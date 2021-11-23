@@ -767,40 +767,4 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $this->data = $store->updateArray($latest->data);
         return $this->data;
     }
-
-    /**
-     * Locks required to the request
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function locks()
-    {
-        return $this->hasMany(ProcessRequestLock::class);
-    }
-
-    /**
-     * Request a lock
-     *
-     * @param int $tokenId
-     *
-     * @return ProcessRequestLock
-     */
-    public function lock($tokenId)
-    {
-        return $this->locks()->create(['process_request_token_id' => $tokenId]);
-    }
-
-    public function unlock()
-    {
-        $first = $this->locks()->orderBy('id')->first();
-        if ($first) {
-            $first->delete();
-        }
-    }
-
-    public function hasLock(ProcessRequestLock $lock)
-    {
-        $first = $this->locks()->orderBy('id')->first();
-        return !$first || $first->getKey() === $lock->getKey();
-    }
 }

@@ -3,6 +3,7 @@
 namespace ProcessMaker\Jobs;
 
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\App;
 use ProcessMaker\BpmnEngine;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestLock;
 use Throwable;
 
 abstract class BpmnAction implements ShouldQueue
@@ -36,6 +38,11 @@ abstract class BpmnAction implements ShouldQueue
     protected $disableGlobalEvents = false;
 
     /**
+     * @var ProcessRequestLock
+     */
+    private $lock;
+
+    /**
      * Execute the job.
      *
      * @return void
@@ -53,6 +60,7 @@ abstract class BpmnAction implements ShouldQueue
         try {
             $this->engine->runToNextState();
         } catch (Throwable $exception) {
+            Log::error($exception->getMessage());
             // Change the Request to error status
             $request = !$this->instance && $this instanceof StartEvent ? $response : $this->instance;
             if ($request) {
@@ -61,7 +69,7 @@ abstract class BpmnAction implements ShouldQueue
             throw $exception;
         } finally {
             if (isset($this->instanceId)) {
-                $this->unlockInstance($this->instanceId);
+                $this->unlock();
             };
         }
 
@@ -149,21 +157,96 @@ abstract class BpmnAction implements ShouldQueue
      */
     protected function lockInstance($instanceId)
     {
-        $instance = ProcessRequest::findOrFail($instanceId);
-        if (config('queue.default') === 'sync') {
-            return $instance;
-        }
-        $lock = $instance->lock($this->tokenId ?? null);
-        do {
-            $ready = $instance->hasLock($lock);
-            if ($ready) {
-                $instance = ProcessRequest::findOrFail($instanceId);
-                $lock->save();
-            } else {
-                usleep(500);
+        try {
+            $instance = ProcessRequest::findOrFail($instanceId);
+            if (config('queue.default') === 'sync') {
+                return $instance;
             }
-        } while (!$ready);
-        return $instance;
+            if ($instance->collaboration) {
+                $ids = $instance->collaboration->requests->pluck('id')->toArray();
+            } else {
+                $ids = [$instance->id];
+            }
+            $lock = $this->requestLock($ids);
+            // If the processes are going to have thousands of parallel instances,
+            // the lock will be released after a while.
+            //$numSeconds = config('app.bpmn_actions_max_lock_time', 1) ?: 60;
+            for ($tries=0; $tries < 6000; $tries++) {
+                $currentLock = $this->currentLock($ids);
+                if (!$currentLock) {
+                    if (ProcessRequest::find($instanceId)) {
+                        $lock = $this->requestLock($ids);
+                    } else {
+                        return false;
+                    }
+                } elseif ($lock->id == $currentLock->id) {
+                    $instance = ProcessRequest::findOrFail($instanceId);
+                    $this->activateLock($lock);
+                    return $instance;
+                }
+                // average of lock time is 1 second
+                usleep(1000);
+            }
+        } catch (Throwable $exception) {
+            Log::error($exception->getMessage());
+            return false;
+        }
+        return false;
+    }
+
+    /**
+     * Request a lock for the instance
+     * @param array $ids
+     * @return ProcessRequestLock
+     */
+    private function requestLock($ids)
+    {
+        return ProcessRequestLock::create([
+            'request_id' => $this->instanceId,
+            'token_id' => $this->tokenId,
+            'request_ids' => $ids,
+        ]);
+    }
+
+    /**
+     * Get the current lock
+     * @param array $ids
+     * @return ProcessRequestLock|null
+     */
+    private function currentLock($ids)
+    {
+        $query = ProcessRequestLock::whereNotDue()
+            ->orderBy('id', 'asc')
+            ->limit(1);
+        $query->where(function ($query) use ($ids) {
+            foreach ($ids as $id) {
+                $query->orWhereJsonContains('request_ids', $id);
+            }
+        });
+        return $query->first();
+    }
+
+    /**
+     * Activate the lock
+     * @param ProcessRequestLock $lock
+     * @return void
+     */
+    private function activateLock(ProcessRequestLock $lock)
+    {
+        $lock->activate();
+        $this->lock = $lock;
+        // Remove due locks
+        ProcessRequestLock::where('due_at', '<', Carbon::now())->delete();
+    }
+
+    /**
+     * Unlock the instance and its collaborators
+     */
+    protected function unlock()
+    {
+        if (isset($this->lock)) {
+            $this->lock->delete();
+        }
     }
 
     /**

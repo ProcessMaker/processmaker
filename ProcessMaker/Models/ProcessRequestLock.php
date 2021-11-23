@@ -14,6 +14,7 @@ use ProcessMaker\Traits\SqlsrvSupportTrait;
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  * @property ProcessRequest $processRequest
+ * @method static \Illuminate\Database\Eloquent\Builder|\ProcessMaker\Models\ProcessRequestLock whereNotDue()
  */
 class ProcessRequestLock extends Model
 {
@@ -35,10 +36,30 @@ class ProcessRequestLock extends Model
 
     protected $casts = [
         'due_at' => 'datetime',
+        'request_ids' => 'array',
     ];
 
-    public function processRequest()
+    /**
+     * Active block that did not overcome.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeWhereNotDue($query)
     {
-        return $this->belongsTo(ProcessRequest::class);
+        return $query->where(function ($query) {
+            return $query->whereNull('due_at')
+                ->orWhere('due_at', '>', now());
+        });
+    }
+
+    /**
+     * @return void
+     */
+    public function activate()
+    {
+        $numSeconds = config('app.bpmn_actions_max_lock_time', 1) ?: 60;
+        $this->due_at = now()->modify(now()->modify("+{$numSeconds} seconds"));
+        $this->save();
     }
 }
