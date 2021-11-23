@@ -200,7 +200,7 @@ abstract class BpmnAction implements ShouldQueue
      * @param array $ids
      * @return ProcessRequestLock
      */
-    private function requestLock($ids)
+    protected function requestLock($ids)
     {
         return ProcessRequestLock::create([
             'request_id' => $this->instanceId,
@@ -214,7 +214,7 @@ abstract class BpmnAction implements ShouldQueue
      * @param array $ids
      * @return ProcessRequestLock|null
      */
-    private function currentLock($ids)
+    protected function currentLock($ids)
     {
         $query = ProcessRequestLock::whereNotDue()
             ->orderBy('id', 'asc')
@@ -232,7 +232,7 @@ abstract class BpmnAction implements ShouldQueue
      * @param ProcessRequestLock $lock
      * @return void
      */
-    private function activateLock(ProcessRequestLock $lock)
+    protected function activateLock(ProcessRequestLock $lock)
     {
         $lock->activate();
         $this->lock = $lock;
