@@ -86,6 +86,7 @@ class SignalTest extends TestCase
             'count' => $perPage,
             'per_page' => $perPage,
             'current_page' => $page,
+            'total_pages' => 2
         ], $meta);
         //Verify the data size
         $this->assertCount($meta['count'], $data);
@@ -118,6 +119,40 @@ class SignalTest extends TestCase
             'count' => $perPage,
             'per_page' => $perPage,
             'current_page' => $page,
+            'total_pages' => 2
+        ], $meta);
+        //Verify the data size
+        $this->assertCount($meta['count'], $data);
+    }
+
+    /**
+     * Get a list of Signals first page with ten records should return one total_pages.
+     */
+    public function testListSignalOnPageWithTenRecordsShouldReturnOneTotalPages()
+    {
+        // Create some signals
+        $countSignals = 10;
+        $signals = $this->createSignal($countSignals);
+
+        //Get a page of signals
+        $page = 1;
+        $perPage = 10;
+
+        $route = route($this->resource . '.index');
+        $response = $this->apiCall('GET', $route . '?page=' . $page . '&per_page=' . $perPage);
+        //Verify the status
+        $response->assertStatus(200);
+        //Verify the structure
+        $response->assertJsonStructure(['data' => [$this->structure]]);
+        $data = $response->json('data');
+        $meta = $response->json('meta');
+        // Verify the meta values
+        $this->assertArraySubset([
+            'total' => $countSignals,
+            'count' => $perPage,
+            'per_page' => $perPage,
+            'current_page' => $page,
+            'total_pages' => 1
         ], $meta);
         //Verify the data size
         $this->assertCount($meta['count'], $data);
