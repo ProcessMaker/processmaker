@@ -71,6 +71,7 @@ class PMConfigGenericExportManager
         $definitions = $process->getDefinitions();
         $xpath = new DOMXPath($definitions);
         $xpath->registerNamespace('pm', WorkflowServiceProvider::PROCESS_MAKER_NS);
+        $xpath->registerNamespace('bpmn', WorkflowServiceProvider::PROCESS_MAKER_NS);
 
         // Used in config
         $nodes = $xpath->query("//{$this->tag}[@pm:config!='']");
@@ -95,4 +96,4 @@ class PMConfigGenericExportManager
         $process->bpmn = $definitions->saveXML();
         $process->save();
     }
-} 
+}
