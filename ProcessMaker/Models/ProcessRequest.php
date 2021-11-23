@@ -742,43 +742,41 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     }
 
     /**
-     * Locks required to the request
+     * Returns true if the request persists
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return boolean
      */
-    public function locks()
+    public function isNonPersistent()
     {
-        return $this->hasMany(ProcessRequestLock::class);
+        return $this->getProcess()->isNonPersistent();
     }
 
     /**
-     * Request a lock
+     * Get managed data from the process request
      *
-     * @param int $tokenId
-     *
-     * @return ProcessRequestLock
+     * @return array
      */
-    public function requestLock($tokenId)
+    public function getRequestData()
     {
-        return $this->locks()->create(['process_request_token_id' => $tokenId]);
+        $dataManager = new DataManager();
+        return $dataManager->getRequestData($this);
     }
 
     /**
-     * @return void
+     * @return self
      */
-    public function unlock()
+    public function loadProcessRequestInstance()
     {
-        $this->locks()->whereNotNull('due_at')->delete();
-    }
-
-    /**
-     * Get current lock for $this request
-     *
-     * @return ProcessRequestLock
-     */
-    public function currentLock()
-    {
-        return $this->locks()->whereNotDue()->orderBy('id')->limit(1)->first();
+        $process = $this->processVersion ?? $this->processVersion()->first() ?? $this->process ?? $this->process()->first();
+        $storage = $process->getDefinitions();
+        $callableId = $this->callable_id;
+        $process = $storage->getProcess($callableId);
+        $dataStore = $storage->getFactory()->createDataStore();
+        $dataStore->setData($this->data);
+        $this->setId($this->getKey());
+        $this->setProcess($process);
+        $this->setDataStore($dataStore);
+        return $this;
     }
 
     /**
