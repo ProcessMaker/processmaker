@@ -26,7 +26,7 @@ class ScreensInProcess
         // Screens used in BPMN
         $xpath = new DOMXPath($process->getDefinitions());
         $xpath->registerNamespace('pm', WorkflowServiceProvider::PROCESS_MAKER_NS);
-        $xpath->registerNamespace('bpmn', WorkflowServiceProvider::PROCESS_MAKER_NS);
+        $xpath->registerNamespace('bpmn', 'http://www.omg.org/spec/BPMN/20100524/MODEL');
         // Used in screenRef
         $nodes = $xpath->query("//*[@pm:screenRef!='']");
         foreach ($nodes as $node) {
@@ -63,7 +63,7 @@ class ScreensInProcess
         $definitions = $process->getDefinitions();
         $xpath = new DOMXPath($definitions);
         $xpath->registerNamespace('pm', WorkflowServiceProvider::PROCESS_MAKER_NS);
-        $xpath->registerNamespace('bpmn', WorkflowServiceProvider::PROCESS_MAKER_NS);
+        $xpath->registerNamespace('bpmn', 'http://www.omg.org/spec/BPMN/20100524/MODEL');
 
         // Used in screenRef
         $nodes = $xpath->query("//*[@pm:screenRef!='']");
