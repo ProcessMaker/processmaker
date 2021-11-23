@@ -41,8 +41,12 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
      *
      * @return void
      */
-    public function action(ProcessRequestToken $token, ServiceTaskInterface $element, Definitions $processModel, ProcessRequest $instance)
+    public function action(ProcessRequestToken $token = null, ServiceTaskInterface $element = null, Definitions $processModel, ProcessRequest $instance)
     {
+        // Exit if the task was completed or closed
+        if (!$token || !$element) {
+            return;
+        }
         $implementation = $element->getImplementation();
         Log::info('Service task started: ' . $implementation);
         $configuration = json_decode($element->getProperty('config'), true);
@@ -69,11 +73,16 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
                 throw new ScriptException('Service task not implemented: ' . $implementation);
             }
 
-            $this->unlockInstance($instance->getKey());
+            $this->unlock();
+            $dataManager = new DataManager();
+            $data = $dataManager->getData($token);
             $response = $script->runScript($data, $configuration);
 
             $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
-                $dataStore = $token->getInstance()->getDataStore();
+                // Exit if the task was completed or closed
+                if (!$token || !$element) {
+                    return;
+                }
                 // Update data
                 if (is_array($response['output'])) {
                     // Validate data
@@ -93,6 +102,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
             $token->setStatus(ServiceTaskInterface::TOKEN_STATE_FAILING);
             $token->getInstance()->logError($exception, $element);
             Log::info('Service task failed: ' . $implementation . ' - ' . $exception->getMessage());
+            Log::error($exception->getTraceAsString());
         }
     }
 }
