@@ -79,10 +79,10 @@ class TaskTest extends TestCase {
 
         $r = $processRequest->requestFiles();
         $this->assertCount(1, $r->single);
-        $this->assertEquals(['id' => $media1->id, 'file_name' => 'file1.txt'], $r->single[0]);
+        $this->assertEquals(['id' => $media1->id, 'file_name' => 'file1.txt', 'mime_type' => 'application/x-empty'], $r->single[0]);
         $this->assertCount(2, $r->multiple);
-        $this->assertEquals(['id' => $media2->id, 'file_name' => 'file2.txt'], $r->multiple[0]);
-        $this->assertEquals(['id' => $media3->id, 'file_name' => 'file3.txt'], $r->multiple[1]);
+        $this->assertEquals(['id' => $media2->id, 'file_name' => 'file2.txt', 'mime_type' => 'application/x-empty'], $r->multiple[0]);
+        $this->assertEquals(['id' => $media3->id, 'file_name' => 'file3.txt', 'mime_type' => 'application/x-empty'], $r->multiple[1]);
 
         // Include token
         $r = $processRequest->requestFiles(true);
