@@ -43,8 +43,12 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
      *
      * @return void
      */
-    public function action(ProcessRequestToken $token, ScriptTaskInterface $element, ProcessRequest $instance)
+    public function action(ProcessRequestToken $token = null, ScriptTaskInterface $element = null, ProcessRequest $instance)
     {
+        // Exit if the task was completed or closed
+        if (!$token || !$element) {
+            return;
+        }
         $scriptRef = $element->getProperty('scriptRef');
         $configuration = json_decode($element->getProperty('config'), true);
 
@@ -69,12 +73,16 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
                 $script = Script::findOrFail($scriptRef)->versionFor($instance);
             }
 
-            $this->unlockInstance($instance->getKey());
+            $this->unlock();
             $dataManager = new DataManager();
             $data = $dataManager->getData($token);
             $response = $script->runScript($data, $configuration);
 
             $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
+                // Exit if the task was completed or closed
+                if (!$token || !$element) {
+                    return;
+                }
                 // Update data
                 if (is_array($response['output'])) {
                     // Validate data
@@ -93,7 +101,8 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             $error = $element->getRepository()->createError();
             $error->setName($exception->getMessage());
             $token->setProperty('error', $error);
-            Log::info('Script failed: ' . $scriptRef . ' - ' . $exception->getMessage());
+            Log::error('Script failed: ' . $scriptRef . ' - ' . $exception->getMessage());
+            Log::error($exception->getTraceAsString());
         }
     }
 }

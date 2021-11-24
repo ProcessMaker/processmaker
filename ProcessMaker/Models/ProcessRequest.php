@@ -774,46 +774,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     }
 
     /**
-     * Locks required to the request
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function locks()
-    {
-        return $this->hasMany(ProcessRequestLock::class);
-    }
-
-    /**
-     * Request a lock
-     *
-     * @param int $tokenId
-     *
-     * @return ProcessRequestLock
-     */
-    public function requestLock($tokenId)
-    {
-        return $this->locks()->create(['process_request_token_id' => $tokenId]);
-    }
-
-    /**
-     * @return void
-     */
-    public function unlock()
-    {
-        $this->locks()->whereNotNull('due_at')->delete();
-    }
-
-    /**
-     * Get current lock for $this request
-     *
-     * @return ProcessRequestLock
-     */
-    public function currentLock()
-    {
-        return $this->locks()->whereNotDue()->orderBy('id')->limit(1)->first();
-    }
-
-    /**
      * Returns true if the request persists
      *
      * @return boolean
