@@ -52,6 +52,7 @@ class PMConfigGenericExportManagerTest extends TestCase {
         $definitions = $process->refresh()->getDefinitions();
         $xpath = new DOMXPath($definitions);
         $xpath->registerNamespace('pm', WorkflowServiceProvider::PROCESS_MAKER_NS);
+        $xpath->registerNamespace('bpmn', 'http://www.omg.org/spec/BPMN/20100524/MODEL');
 
         $nodes = $xpath->query("//bpmn:callActivity");
         $abeConfig = json_decode(
