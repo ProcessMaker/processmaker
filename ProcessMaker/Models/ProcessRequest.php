@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Arr;
 use Laravel\Scout\Searchable;
 use Log;
 use ProcessMaker\Events\ProcessUpdated;
@@ -901,7 +902,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
             $dataName = $file->getCustomProperty('data_name');
             $info = [
                 'id' => $file->id,
-                'file_name' => $file->file_name
+                'file_name' => $file->file_name,
+                'mime_type' => $file->mime_type,
             ];
             if ($includeToken) {
                 $info['token'] = md5($dataName . $file->id . $file->created_at);
