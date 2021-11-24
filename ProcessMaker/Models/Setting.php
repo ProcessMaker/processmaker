@@ -110,7 +110,6 @@ class Setting extends Model implements HasMedia
 
         return [
             'key' => ['required', $unique],
-            'config' => ['required'],
             'config.*' => ['required', 'valid_variable']
         ];
     }
