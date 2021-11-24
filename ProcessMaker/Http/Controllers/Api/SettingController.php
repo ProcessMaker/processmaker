@@ -204,7 +204,6 @@ class SettingController extends Controller
      */
     public function update(Setting $setting, Request $request)
     {
-        $request->validate(Setting::rules($setting), Setting::messages());
         $setting->config = $request->input('config');
         $setting->save();
 
