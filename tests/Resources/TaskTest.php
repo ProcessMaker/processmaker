@@ -9,7 +9,7 @@ use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Models\ProcessRequest;
 use Tests\Feature\Shared\RequestHelper;
 use ProcessMaker\Facades\WorkflowManager;
-use ProcessMaker\Models\ProcessRequestToken;
+use Illuminate\Http\UploadedFile;
 
 class TaskTest extends TestCase {
 
@@ -65,6 +65,28 @@ class TaskTest extends TestCase {
         // $this->assertEquals('original child description', $json['screen']['nested'][0]['description']);
         // $this->assertEquals('original child2 description', $json['screen']['nested'][1]['description']);
         // $this->assertEquals('original child3 description', $json['screen']['nested'][2]['description']);
+    }
+
+    public function testRequestFiles()
+    {
+        $processRequest = factory(ProcessRequest::class)->create();
+        $file1 = UploadedFile::fake()->create('file1.txt', 1);
+        $file2 = UploadedFile::fake()->create('file2.txt', 1);
+        $file3 = UploadedFile::fake()->create('file3.txt', 1);
+        $media1 = $processRequest->addMedia($file1)->withCustomProperties(['data_name' => 'single'])->toMediaCollection();
+        $media2 = $processRequest->addMedia($file2)->withCustomProperties(['data_name' => 'multiple'])->toMediaCollection();
+        $media3 = $processRequest->addMedia($file3)->withCustomProperties(['data_name' => 'multiple'])->toMediaCollection();
+
+        $r = $processRequest->requestFiles();
+        $this->assertCount(1, $r->single);
+        $this->assertEquals(['id' => $media1->id, 'file_name' => 'file1.txt', 'mime_type' => 'application/x-empty'], $r->single[0]);
+        $this->assertCount(2, $r->multiple);
+        $this->assertEquals(['id' => $media2->id, 'file_name' => 'file2.txt', 'mime_type' => 'application/x-empty'], $r->multiple[0]);
+        $this->assertEquals(['id' => $media3->id, 'file_name' => 'file3.txt', 'mime_type' => 'application/x-empty'], $r->multiple[1]);
+
+        // Include token
+        $r = $processRequest->requestFiles(true);
+        $this->assertEquals($r->single[0]['token'], md5('single' . $media1->id . $media1->created_at));
     }
 
     public function tearDown() : void {

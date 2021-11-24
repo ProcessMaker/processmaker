@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Arr;
 use Laravel\Scout\Searchable;
 use Log;
 use ProcessMaker\Events\ProcessUpdated;
@@ -848,5 +849,26 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public function ownerTask()
     {
         return $this->hasOne(ProcessRequestToken::class, 'subprocess_request_id', 'id');
+    }
+
+    /**
+     * Media files formatted for screen builder file controls
+     *
+     * @return Object
+     */
+    public function requestFiles(bool $includeToken = false)
+    {
+        return (object) $this->getMedia()->mapToGroups(function($file) use ($includeToken) {
+            $dataName = $file->getCustomProperty('data_name');
+            $info = [
+                'id' => $file->id,
+                'file_name' => $file->file_name,
+                'mime_type' => $file->mime_type,
+            ];
+            if ($includeToken) {
+                $info['token'] = md5($dataName . $file->id . $file->created_at);
+            }
+            return [ $dataName => $info ];
+        })->toArray();
     }
 }

@@ -297,6 +297,12 @@
       <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
     @endif
 
+    <script>
+      window.PM4ConfigOverrides = {
+        requestFiles: @json($request->requestFiles())
+      };
+    </script>
+
     <script src="{{mix('js/requests/show.js')}}"></script>
     <script>
       new Vue({
