@@ -179,7 +179,7 @@ export default {
   },
   methods: {
     isValid(key) {
-      let pattern = /^[a-zA-Z_-][a-zA-Z0-9_-]*$/g;
+      let pattern = /^[a-zA-Z_][a-zA-Z0-9_]*$/g;
       return pattern.test(key) && key != '';
     },
     keyLabel() {
