@@ -37,8 +37,9 @@ class SettingsTest extends TestCase
      */
     public function testUpdateExtendedPropertiesWithValidVariableName()
     {
-        $setting = factory(Setting::class)->create(['key' => 'users.properties']);
+        $this->markTestSkipped('Not using validation in backend yet, because there are some config data that should not be validated as LDAP config...');
 
+        $setting = factory(Setting::class)->create(['key' => 'users.properties']);
         $params = [
             // Test data different valid variable names
             'config' => [
@@ -64,12 +65,15 @@ class SettingsTest extends TestCase
      */
     public function testUpdateExtendedPropertiesWithInvalidVariableName()
     {
+        $this->markTestSkipped('Not using validation in backend yet, because there are some config data that should not be validated as LDAP config...');
+
         $setting = factory(Setting::class)->create(['key' => 'users.properties']);
         $params = [
             // Test data different valid variable names
             'config' => [
                 '1myVar' => 'This is my variable 1',
                 'myVar space' => 'This is my variable 2',
+                'my-Var' => 'This is my variable 3',
             ],
             'key' => $setting->key,
             'id' => $setting->id
@@ -88,6 +92,9 @@ class SettingsTest extends TestCase
                         'Name has to start with a letter and can contain only letters, numbers, and underscores (_).'
                     ],
                     'config.myVar space' => [
+                        'Name has to start with a letter and can contain only letters, numbers, and underscores (_).'
+                    ],
+                    'config.my-Var' => [
                         'Name has to start with a letter and can contain only letters, numbers, and underscores (_).'
                     ]
                 ]

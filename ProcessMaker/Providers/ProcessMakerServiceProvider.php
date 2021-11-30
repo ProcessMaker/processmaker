@@ -66,7 +66,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
         //Custom validator for variable names. Eg: correct var names _myvar, myvar, myvar1, _myvar1. Eg: incorrect variable names 1_myvar, 1myvar, myvar a
         Validator::extend('valid_variable', function ($attr, $val) {
             $key = explode(".", $attr)[1];
-            return preg_match('/^[a-zA-Z_-][a-zA-Z0-9_-]*$/', $key);
+            return preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $key);
         });
 
         parent::boot();
