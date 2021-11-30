@@ -37,8 +37,9 @@ class SettingsTest extends TestCase
      */
     public function testUpdateExtendedPropertiesWithValidVariableName()
     {
-        $setting = factory(Setting::class)->create(['key' => 'users.properties']);
+        $this->markTestSkipped('Not using validation in backend yet, because there are some config data that should not be validated as LDAP config...');
 
+        $setting = factory(Setting::class)->create(['key' => 'users.properties']);
         $params = [
             // Test data different valid variable names
             'config' => [
@@ -62,8 +63,10 @@ class SettingsTest extends TestCase
     /**
      * Test extended properties variable invalid name validation
      */
-    public function updateExtendedPropertiesWithInvalidVariableName()
+    public function testUpdateExtendedPropertiesWithInvalidVariableName()
     {
+        $this->markTestSkipped('Not using validation in backend yet, because there are some config data that should not be validated as LDAP config...');
+
         $setting = factory(Setting::class)->create(['key' => 'users.properties']);
         $params = [
             // Test data different valid variable names
