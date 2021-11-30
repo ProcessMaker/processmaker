@@ -11,6 +11,9 @@ class ScriptExecutorSeeder extends Seeder
             if ($key === 'javascript') {
                 $key = 'node';
             }
+            if ($key === 'javascript-ssr') {
+                $key = 'node-ssr';
+            }
             try {
                 if (isset($this->command)) {
                     $this->command->line("Running docker-executor-{$key}:install");
