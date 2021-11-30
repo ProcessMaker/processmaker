@@ -139,6 +139,31 @@
 
                                 </template>
                             </template>
+                            <template v-else>
+                                <template v-if="showScreenRequestDetail">
+                                    <div class="card">
+                                        <div class="card-body">
+                                          <vue-form-renderer ref="screenRequestDetail" :config="screenRequestDetail" v-model="dataSummary"/>
+                                        </div>
+                                    </div>
+                                </template>
+                                <template v-else>
+                                    <div class="card border-0">
+                                        <div class="card-header bg-white">
+                                            <h5 class="m-0">
+                                                {{ __('Request In Progress') }}
+                                            </h5>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <p class="card-text">
+                                                {{__('This Request is currently in progress.')}}
+                                                {{__('This screen will be populated once the Request is completed.')}}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </template>
+                            </template>
                         </div>
                         @if ($request->status === 'COMPLETED')
                             @can('editData', $request)
@@ -393,6 +418,18 @@
               options[option.key] = option.value
             });
             return options;
+          },
+          /**
+           * If the screen request detail is configured.
+           **/
+          showScreenRequestDetail() {
+            return !!this.request.request_detail_screen;
+          },
+          /**
+           * Get Screen request detail
+           * */
+          screenRequestDetail() {
+            return this.request.request_detail_screen ? this.request.request_detail_screen.config : null;
           },
           classStatusCard() {
             let header = {
