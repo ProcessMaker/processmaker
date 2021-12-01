@@ -82,6 +82,7 @@ class ProcessController extends Controller
             ->toArray();
 
         $screenCancel = Screen::find($process->cancel_screen_id);
+        $screenRequestDetail = Screen::find($process->request_detail_screen_id);
 
         $list = $this->listUsersAndGroups();
 
@@ -92,7 +93,7 @@ class ProcessController extends Controller
         $canEditData = $this->listCan('EditData', $process);
         $addons = $this->getPluginAddons('edit', compact(['process']));
 
-        return view('processes.edit', compact(['process', 'categories', 'screenCancel', 'list', 'canCancel', 'canStart', 'canEditData', 'addons']));
+        return view('processes.edit', compact(['process', 'categories', 'screenRequestDetail', 'screenCancel', 'list', 'canCancel', 'canStart', 'canEditData', 'addons']));
     }
 
     /**

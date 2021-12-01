@@ -115,7 +115,14 @@
                                         <vue-form-renderer ref="screen" :config="screenSummary.config" v-model="dataSummary" :computed="screenSummary.computed"/>
                                     </div>
                                 </template>
-                                <template v-else>
+                                <template v-if="showScreenRequestDetail && !showScreenSummary">
+                                    <div class="card">
+                                        <div class="card-body">
+                                          <vue-form-renderer ref="screenRequestDetail" :config="screenRequestDetail" v-model="dataSummary"/>
+                                        </div>
+                                    </div>
+                                </template>
+                                <template v-if="!showScreenSummary && !showScreenRequestDetail">
                                     <template v-if="summary.length > 0">
                                         <div class="card border-0">
                                             <data-summary :summary="dataSummary"></data-summary>
@@ -394,6 +401,18 @@
             });
             return options;
           },
+          /**
+           * If the screen request detail is configured.
+           **/
+          showScreenRequestDetail() {
+            return !!this.request.request_detail_screen;
+          },
+          /**
+           * Get Screen request detail
+           * */
+          screenRequestDetail() {
+            return this.request.request_detail_screen ? this.request.request_detail_screen.config : null;
+          },
           classStatusCard() {
             let header = {
               "ACTIVE": "bg-success",
@@ -438,7 +457,7 @@
         },
         methods: {
           switchTab(tab) {
-            ProcessMaker.EventBus.$emit('tab-switched', tab);  
+            ProcessMaker.EventBus.$emit('tab-switched', tab);
           },
           requestStatusClass(status) {
             status = status.toLowerCase();
