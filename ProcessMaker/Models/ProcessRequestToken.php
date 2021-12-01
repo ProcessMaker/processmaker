@@ -10,6 +10,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Notification;
 use Laravel\Scout\Searchable;
 use Log;
+use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Facades\WorkflowUserManager;
 use ProcessMaker\Models\Setting;
@@ -84,6 +85,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     use TokenTrait;
     use SerializeToIso8601;
     use Searchable;
+    use HideSystemResources;
 
     protected $connection = 'processmaker';
 
