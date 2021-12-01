@@ -110,6 +110,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->initiated_at = null;
         $token->riskchanges_at = $due ? Carbon::now()->addHours($due * 0.7) : null;
         $token->updateTokenProperties();
+        $token->getInstance()->updateCatchEvents();
         $token->saveOrFail();
         $token->setId($token->getKey());
         $request = $token->getInstance();

@@ -62,10 +62,10 @@ class ThrowSignalEvent implements ShouldQueue
             $requests = $requests->orderBy('id')
                 ->pluck('id')
                 ->toArray();
-            $chuncks = array_chunk($requests, $perJob);
-            foreach ($chuncks as $chunck) {
+            $chunks = array_chunk($requests, $perJob);
+            foreach ($chunks as $chunk) {
                 CatchSignalEventRequest::dispatch(
-                    $chunck,
+                    $chunk,
                     $this->signalRef,
                     $this->data
                 )->onQueue('bpmn');

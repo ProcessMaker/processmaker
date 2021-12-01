@@ -12,6 +12,7 @@ use Log;
 use ProcessMaker\Events\ProcessUpdated;
 use ProcessMaker\Exception\PmqlMethodException;
 use ProcessMaker\Managers\DataManager;
+use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\IntermediateCatchEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\SignalEventDefinitionInterface;
@@ -752,6 +753,20 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
                         $signal = $eventDefinition->getProperty('signal');
                         if ($signal) {
                             $signalEvents[]= $signal->getId();
+                        }
+                    }
+                }
+            }
+            // Activity with a boundary signal event
+            if ($element instanceof ActivityInterface) {
+                $boundaryElements = $element->getBoundaryEvents();
+                foreach ($boundaryElements as $boundary) {
+                    foreach ($boundary->getEventDefinitions() as $eventDefinition) {
+                        if ($eventDefinition instanceof SignalEventDefinitionInterface) {
+                            $signal = $eventDefinition->getProperty('signal');
+                            if ($signal) {
+                                $signalEvents[]= $signal->getId();
+                            }
                         }
                     }
                 }
