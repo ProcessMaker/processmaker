@@ -20,6 +20,7 @@ use ProcessMaker\Providers\AuthServiceProvider;
 use ProcessMaker\Models\ProcessNotificationSetting;
 use Illuminate\Support\Facades\Notification;
 use ProcessMaker\Notifications\ActivityActivatedNotification;
+use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 
 /**
  * Tests routes related to tokens list and show
@@ -531,6 +532,40 @@ class TasksTest extends TestCase
         $actualIds = collect($response->json()['data'])->pluck('id');
 
         $this->assertEquals($expectedTaskIds, $actualIds);
+    }
+
+    public function testSearchTasksWithPmqlValidColumn()
+    {
+        // Create a saved search
+        factory(SavedSearch::class)->create(['user_id' => $this->user->id, 'type' => 'task']);
+
+        // Get task list
+        $url = route('api.tasks.index') . '?pmql=(status%20%3D%20%22In%20Progress%22)%20';
+        $response = $this->apiCall('GET', $url);
+        $response->assertStatus(200);
+
+        // Check structure
+        $response->assertJsonStructure([
+            'data',
+            'meta'
+        ]);
+    }
+
+    public function testSearchTasksWithPmqlInvalidColumn()
+    {
+        // Create a saved search
+        factory(SavedSearch::class)->create(['user_id' => $this->user->id, 'type' => 'task']);
+        $unknownColumnName = 'my_unknown_column';
+
+        // Get task list
+        $url = route('api.tasks.index') . '?pmql=(status%20%3D%20%22In%20Progress%22)%20AND%20('.$unknownColumnName.'%20%3D%20%22Test%22)';
+        $response = $this->apiCall('GET', $url);
+        $response->assertStatus(422);
+
+        // Check request throw error
+        $response->assertJsonFragment([
+            'message' => 'PMQL Is Invalid. Column not found: "'.$unknownColumnName.'"'
+        ]);
     }
 
     public function testSelfServeNotifications()
