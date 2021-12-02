@@ -19,6 +19,7 @@ use PermissionSeeder;
 use ProcessMaker\Providers\AuthServiceProvider;
 use ProcessMaker\Models\ProcessNotificationSetting;
 use Illuminate\Support\Facades\Notification;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Notifications\ActivityActivatedNotification;
 
 /**
@@ -142,6 +143,43 @@ class TasksTest extends TestCase
 
         // should only see the 3 closed tasks, not the active one
         $this->assertEquals(count($response->json()['data']), 3);
+    }
+
+    /**
+     * You only see non system type tasks.
+     */
+    public function testGetListNonSystemTasks()
+    {
+        $user_1 = factory(User::class)->create();
+        $user_2 = factory(User::class)->create();
+
+        $process = factory(Process::class)->create();
+        $category = factory(ProcessCategory::class)->create(['status' => 'ACTIVE', 'is_system' => true]);
+        $systemProcess = factory(Process::class)->create(['process_category_id' => $category->id]);
+        // Create some tokens
+        factory(ProcessRequestToken::class, 2)->create([
+            'process_id' => $process->id,
+            'status' => 'ACTIVE',
+            'user_id' => $user_1->id
+        ]);
+        factory(ProcessRequestToken::class, 3)->create([
+            'process_id' => $process->id,
+            'status' => 'ACTIVE',
+            'user_id' => $user_2->id
+        ]);
+        factory(ProcessRequestToken::class, 1)->create([
+            'process_id' => $systemProcess->id,
+            'status' => 'ACTIVE',
+            'user_id' => $user_1->id
+        ]);
+
+        // Get a page of tokens
+        // Since PR #4189, non_system = true is a default parameter
+        $route = route('api.' . $this->resource . '.index', ['user_id' => $user_1->id, 'non_system' => true]);
+        $response = $this->apiCall('GET', $route);
+
+        // should only see the user's 2 tasks
+        $this->assertEquals(2, count($response->json()['data']));
     }
 
     /**

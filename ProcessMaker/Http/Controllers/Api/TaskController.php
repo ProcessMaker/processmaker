@@ -156,8 +156,9 @@ class TaskController extends Controller
         }
 
         //list only display elements type task
+        $nonSystem = filter_var($request->input('non_system'), FILTER_VALIDATE_BOOLEAN);
         $query->where('element_type', '=', 'task')
-            ->when($request->input('non_system', false), function ($query) {
+            ->when($nonSystem, function ($query) {
                 $query->nonSystem();
             });
 
