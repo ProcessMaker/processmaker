@@ -5,7 +5,9 @@ namespace Tests\Feature\Api;
 use ProcessMaker\Jobs\CatchSignalEventProcess;
 use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Jobs\ThrowSignalEvent;
+use ProcessMaker\Managers\WorkflowManager;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
 use Tests\TestCase;
 
 class SignalEventTest extends TestCase
@@ -80,6 +82,14 @@ class SignalEventTest extends TestCase
             file_get_contents(__DIR__ . '/../../Fixtures/signal_catch_with_payload.json')
         );
 
-        //
+        // Payload for all the signals in the test
+        $payload = ['payload1' => 1, 'payload2' => 2];
+
+        // Dispatch the job synchronously for the test (signal 3 triggers the "Payload in variable" start event)
+        ThrowSignalEvent::dispatchNow('Signal3', $payload, []);
+
+        // Verify that the created request has the payload stored in the request variable "incoming_data"
+        $createdRequestData = ProcessRequest::all()->first()->data;
+        $this->assertEquals($createdRequestData['incoming_data'], $payload);
     }
 }
