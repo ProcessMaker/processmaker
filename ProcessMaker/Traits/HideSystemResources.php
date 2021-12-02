@@ -56,7 +56,7 @@ trait HideSystemResources
         } else if (static::class == User::class) {
             return $query->where('is_system', false);
         } else if (static::class === ProcessRequestToken::class) {
-            return $query->whereHas('process.user', function ($query) {
+            return $query->whereHas('process.categories', function ($query) {
                 $query->where('is_system', false);
             });
         } else {            
