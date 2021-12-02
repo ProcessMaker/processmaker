@@ -72,4 +72,14 @@ class SignalEventTest extends TestCase
         $throwSignalEventJob = new ThrowSignalEvent($signalRef, [], [$excludedProcess], []);
         $throwSignalEventJob->handle();
     }
+
+    public function testSignalStarEventWithPayloadToRequestVariable()
+    {
+        // The process used for the tests
+        ImportProcess::dispatchNow(
+            file_get_contents(__DIR__ . '/../../Fixtures/signal_catch_with_payload.json')
+        );
+
+        //
+    }
 }
