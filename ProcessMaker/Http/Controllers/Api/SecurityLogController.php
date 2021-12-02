@@ -20,10 +20,6 @@ class SecurityLogController extends Controller
     {
         $query = SecurityLog::query();
         
-        if ($pmql = $request->input('pmql')) {
-            $query->pmql($pmql);
-        }
-        
         if ($filter = $request->input('filter')) {
             $filter = '%' . mb_strtolower($filter) . '%';
             $query->where('event', 'like', $filter)
@@ -42,6 +38,10 @@ class SecurityLogController extends Controller
             }
             
             $query->orderBy($orderBy, $orderDirection);
+        }
+
+        if ($pmql = $request->input('pmql')) {
+            $query->pmql($pmql);
         }
         
         $response = $query->get();
