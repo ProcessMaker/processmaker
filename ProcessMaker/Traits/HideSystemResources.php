@@ -4,6 +4,7 @@ namespace ProcessMaker\Traits;
 use Illuminate\Support\Str;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 
 trait HideSystemResources
@@ -54,6 +55,10 @@ trait HideSystemResources
             $query->whereNotIn('process_id', $systemProcessIds);
         } else if (static::class == User::class) {
             return $query->where('is_system', false);
+        } else if (static::class === ProcessRequestToken::class) {
+            return $query->whereHas('process.categories', function ($query) {
+                $query->where('is_system', false);
+            });
         } else {            
             return $query->whereDoesntHave('categories', function ($query) {
                 $query->where('is_system', true);

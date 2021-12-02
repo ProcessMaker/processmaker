@@ -156,7 +156,11 @@ class TaskController extends Controller
         }
 
         //list only display elements type task
-        $query->where('element_type', '=', 'task');
+        $nonSystem = filter_var($request->input('non_system'), FILTER_VALIDATE_BOOLEAN);
+        $query->where('element_type', '=', 'task')
+            ->when($nonSystem, function ($query) {
+                $query->nonSystem();
+            });
 
         // order by one or more columns
         $orderColumns = explode(',', $request->input('order_by', 'updated_at'));
