@@ -83,7 +83,6 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection', 'force
     Route::get('request/{request}/files/{media}', 'RequestController@downloadFiles')->middleware('can:view,request');
     Route::get('requests', 'RequestController@index')->name('requests.index');
     Route::get('requests/{request}', 'RequestController@show')->name('requests.show');
-    Route::get('requests/{request}/owner', 'RequestController@showOwner')->name('requests.showOwner');
     Route::get('requests/{request}/task/{task}/screen/{screen}', 'RequestController@screenPreview')->name('requests.screen-preview');
 
     Route::get('tasks/search', 'TaskController@search')->name('tasks.search');
