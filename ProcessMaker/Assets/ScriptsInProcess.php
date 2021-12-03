@@ -25,6 +25,7 @@ class ScriptsInProcess
         // Scripts used in BPMN
         $xpath = new DOMXPath($process->getDefinitions());
         $xpath->registerNamespace('pm', WorkflowServiceProvider::PROCESS_MAKER_NS);
+        $xpath->registerNamespace('bpmn', 'http://www.omg.org/spec/BPMN/20100524/MODEL');
         // Used in scriptRef
         $nodes = $xpath->query("//*[@pm:scriptRef!='']");
         foreach ($nodes as $node) {
@@ -47,7 +48,6 @@ class ScriptsInProcess
         $xpath = new DOMXPath($definitions);
         $xpath->registerNamespace('pm', WorkflowServiceProvider::PROCESS_MAKER_NS);
         $xpath->registerNamespace('bpmn', 'http://www.omg.org/spec/BPMN/20100524/MODEL');
-
         // Used in scriptRef
         $nodes = $xpath->query("//*[@pm:scriptRef!='']");
         foreach ($nodes as $node) {

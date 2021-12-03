@@ -69,8 +69,12 @@ class ScreensInProcess
         $nodes = $xpath->query("//*[@pm:screenRef!='']");
         foreach ($nodes as $node) {
             $oldRef = $node->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef');
-            $newRef = $references[Screen::class][$oldRef]->getKey();
-            $node->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef', $newRef);
+            if (array_key_exists($oldRef, $references[Screen::class])) {
+                $newRef = $references[Screen::class][$oldRef]->getKey();
+                $node->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef', $newRef);
+            } else {
+                $node->removeAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef');
+            }
         }
         // interstitialScreenRef
         $nodes = $xpath->query("//*[@pm:interstitialScreenRef!='']");

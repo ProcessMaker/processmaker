@@ -95,6 +95,13 @@ class ImportProcess implements ShouldQueue
     protected $user;
 
     /**
+     * Prevent duplicate processes from being imported if this job fails
+     *
+     * @var int
+     */
+    public $tries = 1;
+
+    /**
      * In order to handle backwards compatibility with previous packages, an
      * array with a previous package name as the key, and the updated
      * package name as the value.
