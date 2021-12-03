@@ -68,9 +68,7 @@ class CatchSignalEventInRequest extends BpmnAction implements ShouldQueue
             // if not defined in the variable, put the payload into the root request data
             $processVariable = $catchEvent->getBpmnElement()->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'config');
             if ($processVariable) {
-                $data = $instance->getDataStore()->getData();
-                Arr::set($data, $processVariable, $this->data);
-                $instance->getDataStore()->setData($data);
+                $instance->getDataStore()->putData($processVariable, $this->data);
             } else {
                 if ($this->data) {
                     foreach ($this->data as $key => $value) {
