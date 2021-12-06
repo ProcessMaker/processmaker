@@ -335,6 +335,7 @@
       },
       fetch() {
         this.loading = true;
+        this.apiDataLoading = true;
         //change method sort by user
         this.orderBy = this.orderBy === "user" ? "user.firstname" : this.orderBy;
         //change method sort by slot name
