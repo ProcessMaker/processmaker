@@ -61,6 +61,7 @@
                               @completed="completed"
                               @@error="error"
                               @closed="closed"
+                              @redirect="redirectToTask"
                           ></task>
                           @endcan
                             @can('view-comments')
@@ -321,16 +322,13 @@
             if(this.task.component && this.task.component === 'AdvancedScreenFrame') {
               return;
             }
-            // If it is inside a subprocess
-            if(this.task.process_request.parent_request_id) {
-              this.redirect(`/requests/${this.task.process_request_id}/owner`);
-              return;
-            }
-
             this.redirect(`/requests/${processRequestId}`);
           },
           error(processRequestId) {
             this.redirect(`/requests/${this.task.process_request_id}`);
+          },
+          redirectToTask(task) {
+            this.redirect(`/tasks/${task.id}/edit`);
           },
           closed(taskId) {
             // avoid redirection if using a customized renderer
