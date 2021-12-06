@@ -104,13 +104,13 @@ class Setting extends Model implements HasMedia
      *
      * @return array
      */
-    public static function rules($existing = null)
+    public static function rules($existing = null, $validateConfig = false)
     {
         $unique = Rule::unique('settings')->ignore($existing);
 
         return [
             'key' => ['required', $unique],
-            'config.*' => ['required', 'valid_variable']
+            'config.*' => ($validateConfig ? ['required', 'valid_variable'] : [])
         ];
     }
 
