@@ -89,7 +89,7 @@ Vue.filter('csharp', function(value) {
       line = line.replace('{dataVariable}',  `data`);
       line = line.replace('{configVariable}',  `config`);
       line = line.replace('{apiExample}',  `apiInstance.GetUserById(id)`);
-      line = line.replace('{apiDocsUrl}', `https://github.com/ProcessMaker/package-csharp#documentation-for-api-endpoints`);
+      line = line.replace('{apiDocsUrl}', `https://processmaker.gitbook.io/processmaker/designing-processes/scripts/script-editor#processmaker-and-environment-variable-syntax-usage-sdk-and-examples`);
       format = line;
     }
     content.push(format);
