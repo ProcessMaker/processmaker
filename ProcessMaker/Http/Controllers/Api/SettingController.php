@@ -204,6 +204,7 @@ class SettingController extends Controller
      */
     public function update(Setting $setting, Request $request)
     {
+        $request->validate(Setting::rules($setting, $request->input('key') == 'users.properties'), Setting::messages());
         $setting->config = $request->input('config');
         $setting->save();
 
@@ -275,7 +276,7 @@ class SettingController extends Controller
             }
         }
     }
-    
+
     private function createStoragePathIfNotExists($path)
     {
         $dir = pathinfo($path, PATHINFO_DIRNAME);
