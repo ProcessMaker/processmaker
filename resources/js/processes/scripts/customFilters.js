@@ -64,7 +64,7 @@ Vue.filter('lua', function(value) {
       line = line.replace('{dataVariable}',  `data`);
       line = line.replace('{configVariable}',  `config`);
       line = line.replace('{apiExample}',  `users_api:get_users(filter, order_by, order_direction, per_page, include)`);
-      line = line.replace('{apiDocsUrl}', `https://github.com/ProcessMaker/sdk-lua#documentation-for-api-endpoints`);
+      line = line.replace('{apiDocsUrl}', `https://processmaker.gitbook.io/processmaker/designing-processes/scripts/script-editor#processmaker-and-environment-variable-syntax-usage-sdk-and-examples`);
       format = '  ' + line;
     }
     content.push(format);
