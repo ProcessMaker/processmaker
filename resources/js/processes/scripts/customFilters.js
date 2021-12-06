@@ -135,7 +135,7 @@ Vue.filter('python', function(value) {
     line = line.replace('{dataVariable}',  `the data variable`);
     line = line.replace('{configVariable}',  `the config variable`);
     line = line.replace('{apiExample}',  ':');
-    line = line.replace('{apiDocsUrl}', `https://github.com/ProcessMaker/sdk-python#documentation-for-api-endpoints`);
+    line = line.replace('{apiDocsUrl}', `https://processmaker.gitbook.io/processmaker/designing-processes/scripts/script-editor#processmaker-and-environment-variable-syntax-usage-sdk-and-examples`);
     format = '# ' + line;
     content.push(format);
   });
