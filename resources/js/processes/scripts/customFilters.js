@@ -39,7 +39,7 @@ Vue.filter('javascript', function(value) {
       line = line.replace('{dataVariable}',  `data`);
       line = line.replace('{configVariable}',  `config`);
       line = line.replace('{apiExample}',  `getUserById(id, (error, data, response) => {})`);
-      line = line.replace('{apiDocsUrl}', `https://github.com/ProcessMaker/sdk-node#documentation-for-api-endpoints`);
+      line = line.replace('{apiDocsUrl}', `https://github.com/ProcessMaker/docker-executor-node/tree/master/docs/sdk`);
       format = ' * ' + line;
     }
     content.push(format);
