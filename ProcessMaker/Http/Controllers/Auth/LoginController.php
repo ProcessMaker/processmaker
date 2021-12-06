@@ -62,7 +62,7 @@ class LoginController extends Controller
         if ($intended) {
             // Check if the route is a fallback, meaning it's invalid (like favicon.ico)
             $route = app('router')->getRoutes() ->match(
-                app('request') ->create($intended)
+                app('request')->create($intended)
             );
             if ($route->isFallback) {
                 $intended = false;
