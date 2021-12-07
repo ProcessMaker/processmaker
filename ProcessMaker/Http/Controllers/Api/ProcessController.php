@@ -897,7 +897,7 @@ class ProcessController extends Controller
                         if ($assign['id'] == $id && array_key_exists('value', $assign) && array_key_exists('id', $assign['value'])) {
                             $value = $assign['value']['id'];
                             if (is_int($value)) {
-                                $element->setAttribute('pm:assignment', 'user');
+                                $element->setAttribute('pm:assignment', 'user_group');
                                 $element->setAttribute('pm:assignedUsers', $value);
                             } elseif (strpos($value, '-') !== false) {
                                 $value = explode('-', $value);
