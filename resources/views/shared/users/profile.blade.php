@@ -144,7 +144,7 @@
             </div>
         </div>
     </div>
-    @if (config('users.properties'))
+    @if (config('users.properties') && !\Request::is('profile/edit'))
         <hr>
         <h5 class="mt-1 mb-3">{{__('Additional Information')}}</h5>
         @foreach (config('users.properties') as $variable => $label)
