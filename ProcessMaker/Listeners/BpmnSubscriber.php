@@ -23,6 +23,8 @@ use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Nayra\Bpmn\Models\ConditionalEventDefinition;
+use ProcessMaker\Nayra\Contracts\Bpmn\ConditionalEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ErrorInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TransitionInterface;
 use ProcessMaker\Notifications\ProcessCreatedNotification;
@@ -168,7 +170,8 @@ class BpmnSubscriber
     {
         $messages = [
             MessageEventDefinitionInterface::class => 'System is waiting to receive message ":event"',
-            TimerEventDefinitionInterface::class => 'System has scheduled timer: ":event"'
+            TimerEventDefinitionInterface::class => 'System has scheduled timer: ":event"',
+            ConditionalEventDefinitionInterface::class => 'System is waiting for conditional event: ":event"',
         ];
         foreach ($event->getEventDefinitions() as $eventDefinition) {
             foreach ($messages as $interface => $message) {
