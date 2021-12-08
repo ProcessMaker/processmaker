@@ -4,6 +4,8 @@ namespace ProcessMaker\Http\Controllers\Auth;
 
 use ProcessMaker\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ResetsPasswords;
+use Illuminate\Http\Request;
+use ProcessMaker\Models\User;
 
 class ResetPasswordController extends Controller
 {
@@ -35,5 +37,16 @@ class ResetPasswordController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
+    }
+
+    /**
+     * Show the application's reset form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showResetForm(Request $request, $token)
+    {
+        $username = User::where('email', $request->input('email'))->firstOrFail()->username;
+        return view('auth.passwords.reset', compact('username', 'token'));
     }
 }
