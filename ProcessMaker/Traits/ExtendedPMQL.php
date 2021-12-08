@@ -138,8 +138,12 @@ trait ExtendedPMQL
         if ($value instanceof IntervalExpression || (is_string($value) && strlen($value) > 1)) {
             try {
                 $parsed = Carbon::parse($value, auth()->user()->timezone);
-                $parsed->setTimezone(config('app.timezone'));
-                $value = $parsed->toDateTimeString();
+                if ($parsed->isMidnight()) {
+                    $value = $parsed->toDateString();
+                } else {
+                    $parsed->setTimezone(config('app.timezone'));
+                    $value = $parsed->toDateTimeString();
+                }
             } catch (Throwable $e) {
                 //Ignore parsing errors and just return the original
             }
