@@ -32,7 +32,7 @@
                                        aria-controls="errors" aria-selected="false">{{__('Errors')}}</a>
                                 </li>
                             @endif
-                            <li class="nav-item" v-if="!showSummary">
+                            <li class="nav-item" v-if="status !== 'COMPLETED' || status !== 'PENDING'">
                                 <a class="nav-link" :class="{ active: activePending }" id="pending-tab"
                                    data-toggle="tab" @click="switchTab('pending')" href="#pending" role="tab"
                                    aria-controls="pending" aria-selected="true">{{__('Tasks')}}</a>
@@ -40,7 +40,7 @@
                             <li class="nav-item" v-if="showSummary">
                                 <a id="summary-tab" data-toggle="tab" href="#summary" role="tab"
                                    aria-controls="summary" @click="switchTab('summary')" aria-selected="false"
-                                   v-bind:class="{ 'nav-link':true, active: showSummary }">
+                                   v-bind:class="{ 'nav-link':true, active: showSummary && !activePending }">
                                     {{__('Summary')}}
                                 </a>
                             </li>
@@ -103,11 +103,11 @@
                             <request-errors :errors="errorLogs"></request-errors>
                         </div>
                         <div class="tab-pane fade show card card-body border-top-0 p-0" :class="{ active: activePending }" id="pending" role="tabpanel"
-                             aria-labelledby="pending-tab" v-if="!showSummary">
+                             aria-labelledby="pending-tab" v-if="status !== 'COMPLETED' || status !== 'PENDING'">
                             <request-detail ref="pending" :process-request-id="requestId" status="ACTIVE" :is-admin="{{Auth::user()->is_administrator ? 'true' : 'false'}}">
                             </request-detail>
                         </div>
-                        <div class="card card-body border-top-0 p-0" v-bind:class="{ 'tab-pane':true, active: showSummary }" id="summary"
+                        <div class="card card-body border-top-0 p-0" v-bind:class="{ 'tab-pane':true, active: showSummary && !activePending}" id="summary"
                              role="tabpanel" aria-labelledby="summary-tab">
                             <template v-if="showSummary">
                                 <template v-if="showScreenSummary">
@@ -115,11 +115,36 @@
                                         <vue-form-renderer ref="screen" :config="screenSummary.config" v-model="dataSummary" :computed="screenSummary.computed"/>
                                     </div>
                                 </template>
-                                <template v-else>
-                                    <template v-if="summary.length > 0">
-                                        <div class="card border-0">
-                                            <data-summary :summary="dataSummary"></data-summary>
+                                <template v-if="showScreenRequestDetail && !showScreenSummary">
+                                    <div class="card">
+                                        <div class="card-body">
+                                          <vue-form-renderer ref="screenRequestDetail" :config="screenRequestDetail" v-model="dataSummary"/>
                                         </div>
+                                    </div>
+                                </template>
+                                <template v-if="!showScreenSummary && !showScreenRequestDetail">
+                                    <template v-if="summary.length > 0">
+                                        <template v-if="!activePending">
+                                            <div class="card border-0">
+                                                <data-summary :summary="dataSummary"></data-summary>
+                                            </div>
+                                        </template>
+                                        <template v-else>
+                                            <div class="card border-0">
+                                                <div class="card-header bg-white">
+                                                    <h5 class="m-0">
+                                                        {{ __('Request In Progress') }}
+                                                    </h5>
+                                                </div>
+
+                                                <div class="card-body">
+                                                    <p class="card-text">
+                                                        {{__('This Request is currently in progress.')}}
+                                                        {{__('This screen will be populated once the Request is completed.')}}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </template>
                                     </template>
                                     <template v-else>
                                         <div class="card border-0">
@@ -363,7 +388,7 @@
            *
            */
           showSummary() {
-            return this.request.status === 'COMPLETED' || this.request.status === 'CANCELED';
+            return this.request.status === 'ACTIVE' || this.request.status === 'COMPLETED' || this.request.status === 'CANCELED';
           },
           /**
            * If the screen summary is configured.
@@ -393,6 +418,18 @@
               options[option.key] = option.value
             });
             return options;
+          },
+          /**
+           * If the screen request detail is configured.
+           **/
+          showScreenRequestDetail() {
+            return !!this.request.request_detail_screen;
+          },
+          /**
+           * Get Screen request detail
+           * */
+          screenRequestDetail() {
+            return this.request.request_detail_screen ? this.request.request_detail_screen.config : null;
           },
           classStatusCard() {
             let header = {
@@ -438,7 +475,7 @@
         },
         methods: {
           switchTab(tab) {
-            ProcessMaker.EventBus.$emit('tab-switched', tab);  
+            ProcessMaker.EventBus.$emit('tab-switched', tab);
           },
           requestStatusClass(status) {
             status = status.toLowerCase();

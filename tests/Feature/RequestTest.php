@@ -10,11 +10,32 @@ use ProcessMaker\Models\PermissionAssignment;
 use ProcessMaker\Models\Permission;
 use \PermissionSeeder;
 use Illuminate\Http\Testing\File;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\Screen;
 use Symfony\Component\DomCrawler\Crawler;
 
 class RequestTest extends TestCase
 {
     use RequestHelper;
+
+    protected $screen = [
+        "name" => "TICKET-1234 Display",
+        "items" => [
+            [
+                "label" => "Rich Text",
+                "config" => [
+                    "icon" => "fas fa-pencil-ruler",
+                    "label" => null,
+                    "content" => "<h1>TEST WITH CUSTOM REQUEST DETAIL SCREEN</h1>",
+                    "interactive" => true,
+                    "renderVarHtml" => false
+                ],
+                "component" => "FormHtmlViewer",
+                "editor-control" => "FormHtmlEditor",
+                "editor-component" => "FormHtmlEditor"
+            ]
+        ]
+    ];
 
     /**
      * Test to make sure the controller and route work with the view
@@ -46,9 +67,9 @@ class RequestTest extends TestCase
         $this->user->is_administrator = true;
         $this->user->save();
         $response = $this->webCall('GET', '/requests/' . $request->id);
-        
+
         $response->assertStatus(200);
-        
+
         // check the correct view is called
         $response->assertViewIs('requests.show');
     }
@@ -153,5 +174,55 @@ class RequestTest extends TestCase
 
         $response = $this->apiCall('GET', '/requests?total=true&pmql=(status = "Completed")');
         $response->assertJson(['meta' => ['total' => 2]]);
+    }
+
+    /**
+     * Test show default summary tab
+     * @return void
+     */
+    public function testShowDefaultSummaryTab()
+    {
+        $process = factory(Process::class)->create();
+        $process_request = factory(ProcessRequest::class)->create([
+            'name' => $process->name,
+            'process_id' => $process->id,
+            'data' => ['form_input_1' => 'TEST DATA']
+        ]);
+        // get the URL
+        $response = $this->webCall('GET', '/requests/' . $process_request->id);
+
+        $response->assertStatus(200);
+        // check the correct view is called
+        $response->assertViewIs('requests.show');
+        // check custom detail screen is not displayed instead default summary
+        $response->assertDontSee('TEST WITH CUSTOM REQUEST DETAIL SCREEN');
+    }
+
+    /**
+     * Test show custom request detail screen summary tab
+     * @return void
+     */
+    public function testShowCustomRequestDetailScreenSummaryTab()
+    {
+        $screen = factory(Screen::class)->create([
+            'type' => 'DISPLAY',
+            'config' => $this->screen
+        ]);
+        $process = factory(Process::class)->create([
+            'request_detail_screen_id' => $screen->id
+        ]);
+        $process_request = factory(ProcessRequest::class)->create([
+            'name' => $process->name,
+            'process_id' => $process->id,
+            'data' => ['form_input_1' => 'TEST DATA']
+        ]);
+        // get the URL
+        $response = $this->webCall('GET', '/requests/' . $process_request->id);
+
+        $response->assertStatus(200);
+        // check the correct view is called
+        $response->assertViewIs('requests.show');
+        // check custom detail screen is displayed instead default summary
+        $response->assertSee('TEST WITH CUSTOM REQUEST DETAIL SCREEN');
     }
 }
