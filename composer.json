@@ -36,7 +36,6 @@
     "processmaker/docker-executor-node": "^1.0",
     "processmaker/docker-executor-php": "^1.0",
     "processmaker/laravel-i18next": "dev-master",
-    "processmaker/nayra": "1.8.0-RC1",
     "processmaker/pmql": "1.5.0",
     "pusher/pusher-php-server": "^4.0",
     "ralouphie/getallheaders": "^2.0",
@@ -85,7 +84,33 @@
       ]
     },
     "processmaker": {
-      "build": "0253b6e6"
+      "build": "0253b6e6",
+      "enterprise": {
+        "connector-docusign": "0.1.5-RC",
+        "connector-pdf-print": "1.7.4-RC",
+        "connector-send-email": "1.9.8-RC",
+        "connector-slack": "1.1.2-RC",
+        "docker-executor-node-ssr": "1.0.0",
+        "package-actions-by-email": "1.3.5-RC",
+        "package-advanced-user-manager": "0.1.0-RC",
+        "package-auth": "1.4.8-RC",
+        "package-collections": "2.5.8-RC",
+        "package-comments": "1.2.1-RC3",
+        "package-conversational-forms": "1.1.3",
+        "package-data-sources": "1.9.8-RC",
+        "package-dynamic-ui": "1.3.3-RC",
+        "package-files": "1.3.4-RC",
+        "package-googleplaces": "1.1.5-RC2",
+        "package-process-documenter": "1.0.3-RC1",
+        "package-process-optimization": "1.1.1-RC1",
+        "package-savedsearch": "1.16.5-RC",
+        "package-sentry": "1.1.2",
+        "package-signature": "1.2.2-RC",
+        "package-translations": "2.1.2-RC",
+        "package-versions": "1.1.4-RC",
+        "package-vocabularies": "2.5.4-RC",
+        "package-webentry": "2.3.4-RC"
+      }
     }
   },
   "scripts": {
