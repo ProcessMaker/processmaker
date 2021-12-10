@@ -169,8 +169,8 @@ class BpmnSubscriber
     {
         $messages = [
             MessageEventDefinitionInterface::class => 'System is waiting to receive message ":event"',
-            TimerEventDefinitionInterface::class => 'System has scheduled timer: ":event"',
-            ConditionalEventDefinitionInterface::class => 'System is waiting for conditional event: ":event"',
+            TimerEventDefinitionInterface::class => 'System is waiting for the scheduled timer: ":event"',
+            ConditionalEventDefinitionInterface::class => 'System is waiting for the conditional event: ":event"',
         ];
         foreach ($event->getEventDefinitions() as $eventDefinition) {
             foreach ($messages as $interface => $message) {
