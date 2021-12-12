@@ -110,7 +110,8 @@
         "package-translations": "2.1.2-RC",
         "package-versions": "1.1.4-RC",
         "package-vocabularies": "2.5.4-RC",
-        "package-webentry": "2.3.4-RC"
+        "package-webentry": "2.3.4-RC",
+        "packages": "^0"
       }
     }
   },
