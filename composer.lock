@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fb57191a0a95471ce6a4e525ea1d4bab",
+    "content-hash": "412b37414a81040ed6ef646b3974c28b",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -4690,16 +4690,16 @@
         },
         {
             "name": "processmaker/nayra",
-            "version": "1.8.0-RC1",
+            "version": "dev-bugfix/FOUR-4407",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/nayra.git",
-                "reference": "b36e7e3a8f4764a66e42961c32bcf96439ae424b"
+                "reference": "22067671eb6647873cf480b36d663b3e4601618e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/b36e7e3a8f4764a66e42961c32bcf96439ae424b",
-                "reference": "b36e7e3a8f4764a66e42961c32bcf96439ae424b",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/22067671eb6647873cf480b36d663b3e4601618e",
+                "reference": "22067671eb6647873cf480b36d663b3e4601618e",
                 "shasum": ""
             },
             "require-dev": {
@@ -4718,9 +4718,9 @@
             "description": "BPMN compliant engine",
             "support": {
                 "issues": "https://github.com/ProcessMaker/nayra/issues",
-                "source": "https://github.com/ProcessMaker/nayra/tree/v1.8.0-RC1"
+                "source": "https://github.com/ProcessMaker/nayra/tree/bugfix/FOUR-4407"
             },
-            "time": "2021-11-01T22:40:53+00:00"
+            "time": "2021-12-13T21:51:59+00:00"
         },
         {
             "name": "processmaker/pmql",
@@ -11363,7 +11363,8 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "processmaker/laravel-i18next": 20
+        "processmaker/laravel-i18next": 20,
+        "processmaker/nayra": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
