@@ -20,8 +20,9 @@ function lavaryMenuArray($menu, $includeSubMenus = false)
             $children[] = lavaryMenuArray($child);
         }
     }
+
     return [
-        'title' => $menu->title,
+        'title' => __($menu->title),
         'id' => $menu->id,
         'attributes' => $menu->attributes,
         'url' => $menu->url(),
@@ -43,9 +44,9 @@ function lavaryMenuJson($menu)
 
 /**
  * Check if a package exists based on its provider name
- * 
+ *
  * @param string $name
- * 
+ *
  * @return bool
  */
 function hasPackage($name)
@@ -57,7 +58,7 @@ function hasPackage($name)
 
 /**
  * Check both the web and api middleware for an existing user
- * 
+ *
  * @return User
  */
 function pmUser()
