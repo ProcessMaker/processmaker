@@ -80,12 +80,13 @@ class TokenRepository implements TokenRepositoryInterface
             return;
         }
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
-        $token->status = $token->getStatus();
+        $token->status = ActivityInterface::TOKEN_STATE_ACTIVE;
         $token->element_id = $activity->getId();
         $token->element_type = $this->getActivityType($activity);
         $token->element_name = $activity->getName();
         $token->process_id = $token->getInstance()->process->getKey();
         $token->process_request_id = $token->getInstance()->getKey();
+        $token->load('processRequest');
         $user = $token->getInstance()->process->getNextUser($activity, $token);
         $this->addUserToData($token->getInstance(), $user);
         $this->addRequestToData($token->getInstance());
@@ -234,6 +235,9 @@ class TokenRepository implements TokenRepositoryInterface
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $token->status = $token->getStatus();
         $token->element_id = $activity->getId();
+        $token->element_type = $this->getActivityType($activity);
+        $token->element_name = $activity->getName();
+        $token->process_id = $token->getInstance()->process_id;
         $token->process_request_id = $token->getInstance()->getKey();
         $token->data = $token->getInstance()->getDataStore()->getData();
         $token->updateTokenProperties();
