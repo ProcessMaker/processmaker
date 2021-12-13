@@ -49,10 +49,10 @@ class TriggerSignalInRequestTest extends TestCase
         $this->assertCount(2, $activeTokens);
     }
 
-    public function testBoundryLoop()
+    public function testBoundaryLoop()
     {
         $import = ImportProcess::dispatchNow(
-            file_get_contents(base_path('tests/Fixtures/boundry_loop.json'))
+            file_get_contents(base_path('tests/Fixtures/boundary_loop.json'))
         );
         $process = $import->process;
         $event = $process->getDefinitions()->getEvent('node_1');
@@ -74,7 +74,7 @@ class TriggerSignalInRequestTest extends TestCase
         $this->assertEquals('CLOSED', $formTasks->last()->refresh()->status);
 
         $lastTask = $processRequest->refresh()->tokens->last();
-        $this->assertEquals('After Boundry', $lastTask->element_name);
+        $this->assertEquals('After Boundary', $lastTask->element_name);
         
         WorkflowManager::completeTask($process, $processRequest, $lastTask, []);
         $this->assertEquals('CLOSED', $lastTask->refresh()->status);
