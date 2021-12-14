@@ -49,6 +49,8 @@ class CatchSignalEventInRequest extends BpmnAction implements ShouldQueue
         $signal->setId($this->signalRef);
         $eventDefinition->setPayload($signal);
         $eventDefinition->setProperty('signalRef', $this->signalRef);
+        // Do not triggers signal start events with this signal (only intermediate and boundary events) See CatchSignalEventProcess
+        $eventDefinition->setDoNotTriggerStartEvents(true);
 
         // Dispatch the signal to the engine
         $this->engine->getEventDefinitionBus()->dispatchEventDefinition(

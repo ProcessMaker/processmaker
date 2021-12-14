@@ -1256,6 +1256,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
                 $this->validateCallActivity($callActivity->getBpmnElementInstance());
             }
         } catch (Throwable $exception) {
+            \Log::error($exception);
             $warning = [
                 'title' => __('Invalid process'),
                 'text' => $exception->getMessage(),
