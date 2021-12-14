@@ -147,15 +147,15 @@
                     <multiselect id="users"
                                  v-model="selectedUsers"
                                  placeholder="{{__('Select user or type here to search users')}}"
-                                 :options="availableUsers"
+                                 :options="availableUsersFormatted"
                                  :multiple="true"
-                                 track-by="fullname"
+                                 track-by="username"
                                  :custom-label="customLabel"
                                  :show-labels="false"
                                  :searchable="true"
                                  :internal-search="false"
                                  @search-change="loadUsers"
-                                 label="fullname">
+                                 label="username">
 
                         <template slot="noResult" >
                             {{ __('No elements found. Consider changing the search query.') }}
@@ -178,7 +178,7 @@
 
                         <template slot="option" slot-scope="props">
                             <div class="option__desc d-flex align-items-center">
-                                <span class="option__title mr-1">@{{ props.option.fullname }} (@{{ props.option.username }})</span>
+                                <span class="option__title mr-1">@{{ props.option.fullname }}</span>
                             </div>
                         </template>
                     </multiselect>
@@ -267,6 +267,11 @@
               this.selectAll = false;
             }
           }
+        },
+        computed: {
+            availableUsersFormatted() {
+                return this.availableUsers.map(user => ({...user, fullname: `${user.fullname} (${user.username})`}));
+            }
         },
         methods: {
           checkCreate(sibling, $event) {
