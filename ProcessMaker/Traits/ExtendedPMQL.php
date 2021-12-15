@@ -109,16 +109,28 @@ trait ExtendedPMQL
         }
 
         // Check to see if the value is parsable as a date
-        if ($value instanceof IntervalExpression || (is_string($value) && strlen($value) > 1)) {
-            try {
-                $parsed = Carbon::parse($value, auth()->user()->timezone);
-                $parsed->setTimezone(config('app.timezone'));
-                $value = $parsed->toDateTimeString();
-            } catch (Throwable $e) {
-                //Ignore parsing errors and just return the original
+        if ((is_string($value) && strlen($value) > 1)) {
+            switch ($value) {
+                case $value instanceof IntervalExpression: 
+                    $value = $this->parseDate($value);
+                    break;
+                default: 
+                    // Check to see if the value is a date/datetime formatted if not return original value
+                    $isDateFormatted = Carbon::hasFormatWithModifiers($value, 'Y#m#d');
+                    $isDateTimeFormatted = Carbon::hasFormatWithModifiers($value, 'Y#m#d h:i:s');
+                    if ($isDateFormatted || $isDateTimeFormatted) {
+                        $value = $this->parseDate($value);
+                    }
+                    break;
             }
         }
 
         return $value;
+    }
+
+    private function parseDate($value) {
+        $parsed = Carbon::parse($value, auth()->user()->timezone);
+        $parsed->setTimezone(config('app.timezone'));
+        return $parsed->toDateTimeString();
     }
 }
