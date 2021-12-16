@@ -154,13 +154,18 @@ trait ExtendedPMQL
     }
 
     private function parseDate($value) {
-        $parsed = Carbon::parse($value, auth()->user()->timezone);
-        $parsed->setTimezone(config('app.timezone'));
-        if ($parsed->isMidnight()) {
-            return $parsed->toDateString();
-        } else {
+        try {
+            $parsed = Carbon::parse($value, auth()->user()->timezone);
             $parsed->setTimezone(config('app.timezone'));
-            return $parsed->toDateTimeString();
-        }   
+            if ($parsed->isMidnight()) {
+                return $parsed->toDateString();
+            } else {
+                $parsed->setTimezone(config('app.timezone'));
+                return $parsed->toDateTimeString();
+            }  
+        } catch (Throwable $e) {
+            //Ignore parsing errors and just return the original
+            return $value;
+        }  
     }
 }
