@@ -263,7 +263,7 @@ class TaskController extends Controller
      *         @OA\JsonContent(ref="#/components/schemas/processRequestToken")
      *     ),
      *     @OA\Response(response=404, ref="#/components/responses/404"),
-     *     @OA\Response(responsTaskControllere=422, ref="#/components/responses/422"),
+     *     @OA\Response(response=422, ref="#/components/responses/422"),
      * )
      */
     public function update(Request $request, ProcessRequestToken $task)
