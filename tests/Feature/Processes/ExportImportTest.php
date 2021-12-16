@@ -120,14 +120,14 @@ class ExportImportTest extends TestCase
             'Script Task 2' => $this->script02->id,
         ];
 
-        // For each of the script tasks...        
+        // For each of the script tasks...
         $tasks = $this->definitions->getElementsByTagName('scriptTask');
         foreach ($tasks as $task) {
             // Obtain the name and script ref
             $name = $task->getAttribute('name');
             $scriptRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef');
 
-            // Assert that the script ref matches the expected script ref            
+            // Assert that the script ref matches the expected script ref
             if (array_key_exists($name, $map)) {
                 $this->assertEquals($map[$name], $scriptRef);
             }
@@ -201,7 +201,7 @@ class ExportImportTest extends TestCase
         $script = Script::where('title', 'Get available days Script')->firstOrFail();
         $secondScriptCategory = ScriptCategory::create(['name' => 'Other Script Category']);
         $script->categories()->save($secondScriptCategory);
-        
+
         $screen = Screen::where('title', 'Request Time Off')->firstOrFail();
         $secondScreenCategory = ScreenCategory::create(['name' => 'Other Screen Category']);
         $screen->categories()->save($secondScreenCategory);
@@ -256,7 +256,7 @@ class ExportImportTest extends TestCase
         // Assert items were added to both categories
         $this->assertCount(2, $process->category->refresh()->processes);
         $this->assertCount(2, $secondProcessCategory->refresh()->processes);
-        
+
         $this->assertCount(2, $script->category->refresh()->scripts);
         $this->assertCount(2, $secondScriptCategory->refresh()->scripts);
 
@@ -269,7 +269,7 @@ class ExportImportTest extends TestCase
         $ns = WorkflowServiceProvider::PROCESS_MAKER_NS;
         $this->assertEquals("", $definitions->findElementById('node_5')->getAttributeNS($ns, 'assignment'));
         $this->assertEquals("", $definitions->findElementById('node_5')->getAttributeNS($ns, 'assignedUsers'));
-        
+
         $this->assertEquals("self_service", $definitions->findElementById('node_6')->getAttributeNS($ns, 'assignment'));
         $this->assertEquals("", $definitions->findElementById('node_6')->getAttributeNS($ns, 'assignedGroups'));
     }
@@ -299,7 +299,7 @@ class ExportImportTest extends TestCase
         ob_start();
         $content = $response->sendContent();
         $content = ob_get_clean();
-        
+
         // Save the file contents and convert them to an UploadedFile
         $fileName = tempnam(sys_get_temp_dir(), 'exported');
         file_put_contents($fileName, $content);
@@ -309,7 +309,7 @@ class ExportImportTest extends TestCase
         $this->app->extend(AnonymousUser::class, function($app) use ($newAnonUser) {
             return $newAnonUser;
         });
-        
+
         $this->user = $adminUser;
         $response = $this->apiCall('POST', "/processes/import", [
             'file' => $file,
@@ -320,14 +320,125 @@ class ExportImportTest extends TestCase
         $ns = WorkflowServiceProvider::PROCESS_MAKER_NS;
         $this->assertEquals("user", $definitions->findElementById('node_5')->getAttributeNS($ns, 'assignment'));
         $this->assertEquals(
-            $newAnonUser->id, 
+            $newAnonUser->id,
             $definitions->findElementById('node_5')->getAttributeNS($ns, 'assignedUsers')
         );
-        
+
         // Reset the anon user for other tests
         $this->app->extend(AnonymousUser::class, function($app) use ($originalAnonUser) {
             return $originalAnonUser;
         });
+    }
+
+    /**
+     * Test different assignments should not be removed except by user group.
+     */
+    public function test_different_assignments_should_not_be_removed_except_by_user_group()
+    {
+        // Load file to import
+        $file = new UploadedFile(base_path('tests/storage/process/') . 'test_process_import_different_tasks_assignments.json', 'test_process_import_different_tasks_assignments.json', null, null, null, true);
+
+        //Import sample working process
+        $response = $this->apiCall('POST', '/processes/import', [
+            'file' => $file,
+        ]);
+        $response->assertJsonStructure(['status' => [], 'assignable' => [], 'process' => []]);
+
+        //Get imported process
+        $process = Process::first();
+
+        // Export a process
+        $response = $this->apiCall('POST', "/processes/{$process->id}/export");
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['url']);
+
+        // Test to ensure we can download the exported file
+        $response = $this->webCall('GET', $response->json('url'));
+        $response->assertStatus(200);
+        $response->assertHeader('content-disposition', 'attachment; filename="Different Task Assignments.json"');
+
+        // Get our file contents (we have to do it this way because of
+        // Symfony's weird response API)
+        ob_start();
+        $content = $response->sendContent();
+        $content = ob_get_clean();
+
+        // Save the file contents and convert them to an UploadedFile
+        $fileName = tempnam(sys_get_temp_dir(), 'exported');
+        file_put_contents($fileName, $content);
+        $file = new UploadedFile($fileName, 'Different Task Assignments.json', null, null, null, true);
+
+        // Test to ensure our admin user can import a process
+        $response = $this->apiCall('POST', "/processes/import", [
+            'file' => $file,
+        ]);
+        $response->assertJsonStructure(['status' => [], 'assignable' => []]);
+        $response->assertStatus(200);
+
+        $processId = $response->json('process')['id'];
+        $assignable = [];
+        $faker = Faker::create();
+
+        //Create assignments in startEvent, task, userTask, callActivity
+        foreach ($response->json('assignable') as $item) {
+            if ($item['type'] === 'task') {
+                $newUser = $faker->randomElement([factory(User::class)->create(['status' => 'ACTIVE'])->toArray(), factory(Group::class)->create(['status' => 'ACTIVE'])->toArray()]);
+                $item['value'] = $newUser;
+                $assignable[] = $item;
+            }
+        }
+
+        //Assignments after import process
+        $response = $this->apiCall('POST', '/processes/' . $processId . '/import/assignments', [
+            'assignable' => $assignable,
+        ]);
+
+        //Validate the header status code
+        $response->assertStatus(204);
+
+        //get new process definitions
+        $process = Process::find($processId);
+        $definitions = $process->getDefinitions();
+
+        //verify assignments in Start event, task and userTask
+        $elements = $definitions->getElementsByTagName('task');
+
+        foreach ($elements as $element) {
+            $id = $element->getAttributeNode('id')->value;
+
+            //Verifiy task assigned by user id
+            if ($id == 'node_3') {
+                $this->assertEquals('user_by_id', $element->getAttributeNode('pm:assignment')->value);
+                $this->assertEquals('{{ 1 }}', $element->getAttributeNode('pm:assignedUsers')->value);
+            }
+            //Verifiy task assigned by requester
+            if ($id == 'node_5') {
+                $this->assertEquals('requester', $element->getAttributeNode('pm:assignment')->value);
+            }
+            //Verifiy task assigned by self service
+            if ($id == 'node_7') {
+                $this->assertEquals('self_service', $element->getAttributeNode('pm:assignment')->value);
+            }
+            //Verifiy task assigned by process manager
+            if ($id == 'node_13') {
+                $this->assertEquals('process_manager', $element->getAttributeNode('pm:assignment')->value);
+            }
+            //Verifiy task assigned by previous task assignee
+            if ($id == 'node_14') {
+                $this->assertEquals('previous_task_assignee', $element->getAttributeNode('pm:assignment')->value);
+            }
+
+            //Verifiy tasks assigned in import assign screen
+            foreach ($assignable as $assign) {
+                if ($assign['id'] == $id) {
+                    $value = $assign['value']['id'];
+                    if (is_int($value)) {
+                        $this->assertEquals('user_group', $element->getAttributeNode('pm:assignment')->value);
+                        $this->assertEquals($value, $element->getAttributeNode('pm:assignedUsers')->value);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -414,13 +525,13 @@ class ExportImportTest extends TestCase
                     if ($assign['id'] == $id) {
                         $value = $assign['value']['id'];
                         if (is_int($value)) {
-                            $this->assertEquals('user', $element->getAttributeNode('pm:assignment')->value);
+                            $this->assertEquals('user_group', $element->getAttributeNode('pm:assignment')->value);
                             $this->assertEquals($value, $element->getAttributeNode('pm:assignedUsers')->value);
                         } else {
                             $value = explode('-', $value);
                             $value = $value[1];
                             $this->assertEquals('group', $element->getAttributeNode('pm:assignment')->value);
-                            $this->assertEquals('group', $element->getAttributeNode('pm:assignment')->value);
+                            $this->assertEquals('group', $element->getAttributeNode('pm:assignmentGroup')->value);
                             $this->assertEquals($value, $element->getAttributeNode('pm:assignedGroups')->value);
                         }
                     }
@@ -646,7 +757,7 @@ class ExportImportTest extends TestCase
         $process->manager_id = 123;
         $process->setProperty('manager_can_cancel_request', true);
         $process->saveOrFail();
-        
+
         $response = $this->apiCall('POST', "/processes/{$process->id}/export");
         $response = $this->webCall('GET', $response->json('url'));
         // Get our file contents (we have to do it this way because of
@@ -659,11 +770,11 @@ class ExportImportTest extends TestCase
         $fileName = tempnam(sys_get_temp_dir(), 'exported');
         file_put_contents($fileName, $content);
         $file = new UploadedFile($fileName, 'test.json', null, null, null, true);
-        
+
         // Import the process
         $response = $this->apiCall('POST', "/processes/import", ['file' => $file]);
         $process = Process::find($response->json('process')['id']);
-        
+
         $this->assertNull($process->manager);
         $this->assertTrue($process->getProperty('manager_can_cancel_request'));
 

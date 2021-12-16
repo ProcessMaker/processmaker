@@ -93,13 +93,15 @@ class ExportProcess implements ShouldQueue
                     // updated when importing.
                     continue;
                 }
-                
+
                 // Only remove user/group assignments
                 $assignment = $task->getAttributeNS($ns, 'assignment');
                 if (in_array($assignment, ['user', 'group', 'user_group'])) {
                     $task->removeAttributeNS($ns, 'assignment');
                 }
-                $task->removeAttributeNS($ns, 'assignedUsers');
+                if (!in_array($assignment, ['user_by_id'])) {
+                    $task->removeAttributeNS($ns, 'assignedUsers');
+                }
                 $task->removeAttributeNS($ns, 'assignedGroups');
             }
         }
@@ -120,7 +122,7 @@ class ExportProcess implements ShouldQueue
         if (!is_array($this->process->properties)) {
             $this->process->properties = [];
         }
-        
+
         $properties = $this->process->properties;
         $properties['manager_id'] = null;
         $this->process->properties = $properties;
@@ -204,7 +206,7 @@ class ExportProcess implements ShouldQueue
         } else {
             $scriptIds = $this->manager->getDependenciesOfType(Script::class, $this->screen, []);
         }
-        
+
         if (count($scriptIds)) {
             $scripts = Script::whereIn('id', $scriptIds)->get();
 
