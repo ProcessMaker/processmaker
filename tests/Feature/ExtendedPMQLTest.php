@@ -9,6 +9,7 @@ use Tests\TestCase;
 use ProcessMaker\Models\ProcessRequest;
 use Tests\Feature\Shared\RequestHelper;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\User;
 
 class ExtendedPMQLTest extends TestCase
 {
@@ -136,5 +137,19 @@ class ExtendedPMQLTest extends TestCase
         $result = $this->apiCall('GET', $url);
         $this->assertCount(1, $result->json()['data']); // Match only F
         $this->assertEquals($processRequest1->id, $result->json()['data'][0]['id'] );
+    }
+
+    public function testFilterUsernameWithNumbers() {
+        $user = factory(User::class)->create([
+            'username' => 'W0584'
+        ]);
+        $processRequest = factory(ProcessRequest::class)->create([
+            'user_id' => $user->id
+        ]);
+
+        $url = route('api.requests.index', ['pmql' => 'requester = "W0584"']);
+        $result = $this->apiCall('GET', $url);
+        $requesterId = $result->json()['data'][0]['user_id'];
+        $this->assertEquals($requesterId, $user->id);
     }
 }
