@@ -117,7 +117,7 @@ trait ExtendedPMQL
                 default: 
                     // Check to see if the value is a date/datetime formatted if not return original value
                     $isDateFormatted = Carbon::hasFormatWithModifiers($value, 'Y#m#d');
-                    $isDateTimeFormatted = Carbon::hasFormatWithModifiers($value, 'Y#m#d h:i:s');
+                    $isDateTimeFormatted = Carbon::hasFormatWithModifiers($value, 'Y#m#d H:i:s');
                     if ($isDateFormatted || $isDateTimeFormatted) {
                         $value = $this->parseDate($value);
                     }
