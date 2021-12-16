@@ -578,6 +578,21 @@ class ProcessController extends Controller
                 return !$eventIsTimerStart && !$eventIsWebEntry;
             })->values();
 
+            // Filter all processes that have event definitions (start events like message event, conditional event, signal event, timer event)
+            if ($request->input('without_event_definitions') && $request->input('without_event_definitions') == 'true') {
+                $startEventDefinitions = $process->events->filter(function ($event) {
+                    $eventDefinitions = collect($event['eventDefinitions'])
+                        ->filter(function ($eventDefinition) {
+                            return $eventDefinition;
+                        })->count() > 0;
+                    return $eventDefinitions;
+                })->values();
+
+                if (count($startEventDefinitions)) {
+                    $processes->forget($key);
+                }
+            }
+
             if (count($process->startEvents) === 0) {
                 $processes->forget($key);
             }
