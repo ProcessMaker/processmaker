@@ -193,6 +193,98 @@ class ProcessTest extends TestCase
         $this->assertEquals('BProcess', $responseItem->name);
     }
 
+    /**
+     * Verifies if is returning a list that not contains processes with start events like timers, conditionals, signals and messages ..
+     */
+    public function testStartRequestListProcessesWithoutEventDefinitions()
+    {
+        ProcessRequest::query()->delete();
+
+        //get process with start event
+        $startSingleEventFile = Process::getProcessTemplatesPath() . '/StartSingleEvent.bpmn';
+        $startTimerEventFile = Process::getProcessTemplatesPath() . '/StartTimerEvent.bpmn';
+        $startConditionalEventFile = Process::getProcessTemplatesPath() . '/StartConditionalEvent.bpmn';
+        $startSignalEventFile = Process::getProcessTemplatesPath() . '/StartSignalEvent.bpmn';
+        $startMessageEventFile = Process::getProcessTemplatesPath() . '/StartMessageEvent.bpmn';
+        $startSingleEventBpmn = file_get_contents($startSingleEventFile);
+        $startTimerEventBpmn = file_get_contents($startTimerEventFile);
+        $startConditionalEventBpmn = file_get_contents($startConditionalEventFile);
+        $startSignalEventBpmn = file_get_contents($startSignalEventFile);
+        $startMessageEventBpmn = file_get_contents($startMessageEventFile);
+
+        // Create category
+        $category = factory(ProcessCategory::class)->create(['name' => 'A cat', 'status' => 'ACTIVE']);
+
+        // Create processes for every category
+        factory(Process::class)->create(['process_category_id' => $category->id, 'name' => 'AProcess', 'status' => 'ACTIVE', 'bpmn' => $startSingleEventBpmn]);
+        factory(Process::class)->create(['process_category_id' => $category->id, 'name' => 'BProcess', 'status' => 'ACTIVE', 'bpmn' => $startTimerEventBpmn]);
+        factory(Process::class)->create(['process_category_id' => $category->id, 'name' => 'CProcess', 'status' => 'ACTIVE', 'bpmn' => $startConditionalEventBpmn]);
+        factory(Process::class)->create(['process_category_id' => $category->id, 'name' => 'DProcess', 'status' => 'ACTIVE', 'bpmn' => $startSignalEventBpmn]);
+        factory(Process::class)->create(['process_category_id' => $category->id, 'name' => 'EProcess', 'status' => 'ACTIVE', 'bpmn' => $startMessageEventBpmn]);
+
+        $response = $this->apiCall('GET', route('api.processes.start', ['order_by' => 'category.name,name', 'without_event_definitions' => 'true']));
+        $this->assertStatus(200, $response);
+
+        $responseData = $response->getData()->data;
+        $responseMeta = $response->getData()->meta;
+
+        // The process list length should be only 1 because there is only one process that is single start event ..
+        $this->assertEquals(1, count($responseData));
+        // The total processes count in pagination should be only 1 because there is only one process that is single start event ..
+        $this->assertEquals(1, $responseMeta->total);
+
+        if (is_array($responseData)) {
+            $responseItem = $responseData[0];
+        } elseif (is_object($responseData)) {
+            $responseItem = $responseData->{'0'};
+        }
+
+        // The returned list should be ordered category and then by process name, alphabetically
+        $this->assertEquals($category->id, $responseItem->process_category_id);
+        // Should return only AProcess because is the only process with single start event..
+        $this->assertEquals('AProcess', $responseItem->name);
+    }
+
+    /**
+     * Verifies if is returning a list that contains processes with start events like conditionals, signals and messages ..
+     */
+    public function testStartRequestListProcessesWithEventDefinitions()
+    {
+        ProcessRequest::query()->delete();
+
+        //get process with start event
+        $startSingleEventFile = Process::getProcessTemplatesPath() . '/StartSingleEvent.bpmn';
+        $startTimerEventFile = Process::getProcessTemplatesPath() . '/StartTimerEvent.bpmn';
+        $startConditionalEventFile = Process::getProcessTemplatesPath() . '/StartConditionalEvent.bpmn';
+        $startSignalEventFile = Process::getProcessTemplatesPath() . '/StartSignalEvent.bpmn';
+        $startMessageEventFile = Process::getProcessTemplatesPath() . '/StartMessageEvent.bpmn';
+        $startSingleEventBpmn = file_get_contents($startSingleEventFile);
+        $startTimerEventBpmn = file_get_contents($startTimerEventFile);
+        $startConditionalEventBpmn = file_get_contents($startConditionalEventFile);
+        $startSignalEventBpmn = file_get_contents($startSignalEventFile);
+        $startMessageEventBpmn = file_get_contents($startMessageEventFile);
+
+        // Create category
+        $category = factory(ProcessCategory::class)->create(['name' => 'A cat', 'status' => 'ACTIVE']);
+
+        // Create processes for every category
+        factory(Process::class)->create(['process_category_id' => $category->id, 'name' => 'AProcess', 'status' => 'ACTIVE', 'bpmn' => $startSingleEventBpmn]);
+        factory(Process::class)->create(['process_category_id' => $category->id, 'name' => 'BProcess', 'status' => 'ACTIVE', 'bpmn' => $startTimerEventBpmn]);
+        factory(Process::class)->create(['process_category_id' => $category->id, 'name' => 'CProcess', 'status' => 'ACTIVE', 'bpmn' => $startConditionalEventBpmn]);
+        factory(Process::class)->create(['process_category_id' => $category->id, 'name' => 'DProcess', 'status' => 'ACTIVE', 'bpmn' => $startSignalEventBpmn]);
+        factory(Process::class)->create(['process_category_id' => $category->id, 'name' => 'EProcess', 'status' => 'ACTIVE', 'bpmn' => $startMessageEventBpmn]);
+
+        $response = $this->apiCall('GET', route('api.processes.start', ['order_by' => 'category.name,name', 'without_event_definitions' => 'false']));
+        $this->assertStatus(200, $response);
+
+        $responseData = $response->getData()->data;
+        $responseMeta = $response->getData()->meta;
+
+        // The process list length should be 4 because api should return the processes start single event, start conditional, start message, start signal..
+        $this->assertEquals(4, count($responseData));
+        // The total processes count in pagination should be 4 because api should return the processes start single event, start conditional, start message, start signal..
+        $this->assertEquals(4, $responseMeta->total);
+    }
 
     /**
      * Verifies if a process manager can start a request
@@ -387,7 +479,7 @@ class ProcessTest extends TestCase
     public function testFiltering()
     {
         $perPage = 10;
-        
+
         $initialNotArchivedCount = Process::notArchived()->count();
         $initialArchivedCount = Process::archived()->count();
 
@@ -1033,7 +1125,7 @@ class ProcessTest extends TestCase
         $response = $this->apiCall('PUT', $url, $payload);
         $process->refresh();
         $this->assertTrue($process->properties['manager_can_cancel_request']);
-        
+
         $payload['cancel_request']['pseudousers'] = [];
         $response = $this->apiCall('PUT', $url, $payload);
         $process->refresh();
