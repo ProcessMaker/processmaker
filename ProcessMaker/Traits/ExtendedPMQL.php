@@ -129,8 +129,13 @@ trait ExtendedPMQL
     }
 
     private function parseDate($value) {
-        $parsed = Carbon::parse($value, auth()->user()->timezone);
-        $parsed->setTimezone(config('app.timezone'));
-        return $parsed->toDateTimeString();
+        try {
+            $parsed = Carbon::parse($value, auth()->user()->timezone);
+            $parsed->setTimezone(config('app.timezone'));
+            return $parsed->toDateTimeString();
+        } catch (Throwable $e) {
+            //Ignore parsing errors and just return the original
+            return $value;
+        }
     }
 }
