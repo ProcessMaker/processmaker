@@ -17,7 +17,7 @@
 @endsection
 
 @section('content')
-<div class="px-3" id="editSignal">
+<div class="container" id="editSignal">
   <div class="row">
     <div class="col-12">
       <nav>
