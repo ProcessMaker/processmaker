@@ -512,6 +512,12 @@ class ProcessController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
      *     @OA\Parameter(ref="#/components/parameters/include"),
+     *     @OA\Parameter(
+     *         description="If true return only processes that haven't start event definitions",
+     *         in="path",
+     *         name="without_event_definitions",
+     *         required=false
+     *     ),
      *
      *     @OA\Response(
      *         response=200,
@@ -577,6 +583,21 @@ class ProcessController extends Controller
 
                 return !$eventIsTimerStart && !$eventIsWebEntry;
             })->values();
+
+            // Filter all processes that have event definitions (start events like message event, conditional event, signal event, timer event)
+            if ($request->input('without_event_definitions') && $request->input('without_event_definitions') == 'true') {
+                $startEventDefinitions = $process->events->filter(function ($event) {
+                    $eventDefinitions = collect($event['eventDefinitions'])
+                        ->filter(function ($eventDefinition) {
+                            return $eventDefinition;
+                        })->count() > 0;
+                    return $eventDefinitions;
+                })->values();
+
+                if (count($startEventDefinitions)) {
+                    $processes->forget($key);
+                }
+            }
 
             if (count($process->startEvents) === 0) {
                 $processes->forget($key);
