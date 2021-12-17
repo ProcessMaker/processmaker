@@ -5,6 +5,7 @@ namespace ProcessMaker\Providers;
 use Blade;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Validator;
+use ProcessMaker\Managers\DockerManager;
 use ProcessMaker\Managers\IndexManager;
 use ProcessMaker\Managers\ModelerManager;
 use ProcessMaker\Managers\PackageManager;
@@ -107,6 +108,14 @@ class ProcessMakerServiceProvider extends ServiceProvider
          */
         $this->app->singleton(ScriptBuilderManager::class, function($app) {
             return new ScriptBuilderManager();
+        });
+
+        /**
+         * Maps our Docker Manager as a singleton. The Docker Manager is used
+         * to manage docker execution over the application.
+         */
+        $this->app->singleton(DockerManager::class, function($app) {
+            return new DockerManager();
         });
 
         $this->app->singleton(GlobalScriptsManager::class, function($app) {

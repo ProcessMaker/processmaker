@@ -5,6 +5,7 @@ namespace ProcessMaker\Console\Commands;
 use Illuminate\Console\Command;
 use ProcessMaker\Events\BuildScriptExecutor;
 use ProcessMaker\Models\ScriptExecutor;
+use ProcessMaker\Facades\Docker;
 use \Exception;
 
 class BuildScriptExecutors extends Command
@@ -145,7 +146,7 @@ class BuildScriptExecutors extends Command
         $this->info("Building the docker executor");
 
         $image = $scriptExecutor->dockerImageName();
-        $command = "docker build --build-arg SDK_DIR=/sdk -t ${image} -f ${packagePath}/Dockerfile.custom ${packagePath}";
+        $command = Docker::command()." build --build-arg SDK_DIR=/sdk -t ${image} -f ${packagePath}/Dockerfile.custom ${packagePath}";
 
         if ($this->userId) {
             $this->runProc(
@@ -237,7 +238,7 @@ class BuildScriptExecutors extends Command
 
     private function renameDockerImage($old, $new)
     {
-        system("docker tag $old $new");
-        system("docker rmi $old");
+        system(Docker::command()." tag $old $new");
+        system(Docker::command()." rmi $old");
     }
 }
