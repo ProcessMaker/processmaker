@@ -5,7 +5,7 @@
 @endsection
 
 @section('sidebar')
-@include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_about')])
+    @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_about')])
 @endsection
 
 @section('breadcrumbs')
@@ -13,6 +13,7 @@
       __('About ProcessMaker') => null,
   ]])
 @endsection
+
 @section('content')
  <div class="container">
     <div class="row">
@@ -44,7 +45,8 @@
           @endforeach
         </ul>
         @endif
-        &copy; {{date('Y')}} - {{__('All Rights Reserved')}}
+        &copy; {{ date('Y') }} - {{ __('All Rights Reserved') }}
+        @if($commit_hash)<br><small>Build #{{ $commit_hash }}</small>@endif
       </div>
     </div>
   </div>

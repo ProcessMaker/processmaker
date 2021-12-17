@@ -296,7 +296,7 @@ class ProcessController extends Controller
         if ($request->has('task_notifications')) {
             $this->saveTaskNotifications($process, $request);
         }
-        
+
         // Catch errors to send more specific status
         try {
             $process->saveOrFail();
@@ -551,7 +551,7 @@ class ProcessController extends Controller
                         ->filter(function ($eventDefinition) {
                             return $eventDefinition['$type'] == 'timerEventDefinition';
                         })->count() > 0;
-                
+
                 // Filter out web entry start events
                 $eventIsWebEntry = false;
                 if (isset($event['config'])) {
@@ -851,6 +851,7 @@ class ProcessController extends Controller
      */
     public function importAssignments(Process $process, Request $request)
     {
+
         //If we are specifying assignments...
         if ($request->has('assignable')) {
             $assignable = $request->input('assignable');
@@ -919,6 +920,9 @@ class ProcessController extends Controller
                 $watcherIndex = intval($parts[1]);
                 $screen = Screen::findOrFail($screenId);
                 $watchers = $screen->watchers;
+                $scriptConfiguration = json_decode($watchers[$watcherIndex]['script_configuration'], true);
+                $scriptConfiguration['dataSource'] = strval($watcherDataSource['value']['id']);
+                $watchers[$watcherIndex]['script_configuration'] = json_encode($scriptConfiguration);
                 $watchers[$watcherIndex]['script_id'] = $watcherDataSource['value']['id'];
                 $watchers[$watcherIndex]['script'] = $watcherDataSource['value'];
                 $watchers[$watcherIndex]['script']['id'] = 'data_source-' . strval($watcherDataSource['value']['id']);

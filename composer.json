@@ -1,6 +1,6 @@
 {
   "name": "processmaker/processmaker",
-  "version": "4.1.21",
+  "version": "4.1.23",
   "description": "BPM PHP Software",
   "keywords": [
     "php bpm processmaker"
@@ -83,6 +83,9 @@
         "laravel/dusk",
         "laravel/passport"
       ]
+    },
+    "processmaker": {
+      "build": "70cf1971"
     }
   },
   "scripts": {

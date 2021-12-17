@@ -77,7 +77,7 @@ class SignalController extends Controller
         $meta['count'] = $signals->count();
 
         return response()->json([
-            'data' => $signals,
+            'data' => $signals->values(),
             'meta' => $meta
         ]);
     }
