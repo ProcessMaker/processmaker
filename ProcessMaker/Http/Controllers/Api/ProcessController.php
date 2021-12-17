@@ -512,7 +512,12 @@ class ProcessController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
      *     @OA\Parameter(ref="#/components/parameters/include"),
-     *     @OA\Parameter(ref="#/components/parameters/without_event_definitions"),
+     *     @OA\Parameter(
+     *         description="If true return only processes that haven't start event definitions",
+     *         in="path",
+     *         name="without_event_definitions",
+     *         required=false
+     *     ),
      *
      *     @OA\Response(
      *         response=200,
