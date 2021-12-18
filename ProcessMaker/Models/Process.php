@@ -414,6 +414,8 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         return $query->where('processes.status', 'ARCHIVED');
     }
 
+
+
     public function getCollaborations()
     {
         $this->bpmnDefinitions = app(BpmnDocumentInterface::class, ['process' => $this]);

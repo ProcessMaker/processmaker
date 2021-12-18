@@ -90,6 +90,9 @@ class ProcessController extends Controller
         if ($status === 'archived') {
             $processes = Process::archived()->with($include);
         }
+        if ($status === 'all') {
+            $processes = Process::active()->with($include);
+        }
         $filter = $request->input('filter');
         $processes = $processes->select('processes.*')
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
