@@ -164,7 +164,7 @@ return [
             'supervisor-bpmn' => [
                 'connection' => 'redis',
                 'queue' => ['bpmn'],
-                'balance' => 'false',
+                'balance' => 'simple',
                 'processes' => env('PM4_HORIZON_SUPERVISOR_BPMN_PROCESSES', 1),
                 'tries' => 1,
                 'timeout' => env('PM4_HORIZON_SUPERVISOR_BPMN_TIMEOUT', 3600),
@@ -172,7 +172,7 @@ return [
             'supervisor-1' => [
                 'connection' => 'redis',
                 'queue' => ['high', 'default', 'low'],
-                'balance' => 'false',
+                'balance' => 'simple',
                 'processes' => env('PM4_HORIZON_SUPERVISOR_1_PROCESSES', 1),
                 'tries' => env('PM4_HORIZON_SUPERVISOR_1_TRIES', 3),
                 'timeout' => env('PM4_HORIZON_SUPERVISOR_1_TIMEOUT', 600),
