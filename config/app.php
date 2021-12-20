@@ -59,12 +59,17 @@ return [
     'processmaker_scripts_docker' => env('PROCESSMAKER_SCRIPTS_DOCKER', '/usr/bin/docker'),
     'processmaker_scripts_docker_mode' => env('PROCESSMAKER_SCRIPTS_DOCKER_MODE', 'binding'),
     'processmaker_system_scripts_timeout_seconds' => env('PROCESSMAKER_SYSTEM_SCRIPTS_TIMEOUT_SECONDS', 300),
+    'processmaker_scripts_docker_host' => env('PROCESSMAKER_SCRIPTS_DOCKER_HOST', ''),
+    'processmaker_scripts_timeout' => env('PROCESSMAKER_SCRIPTS_TIMEOUT', 'timeout'),
     'timer_events_seconds' => env('TIMER_EVENTS_SECONDS', 'truncate'),
     'bpmn_actions_max_lock_time' => intval(env('BPMN_ACTIONS_MAX_LOCK_TIME', 60)),
 
     // The url of our host from inside the docker
-    'docker_host_url' => env('DOCKER_HOST_URL', preg_replace('/(\w+):\/\/([^:\/]+)(\:\d+)?/', '$1://172.17.0.1$3',
-                env('APP_URL', 'http://localhost'))),
+    'docker_host_url' => env('DOCKER_HOST_URL', preg_replace(
+        '/(\w+):\/\/([^:\/]+)(\:\d+)?/',
+        '$1://172.17.0.1$3',
+        env('APP_URL', 'http://localhost')
+    )),
 
     // Allows our script executors to ignore invalid SSL. This should only be set to false for development.
     'api_ssl_verify' => env('API_SSL_VERIFY', "true"),
@@ -159,6 +164,7 @@ return [
         'GlobalScripts' => ProcessMaker\Facades\GlobalScripts::class,
         'WorkspaceManager' => ProcessMaker\Facades\WorkspaceManager::class,
         'SkinManager' => ProcessMaker\Facades\SkinManager::class,
+        'Docker' => ProcessMaker\Facades\Docker::class,
 
         /**
          * Other Facades
@@ -168,7 +174,7 @@ return [
         
         /**
          * Overwrite package classes
-         */        
+         */
         'ElasticScoutDriver\Factories\SearchRequestFactory' => ProcessMaker\Factories\SearchRequestFactory::class,
 
 

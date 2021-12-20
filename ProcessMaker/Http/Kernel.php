@@ -34,7 +34,7 @@ class Kernel extends HttpKernel
             \ProcessMaker\Http\Middleware\SessionStarted::class,
             \Illuminate\Session\Middleware\AuthenticateSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            //\ProcessMaker\Http\Middleware\VerifyCsrfToken::class,  
+            //\ProcessMaker\Http\Middleware\VerifyCsrfToken::class,
             \ProcessMaker\Http\Middleware\SetLocale::class,       // This is disabled until all routes are handled by our new engine
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \ProcessMaker\Http\Middleware\GenerateMenus::class,
@@ -67,5 +67,6 @@ class Kernel extends HttpKernel
         'setlocale' => \ProcessMaker\Http\Middleware\SetLocale::class,
         'setskin' => \ProcessMaker\Http\Middleware\SetSkin::class,
         'external.connection' => \ProcessMaker\Http\Middleware\ValidateExternalConnection::class,
+        'client' => \Laravel\Passport\Http\Middleware\CheckClientCredentials::class,
     ];
 }
