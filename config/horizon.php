@@ -147,7 +147,7 @@ return [
                 'queue' => ['bpmn'],
                 'balance' => 'simple',
                 'processes' => env('PM4_HORIZON_SUPERVISOR_BPMN_PROCESSES', 4),
-                'tries' => env('PM4_HORIZON_SUPERVISOR_BPMN_TRIES', 1),
+                'tries' => 1,
                 'timeout' => env('PM4_HORIZON_SUPERVISOR_BPMN_TIMEOUT', 3600),
             ],
             'supervisor-1' => [
@@ -166,7 +166,7 @@ return [
                 'queue' => ['bpmn'],
                 'balance' => 'false',
                 'processes' => env('PM4_HORIZON_SUPERVISOR_BPMN_PROCESSES', 1),
-                'tries' => env('PM4_HORIZON_SUPERVISOR_BPMN_TRIES', 1),
+                'tries' => 1,
                 'timeout' => env('PM4_HORIZON_SUPERVISOR_BPMN_TIMEOUT', 3600),
             ],
             'supervisor-1' => [
@@ -185,7 +185,7 @@ return [
                 'queue' => ['bpmn'],
                 'balance' => 'simple',
                 'processes' => env('PM4_HORIZON_SUPERVISOR_BPMN_PROCESSES', 2),
-                'tries' => env('PM4_HORIZON_SUPERVISOR_BPMN_TRIES', 1),
+                'tries' => 1,
                 'timeout' => env('PM4_HORIZON_SUPERVISOR_BPMN_TIMEOUT', 3600),
             ],
             'supervisor-1' => [
