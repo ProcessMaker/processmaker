@@ -61,7 +61,10 @@ class CommentsSubscriber
      * @param $tokens
      * @param $transition
      */
-    public function onGatewayPassed($gateway, $transition, $tokens) {
+    public function onGatewayPassed($gateway, $transition = null, $tokens = null) {
+        if ($transition === null || $tokens === null) {
+            return;
+        }
         $flows = collect($gateway->getProperties()['outgoing']->toArray());
 
         // Find the flows that corresponds to the transition condition
