@@ -62,7 +62,7 @@
         "@panter/vue-i18next": "^0.15.2",
         "@processmaker/modeler": "1.18.5",
         "@processmaker/processmaker-bpmn-moddle": "0.12.0",
-        "@processmaker/screen-builder": "2.20.1",
+        "@processmaker/screen-builder": "2.21.0",
         "@processmaker/vue-form-elements": "0.28.2",
         "@processmaker/vue-multiselect": "2.2.0",
         "babel-eslint": "^10.1.0",
