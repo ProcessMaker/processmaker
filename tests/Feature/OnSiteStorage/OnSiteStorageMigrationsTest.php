@@ -16,6 +16,9 @@ class OnSiteStorageMigrationsTest extends TestCase
      */
     public function testMigrations()
     {
+        // We no longer support separate databases
+        $this->markTestSkipped();
+
         // Drop the tables created in the migrations
         Schema::connection('data')->dropIfExists('comments');
         Schema::connection('data')->dropIfExists('process_requests');

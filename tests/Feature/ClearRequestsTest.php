@@ -241,7 +241,7 @@ class ClearRequestsTest extends TestCase
         $fileUpload = UploadedFile::fake()->create('request_test_file456.txt', 1);
   
         // We create a model (in this case a user) and associate to him the file
-        $model = ProcessRequest::find(1);
+        $model = ProcessRequest::orderBy('id', 'desc')->first();
         $model->addMedia($fileUpload)
             ->withCustomProperties(['data_name' => 'test'])
             ->toMediaCollection('local');

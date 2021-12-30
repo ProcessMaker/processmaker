@@ -49,12 +49,14 @@
     "whichbrowser/parser": "^2.0"
   },
   "require-dev": {
+    "brianium/paratest": "^6.3",
+    "dms/phpunit-arraysubset-asserts": "^0.3.1",
     "filp/whoops": "^2.0",
     "laravel/dusk": "^5.4",
     "laravel/homestead": "10.15.2",
     "mockery/mockery": "^1.0",
     "nunomaduro/collision": "^2.0",
-    "phpunit/phpunit": "^7.0",
+    "phpunit/phpunit": "^9",
     "squizlabs/php_codesniffer": "^3.0.2",
     "symfony/dom-crawler": "^4.3"
   },

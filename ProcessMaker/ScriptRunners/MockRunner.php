@@ -1,6 +1,7 @@
 <?php
 
 namespace ProcessMaker\ScriptRunners;
+use Illuminate\Support\Str;
 
 class MockRunner
 {
@@ -13,7 +14,11 @@ class MockRunner
             throw new \Exception("MockRunner is for tests only.");
         }
         putenv('HOST_URL=' . config('app.docker_host_url'));
-        $res = eval(str_replace('<?php', '', $code));
+        if (Str::startsWith($code, '<?php')) {
+            $res = eval(str_replace('<?php', '', $code));
+        } else {
+            $res = ['response' => 1];
+        }
         return ['output' => $res];
     }
 }

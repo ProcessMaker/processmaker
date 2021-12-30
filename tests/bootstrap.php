@@ -10,7 +10,6 @@ use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Artisan;
-use ProcessMaker\Models\ScriptExecutor;
 
 // Bootstrap laravel
 app()->make(Kernel::class)->bootstrap();
@@ -89,16 +88,26 @@ if (env('RUN_MSSQL_TESTS')) {
 }
 
 
-// THIS IS FOR STANDARD PROCESSMAKER TABLES
-if (env('POPULATE_DATABASE')) {
+// setup parallel test databases
+if (env('TEST_TOKEN')) {
+    $database = 'test_' . env('TEST_TOKEN');
+    $_ENV['DB_DATABASE'] = $database;
+    $_ENV['DATA_DB_DATABASE'] = $database;
+
+} elseif (env('POPULATE_DATABASE')) {
     Artisan::call('db:wipe', ['--database' => \DB::connection()->getName()]);
     Artisan::call('migrate:fresh', []);
-}
 
-if (ScriptExecutor::where('language', 'php')->count() === 0) {
-    Artisan::call('docker-executor-php:install');
-}
-
-if (ScriptExecutor::where('language', 'lua')->count() === 0) {
-    Artisan::call('docker-executor-lua:install');
+    \ProcessMaker\Models\ScriptExecutor::firstOrCreate(
+        ['language' => 'php'],
+        ['title' => 'Test Executor']
+    );
+    \ProcessMaker\Models\ScriptExecutor::firstOrCreate(
+        ['language' => 'lua'],
+        ['title' => 'Test Executor']
+    );
+    
+    if (env('PARALLEL_TEST_PROCESSES')) {
+        Artisan::call('processmaker:create-test-dbs');
+    }
 }
