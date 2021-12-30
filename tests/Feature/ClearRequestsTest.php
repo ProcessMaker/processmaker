@@ -276,6 +276,8 @@ class ClearRequestsTest extends TestCase
   
     public function testCommandClearRequests()
     {
+        $existingProcessIds = Process::pluck('id');
+        
         // Run process with timers
         $this->runProcessWithTimers();
 
@@ -306,6 +308,12 @@ class ClearRequestsTest extends TestCase
         // 3 comments about Process should remain
         $this->assertEquals(3, Comment::count());
         $this->assertEquals(1, Media::count());
+
+        // We need to do our own teardown here since were not using
+        // transactions for this test
+        $currrentProcessIds = Process::pluck('id');
+        $createdProcessIds = $currrentProcessIds->diff($existingProcessIds);
+        Process::destroy($createdProcessIds);
     }
 
     /**
