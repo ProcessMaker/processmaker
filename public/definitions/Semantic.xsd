@@ -1468,7 +1468,9 @@
 	<xsd:element name="task" type="tTask" substitutionGroup="flowElement"/>
 	<xsd:complexType name="tTask">
 		<xsd:complexContent>
-			<xsd:extension base="tActivity"/>
+			<xsd:extension base="tActivity">
+				<xsd:attribute name="calledElement" type="xsd:QName" use="optional"/>
+      </xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
 	

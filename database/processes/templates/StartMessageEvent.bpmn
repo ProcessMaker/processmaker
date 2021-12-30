@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd" xmlns:tns="http://sourceforge.net/bpmn/definitions/_1530553328908" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bpmn.io/schema/bpmn" exporter="ProcessMaker Modeler" exporterVersion="1.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <bpmn:process id="ProcessId" name="ProcessName" isExecutable="true">
+    <bpmn:endEvent id="node_2" name="End Event">
+      <bpmn:incoming>node_13</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="node_4" name="Form Task" pm:screenRef="8" pm:allowInterstitial="false" pm:assignment="requester" pm:assignmentLock="false" pm:allowReassignment="false">
+      <bpmn:incoming>node_11</bpmn:incoming>
+      <bpmn:outgoing>node_13</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="node_13" name="" sourceRef="node_4" targetRef="node_2" />
+    <bpmn:task id="node_3" name="Form Task" pm:screenRef="8" pm:allowInterstitial="false" pm:assignment="requester" pm:assignmentLock="false" pm:allowReassignment="false">
+      <bpmn:incoming>node_7</bpmn:incoming>
+      <bpmn:outgoing>node_9</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateCatchEvent id="node_15" name="Intermediate Signal Catch Event">
+      <bpmn:incoming>node_9</bpmn:incoming>
+      <bpmn:outgoing>node_11</bpmn:outgoing>
+      <bpmn:signalEventDefinition />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="node_11" name="" sourceRef="node_15" targetRef="node_4" />
+    <bpmn:sequenceFlow id="node_9" name="" sourceRef="node_3" targetRef="node_15" />
+    <bpmn:startEvent id="node_19" name="Message Start Event">
+      <bpmn:outgoing>node_7</bpmn:outgoing>
+      <bpmn:messageEventDefinition />
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="node_7" name="" sourceRef="node_19" targetRef="node_3" />
+  </bpmn:process>
+  <bpmn:signal id="collection_1_create" name="test create" pm:detail="" />
+  <bpmndi:BPMNDiagram id="BPMNDiagramId">
+    <bpmndi:BPMNPlane id="BPMNPlaneId" bpmnElement="ProcessId">
+      <bpmndi:BPMNShape id="node_2_di" bpmnElement="node_2">
+        <dc:Bounds x="810" y="170" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_4_di" bpmnElement="node_4">
+        <dc:Bounds x="620" y="150" width="116" height="76" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_13_di" bpmnElement="node_13">
+        <di:waypoint x="678" y="188" />
+        <di:waypoint x="828" y="188" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_3_di" bpmnElement="node_3">
+        <dc:Bounds x="280" y="150" width="116" height="76" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_15_di" bpmnElement="node_15">
+        <dc:Bounds x="490" y="170" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_11_di" bpmnElement="node_11">
+        <di:waypoint x="508" y="188" />
+        <di:waypoint x="678" y="188" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_9_di" bpmnElement="node_9">
+        <di:waypoint x="338" y="188" />
+        <di:waypoint x="508" y="188" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_19_di" bpmnElement="node_19">
+        <dc:Bounds x="170" y="170" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_7_di" bpmnElement="node_7">
+        <di:waypoint x="188" y="188" />
+        <di:waypoint x="338" y="188" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -54,7 +54,11 @@ class LoginController extends Controller
         $manager = App::make(LoginManager::class);
         $addons = $manager->list();
         $block = $manager->getBlock();
-        return view('auth.login', compact('addons', 'block'));
+        // cookie required here because SSO redirect resets the session
+        $cookie = cookie("processmaker_intended", redirect()->intended()->getTargetUrl(), 10, '/');
+        $response = response(view('auth.login', compact('addons', 'block')));
+        $response->withCookie($cookie);
+        return $response;
     }
 
     public function loginWithIntendedCheck(Request $request) {
