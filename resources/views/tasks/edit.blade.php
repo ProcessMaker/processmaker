@@ -424,16 +424,11 @@
             .catch(error => {
               // If there are errors, the user will be redirected to the request page
               // to view error details. This is done in loadTask in Task.vue
-              if (error.response && error.response.data && error.response.data.errors) {
-                let message = '';
-
-                let errors = Object.values(error.response.data.errors);
-                if (Array.isArray(errors)) {
-                  errors.forEach(error => {
-                    message += error.join('\n') + '\n';
-                  });
-                  window.ProcessMaker.alert(message, 'danger');
-                }
+              if (error.response?.status && error.response?.status === 422) {
+                // Validation error
+                Object.entries(error.response.data.errors).forEach(([key, value]) => {
+                  window.ProcessMaker.alert(`${key}: ${value[0]}`, 'danger', 0);
+                });
               }
             }).finally(() => {
               this.submitting = false;
