@@ -46,7 +46,7 @@
       <!-- Workflow Database -->
       <env name="DB_ADAPTER" value="mysql" />
       <env name="DB_DATABASE" value="test" />
-      <env name="DATA_DB_DATABASE" value="test" />
+      <env name="DATA_DB_DATABASE" value="test" force="true" />
       <env name="DB_TIMEZONE" value="+00:00" />
       <env name="DATA_DB_TIMEZONE" value="+00:00" />
 
