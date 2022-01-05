@@ -93,6 +93,10 @@ export default {
         "px; padding:0; cursor: pointer;";
     },
     formatValue(value) {
+      if (value === null) {
+        value = {};
+      }
+      
       return {
         id: value.id ? "/profile/" + value.id : null,
         src: value.src ? value.src : value.avatar ? value.avatar : "",
