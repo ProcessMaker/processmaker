@@ -125,6 +125,11 @@ export default {
       ]
     };
   },
+  watch: {
+    filter() {
+      this.page = 1;
+    }
+  },
   created() {
     ProcessMaker.EventBus.$on("api-data-deleted-users", (val) => {
       this.localLoadOnStart = val;
