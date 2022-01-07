@@ -40,6 +40,24 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TimerEventDefinitionInterface;
  */
 class BpmnSubscriber
 {
+    private $memory;
+
+    public function initErrorHandler($element, TokenInterface $token)
+    {
+        // This storage is freed on error (case of allowed memory exhausted)
+        $this->memory = str_repeat('*', 1024 * 1024);
+
+        register_shutdown_function(function() use ($token) {
+            $this->memory = null;
+            if ((!is_null($err = error_get_last())) && in_array($err['type'], array (E_ERROR)))
+            {
+                file_put_contents($this->path . 'unhandled_error.txt', $token->id);
+                Log::error('Script/Service task failed with unhandled system error: ' . print_r($err, true));
+            }
+        });
+        return $this;
+    }
+
     /**
      * When a process instance is completed.
      *
@@ -142,6 +160,8 @@ class BpmnSubscriber
         }
     }
 
+
+
     /**
      * When a script task is activated.
      *
@@ -150,8 +170,13 @@ class BpmnSubscriber
      */
     public function onScriptTaskActivated(ScriptTaskInterface $scriptTask, TokenInterface $token)
     {
-        // Log::info('ScriptTaskActivated: ' . $scriptTask->getId());
-        WorkflowManager::runScripTask($scriptTask, $token);
+        $this->initErrorHandler($scriptTask, $token);
+        try {
+            WorkflowManager::runScripTask($scriptTask, $token);
+        }
+        catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::Error('Unhandled error when running a script task:' . $e->getMessage());
+        }
     }
 
     /**
@@ -162,7 +187,13 @@ class BpmnSubscriber
      */
     public function onServiceTaskActivated(ServiceTaskInterface $serviceTask, TokenInterface $token)
     {
-        WorkflowManager::runServiceTask($serviceTask, $token);
+        $this->initErrorHandler($serviceTask, $token);
+        try {
+            WorkflowManager::runServiceTask($serviceTask, $token);
+        }
+        catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::Error('Unhandled error when running a service task:' . $e->getMessage());
+        }
     }
 
     public function onIntermediateCatchEventActivated(IntermediateCatchEventInterface $event, TokenInterface $token)
@@ -258,4 +289,6 @@ class BpmnSubscriber
 
         $events->listen(IntermediateCatchEventInterface::EVENT_CATCH_TOKEN_ARRIVES, static::class . '@onIntermediateCatchEventActivated');
     }
+
+    private $path = '/home/dante/desa/processmaker/';
 }
