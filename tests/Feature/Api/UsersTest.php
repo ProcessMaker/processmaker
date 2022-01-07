@@ -501,8 +501,10 @@ class UsersTest extends TestCase
         $response->assertJsonMissing(['id' => $id]);
 
         // Restore the user by email
+        // The end-user may enter a wrong email, it is better to send the username as well.
         $response = $this->apiCall('PUT', self::API_TEST_URL .'/restore', [
-            'email' => $user->email
+            'email' => $user->email,
+            'username' => $user->username,
         ]);
         $response->assertStatus(200);
 
