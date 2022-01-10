@@ -108,13 +108,22 @@ trait ExtendedPMQL
             $value = $expression->value;
         }
 
+        // Check to see if the value is parsable as float
+        if (is_numeric($value) && strpos($value, ".")) {
+            $value = floatval($value);
+        }
+        // Check to see if the value is parsable as integer
+        if (is_numeric($value) && is_int($value)) {
+            $value = intval($value);
+        }
+
         // Check to see if the value is parsable as a date
         if ((is_string($value) && strlen($value) > 1)) {
             switch ($value) {
-                case $value instanceof IntervalExpression: 
+                case $value instanceof IntervalExpression:
                     $value = $this->parseDate($value);
                     break;
-                default: 
+                default:
                     // Check to see if the value is a date/datetime formatted if not return original value
                     $isDateFormatted = Carbon::hasFormatWithModifiers($value, 'Y#m#d');
                     $isDateTimeFormatted = Carbon::hasFormatWithModifiers($value, 'Y#m#d H:i:s');
