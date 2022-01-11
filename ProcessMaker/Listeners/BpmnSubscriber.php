@@ -42,20 +42,36 @@ class BpmnSubscriber
 {
     private $memory;
 
-    public function initErrorHandler($element, TokenInterface $token)
+    /**
+     * @param $element
+     * @param TokenInterface|null $token
+     * @return $this
+     */
+    public function registerErrorHandler($element, TokenInterface $token = null)
     {
         // This storage is freed on error (case of allowed memory exhausted)
         $this->memory = str_repeat('*', 1024 * 1024);
 
-        register_shutdown_function(function() use ($token) {
-            $this->memory = null;
-            if ((!is_null($err = error_get_last())) && in_array($err['type'], array (E_ERROR)))
-            {
-                file_put_contents($this->path . 'unhandled_error.txt', $token->id);
-                Log::error('Script/Service task failed with unhandled system error: ' . print_r($err, true));
-            }
+        $path = getcwd();
+
+        if (empty($token)) {
+            return;
+        }
+
+        register_shutdown_function(function() use ($path, $element, $token) {
+            $this->errorHandler($path, $token);
         });
-        return $this;
+    }
+
+    public function errorHandler($path, $token)
+    {
+        // free the reserved memory
+        $this->memory = null;
+
+        file_put_contents($path . '/unhandled_error.txt', $token->id . "\n", FILE_APPEND);
+        if (!is_null($err = error_get_last()) && in_array($err['type'], [E_ERROR])) {
+            Log::error('Script/Service task failed with unhandled system error: ' . print_r($err, true));
+        }
     }
 
     /**
@@ -170,7 +186,7 @@ class BpmnSubscriber
      */
     public function onScriptTaskActivated(ScriptTaskInterface $scriptTask, TokenInterface $token)
     {
-        $this->initErrorHandler($scriptTask, $token);
+        $this->registerErrorHandler($scriptTask, $token);
         try {
             WorkflowManager::runScripTask($scriptTask, $token);
         }
@@ -187,7 +203,7 @@ class BpmnSubscriber
      */
     public function onServiceTaskActivated(ServiceTaskInterface $serviceTask, TokenInterface $token)
     {
-        $this->initErrorHandler($serviceTask, $token);
+        $this->registerErrorHandler($serviceTask, $token);
         try {
             WorkflowManager::runServiceTask($serviceTask, $token);
         }
@@ -290,5 +306,4 @@ class BpmnSubscriber
         $events->listen(IntermediateCatchEventInterface::EVENT_CATCH_TOKEN_ARRIVES, static::class . '@onIntermediateCatchEventActivated');
     }
 
-    private $path = '/home/dante/desa/processmaker/';
 }

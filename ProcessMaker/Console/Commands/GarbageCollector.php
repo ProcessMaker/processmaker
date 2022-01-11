@@ -49,8 +49,6 @@ class GarbageCollector extends Command
         $this->processHaltedScripts();
 
         $this->processUnhandledErrors();
-
-        $this->processOrphanScheduledTask();
     }
 
     private function processHaltedScripts()
@@ -85,10 +83,17 @@ class GarbageCollector extends Command
 
     private function processUnhandledErrors()
     {
-        $fileName = 'unhandled_error.txt';
+        $fileName = getcwd(). '/unhandled_error.txt';
         if (file_exists($fileName)) {
-            $content = file_get_contents($fileName);
-            $tokens = explode(',', $content);
+            $tokens = [];
+            if ($file = fopen($fileName, "r")) {
+                while(!feof($file)) {
+                    $token = fgets($file);
+                    $tokens[] = trim($token);
+                }
+                fclose($file);
+            }
+
             foreach ($tokens as $tokenId) {
                 $token = ProcessRequestToken::find($tokenId);
                 if ($token) {
@@ -104,40 +109,11 @@ class GarbageCollector extends Command
             }
             unlink($fileName);
         }
-        $this->info('directorio' . getcwd());
-    }
-
-    private function processOrphanScheduledTask()
-    {
-        $scheduledTasks = $this->getScheduledTasks();
-        $toRemove = [];
-        foreach ($scheduledTasks as $scheduled) {
-            $config = json_decode($scheduled->configuration, true);
-            //print_r($scheduled->configuration);
-            $elementId = $config['element_id'];
-            $this->info('config: ' . print_r($config['element_id'], true));
-            $process = $scheduled->process;
-            $definition = $process->getBpmnDefinition();
-            $node = $this->getElementById($definition, $elementId);
-            if (!$node) {
-               $toRemove[]  = $node;
-            }
-        }
     }
 
     private function getTaskList()
     {
         $tasks = ProcessRequestToken::whereIn('status', array('FAILING', 'ACTIVE'))->whereIn('element_type', ['scriptTask', 'serviceTask']);
         return $tasks->get();
-    }
-
-    private function getScheduledTasks()
-    {
-        return $scheduled = ScheduledTask::all();
-    }
-    private function getElementById($definitions, $id)
-    {
-        $x = new DOMXPath($this->definitions);
-        return $x->query("//*[@id='$id']")->item(0);
     }
 }
