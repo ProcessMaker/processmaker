@@ -150,7 +150,6 @@ class WorkflowManager
     public function runScripTask(ScriptTaskInterface $scriptTask, Token $token)
     {
         Log::info('Dispatch a script task: ' . $scriptTask->getId());
-        \Illuminate\Support\Facades\Log::Critical(" AAA = " . print_r($token, true));
         $instance = $token->processRequest;
         $process = $instance->process;
         RunScriptTask::dispatch($process, $instance, $token, [])->onQueue('bpmn');
