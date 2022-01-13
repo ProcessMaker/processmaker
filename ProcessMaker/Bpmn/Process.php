@@ -42,7 +42,14 @@ class Process extends ModelsProcess
             $properties = Cache::store('global_variables')->get($key, []);
             $properties[$name] = $value;
             \Log::info(['global_variables', $key, $properties]);
-            Cache::store('global_variables')->forever($key, $properties);
+            try {
+                Cache::store('global_variables')->forever($key, $properties);
+            } catch (\Throwable $e) {
+                \Log::error($e->getMessage());
+                if (in_array('22001', $e->errorInfo)) {
+                    Cache::store('global_variables')->forget($key);
+                }
+            }
             return $this;
         } else {
             return parent::setProperty($name, $value);
