@@ -211,8 +211,16 @@ class ImportProcess implements ShouldQueue
                 $number = 2;
             }
 
-            //Return the name appended with the number
-            return $name . ' ' . $number;
+            //the name appended with the number
+            $name = $name . ' ' . $number;
+
+            //verify existence of the new name
+            if ($model->where($field, $name)->exists()) {
+                return $this->formatName($name, $field, $class);
+            } else {
+                //Return the new name
+                return $name;
+            }
         } else {
             //Return the original name (if there are no dupes)
             return $name;
