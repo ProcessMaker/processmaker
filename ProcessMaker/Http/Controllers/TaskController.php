@@ -72,16 +72,16 @@ class TaskController extends Controller
         $files = [];
         foreach ($task->processRequest->getMedia() as $file) {
             $dataName = $file->getCustomProperty('data_name');
-            if (isset($files[$dataName])) {
-                if (isset($files[$dataName]['id'])) {
-                    $files[$dataName] = [$files[$dataName]];
+            if (isset($files[$file->id])) {
+                if (isset($files[$file->id]['id'])) {
+                    $files[$file->id] = [$files[$file->id]];
                 }
-                $files[$dataName][] = [
+                $files[$file->id][] = [
                     'id' => $file->id,
                     'file_name' => $file->file_name
                 ];
             } else {
-                $files[$dataName] = [
+                $files[$file->id] = [
                     'id' => $file->id,
                     'file_name' => $file->file_name,
                 ];
