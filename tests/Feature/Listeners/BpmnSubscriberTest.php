@@ -19,7 +19,7 @@ class BpmnSubscriberTest extends TestCase
 
     public function testErrorHandler()
     {
-        $path = getcwd();
+        $path = storage_path('app/private');
         $errorFile = $path . '/unhandled_error.txt';
         $this->removeFileIfExists($errorFile);
 

@@ -52,7 +52,7 @@ class BpmnSubscriber
         // This storage is freed on error (case of allowed memory exhausted)
         $this->memory = str_repeat('*', 1024 * 1024);
 
-        $path = getcwd();
+        $path = storage_path('app/private');
 
         if (empty($token)) {
             return;

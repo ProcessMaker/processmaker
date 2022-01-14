@@ -49,7 +49,7 @@ class GarbageCollectorTest extends TestCase
             'status' => 'FAILING',
             'element_type' => 'serviceTask']);
 
-        $path = getcwd();
+        $path = storage_path('app/private');
         $errorFile = $path . '/unhandled_error.txt';
         $this->removeFileIfExists($errorFile);
 
@@ -80,7 +80,7 @@ class GarbageCollectorTest extends TestCase
             'status' => 'FAILING',
             'element_type' => 'serviceTask']);
 
-        $path = getcwd();
+        $path = storage_path('app/private');
         $errorFile = $path . '/unhandled_error.txt';
         $this->removeFileIfExists($errorFile);
 

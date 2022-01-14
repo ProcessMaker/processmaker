@@ -83,7 +83,7 @@ class GarbageCollector extends Command
 
     private function processUnhandledErrors()
     {
-        $fileName = getcwd(). '/unhandled_error.txt';
+        $fileName = storage_path('app/private') . '/unhandled_error.txt';
         if (file_exists($fileName)) {
             $tokens = [];
             if ($file = fopen($fileName, "r")) {
