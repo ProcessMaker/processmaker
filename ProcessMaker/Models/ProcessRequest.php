@@ -402,7 +402,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
                 ->with('user')
                 ->whereNotIn('element_type', ['scriptTask']);
     }
-    
+
     /**
      * Filter processes with a string
      *
@@ -418,7 +418,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
                 $query->whereIn('id', [$filter]);
             } else {
                 $matches = ProcessRequest::search($filter)->take(10000)->get()->pluck('id');
-                $query->whereIn('id', $matches);            
+                $query->whereIn('id', $matches);
             }
         } else {
             $filter = '%' . mb_strtolower($filter) . '%';
@@ -432,7 +432,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
                     ->orWhere('updated_at', 'like', $filter);
             });
         }
-        
+
         return $query;
     }
 
@@ -873,7 +873,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     public function requestFiles(bool $includeToken = false)
     {
-        return (object) $this->getMedia()->mapToGroups(function($file) use ($includeToken) {
+        $grouped = (object) $this->getMedia()->mapToGroups(function($file) use ($includeToken) {
             $dataName = $file->getCustomProperty('data_name');
             $info = [
                 'id' => $file->id,
@@ -885,5 +885,10 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
             }
             return [ $dataName => $info ];
         })->toArray();
+        $groupedById = [];
+        foreach ($grouped as $value) {
+            $groupedById[$value[0]['id']] = $value;
+        }
+        return $groupedById;
     }
 }
