@@ -94,18 +94,23 @@ class ProcessRequestFileController extends Controller
 		//Retrieve input variable 'name'
 		$name = $laravel_request->get('name');
 
-		//If no name, retern entire collection; otherwise, filter collection
-		if (! $name) {
-			return new ResourceCollection($media);
-		} else {
+        $id = $laravel_request->get('id');
+
+        if ($id && $id != null) {
+            $filtered = $media->find($id);
+            return new ApiResource($filtered);
+        }
+
+		if ($name) {
 			$filtered = $media->reject(function ($item, $key) use ($name) {
 				if ($item->custom_properties['data_name'] != $name) {
 					return true;
 				}
 			});
-
 	        return new ResourceCollection($filtered);
 		}
+
+        return new ResourceCollection($media);
      }
 
     /**
