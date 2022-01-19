@@ -9,6 +9,7 @@ use Illuminate\Validation\Rule;
 use Laravel\Scout\Searchable;
 use Log;
 use ProcessMaker\Exception\PmqlMethodException;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\IntermediateCatchEventInterface;
@@ -35,15 +36,18 @@ use ProcessMaker\Traits\HideSystemResources;
  * @property string $participant_id
  * @property string $name
  * @property string $status
- * @property string $data
+ * @property array $data
  * @property \Carbon\Carbon $initiated_at
  * @property \Carbon\Carbon $completed_at
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  * @property Process $process
+ * @property ProcessRequestToken[]|Collection $tokens
  * @property ProcessRequestLock[] $locks
  * @method static ProcessRequest find($id)
  * @method static ProcessRequest findOrFail($id)
+ * @method DataStore getDataStore()
+ * @method Process getProcess()
  *
  * @OA\Schema(
  *   schema="processRequestEditable",
@@ -541,7 +545,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $errors[] = $error;
         $this->errors = $errors;
         $this->status = 'ERROR';
-        \Log::error($exception);
+        Log::error($exception);
         $this->save();
     }
 
