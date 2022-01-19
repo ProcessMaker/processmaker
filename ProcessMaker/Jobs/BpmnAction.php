@@ -10,6 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\BpmnEngine;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequest;
@@ -49,15 +50,16 @@ abstract class BpmnAction implements ShouldQueue
      */
     public function handle()
     {
-        extract($this->loadContext());
-        $this->engine = $engine;
-        $this->instance = $instance;
-
-        //Do the action
-        $response = App::call([$this, 'action'], compact('definitions', 'instance', 'token', 'process', 'element', 'data', 'processModel'));
-
-        //Run engine to the next state
+        $response = null;
         try {
+            extract($this->loadContext());
+            $this->engine = $engine;
+            $this->instance = $instance;
+
+            //Do the action
+            $response = App::call([$this, 'action'], compact('definitions', 'instance', 'token', 'process', 'element', 'data', 'processModel'));
+
+            //Run engine to the next state
             $this->engine->runToNextState();
         } catch (Throwable $exception) {
             Log::error($exception->getMessage());
@@ -66,7 +68,6 @@ abstract class BpmnAction implements ShouldQueue
             if ($request) {
                 $request->logError($exception, $element);
             }
-            throw $exception;
         } finally {
             $this->unlock();
         }

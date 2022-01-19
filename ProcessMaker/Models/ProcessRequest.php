@@ -3,13 +3,17 @@
 namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
-use DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Laravel\Scout\Searchable;
-use Log;
+use ProcessMaker\Events\ProcessUpdated;
 use ProcessMaker\Exception\PmqlMethodException;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Setting;
+use ProcessMaker\Models\DataStore;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\IntermediateCatchEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\SignalEventDefinitionInterface;
@@ -35,15 +39,17 @@ use ProcessMaker\Traits\HideSystemResources;
  * @property string $participant_id
  * @property string $name
  * @property string $status
- * @property string $data
+ * @property array $data
  * @property \Carbon\Carbon $initiated_at
  * @property \Carbon\Carbon $completed_at
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  * @property Process $process
+ * @property ProcessRequestToken[]|Collection $tokens
  * @property ProcessRequestLock[] $locks
  * @method static ProcessRequest find($id)
  * @method static ProcessRequest findOrFail($id)
+ * @method DataStore getDataStore()
  *
  * @OA\Schema(
  *   schema="processRequestEditable",
@@ -541,7 +547,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $errors[] = $error;
         $this->errors = $errors;
         $this->status = 'ERROR';
-        \Log::error($exception);
+        Log::error($exception);
         $this->save();
     }
 
@@ -766,5 +772,68 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $latest = ProcessRequest::find($this->getId());
         $this->data = $store->updateArray($latest->data);
         return $this->data;
+    }
+
+    /**
+     * Get managed data from the process request
+     *
+     * @return array
+     */
+    public function getRequestData()
+    {
+        $dataManager = new DataManager();
+        return $dataManager->getRequestData($this);
+    }
+
+    /**
+     * @return self
+     */
+    public function loadProcessRequestInstance()
+    {
+        $process = $this->processVersion ?? $this->processVersion()->first() ?? $this->process ?? $this->process()->first();
+        $storage = $process->getDefinitions();
+        $callableId = $this->callable_id;
+        $process = $storage->getProcess($callableId);
+        $dataStore = $storage->getFactory()->createDataStore();
+        $dataStore->setData($this->data);
+        $this->setId($this->getKey());
+        $this->setProcess($process);
+        $this->setDataStore($dataStore);
+        return $this;
+    }
+
+    /**
+     * Get the BPMN definitions version of the process that is running.
+     *
+     * @param boolean $forceParse
+     * @param mixed $engine
+     *
+     * @return BpmnDocument
+     */
+    public function getVersionDefinitions($forceParse = false, $engine = null)
+    {
+        $processVersion = $this->processVersion ?: $this->process;
+        return $processVersion->getDefinitions($forceParse, $engine);
+    }
+
+    /**
+     * Notify a process update
+     *
+     * @param string $eventName
+     */
+    public function notifyProcessUpdated($eventName)
+    {
+        $event = new ProcessUpdated($this, $eventName);
+        event($event);
+        if ($this->parentRequest) {
+            $this->parentRequest->notifyProcessUpdated($eventName);
+            event($event);
+        }
+    }
+
+    public function hasLock(ProcessRequestLock $lock)
+    {
+        $first = $this->locks()->orderBy('id')->first();
+        return !$first || $first->getKey() === $lock->getKey();
     }
 }
