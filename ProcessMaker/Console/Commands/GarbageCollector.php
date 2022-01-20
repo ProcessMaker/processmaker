@@ -3,6 +3,7 @@
 namespace ProcessMaker\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Jobs\RunServiceTask;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -49,6 +50,8 @@ class GarbageCollector extends Command
         $this->processHaltedScripts();
 
         $this->processUnhandledErrors();
+
+        $this->processDuplicatedTimerEvents();
     }
 
     private function processHaltedScripts()
@@ -108,6 +111,46 @@ class GarbageCollector extends Command
                 }
             }
             unlink($fileName);
+        }
+    }
+
+    private function processDuplicatedTimerEvents()
+    {
+        // Intermediate Timer Events should have just one scheduled task
+        $scheduled = ScheduledTask::
+            select(
+                'process_request_id',
+                'configuration->element_id as element_id',
+                DB::raw('count(*)')
+            )
+            ->groupBy('process_request_id', 'configuration->element_id')
+            ->having('count(*)', '>', 1)
+            ->get();
+
+        foreach($scheduled as $schedule) {
+            $maxId = ProcessRequestToken::where('process_request_id', $schedule->process_request_id)
+                ->where('element_id', $schedule->element_id)
+                ->where('status', 'ACTIVE')
+                ->max('id');
+
+            ScheduledTask::where('process_request_id', $schedule->request_id)
+                ->where('process_request_token_id', '<>', $maxId)
+                ->where('configuration->element_id', $schedule->element_id)
+                ->delete();
+
+            ProcessRequestToken::where('id', '<>', $maxId)
+                ->where('process_request_id', $schedule->process_request_id)
+                ->where('element_id', $schedule->element_id)
+                ->delete();
+
+            $maxScheduleId = ScheduledTask::where('process_request_id', $schedule->process_request_id)
+                ->where('configuration->element_id', $schedule->element_id)
+                ->max('id');
+
+            ScheduledTask::where('process_request_id', $schedule->process_request_id)
+                ->where('id', '<>', $maxScheduleId)
+                ->where('configuration->element_id', $schedule->element_id)
+                ->delete();
         }
     }
 
