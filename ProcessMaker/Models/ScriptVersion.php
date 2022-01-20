@@ -42,4 +42,20 @@ class ScriptVersion extends Model
     {
         return $this->belongsTo(Script::class, 'script_id', 'id');
     }
+
+    /**
+     * Executes a script given a configuration and data input.
+     *
+     * @param array $data
+     * @param array $config
+     */
+    public function runScript(array $data, array $config)
+    { 
+        $script = $this->parent->replicate();
+        $except = $script->getGuarded();
+        foreach (collect($script->getAttributes())->except($except)->keys() as $prop) {
+            $script->$prop = $this->$prop;
+        }
+        return $script->runScript($data, $config);
+    }
 }
