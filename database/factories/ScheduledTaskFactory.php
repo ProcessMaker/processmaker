@@ -21,6 +21,6 @@ $factory->define(ScheduledTask::class, function (Faker $faker) {
         },
         'type' => $faker->randomElement(['INTERMEDIATE_TIMER_EVENT', 'TIMER_START_EVENT', 'BOUNDARY_TIMER_EVENT']),
         'last_execution' => date('Y-m-d H:t:s'),
-        'configuration' => [],
+        'configuration' => '{}',
     ];
 });
