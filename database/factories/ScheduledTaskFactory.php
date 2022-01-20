@@ -2,10 +2,10 @@
 
 use Faker\Generator as Faker;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ScheduledTask;
 
-$factory->define(Script::class, function (Faker $faker) {
-    $token = sqlite_factory(ProcessRequestToken::class)->make([]);
+$factory->define(ScheduledTask::class, function (Faker $faker) {
+    $token = factory(ProcessRequestToken::class)->make([]);
     return [
         'process_id' => function() use ($token) {
             $token->save();
