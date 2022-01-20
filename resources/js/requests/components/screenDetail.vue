@@ -21,7 +21,7 @@
       </button>
     </div>
     <div v-for="page in printablePages" :key="page" class="card">
-      <div class="card-body h-100" style="pointer-events: none">
+      <div class="card-body h-100">
         <component
           ref="print"
           :is="component"
