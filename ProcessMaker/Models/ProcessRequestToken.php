@@ -355,11 +355,20 @@ class ProcessRequestToken extends Model implements TokenInterface
     public function getScreenAndNestedIds()
     {
         $taskScreen = $this->getScreen();
+        $interstitialScreen = $this->getInterstitial()['interstitial_screen'];
+        
+        if (!$taskScreen && !$interstitialScreen) {
+            $screenIds = [];
+        }
+        
         if ($taskScreen) {
             $screenIds = $taskScreen->nestedScreenIds($this->processRequest);
             $screenIds[] = $taskScreen->id;
-        } else {
-            $screenIds = [];
+        } 
+        
+        if ($interstitialScreen) {
+            $screenIds = $interstitialScreen->nestedScreenIds($this->processRequest);
+            $screenIds[] = $interstitialScreen->id;
         }
         return $screenIds;
     }
