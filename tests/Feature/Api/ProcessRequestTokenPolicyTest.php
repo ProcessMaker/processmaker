@@ -75,4 +75,54 @@ class ProcessRequestTokenPolicyTest extends TestCase
         $response->assertStatus(200);
         $this->assertEquals('child', $response->json()['config'][0]['name']);
     }
+
+    public function testGetInterstitialNestedScreen()
+    {
+        $taskUser = factory(User::class)->create();
+        $otherUser = factory(User::class)->create();
+
+        $formScreen = factory(Screen::class)->create();
+
+        $nestedScreen = factory(Screen::class)->create([
+            'config' => json_decode(file_get_contents(__DIR__ . '/screens/nested.json'))
+        ]);
+        $interstitialScreen = factory(Screen::class)->create([
+            'config' => json_decode(
+                str_replace(
+                    '"screen-id"',
+                    $nestedScreen->id,
+                    file_get_contents(__DIR__ . '/screens/interstitial.json')
+                )
+            )
+        ]);
+        $process = factory(Process::class)->create([
+            'bpmn' => str_replace(
+                ['[formScreen]', '[interstitialScreen]', '[user]'],
+                [$formScreen->id, $interstitialScreen->id, $taskUser->id],
+                file_get_contents(__DIR__ . '/processes/InterstitialWithNestedScreen.bpmn')
+            )
+        ]);
+        factory(ProcessTaskAssignment::class)->create([
+            'process_id' => $process->id,
+            'process_task_id' => 'node_2',
+            'assignment_type' => User::class,
+            'assignment_id' => $taskUser->id,
+        ]);
+
+        $route = route('api.process_events.trigger', [$process->id, 'event' => 'node_1']);
+        $response = $this->apiCall('POST', $route, []);
+        $task = ProcessRequestToken::where('user_id', $taskUser->id)->first();
+
+        $url = route('api.tasks.get_screen', [$task, $nestedScreen]);
+
+        // Try with unauthorized user
+        $this->user = $otherUser; 
+        $response = $this->apiCall('GET', $url);
+        $response->assertStatus(403);
+
+        $this->user = $taskUser; 
+        $response = $this->apiCall('GET', $url);
+        $response->assertStatus(200);
+        $this->assertEquals('Screen Interstitial', $response->json()['config'][0]['name']);
+    }
 }
