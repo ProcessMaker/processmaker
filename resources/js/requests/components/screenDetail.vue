@@ -144,6 +144,7 @@
           json.config.disabled = true;
           json.config.readonly = true;
           json.config.editable = false;
+          json.config._perPage = Number.MAX_SAFE_INTEGER;
         }
         if (json.items !== undefined) {
           this.disableForm(json.items);
