@@ -50,6 +50,10 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends Migration
      */
     public function up()
     {
+        if (!$this->connectorSendEmailInstalled()) {
+            throw new RuntimeException('The package connector-send-email must be installed to run this upgrade.');
+        }
+
         // Clear out any cached environment variable
         Artisan::call('optimize:clear', [
             '--quiet' => true
@@ -136,6 +140,11 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends Migration
                 ]);
             }
         }
+    }
+
+    protected function connectorSendEmailInstalled()
+    {
+        return File::exists(base_path('vendor/processmaker/connector-send-email'));
     }
 
     /**
