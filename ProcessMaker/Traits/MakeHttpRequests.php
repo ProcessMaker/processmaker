@@ -9,8 +9,8 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Arr;
-use InvalidArgumentException;
 use Mustache_Engine;
+use ProcessMaker\Exception\HttpInvalidArgumentException;
 use ProcessMaker\Exception\HttpResponseException;
 use ProcessMaker\Models\FormalExpression;
 use Psr\Http\Message\ResponseInterface;
@@ -568,7 +568,7 @@ trait MakeHttpRequests
         );
         $parts = parse_url($enc_url);
         if ($parts === false) {
-            throw new InvalidArgumentException('Malformed URL: ' . $url);
+            throw new HttpInvalidArgumentException('Malformed URL: ' . $url);
         }
         foreach ($parts as $name => $value) {
             $parts[$name] = urldecode($value);
