@@ -346,8 +346,6 @@ trait MakeHttpRequests
         }
 
         $mapped = [];
-        $mapped['status'] = $status;
-        $mapped['response'] = $content;
 
         if (!isset($config['dataMapping'])) {
             return $mapped;
