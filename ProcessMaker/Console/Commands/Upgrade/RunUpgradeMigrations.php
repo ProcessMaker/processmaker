@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Console\Commands;
+namespace ProcessMaker\Console\Commands\Upgrade;
 
 use Illuminate\Console\Command;
 
