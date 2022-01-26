@@ -358,7 +358,6 @@ trait MakeHttpRequests
         }, $response->getHeaders());
 
         $merged = array_merge($data, $content, $headers);
-        $responseData = array_merge($content, $headers);
 
         foreach ($config['dataMapping'] as $map) {
             $processVar = $this->getMustache()->render($map['key'], $data);
@@ -367,7 +366,7 @@ trait MakeHttpRequests
 
             // if value is empty all the response is mapped
             if (trim($value) === '') {
-                $mapped[$processVar] = $responseData;
+                $mapped[$processVar] = $content;
                 continue;
             }
 
