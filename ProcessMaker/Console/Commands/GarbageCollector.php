@@ -118,7 +118,7 @@ class GarbageCollector extends Command
                 $token = ProcessRequestToken::find($tokenId);
 
                 if (!$this->canRunScriptOfToken($token)) {
-                    $this->writeln("Script of the token { $token->id } is still running...\n", line, true);
+                    $this->writeln("Script of the token { $token->id } is still running...\n", 'line', true);
                     continue;
                 }
 
