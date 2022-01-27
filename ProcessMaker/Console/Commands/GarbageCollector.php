@@ -12,6 +12,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessRequestLock;
 use ProcessMaker\Models\ScheduledTask;
 use ProcessMaker\Models\Script;
+use Throwable;
 
 class GarbageCollector extends Command
 {
@@ -201,9 +202,17 @@ class GarbageCollector extends Command
 
     private function canRunScriptOfToken($token)
     {
-        if ($token === null || $token->getBpmnDefinition() === null) {
+        try {
+            $definition = $token->getBpmnDefinition();
+        }
+        catch (Throwable $e) {
+            $definition = null;
+        }
+
+        if (empty($token) || empty($definition)) {
             return true;
         }
+
         $scriptId = $token->getBpmnDefinition()->getAttribute('pm:scriptRef');
         $script = Script::find($scriptId);
         $delta = time() - strtotime($token->created_at);
