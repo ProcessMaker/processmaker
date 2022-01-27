@@ -2,16 +2,20 @@
 
 namespace ProcessMaker\Console\Commands;
 
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Jobs\RunServiceTask;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessRequestLock;
 use ProcessMaker\Models\ScheduledTask;
+use ProcessMaker\Models\Script;
 
 class GarbageCollector extends Command
 {
+    private $MAX_SCRIPT_TIMEOUT = 3600;
     /**
      * The name and signature of the console command.
      *
@@ -45,7 +49,7 @@ class GarbageCollector extends Command
      */
     public function handle()
     {
-        //TODO log to main logger too
+        $this->writeln("Running Garbage Collector\n", 'info', true);
 
         $this->processHaltedScripts();
 
@@ -56,28 +60,37 @@ class GarbageCollector extends Command
 
     private function processHaltedScripts()
     {
-        $this->info('Processing halted service/script tasks...');
         $tasks = $this->getTaskList();
 
         if (!$tasks->count()) {
-            $this->info('No failing script or service tasks found.');
+            $this->writeln("No failing script or service tasks found.\n", 'line');
+            return;
         }
+
+        $this->writeln("Halted scripts found.\n", 'line');
 
         $bar = $this->output->createProgressBar($tasks->count());
         $bar->start();
 
-
-        $requestIds = $tasks->pluck('process_request_id');
-
         foreach ($tasks as $token) {
             $bar->advance();
+            if (!$this->canRunScriptOfToken($token)) {
+                $this->writeln("Script of the token { $token->id } is still running...\n", 'line', true);
+                continue;
+            }
             $instance = $token->processRequest;
             $process = $instance->process;
 
+            $token->created_at = Carbon::now();
+            $token->updated_at = Carbon::now();
+            $token->save();
+
             if ($token->element_type === 'scriptTask') {
+                $this->writeln("Dispatching script of token { $token->id } \n", 'line', true);
                 RunScriptTask::dispatch($process, $instance, $token, []);
             }
             if ($token->element_type === 'serviceTask') {
+                $this->writeln("Dispatching service task of token { $token->id } \n", 'line', true);
                 RunServiceTask::dispatch($process, $instance, $token, []);
             }
         }
@@ -88,6 +101,9 @@ class GarbageCollector extends Command
     {
         $fileName = storage_path('app/private') . '/unhandled_error.txt';
         if (file_exists($fileName)) {
+
+            $this->writeln("Unhandled errors file found...", 'info', true);
+
             $tokens = [];
             if ($file = fopen($fileName, "r")) {
                 while(!feof($file)) {
@@ -99,13 +115,26 @@ class GarbageCollector extends Command
 
             foreach ($tokens as $tokenId) {
                 $token = ProcessRequestToken::find($tokenId);
+
+                if (!$this->canRunScriptOfToken($token)) {
+                    $this->writeln("Script of the token { $token->id } is still running...\n", line, true);
+                    continue;
+                }
+
                 if ($token) {
+                    $token->created_at = Carbon::now();
+                    $token->updated_at = Carbon::now();
+                    $token->save();
+
                     $instance = $token->processRequest;
                     $process = $instance->process;
+
                     if ($token->element_type === 'scriptTask') {
+                        $this->writeln("Dispatching script of token { $token->id } \n", 'line', true);
                         RunScriptTask::dispatch($process, $instance, $token, []);
                     }
                     if ($token->element_type === 'serviceTask') {
+                        $this->writeln("Dispatching service task of token { $token->id } \n", 'line', true);
                         RunServiceTask::dispatch($process, $instance, $token, []);
                     }
                 }
@@ -127,7 +156,17 @@ class GarbageCollector extends Command
             ->having('count(*)', '>', 1)
             ->get();
 
+        if ($scheduled->count() > 0) {
+            $this->writeln("Duplicated timer events found...", 'info', true);
+        }
+
         foreach($scheduled as $schedule) {
+            $this->writeln("Cleaning scheduled task { $$schedule->id } 
+                of token={ $schedule->process_request_token_id },
+                request={ $schedule->process_request_id },  
+                element={ $schedule->process_id }, 
+                process { $schedule->process_id }", 'line', true);
+
             $maxId = ProcessRequestToken::where('process_request_id', $schedule->process_request_id)
                 ->where('element_id', $schedule->element_id)
                 ->where('status', 'ACTIVE')
@@ -158,5 +197,29 @@ class GarbageCollector extends Command
     {
         $tasks = ProcessRequestToken::whereIn('status', array('FAILING', 'ACTIVE'))->whereIn('element_type', ['scriptTask', 'serviceTask']);
         return $tasks->get();
+    }
+
+    private function canRunScriptOfToken($token)
+    {
+        if ($token === null || $token->getBpmnDefinition() === null) {
+            return true;
+        }
+        $scriptId = $token->getBpmnDefinition()->getAttribute('pm:scriptRef');
+        $script = Script::find($scriptId);
+        $delta = time() - strtotime($token->created_at);
+
+        if (empty($script->timeout) || $script->timeout === 0) {
+           return $delta >  $this->MAX_SCRIPT_TIMEOUT;
+        }
+
+        return $delta > $script->timeout;
+    }
+
+    private function writeln($message, $type, $toLog = false)
+    {
+        $this->{$type}($message);
+        if ($toLog) {
+            Log::Info("Garbage Collector: " . $message);
+        }
     }
 }
