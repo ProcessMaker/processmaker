@@ -658,7 +658,10 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $user = User::where('username', $value)->get()->first();
 
         if ($user) {
-            $requests = ProcessRequest::where('user_id', $expression->operator, $user->id)->get();
+            $requests = ProcessRequest::select('id')
+                ->where('user_id', $expression->operator, $user->id)
+                ->distinct()
+                ->get();
             return function ($query) use ($requests) {
                 $query->whereIn('id', $requests->pluck('id'));
             };
@@ -679,7 +682,11 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $user = User::where('username', $value)->get()->first();
 
         if ($user) {
-            $tokens = ProcessRequestToken::where('user_id', $expression->operator, $user->id)->get();
+            $tokens = ProcessRequestToken::select('process_request_id')
+                ->where('user_id', $expression->operator, $user->id)
+                ->whereIn('element_type', ['task', 'userTask', 'startEvent'])
+                ->distinct()
+                ->get();
 
             return function ($query) use ($tokens) {
                 $query->whereIn('id', $tokens->pluck('process_request_id'));
