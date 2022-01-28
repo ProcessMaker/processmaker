@@ -36,18 +36,18 @@ class MustacheOptions
         return urlencode(Hash::make($helper->render($text)));
     }
     
-    public function json($text)
+    public function json($text, Mustache_LambdaHelper $helper)
     {
-        return json_encode($text);
+        return json_encode($helper->render($text));
     }
     
-    public function serialize($text)
+    public function serialize($text, Mustache_LambdaHelper $helper)
     {
-        return serialize($text);
+        return serialize($helper->render($text));
     }
     
-    public function xml($text)
+    public function xml($text, Mustache_LambdaHelper $helper)
     {
-        return xmlrpc_encode($text);
+        return xmlrpc_encode($helper->render($text));
     }
 }

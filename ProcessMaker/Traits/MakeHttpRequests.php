@@ -9,8 +9,8 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Arr;
-use InvalidArgumentException;
 use Mustache_Engine;
+use ProcessMaker\Exception\HttpInvalidArgumentException;
 use ProcessMaker\Exception\HttpResponseException;
 use ProcessMaker\Models\FormalExpression;
 use Psr\Http\Message\ResponseInterface;
@@ -346,8 +346,6 @@ trait MakeHttpRequests
         }
 
         $mapped = [];
-        $mapped['status'] = $status;
-        $mapped['response'] = $content;
 
         if (!isset($config['dataMapping'])) {
             return $mapped;
@@ -360,7 +358,6 @@ trait MakeHttpRequests
         }, $response->getHeaders());
 
         $merged = array_merge($data, $content, $headers);
-        $responseData = array_merge($content, $headers);
 
         foreach ($config['dataMapping'] as $map) {
             $processVar = $this->getMustache()->render($map['key'], $data);
@@ -369,7 +366,7 @@ trait MakeHttpRequests
 
             // if value is empty all the response is mapped
             if (trim($value) === '') {
-                $mapped[$processVar] = $responseData;
+                $mapped[$processVar] = $content;
                 continue;
             }
 
@@ -568,7 +565,7 @@ trait MakeHttpRequests
         );
         $parts = parse_url($enc_url);
         if ($parts === false) {
-            throw new InvalidArgumentException('Malformed URL: ' . $url);
+            throw new HttpInvalidArgumentException('Malformed URL: ' . $url);
         }
         foreach ($parts as $name => $value) {
             $parts[$name] = urldecode($value);

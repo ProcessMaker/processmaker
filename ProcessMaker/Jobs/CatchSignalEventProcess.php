@@ -19,7 +19,7 @@ class CatchSignalEventProcess implements ShouldQueue
         InteractsWithQueue,
         Queueable;
 
-    public $payload;
+    public $payload_uid;
     public $processId;
     public $signalRef;
 
@@ -30,13 +30,14 @@ class CatchSignalEventProcess implements ShouldQueue
      */
     public function __construct($processId, $signalRef, $payload)
     {
-        $this->payload = $payload;
+        $this->payload_uid = packTemporalData($payload);
         $this->processId = $processId;
         $this->signalRef = $signalRef;
     }
 
     public function handle()
     {
+        $this->payload = unpackTemporalData($this->payload_uid);
         $repository = new DefinitionsRepository;
         $eventDefinition = $repository->createSignalEventDefinition();
         $signal = $repository->createSignal();
@@ -75,6 +76,7 @@ class CatchSignalEventProcess implements ShouldQueue
         }
 
         $engine->runToNextState();
+        removeTemporalData($this->payload_uid);
     }
 
     /**
