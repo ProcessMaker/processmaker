@@ -634,7 +634,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         if ($user) {
             $requests = ProcessRequest::select('id')
                 ->where('user_id', $expression->operator, $user->id)
-                ->distinct()
                 ->get();
 
             return function ($query) use ($requests) {
