@@ -245,6 +245,7 @@
           hasErrors: false,
           redirectInProcess: false,
           formData: {},
+          submitting: false,
         },
         watch: {
           task: {
@@ -396,8 +397,13 @@
             this.$set(this, 'task', val);
           },
           submit(task) {
+            if (this.submitting) {
+              return;
+            }
+
             let message = this.$t('Task Completed Successfully');
             const taskId = task.id;
+            this.submitting = true;
             ProcessMaker.apiClient
             .put("tasks/" + taskId, {status:"COMPLETED", data: this.formData})
             .then(() => {
@@ -406,7 +412,9 @@
             .catch(error => {
               // If there are errors, the user will be redirected to the request page
               // to view error details. This is done in loadTask in Task.vue
-            });
+            }).finally(() => {
+              this.submitting = false;
+            })
 
           },
           taskUpdated(task) {
