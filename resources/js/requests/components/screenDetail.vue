@@ -21,7 +21,7 @@
       </button>
     </div>
     <div v-for="page in printablePages" :key="page" class="card">
-      <div class="card-body h-100" style="pointer-events: none">
+      <div class="card-body h-100" style="pointer-events: none;">
         <component
           ref="print"
           :is="component"
@@ -188,6 +188,7 @@
           json.config.disabled = true;
           json.config.readonly = true;
           json.config.editable = false;
+          json.config._perPage = Number.MAX_SAFE_INTEGER;
         }
         if (json.items !== undefined) {
           this.disableForm(json.items);
