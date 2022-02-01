@@ -30,7 +30,7 @@ jobs:
         run: mkdir -p cache
 
       - name: Install
-        run: docker-compose run builder
+        run: docker-compose run cicd
         env:
           GITHUB_TOKEN: ${{ secrets.PM_GITHUB_TOKEN }}
           GITHUB_CONTEXT: ${{ toJSON(github.event.pull_request) }}
