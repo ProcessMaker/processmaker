@@ -1,4 +1,4 @@
-name: test-workflows
+name: CICD
 on:
   pull_request:
     types: [edited, opened, synchronize, reopened]
