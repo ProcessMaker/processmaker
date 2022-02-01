@@ -1,6 +1,6 @@
 {
   "name": "processmaker/processmaker",
-  "version": "4.2.27",
+  "version": "4.2.28",
   "description": "BPM PHP Software",
   "keywords": [
     "php bpm processmaker"
@@ -37,7 +37,7 @@
     "processmaker/docker-executor-php": "^1.0",
     "processmaker/laravel-i18next": "dev-master",
     "processmaker/nayra": "1.9.2",
-    "processmaker/pmql": "1.5.0",
+    "processmaker/pmql": "1.5.1",
     "pusher/pusher-php-server": "^4.0",
     "ralouphie/getallheaders": "^2.0",
     "spatie/laravel-fractal": "^5.3",
@@ -87,7 +87,7 @@
       ]
     },
     "processmaker": {
-      "build": "af29c741",
+      "build": "72fec29b",
       "enterprise": {
         "connector-docusign": "0.1.5-RC",
         "connector-pdf-print": "1.7.4-RC",

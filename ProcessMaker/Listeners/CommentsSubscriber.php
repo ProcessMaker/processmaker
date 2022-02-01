@@ -97,7 +97,7 @@ class CommentsSubscriber
                 'type' => 'LOG',
                 'user_id' => $user_id,
                 'commentable_type' => ProcessRequest::class,
-                'commentable_id' => $token->getInstance()->id,
+                'commentable_id' => $token->getInstance()->getId(),
                 'subject' => 'Gateway',
                 'body' => $sourceLabel . ': ' . $flowLabel
             ]);

@@ -16,7 +16,7 @@ class CatchSignalEventRequest implements ShouldQueue
 
     public $chunck;
     public $signalRef;
-    public $payload;
+    public $payload_uid;
 
     /**
      * Create a new job instance.
@@ -26,15 +26,17 @@ class CatchSignalEventRequest implements ShouldQueue
     public function __construct($chunck, $signalRef, $payload)
     {
         $this->chunck = $chunck;
-        $this->payload = $payload;
+        $this->payload_uid = packTemporalData($payload);
         $this->signalRef = $signalRef;
     }
 
     public function handle()
     {
+        $this->payload = unpackTemporalData($this->payload_uid);
         foreach ($this->chunck as $requestId) {
             $request = ProcessRequest::find($requestId);
             CatchSignalEventInRequest::dispatchNow($request, $this->payload, $this->signalRef);
         }
+        removeTemporalData($this->payload_uid);
     }
 }

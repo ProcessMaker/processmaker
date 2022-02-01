@@ -4,9 +4,11 @@ namespace ProcessMaker\Listeners;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Bus;
+use ProcessMaker\Bpmn\Process;
 use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Jobs\RunServiceTask;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\ScheduledTask;
 use Tests\TestCase;
 
 class GarbageCollectorTest extends TestCase
@@ -68,6 +70,42 @@ class GarbageCollectorTest extends TestCase
 
         // Verify that the file has been deleted
         $this->assertFileNotExists($errorFile);
+    }
+
+    public function testProcessDuplicatedTimerEvents()
+    {
+        $token1 = factory(ProcessRequestToken::class)->create([
+            'status' => 'ACTIVE',
+            'element_type' => 'event']);
+
+        $token2 = factory(ProcessRequestToken::class)->create([
+            'process_request_id' => $token1->process_request_id,
+            'status' => 'ACTIVE',
+            'element_id' => $token1->element_id,
+            'element_type' => 'event']);
+
+        // Create duplicated scheduled tasks for the same token
+        $schedule = factory(ScheduledTask::class)->create([
+            'process_request_id' => $token1->process_request_id,
+            'configuration' => json_encode(['node_id' => $token1->element_id])
+        ]);
+
+        $schedule = factory(ScheduledTask::class)->create([
+            'process_request_id' => $token1->process_request_id,
+            'configuration' => json_encode(['node_id' => $token1->element_id])
+        ]);
+
+
+        // Assert that the table was correcly created
+        $this->assertNotNull(ProcessRequestToken::find($token1));
+        $this->assertTrue(ScheduledTask::all()->count() === 2);
+
+        // Run the garbage collector
+        $this->artisan('processmaker:garbage-collect');
+
+        // The duplicated schedule task should be removed
+        $this->assertTrue(ScheduledTask::all()->count() === 1);
+
     }
 
     protected function generateErrorHandlerFileWith2Tokens()
