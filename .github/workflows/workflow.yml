@@ -1,2 +1,37 @@
-# Empty workflow file to enable actions in branches
-name: CI
+name: test-workflows
+on:
+  pull_request:
+    types: [edited, opened, synchronize, reopened]
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout pm4core-docker
+        uses: actions/checkout@v2
+        with:
+          repository: 'processmaker/pm4core-docker'
+          ref: 'v2'
+      
+      - name: Checkout pm4-tools
+        uses: actions/checkout@v2
+        with:
+          repository: 'processmaker/pm4-tools'
+          ref: 'master'
+          token: ${{ secrets.PM_GITHUB_TOKEN }}
+          path: pm4-tools
+
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: cache
+          key: ${{ runner.os }}-build-cache-v1
+      
+      - name: create cache directory
+        run: mkdir -p cache
+
+      - name: Install
+        run: docker-compose run builder
+        env:
+          GITHUB_TOKEN: ${{ secrets.PM_GITHUB_TOKEN }}
+          GITHUB_CONTEXT: ${{ toJSON(github.event.pull_request) }}
+      
