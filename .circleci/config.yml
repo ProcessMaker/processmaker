@@ -19,11 +19,12 @@ jobs:
           MYSQL_DATABASE: circle_test
 
       # Add support for Microsoft SQL Server Testing
-      - image: mcr.microsoft.com/mssql/server:2017-GA-ubuntu
+      - image: microsoft/mssql-server-linux:2017-GA
         environment:
           # Needed for MS SQL Docker install
           ACCEPT_EULA: 'Y'
           SA_PASSWORD: 'P4ssW0rd1!'
+
     working_directory: ~/repo
 
     steps:
