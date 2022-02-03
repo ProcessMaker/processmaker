@@ -127,12 +127,13 @@ class Script extends Model implements ScriptInterface
      * @param array $data
      * @param array $config
      */
-    public function runScript(array $data, array $config)
+    public function runScript(array $data, array $config, $tokenId = '')
     {
         if (!$this->scriptExecutor) {
             throw new ScriptLanguageNotSupported($this->language);
         }
         $runner = new ScriptRunner($this->scriptExecutor);
+        $runner->setTokenId($tokenId);
         $user = User::find($this->run_as_user_id);
         if (!$user) {
             throw new \RuntimeException("A user is required to run scripts");

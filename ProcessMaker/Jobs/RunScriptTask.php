@@ -76,7 +76,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             $this->unlock();
             $dataManager = new DataManager();
             $data = $dataManager->getData($token);
-            $response = $script->runScript($data, $configuration);
+            $response = $script->runScript($data, $configuration, $token->getId());
 
             $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
                 // Exit if the task was completed or closed
