@@ -85,9 +85,6 @@ abstract class BpmnAction implements ShouldQueue
         //Load the process definition
         if (isset($this->instanceId)) {
             $instance = $this->lockInstance($this->instanceId);
-            if (!$instance) {
-                throw new Exception('Unable to lock instance ' . $this->instanceId);
-            }
             $processModel = $instance->process;
             $definitions = ($instance->processVersion ?? $instance->process)->getDefinitions(true);
             $engine = app(BpmnEngine::class, ['definitions' => $definitions, 'globalEvents' => !$this->disableGlobalEvents]);
@@ -154,7 +151,7 @@ abstract class BpmnAction implements ShouldQueue
      *
      * @return ProcessRequest
      */
-    protected function lockInstance($instanceId)
+    private function lockInstance($instanceId)
     {
         try {
             $instance = ProcessRequest::findOrFail($instanceId);
@@ -169,16 +166,16 @@ abstract class BpmnAction implements ShouldQueue
             $lock = $this->requestLock($ids);
             // If the processes are going to have thousands of parallel instances,
             // the lock will be released after a while.
-            $timeout = config('app.bpmn_actions_max_lock_timeout', 6000) ?: 6000;
+            $timeout = config('app.bpmn_actions_max_lock_timeout', 60000) ?: 60000;
             $interval = config('app.bpmn_actions_lock_check_interval', 1000) ?: 1000;
-            $maxRetries = ceil($timeout / $interval * 1000);
+            $maxRetries = ceil($timeout / $interval);
             for ($tries=0; $tries < $maxRetries; $tries++) {
                 $currentLock = $this->currentLock($ids);
                 if (!$currentLock) {
                     if (ProcessRequest::find($instanceId)) {
                         $lock = $this->requestLock($ids);
                     } else {
-                        return false;
+                        throw new Exception('Unable to lock instance #' . $this->instanceId . ': Request does not exists');
                     }
                 } elseif ($lock->id == $currentLock->id) {
                     $instance = ProcessRequest::findOrFail($instanceId);
@@ -186,13 +183,12 @@ abstract class BpmnAction implements ShouldQueue
                     return $instance;
                 }
                 // average of lock time is 1 second
-                usleep($interval);
+                usleep($interval * 1000);
             }
         } catch (Throwable $exception) {
-            Log::error($exception->getMessage());
-            return false;
+            throw new Exception('Unable to lock instance #' . $this->instanceId . ': ' . $exception->getMessage());
         }
-        return false;
+        throw new Exception('Unable to lock instance #' . $this->instanceId . ": Timeout {$timeout}[ms]");
     }
 
     /**
@@ -248,19 +244,5 @@ abstract class BpmnAction implements ShouldQueue
         if (isset($this->lock)) {
             $this->lock->delete();
         }
-    }
-
-    /**
-     * Lock the instance and its collaborators
-     *
-     * @param int $instanceId
-     *
-     * @return ProcessRequest
-     */
-    protected function unlockInstance($instanceId)
-    {
-        $instance = ProcessRequest::find($instanceId);
-        $instance->unlock();
-        return $instance;
     }
 }
