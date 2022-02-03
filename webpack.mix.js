@@ -38,7 +38,6 @@ mix.extract([
   "popper.js",
   "lodash",
   "bootstrap",
-  "jointjs",
   "luxon",
   "bpmn-moddle",
   "@fortawesome/fontawesome-free",
