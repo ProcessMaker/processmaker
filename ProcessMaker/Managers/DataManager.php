@@ -135,7 +135,7 @@ class DataManager
         }
 
         // Magic Variable: _parent
-        if ($token->isMultiInstance()) {
+        if ($token->isMultiInstance() && !$token->getConfigParam('withoutMIParentVariables', false)) {
             if ($whenTokenSaved) {
                 $data['_parent'] = $token->data ?: [];
             } else {
