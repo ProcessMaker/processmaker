@@ -63,9 +63,10 @@ return [
     'processmaker_system_scripts_timeout_seconds' => env('PROCESSMAKER_SYSTEM_SCRIPTS_TIMEOUT_SECONDS', 300),
     'timer_events_seconds' => env('TIMER_EVENTS_SECONDS', 'truncate'),
     'bpmn_actions_max_lock_time' => intval(env('BPMN_ACTIONS_MAX_LOCK_TIME', 60)),
+    // Maximum time to wait for a lock to be released. Default 60000 [ms]
     // If the processes are going to have thousands of concurrent parallel instances, increase this number.
-    'bpmn_actions_max_lock_timeout' => intval(env('BPMN_ACTIONS_MAX_LOCK_TIMEOUT', 6000)),
-    // Lock check interval. Default every second.
+    'bpmn_actions_max_lock_timeout' => intval(env('BPMN_ACTIONS_MAX_LOCK_TIMEOUT', 60000)),
+    // Lock check interval. Default every second. 1000 [ms]
     'bpmn_actions_lock_check_interval' => intval(env('BPMN_ACTIONS_LOCK_CHECK_INTERVAL', 1000)),
 
     // The url of our host from inside the docker
