@@ -159,7 +159,7 @@ abstract class BpmnAction implements ShouldQueue
                 return $instance;
             }
             if ($instance->collaboration) {
-                $ids = $instance->collaboration->requests->pluck('id')->toArray();
+                $ids = $instance->collaboration->requests()->where('status', 'ACTIVE')->pluck('id')->toArray();
             } else {
                 $ids = [$instance->id];
             }
