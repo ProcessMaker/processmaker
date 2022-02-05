@@ -12,6 +12,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
+use ProcessMaker\Repositories\DefinitionsRepository;
 use Throwable;
 
 class RunServiceTask extends BpmnAction implements ShouldQueue
@@ -31,6 +32,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
      */
     public function __construct(Definitions $definitions, ProcessRequest $instance, ProcessRequestToken $token, array $data)
     {
+        $this->onQueue('bpmn');
         $this->definitionsId = $definitions->getKey();
         $this->instanceId = $instance->getKey();
         $this->tokenId = $token->getKey();
@@ -107,14 +109,14 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
             return;
         }
         Log::error('Script (#' . $this->tokenId . ') failed: ' . $exception->getMessage());
+        Log::error($exception->getTraceAsString());
         $token = ProcessRequestToken::find($this->tokenId);
         if ($token) {
-            $element = $token->getBpmnDefinition();
             $token->setStatus(ServiceTaskInterface::TOKEN_STATE_FAILING);
-            $error = $element->getRepository()->createError();
+            $repository = new DefinitionsRepository();
+            $error = $repository->createError();
             $error->setName($exception->getMessage());
             $token->setProperty('error', $error);
-            Log::error($exception->getTraceAsString());
             $token->save();
         }
     }
