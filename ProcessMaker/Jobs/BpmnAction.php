@@ -184,7 +184,7 @@ abstract class BpmnAction implements ShouldQueue
                     return $instance;
                 }
                 // average of lock time is 1 second
-                usleep($interval * 1000);
+                $this->mSleep($interval);
             }
         } catch (Throwable $exception) {
             throw new Exception('Unable to lock instance #' . $this->instanceId . ': ' . $exception->getMessage());
@@ -268,5 +268,19 @@ abstract class BpmnAction implements ShouldQueue
             $tags[] = 'elementId:' . $this->elementId;
         }
         return $tags;
+    }
+
+    /**
+     * Sleep in milliseconds
+     *
+     * @param int $milliseconds
+     * 
+     */
+    private function mSleep($milliseconds)
+    {
+        $seconds = floor($milliseconds / 1000);
+        $microseconds = ($milliseconds % 1000) * 1000;
+        sleep($seconds);
+        usleep($microseconds);
     }
 }
