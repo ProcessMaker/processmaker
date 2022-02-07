@@ -85,9 +85,6 @@ abstract class BpmnAction implements ShouldQueue
         //Load the process definition
         if (isset($this->instanceId)) {
             $instance = $this->lockInstance($this->instanceId);
-            if (!$instance) {
-                throw new Exception('Unable to lock instance ' . $this->instanceId);
-            }
             $processModel = $instance->process;
             $definitions = ($instance->processVersion ?? $instance->process)->getDefinitions(true);
             $engine = app(BpmnEngine::class, ['definitions' => $definitions, 'globalEvents' => !$this->disableGlobalEvents]);
@@ -101,7 +98,8 @@ abstract class BpmnAction implements ShouldQueue
 
         //Load the instances of the process and its collaborators
         if ($instance && $instance->collaboration) {
-            foreach ($instance->collaboration->requests as $request) {
+            $activeRequests = $instance->collaboration->requests()->where('status', 'ACTIVE')->get();
+            foreach ($activeRequests as $request) {
                 if ($request->getKey() !== $instance->getKey()) {
                     $engine->loadProcessRequest($request);
                 }
@@ -154,7 +152,7 @@ abstract class BpmnAction implements ShouldQueue
      *
      * @return ProcessRequest
      */
-    protected function lockInstance($instanceId)
+    private function lockInstance($instanceId)
     {
         try {
             $instance = ProcessRequest::findOrFail($instanceId);
@@ -162,23 +160,23 @@ abstract class BpmnAction implements ShouldQueue
                 return $instance;
             }
             if ($instance->collaboration) {
-                $ids = $instance->collaboration->requests->pluck('id')->toArray();
+                $ids = $instance->collaboration->requests()->where('status', 'ACTIVE')->pluck('id')->toArray();
             } else {
                 $ids = [$instance->id];
             }
             $lock = $this->requestLock($ids);
             // If the processes are going to have thousands of parallel instances,
             // the lock will be released after a while.
-            $timeout = config('app.bpmn_actions_max_lock_timeout', 6000) ?: 6000;
+            $timeout = config('app.bpmn_actions_max_lock_timeout', 60000) ?: 60000;
             $interval = config('app.bpmn_actions_lock_check_interval', 1000) ?: 1000;
-            $maxRetries = ceil($timeout / $interval * 1000);
+            $maxRetries = ceil($timeout / $interval);
             for ($tries=0; $tries < $maxRetries; $tries++) {
                 $currentLock = $this->currentLock($ids);
                 if (!$currentLock) {
                     if (ProcessRequest::find($instanceId)) {
                         $lock = $this->requestLock($ids);
                     } else {
-                        return false;
+                        throw new Exception('Unable to lock instance #' . $this->instanceId . ': Request does not exists');
                     }
                 } elseif ($lock->id == $currentLock->id) {
                     $instance = ProcessRequest::findOrFail($instanceId);
@@ -186,13 +184,12 @@ abstract class BpmnAction implements ShouldQueue
                     return $instance;
                 }
                 // average of lock time is 1 second
-                usleep($interval);
+                $this->mSleep($interval);
             }
         } catch (Throwable $exception) {
-            Log::error($exception->getMessage());
-            return false;
+            throw new Exception('Unable to lock instance #' . $this->instanceId . ': ' . $exception->getMessage());
         }
-        return false;
+        throw new Exception('Unable to lock instance #' . $this->instanceId . ": Timeout {$timeout}[ms]");
     }
 
     /**
@@ -251,16 +248,39 @@ abstract class BpmnAction implements ShouldQueue
     }
 
     /**
-     * Lock the instance and its collaborators
+     * Get the tags that should be assigned to the job.
      *
-     * @param int $instanceId
-     *
-     * @return ProcessRequest
+     * @return array
      */
-    protected function unlockInstance($instanceId)
+    public function tags()
     {
-        $instance = ProcessRequest::find($instanceId);
-        $instance->unlock();
-        return $instance;
+        $tags = ['bpmn'];
+        if (isset($this->definitionsId)) {
+            $tags[] = 'processId:' . $this->definitionsId;
+        }
+        if (isset($this->instanceId)) {
+            $tags[] = 'instanceId:' . $this->instanceId;
+        }
+        if (isset($this->tokenId)) {
+            $tags[] = 'tokenId:' . $this->tokenId;
+        }
+        if (isset($this->elementId)) {
+            $tags[] = 'elementId:' . $this->elementId;
+        }
+        return $tags;
+    }
+
+    /**
+     * Sleep in milliseconds
+     *
+     * @param int $milliseconds
+     * 
+     */
+    private function mSleep($milliseconds)
+    {
+        $seconds = floor($milliseconds / 1000);
+        $microseconds = ($milliseconds % 1000) * 1000;
+        sleep($seconds);
+        usleep($microseconds);
     }
 }

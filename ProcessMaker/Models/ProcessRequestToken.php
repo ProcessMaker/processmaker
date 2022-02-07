@@ -884,7 +884,25 @@ class ProcessRequestToken extends Model implements TokenInterface
         }
         return false;
     }
-    
+
+    /**
+     * Get a config parameter from the bpmn element definition.
+     * 
+     * @param string $key
+     * @param mixed $default
+     *
+     * @return mixed
+     */
+    public function getConfigParam($key, $default = null)
+    {
+        $definition = $this->getDefinition(true);
+        $config = json_decode($definition->getProperty('config', '{}'), true);
+        if (!empty($config) && \is_array($config)) {
+            return Arr::get($config, $key, $default);
+        }
+        return $default;
+    }
+
     /**
      * Send notifications when the task activates
      *
