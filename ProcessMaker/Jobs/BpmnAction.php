@@ -246,4 +246,27 @@ abstract class BpmnAction implements ShouldQueue
             $this->lock->delete();
         }
     }
+
+    /**
+     * Get the tags that should be assigned to the job.
+     *
+     * @return array
+     */
+    public function tags()
+    {
+        $tags = ['bpmn'];
+        if (isset($this->definitionsId)) {
+            $tags[] = 'processId:' . $this->definitionsId;
+        }
+        if (isset($this->instanceId)) {
+            $tags[] = 'instanceId:' . $this->instanceId;
+        }
+        if (isset($this->tokenId)) {
+            $tags[] = 'tokenId:' . $this->tokenId;
+        }
+        if (isset($this->elementId)) {
+            $tags[] = 'elementId:' . $this->elementId;
+        }
+        return $tags;
+    }
 }
