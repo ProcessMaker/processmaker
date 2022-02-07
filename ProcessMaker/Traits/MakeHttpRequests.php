@@ -339,7 +339,7 @@ trait MakeHttpRequests
                 $content = json_decode($bodyContent, true);
                 break;
             case $status > 200 && $status < 300:
-                $content = [];
+                $content = !empty($bodyContent) ? json_decode($bodyContent, true) : [];
                 break;
             default:
                 throw new HttpResponseException($response);
