@@ -36,6 +36,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
         $this->definitionsId = $definitions->getKey();
         $this->instanceId = $instance->getKey();
         $this->tokenId = $token->getKey();
+        $this->elementId = $token->getProperty('element_ref');
         $this->data = $data;
     }
 
