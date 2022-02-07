@@ -303,7 +303,7 @@ trait MakeHttpRequests
                 $content = json_decode($bodyContent, true);
                 break;
             case $status > 200 && $status < 300:
-                $content = [];
+                $content = !empty($bodyContent) ? json_decode($bodyContent, true) : [];
                 break;
             default:
                 throw new HttpResponseException($response);
@@ -367,6 +367,10 @@ trait MakeHttpRequests
             // if value is empty all the response is mapped
             if (trim($value) === '') {
                 $mapped[$processVar] = $content;
+                continue;
+            }
+            if (trim($value) === '$status') {
+                $mapped[$processVar] = $status;
                 continue;
             }
 
