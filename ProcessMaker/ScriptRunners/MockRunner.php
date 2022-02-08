@@ -21,4 +21,6 @@ class MockRunner
         }
         return ['output' => $res];
     }
+
+    public function setTokenId() {}
 }

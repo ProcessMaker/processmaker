@@ -666,11 +666,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $user = User::where('username', $value)->get()->first();
 
         if ($user) {
-            $requests = ProcessRequest::select('id')
-                ->where('user_id', $expression->operator, $user->id)
-                ->get();
-            return function ($query) use ($requests) {
-                $query->whereIn('id', $requests->pluck('id'));
+            return function ($query) use ($user, $expression) {
+                $query->where('user_id', $expression->operator, $user->id);
             };
         } else {
             throw new PmqlMethodException('requester', 'The specified requester username does not exist.');
