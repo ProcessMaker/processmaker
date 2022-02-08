@@ -30,7 +30,7 @@ abstract class TestCase extends BaseTestCase
         }
     }
 
-    public static function setUpBeforeClass(): void
+    public static function setUpMockScriptRunners(): void
     {
         config()->set("script-runners.php.runner", 'MockRunner');
         config()->set("script-runners.lua.runner", 'MockRunner');
