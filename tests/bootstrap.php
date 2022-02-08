@@ -95,7 +95,8 @@ if (env('TEST_TOKEN')) {
     $_ENV['DATA_DB_DATABASE'] = $database;
 
 } elseif (env('POPULATE_DATABASE')) {
-    Artisan::call('migrate:fresh');
+    Artisan::call('db:wipe', ['--database' => \DB::connection()->getName()]);
+    Artisan::call('migrate:fresh', []);
 
     \ProcessMaker\Models\ScriptExecutor::firstOrCreate(
         ['language' => 'php'],
