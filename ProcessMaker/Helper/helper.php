@@ -102,3 +102,21 @@ function removeTemporalData($uid)
         unlink($path);
     }
 }
+
+// performance helpers
+function perfStart()
+{
+    $GLOBALS['perf_t0'] = microtime(true);
+    $GLOBALS['perf_m0'] = memory_get_usage(true);
+}
+// performance tools
+function perfLog($msg)
+{
+    $t1 = microtime(true);
+    $m1 = memory_get_usage(true);
+    $dt = $t1 - $GLOBALS['perf_t0'];
+    $dm = $m1 - $GLOBALS['perf_m0'];
+    $GLOBALS['perf_t0'] = $t1;
+    $GLOBALS['perf_m0'] = $m1;
+    \Log::debug("[perf] $dt sec, $dm bytes: $msg");
+}

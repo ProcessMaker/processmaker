@@ -100,18 +100,22 @@ class CallActivity implements CallActivityInterface
      */
     protected function completeSubprocess(TokenInterface $token, ExecutionInstanceInterface $closedInstance, ExecutionInstanceInterface $instance)
     {
+        perfLog('beforeCompleteCallActivity ' . $token->getId());
         // Copy data from subprocess to main process
         $data = $closedInstance->getDataStore()->getData();
         $dataManager = new DataManager();
         $dataManager->updateData($token, $data);
         $token->getInstance()->getProcess()->getEngine()->runToNextState();
+        perfLog('copyDataCompleteCallActivity ' . $token->getId());
 
         // Complete the sub process call
         $this->completeSubprocessBase($token);
         $this->syncronizeInstances($instance, $token->getInstance());
+        perfLog('syncInstancesCompleteCallActivity ' . $token->getId());
 
         CopyRequestFiles::dispatch($instance, $token->getInstance());
         
+        perfLog('copyFilesCompleteCallActivity ' . $token->getId());
         return $this;
     }
 

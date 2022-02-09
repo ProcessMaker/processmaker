@@ -292,20 +292,13 @@ abstract class BpmnAction implements ShouldQueue
     // performance tools
     private function perfStart()
     {
-        $this->t0 = microtime(true);
-        $this->m0 = memory_get_usage(true);
+        perfStart();
     }
     // performance tools
     private function perfLog($msg)
     {
-        $t1 = microtime(true);
-        $m1 = memory_get_usage(true);
-        $dt = $t1 - $this->t0;
-        $dm = $m1 - $this->m0;
-        $this->t0 = $t1;
-        $this->m0 = $m1;
         $instance = $this->instanceId ?? '';
         $token = $this->tokenId ?? '';
-        Log::debug("[perf] $dt sec, $dm bytes: $msg $instance $token");
+        perfLog("$msg $instance $token");
     }
 }

@@ -178,6 +178,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      */
     public function persistInstanceCompleted(ExecutionInstanceInterface $instance)
     {
+        perfLog('beforeInstanceCompleted ' . $instance->getId());
         $process = $instance->getProcess();
         if ($process->isNonPersistent()) {
             return;
@@ -187,6 +188,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->completed_at = Carbon::now();
         $instance->mergeLatestStoredData();
         $instance->saveOrFail();
+        perfLog('afterInstanceCompleted ' . $instance->getId());
     }
 
     /**
