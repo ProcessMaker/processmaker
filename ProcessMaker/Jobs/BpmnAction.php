@@ -305,4 +305,14 @@ abstract class BpmnAction implements ShouldQueue
         $token = $this->tokenId ?? '';
         perfLog("$msg $instance $token");
     }
+
+    /**
+     * Once completed run garbage collection
+     *
+     * @return void
+     */
+    public function __destruct()
+    {
+        gc_collect_cycles();
+    }
 }
