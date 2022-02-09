@@ -197,7 +197,6 @@ class TokenRepository implements TokenRepositoryInterface
      */
     public function persistActivityCompleted(ActivityInterface $activity, TokenInterface $token)
     {
-        perfLog('beforeActivityCompleted ' . $token->getId());
         $process = $token->getInstance()->getProcess();
         if ($process->isNonPersistent()) {
             return;
@@ -217,7 +216,6 @@ class TokenRepository implements TokenRepositoryInterface
         $token->setId($token->getKey());
         $request = $token->getInstance();
         $request->notifyProcessUpdated('ACTIVITY_COMPLETED');
-        perfLog('afterActivityCompleted ' . $token->getId());
     }
 
     /**

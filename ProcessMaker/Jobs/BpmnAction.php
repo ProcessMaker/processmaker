@@ -50,21 +50,21 @@ abstract class BpmnAction implements ShouldQueue
      */
     public function handle()
     {
-        $this->perfStart();
+        //$this->perfStart();
         $response = null;
         try {
             extract($this->loadContext());
-            $this->perfLog('loadContext');
+            //$this->perfLog('loadContext');
             $this->engine = $engine;
             $this->instance = $instance;
 
             //Do the action
             $response = App::call([$this, 'action'], compact('definitions', 'instance', 'token', 'process', 'element', 'data', 'processModel'));
-            $this->perfLog('doAction');
+            //$this->perfLog('doAction');
 
             //Run engine to the next state
             $this->engine->runToNextState();
-            $this->perfLog('runEngine');
+            //$this->perfLog('runEngine');
         } catch (Throwable $exception) {
             Log::error($exception->getMessage());
             // Change the Request to error status
@@ -76,7 +76,7 @@ abstract class BpmnAction implements ShouldQueue
             $this->unlock();
         }
 
-        $this->perfLog('unlock');
+        //$this->perfLog('unlock');
         return $response;
     }
 
@@ -101,19 +101,19 @@ abstract class BpmnAction implements ShouldQueue
             $engine = app(BpmnEngine::class, ['definitions' => $definitions, 'globalEvents' => !$this->disableGlobalEvents]);
             $instance = null;
         }
-        $this->perfLog('loadDefinitions');
+        //$this->perfLog('loadDefinitions');
 
         //Load the instances of the process and its collaborators
         if ($instance && $instance->collaboration) {
             $activeRequests = $instance->collaboration->requests()->where('status', 'ACTIVE')->get();
-            $this->perfLog('loadCollaboratorsQuery');
+            //$this->perfLog('loadCollaboratorsQuery');
             foreach ($activeRequests as $request) {
                 if ($request->getKey() !== $instance->getKey()) {
                     $engine->loadProcessRequest($request);
                 }
             }
         }
-        $this->perfLog('loadCollaborators');
+        //$this->perfLog('loadCollaborators');
 
         //Get the BPMN process instance
         $process = null;
