@@ -118,5 +118,6 @@ function perfLog($msg)
     $dm = $m1 - $GLOBALS['perf_m0'];
     $GLOBALS['perf_t0'] = $t1;
     $GLOBALS['perf_m0'] = $m1;
-    \Log::debug("[perf] $dm bytes $dt sec: $msg");
+    $warn = ($dm> 5000000) ? 'W' : '_';
+    \Log::debug("[perf] $warn $dm bytes $dt sec: $msg");
 }

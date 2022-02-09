@@ -87,6 +87,7 @@ abstract class BpmnAction implements ShouldQueue
      */
     private function loadContext()
     {
+        $this->perfStart();
         //Load the process definition
         if (isset($this->instanceId)) {
             $instance = $this->lockInstance($this->instanceId);
@@ -105,6 +106,7 @@ abstract class BpmnAction implements ShouldQueue
         //Load the instances of the process and its collaborators
         if ($instance && $instance->collaboration) {
             $activeRequests = $instance->collaboration->requests()->where('status', 'ACTIVE')->get();
+            $this->perfLog('loadCollaboratorsQuery');
             foreach ($activeRequests as $request) {
                 if ($request->getKey() !== $instance->getKey()) {
                     $engine->loadProcessRequest($request);
@@ -118,7 +120,6 @@ abstract class BpmnAction implements ShouldQueue
         if (isset($this->processId)) {
             $process = $definitions->getProcess($this->processId);
         }
-        $this->perfLog('loadProcess');
 
         //Load token and element
         $token = null;
@@ -135,11 +136,9 @@ abstract class BpmnAction implements ShouldQueue
         } elseif (isset($this->elementId)) {
             $element = $definitions->getElementInstanceById($this->elementId);
         }
-        $this->perfLog('loadToken');
 
         //Load data
         $data = isset($this->data) ? $this->data : null;
-        $this->perfLog('loadDataVariable');
 
         return compact('definitions', 'instance', 'token', 'process', 'element', 'data', 'processModel', 'engine');
     }
