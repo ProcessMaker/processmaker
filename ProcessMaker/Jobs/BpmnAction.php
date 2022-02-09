@@ -60,11 +60,11 @@ abstract class BpmnAction implements ShouldQueue
 
             //Do the action
             $response = App::call([$this, 'action'], compact('definitions', 'instance', 'token', 'process', 'element', 'data', 'processModel'));
-            $this->perfLog('do action');
+            $this->perfLog('doAction');
 
             //Run engine to the next state
             $this->engine->runToNextState();
-            $this->perfLog('run engine');
+            $this->perfLog('runEngine');
         } catch (Throwable $exception) {
             Log::error($exception->getMessage());
             // Change the Request to error status
@@ -304,6 +304,8 @@ abstract class BpmnAction implements ShouldQueue
         $dm = $m1 - $this->m0;
         $this->t0 = $t1;
         $this->m0 = $m1;
-        Log::debug("[perf] $dt sec, $dm bytes: $msg");
+        $instance = $this->instanceId ?? '';
+        $token = $this->tokenId ?? '';
+        Log::debug("[perf] $dt sec, $dm bytes: $msg $instance $token");
     }
 }
