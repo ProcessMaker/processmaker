@@ -22,12 +22,12 @@ jobs:
           name: 'build the local cicd image and run tests'
           command: |
             source set_context_example.sh
-            export GITHUB_TOKEN=$PM_GITHUB_TOKEN
-            docker-compose run -e BUILD_JAVASCRIPT=false cicd
+            export GITHUB_TOKEN=$GIT_TOKEN
+            docker-compose run cicd
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  say-hello-workflow:
+  build:
     jobs:
       - build
