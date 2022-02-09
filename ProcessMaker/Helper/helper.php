@@ -118,5 +118,5 @@ function perfLog($msg)
     $dm = $m1 - $GLOBALS['perf_m0'];
     $GLOBALS['perf_t0'] = $t1;
     $GLOBALS['perf_m0'] = $m1;
-    \Log::debug("[perf] $dt sec, $dm bytes: $msg");
+    \Log::debug("[perf] $dm bytes $dt sec: $msg");
 }

@@ -100,6 +100,7 @@ abstract class BpmnAction implements ShouldQueue
             $engine = app(BpmnEngine::class, ['definitions' => $definitions, 'globalEvents' => !$this->disableGlobalEvents]);
             $instance = null;
         }
+        $this->perfLog('loadDefinitions');
 
         //Load the instances of the process and its collaborators
         if ($instance && $instance->collaboration) {
@@ -110,12 +111,14 @@ abstract class BpmnAction implements ShouldQueue
                 }
             }
         }
+        $this->perfLog('loadCollaborators');
 
         //Get the BPMN process instance
         $process = null;
         if (isset($this->processId)) {
             $process = $definitions->getProcess($this->processId);
         }
+        $this->perfLog('loadProcess');
 
         //Load token and element
         $token = null;
@@ -132,9 +135,11 @@ abstract class BpmnAction implements ShouldQueue
         } elseif (isset($this->elementId)) {
             $element = $definitions->getElementInstanceById($this->elementId);
         }
+        $this->perfLog('loadToken');
 
         //Load data
         $data = isset($this->data) ? $this->data : null;
+        $this->perfLog('loadDataVariable');
 
         return compact('definitions', 'instance', 'token', 'process', 'element', 'data', 'processModel', 'engine');
     }
