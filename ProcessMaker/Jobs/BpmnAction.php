@@ -50,17 +50,21 @@ abstract class BpmnAction implements ShouldQueue
      */
     public function handle()
     {
+        $this->perfStart();
         $response = null;
         try {
             extract($this->loadContext());
+            $this->perfLog('loadContext');
             $this->engine = $engine;
             $this->instance = $instance;
 
             //Do the action
             $response = App::call([$this, 'action'], compact('definitions', 'instance', 'token', 'process', 'element', 'data', 'processModel'));
+            $this->perfLog('do action');
 
             //Run engine to the next state
             $this->engine->runToNextState();
+            $this->perfLog('run engine');
         } catch (Throwable $exception) {
             Log::error($exception->getMessage());
             // Change the Request to error status
@@ -72,6 +76,7 @@ abstract class BpmnAction implements ShouldQueue
             $this->unlock();
         }
 
+        $this->perfLog('unlock');
         return $response;
     }
 
@@ -282,5 +287,23 @@ abstract class BpmnAction implements ShouldQueue
         $microseconds = ($milliseconds % 1000) * 1000;
         sleep($seconds);
         usleep($microseconds);
+    }
+
+    // performance tools
+    private function perfStart()
+    {
+        $this->t0 = microtime(true);
+        $this->m0 = memory_get_usage(true);
+    }
+    // performance tools
+    private function perfLog($msg)
+    {
+        $t1 = microtime(true);
+        $m1 = memory_get_usage(true);
+        $dt = $t1 - $this->t0;
+        $dm = $m1 - $this->m0;
+        $this->t0 = $t1;
+        $this->m0 = $m1;
+        Log::debug("[perf] $dt sec, $dm bytes: $msg");
     }
 }
