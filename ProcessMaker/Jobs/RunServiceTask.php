@@ -80,7 +80,9 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
             $this->perfLog('LoadData');
 
             if ($existsImpl) {
-                $response = WorkflowManager::runServiceImplementation($implementation, $data, $configuration, $token->getId());
+                $response = [
+                    'output' => WorkflowManager::runServiceImplementation($implementation, $data, $configuration, $token->getId())
+                ];
             } else {
                 $response = $script->runScript($data, $configuration, $token->getId());
             }
