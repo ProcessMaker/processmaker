@@ -1,5 +1,25 @@
 version: 2.1
 
+parameters:
+  package_branch:
+    type: string
+    default: "null"
+  package_url:
+    type: string
+    default: "null"
+  sha:
+    type: string
+    default: "null"
+  project:
+    type: string
+    default: "null"
+  pull_req_id:
+    type: string
+    default: "null"
+  body:
+    type: string
+    default: "null"
+
 jobs:
   build:
     docker:
@@ -21,8 +41,8 @@ jobs:
       - run:
           name: 'build the local cicd image and run tests'
           command: |
-            source set_context_example.sh
-            export GITHUB_TOKEN=$GIT_TOKEN
+            GITHUB_TOKEN=$GIT_TOKEN \
+            REPO_NAME=<< pipeline.parameters.repo_name >> \
             docker-compose run cicd
 
 # Invoke jobs via workflows
