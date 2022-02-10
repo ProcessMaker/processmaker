@@ -50,22 +50,23 @@ abstract class BpmnAction implements ShouldQueue
      */
     public function handle()
     {
+        gc_collect_cycles();
         \Log::debug('[perf] memory used: ' . memory_get_usage(true) . ' ' . getmypid() . ' ' . Carbon::now()->timestamp);
-        //$this->perfStart();
+        $this->perfStart();
         $response = null;
         try {
             extract($this->loadContext());
-            //$this->perfLog('loadContext');
+            $this->perfLog('loadContext');
             $this->engine = $engine;
             $this->instance = $instance;
 
             //Do the action
             $response = App::call([$this, 'action'], compact('definitions', 'instance', 'token', 'process', 'element', 'data', 'processModel'));
-            //$this->perfLog('doAction');
+            $this->perfLog('doAction');
 
             //Run engine to the next state
             $this->engine->runToNextState();
-            //$this->perfLog('runEngine');
+            $this->perfLog('runEngine');
         } catch (Throwable $exception) {
             Log::error($exception->getMessage());
             // Change the Request to error status
@@ -86,6 +87,7 @@ abstract class BpmnAction implements ShouldQueue
             $this->instance = null;
             gc_collect_cycles();
             \Log::debug('[perf] free memory: ' . memory_get_usage(true) . ' ' . getmypid() . ' ' . Carbon::now()->timestamp);
+            $this->perfLog('runEngine');
         }
 
         //$this->perfLog('unlock');

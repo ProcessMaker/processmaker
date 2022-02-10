@@ -42,12 +42,10 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      */
     public function loadExecutionInstanceByUid($instanceId, StorageInterface $storage)
     {
-        perfStart();
         $instance = Instance::find($instanceId);
         if (!$instance) {
             abort(404, 'Instance not found');
         }
-        perfLog('loadInstance ' . $instanceId);
         $callableId = $instance->callable_id;
         $process = $storage->getProcess($callableId);
         $dataStore = $storage->getFactory()->createDataStore();
@@ -56,7 +54,6 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->setProcess($process);
         $instance->setDataStore($dataStore);
         $process->getTransitions($storage->getFactory());
-        perfLog('prepareProperties ' . $instanceId);
 
         //Load tokens:
         $tokens = $instance->tokens()->where('status', '!=', 'CLOSED')->get();
@@ -71,7 +68,6 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
             $element = $storage->getElementInstanceById($tokenInfo['element_ref']);
             $element->addToken($instance, $token);
         }
-        perfLog('loadTokens ' . $instanceId);
         return $instance;
     }
 
