@@ -41,8 +41,8 @@ jobs:
       - run:
           name: 'build the local cicd image and run tests'
           command: |
-            GITHUB_TOKEN=$GIT_TOKEN \
-            REPO_NAME=<< pipeline.parameters.repo_name >> \
+            source set_context_example.sh
+            export GITHUB_TOKEN=$GIT_TOKEN
             docker-compose run cicd
 
 # Invoke jobs via workflows
