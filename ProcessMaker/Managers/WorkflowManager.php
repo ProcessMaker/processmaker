@@ -2,9 +2,10 @@
 
 namespace ProcessMaker\Managers;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Arr;
+use ProcessMaker\Contracts\ServiceTaskImplementationInterface;
 use ProcessMaker\Jobs\BoundaryEvent;
 use ProcessMaker\Jobs\CallProcess;
 use ProcessMaker\Jobs\CatchEvent;
@@ -27,7 +28,6 @@ use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
-
 
 class WorkflowManager
 {
@@ -321,6 +321,11 @@ class WorkflowManager
     public function registerServiceImplementation($implementation, $class)
     {
         if (!class_exists($class)) {
+            return false;
+        }
+
+        // check class instance of ServiceTaskImplementationInterface
+        if (!is_subclass_of($class, ServiceTaskImplementationInterface::class)) {
             return false;
         }
 
