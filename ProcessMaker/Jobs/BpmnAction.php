@@ -101,7 +101,6 @@ abstract class BpmnAction implements ShouldQueue
      */
     private function loadContext()
     {
-        $this->perfStart();
         //Load the process definition
         if (isset($this->instanceId)) {
             $instance = $this->lockInstance($this->instanceId);
