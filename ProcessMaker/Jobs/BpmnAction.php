@@ -75,6 +75,7 @@ abstract class BpmnAction implements ShouldQueue
             }
         } finally {
             $this->unlock();
+            gc_collect_cycles();
         }
 
         //$this->perfLog('unlock');
