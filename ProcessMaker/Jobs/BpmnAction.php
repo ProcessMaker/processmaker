@@ -50,6 +50,7 @@ abstract class BpmnAction implements ShouldQueue
      */
     public function handle()
     {
+        \Log::debug('memory used: ' . memory_get_usage(true));
         //$this->perfStart();
         $response = null;
         try {
