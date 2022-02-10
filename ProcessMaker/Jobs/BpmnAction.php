@@ -75,7 +75,17 @@ abstract class BpmnAction implements ShouldQueue
             }
         } finally {
             $this->unlock();
+            $definitions = null;
+            $instance = null;
+            $token = null;
+            $process = null;
+            $element = null;
+            $data = null;
+            $processModel = null;
+            $this->engine = null;
+            $this->instance = null;
             gc_collect_cycles();
+            \Log::debug('[perf] free memory: ' . memory_get_usage(true) . ' ' . getmypid() . ' ' . Carbon::now()->timestamp);
         }
 
         //$this->perfLog('unlock');
@@ -316,5 +326,6 @@ abstract class BpmnAction implements ShouldQueue
     public function __destruct()
     {
         gc_collect_cycles();
+        \Log::debug('[perf] GC on destruct: ' . memory_get_usage(true) . ' ' . getmypid() . ' ' . Carbon::now()->timestamp);
     }
 }
