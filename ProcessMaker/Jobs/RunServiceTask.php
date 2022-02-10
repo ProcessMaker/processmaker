@@ -47,14 +47,12 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
      */
     public function action(ProcessRequestToken $token = null, ServiceTaskInterface $element = null, Definitions $processModel, ProcessRequest $instance)
     {
-        $this->perfStart();
         // Exit if the task was completed or closed
         if (!$token || !$element) {
             return;
         }
         $implementation = $element->getImplementation();
         $configuration = json_decode($element->getProperty('config'), true);
-        $this->perfLog('LoadConfig');
         // Check to see if we've failed parsing.  If so, let's convert to empty array.
         if ($configuration === null) {
             $configuration = [];
@@ -71,13 +69,10 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
             if (!$existsImpl && empty($script)) {
                 throw new ScriptException('Service task not implemented: ' . $implementation);
             }
-            $this->perfLog('LoadScript');
 
             $this->unlock();
-            $this->perfLog('Unlock');
             $dataManager = new DataManager();
             $data = $dataManager->getData($token);
-            $this->perfLog('LoadData');
 
             if ($existsImpl) {
                 $response = [
@@ -86,13 +81,11 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
             } else {
                 $response = $script->runScript($data, $configuration, $token->getId());
             }
-            $this->perfLog('RunScript');
             $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
                 // Exit if the task was completed or closed
                 if (!$token || !$element) {
                     return;
                 }
-                $this->perfLog('UpdateContext');
                 // Update data
                 if (is_array($response['output'])) {
                     // Validate data
@@ -105,7 +98,6 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
                 $this->engine = $engine;
                 $this->instance = $instance;
             });
-            $this->perfLog('UpdateData');
         } catch (Throwable $exception) {
             // Change to error status
             $token->setStatus(ServiceTaskInterface::TOKEN_STATE_FAILING);
