@@ -324,7 +324,7 @@ class WorkflowManager
             return false;
         }
 
-        $this->serviceImplementations[$implementation] = $class;
+        $this->serviceTaskImplementations[$implementation] = $class;
 
         return true;
     }
