@@ -9,6 +9,12 @@ use Illuminate\Database\Migrations\Migration;
 
 class UpgradeEmailConnectorSettingsFrom41to42 extends Migration
 {
+    protected $from = '4.1';
+
+    protected $to = '4.2';
+
+    protected $required = true;
+
     /**
      * @var array
      */
@@ -42,6 +48,13 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends Migration
         $this->settings_groups = $config::settings_groups;
     }
 
+    public function test()
+    {
+        // Test if we can run
+
+        Artisan::printLog('Test');
+    }
+
     /**
      * Run the migrations.
      *
@@ -51,7 +64,13 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends Migration
     public function up()
     {
         if (!$this->connectorSendEmailInstalled()) {
-            throw new RuntimeException('The package connector-send-email must be installed to run this upgrade.');
+            logger()->error('The package connector-send-email must be installed to run this upgrade.', [
+                'package' => 'connector-send-email',
+                'class' => __CLASS__,
+                'method' => __METHOD__
+            ]);
+
+            return;
         }
 
         // Clear out any cached environment variable
