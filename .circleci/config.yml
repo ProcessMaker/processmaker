@@ -31,8 +31,8 @@ jobs:
           docker_layer_caching: true
 
       - run:
-          name: 'Identify << pipeline.project.git_url >>:<<pipeline.git.branch >>'
-          command: 'echo << pipeline.project.git_url >>:<<pipeline.git.branch >>'
+          name: 'This Build: << pipeline.parameters.project >> branch: <<pipeline.parameters.package_branch>> PR id: <<pipeline.parameters.pull_req_id>>'
+          command: 'echo <<pipeline.parameters.package_url>>'
 
       - run:
           name: 'clone pm4core-docker'
