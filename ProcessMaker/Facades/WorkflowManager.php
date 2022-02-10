@@ -18,6 +18,9 @@ use ProcessMaker\Bpmn\Process;
  * @method static void onDataValidation(callable $callback)
  * @method static void validateData(array $data, $definitions, $element)
  * @method static array runProcess(Process $process, $startEventId, array $data)
+ * @method static bool registerServiceImplementation($implementation, $class)
+ * @method static bool existsServiceImplementation($implementation)
+ * @method static bool runServiceImplementation($implementation, array $data, array $config, $tokenId = '')
  */
 class WorkflowManager extends Facade
 {

@@ -47,6 +47,13 @@ class WorkflowManager
     protected $validator;
 
     /**
+     * Service Task implementations
+     *
+     * @var array $serviceTaskImplementations
+     */
+    protected $serviceTaskImplementations = [];
+
+    /**
      * Complete a task.
      *
      * @param Definitions $definitions
@@ -302,5 +309,52 @@ class WorkflowManager
         $startEvent = $definitions->getDefinitions()->getStartEvent($startId);
         $instance = $this->triggerStartEvent($definitions, $startEvent, $data);
         return $instance->getDataStore()->getData();
+    }
+
+    /**
+     * Check if service task implementation exists
+     *
+     * @param string $implementation
+     *
+     * @return bool
+     */
+    public function registerServiceImplementation($implementation, $class)
+    {
+        if (!class_exists($class)) {
+            return false;
+        }
+
+        $this->serviceImplementations[$implementation] = $class;
+
+        return true;
+    }
+
+    /**
+     * Check if service task implementation exists
+     *
+     * @param string $implementation
+     *
+     * @return bool
+     */
+    public function existsServiceImplementation($implementation)
+    {
+        return isset($this->serviceTaskImplementations[$implementation]) &&
+            class_exists($this->serviceTaskImplementations[$implementation]);
+    }
+
+    /**
+     * Run the service task implementation
+     * @param string $implementation
+     * @param array $dat
+     * @param array $config
+     * @param string $tokenId
+     *
+     * @return mixed
+     */
+    public function runServiceImplementation($implementation, array $data, array $config, $tokenId = '')
+    {
+        $class = $this->serviceTaskImplementations[$implementation];
+        $service = new $class();
+        return $service->run($data, $config, $tokenId);
     }
 }

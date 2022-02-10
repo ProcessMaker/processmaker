@@ -65,7 +65,10 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
             } else {
                 $script = Script::where('key', $implementation)->first();
             }
-            if (empty($script)) {
+            // Check if service task implementation exists
+            $existsImpl = WorkflowManager::existsServiceImplementation($implementation);
+
+            if (!$existsImpl && empty($script)) {
                 throw new ScriptException('Service task not implemented: ' . $implementation);
             }
             $this->perfLog('LoadScript');
@@ -75,7 +78,12 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
             $dataManager = new DataManager();
             $data = $dataManager->getData($token);
             $this->perfLog('LoadData');
-            $response = $script->runScript($data, $configuration, $token->getId());
+
+            if ($existsImpl) {
+                $response = WorkflowManager::runServiceImplementation($implementation, $data, $configuration, $token->getId());
+            } else {
+                $response = $script->runScript($data, $configuration, $token->getId());
+            }
             $this->perfLog('RunScript');
             $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
                 // Exit if the task was completed or closed
