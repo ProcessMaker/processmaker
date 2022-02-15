@@ -283,4 +283,12 @@ abstract class BpmnAction implements ShouldQueue
         sleep($seconds);
         usleep($microseconds);
     }
+
+    public function __destruct()
+    {
+        $this->instance = null;
+        $this->engine = null;
+        $this->lock = null;
+        gc_collect_cycles();
+    }
 }
