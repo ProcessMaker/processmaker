@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd" xmlns:tns="http://sourceforge.net/bpmn/definitions/_1530553328908" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bpmn.io/schema/bpmn" exporter="ProcessMaker Modeler" exporterVersion="1.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+    <bpmn:process id="ProcessId" name="ProcessName" isExecutable="true">
+        <bpmn:startEvent id="node_1" name="Start Event" pm:allowInterstitial="false" pm:config="{&#34;web_entry&#34;:null}">
+            <bpmn:outgoing>node_13</bpmn:outgoing>
+        </bpmn:startEvent>
+        <bpmn:endEvent id="node_2" name="End Event">
+            <bpmn:incoming>node_5</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:task id="node_3" name="Form Task 3" pm:screenRef="1" pm:allowInterstitial="false" pm:assignment="requester" pm:assignmentLock="false" pm:allowReassignment="false" pm:config="{&#34;web_entry&#34;:null,&#34;email_notifications&#34;:{&#34;notifications&#34;:[]}}">
+            <bpmn:incoming>node_8</bpmn:incoming>
+            <bpmn:outgoing>node_5</bpmn:outgoing>
+        </bpmn:task>
+        <bpmn:sequenceFlow id="node_5" name="" sourceRef="node_3" targetRef="node_2" />
+        <bpmn:task id="node_6" name="Form Task 2" pm:screenRef="1" pm:allowInterstitial="false" pm:assignment="requester" pm:assignmentLock="false" pm:allowReassignment="false" pm:config="{&#34;web_entry&#34;:null,&#34;email_notifications&#34;:{&#34;notifications&#34;:[]}}">
+            <bpmn:incoming>node_11</bpmn:incoming>
+            <bpmn:outgoing>node_8</bpmn:outgoing>
+        </bpmn:task>
+        <bpmn:sequenceFlow id="node_8" name="" sourceRef="node_6" targetRef="node_3" />
+        <bpmn:task id="node_9" name="Form Task 1" pm:screenRef="1" pm:allowInterstitial="false" pm:assignment="requester" pm:assignmentLock="false" pm:allowReassignment="false" pm:config="{&#34;web_entry&#34;:null,&#34;email_notifications&#34;:{&#34;notifications&#34;:[]}}">
+            <bpmn:incoming>node_13</bpmn:incoming>
+            <bpmn:outgoing>node_11</bpmn:outgoing>
+        </bpmn:task>
+        <bpmn:sequenceFlow id="node_11" name="" sourceRef="node_9" targetRef="node_6" />
+        <bpmn:sequenceFlow id="node_13" name="" sourceRef="node_1" targetRef="node_9" />
+        <bpmn:textAnnotation id="node_4">
+            <bpmn:text>Case 1: Two different fixes.</bpmn:text>
+        </bpmn:textAnnotation>
+        <bpmn:textAnnotation id="node_7">
+            <bpmn:text>1- Adding _DO_NOT_SANITIZE variable to be available in all screens</bpmn:text>
+        </bpmn:textAnnotation>
+        <bpmn:textAnnotation id="node_10">
+            <bpmn:text>2- Passing to sanitize helper all tokens from request and search in all screens every time</bpmn:text>
+        </bpmn:textAnnotation>
+        <bpmn:textAnnotation id="node_12">
+            <bpmn:text>form_text_area_1 with rich text option</bpmn:text>
+        </bpmn:textAnnotation>
+        <bpmn:textAnnotation id="node_14">
+            <bpmn:text>rich text with content: {{{form_text_area_1}}}</bpmn:text>
+        </bpmn:textAnnotation>
+        <bpmn:textAnnotation id="node_15">
+            <bpmn:text>In this step is going to be sanitized because form_text_area_1 is not part of Form Task 2 screen</bpmn:text>
+        </bpmn:textAnnotation>
+        <bpmn:textAnnotation id="node_16">
+            <bpmn:text>form_text_area_1 with rich text option</bpmn:text>
+        </bpmn:textAnnotation>
+    </bpmn:process>
+    <bpmndi:BPMNDiagram id="BPMNDiagramId">
+        <bpmndi:BPMNPlane id="BPMNPlaneId" bpmnElement="ProcessId">
+            <bpmndi:BPMNShape id="node_1_di" bpmnElement="node_1">
+                <dc:Bounds x="200" y="270" width="36" height="36" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="node_2_di" bpmnElement="node_2">
+                <dc:Bounds x="870" y="270" width="36" height="36" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="node_3_di" bpmnElement="node_3">
+                <dc:Bounds x="700" y="250" width="116" height="76" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge id="node_5_di" bpmnElement="node_5">
+                <di:waypoint x="758" y="288" />
+                <di:waypoint x="888" y="288" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNShape id="node_6_di" bpmnElement="node_6">
+                <dc:Bounds x="510" y="250" width="116" height="76" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge id="node_8_di" bpmnElement="node_8">
+                <di:waypoint x="568" y="288" />
+                <di:waypoint x="758" y="288" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNShape id="node_9_di" bpmnElement="node_9">
+                <dc:Bounds x="330" y="250" width="116" height="76" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge id="node_11_di" bpmnElement="node_11">
+                <di:waypoint x="388" y="288" />
+                <di:waypoint x="568" y="288" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="node_13_di" bpmnElement="node_13">
+                <di:waypoint x="218" y="288" />
+                <di:waypoint x="388" y="288" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNShape id="node_4_di" bpmnElement="node_4">
+                <dc:Bounds x="240" y="140" width="150" height="30" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="node_7_di" bpmnElement="node_7">
+                <dc:Bounds x="430" y="140" width="150" height="30" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="node_10_di" bpmnElement="node_10">
+                <dc:Bounds x="620" y="140" width="150" height="30" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="node_12_di" bpmnElement="node_12">
+                <dc:Bounds x="310" y="410" width="150" height="30" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="node_14_di" bpmnElement="node_14">
+                <dc:Bounds x="500" y="410" width="150" height="30" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="node_15_di" bpmnElement="node_15">
+                <dc:Bounds x="500" y="490" width="150" height="30" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="node_16_di" bpmnElement="node_16">
+                <dc:Bounds x="720" y="410" width="150" height="30" />
+            </bpmndi:BPMNShape>
+        </bpmndi:BPMNPlane>
+    </bpmndi:BPMNDiagram>
+</bpmn:definitions>
