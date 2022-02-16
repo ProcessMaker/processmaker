@@ -75,13 +75,34 @@ class SanitizeHelper {
      *
      * @return string
      */
-    public static function sanitizeData($data, $screen)
+    public static function sanitizeData($data, $task)
     {
-        $except = self::getExceptions($screen);
-        if (isset($data['_DO_NOT_SANITIZE'])) {
-           $except = array_unique(array_merge(json_decode($data['_DO_NOT_SANITIZE']), $except));
+        // Get current and nested screens IDs ..
+        $currentScreenExceptions = [];
+        $currentScreenAndNestedIds = $task->getScreenAndNestedIds();
+        foreach ($currentScreenAndNestedIds as $id) {
+            // Find the screen version ..
+            $screen = Screen::findOrFail($id);
+            $screen = $screen->versionFor($task->processRequest)->toArray();
+            // Get exceptions ..
+            $exceptions = self::getExceptions((object) $screen);
+            if (count($exceptions)) {
+                $currentScreenExceptions = array_unique(array_merge($exceptions, $currentScreenExceptions));
+            }
         }
-        $data['_DO_NOT_SANITIZE'] = json_encode($except);
+
+        // Get process request exceptions stored in do_not_sanitize column ..
+        $processRequestExceptions = $task->processRequest->do_not_sanitize;
+        if (!$processRequestExceptions) {
+            $processRequestExceptions = [];
+        }
+
+        // Merge (nestedSreensExceptions and currentScreenExceptions) with processRequestExceptions ..
+        $except = array_unique(array_merge($processRequestExceptions, $currentScreenExceptions));
+
+        // Update database with all the exceptions ..
+        $task->processRequest->do_not_sanitize = $except;
+        $task->processRequest->save();
         return self::sanitizeWithExceptions($data, $except);
     }
 
@@ -92,7 +113,7 @@ class SanitizeHelper {
                 $data[$key] = self::sanitizeWithExceptions($value, $except, $level + 1);
             } else {
                 // Only allow skipping on top-level data for now
-                $strip_tags = $level !== 0 || !in_array($key, $except);
+                $strip_tags = !in_array($key, $except);
                 $data[$key] = self::sanitize($value, $strip_tags);
             }
         }
@@ -121,6 +142,14 @@ class SanitizeHelper {
             if (isset($item['items']) && is_array($item['items'])) {
                 // Inside a table
                 foreach ($item['items'] as $cell) {
+                    if (
+                        isset($cell['component']) &&
+                        $cell['component'] === 'FormTextArea' &&
+                        isset($cell['config']['richtext']) &&
+                        $cell['config']['richtext'] === true
+                    ) {
+                        $elements[] = $cell['config']['name'];
+                    }
                     if (is_array($cell)) {
                         $elements = array_merge($elements, self::getRichTextElements($cell));
                     }

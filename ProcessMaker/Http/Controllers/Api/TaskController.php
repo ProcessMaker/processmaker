@@ -311,7 +311,7 @@ class TaskController extends Controller
             }
             // Skip ConvertEmptyStringsToNull and TrimStrings middlewares
             $data = json_decode($request->getContent(), true);
-            $data = SanitizeHelper::sanitizeData($data['data'], $task->getScreenVersion());
+            $data = SanitizeHelper::sanitizeData($data['data'], $task);
             //Call the manager to trigger the start event
             $process = $task->process;
             $instance = $task->processRequest;
