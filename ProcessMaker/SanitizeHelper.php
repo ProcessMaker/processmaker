@@ -109,7 +109,6 @@ class SanitizeHelper {
 
     private static function sanitizeWithExceptions(Array $data, Array $except, $parent = null)
     {
-        print_r($except);
         foreach ($data as $key => $value) {
             if (!is_int($key)) {
                 $searchKey = ($parent ? $parent . '.' . $key : $key);
@@ -121,8 +120,6 @@ class SanitizeHelper {
             } else {
                 // Only allow skipping on top-level data for now
                 $strip_tags = !in_array($searchKey, $except);
-                echo $searchKey;
-                echo $strip_tags;
                 $data[$key] = self::sanitize($value, $strip_tags);
             }
         }
@@ -146,7 +143,6 @@ class SanitizeHelper {
 
     private static function getRichTextElements($items, $parent = null)
     {
-	    //"loop_1.loop_2.form_text_area_2"
         $elements = [];
 
         foreach ($items as $item) {
@@ -163,57 +159,6 @@ class SanitizeHelper {
             }
         }
 
-        // foreach ($items as $item) {
-        //     if (isset($item['items']) && is_array($item['items'])) {
-        //         foreach ($item['items'] as $cell) {
-        //             if ($item['component'] == 'FormLoop') {
-        //                 // $path = ($parent ? $parent . '.' . $cell['config']['name'] : $item['config']['name']);
-        //                 $elements = array_merge($elements, self::getRichTextElements($cell, $item['config']['name']));
-        //             } else if (
-        //                 isset($cell['component']) &&
-        //                 $cell['component'] === 'FormTextArea' &&
-        //                 isset($cell['config']['richtext']) &&
-        //                 $cell['config']['richtext'] === true
-        //             ) {
-        //                 // \Log::info($path);
-        //                 $elements[] = $parent . '.' . $cell['config']['name'];
-        //             }
-        //         }
-        //     }
-        // }
-
-        // foreach ($items as $item) {
-        //     if (isset($item['items']) && is_array($item['items'])) {
-        //         // Inside a table
-        //         foreach ($item['items'] as $cell) {
-        //             if($item['component'] == 'FormLoop') {
-        //                 // $path = ($path ? $path . '.' . $cell['config']['name'] : $item['config']['name']);
-        //                 $elements = array_merge($elements, self::getRichTextElements($cell, $item));
-        //             }
-        //             if (
-        //                 isset($cell['component']) &&
-        //                 $cell['component'] === 'FormTextArea' &&
-        //                 isset($cell['config']['richtext']) &&
-        //                 $cell['config']['richtext'] === true
-        //             ) {
-        //                 // \Log::info($path);
-        //                 $elements[] = $path;
-        //             }
-        //             if (is_array($cell)) {
-        //                 $elements = array_merge($elements, self::getRichTextElements($cell));
-        //             }
-        //         }
-        //     } else {
-        //         if (
-        //             isset($item['component']) &&
-        //             $item['component'] === 'FormTextArea' &&
-        //             isset($item['config']['richtext']) &&
-        //             $item['config']['richtext'] === true
-        //         ) {
-        //             $elements[] = $item['config']['name'];
-        //         }
-        //     }
-        // }
         return $elements;
     }
 
