@@ -30,6 +30,9 @@ class SanitizeHelperTest extends TestCase
         $this->user->save();
     }
 
+    /**
+     * @group agustin
+     */
     public function testSingleRichTextSanitization()
     {
         // Prepare scenario ..
@@ -48,11 +51,9 @@ class SanitizeHelperTest extends TestCase
         $response->assertJsonFragment([
             'do_not_sanitize' => ['form_text_area_1'],
         ]);
-
         // Assert data was sanitized or not if rich text ..
         $processRequest = ProcessRequest::findOrFail($this->processRequest->id)['data']['data'];
-
-        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequest['data']['form_text_area_1']);
+        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequest['form_text_area_1']);
         $this->assertEquals('Sanitize', $processRequest['data']['input_1']);
     }
 
@@ -104,7 +105,7 @@ class SanitizeHelperTest extends TestCase
 
         // Assert do_not_sanitize was updated successfully ..
         $response->assertJsonFragment([
-            'do_not_sanitize' => ['form_text_area_3'],
+            'do_not_sanitize' => ['loop_1.form_text_area_3'],
         ]);
 
         // Assert data was sanitized or not if rich text ..
@@ -136,7 +137,7 @@ class SanitizeHelperTest extends TestCase
 
         // Assert do_not_sanitize was updated successfully ..
         $response->assertJsonFragment([
-            'do_not_sanitize' => ['form_text_area_4'],
+            'do_not_sanitize' => ['loop_1.form_text_area_4'],
         ]);
 
         // Assert data was sanitized or not if rich text ..
@@ -258,17 +259,14 @@ class SanitizeHelperTest extends TestCase
     private function dataSingleTask()
     {
         return [
-            "status" => "ACTIVE",
-            "data" => [
-                "_user" => [
-                    "id" => 1
-                ],
-                "_request" => [
-                    "id" => 1
-                ],
-                "form_text_area_1" => "<p><strong>Do not sanitize<\/strong><\/p>",
-                "input_1" => "<p><strong>Sanitize<\/strong><\/p>"
-            ]
+            "_user" => [
+                "id" => 1
+            ],
+            "_request" => [
+                "id" => 1
+            ],
+            "form_text_area_1" => "<p><strong>Do not sanitize<\/strong><\/p>",
+            "input_1" => "<p><strong>Sanitize<\/strong><\/p>"
         ];
     }
 
