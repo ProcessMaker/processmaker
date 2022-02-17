@@ -8,6 +8,7 @@ use Tests\Feature\Shared\ProcessTestingTrait;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Models\User;
@@ -30,9 +31,6 @@ class SanitizeHelperTest extends TestCase
         $this->user->save();
     }
 
-    /**
-     * @group agustin
-     */
     public function testSingleRichTextSanitization()
     {
         // Prepare scenario ..
@@ -40,7 +38,7 @@ class SanitizeHelperTest extends TestCase
         $this->createProcess('tests/Fixtures/sanitize_single_task.bpmn');
         $this->createProcessRequest();
         $task = $this->createTask($this->process->id, $this->screenVersion->id, $this->processRequest->id, 'node_9');
-        $data['data'] = $this->dataSingleTask();
+        $data = $this->dataSingleTask();
 
         // Call api and do sanitization ..
         $route = route('api.tasks.update', [$task->id, 'status' => 'COMPLETED']);
@@ -51,10 +49,11 @@ class SanitizeHelperTest extends TestCase
         $response->assertJsonFragment([
             'do_not_sanitize' => ['form_text_area_1'],
         ]);
+
         // Assert data was sanitized or not if rich text ..
-        $processRequest = ProcessRequest::findOrFail($this->processRequest->id)['data']['data'];
-        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequest['form_text_area_1']);
-        $this->assertEquals('Sanitize', $processRequest['data']['input_1']);
+        $processRequestData = ProcessRequest::findOrFail($this->processRequest->id)->data;
+        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequestData['form_text_area_1']);
+        $this->assertEquals('Sanitize', $processRequestData['input_1']);
     }
 
     public function testRichTextSanitizationInsideNestedScreen()
@@ -70,11 +69,11 @@ class SanitizeHelperTest extends TestCase
         $this->createProcess('tests/Fixtures/sanitize_single_task_nested.bpmn');
         $this->createProcessRequest();
         $task = $this->createTask($this->process->id, $this->screenVersion->id, $this->processRequest->id, 'node_3');
-        $data['data'] = $this->dataSingleTask();
+        $data = $this->dataSingleTask();
 
         // Call api and do sanitization ..
-        $route = route('api.tasks.update', [$task->id, 'status' => 'COMPLETED']);
-        $response = $this->apiCall('PUT', $route, ['data' => $data]);
+        $route = route('api.tasks.update', $task->id);
+        $response = $this->apiCall('PUT', $route, ['status' => 'COMPLETED', 'data' => $data]);
         $this->assertStatus(200, $response);
 
         // Assert do_not_sanitize was updated successfully ..
@@ -83,10 +82,10 @@ class SanitizeHelperTest extends TestCase
         ]);
 
         // Assert data was sanitized or not if rich text ..
-        $processRequest = ProcessRequest::findOrFail($this->processRequest->id)['data']['data'];
+        $processRequestData = ProcessRequest::findOrFail($this->processRequest->id)->data;
 
-        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequest['data']['form_text_area_1']);
-        $this->assertEquals('Sanitize', $processRequest['data']['input_1']);
+        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequestData['form_text_area_1']);
+        $this->assertEquals('Sanitize', $processRequestData['input_1']);
     }
 
     public function testSingleRichTextSanitizationInsideLoop()
@@ -96,11 +95,11 @@ class SanitizeHelperTest extends TestCase
         $this->createProcess('tests/Fixtures/sanitize_single_task_loop.bpmn');
         $this->createProcessRequest();
         $task = $this->createTask($this->process->id, $this->screenVersion->id, $this->processRequest->id, 'node_2');
-        $data['data'] = $this->dataSingleTaskLoop();
+        $data = $this->dataSingleTaskLoop();
 
         // Call api and do sanitization ..
-        $route = route('api.tasks.update', [$task->id, 'status' => 'COMPLETED']);
-        $response = $this->apiCall('PUT', $route, ['data' => $data]);
+        $route = route('api.tasks.update', $task->id);
+        $response = $this->apiCall('PUT', $route, ['status' => 'COMPLETED', 'data' => $data]);
         $this->assertStatus(200, $response);
 
         // Assert do_not_sanitize was updated successfully ..
@@ -109,10 +108,10 @@ class SanitizeHelperTest extends TestCase
         ]);
 
         // Assert data was sanitized or not if rich text ..
-        $processRequest = ProcessRequest::findOrFail($this->processRequest->id)['data']['data'];
+        $processRequestData = ProcessRequest::findOrFail($this->processRequest->id)->data;
 
-        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequest['data']['loop_1'][0]['form_text_area_3']);
-        $this->assertEquals('Sanitize', $processRequest['data']['loop_1'][0]['form_input_1']);
+        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequestData['loop_1'][0]['form_text_area_3']);
+        $this->assertEquals('Sanitize', $processRequestData['loop_1'][0]['form_input_1']);
     }
 
     public function testRichTextSanitizationInsideLoopInsideNestedScreen()
@@ -128,11 +127,11 @@ class SanitizeHelperTest extends TestCase
         $this->createProcess('tests/Fixtures/sanitize_single_task_nested_loop.bpmn');
         $this->createProcessRequest();
         $task = $this->createTask($this->process->id, $this->screenVersion->id, $this->processRequest->id, 'node_2');
-        $data['data'] = $this->dataSingleTaskNestedLoop();
+        $data = $this->dataSingleTaskNestedLoop();
 
         // Call api and do sanitization ..
-        $route = route('api.tasks.update', [$task->id, 'status' => 'COMPLETED']);
-        $response = $this->apiCall('PUT', $route, ['data' => $data]);
+        $route = route('api.tasks.update', $task->id);
+        $response = $this->apiCall('PUT', $route, ['status' => 'COMPLETED', 'data' => $data]);
         $this->assertStatus(200, $response);
 
         // Assert do_not_sanitize was updated successfully ..
@@ -141,10 +140,10 @@ class SanitizeHelperTest extends TestCase
         ]);
 
         // Assert data was sanitized or not if rich text ..
-        $processRequest = ProcessRequest::findOrFail($this->processRequest->id)['data']['data'];
+        $processRequestData = ProcessRequest::findOrFail($this->processRequest->id)->data;
 
-        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequest['data']['loop_1'][0]['form_text_area_4']);
-        $this->assertEquals('Sanitize', $processRequest['data']['loop_1'][0]['form_input_1']);
+        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequestData['loop_1'][0]['form_text_area_4']);
+        $this->assertEquals('Sanitize', $processRequestData['loop_1'][0]['form_input_1']);
     }
 
     public function testPreloadExceptionForDifferentScreenSanitization()
@@ -157,11 +156,11 @@ class SanitizeHelperTest extends TestCase
         $this->processRequest->do_not_sanitize = ['form_text_area_20'];
         $this->processRequest->save();
         $task = $this->createTask($this->process->id, $this->screenVersion->id, $this->processRequest->id, 'node_9');
-        $data['data'] = $this->dataTwoTask();
+        $data = $this->dataTwoTask();
 
         // Call api and do sanitization ..
-        $route = route('api.tasks.update', [$task->id, 'status' => 'COMPLETED']);
-        $response = $this->apiCall('PUT', $route, ['data' => $data]);
+        $route = route('api.tasks.update', $task->id);
+        $response = $this->apiCall('PUT', $route, ['status' => 'COMPLETED', 'data' => $data]);
         $this->assertStatus(200, $response);
 
         // Assert do_not_sanitize was updated successfully ..
@@ -170,12 +169,12 @@ class SanitizeHelperTest extends TestCase
         ]);
 
         // Assert data was sanitized or not if rich text ..
-        $processRequest = ProcessRequest::findOrFail($this->processRequest->id)['data']['data'];
+        $processRequestData = ProcessRequest::findOrFail($this->processRequest->id)->data;
 
-        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequest['data']['form_text_area_1']);
-        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequest['data']['form_text_area_20']);
-        $this->assertEquals('Sanitize', $processRequest['data']['form_text_area_10']);
-        $this->assertEquals('Sanitize', $processRequest['data']['input_1']);
+        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequestData['form_text_area_1']);
+        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequestData['form_text_area_20']);
+        $this->assertEquals('Sanitize', $processRequestData['form_text_area_10']);
+        $this->assertEquals('Sanitize', $processRequestData['input_1']);
     }
 
     public function testSingleRichTextTwoPagesSanitization()
@@ -185,11 +184,11 @@ class SanitizeHelperTest extends TestCase
         $this->createProcess('tests/Fixtures/sanitize_single_task_two_pages.bpmn');
         $this->createProcessRequest();
         $task = $this->createTask($this->process->id, $this->screenVersion->id, $this->processRequest->id, 'node_3');
-        $data['data'] = $this->dataSingleTaskTwoPages();
+        $data = $this->dataSingleTaskTwoPages();
 
         // Call api and do sanitization ..
-        $route = route('api.tasks.update', [$task->id, 'status' => 'COMPLETED']);
-        $response = $this->apiCall('PUT', $route, ['data' => $data]);
+        $route = route('api.tasks.update', $task->id);
+        $response = $this->apiCall('PUT', $route, ['status' => 'COMPLETED', 'data' => $data]);
         $this->assertStatus(200, $response);
 
         // Assert do_not_sanitize was updated successfully ..
@@ -198,11 +197,11 @@ class SanitizeHelperTest extends TestCase
         ]);
 
         // Assert data was sanitized or not if rich text ..
-        $processRequest = ProcessRequest::findOrFail($this->processRequest->id)['data']['data'];
+        $processRequestData = ProcessRequest::findOrFail($this->processRequest->id)->data;
 
-        $this->assertEquals('<p><strong>Do not sanitize page 2<\/strong><\/p>', $processRequest['data']['form_text_area_1']);
-        $this->assertEquals('<p><strong>Do not sanitize page 1<\/strong><\/p>', $processRequest['data']['form_text_area_2']);
-        $this->assertEquals('Sanitize', $processRequest['data']['input_1']);
+        $this->assertEquals('<p><strong>Do not sanitize page 2<\/strong><\/p>', $processRequestData['form_text_area_1']);
+        $this->assertEquals('<p><strong>Do not sanitize page 1<\/strong><\/p>', $processRequestData['form_text_area_2']);
+        $this->assertEquals('Sanitize', $processRequestData['input_1']);
     }
 
     private function createScreen($screenConfigFilePath)
@@ -273,19 +272,16 @@ class SanitizeHelperTest extends TestCase
     private function dataSingleTaskNestedLoop()
     {
        return [
-            "status" => "ACTIVE",
-            "data" => [
-                "_user" => [
-                    "id" => 1
-                ],
-                "_request" => [
-                    "id" => 1
-                ],
-                "loop_1" => [
-                    [
-                        "form_text_area_4" => "<p><strong>Do not sanitize<\/strong><\/p>",
-                        "form_input_1" => "<p><strong>Sanitize<\/strong><\/p>"
-                    ]
+            "_user" => [
+                "id" => 1
+            ],
+            "_request" => [
+                "id" => 1
+            ],
+            "loop_1" => [
+                [
+                    "form_text_area_4" => "<p><strong>Do not sanitize<\/strong><\/p>",
+                    "form_input_1" => "<p><strong>Sanitize<\/strong><\/p>"
                 ]
             ]
         ];
@@ -294,38 +290,32 @@ class SanitizeHelperTest extends TestCase
     private function dataTwoTask()
     {
         return [
-            "status" => "ACTIVE",
-            "data" => [
-                "_user" => [
-                    "id" => 1
-                ],
-                "_request" => [
-                    "id" => 1
-                ],
-                "form_text_area_1" => "<p><strong>Do not sanitize<\/strong><\/p>",
-                "form_text_area_20" => "<p><strong>Do not sanitize<\/strong><\/p>",
-                "form_text_area_10" => "<p><strong>Sanitize<\/strong><\/p>",
-                "input_1" => "<p><strong>Sanitize<\/strong><\/p>"
-            ]
+            "_user" => [
+                "id" => 1
+            ],
+            "_request" => [
+                "id" => 1
+            ],
+            "form_text_area_1" => "<p><strong>Do not sanitize<\/strong><\/p>",
+            "form_text_area_20" => "<p><strong>Do not sanitize<\/strong><\/p>",
+            "form_text_area_10" => "<p><strong>Sanitize<\/strong><\/p>",
+            "input_1" => "<p><strong>Sanitize<\/strong><\/p>"
         ];
     }
 
     private function dataSingleTaskLoop()
     {
         return [
-            "status" => "ACTIVE",
-            "data" => [
-                "_user" => [
-                    "id" => 1
-                ],
-                "_request" => [
-                    "id" => 1
-                ],
-                "loop_1" => [
-                    [
-                        "form_text_area_3" => "<p><strong>Do not sanitize<\/strong><\/p>",
-                        "form_input_1" => "<p><strong>Sanitize<\/strong><\/p>"
-                    ]
+            "_user" => [
+                "id" => 1
+            ],
+            "_request" => [
+                "id" => 1
+            ],
+            "loop_1" => [
+                [
+                    "form_text_area_3" => "<p><strong>Do not sanitize<\/strong><\/p>",
+                    "form_input_1" => "<p><strong>Sanitize<\/strong><\/p>"
                 ]
             ]
         ];
@@ -334,18 +324,15 @@ class SanitizeHelperTest extends TestCase
     private function dataSingleTaskTwoPages()
     {
         return [
-            "status" => "ACTIVE",
-            "data" => [
-                "_user" => [
-                    "id" => 1
-                ],
-                "_request" => [
-                    "id" => 1
-                ],
-                "form_text_area_1" => "<p><strong>Do not sanitize page 2<\/strong><\/p>",
-                "form_text_area_2" => "<p><strong>Do not sanitize page 1<\/strong><\/p>",
-                "input_1" => "<p><strong>Sanitize<\/strong><\/p>"
-            ]
+            "_user" => [
+                "id" => 1
+            ],
+            "_request" => [
+                "id" => 1
+            ],
+            "form_text_area_1" => "<p><strong>Do not sanitize page 2<\/strong><\/p>",
+            "form_text_area_2" => "<p><strong>Do not sanitize page 1<\/strong><\/p>",
+            "input_1" => "<p><strong>Sanitize<\/strong><\/p>"
         ];
     }
 }
