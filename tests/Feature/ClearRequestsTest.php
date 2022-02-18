@@ -311,8 +311,8 @@ class ClearRequestsTest extends TestCase
 
         // We need to do our own teardown here since were not using
         // transactions for this test
-        $currrentProcessIds = Process::pluck('id');
-        $createdProcessIds = $currrentProcessIds->diff($existingProcessIds);
+        $currentProcessIds = Process::pluck('id');
+        $createdProcessIds = $currentProcessIds->diff($existingProcessIds);
         Process::destroy($createdProcessIds);
     }
 
