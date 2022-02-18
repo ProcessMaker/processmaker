@@ -204,6 +204,58 @@ class SanitizeHelperTest extends TestCase
         $this->assertEquals('Sanitize', $processRequestData['input_1']);
     }
 
+    public function testSingleRichTextSanitizationWithNestedVariableName()
+    {
+        // Prepare scenario ..
+        $this->createScreen('tests/Fixtures/sanitize_single_rich_text_nested_variable_name_screen.json');
+        $this->createProcess('tests/Fixtures/sanitize_single_task.bpmn');
+        $this->createProcessRequest();
+        $task = $this->createTask($this->process->id, $this->screenVersion->id, $this->processRequest->id, 'node_9');
+        $data = $this->dataSingleTaskNestedVariableName();
+
+        // Call api and do sanitization ..
+        $route = route('api.tasks.update', [$task->id, 'status' => 'COMPLETED']);
+        $response = $this->apiCall('PUT', $route, ['data' => $data]);
+        $this->assertStatus(200, $response);
+
+        // Assert do_not_sanitize was updated successfully ..
+        $response->assertJsonFragment([
+            'do_not_sanitize' => ['foo.bar.baz'],
+        ]);
+
+        // Assert data was sanitized or not if rich text ..
+        $processRequestData = ProcessRequest::findOrFail($this->processRequest->id)->data;
+        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequestData['foo']['bar']['baz']);
+        $this->assertEquals('Sanitize', $processRequestData['input_1']);
+    }
+
+    public function testSingleRichTextSanitizationSameNameDifferentScope()
+    {
+        // Prepare scenario ..
+        $this->createScreen('tests/Fixtures/sanitize_single_rich_text_same_name_different_scope_screen.json');
+        $this->createProcess('tests/Fixtures/sanitize_single_task_loop.bpmn');
+        $this->createProcessRequest();
+        $task = $this->createTask($this->process->id, $this->screenVersion->id, $this->processRequest->id, 'node_2');
+        $data = $this->dataSingleTaskSameNameDifferentScope();
+
+        // Call api and do sanitization ..
+        $route = route('api.tasks.update', $task->id);
+        $response = $this->apiCall('PUT', $route, ['status' => 'COMPLETED', 'data' => $data]);
+        $this->assertStatus(200, $response);
+
+        // Assert do_not_sanitize was updated successfully ..
+        $response->assertJsonFragment([
+            'do_not_sanitize' => ['loop_1.form_text_area_1'],
+        ]);
+
+        // Assert data was sanitized or not if rich text ..
+        $processRequestData = ProcessRequest::findOrFail($this->processRequest->id)->data;
+
+        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequestData['loop_1'][0]['form_text_area_1']);
+        $this->assertEquals('<p><strong>Do not sanitize 2<\/strong><\/p>', $processRequestData['loop_1'][1]['form_text_area_1']);
+        $this->assertEquals('Sanitize', $processRequestData['form_text_area_1']);
+    }
+
     private function createScreen($screenConfigFilePath)
     {
         $this->screen = factory(Screen::class)->create([
@@ -333,6 +385,45 @@ class SanitizeHelperTest extends TestCase
             "form_text_area_1" => "<p><strong>Do not sanitize page 2<\/strong><\/p>",
             "form_text_area_2" => "<p><strong>Do not sanitize page 1<\/strong><\/p>",
             "input_1" => "<p><strong>Sanitize<\/strong><\/p>"
+        ];
+    }
+
+    private function dataSingleTaskNestedVariableName()
+    {
+        return [
+            "_user" => [
+                "id" => 1
+            ],
+            "_request" => [
+                "id" => 1
+            ],
+            "foo" => [
+                "bar" => [
+                    "baz" => "<p><strong>Do not sanitize<\/strong><\/p>"
+                ]
+            ],
+            "input_1" => "<p><strong>Sanitize<\/strong><\/p>"
+        ];
+    }
+
+    private function dataSingleTaskSameNameDifferentScope()
+    {
+        return [
+            "_user" => [
+                "id" => 1
+            ],
+            "_request" => [
+                "id" => 1
+            ],
+            "loop_1" => [
+                [
+                    "form_text_area_1" => "<p><strong>Do not sanitize<\/strong><\/p>",
+                ],
+                [
+                    "form_text_area_1" => "<p><strong>Do not sanitize 2<\/strong><\/p>",
+                ]
+            ],
+            "form_text_area_1" => "<p><strong>Sanitize<\/strong><\/p>",
         ];
     }
 }
