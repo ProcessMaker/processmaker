@@ -143,10 +143,26 @@ class SanitizeHelper {
         $elements = [];
         foreach ($items as $item) {
             if (isset($item['items']) && is_array($item['items'])) {
+                // Inside loop
                 if ($item['component'] == 'FormLoop') {
                     $elements = array_merge($elements, self::getRichTextElements($item['items'], ($parent ? $parent . '.' . $item['config']['name'] : $item['config']['name'])));
                 } else if (isset($item['component']) && $item['component'] === 'FormTextArea' && isset($item['config']['richtext']) && $item['config']['richtext'] === true) {
                     $elements[] = ($parent ? $parent . '.' . $item['config']['name'] : $item['config']['name']);
+                // Inside a table ..
+                } else if ($item['component'] == 'FormMultiColumn') {
+                    foreach ($item['items'] as $cell) {
+                        if (
+                            isset($cell['component']) &&
+                            $cell['component'] === 'FormTextArea' &&
+                            isset($cell['config']['richtext']) &&
+                            $cell['config']['richtext'] === true
+                        ) {
+                            $elements[] = $cell['config']['name'];
+                        }
+                        if (is_array($cell)) {
+                            $elements = array_merge($elements, self::getRichTextElements($cell));
+                        }
+                    }
                 }
             } else {
                 if (isset($item['component']) && $item['component'] === 'FormTextArea' && isset($item['config']['richtext']) && $item['config']['richtext'] === true) {
