@@ -256,6 +256,35 @@ class SanitizeHelperTest extends TestCase
         $this->assertEquals('Sanitize', $processRequestData['form_text_area_1']);
     }
 
+    public function testSingleRichTextSanitizationInsideTableAndLoop()
+    {
+        // Prepare scenario ..
+        $this->createScreen('tests/Fixtures/sanitize_single_rich_text_inside_table_and_loop_screen.json');
+        $this->createProcess('tests/Fixtures/sanitize_single_task_table_loop.bpmn');
+        $this->createProcessRequest();
+        $task = $this->createTask($this->process->id, $this->screenVersion->id, $this->processRequest->id, 'node_2');
+        $data = $this->dataSingleTaskTableAndLoop();
+
+        // Call api and do sanitization ..
+        $route = route('api.tasks.update', $task->id);
+        $response = $this->apiCall('PUT', $route, ['status' => 'COMPLETED', 'data' => $data]);
+        $this->assertStatus(200, $response);
+
+        // Assert do_not_sanitize was updated successfully ..
+        $response->assertJsonFragment([
+            'do_not_sanitize' => ['loop_1.form_text_area_3','form_text_area_1','loop_2.form_text_area_4'],
+        ]);
+
+        // Assert data was sanitized or not if rich text ..
+        $processRequestData = ProcessRequest::findOrFail($this->processRequest->id)->data;
+
+        $this->assertEquals('<p><strong>Inside loop outside table 1</strong><strong>do not sanitize</strong></p>', $processRequestData['loop_1'][0]['form_text_area_3']);
+        $this->assertEquals('<p><strong>Inside loop outside table 2</strong><strong>do not sanitize</strong></p>', $processRequestData['loop_1'][1]['form_text_area_3']);
+        $this->assertEquals('<p><strong>Inside table do not sanitize</strong></p>', $processRequestData['form_text_area_1']);
+        $this->assertEquals('<p><strong>Inside loop inside table 1 </strong><strong>do not sanitize</strong></p>', $processRequestData['loop_2'][0]['form_text_area_4']);
+        $this->assertEquals('<p><strong>Inside loop inside table 2 </strong><strong>do not sanitize</strong></p>', $processRequestData['loop_2'][1]['form_text_area_4']);
+    }
+
     private function createScreen($screenConfigFilePath)
     {
         $this->screen = factory(Screen::class)->create([
@@ -424,6 +453,36 @@ class SanitizeHelperTest extends TestCase
                 ]
             ],
             "form_text_area_1" => "<p><strong>Sanitize<\/strong><\/p>",
+        ];
+    }
+
+    private function dataSingleTaskTableAndLoop()
+    {
+        return [
+            "_user" => [
+                "id" => 1
+            ],
+            "_request" => [
+                "id" => 1
+            ],
+            "loop_1" => [
+                [
+                    "form_text_area_3" => "<p><strong>Inside loop outside table 1</strong><strong>do not sanitize</strong></p>"
+                ],
+                [
+                    "form_text_area_3" => "<p><strong>Inside loop outside table 2</strong><strong>do not sanitize</strong></p>"
+                ]
+            ],
+            "form_text_area_1" => "<p><strong>Inside table do not sanitize</strong></p>",
+            "loop_2" => [
+                [
+                    "form_text_area_4" => "<p><strong>Inside loop inside table 1 </strong><strong>do not sanitize</strong></p>"
+                ],
+                [
+                    "form_text_area_4" => "<p><strong>Inside loop inside table 2 </strong><strong>do not sanitize</strong></p>"
+                ]
+            ],
+            "form_text_area_2" => "<b>Inside table SANITIZE</b>"
         ];
     }
 }
