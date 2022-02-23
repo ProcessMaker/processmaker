@@ -32,8 +32,6 @@ class NotificationControlsTest extends TestCase
      */
     public function testRequestWithNotifications()
     {
-        ScriptExecutor::setTestConfig('php');
-        
         // Create a user
         $adminUser = factory(User::class)->create([
             'username' => 'admin',
@@ -108,8 +106,6 @@ class NotificationControlsTest extends TestCase
      */
     public function testRequestWithoutNotifications()
     {
-        ScriptExecutor::setTestConfig('php');
-
         // Create a user
         $adminUser = factory(User::class)->create([
             'username' => 'admin',

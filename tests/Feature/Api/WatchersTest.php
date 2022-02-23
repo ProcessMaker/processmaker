@@ -24,11 +24,6 @@ class WatchersTest extends TestCase
 
     const API_TEST_URL = 'api.scripts.execute';
 
-    protected function setUpExecutors()
-    {
-        ScriptExecutor::setTestConfig('php');
-    }
-
     public function setUpWithPersonalAccessClient()
     {
         $this->withPersonalAccessClient();
@@ -42,7 +37,6 @@ class WatchersTest extends TestCase
         Event::fake([
             ScriptResponseEvent::class,
         ]);
-        ScriptExecutor::setTestConfig('php');
         $script = factory(Script::class)->create([
             'language' => 'PHP',
             'code' => '<?php return ["language"=>"PHP","data"=>$data,"config"=>$config];',

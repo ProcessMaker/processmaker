@@ -22,7 +22,7 @@ class BuildSdkTest extends TestCase
             $builder->setLang('foo');
             $this->fail('Exception was not thrown.');
         } catch(\Exception $e) {
-            $this->assertContains("foo language is not supported", $e->getMessage());
+            $this->assertStringContainsString("foo language is not supported", $e->getMessage());
         }
     }
     

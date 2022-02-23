@@ -70,8 +70,8 @@ class BuildSdk {
 
     private function stopContainer()
     {
-        $this->runCmd(Docker::command()." kill generator || true");
-        $this->runCmd(Docker::command()." rm generator || true");
+        $this->runCmd(Docker::command()." kill generator 2>&1 || true");
+        $this->runCmd(Docker::command()." rm generator 2>&1 || true");
     }
 
     public function setLang($value)
