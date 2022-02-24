@@ -4,21 +4,21 @@ namespace ProcessMaker\Console\Commands\Upgrade;
 
 use Illuminate\Console\Command;
 
-class ResetUpgradeMigrations extends Command
+class RunUpgradesCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'upgrade:reset';
+    protected $signature = 'upgrade';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Rollback all upgrade migrations';
+    protected $description = 'Run the upgrade migrations';
 
     /**
      * Create a new command instance.
@@ -33,11 +33,11 @@ class ResetUpgradeMigrations extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
     public function handle()
     {
-        $this->call('migrate:reset', [
+        $this->call('migrate', [
             '--path' => 'upgrades'
         ]);
     }

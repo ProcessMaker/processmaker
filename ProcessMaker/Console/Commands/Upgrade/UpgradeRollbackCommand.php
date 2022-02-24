@@ -4,21 +4,21 @@ namespace ProcessMaker\Console\Commands\Upgrade;
 
 use Illuminate\Console\Command;
 
-class RunUpgradeMigrations extends Command
+class UpgradeRollbackCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'upgrade';
+    protected $signature = 'upgrade:rollback';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Run the upgrade migrations';
+    protected $description = 'Rollback the last upgrade migration';
 
     /**
      * Create a new command instance.
@@ -33,11 +33,11 @@ class RunUpgradeMigrations extends Command
     /**
      * Execute the console command.
      *
-     * @return void
+     * @return mixed
      */
     public function handle()
     {
-        $this->call('migrate', [
+        $this->call('migrate:rollback', [
             '--path' => 'upgrades'
         ]);
     }
