@@ -2,10 +2,10 @@
 
 namespace ProcessMaker\Console\Commands\Upgrade;
 
-use ProcessMaker\Managers\Upgrade\UpgradeCreator;
-use Illuminate\Database\Console\Migrations\BaseCommand;
-use Illuminate\Support\Composer;
 use Illuminate\Support\Str;
+use Illuminate\Support\Composer;
+use ProcessMaker\Upgrades\UpgradeCreator;
+use Illuminate\Database\Console\Migrations\BaseCommand;
 
 class UpgradeMakeCommand extends BaseCommand
 {
@@ -15,7 +15,10 @@ class UpgradeMakeCommand extends BaseCommand
      * @var string
      */
     protected $signature = 'make:upgrade {name : The name of the upgrade}
-        {--path= : The location where the upgrade file should be created}';
+        {--optional : Designates this upgrade as optional/can be skipped when running as a set. Defaults to required}
+        {--path= : The location where the upgrade file should be created. Defaults to "upgrades"}
+        {--from= : The ProcessMaker version being upgraded from. Example: "4.1.23"}
+        {--to= : The ProcessMaker version being upgraded to. Example: "4.2.28"}';
 
     /**
      * The console command description.
@@ -66,12 +69,21 @@ class UpgradeMakeCommand extends BaseCommand
         // to be freshly created so we can create the appropriate migrations.
         $name = Str::snake(trim($this->input->getArgument('name')));
 
-        // Now we are ready to write the migration out to disk. Once we've written
-        // the migration out, we will dump-autoload for the entire framework to
-        // make sure that the migrations are registered by the class loaders.
-        $this->writeMigration($name);
+        // The version we're upgrading *from* if provided
+        $from = $this->input->hasOption('from')
+            ? $this->input->getOption('from')
+            : null;
 
-        $this->composer->dumpAutoloads();
+        // The version we're upgrading *to* if provided
+        $to = $this->input->hasOption('to')
+            ? $this->input->getOption('to')
+            : null;
+
+        // Created upgrade migration is required when run as a set
+        $optional = $this->input->hasOption('optional');
+
+        // Now we are ready to write the migration out to disk.
+        $this->writeMigration($name, $from, $to, $optional);
     }
 
     /**
@@ -81,11 +93,16 @@ class UpgradeMakeCommand extends BaseCommand
      *
      * @throws \Exception
      */
-    protected function writeMigration($name)
+    protected function writeMigration($name, $from, $to, $optional)
     {
-        $file = $this->creator->create(
-            $name, $this->getMigrationPath()
+        $file = $this->creator->createUpgrade(
+            $name, $this->getMigrationPath(), $from, $to, $optional
         );
+
+        // Once we've written the migration out, we will dump-autoload
+        // for the entire framework to make sure that the migrations
+        // are registered by the class loaders.
+        $this->composer->dumpAutoloads();
 
         $this->line("<info>Created Upgrade File:</info> {$file}");
     }

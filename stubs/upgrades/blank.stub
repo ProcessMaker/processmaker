@@ -1,8 +1,8 @@
 <?php
 
-use ProcessMaker\UpgradeMigration as Migration;
+use ProcessMaker\UpgradeMigration as Upgrade;
 
-class DummyUpgradeClass extends Migration
+class DummyUpgradeClass extends Upgrade
 {
     /**
      * The version of ProcessMaker being upgraded *to*
