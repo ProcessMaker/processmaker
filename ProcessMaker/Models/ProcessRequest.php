@@ -133,6 +133,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         'initiated_at' => 'datetime:c',
         'data' => 'array',
         'errors' => 'array',
+        'do_not_sanitize' => 'array',
         'signal_events' => 'array',
         'locked_at' => 'datetime:c',
     ];
@@ -402,7 +403,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
                 ->with('user')
                 ->whereNotIn('element_type', ['scriptTask']);
     }
-    
+
     /**
      * Filter processes with a string
      *
@@ -418,7 +419,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
                 $query->whereIn('id', [$filter]);
             } else {
                 $matches = ProcessRequest::search($filter)->take(10000)->get()->pluck('id');
-                $query->whereIn('id', $matches);            
+                $query->whereIn('id', $matches);
             }
         } else {
             $filter = '%' . mb_strtolower($filter) . '%';
@@ -432,7 +433,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
                     ->orWhere('updated_at', 'like', $filter);
             });
         }
-        
+
         return $query;
     }
 
