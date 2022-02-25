@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker;
+namespace ProcessMaker\Upgrades;
 
 use Illuminate\Database\Migrations\Migration;
 

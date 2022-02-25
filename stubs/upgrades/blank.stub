@@ -1,6 +1,6 @@
 <?php
 
-use ProcessMaker\UpgradeMigration as Upgrade;
+use ProcessMaker\Upgrades\UpgradeMigration as Upgrade;
 
 class DummyUpgradeClass extends Upgrade
 {

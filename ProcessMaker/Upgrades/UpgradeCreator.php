@@ -6,7 +6,6 @@ use Illuminate\Database\Migrations\MigrationCreator;
 
 class UpgradeCreator extends MigrationCreator
 {
-
     /**
      * Create a new upgrade migration file at the given path
      *

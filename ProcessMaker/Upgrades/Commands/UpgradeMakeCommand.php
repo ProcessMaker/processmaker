@@ -1,11 +1,10 @@
 <?php
 
-namespace ProcessMaker\Console\Commands\Upgrade;
+namespace ProcessMaker\Upgrades\Commands;
 
 use Illuminate\Support\Str;
 use Illuminate\Support\Composer;
 use ProcessMaker\Upgrades\UpgradeCreator;
-use Illuminate\Database\Console\Migrations\BaseCommand;
 
 class UpgradeMakeCommand extends BaseCommand
 {
@@ -118,6 +117,6 @@ class UpgradeMakeCommand extends BaseCommand
             return $this->laravel->basePath().'/'.$targetPath;
         }
 
-        return base_path('upgrades');
+        return $this->getMigrationPath();
     }
 }

@@ -86,6 +86,8 @@ return [
     |
     */
     'migrations' => 'migrations',
+    'upgrades' => 'upgrade_migrations',
+
     /*
     |--------------------------------------------------------------------------
     | Redis Databases
