@@ -102,21 +102,16 @@ class ProcessRequestFileController extends Controller
 			return new ResourceCollection($media);
 		} else {
             $filtered = $media->reject(function ($item, $key) use ($filter, $name, $id) {
-                switch ($filter) {
-                    case $filter === $name:
-                        if ($item->custom_properties['data_name'] != $name) {
-                            return true;
-                        }        
-                        break;
-                    case $filter === $id:
-                        if ($item->id != $id) {
-                            return true;
-                        }        
-                        break;
-                    default:
-                        return false;
-                        break;
+                if ($filter === $name) {
+                    if ($item->custom_properties['data_name'] != $name) {
+                        return true;
+                    }     
+                } else if ($filter === $id) {
+                    if ($item->id != $id) {
+                        return true;
+                    } 
                 }
+                return false;
             });
 
 	        return new ResourceCollection($filtered);
