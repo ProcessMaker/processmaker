@@ -26,13 +26,13 @@ class ArtisanServiceProvider extends ServiceProvider
      * @var array
      */
     protected $commands = [
-        'Migrate' => 'command.upgrade-migrate',
-        'MigrateInstall' => 'command.upgrade-migrate.install',
-        'MigrateRefresh' => 'command.upgrade-migrate.refresh',
-        'MigrateReset' => 'command.upgrade-migrate.reset',
-        'MigrateRollback' => 'command.upgrade-migrate.rollback',
-        'MigrateStatus' => 'command.upgrade-migrate.status',
-        'MigrateMake' => 'command.upgrade-migrate.make',
+        'Migrate' => 'command.upgrade',
+        'MigrateInstall' => 'command.upgrade.install',
+        'MigrateRefresh' => 'command.upgrade.refresh',
+        'MigrateReset' => 'command.upgrade.reset',
+        'MigrateRollback' => 'command.upgrade.rollback',
+        'MigrateStatus' => 'command.upgrade.status',
+        'MigrateMake' => 'command.upgrade.make',
     ];
 
     /**
@@ -69,7 +69,7 @@ class ArtisanServiceProvider extends ServiceProvider
      */
     protected function registerMigrateCommand()
     {
-        $this->app->singleton('command.upgrade-migrate', function ($app) {
+        $this->app->singleton('command.upgrade', function ($app) {
             return new UpgradeCommand($app['upgrade-migrator']);
         });
     }
@@ -81,7 +81,7 @@ class ArtisanServiceProvider extends ServiceProvider
      */
     protected function registerMigrateInstallCommand()
     {
-        $this->app->singleton('command.upgrade-migrate.install', function ($app) {
+        $this->app->singleton('command.upgrade.install', function ($app) {
             return new MigrateInstallCommand($app['upgrade-migrator.repository']);
         });
     }
@@ -93,7 +93,7 @@ class ArtisanServiceProvider extends ServiceProvider
      */
     protected function registerMigrateMakeCommand()
     {
-        $this->app->singleton('command.upgrade-migrate.make', function ($app) {
+        $this->app->singleton('command.upgrade.make', function ($app) {
             // Once we have the upgrade-migrator creator registered, we will create the command
             // and inject the creator. The creator is responsible for the actual file
             // creation of the data-migrations, and may be extended by these developers.
@@ -112,7 +112,7 @@ class ArtisanServiceProvider extends ServiceProvider
      */
     protected function registerMigrateRefreshCommand()
     {
-        $this->app->singleton('command.upgrade-migrate.refresh', function () {
+        $this->app->singleton('command.upgrade.refresh', function () {
             return new MigrateRefreshCommand;
         });
     }
@@ -124,7 +124,7 @@ class ArtisanServiceProvider extends ServiceProvider
      */
     protected function registerMigrateResetCommand()
     {
-        $this->app->singleton('command.upgrade-migrate.reset', function ($app) {
+        $this->app->singleton('command.upgrade.reset', function ($app) {
             return new MigrateResetCommand($app['upgrade-migrator']);
         });
     }
@@ -136,7 +136,7 @@ class ArtisanServiceProvider extends ServiceProvider
      */
     protected function registerMigrateRollbackCommand()
     {
-        $this->app->singleton('command.upgrade-migrate.rollback', function ($app) {
+        $this->app->singleton('command.upgrade.rollback', function ($app) {
             return new MigrateRollbackCommand($app['upgrade-migrator']);
         });
     }
@@ -148,7 +148,7 @@ class ArtisanServiceProvider extends ServiceProvider
      */
     protected function registerMigrateStatusCommand()
     {
-        $this->app->singleton('command.upgrade-migrate.status', function ($app) {
+        $this->app->singleton('command.upgrade.status', function ($app) {
             return new MigrateStatusCommand($app['upgrade-migrator']);
         });
     }

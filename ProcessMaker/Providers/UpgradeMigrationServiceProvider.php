@@ -5,6 +5,7 @@ namespace ProcessMaker\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Migrations\Migrator;
 use ProcessMaker\Upgrades\UpgradeMigrationRepository;
+use ProcessMaker\Upgrades\UpgradeCreator;
 
 class UpgradeMigrationServiceProvider extends ServiceProvider
 {
@@ -25,6 +26,8 @@ class UpgradeMigrationServiceProvider extends ServiceProvider
         $this->registerRepository();
 
         $this->registerMigrator();
+
+        $this->registerCreator();
     }
 
     /**
@@ -59,12 +62,24 @@ class UpgradeMigrationServiceProvider extends ServiceProvider
     }
 
     /**
+     * Register the migration creator.
+     *
+     * @return void
+     */
+    protected function registerCreator()
+    {
+        $this->app->singleton('upgrade-migrator.creator', function ($app) {
+            return new UpgradeCreator($app['files']);
+        });
+    }
+
+    /**
      * Get the services provided by the provider.
      *
      * @return array
      */
     public function provides()
     {
-        return ['upgrade-migrator', 'upgrade-migrator.repository'];
+        return ['upgrade-migrator', 'upgrade-migrator.repository', 'upgrade-migrator.creator'];
     }
 }
