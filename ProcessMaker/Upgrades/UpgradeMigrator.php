@@ -107,6 +107,7 @@ class UpgradeMigrator extends Migrator
 
     /**
      * @param $migration
+     * @param $name
      *
      * @return bool
      */

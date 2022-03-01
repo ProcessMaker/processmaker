@@ -91,14 +91,11 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
      */
     public function preflightChecks()
     {
+        $this->clearCache();
+
         if (!$this->connectorSendEmailInstalled()) {
             throw new RuntimeException('The package connector-send-email must be installed to run this upgrade.');
         }
-
-        // Clear out any cached environment variable
-        Artisan::call('optimize:clear', [
-            '--quiet' => true
-        ]);
 
         // If the .env file doesn't exist, we have nothing to upgrade from
         if (!$this->envFileExists()) {
@@ -139,10 +136,12 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
     public function up()
     {
         // Now update the mail driver setting
-        $this->emailSetting()->config = (string) array_search($this->emailDriver(), $this->drivers, true);
+        $updated = $this->emailSetting()->fill([
+            'config' => (string) array_search($this->emailDriver(), $this->drivers, true)
+        ])->save();
 
         // Update the setting and remove it from .env
-        if ($this->emailSetting()->save()) {
+        if ($updated) {
             $this->removeEnvValue('MAIL_DRIVER');
         }
 
@@ -163,10 +162,6 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
             }
 
             if ($variable_name === 'MAIL_ENCRYPTION') {
-                if (in_array($env_value, $this->encryption, true)) {
-                    continue;
-                }
-
                 $env_value = (string) array_search($env_value, array_values($this->encryption), true);
             }
 
@@ -182,17 +177,15 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
                 continue;
             }
 
-            $setting->config = $env_value;
+            $setting->fill([
+                'config' => $env_value
+            ]);
 
-            if (!$setting->save()) {
-                return;
+            if ($setting->save()) {
+                $this->removeEnvValue($variable_name);
             }
 
-            $this->removeEnvValue($variable_name);
-
-            logger("Upgrade migration: Setting with key $setting_key successfully updated", [
-                'migration' => __FILE__
-            ]);
+            $this->clearCache();
         }
     }
 
@@ -204,6 +197,16 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
     public function down()
     {
         //
+    }
+
+    /**
+     * @return void
+     */
+    public function clearCache()
+    {
+        Artisan::call('optimize:clear', [
+            '--quiet' => true
+        ]);
     }
 
     /**
@@ -226,7 +229,7 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
      */
     public function emailSetting(string $key = null)
     {
-        if (! $this->setting instanceof Setting && is_string($key)) {
+        if (!$this->setting instanceof Setting && is_string($key)) {
             $this->setting = Setting::byKey($key);
         }
 
