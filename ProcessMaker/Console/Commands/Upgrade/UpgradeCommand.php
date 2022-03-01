@@ -14,7 +14,8 @@ class UpgradeCommand extends BaseCommand
      *
      * @var string
      */
-    protected $signature = 'upgrade';
+    protected $signature = 'upgrade 
+                            {--to= : The target version we\'re upgrading to}';
 
     /**
      * The console command description.
@@ -50,6 +51,10 @@ class UpgradeCommand extends BaseCommand
      */
     public function handle()
     {
+        $to = $this->getToVersion();
+
+        dump($to);
+
         if (! $this->confirmToProceed()) {
             return;
         }

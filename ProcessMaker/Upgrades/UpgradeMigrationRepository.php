@@ -37,9 +37,10 @@ class UpgradeMigrationRepository extends DMR implements MigrationRepositoryInter
     public function getRan()
     {
         return $this->table()
-                ->orderBy('batch', 'asc')
-                ->orderBy('upgrade', 'asc')
-                ->pluck('upgrade')->all();
+                    ->orderBy('batch', 'asc')
+                    ->orderBy('upgrade', 'asc')
+                    ->pluck('upgrade')
+                    ->all();
     }
 
     /**

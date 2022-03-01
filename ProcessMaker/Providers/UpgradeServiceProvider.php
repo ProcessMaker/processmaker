@@ -4,7 +4,7 @@ namespace ProcessMaker\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use ProcessMaker\Upgrades\UpgradeCreator;
-use Illuminate\Database\Migrations\Migrator;
+use ProcessMaker\Upgrades\UpgradeMigrator;
 use ProcessMaker\Upgrades\UpgradeMigrationRepository;
 use ProcessMaker\Console\Commands\Upgrade\UpgradeCommand;
 use ProcessMaker\Console\Commands\Upgrade\UpgradeMakeCommand;
@@ -81,7 +81,7 @@ class UpgradeServiceProvider extends ServiceProvider
         $this->app->singleton('upgrade', function ($app) {
             $repository = $app['upgrade.repository'];
 
-            return new Migrator($repository, $app['db'], $app['files']);
+            return new UpgradeMigrator($repository, $app['db'], $app['files']);
         });
     }
 

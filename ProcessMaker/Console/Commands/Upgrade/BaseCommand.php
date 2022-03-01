@@ -2,7 +2,9 @@
 
 namespace ProcessMaker\Console\Commands\Upgrade;
 
+use RuntimeException;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Validator;
 use function collect;
 use function base_path;
 
@@ -27,6 +29,30 @@ class BaseCommand extends Command
         return array_merge(
             [$this->getMigrationPath()], $this->migrator->paths()
         );
+    }
+
+    /**
+     * Get the version we're upgrading or rolling back to
+     *
+     * @return string|null
+     * @throws \RuntimeException
+     */
+    protected function getToVersion()
+    {
+        if (!$this->hasOption('to') || null === $this->option('to')) {
+            return null;
+        }
+
+        $validator = Validator::make(
+            ['to' => $this->option('to')],
+            ['to' => 'regex:/^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/i']
+        );
+
+        if ($validator->fails()) {
+            throw new RuntimeException('The --to option has an invalid argument value. This must be a semantic version of ProcessMaker, e.g. \"4.2.28\"');
+        }
+
+        return $this->option('to');
     }
 
     /**
