@@ -425,10 +425,10 @@ class TasksTest extends TestCase
             'user_id' => $this->user->id,
             'status' => 'ACTIVE',
         ]);
-        $params = ['status' => 'COMPLETED', 'data' => ['foo' => '<p>bar</p>', '_DO_NOT_SANITIZE' => '[]']];
+        $params = ['status' => 'COMPLETED', 'data' => ['foo' => '<p>bar</p>']];
         WorkflowManager::shouldReceive('completeTask')
             ->once()
-            ->with(\Mockery::any(), \Mockery::any(), \Mockery::any(), ['foo' => 'bar', '_DO_NOT_SANITIZE' => '[]']);
+            ->with(\Mockery::any(), \Mockery::any(), \Mockery::any(), ['foo' => 'bar']);
         $response = $this->apiCall('PUT', '/tasks/' . $token->id, $params);
         $this->assertStatus(200, $response);
     }
@@ -461,16 +461,14 @@ class TasksTest extends TestCase
         $params = ['status' => 'COMPLETED', 'data' => [
             'input1' => '<p>foo</p>',
             'richtext1' => '<p>bar</p>',
-            'richtext2' => '<p>another</p>',
-            '_DO_NOT_SANITIZE' => '["richtext1","richtext2"]'
+            'richtext2' => '<p>another</p>'
         ]];
         WorkflowManager::shouldReceive('completeTask')
             ->once()
             ->with(\Mockery::any(), \Mockery::any(), \Mockery::any(), [
                 'input1' => 'foo',
                 'richtext1' => '<p>bar</p>', // do not sanitize rich text
-                'richtext2' => '<p>another</p>',
-                '_DO_NOT_SANITIZE' => '["richtext1","richtext2"]'
+                'richtext2' => '<p>another</p>'
             ]);
         $response = $this->apiCall('PUT', '/tasks/' . $token->id, $params);
         $this->assertStatus(200, $response);

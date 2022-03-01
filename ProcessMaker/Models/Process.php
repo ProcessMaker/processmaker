@@ -96,14 +96,12 @@ use Throwable;
  * ),
  * @OA\Schema(
  *     schema="ProcessStartEvents",
- *     @OA\Schema(
- *         @OA\Property(property="eventDefinitions", type="object"),
- *         @OA\Property(property="parallelMultiple", type="boolean"),
- *         @OA\Property(property="outgoing", type="object"),
- *         @OA\Property(property="incoming", type="object"),
- *         @OA\Property(property="id", type="string"),
- *         @OA\Property(property="name", type="string"),
- *     )
+ *     @OA\Property(property="eventDefinitions", type="object"),
+ *     @OA\Property(property="parallelMultiple", type="boolean"),
+ *     @OA\Property(property="outgoing", type="object"),
+ *     @OA\Property(property="incoming", type="object"),
+ *     @OA\Property(property="id", type="string"),
+ *     @OA\Property(property="name", type="string"),
  * ),
  * @OA\Schema(
  *     schema="ProcessWithStartEvents",

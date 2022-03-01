@@ -26,6 +26,11 @@ class CommentsSubscriber
         $token     = $event->token;
         $user_id   = $token->user ? $token->user_id : null;
         $user_name = $token->user ? $token->user->fullname : __('The System');
+
+        if (!is_int($token->process_request_id)) {
+            return;
+        }
+
         Comment::create([
             'type' => 'LOG',
             'user_id' => $user_id,
@@ -46,6 +51,11 @@ class CommentsSubscriber
     public function onActivitySkipped(ActivityInterface $activity, ProcessRequestToken $token)
     {
         $taskName = $token->getOwnerElement()->getName();
+
+        if (!is_int($token->getInstance()->getId())) {
+            return;
+        }
+
         Comment::create([
             'type' => 'LOG',
             'user_id' => null,
@@ -93,11 +103,16 @@ class CommentsSubscriber
             $flowLabel = array_key_exists('name', $flowProps) && $flowProps['name']
                 ? $flowProps['name']
                 : __('Label Undefined');
+
+            if (!is_int($token->getInstance()->getId())) {
+                return;
+            }
+
             Comment::create([
                 'type' => 'LOG',
                 'user_id' => $user_id,
                 'commentable_type' => ProcessRequest::class,
-                'commentable_id' => $token->getInstance()->id,
+                'commentable_id' => $token->getInstance()->getId(),
                 'subject' => 'Gateway',
                 'body' => $sourceLabel . ': ' . $flowLabel
             ]);

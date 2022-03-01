@@ -16,4 +16,6 @@ class MockRunner
         $res = eval(str_replace('<?php', '', $code));
         return ['output' => $res];
     }
+
+    public function setTokenId() {}
 }

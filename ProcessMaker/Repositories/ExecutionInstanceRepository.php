@@ -56,7 +56,8 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $process->getTransitions($storage->getFactory());
 
         //Load tokens:
-        foreach ($instance->tokens as $token) {
+        $tokens = $instance->tokens()->where('status', '!=', 'CLOSED')->get();
+        foreach ($tokens as $token) {
             $tokenInfo = [
                 'id' => $token->getKey(),
                 'status' => $token->status,

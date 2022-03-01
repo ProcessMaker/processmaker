@@ -327,8 +327,8 @@
           error(processRequestId) {
             this.redirect(`/requests/${this.task.process_request_id}`);
           },
-          redirectToTask(task) {
-            this.redirect(`/tasks/${task.id}/edit`);
+          redirectToTask(task, force = false) {
+            this.redirect(`/tasks/${task}/edit`, force);
           },
           closed(taskId) {
             // avoid redirection if using a customized renderer
@@ -392,8 +392,8 @@
                 });
             }
           },
-          redirect(to) {
-            if (this.redirectInProcess) {
+          redirect(to, forceRedirect = false) {
+            if (this.redirectInProcess && !forceRedirect) {
               return;
             }
             this.redirectInProcess = true;

@@ -2,9 +2,10 @@
 
 namespace ProcessMaker\Managers;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Arr;
+use ProcessMaker\Contracts\ServiceTaskImplementationInterface;
 use ProcessMaker\Jobs\BoundaryEvent;
 use ProcessMaker\Jobs\CallProcess;
 use ProcessMaker\Jobs\CatchEvent;
@@ -28,7 +29,6 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 
-
 class WorkflowManager
 {
 
@@ -45,6 +45,13 @@ class WorkflowManager
      * @var \Illuminate\Contracts\Validation\Validator $validator
      */
     protected $validator;
+
+    /**
+     * Service Task implementations
+     *
+     * @var array $serviceTaskImplementations
+     */
+    protected $serviceTaskImplementations = [];
 
     /**
      * Complete a task.
@@ -149,7 +156,7 @@ class WorkflowManager
      */
     public function runScripTask(ScriptTaskInterface $scriptTask, Token $token)
     {
-        Log::info('Dispatch a script task: ' . $scriptTask->getId());
+        Log::info('Dispatch a script task: ' . $scriptTask->getId() . ' #' . $token->getId());
         $instance = $token->processRequest;
         $process = $instance->process;
         RunScriptTask::dispatch($process, $instance, $token, [])->onQueue('bpmn');
@@ -302,5 +309,57 @@ class WorkflowManager
         $startEvent = $definitions->getDefinitions()->getStartEvent($startId);
         $instance = $this->triggerStartEvent($definitions, $startEvent, $data);
         return $instance->getDataStore()->getData();
+    }
+
+    /**
+     * Check if service task implementation exists
+     *
+     * @param string $implementation
+     *
+     * @return bool
+     */
+    public function registerServiceImplementation($implementation, $class)
+    {
+        if (!class_exists($class)) {
+            return false;
+        }
+
+        // check class instance of ServiceTaskImplementationInterface
+        if (!is_subclass_of($class, ServiceTaskImplementationInterface::class)) {
+            return false;
+        }
+
+        $this->serviceTaskImplementations[$implementation] = $class;
+
+        return true;
+    }
+
+    /**
+     * Check if service task implementation exists
+     *
+     * @param string $implementation
+     *
+     * @return bool
+     */
+    public function existsServiceImplementation($implementation)
+    {
+        return isset($this->serviceTaskImplementations[$implementation]) &&
+            class_exists($this->serviceTaskImplementations[$implementation]);
+    }
+
+    /**
+     * Run the service task implementation
+     * @param string $implementation
+     * @param array $dat
+     * @param array $config
+     * @param string $tokenId
+     *
+     * @return mixed
+     */
+    public function runServiceImplementation($implementation, array $data, array $config, $tokenId = '')
+    {
+        $class = $this->serviceTaskImplementations[$implementation];
+        $service = new $class();
+        return $service->run($data, $config, $tokenId);
     }
 }
