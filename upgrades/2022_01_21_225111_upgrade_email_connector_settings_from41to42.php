@@ -91,7 +91,9 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
      */
     public function preflightChecks()
     {
-        $this->clearCache();
+        Artisan::call('optimize:clear', [
+            '--quiet' => true
+        ]);
 
         if (!$this->connectorSendEmailInstalled()) {
             throw new RuntimeException('The package connector-send-email must be installed to run this upgrade.');
@@ -136,12 +138,12 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
     public function up()
     {
         // Now update the mail driver setting
-        $updated = $this->emailSetting()->fill([
+        $this->emailSetting()->fill([
             'config' => (string) array_search($this->emailDriver(), $this->drivers, true)
-        ])->save();
+        ]);
 
         // Update the setting and remove it from .env
-        if ($updated) {
+        if ($this->emailSetting()->save()) {
             $this->removeEnvValue('MAIL_DRIVER');
         }
 
@@ -184,8 +186,6 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
             if ($setting->save()) {
                 $this->removeEnvValue($variable_name);
             }
-
-            $this->clearCache();
         }
     }
 
@@ -197,16 +197,6 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
     public function down()
     {
         //
-    }
-
-    /**
-     * @return void
-     */
-    public function clearCache()
-    {
-        Artisan::call('optimize:clear', [
-            '--quiet' => true
-        ]);
     }
 
     /**
