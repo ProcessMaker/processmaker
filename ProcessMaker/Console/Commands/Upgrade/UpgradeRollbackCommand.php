@@ -2,12 +2,11 @@
 
 namespace ProcessMaker\Console\Commands\Upgrade;
 
-use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
 use Illuminate\Database\Migrations\Migrator;
 use Symfony\Component\Console\Input\InputOption;
 
-class UpgradeRollbackCommand extends Command
+class UpgradeRollbackCommand extends BaseCommand
 {
     use ConfirmableTrait;
 
@@ -56,7 +55,7 @@ class UpgradeRollbackCommand extends Command
             return;
         }
 
-        $this->migrator->setConnection($this->option('database'));
+        $this->migrator->setConnection($this->getDatabase());
 
         $this->migrator->rollback(
             $this->getMigrationPaths(), [

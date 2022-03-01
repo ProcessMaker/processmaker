@@ -30,6 +30,20 @@ class BaseCommand extends Command
     }
 
     /**
+     * Get the database name the upgrades will use
+     *
+     * @return string
+     */
+    protected function getDatabase()
+    {
+        if ($this->hasOption('database')) {
+            return $this->option('database');
+        }
+
+        return (string) config('database.connections.processmaker.database');
+    }
+
+    /**
      * Get the path to the migration directory.
      *
      * @return string

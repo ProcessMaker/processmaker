@@ -38,8 +38,8 @@ class UpgradeMigrationRepository extends DMR implements MigrationRepositoryInter
     {
         return $this->table()
                 ->orderBy('batch', 'asc')
-                ->orderBy('migration', 'asc')
-                ->pluck('migration')->all();
+                ->orderBy('upgrade', 'asc')
+                ->pluck('upgrade')->all();
     }
 
     /**
@@ -52,7 +52,7 @@ class UpgradeMigrationRepository extends DMR implements MigrationRepositoryInter
     {
         $query = $this->table()->where('batch', '>=', '1');
 
-        return $query->orderBy('migration', 'desc')->take($steps)->get()->all();
+        return $query->orderBy('upgrade', 'desc')->take($steps)->get()->all();
     }
 
     /**
@@ -64,7 +64,7 @@ class UpgradeMigrationRepository extends DMR implements MigrationRepositoryInter
     {
         $query = $this->table()->where('batch', $this->getLastBatchNumber());
 
-        return $query->orderBy('migration', 'desc')->get()->all();
+        return $query->orderBy('upgrade', 'desc')->get()->all();
     }
 
     /**
@@ -76,7 +76,7 @@ class UpgradeMigrationRepository extends DMR implements MigrationRepositoryInter
      */
     public function log($file, $batch)
     {
-        $record = ['migration' => $file, 'batch' => $batch];
+        $record = ['upgrade' => $file, 'batch' => $batch];
 
         $this->table()->insert($record);
     }
@@ -89,7 +89,7 @@ class UpgradeMigrationRepository extends DMR implements MigrationRepositoryInter
      */
     public function delete($migration)
     {
-        $this->table()->where('migration', $migration->migration)->delete();
+        $this->table()->where('upgrade', $migration->migration)->delete();
     }
 
     /**
@@ -126,7 +126,7 @@ class UpgradeMigrationRepository extends DMR implements MigrationRepositoryInter
             // migrations have actually run for the application. We'll create the
             // table to hold the migration file's path as well as the batch ID.
             $table->increments('id');
-            $table->string('migration');
+            $table->string('upgrade');
             $table->integer('batch');
         });
     }

@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Database\Migrations\Migrator;
 use Symfony\Component\Console\Input\InputOption;
 
-class UpgradeStatusCommand extends Command
+class UpgradeStatusCommand extends BaseCommand
 {
     /**
      * The name and signature of the console command.
@@ -50,7 +50,7 @@ class UpgradeStatusCommand extends Command
      */
     public function handle()
     {
-        $this->migrator->setConnection($this->option('database'));
+        $this->migrator->setConnection($this->getDatabase());
 
         if (! $this->migrator->repositoryExists()) {
             return $this->error('No migrations found.');
@@ -102,7 +102,6 @@ class UpgradeStatusCommand extends Command
     {
         return [
             ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
-
             ['path', null, InputOption::VALUE_OPTIONAL, 'The path of migrations files to use.'],
         ];
     }

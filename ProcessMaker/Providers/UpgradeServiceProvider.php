@@ -62,7 +62,7 @@ class UpgradeServiceProvider extends ServiceProvider
     protected function registerRepository()
     {
         $this->app->singleton('upgrade.repository', function ($app) {
-            $table = $app['config']['database.upgrade_migrations'];
+            $table = $app['config']['database.upgrades'];
 
             return new UpgradeMigrationRepository($app['db'], $table);
         });

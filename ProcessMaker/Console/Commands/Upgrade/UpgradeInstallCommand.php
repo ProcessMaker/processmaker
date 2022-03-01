@@ -2,11 +2,10 @@
 
 namespace ProcessMaker\Console\Commands\Upgrade;
 
-use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Illuminate\Database\Migrations\MigrationRepositoryInterface;
 
-class UpgradeInstallCommand extends Command
+class UpgradeInstallCommand extends BaseCommand
 {
     /**
      * The console command name.

@@ -2,11 +2,10 @@
 
 namespace ProcessMaker\Console\Commands\Upgrade;
 
-use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
 use Symfony\Component\Console\Input\InputOption;
 
-class UpgradeRefreshCommand extends Command
+class UpgradeRefreshCommand extends BaseCommand
 {
     use ConfirmableTrait;
 

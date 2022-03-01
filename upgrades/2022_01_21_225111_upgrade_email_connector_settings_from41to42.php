@@ -1,13 +1,13 @@
 <?php
 
 use ProcessMaker\Models\Setting;
+use ProcessMaker\Upgrades\UpgradeMigration;
 use ProcessMaker\Packages\Connectors\Email\EmailConfig;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
-class UpgradeEmailConnectorSettingsFrom41to42 extends Migration
+class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
 {
     protected $from = '4.1';
 

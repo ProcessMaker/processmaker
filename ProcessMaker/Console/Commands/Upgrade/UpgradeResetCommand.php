@@ -2,12 +2,11 @@
 
 namespace ProcessMaker\Console\Commands\Upgrade;
 
-use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
 use Illuminate\Database\Migrations\Migrator;
 use Symfony\Component\Console\Input\InputOption;
 
-class UpgradeResetCommand extends Command
+class UpgradeResetCommand extends BaseCommand
 {
     use ConfirmableTrait;
 
@@ -56,7 +55,7 @@ class UpgradeResetCommand extends Command
             return;
         }
 
-        $this->migrator->setConnection($this->option('database'));
+        $this->migrator->setConnection($this->getDatabase());
 
         // First, we'll make sure that the migration table actually exists before we
         // start trying to rollback and re-run all of the migrations. If it's not
