@@ -35,15 +35,12 @@ abstract class UpgradeMigration extends Migration
      * migrator will do this automatically and fail if the correct
      * version(s) are not present.
      *
-     * Return false if the conditions are *NOT* correct and if this is not
-     * a required upgrade, then it will be skipped. Otherwise this will
-     * result in an exception being thrown and the upgrades will be
-     * kept from continuing to run.
+     * Throw a RuntimeException if the conditions to run this upgrade migration
+     * are *NOT* correct. If this is not a required upgrade, then it will be
+     * skipped. Otherwise, the thrown exception will stop the remaining
+     * upgrade migrations from running.
      *
-     * Returning void or null is equivalent to return true, meaning the
-     * checks were successful.
-     *
-     * @return void|bool
+     * @return void
      */
     protected function preflightChecks()
     {

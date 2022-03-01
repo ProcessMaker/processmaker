@@ -2,7 +2,7 @@
 
 namespace ProcessMaker\Upgrades;
 
-use Illuminate\Support\Str;
+use RuntimeException;
 use Composer\Semver\Comparator;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Migrations\Migrator;
@@ -58,6 +58,111 @@ class UpgradeMigrator extends Migrator
     }
 
     /**
+     * Run "up" a migration instance.
+     *
+     * @param  string  $file
+     * @param  int  $batch
+     * @param  bool  $pretend
+     *
+     * @return void
+     */
+    protected function runUp($file, $batch, $pretend)
+    {
+        // First we will resolve a "real" instance of the migration class from this
+        // migration file name. Once we have the instances we can run the actual
+        // command such as "up" or "down", or we can just simulate the action.
+        $migration = $this->resolve(
+            $name = $this->getMigrationName($file)
+        );
+
+        if ($pretend) {
+            return $this->pretendToRun($migration, 'up');
+        }
+
+        $this->note("<comment>Preflight Checks:</comment> {$name}");
+
+        $startTime = microtime(true);
+
+        if (!$this->runMigrationPreflightChecks($migration, $name)) {
+            if (!$migration->required) {
+                return;
+            }
+
+            throw new RuntimeException('Upgrade migrations halted: One or more preflight checks failed');
+        }
+
+        $this->note("<comment>Upgrading:</comment> {$name}");
+
+        $this->runMigration($migration, 'up');
+
+        $runTime = round(microtime(true) - $startTime, 2);
+
+        // Once we have run a migrations class, we will log that it was run in this
+        // repository so that we don't try to run it next time we do a migration
+        // in the application. A migration repository keeps the migrate order.
+        $this->repository->log($name, $batch);
+
+        $this->note("<info>Upgraded:</info>  {$name} ({$runTime} seconds)");
+    }
+
+    /**
+     * @param $migration
+     *
+     * @return bool
+     */
+    protected function runMigrationPreflightChecks($migration, $name)
+    {
+        if (!method_exists($migration, 'preflightChecks')) {
+            return true;
+        }
+
+        // Required migrations can't be skipped if the preflight checks fail, and
+        // each upgrade migration will throw a RuntimeException if the preflight
+        // check fails, so if we encounter one on a required upgrade migration,
+        // we'll note the exception and then throw an exception to stop the
+        // other upgrade migrations from running.
+        try {
+            $migration->preflightChecks();
+        } catch (RuntimeException $exception) {
+            $this->note("<comment>Preflight Checks Failed:</comment> {$name}");
+            $this->note("<comment>Preflight Checks Failed Reason:</comment> {$exception->getMessage()}");
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param  array  $migrations
+     *
+     * @return array
+     */
+    protected function compatibleMigrations(array $migrations): array
+    {
+        return Collection::make($migrations)->reject(function ($file) {
+            return Comparator::lessThanOrEqualTo(
+                $this->to,
+                $this->getMigrationToVersion($file)
+            );
+        })->values()->all();
+    }
+
+    /**
+     * @param  string  $file
+     *
+     * @return mixed
+     */
+    protected function getMigrationToVersion(string $file)
+    {
+        $migration = $this->resolve(
+            $this->getMigrationName($file)
+        );
+
+        return $migration->to;
+    }
+
+    /**
      * @param  array  $options
      *
      * @return void
@@ -70,37 +175,34 @@ class UpgradeMigrator extends Migrator
 
         if (array_key_exists('to', $options)) {
             $this->setToVersion($options['to']);
-        } else {
+        }
+
+        if (blank($this->to)) {
             $this->setToVersion($this->current);
         }
     }
 
     /**
-     * @param  array  $migrations
+     * @param $to string
      *
-     * @return array
+     * @return void
      */
-    protected function compatibleMigrations(array $migrations): array
+    public function setToVersion($to)
     {
-        return Collection::make($migrations)->reject(function ($file) {
-            $migration = $this->resolve(
-                $this->getMigrationName($file)
-            );
-
-            return Comparator::lessThanOrEqualTo(
-                $this->to,
-                $migration->to
-            );
-        })->values()->all();
+        if (is_string($to)) {
+            $this->to = $to;
+        }
     }
 
-    public function setToVersion(string $to)
+    /**
+     * @param $current string
+     *
+     * @return void
+     */
+    public function setCurrentVersion($current)
     {
-        $this->to = $to;
-    }
-
-    public function setCurrentVersion(string $current)
-    {
-        $this->current = $current;
+        if (is_string($current)) {
+            $this->current = $current;
+        }
     }
 }

@@ -9,11 +9,36 @@ use Illuminate\Support\Str;
 
 class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
 {
+    /**
+     * The version of ProcessMaker being upgraded *to*
+     *
+     * @var string example: 4.2.28
+     */
     public $from = '4.1.*';
 
+    /**
+     * The version of ProcessMaker being upgraded *from*
+     *
+     * @var string example: 4.1.23
+     */
     public $to = '4.2.29-RC';
 
+    /**
+     * Upgrade migration cannot be skipped if the pre-upgrade checks fail
+     *
+     * @var bool
+     */
     public $required = true;
+
+    /**
+     * @var string
+     */
+    protected $driver;
+
+    /**
+     * @var \ProcessMaker\Models\Setting|null
+     */
+    protected $setting;
 
     /**
      * @var array
@@ -48,11 +73,61 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
         $this->settings_groups = $config::settings_groups;
     }
 
-    public function test()
+    /**
+     * Run any validations/pre-run checks to ensure the environment, settings,
+     * packages installed, etc. are right correct to run this upgrade.
+     *
+     * There is no need to check against the version(s) as the upgrade
+     * migrator will do this automatically and fail if the correct
+     * version(s) are not present.
+     *
+     * Throw a RuntimeException if the conditions to run this upgrade migration
+     * are *NOT* correct. If this is not a required upgrade, then it will be
+     * skipped. Otherwise, the thrown exception will stop the remaining
+     * upgrade migrations from running.
+     *
+     * @return void
+     * @throws \Exception
+     */
+    public function preflightChecks()
     {
-        // Test if we can run
+        if (!$this->connectorSendEmailInstalled()) {
+            throw new RuntimeException('The package connector-send-email must be installed to run this upgrade.');
+        }
 
-        Artisan::printLog('Test');
+        // Clear out any cached environment variable
+        Artisan::call('optimize:clear', [
+            '--quiet' => true
+        ]);
+
+        // If the .env file doesn't exist, we have nothing to upgrade from
+        if (!$this->envFileExists()) {
+            throw new RuntimeException('The .env file is missing');
+        }
+
+        // If we don't know which driver we're taking from the
+        // .env file, then we shouldn't continue since we won't
+        // know where to set all of the other settings, e.g.
+        // MAIL_HOST, MAIL_ENCRYPTION, etc.
+        if (!$this->emailDriver()) {
+            throw new RuntimeException('The MAIL_DRIVER environment variable was not found in the .env file. This is required to run the upgrade process.');
+        }
+
+        // Validate the driver and bail if it's not supported
+        if (!in_array($this->emailDriver(), $this->drivers, true)) {
+            throw new RuntimeException("Unsupported MAIL_DRIVER found in the .env file: \"".$this->emailDriver()."\"");
+        }
+
+        // First, let's find the primary mail driver setting
+        $this->emailSetting(
+            $mail_driver_key = $this->prefix.'MAIL_DRIVER'
+        );
+
+        // Double-check to make sure we found the right Setting and if so,
+        // all of our pre-flight checks before running the upgrade
+        if (!$this->emailSetting() instanceof Setting) {
+            throw new RuntimeException("Setting with key \"$mail_driver_key\" was not found.");
+        }
     }
 
     /**
@@ -63,54 +138,11 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
      */
     public function up()
     {
-        if (!$this->connectorSendEmailInstalled()) {
-            logger()->error('The package connector-send-email must be installed to run this upgrade.', [
-                'package' => 'connector-send-email',
-                'class' => __CLASS__,
-                'method' => __METHOD__
-            ]);
-
-            return;
-        }
-
-        // Clear out any cached environment variable
-        Artisan::call('optimize:clear', [
-            '--quiet' => true
-        ]);
-
-        // If the .env file doesn't exist, we have nothing to upgrade from
-        if (!$this->envFileExists()) {
-            throw new RuntimeException('Upgrade migration failed: .env file is missing');
-        }
-
-        $driver = env('MAIL_DRIVER');
-
-        // If we don't know which driver we're taking from the
-        // .env file, then we shouldn't continue since we won't
-        // know where to set all of the other settings, e.g.
-        // MAIL_HOST, MAIL_ENCRYPTION, etc.
-        if (!$driver) {
-            throw new RuntimeException('Upgrade migration failed: The MAIL_DRIVER environment variable was not found in the .env file. This is required to run the upgrade process.');
-        }
-
-        // Validate the driver and bail if it's not supported
-        if (!in_array($driver, $this->drivers, true)) {
-            throw new RuntimeException("Unsupported MAIL_DRIVER found in the .env file: \"$driver\"");
-        }
-
-        // First, let's find the primary mail driver setting
-        $mail_driver_key = $this->prefix.'MAIL_DRIVER';
-        $mail_driver_setting = Setting::byKey($mail_driver_key);
-
-        if (!$mail_driver_setting instanceof Setting) {
-            throw new RuntimeException("Setting with key \"$mail_driver_key\" was not found.");
-        }
-
         // Now update the mail driver setting
-        $mail_driver_setting->config = (string) array_search($driver, $this->drivers, true);
+        $this->emailSetting()->config = (string) array_search($this->emailDriver(), $this->drivers, true);
 
         // Update the setting and remove it from .env
-        if ($mail_driver_setting->save()) {
+        if ($this->emailSetting()->save()) {
             $this->removeEnvValue('MAIL_DRIVER');
         }
 
@@ -118,7 +150,7 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
         // and if we find the value, create a setting with
         // the variable name/value and then remove it
         // from the .env file
-        foreach ($this->settings_groups[$driver] as $variable_name) {
+        foreach ($this->settings_groups[$this->emailDriver()] as $variable_name) {
             // We've already set this so we can skip it
             if ($variable_name === 'MAIL_DRIVER') {
                 continue;
@@ -131,15 +163,16 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
             }
 
             if ($variable_name === 'MAIL_ENCRYPTION') {
-                if (!in_array($env_value, $this->encryption, true)) {
+                if (in_array($env_value, $this->encryption, true)) {
                     continue;
                 }
 
                 $env_value = (string) array_search($env_value, array_values($this->encryption), true);
             }
 
-            $setting_key = $this->prefix.$variable_name;
-            $setting = Setting::byKey($setting_key);
+            $setting = Setting::byKey(
+                $setting_key = $this->prefix.$variable_name
+            );
 
             if (!$setting instanceof Setting) {
                 logger()->warning("Warning while running upgrade migration: Setting with key: $setting_key not found, skipping...", [
@@ -151,16 +184,58 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
 
             $setting->config = $env_value;
 
-            if ($setting->save()) {
-                $this->removeEnvValue($variable_name);
-
-                logger("Upgrade migration: Setting with key $setting_key successfully updated", [
-                    'migration' => __FILE__
-                ]);
+            if (!$setting->save()) {
+                return;
             }
+
+            $this->removeEnvValue($variable_name);
+
+            logger("Upgrade migration: Setting with key $setting_key successfully updated", [
+                'migration' => __FILE__
+            ]);
         }
     }
 
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        //
+    }
+
+    /**
+     * @return mixed|string
+     */
+    public function emailDriver()
+    {
+        if (blank($this->driver)) {
+            $this->driver = env('MAIL_DRIVER');
+        }
+
+        return $this->driver;
+    }
+
+    /**
+     * @param  string  $key
+     *
+     * @return \ProcessMaker\Models\Setting|null
+     * @throws \Exception
+     */
+    public function emailSetting(string $key = null)
+    {
+        if (! $this->setting instanceof Setting && is_string($key)) {
+            $this->setting = Setting::byKey($key);
+        }
+
+        return $this->setting;
+    }
+
+    /**
+     * @return bool
+     */
     protected function connectorSendEmailInstalled()
     {
         return File::exists(base_path('vendor/processmaker/connector-send-email'));
@@ -203,15 +278,5 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
 
         fclose($file_handle);
         file_put_contents($file_path, $file_contents);
-    }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        //
     }
 }
