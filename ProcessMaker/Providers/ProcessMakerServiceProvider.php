@@ -3,9 +3,6 @@
 namespace ProcessMaker\Providers;
 
 use Blade;
-use ProcessMaker\Upgrades\UpgradeMigrator;
-use Illuminate\Database\Migrations\Migrator;
-use Illuminate\Database\Migrations\DatabaseMigrationRepository;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Managers\DockerManager;

@@ -2,17 +2,17 @@
 
 namespace ProcessMaker\Providers;
 
-use ProcessMaker\Upgrades\UpgradeCreator;
-use ProcessMaker\Upgrades\UpgradeMigrationRepository;
-use ProcessMaker\Upgrades\Commands\UpgradeCommand;
-use ProcessMaker\Upgrades\Commands\UpgradeMakeCommand;
-use ProcessMaker\Upgrades\Commands\UpgradeResetCommand;
-use ProcessMaker\Upgrades\Commands\UpgradeStatusCommand;
-use ProcessMaker\Upgrades\Commands\UpgradeInstallCommand;
-use ProcessMaker\Upgrades\Commands\UpgradeRefreshCommand;
-use ProcessMaker\Upgrades\Commands\UpgradeRollbackCommand;
-use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Support\ServiceProvider;
+use ProcessMaker\Upgrades\UpgradeCreator;
+use Illuminate\Database\Migrations\Migrator;
+use ProcessMaker\Upgrades\UpgradeMigrationRepository;
+use ProcessMaker\Console\Commands\Upgrade\UpgradeCommand;
+use ProcessMaker\Console\Commands\Upgrade\UpgradeMakeCommand;
+use ProcessMaker\Console\Commands\Upgrade\UpgradeResetCommand;
+use ProcessMaker\Console\Commands\Upgrade\UpgradeStatusCommand;
+use ProcessMaker\Console\Commands\Upgrade\UpgradeInstallCommand;
+use ProcessMaker\Console\Commands\Upgrade\UpgradeRefreshCommand;
+use ProcessMaker\Console\Commands\Upgrade\UpgradeRollbackCommand;
 
 class UpgradeServiceProvider extends ServiceProvider
 {

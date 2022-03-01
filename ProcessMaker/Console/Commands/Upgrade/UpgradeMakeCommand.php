@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Upgrades\Commands;
+namespace ProcessMaker\Console\Commands\Upgrade;
 
 use Illuminate\Support\Str;
 use Illuminate\Support\Composer;
