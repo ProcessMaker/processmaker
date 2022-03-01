@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Upgrades;
 
+use Composer\Semver\Comparator;
 use Illuminate\Database\Migrations\MigrationRepositoryInterface;
 use Illuminate\Database\Migrations\DatabaseMigrationRepository as DMR;
 

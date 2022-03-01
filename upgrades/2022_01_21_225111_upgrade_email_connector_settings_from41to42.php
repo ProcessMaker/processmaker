@@ -9,11 +9,11 @@ use Illuminate\Support\Str;
 
 class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
 {
-    protected $from = '4.1';
+    public $from = '4.1.*';
 
-    protected $to = '4.2';
+    public $to = '4.2.29-RC';
 
-    protected $required = true;
+    public $required = true;
 
     /**
      * @var array

@@ -2,7 +2,10 @@
 
 namespace ProcessMaker\Console\Commands\Upgrade;
 
+use RuntimeException;
+use Composer\Semver\Comparator;
 use Illuminate\Console\ConfirmableTrait;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Migrations\Migrator;
 
 class UpgradeCommand extends BaseCommand
@@ -51,27 +54,18 @@ class UpgradeCommand extends BaseCommand
      */
     public function handle()
     {
-        $to = $this->getToVersion();
-
-        dump($to);
-
-        if (! $this->confirmToProceed()) {
+        if (!$this->confirmToProceed()) {
             return;
         }
 
         $this->prepareDatabase();
 
-        // Next, we will check to see if a path option has been defined. If it has
-        // we will use the path relative to the root of this installation folder
-        // so that migrations may be run for any path within the applications.
-        $this->migrator->run($this->getMigrationPaths());
+        $this->migrator->setOutput($this->output);
 
-        // Once the migrator has run we will grab the note output and send it out to
-        // the console screen, since the migrator itself functions without having
-        // any instances of the OutputInterface contract passed into the class.
-        foreach ($this->migrator->getNotes() as $note) {
-            $this->output->writeln($note);
-        }
+        $this->migrator->run($this->getMigrationPaths(), [
+            'to' /********/ => $this->getToVersion(),
+            'current' /***/ => $this->getCurrentVersion()
+        ]);
     }
 
     /**

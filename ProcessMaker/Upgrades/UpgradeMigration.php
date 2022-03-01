@@ -11,21 +11,21 @@ abstract class UpgradeMigration extends Migration
      *
      * @var string example: 4.2.28
      */
-    protected $to = '';
+    public $to = '';
 
     /**
      * The version of ProcessMaker being upgraded *from*
      *
      * @var string example: 4.1.23
      */
-    protected $from = '';
+    public $from = '';
 
     /**
      * Upgrade migration cannot be skipped if the pre-upgrade checks fail
      *
      * @var bool
      */
-    protected $required = true;
+    public $required = true;
 
     /**
      * Run any validations/pre-run checks to ensure the environment, settings,

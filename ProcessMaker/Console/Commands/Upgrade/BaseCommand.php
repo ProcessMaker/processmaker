@@ -5,8 +5,6 @@ namespace ProcessMaker\Console\Commands\Upgrade;
 use RuntimeException;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Validator;
-use function collect;
-use function base_path;
 
 class BaseCommand extends Command
 {
@@ -29,6 +27,20 @@ class BaseCommand extends Command
         return array_merge(
             [$this->getMigrationPath()], $this->migrator->paths()
         );
+    }
+
+    /**
+     * Get the current running version of ProcessMaker (as set in composer.json)
+     *
+     * @return string|void
+     */
+    protected function getCurrentVersion()
+    {
+        $composer = json_decode(file_get_contents(base_path('/composer.json')));
+
+        if (property_exists($composer, 'version')) {
+            return $composer->version;
+        }
     }
 
     /**
