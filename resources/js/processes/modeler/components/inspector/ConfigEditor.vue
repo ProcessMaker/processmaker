@@ -43,7 +43,7 @@
         watch: {
             value: {
                 handler() {
-                    this.code = this.value;
+                    this.code = this.value ? this.value : '';
                 },
                 immediate: true,
             },
