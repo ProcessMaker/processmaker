@@ -748,8 +748,9 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public function updateCatchEvents()
     {
         $signalEvents = [];
-        foreach ($this->tokens as $token) {
-            $element = $token->getDefinition(true, $this->tokens->toArray());
+        $activeTokens = $this->tokens()->where('status', '!=', 'CLOSED')->get();
+        foreach ($activeTokens as $token) {
+            $element = $token->getDefinition(true);
             if ($element instanceof IntermediateCatchEventInterface) {
                 foreach ($element->getEventDefinitions() as $eventDefinition) {
                     if ($eventDefinition instanceof SignalEventDefinitionInterface) {

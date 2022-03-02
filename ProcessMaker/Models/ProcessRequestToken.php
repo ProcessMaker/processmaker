@@ -295,7 +295,7 @@ class ProcessRequestToken extends Model implements TokenInterface
      *
      * @return array|\ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface
      */
-    public function getDefinition($asObject = false, $par = null)
+    public function getDefinition($asObject = false)
     {
         $request = $this->processRequest ?: $this->getInstance();
         $process = $request->processVersion ?: $request->process;
