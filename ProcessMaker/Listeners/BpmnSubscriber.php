@@ -155,7 +155,6 @@ class BpmnSubscriber
      */
     public function onActivityClosed(ActivityClosedEvent $event)
     {
-        Log::info('ActivityClosed: ' . json_encode($event->token->getProperties()));
     }
 
 
