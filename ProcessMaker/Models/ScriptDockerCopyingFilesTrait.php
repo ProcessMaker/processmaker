@@ -133,11 +133,6 @@ trait ScriptDockerCopyingFilesTrait
     {
         $cmd = Docker::command($timeout) . sprintf(' start %s -a 2>&1', $container);
 
-        Log::debug('Running Docker container', [
-            'timeout' => $timeout,
-            'cmd' => $cmd,
-        ]);
-
         $line = exec($cmd, $output, $returnCode);
         if ($returnCode) {
             if ($returnCode == 137) {

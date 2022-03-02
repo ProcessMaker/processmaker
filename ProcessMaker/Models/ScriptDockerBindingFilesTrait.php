@@ -65,11 +65,6 @@ trait ScriptDockerBindingFilesTrait
             $command
         );
 
-        Log::debug('Running Docker container', [
-            'timeout' => $timeout,
-            'cmd' => $cmd,
-        ]);
-
         $line = exec($cmd, $output, $returnCode);
         if ($returnCode) {
             if ($returnCode == 137) {

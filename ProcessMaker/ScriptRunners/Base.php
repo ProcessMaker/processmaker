@@ -2,7 +2,7 @@
 
 namespace ProcessMaker\ScriptRunners;
 
-use Log;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\ScriptDockerBindingFilesTrait;
 use ProcessMaker\Models\ScriptDockerCopyingFilesTrait;
@@ -107,9 +107,6 @@ abstract class Base
         // Execute docker
         $executeMethod = config('app.processmaker_scripts_docker_mode') === 'binding'
             ? 'executeBinding' : 'executeCopying';
-        Log::debug('Executing docker ' . $this->getRunId() . ':', [
-            'executeMethod' => $executeMethod,
-        ]);
         $response = $this->$executeMethod($dockerConfig);
 
         // Delete the token we created for this run
@@ -121,9 +118,9 @@ abstract class Base
         $returnCode = $response['returnCode'];
         $stdOutput = $response['output'];
         $output = $response['outputs']['response'];
-        Log::debug("Docker returned " . $this->getRunId(). ': ' . substr(json_encode($response), 0, 500));
         if ($returnCode || $stdOutput) {
             // Has an error code
+            Log::debug("Docker returned " . $this->getRunId(). ': ' . substr(json_encode($response), 0, 500));
             throw new RuntimeException("(Code: {$returnCode})" . implode("\n", $stdOutput));
         } else {
             // Success

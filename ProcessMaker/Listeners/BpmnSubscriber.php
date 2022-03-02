@@ -118,7 +118,6 @@ class BpmnSubscriber
         if ($token->getInstance()->isNonPersistent()) {
             return;
         }
-        Log::info('Activity activated: ' . json_encode($token->getProperties()));
 
         // Do not send activated notification for self service tasks since
         // they do not have a user assigned yet.
@@ -140,7 +139,7 @@ class BpmnSubscriber
         if ($token->getInstance()->isNonPersistent()) {
             return;
         }
-        Log::info('Activity completed: ' . json_encode($token->getProperties()));
+        // Log::info('Activity completed: ' . json_encode($token->getProperties()));
 
         if ($token->element_type == 'task') {
             $notifiables = $token->getNotifiables('completed');
