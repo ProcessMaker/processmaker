@@ -211,7 +211,9 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
      */
     public function down()
     {
-        dump($this->getAppendedComments());
+        $this->removeSnapshotComments();
+
+        $this->uncommentLines();
     }
 
     /**
@@ -226,7 +228,7 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
         }
 
         foreach ($env as $variable => $value) {
-            $this->removeEnvFileValue($variable);
+            $this->removeLineContaining($variable);
         }
 
         $this->appendSystemComment('The comments below were created during an automated upgrade migration.');
@@ -241,6 +243,35 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
             }
 
             $this->appendMigrationComment("{$variable}={$value}");
+        }
+    }
+
+    /**
+     * Remove the meta-information left by the upgrade migration
+     *
+     * @return void
+     */
+    protected function removeSnapshotComments()
+    {
+        foreach ($this->getAppendedComments([self::SYSTEM_COMMENT_PREFIX]) as $line) {
+            $this->removeLineContaining($line);
+        }
+    }
+
+    /**
+     * @return void
+     */
+    protected function uncommentLines()
+    {
+        foreach ($this->getAppendedComments([$prefix = self::VARIABLE_COMMENT_PREFIX]) as $line) {
+            // Format what we need to re-append to the env file
+            $uncommented = str_replace("# {$prefix}: ", '', $line);
+
+            // Remove the comment
+            $this->removeLineContaining($line);
+
+            // Re-append the variable and value
+            File::append(base_path('.env'), "#{$uncommented}".PHP_EOL);
         }
     }
 
@@ -358,11 +389,11 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
     /**
      * Remove any line(s) containing a set variable in .env
      *
-     * @param  string  $variable_name
+     * @param  string  $search
      *
      * @return void
      */
-    protected function removeEnvFileValue(string $variable_name)
+    protected function removeLineContaining(string $search)
     {
         if (!$this->envFileAvailable()) {
             return;
@@ -377,7 +408,7 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
         }
 
         while (($line = fgets($file_handle)) !== false) {
-            if (!Str::contains($line, $variable_name)) {
+            if (!Str::contains($line, $search)) {
                 $file_contents .= $line;
             }
         }
