@@ -9,12 +9,15 @@ use Illuminate\Support\Str;
 
 class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
 {
+    public const SYSTEM_COMMENT_PREFIX = 'System:';
+    public const VARIABLE_COMMENT_PREFIX = 'Migrated:';
+
     /**
      * The version of ProcessMaker being upgraded *to*
      *
      * @var string example: 4.2.28
      */
-    public $to = '4.2.29';
+    public $to = '4.2.29-RC';
 
     /**
      * Upgrades migration cannot be skipped if the pre-upgrade checks fail
@@ -99,7 +102,7 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
         }
 
         // If the .env file doesn't exist, we have nothing to upgrade from
-        if (!$this->envFileExists()) {
+        if (!$this->envFileAvailable()) {
             throw new RuntimeException('The .env file is missing');
         }
 
@@ -134,16 +137,18 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
      */
     public function up()
     {
+        // Save all of the removed env variable names/values
+        $env = [];
+
         // Setup the new config attribute for the related Setting
-        $attributes = ['config' => (string) array_search($this->getDriverFromEnv(), $this->drivers)];
+        $attributes = ['config' => (string) array_search(
+            $driver = $this->getDriverFromEnv(), $this->drivers
+        )];
 
         // Fill the model's attributes with the
         // updates one and save it
-        $this->getDriverSetting()->fill($attributes);
-
-        // Update the setting and remove it from .env
-        if ($this->getDriverSetting()->save()) {
-            $this->removeEnvValue('MAIL_DRIVER');
+        if ($this->getDriverSetting()->fill($attributes)->save()) {
+            $env['MAIL_DRIVER'] = $driver;
         }
 
         // Loop through the variables for a given driver
@@ -159,12 +164,22 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
 
             $env_value = env($variable_name);
 
+            // If we can't a value for it, then skip it
             if (null === $env_value) {
                 continue;
             }
 
+            // Make sure we set the index number for
+            // the Setting config attribute
             if ($variable_name === 'MAIL_ENCRYPTION') {
-                $env_value = (string) array_search($env_value, array_values($this->encryption), true);
+                // We want to save the actual .env value instead of
+                // the index number from the encryption array
+                $env[$variable_name] = $env_value;
+
+                // Now we can set it back to the index of the
+                // encryption array (as required by the way
+                // the config works for Settings)
+                $env_value = (string) array_search($env_value, array_values($this->encryption));
             }
 
             $setting = Setting::byKey($this->prefix.$variable_name);
@@ -176,9 +191,17 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
             $attributes = ['config' => $env_value];
 
             if ($setting->fill($attributes)->save()) {
-                $this->removeEnvValue($variable_name);
+                if ($variable_name !== 'MAIL_ENCRYPTION') {
+                    $env[$variable_name] = $env_value;
+                }
             }
         }
+
+        // Comment out the found environment variables
+        // and include a system message + prefix which
+        // will allow us to remove them during a
+        // rollback if necessary
+        $this->addSnapshotComments($env);
     }
 
     /**
@@ -188,19 +211,179 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
      */
     public function down()
     {
-        $settings = Setting::where('group', '=', $this->settings_group)
-                           ->whereNotNull('config')
-                           ->get();
+        dump($this->getAppendedComments());
+    }
 
-        if ($settings->isEmpty()) {
+    /**
+     * @param  array  $env
+     *
+     * @return void
+     */
+    protected function addSnapshotComments(array $env)
+    {
+        if (blank($env)) {
             return;
         }
 
-        foreach ($settings as $setting) {
-            $variable = str_replace($this->prefix, '', $setting->key);
-
-            dump($variable);
+        foreach ($env as $variable => $value) {
+            $this->removeEnvFileValue($variable);
         }
+
+        $this->appendSystemComment('The comments below were created during an automated upgrade migration.');
+        $this->appendSystemComment('Please leave this message and the comments in place.');
+        $this->appendSystemComment('Run on: '.now());
+        $this->appendSystemComment('Upgrade migration: '.str_replace('.php', '', basename(__FILE__)));
+
+        foreach ($env as $variable => $value) {
+            // Wrap env values containing a space with double quotes
+            if (Str::contains($value, " ")) {
+                $value = "\"{$value}\"";
+            }
+
+            $this->appendMigrationComment("{$variable}={$value}");
+        }
+    }
+
+    /**
+     * Grab all system and migration comments made in the .env file
+     *
+     * @param  array  $prefixes
+     *
+     * @return array
+     */
+    protected function getAppendedComments(array $prefixes = [])
+    {
+        $filtered = [];
+
+        if (blank($prefixes)) {
+            $prefixes = [
+                self::SYSTEM_COMMENT_PREFIX,
+                self::VARIABLE_COMMENT_PREFIX
+            ];
+        }
+
+        foreach ($this->getComments() as $line) {
+            foreach ($prefixes as $prefix) {
+
+                // We only want comments with one of the pre-defined prefixes
+                if (!Str::contains($line, $prefix)) {
+                    continue;
+                }
+
+                // This is to remove the actual prefix from the comment
+                // and then used to create a multi-dimensional array
+                // to group the different types of comments in
+                $comment = str_replace("# {$prefix}: ", '', $line);
+
+                // Reformat the prefix so we can key our array with it
+                $key = strtolower(
+                    str_replace(['#', " ", ':'], '', $prefix)
+                );
+
+                // Add an empty array if one doesn't exist for the key
+                if (!array_key_exists($key, $filtered)) {
+                    $filtered[$key] = [];
+                }
+
+                // Finally, add the comment into the keyed array
+                $filtered[$key][] = $comment;
+            }
+        }
+
+        return $filtered;
+    }
+
+    /**
+     * @param  string  $line
+     *
+     * @return void
+     */
+    protected function appendMigrationComment(string $line)
+    {
+        $this->appendComment(' '.self::VARIABLE_COMMENT_PREFIX.' '.$line);
+    }
+
+    /**
+     * @param  string  $line
+     *
+     * @return void
+     */
+    protected function appendSystemComment(string $line)
+    {
+        $this->appendComment(' '.self::SYSTEM_COMMENT_PREFIX.' '.$line);
+    }
+
+    /**
+     * Append a comment to the .env file
+     *
+     * @param  string  $line
+     *
+     * @return void
+     */
+    protected function appendComment(string $line)
+    {
+        if ($this->envFileAvailable()) {
+            File::append(base_path('.env'), "#{$line}".PHP_EOL);
+        }
+    }
+
+    /**
+     * Get all comment lines from the .env file as an array
+     *
+     * @return array
+     */
+    protected function getComments()
+    {
+        if (!$this->envFileAvailable()) {
+            return [];
+        }
+
+        $env = File::get(base_path('.env'));
+
+        return collect(explode(PHP_EOL, $env))->transform(function ($line) {
+            return str_replace(PHP_EOL, '', $line);
+        })->filter(function ($line) {
+            return Str::startsWith($line, '#');
+        })->values()->toArray();
+    }
+
+    /**
+     * @return bool
+     */
+    protected function envFileAvailable()
+    {
+        return File::exists($env = base_path('.env')) && File::isWritable($env);
+    }
+
+    /**
+     * Remove any line(s) containing a set variable in .env
+     *
+     * @param  string  $variable_name
+     *
+     * @return void
+     */
+    protected function removeEnvFileValue(string $variable_name)
+    {
+        if (!$this->envFileAvailable()) {
+            return;
+        }
+
+        $file_contents = '';
+        $file_path = base_path('.env');
+        $file_handle = fopen($file_path, 'rb');
+
+        if (!is_resource($file_handle)) {
+            return;
+        }
+
+        while (($line = fgets($file_handle)) !== false) {
+            if (!Str::contains($line, $variable_name)) {
+                $file_contents .= $line;
+            }
+        }
+
+        fclose($file_handle);
+        file_put_contents($file_path, $file_contents);
     }
 
     /**
@@ -236,44 +419,5 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
     protected function connectorSendEmailInstalled()
     {
         return File::exists(base_path('vendor/processmaker/connector-send-email'));
-    }
-
-    /**
-     * @return bool
-     */
-    protected function envFileExists()
-    {
-        return File::exists(base_path('.env'));
-    }
-
-    /**
-     * Remove any line(s) containing a set variable in .env
-     *
-     * @param  string  $variable_name
-     *
-     * @return void
-     */
-    protected function removeEnvValue(string $variable_name)
-    {
-        if (!$this->envFileExists()) {
-            return;
-        }
-
-        $file_contents = '';
-        $file_path = base_path('.env');
-        $file_handle = fopen($file_path, 'rb');
-
-        if (!is_resource($file_handle)) {
-            return;
-        }
-
-        while (($line = fgets($file_handle)) !== false) {
-            if (!Str::contains($line, $variable_name)) {
-                $file_contents .= $line;
-            }
-        }
-
-        fclose($file_handle);
-        file_put_contents($file_path, $file_contents);
     }
 }
