@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Console\Commands\Upgrade;
+namespace ProcessMaker\Upgrades\Commands;
 
 use Illuminate\Console\ConfirmableTrait;
 use Symfony\Component\Console\Input\InputOption;
@@ -30,7 +30,7 @@ class UpgradeRefreshCommand extends BaseCommand
      */
     public function handle()
     {
-        if (! $this->confirmToProceed()) {
+        if (!$this->confirmToProceed()) {
             return;
         }
 

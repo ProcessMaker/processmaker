@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Console\Commands\Upgrade;
+namespace ProcessMaker\Upgrades\Commands;
 
 use Illuminate\Support\Str;
 use Illuminate\Support\Composer;
@@ -103,7 +103,7 @@ class UpgradeMakeCommand extends BaseCommand
         // are registered by the class loaders.
         $this->composer->dumpAutoloads();
 
-        $this->line("<info>Created Upgrade File:</info> {$file}");
+        $this->line("<info>Created Upgrades File:</info> {$file}");
     }
 
     /**

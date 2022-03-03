@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Console\Commands\Upgrade;
+namespace ProcessMaker\Upgrades\Commands;
 
 use Illuminate\Console\ConfirmableTrait;
 use Illuminate\Database\Migrations\Migrator;

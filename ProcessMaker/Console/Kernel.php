@@ -12,24 +12,7 @@ class Kernel extends ConsoleKernel
      *
      * @var array
      */
-    protected $commands = [
-        Commands\BpmnTimer::class,
-        Commands\BuildScriptExecutors::class,
-        Commands\Check::class,
-        Commands\DataSchema::class,
-        Commands\GarbageCollector::class,
-        Commands\GenerateSdk::class,
-        Commands\IndexedSearchDisable::class,
-        Commands\IndexedSearchEnable::class,
-        Commands\Install::class,
-        Commands\MigrateFresh::class,
-        Commands\ProcessmakerClearRequests::class,
-        Commands\ProcessMakerTest::class,
-        Commands\ProcessMakerValidateProcesses::class,
-        Commands\RegenerateCss::class,
-        Commands\RetryScriptTasks::class,
-        Commands\UnblockRequest::class,
-    ];
+    protected $commands = [];
 
     /**
      * Define the application's command schedule.
@@ -51,16 +34,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        //
-        // Note:
-        // The load() method is no longer used as our commands are manually registered
-        // to the static $commands property here in the console kernel. This is so the
-        // "Upgrade" subdirectory of commands is not automatically registered as they
-        // are registered in the UpgradeServiceProvider, which allows for specific
-        // functionality otherwise not available
-        //
-        // $this->load(__DIR__ . '/Commands');
-        //
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

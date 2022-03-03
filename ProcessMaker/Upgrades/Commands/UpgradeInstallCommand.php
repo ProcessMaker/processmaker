@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Console\Commands\Upgrade;
+namespace ProcessMaker\Upgrades\Commands;
 
 use Symfony\Component\Console\Input\InputOption;
 use Illuminate\Database\Migrations\MigrationRepositoryInterface;

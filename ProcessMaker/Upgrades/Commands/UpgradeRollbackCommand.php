@@ -1,14 +1,11 @@
 <?php
 
-namespace ProcessMaker\Console\Commands\Upgrade;
+namespace ProcessMaker\Upgrades\Commands;
 
-use RuntimeException;
-use Composer\Semver\Comparator;
 use Illuminate\Console\ConfirmableTrait;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Database\Migrations\Migrator;
+use ProcessMaker\Upgrades\UpgradeMigrator;
 
-class UpgradeCommand extends BaseCommand
+class UpgradeRollbackCommand extends BaseCommand
 {
     use ConfirmableTrait;
 
@@ -17,15 +14,14 @@ class UpgradeCommand extends BaseCommand
      *
      * @var string
      */
-    protected $signature = 'upgrade 
-                            {--to= : The target version we\'re upgrading to}';
+    protected $signature = 'upgrade:rollback';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Run the upgrade migrations';
+    protected $description = 'Rollback the last upgrade migration';
 
     /**
      * The migrator instance.
@@ -35,12 +31,12 @@ class UpgradeCommand extends BaseCommand
     protected $migrator;
 
     /**
-     * Create a new migration command instance.
+     * Create a new migration rollback command instance.
      *
      * @param  \Illuminate\Database\Migrations\Migrator  $migrator
      * @return void
      */
-    public function __construct(Migrator $migrator)
+    public function __construct(UpgradeMigrator $migrator)
     {
         parent::__construct();
 
@@ -60,12 +56,7 @@ class UpgradeCommand extends BaseCommand
 
         $this->prepareDatabase();
 
-        $this->migrator->setOutput($this->output);
-
-        $this->migrator->run($this->getMigrationPaths(), [
-            'to' /********/ => $this->getToVersion(),
-            'current' /***/ => $this->getCurrentVersion()
-        ]);
+        $this->migrator->rollback($this->getMigrationPaths());
     }
 
     /**
@@ -75,12 +66,11 @@ class UpgradeCommand extends BaseCommand
      */
     protected function prepareDatabase()
     {
-        $this->migrator->setConnection($this->getDatabase());
+        $this->migrator->setOutput($this->output)
+                       ->setConnection($this->getDatabase());
 
         if (!$this->migrator->repositoryExists()) {
-            $this->call('upgrade:install', [
-                '--database' => $this->getDatabase()
-            ]);
+            $this->call('upgrade:install', ['--database' => $this->getDatabase()]);
         }
     }
 }

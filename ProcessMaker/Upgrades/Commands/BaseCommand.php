@@ -1,13 +1,18 @@
 <?php
 
-namespace ProcessMaker\Console\Commands\Upgrade;
+namespace ProcessMaker\Upgrades\Commands;
 
-use RuntimeException;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Validator;
+use ProcessMaker\Upgrades\ValidatesSemver;
+use ProcessMaker\Exception\InvalidSemanticVersion;
+use function config;
+use function collect;
+use function base_path;
 
 class BaseCommand extends Command
 {
+    use ValidatesSemver;
+
     /**
      * Get all of the migration paths.
      *
@@ -34,9 +39,9 @@ class BaseCommand extends Command
      *
      * @return string|void
      */
-    protected function getCurrentVersion()
+    protected function getCurrentAppVersion()
     {
-        $composer = json_decode(file_get_contents(base_path('/composer.json')));
+        $composer = json_decode(file_get_contents(base_path('/composer.json')), false);
 
         if (property_exists($composer, 'version')) {
             return $composer->version;
@@ -46,25 +51,26 @@ class BaseCommand extends Command
     /**
      * Get the version we're upgrading or rolling back to
      *
-     * @return string|null
+     * @return string|void
+     *
      * @throws \RuntimeException
+     * @throws \ProcessMaker\Exception\InvalidSemanticVersion
      */
-    protected function getToVersion()
+    protected function getMigratingToVersion()
     {
-        if (!$this->hasOption('to') || null === $this->option('to')) {
-            return null;
+        if (!$this->hasOption('to')) {
+            return;
         }
 
-        $validator = Validator::make(
-            ['to' => $this->option('to')],
-            ['to' => 'regex:/^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/i']
-        );
-
-        if ($validator->fails()) {
-            throw new RuntimeException('The --to option has an invalid argument value. This must be a semantic version of ProcessMaker, e.g. \"4.2.28\"');
+        if (!is_string($to = $this->option('to'))) {
+            return;
         }
 
-        return $this->option('to');
+        if (!$this->validateSemver($to)) {
+            throw new InvalidSemanticVersion('The --to option must be a valid semantic version');
+        }
+
+        return $to;
     }
 
     /**
@@ -74,8 +80,8 @@ class BaseCommand extends Command
      */
     protected function getDatabase()
     {
-        if ($this->hasOption('database')) {
-            return $this->option('database');
+        if ($this->hasOption('database') && $database = $this->option('database')) {
+            return $database;
         }
 
         return (string) config('database.connections.processmaker.database');

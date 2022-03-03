@@ -12,13 +12,6 @@ class DummyUpgradeClass extends Upgrade
     protected $to = '';
 
     /**
-     * The version of ProcessMaker being upgraded *from*
-     *
-     * @var string example: 4.1.23
-     */
-    protected $from = '';
-
-    /**
      * Upgrade migration cannot be skipped if the pre-upgrade checks fail
      *
      * @var bool

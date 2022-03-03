@@ -1,11 +1,11 @@
 <?php
 
-namespace ProcessMaker\Console\Commands\Upgrade;
+namespace ProcessMaker\Upgrades\Commands;
 
-use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Migrations\Migrator;
 use Symfony\Component\Console\Input\InputOption;
+use function ProcessMaker\Console\Commands\Upgrades\count;
 
 class UpgradeStatusCommand extends BaseCommand
 {

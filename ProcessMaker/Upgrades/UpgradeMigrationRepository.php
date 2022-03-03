@@ -3,6 +3,7 @@
 namespace ProcessMaker\Upgrades;
 
 use Composer\Semver\Comparator;
+use Illuminate\Support\Collection;
 use Illuminate\Database\Migrations\MigrationRepositoryInterface;
 use Illuminate\Database\Migrations\DatabaseMigrationRepository as DMR;
 
@@ -91,7 +92,7 @@ class UpgradeMigrationRepository extends DMR implements MigrationRepositoryInter
      */
     public function delete($migration)
     {
-        $this->table()->where('upgrade', $migration->migration)->delete();
+        $this->table()->where('upgrade', $migration->upgrade)->delete();
     }
 
     /**
