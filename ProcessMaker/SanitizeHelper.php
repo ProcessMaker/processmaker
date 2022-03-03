@@ -75,24 +75,51 @@ class SanitizeHelper {
      *
      * @return string
      */
-    public static function sanitizeData($data, $screen)
+    public static function sanitizeData($data, $task)
     {
-        $except = self::getExceptions($screen);
-        if (isset($data['_DO_NOT_SANITIZE'])) {
-           $except = array_unique(array_merge(json_decode($data['_DO_NOT_SANITIZE']), $except));
+        // Get current and nested screens IDs ..
+        $currentScreenExceptions = [];
+        $currentScreenAndNestedIds = $task->getScreenAndNestedIds();
+        foreach ($currentScreenAndNestedIds as $id) {
+            // Find the screen version ..
+            $screen = Screen::findOrFail($id);
+            $screen = $screen->versionFor($task->processRequest)->toArray();
+            // Get exceptions ..
+            $exceptions = self::getExceptions((object) $screen);
+            if (count($exceptions)) {
+                $currentScreenExceptions = array_unique(array_merge($exceptions, $currentScreenExceptions));
+            }
         }
-        $data['_DO_NOT_SANITIZE'] = json_encode($except);
+
+        // Get process request exceptions stored in do_not_sanitize column ..
+        $processRequestExceptions = $task->processRequest->do_not_sanitize;
+        if (!$processRequestExceptions) {
+            $processRequestExceptions = [];
+        }
+
+        // Merge (nestedSreensExceptions and currentScreenExceptions) with processRequestExceptions ..
+        $except = array_unique(array_merge($processRequestExceptions, $currentScreenExceptions));
+
+        // Update database with all the exceptions ..
+        $task->processRequest->do_not_sanitize = $except;
+        $task->processRequest->save();
+
         return self::sanitizeWithExceptions($data, $except);
     }
 
-    private static function sanitizeWithExceptions(Array $data, Array $except, $level = 0)
+    private static function sanitizeWithExceptions(Array $data, Array $except, $parent = null)
     {
         foreach ($data as $key => $value) {
+            if (!is_int($key)) {
+                $searchKey = ($parent ? $parent . '.' . $key : $key);
+            } else {
+                $searchKey = $parent;
+            }
             if (is_array($value)) {
-                $data[$key] = self::sanitizeWithExceptions($value, $except, $level + 1);
+                $data[$key] = self::sanitizeWithExceptions($value, $except, $searchKey);
             } else {
                 // Only allow skipping on top-level data for now
-                $strip_tags = $level !== 0 || !in_array($key, $except);
+                $strip_tags = !in_array($searchKey, $except);
                 $data[$key] = self::sanitize($value, $strip_tags);
             }
         }
@@ -114,28 +141,40 @@ class SanitizeHelper {
         return $except;
     }
 
-    private static function getRichTextElements($items)
+    private static function getRichTextElements($items, $parent = null)
     {
         $elements = [];
+
         foreach ($items as $item) {
             if (isset($item['items']) && is_array($item['items'])) {
-                // Inside a table
-                foreach ($item['items'] as $cell) {
-                    if (is_array($cell)) {
-                        $elements = array_merge($elements, self::getRichTextElements($cell));
+                // Inside loop ..
+                if ($item['component'] == 'FormLoop') {
+                    $elements = array_merge($elements, self::getRichTextElements($item['items'], ($parent ? $parent . '.' . $item['config']['name'] : $item['config']['name'])));
+                } else if (isset($item['component']) && $item['component'] === 'FormTextArea' && isset($item['config']['richtext']) && $item['config']['richtext'] === true) {
+                    $elements[] = ($parent ? $parent . '.' . $item['config']['name'] : $item['config']['name']);
+                // Inside a table ..
+                } else if ($item['component'] == 'FormMultiColumn') {
+                    foreach ($item['items'] as $cell) {
+                        if (
+                            isset($cell['component']) &&
+                            $cell['component'] === 'FormTextArea' &&
+                            isset($cell['config']['richtext']) &&
+                            $cell['config']['richtext'] === true
+                        ) {
+                            $elements[] = $cell['config']['name'];
+                        }
+                        if (is_array($cell)) {
+                            $elements = array_merge($elements, self::getRichTextElements($cell));
+                        }
                     }
                 }
             } else {
-                if (
-                    isset($item['component']) &&
-                    $item['component'] === 'FormTextArea' &&
-                    isset($item['config']['richtext']) &&
-                    $item['config']['richtext'] === true
-                ) {
-                    $elements[] = $item['config']['name'];
+                if (isset($item['component']) && $item['component'] === 'FormTextArea' && isset($item['config']['richtext']) && $item['config']['richtext'] === true) {
+                    $elements[] = ($parent ? $parent . '.' . $item['config']['name'] : $item['config']['name']);
                 }
             }
         }
+
         return $elements;
     }
 

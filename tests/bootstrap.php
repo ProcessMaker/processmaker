@@ -7,9 +7,8 @@ include_once(__DIR__ . '/../bootstrap/autoload.php');
 require_once __DIR__ . '/../bootstrap/app.php';
 
 use Illuminate\Contracts\Console\Kernel;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Artisan;
+use ProcessMaker\Models\ScriptExecutor;
 
 // Bootstrap laravel
 app()->make(Kernel::class)->bootstrap();
@@ -98,11 +97,11 @@ if (env('TEST_TOKEN')) {
     Artisan::call('db:wipe', ['--database' => \DB::connection()->getName()]);
     Artisan::call('migrate:fresh', []);
 
-    \ProcessMaker\Models\ScriptExecutor::firstOrCreate(
+    ScriptExecutor::firstOrCreate(
         ['language' => 'php'],
         ['title' => 'Test Executor']
     );
-    \ProcessMaker\Models\ScriptExecutor::firstOrCreate(
+    ScriptExecutor::firstOrCreate(
         ['language' => 'lua'],
         ['title' => 'Test Executor']
     );
