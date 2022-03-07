@@ -31,52 +31,18 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
     public $required = true;
 
     /**
-     * @var string
+     * @var \ProcessMaker\Packages\Connectors\Email\EmailConfig
      */
+    protected $config;
     protected $driver;
-
-    /**
-     * @var \ProcessMaker\Models\Setting|null
-     */
     protected $setting;
-
-    /**
-     * @var array
-     */
-    protected $drivers;
-
-    /**
-     * @var array
-     */
-    protected $encryption;
-
-    /**
-     * @var string
-     */
-    protected $prefix;
-
-    /**
-     * @var array
-     */
-    protected $settings_groups;
-
-    /**
-     * @var string
-     */
-    protected $settings_group;
 
     /**
      * @param  \ProcessMaker\Packages\Connectors\Email\EmailConfig  $config
      */
     public function __construct()
     {
-        $config = new EmailConfig();
-
-        $this->drivers = $config::drivers;
-        $this->encryption = $config::encryption;
-        $this->prefix = $config::prefix;
-        $this->settings_groups = $config::settings_groups;
-        $this->settings_group = $config::settings_group;
+        $this->config = new EmailConfig();
     }
 
     /**
@@ -119,7 +85,7 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
         }
 
         // Validate the driver and bail if it's not supported
-        if (!in_array($this->getDriverFromEnv(), $this->drivers, true)) {
+        if (!in_array($this->getDriverFromEnv(), $this->config::drivers, true)) {
             throw new RuntimeException("Unsupported MAIL_DRIVER found in the .env file: \"".$this->getDriverFromEnv()."\"");
         }
 
@@ -129,7 +95,7 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
         // Double-check to make sure we found the right Setting and if so,
         // all of our pre-flight checks before running the upgrade
         if (!$this->getDriverSetting() instanceof Setting) {
-            throw new RuntimeException("Setting with key \"{$this->prefix}.'MAIL_DRIVER'\" was not found.");
+            throw new RuntimeException("Setting with key \"".$this->config::prefix."MAIL_DRIVER\" was not found.");
         }
     }
 
@@ -146,7 +112,7 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
 
         // Setup the new config attribute for the related Setting
         $attributes = ['config' => (string) array_search(
-            $driver = $this->getDriverFromEnv(), $this->drivers
+            $driver = $this->getDriverFromEnv(), $this->config::drivers, false
         )];
 
         // Fill the model's attributes with the
@@ -159,7 +125,7 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
         // and if we find the value, create a setting with
         // the variable name/value and then remove it
         // from the .env file
-        foreach ($this->settings_groups[$this->getDriverFromEnv()] as $variable_name) {
+        foreach ($this->config::settings_groups[$driver] as $variable_name) {
 
             // We've already set this so we can skip it
             if ($variable_name === 'MAIL_DRIVER') {
@@ -183,10 +149,10 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
                 // Now we can set it back to the index of the
                 // encryption array (as required by the way
                 // the config works for Settings)
-                $env_value = (string) array_search($env_value, array_values($this->encryption));
+                $env_value = (string) array_search($env_value, array_values($this->config::encryption));
             }
 
-            $setting = Setting::byKey($this->prefix.$variable_name);
+            $setting = Setting::byKey($this->config::prefix.$variable_name);
 
             if (!$setting instanceof Setting) {
                 continue;
@@ -221,6 +187,8 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
     }
 
     /**
+     * Comment out the migrated .env variables and add meta-comments on this migration
+     *
      * @param  array  $env
      *
      * @return void
@@ -280,7 +248,7 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
     /**
      * Grab all system and migration comments made in the .env file
      *
-     * @param  array  $prefixes
+     * @param  bool  $variables_only
      *
      * @return array
      */
@@ -383,7 +351,7 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
     /**
      * @return mixed|string
      */
-    public function getDriverFromEnv()
+    protected function getDriverFromEnv()
     {
         if (blank($this->driver)) {
             $this->driver = env('MAIL_DRIVER');
@@ -393,15 +361,13 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
     }
 
     /**
-     * @param  string  $key
-     *
      * @return \ProcessMaker\Models\Setting|null
      * @throws \Exception
      */
-    public function getDriverSetting()
+    protected function getDriverSetting()
     {
         if (!$this->setting instanceof Setting) {
-            $this->setting = Setting::byKey($this->prefix.'MAIL_DRIVER');
+            $this->setting = Setting::byKey($this->config::prefix.'MAIL_DRIVER');
         }
 
         return $this->setting;
