@@ -35,7 +35,7 @@ abstract class UpgradeMigration extends Migration
      *
      * @return void
      */
-    protected function preflightChecks()
+    public function preflightChecks()
     {
         //
     }

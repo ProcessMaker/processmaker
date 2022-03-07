@@ -16,7 +16,6 @@ class UpgradeMakeCommand extends BaseCommand
     protected $signature = 'make:upgrade {name : The name of the upgrade}
         {--optional : Designates this upgrade as optional/can be skipped when running as a set. Defaults to required}
         {--path= : The location where the upgrade file should be created. Defaults to "upgrades"}
-        {--from= : The ProcessMaker version being upgraded from. Example: "4.1.23"}
         {--to= : The ProcessMaker version being upgraded to. Example: "4.2.28"}';
 
     /**
@@ -68,21 +67,14 @@ class UpgradeMakeCommand extends BaseCommand
         // to be freshly created so we can create the appropriate migrations.
         $name = Str::snake(trim($this->input->getArgument('name')));
 
-        // The version we're upgrading *from* if provided
-        $from = $this->input->hasOption('from')
-            ? $this->input->getOption('from')
-            : null;
-
         // The version we're upgrading *to* if provided
-        $to = $this->input->hasOption('to')
-            ? $this->input->getOption('to')
-            : null;
+        $to = $this->input->getOption('to');
 
         // Created upgrade migration is required when run as a set
-        $optional = $this->input->hasOption('optional');
+        $optional = $this->input->getOption('optional');
 
         // Now we are ready to write the migration out to disk.
-        $this->writeMigration($name, $from, $to, $optional);
+        $this->writeMigration($name, $to, $optional);
     }
 
     /**
@@ -92,10 +84,10 @@ class UpgradeMakeCommand extends BaseCommand
      *
      * @throws \Exception
      */
-    protected function writeMigration($name, $from, $to, $optional)
+    protected function writeMigration($name, $to, $optional)
     {
         $file = $this->creator->createUpgrade(
-            $name, $this->getMigrationPath(), $from, $to, $optional
+            $name, $this->getMigrationPath(), $to, $optional
         );
 
         // Once we've written the migration out, we will dump-autoload
@@ -117,6 +109,6 @@ class UpgradeMakeCommand extends BaseCommand
             return $this->laravel->basePath().'/'.$targetPath;
         }
 
-        return $this->getMigrationPath();
+        return parent::getMigrationPath();
     }
 }

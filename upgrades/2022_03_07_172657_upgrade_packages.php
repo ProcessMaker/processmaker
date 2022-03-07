@@ -2,14 +2,14 @@
 
 use ProcessMaker\Upgrades\UpgradeMigration as Upgrade;
 
-class DummyUpgradeClass extends Upgrade
+class UpgradePackages extends Upgrade
 {
     /**
      * The version of ProcessMaker being upgraded *to*
      *
      * @var string example: 4.2.28
      */
-    public $to = '';
+    public $to = '4.2.23-RC';
 
     /**
      * Upgrade migration cannot be skipped if the pre-upgrade checks fail

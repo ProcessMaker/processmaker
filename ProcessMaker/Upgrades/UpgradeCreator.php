@@ -17,14 +17,14 @@ class UpgradeCreator extends MigrationCreator
      *
      * @return string
      */
-    public function createUpgrade($name, $path, $from = null, $to = null, $optional = null)
+    public function createUpgrade($name, $path, $to = null, $optional = null)
     {
         $this->ensureMigrationDoesntAlreadyExist($name, $path);
 
         $this->files->put(
             $path = $this->getPath($name, $path),
             $this->populateUpgradeStub(
-                $name, $this->getStub(null, null), $from, $to, $optional
+                $name, $this->getStub(null, null), $to, $optional ?? false
             )
         );
 
@@ -49,24 +49,20 @@ class UpgradeCreator extends MigrationCreator
      * @param $stub
      * @param $from
      * @param $to
-     * @param $optional
+     * @param  bool  $optional
      *
      * @return array|string|string[]
      */
-    protected function populateUpgradeStub($name, $stub, $from = null, $to = null, $optional = false)
+    protected function populateUpgradeStub($name, $stub, $to = null, bool $optional = false)
     {
         $stub = str_replace('DummyUpgradeClass', $this->getClassName($name), $stub);
 
-        if (! is_null($from)) {
-            $stub = str_replace('protected $from = \'\';', 'protected $from = \''.$from.'\';', $stub);
-        }
-
         if (! is_null($to)) {
-            $stub = str_replace('protected $to = \'\';', 'protected $to = \''.$to.'\';', $stub);
+            $stub = str_replace('public $to = \'\';', 'public $to = \''.$to.'\';', $stub);
         }
 
         if (true === $optional) {
-            $stub = str_replace('protected $required = true;', 'protected $required = false;', $stub);
+            $stub = str_replace('public $required = true;', 'public $required = false;', $stub);
         }
 
         return $stub;

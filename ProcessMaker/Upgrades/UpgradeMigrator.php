@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Migrations\Migrator;
+use ProcessMaker\Exception\InvalidSemanticVersion;
 use ProcessMaker\Events\Upgrades\UpgradeMigrationEnded;
 use ProcessMaker\Exception\UpgradeMigrationUnsuccessful;
 use ProcessMaker\Events\Upgrades\UpgradeMigrationsEnded;
@@ -53,14 +54,98 @@ class UpgradeMigrator extends Migrator
         // run each of the outstanding migrations against a database connection.
         $files = $this->getMigrationFiles($paths);
 
-        $this->requireFiles($migrations = $this->pendingMigrations(
+        $migrations = $this->pendingMigrations(
             $files, $this->repository->getRan()
-        ));
+        );
 
         // Run the remaining migrations
         $this->runPending($migrations, $options);
 
         return $migrations;
+    }
+
+    /**
+     * Get the migration files that have not yet run.
+     *
+     * @param  array  $files
+     * @param  array  $ran
+     * @return array
+     */
+    protected function pendingMigrations($files, $ran)
+    {
+        $this->requireFiles(
+            $migrations = Collection::make($files)->reject(function ($file) use ($ran) {
+                return in_array($this->getMigrationName($file), $ran);
+            })->values()->all()
+        );
+
+        return $this->sortMigrationsBySemanticVersion($migrations);
+    }
+
+    /**
+     * Sorts migrations by their relative semantic version
+     *
+     * @param  array  $migrations
+     *
+     * @return array
+     */
+    public function sortMigrationsBySemanticVersion(array $migrations)
+    {
+        return Collection::make($migrations)->sort(function ($first, $second) {
+
+            $first = $this->resolve(
+                $first_name = $this->getMigrationName($first)
+            );
+
+            $second = $this->resolve(
+                $second_name = $this->getMigrationName($second)
+            );
+
+            if (!$this->validateSemver($first->to)) {
+                throw new InvalidSemanticVersion("Invalid semantic version found in: {$first_name}.php");
+            }
+
+            if (!$this->validateSemver($second->to)) {
+                throw new InvalidSemanticVersion("Invalid semantic version found in: {$second_name}.php");
+            }
+
+            if (Comparator::lessThan($first->to, $second->to)) {
+                return -1;
+            }
+
+            if (Comparator::greaterThan($first->to, $second->to)) {
+                return 1;
+            }
+
+            return 0;
+
+        })->values()->all();
+    }
+
+    /**
+     * Get an array of version-compatible upgrade migrations
+     *
+     * @param  array  $migrations
+     *
+     * @return array
+     */
+    protected function versionCompatibleMigrations(array $migrations = [])
+    {
+        return Collection::make($migrations)->reject(function ($file) {
+            // Get an instance of the migration file class
+            $upgrade = $this->resolve(
+                $this->getMigrationName($file)
+            );
+
+            // Filter out upgrade migrations which are out of the range for the current running
+            // version of the app. For example, if we are running 4.2.28 then any upgrade
+            // migration with a "to" property of a version that's equal to or less than
+            // this version is compatible. This is because the migrations run in order
+            // of the version they were created for. We also need to filter out any
+            // migrations which are less than the requested $to version.
+            return Comparator::lessThan($this->current, $upgrade->to)
+                || Comparator::lessThanOrEqualTo($this->to, $upgrade->to);
+        })->values()->all();
     }
 
     /**
@@ -146,26 +231,28 @@ class UpgradeMigrator extends Migrator
         // (if the method is present) and watch for exceptions. If one is
         // thrown, catch it and if the migration is optional, skip it,
         // otherwise throw an UpgradeMigrationUnsuccessful exception
-        if (!$this->runPreflightChecks($migration)) {
+        if (!$this->runPreflightChecks($migration, $name)) {
             if (!$migration->required) {
-                return;
+                return $this->note("|-- <comment>Skipping</comment>: {$name}");
             }
 
-            throw new UpgradeMigrationUnsuccessful('<fg=red>Upgrades Migrations Halted:</> One or more preflight checks failed');
+            throw new UpgradeMigrationUnsuccessful('|-- <fg=red>Upgrades Migrations Halted:</> One or more preflight checks failed for a required upgrade migration');
         }
 
+        $this->note("<info>Preflight Checks Successful: </info> {$name}");
         $this->note("<comment>Upgrading:</comment> {$name}");
 
         try {
             $this->runMigration($migration, 'up');
         } catch (Throwable $exception) {
-            $this->note("|-- <fg=red>Upgrades Migration Failed:</> {$exception->getMessage()}");
+            $this->note("<fg=red>Upgrades Migration Failed:</> {$name}");
+            $this->note("|-- <comment>Failure Message:</comment> {$exception->getMessage()}");
 
             if (!$migration->required) {
-                return;
+                return $this->note("|-- <comment>Skipping</comment>: {$name}");
             }
 
-            throw new UpgradeMigrationUnsuccessful('<fg=red>Upgrades Migrations Halted:</> A required upgrade migration failed to run');
+            throw new UpgradeMigrationUnsuccessful('|-- <fg=red>Upgrades Migrations Halted:</> A required upgrade migration failed to run');
         }
 
         $runTime = round(microtime(true) - $startTime, 2);
@@ -254,7 +341,7 @@ class UpgradeMigrator extends Migrator
      *
      * @return bool
      */
-    protected function runPreflightChecks($migration)
+    protected function runPreflightChecks($migration, $name)
     {
         if (!method_exists($migration, 'preflightChecks')) {
             return true;
@@ -268,7 +355,8 @@ class UpgradeMigrator extends Migrator
         try {
             $migration->preflightChecks();
         } catch (Throwable $exception) {
-            $this->note("|-- <fg=red>Preflight Checks Failed:</> {$exception->getMessage()}");
+            $this->note("<fg=red>Preflight Checks Failed:</> {$name}");
+            $this->note("|-- <comment>Failure Message:</comment> {$exception->getMessage()}");
 
             return false;
         }
@@ -338,32 +426,6 @@ class UpgradeMigrator extends Migrator
         $this->fireMigrationEvent(new UpgradeMigrationsEnded);
 
         return $rolledBack;
-    }
-
-    /**
-     * Get an array of version-compatible upgrade migrations
-     *
-     * @param  array  $migrations
-     *
-     * @return array
-     */
-    protected function versionCompatibleMigrations(array $migrations = [])
-    {
-        return Collection::make($migrations)->reject(function ($file) {
-            // Get an instance of the migration file class
-            $upgrade = $this->resolve(
-                $this->getMigrationName($file)
-            );
-
-            // Filter out upgrade migrations which are out of the range for the current running
-            // version of the app. For example, if we are running 4.2.28 then any upgrade
-            // migration with a "to" property of a version that's equal to or less than
-            // this version is compatible. This is because the migrations run in order
-            // of the version they were created for. We also need to filter out any
-            // migrations which are less than the requested $to version.
-            return Comparator::lessThan($this->current, $upgrade->to)
-                || Comparator::lessThanOrEqualTo($this->to, $upgrade->to);
-        })->values()->all();
     }
 
     /**

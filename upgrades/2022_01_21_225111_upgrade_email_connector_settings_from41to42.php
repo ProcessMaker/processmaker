@@ -30,14 +30,7 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
      */
     public $required = true;
 
-    /**
-     * @var \ProcessMaker\Packages\Connectors\Email\EmailConfig
-     */
-    protected $config;
-    protected $driver;
-    protected $setting;
-
-    public $updated = [];
+    protected $config, $driver, $setting;
 
     /**
      * @param  \ProcessMaker\Packages\Connectors\Email\EmailConfig  $config
@@ -121,7 +114,7 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
 
         // If it's different than what we've found the the .env file,
         // than save the setting and add it to the $env array
-        if ($driver_setting->isDirty() && $driver_setting->save()) {
+        if ($driver_setting->save()) {
             $env['MAIL_DRIVER'] = $driver;
         }
 

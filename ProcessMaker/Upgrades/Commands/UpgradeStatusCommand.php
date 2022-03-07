@@ -3,9 +3,8 @@
 namespace ProcessMaker\Upgrades\Commands;
 
 use Illuminate\Support\Collection;
-use Illuminate\Database\Migrations\Migrator;
+use ProcessMaker\Upgrades\UpgradeMigrator;
 use Symfony\Component\Console\Input\InputOption;
-use function ProcessMaker\Console\Commands\Upgrades\count;
 
 class UpgradeStatusCommand extends BaseCommand
 {
@@ -36,7 +35,7 @@ class UpgradeStatusCommand extends BaseCommand
      * @param  \Illuminate\Database\Migrations\Migrator $migrator
      * @return \Illuminate\Database\Console\Migrations\StatusCommand
      */
-    public function __construct(Migrator $migrator)
+    public function __construct(UpgradeMigrator $migrator)
     {
         parent::__construct();
 
@@ -52,8 +51,8 @@ class UpgradeStatusCommand extends BaseCommand
     {
         $this->migrator->setConnection($this->getDatabase());
 
-        if (! $this->migrator->repositoryExists()) {
-            return $this->error('No migrations found.');
+        if (!$this->migrator->repositoryExists()) {
+            return $this->error('No upgrade migrations found.');
         }
 
         $ran = $this->migrator->getRepository()->getRan();
@@ -73,14 +72,21 @@ class UpgradeStatusCommand extends BaseCommand
      */
     protected function getStatusFor(array $ran)
     {
-        return Collection::make($this->getAllMigrationFiles())
-                         ->map(function ($migration) use ($ran) {
-                             $migrationName = $this->migrator->getMigrationName($migration);
+        $this->migrator->requireFiles(
+            $files = $this->getAllMigrationFiles()
+        );
 
-                             return in_array($migrationName, $ran)
-                                 ? ['<info>Y</info>', $migrationName]
-                                 : ['<fg=red>N</fg=red>', $migrationName];
-                         });
+        $sorted_migrations = Collection::make(
+            $this->migrator->sortMigrationsBySemanticVersion($files)
+        );
+
+        return $sorted_migrations->map(function ($migration) use ($ran) {
+            $migration_name = $this->migrator->getMigrationName($migration);
+
+            return in_array($migration_name, $ran)
+                ? ['<info>Y</info>', $migration_name]
+                : ['<fg=red>N</fg=red>', $migration_name];
+        });
     }
 
     /**
@@ -101,7 +107,6 @@ class UpgradeStatusCommand extends BaseCommand
     protected function getOptions()
     {
         return [
-            ['database', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.'],
             ['path', null, InputOption::VALUE_OPTIONAL, 'The path of migrations files to use.'],
         ];
     }

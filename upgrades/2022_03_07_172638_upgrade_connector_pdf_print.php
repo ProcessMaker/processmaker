@@ -2,21 +2,21 @@
 
 use ProcessMaker\Upgrades\UpgradeMigration as Upgrade;
 
-class DummyUpgradeClass extends Upgrade
+class UpgradeConnectorPdfPrint extends Upgrade
 {
     /**
      * The version of ProcessMaker being upgraded *to*
      *
      * @var string example: 4.2.28
      */
-    public $to = '';
+    public $to = '4.2.22';
 
     /**
      * Upgrade migration cannot be skipped if the pre-upgrade checks fail
      *
      * @var bool
      */
-    public $required = true;
+    public $required = false;
 
     /**
      * Run any validations/pre-run checks to ensure the environment, settings,
