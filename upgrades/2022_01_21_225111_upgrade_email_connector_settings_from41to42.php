@@ -9,8 +9,12 @@ use Illuminate\Support\Str;
 
 class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
 {
-    public const SYSTEM_COMMENT_PREFIX = 'System:';
-    public const VARIABLE_COMMENT_PREFIX = 'Migrated:';
+    /**
+     * Prefix to comments made in the .env file
+     *
+     * @var string
+     */
+    public const COMMENT_PREFIX = 'Migrated:';
 
     /**
      * The version of ProcessMaker being upgraded *to*
@@ -211,9 +215,12 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
      */
     public function down()
     {
-        $this->removeSnapshotComments();
+        dump($this->getAppendedComments());
+        dump($this->getAppendedComments(true));
 
-        $this->uncommentLines();
+//        $this->removeSnapshotComments();
+
+//        $this->uncommentLines();
     }
 
     /**
@@ -231,10 +238,10 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
             $this->removeLineContaining($variable);
         }
 
-        $this->appendSystemComment('The comments below were created during an automated upgrade migration.');
-        $this->appendSystemComment('Please leave this message and the comments in place.');
-        $this->appendSystemComment('Run on: '.now());
-        $this->appendSystemComment('Upgrade migration: '.str_replace('.php', '', basename(__FILE__)));
+        $this->appendComment('The comments below were created during an automated upgrade migration.');
+        $this->appendComment('Please leave this message and the comments in place.');
+        $this->appendComment('Run on: '.now());
+        $this->appendComment('Upgrade migration: '.str_replace('.php', '', basename(__FILE__)));
 
         foreach ($env as $variable => $value) {
             // Wrap env values containing a space with double quotes
@@ -242,7 +249,7 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
                 $value = "\"{$value}\"";
             }
 
-            $this->appendMigrationComment("{$variable}={$value}");
+            $this->appendComment("MIGRATED_{$variable}={$value}");
         }
     }
 
@@ -253,7 +260,7 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
      */
     protected function removeSnapshotComments()
     {
-        foreach ($this->getAppendedComments([self::SYSTEM_COMMENT_PREFIX]) as $line) {
+        foreach ($this->getAppendedComments() as $line) {
             $this->removeLineContaining($line);
         }
     }
@@ -263,13 +270,11 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
      */
     protected function uncommentLines()
     {
-        foreach ($this->getAppendedComments([$prefix = self::VARIABLE_COMMENT_PREFIX]) as $line) {
+        foreach ($this->getAppendedComments() as $line) {
             // Format what we need to re-append to the env file
-            $uncommented = str_replace("# {$prefix}: ", '', $line);
-
+            $uncommented = str_replace("# ".self::COMMENT_PREFIX.": ", '', $line);
             // Remove the comment
             $this->removeLineContaining($line);
-
             // Re-append the variable and value
             File::append(base_path('.env'), "#{$uncommented}".PHP_EOL);
         }
@@ -282,66 +287,25 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
      *
      * @return array
      */
-    protected function getAppendedComments(array $prefixes = [])
+    protected function getAppendedComments(bool $variables_only = false)
     {
-        $filtered = [];
+        return array_filter(array_map(static function ($line) use ($variables_only) {
 
-        if (blank($prefixes)) {
-            $prefixes = [
-                self::SYSTEM_COMMENT_PREFIX,
-                self::VARIABLE_COMMENT_PREFIX
-            ];
-        }
-
-        foreach ($this->getComments() as $line) {
-            foreach ($prefixes as $prefix) {
-
-                // We only want comments with one of the pre-defined prefixes
-                if (!Str::contains($line, $prefix)) {
-                    continue;
-                }
-
-                // This is to remove the actual prefix from the comment
-                // and then used to create a multi-dimensional array
-                // to group the different types of comments in
-                $comment = str_replace("# {$prefix}: ", '', $line);
-
-                // Reformat the prefix so we can key our array with it
-                $key = strtolower(
-                    str_replace(['#', " ", ':'], '', $prefix)
-                );
-
-                // Add an empty array if one doesn't exist for the key
-                if (!array_key_exists($key, $filtered)) {
-                    $filtered[$key] = [];
-                }
-
-                // Finally, add the comment into the keyed array
-                $filtered[$key][] = $comment;
+            // We only want comments we left behind previously
+            if (!Str::contains($line, $prefix = self::COMMENT_PREFIX)) {
+                return;
             }
-        }
 
-        return $filtered;
-    }
+            // If the $variables_only arg is passed as true, then only
+            // return the commented out variables
+            if ($variables_only && !Str::contains($line, 'MIGRATED_')) {
+                return;
+            }
 
-    /**
-     * @param  string  $line
-     *
-     * @return void
-     */
-    protected function appendMigrationComment(string $line)
-    {
-        $this->appendComment(' '.self::VARIABLE_COMMENT_PREFIX.' '.$line);
-    }
+            // Reformat so we get only the comment itself
+            return str_replace(["# {$prefix}".' ', 'MIGRATED_'], '', $line);
 
-    /**
-     * @param  string  $line
-     *
-     * @return void
-     */
-    protected function appendSystemComment(string $line)
-    {
-        $this->appendComment(' '.self::SYSTEM_COMMENT_PREFIX.' '.$line);
+        }, $this->getComments()));
     }
 
     /**
@@ -354,7 +318,7 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
     protected function appendComment(string $line)
     {
         if ($this->envFileAvailable()) {
-            File::append(base_path('.env'), "#{$line}".PHP_EOL);
+            File::append(base_path('.env'), '# '.self::COMMENT_PREFIX.' '.$line.PHP_EOL);
         }
     }
 
