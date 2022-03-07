@@ -2,12 +2,7 @@
 
 namespace ProcessMaker\Providers;
 
-use Exception;
-use Illuminate\Support\Str;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Upgrades\Commands as Commands;
 use ProcessMaker\Upgrades\UpgradeCreator;
 use ProcessMaker\Upgrades\UpgradeMigrator;
