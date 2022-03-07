@@ -14,7 +14,7 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
      *
      * @var string
      */
-    public const COMMENT_PREFIX = 'Migrated:';
+    public const COMMENT_PREFIX = '# Migrated: ';
 
     /**
      * The version of ProcessMaker being upgraded *to*
@@ -215,12 +215,9 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
      */
     public function down()
     {
-        dump($this->getAppendedComments());
-        dump($this->getAppendedComments(true));
+        $this->uncommentLines();
 
-//        $this->removeSnapshotComments();
-
-//        $this->uncommentLines();
+        $this->removeSnapshotComments();
     }
 
     /**
@@ -270,13 +267,13 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
      */
     protected function uncommentLines()
     {
-        foreach ($this->getAppendedComments() as $line) {
+        foreach ($this->getAppendedComments($vars_only = true) as $line) {
             // Format what we need to re-append to the env file
-            $uncommented = str_replace("# ".self::COMMENT_PREFIX.": ", '', $line);
+            $uncommented = str_replace([self::COMMENT_PREFIX, 'MIGRATED_'], '', $line);
             // Remove the comment
             $this->removeLineContaining($line);
             // Re-append the variable and value
-            File::append(base_path('.env'), "#{$uncommented}".PHP_EOL);
+            File::append(base_path('.env'), $uncommented.PHP_EOL);
         }
     }
 
@@ -303,7 +300,7 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
             }
 
             // Reformat so we get only the comment itself
-            return str_replace(["# {$prefix}".' ', 'MIGRATED_'], '', $line);
+            return str_replace([self::COMMENT_PREFIX, 'MIGRATED_'], '', $line);
 
         }, $this->getComments()));
     }
@@ -318,7 +315,7 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
     protected function appendComment(string $line)
     {
         if ($this->envFileAvailable()) {
-            File::append(base_path('.env'), '# '.self::COMMENT_PREFIX.' '.$line.PHP_EOL);
+            File::append(base_path('.env'), self::COMMENT_PREFIX.$line.PHP_EOL);
         }
     }
 
@@ -347,7 +344,9 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
      */
     protected function envFileAvailable()
     {
-        return File::exists($env = base_path('.env')) && File::isWritable($env);
+        return File::exists($env = base_path('.env'))
+            && File::isWritable($env)
+            && File::isReadable($env);
     }
 
     /**
