@@ -32,9 +32,11 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
      */
     public function __construct(Definitions $definitions, ProcessRequest $instance, ProcessRequestToken $token, array $data)
     {
+        $this->onQueue('bpmn');
         $this->definitionsId = $definitions->getKey();
         $this->instanceId = $instance->getKey();
         $this->tokenId = $token->getKey();
+        $this->elementId = $token->getProperty('element_ref');
         $this->data = $data;
     }
 
@@ -76,7 +78,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             $this->unlock();
             $dataManager = new DataManager();
             $data = $dataManager->getData($token);
-            $response = $script->runScript($data, $configuration);
+            $response = $script->runScript($data, $configuration, $token->getId());
 
             $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
                 // Exit if the task was completed or closed
@@ -103,6 +105,28 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             $token->setProperty('error', $error);
             Log::error('Script failed: ' . $scriptRef . ' - ' . $exception->getMessage());
             Log::error($exception->getTraceAsString());
+        }
+    }
+
+    /**
+     * When Job fails
+     */
+    public function failed(Throwable $exception)
+    {
+        if (!$this->tokenId) {
+            Log::error('Script failed: ' . $exception->getMessage());
+            return;
+        }
+        Log::error('Script (#' . $this->tokenId . ') failed: ' . $exception->getMessage());
+        $token = ProcessRequestToken::find($this->tokenId);
+        if ($token) {
+            $element = $token->getBpmnDefinition();
+            $token->setStatus(ScriptTaskInterface::TOKEN_STATE_FAILING);
+            $error = $element->getRepository()->createError();
+            $error->setName($exception->getMessage());
+            $token->setProperty('error', $error);
+            Log::error($exception->getTraceAsString());
+            $token->save();
         }
     }
 }
