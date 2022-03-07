@@ -37,6 +37,8 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
     protected $driver;
     protected $setting;
 
+    public $updated = [];
+
     /**
      * @param  \ProcessMaker\Packages\Connectors\Email\EmailConfig  $config
      */
@@ -90,11 +92,11 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
         }
 
         // First, let's find the primary mail driver setting
-        $this->getDriverSetting();
+        $setting = $this->getDriverSetting();
 
         // Double-check to make sure we found the right Setting and if so,
         // all of our pre-flight checks before running the upgrade
-        if (!$this->getDriverSetting() instanceof Setting) {
+        if (!$setting instanceof Setting) {
             throw new RuntimeException("Setting with key \"".$this->config::prefix."MAIL_DRIVER\" was not found.");
         }
     }
@@ -107,17 +109,19 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
      */
     public function up()
     {
-        // Save all of the removed env variable names/values
         $env = [];
 
         // Setup the new config attribute for the related Setting
-        $attributes = ['config' => (string) array_search(
-            $driver = $this->getDriverFromEnv(), $this->config::drivers, false
+        $attributes = ['config' => (string) $this->findConfigValue(
+            $driver = $this->getDriverFromEnv(), $this->config::drivers
         )];
 
-        // Fill the model's attributes with the
-        // updates one and save it
-        if ($this->getDriverSetting()->fill($attributes)->save()) {
+        // Fill the model's attributes with the updates one and save it
+        $driver_setting = $this->getDriverSetting()->fill($attributes);
+
+        // If it's different than what we've found the the .env file,
+        // than save the setting and add it to the $env array
+        if ($driver_setting->isDirty() && $driver_setting->save()) {
             $env['MAIL_DRIVER'] = $driver;
         }
 
@@ -135,7 +139,7 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
             $env_value = env($variable_name);
 
             // If we can't a value for it, then skip it
-            if (null === $env_value) {
+            if (blank($env_value)) {
                 continue;
             }
 
@@ -149,21 +153,29 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
                 // Now we can set it back to the index of the
                 // encryption array (as required by the way
                 // the config works for Settings)
-                $env_value = (string) array_search($env_value, array_values($this->config::encryption));
-            }
+                $env_value = $this->findConfigValue(
+                    $env_value, $this->config::encryption
+                );
 
-            $setting = Setting::byKey($this->config::prefix.$variable_name);
-
-            if (!$setting instanceof Setting) {
-                continue;
-            }
-
-            $attributes = ['config' => $env_value];
-
-            if ($setting->fill($attributes)->save()) {
-                if ($variable_name !== 'MAIL_ENCRYPTION') {
-                    $env[$variable_name] = $env_value;
+                if (blank($env_value)) {
+                    continue;
                 }
+            }
+
+            // Find the related setting model for this env value
+            $setting = Setting::byKey($this->config::prefix.$variable_name)
+                              ->fill(['config' => $env_value]);
+
+            // Attempt to update the setting model with the new
+            // value found in the .env file
+            if ($variable_name !== 'MAIL_ENCRYPTION') {
+                // Save the newly updated setting value
+                $env[$variable_name] = $env_value;
+            }
+
+            // If there aren't any changes to make, we can move on
+            if ($setting->isDirty()) {
+                $setting->save();
             }
         }
 
@@ -181,7 +193,7 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
      */
     public function down()
     {
-        $this->uncommentLines();
+        $this->uncommentLines($with = 'MIGRATED_');
 
         $this->removeSnapshotComments();
     }
@@ -189,17 +201,17 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
     /**
      * Comment out the migrated .env variables and add meta-comments on this migration
      *
-     * @param  array  $env
+     * @param  array  $values
      *
      * @return void
      */
-    protected function addSnapshotComments(array $env)
+    protected function addSnapshotComments(array $values)
     {
-        if (blank($env)) {
+        if (blank($values)) {
             return;
         }
 
-        foreach ($env as $variable => $value) {
+        foreach ($values as $variable => $value) {
             $this->removeLineContaining($variable);
         }
 
@@ -208,13 +220,10 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
         $this->appendComment('Run on: '.now());
         $this->appendComment('Upgrade migration: '.str_replace('.php', '', basename(__FILE__)));
 
-        foreach ($env as $variable => $value) {
-            // Wrap env values containing a space with double quotes
-            if (Str::contains($value, " ")) {
-                $value = "\"{$value}\"";
-            }
-
-            $this->appendComment("MIGRATED_{$variable}={$value}");
+        // Save the new values as commented out lines (in
+        // case we need to rollback)
+        foreach ($values as $variable => $value) {
+            $this->appendCommentedVariable("MIGRATED_{$variable}", $value);
         }
     }
 
@@ -231,30 +240,44 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
     }
 
     /**
+     * @param  string  $only_with
+     *
      * @return void
      */
-    protected function uncommentLines()
+    protected function uncommentLines(string $only_with = null)
     {
-        foreach ($this->getAppendedComments($vars_only = true) as $line) {
-            // Format what we need to re-append to the env file
-            $uncommented = str_replace([self::COMMENT_PREFIX, 'MIGRATED_'], '', $line);
-            // Remove the comment
-            $this->removeLineContaining($line);
-            // Re-append the variable and value
-            File::append(base_path('.env'), $uncommented.PHP_EOL);
+        foreach ($this->getAppendedComments($only_with) as $line) {
+            $this->uncommentLine($line);
         }
+    }
+
+    /**
+     * Uncomment a specific line in the .env file
+     *
+     * @param  string  $line
+     *
+     * @return void
+     */
+    protected function uncommentLine(string $line)
+    {
+        // Format what we need to re-append to the env file
+        $uncommented = str_replace(self::COMMENT_PREFIX, '', $line);
+        // Remove the comment
+        $this->removeLineContaining($line);
+        // Re-append the variable and value
+        File::append(base_path('.env'), $uncommented.PHP_EOL);
     }
 
     /**
      * Grab all system and migration comments made in the .env file
      *
-     * @param  bool  $variables_only
+     * @param  string|array|null  $only_with
      *
      * @return array
      */
-    protected function getAppendedComments(bool $variables_only = false)
+    protected function getAppendedComments($only_with = null)
     {
-        return array_filter(array_map(static function ($line) use ($variables_only) {
+        return array_filter(array_map(static function ($line) use ($only_with) {
 
             // We only want comments we left behind previously
             if (!Str::contains($line, $prefix = self::COMMENT_PREFIX)) {
@@ -263,14 +286,36 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
 
             // If the $variables_only arg is passed as true, then only
             // return the commented out variables
-            if ($variables_only && !Str::contains($line, 'MIGRATED_')) {
+            if ($only_with && !Str::contains($line, $only_with)) {
                 return;
             }
 
             // Reformat so we get only the comment itself
-            return str_replace([self::COMMENT_PREFIX, 'MIGRATED_'], '', $line);
+            $needles = array_filter(
+                is_array($only_with) ? array_merge([$prefix], $only_with) : [$prefix, $only_with]
+            );
+
+            return str_replace($needles, '', $line);
 
         }, $this->getComments()));
+    }
+
+    /**
+     * Append a commented-out variable and value to the .env file
+     *
+     * @param  string  $variable
+     * @param  string  $value
+     *
+     * @return void
+     */
+    protected function appendCommentedVariable(string $variable, string $value)
+    {
+        // Wrap env values containing a space with double quotes
+        if (Str::contains($value, " ")) {
+            $value = "\"{$value}\"";
+        }
+
+        $this->appendComment("{$variable}={$value}");
     }
 
     /**
@@ -379,5 +424,18 @@ class UpgradeEmailConnectorSettingsFrom41to42 extends UpgradeMigration
     protected function connectorSendEmailInstalled()
     {
         return File::exists(base_path('vendor/processmaker/connector-send-email'));
+    }
+
+    /**
+     * Find the value of an EmailConfig value
+     *
+     * @param $key
+     * @param $array
+     *
+     * @return false|int|string
+     */
+    protected function findConfigValue($key, $array)
+    {
+        return (string) array_search($key, array_values($array), false);
     }
 }

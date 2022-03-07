@@ -2,17 +2,16 @@
 
 namespace ProcessMaker\Providers;
 
+use Exception;
+use Illuminate\Support\Str;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Database\Eloquent\Model;
+use ProcessMaker\Upgrades\Commands as Commands;
 use ProcessMaker\Upgrades\UpgradeCreator;
 use ProcessMaker\Upgrades\UpgradeMigrator;
 use ProcessMaker\Upgrades\UpgradeMigrationRepository;
-use ProcessMaker\Upgrades\Commands\UpgradeCommand;
-use ProcessMaker\Upgrades\Commands\UpgradeMakeCommand;
-use ProcessMaker\Upgrades\Commands\UpgradeResetCommand;
-use ProcessMaker\Upgrades\Commands\UpgradeStatusCommand;
-use ProcessMaker\Upgrades\Commands\UpgradeInstallCommand;
-use ProcessMaker\Upgrades\Commands\UpgradeRefreshCommand;
-use ProcessMaker\Upgrades\Commands\UpgradeRollbackCommand;
 
 class UpgradeServiceProvider extends ServiceProvider
 {
@@ -29,13 +28,13 @@ class UpgradeServiceProvider extends ServiceProvider
      * @var array
      */
     protected static $commands = [
-        'Upgrade' => 'command.upgrade',
-        'UpgradeInstall' => 'command.upgrade.install',
-        'UpgradeRefresh' => 'command.upgrade.refresh',
-        'UpgradeReset' => 'command.upgrade.reset',
-        'UpgradeRollback' => 'command.upgrade.rollback',
-        'UpgradeStatus' => 'command.upgrade.status',
-        'UpgradeMake' => 'command.upgrade.make',
+        Commands\UpgradeCommand::class => 'command.upgrade',
+        Commands\UpgradeInstallCommand::class => 'command.upgrade.install',
+        Commands\UpgradeRefreshCommand::class => 'command.upgrade.refresh',
+        Commands\UpgradeResetCommand::class => 'command.upgrade.reset',
+        Commands\UpgradeRollbackCommand::class => 'command.upgrade.rollback',
+        Commands\UpgradeStatusCommand::class => 'command.upgrade.status',
+        Commands\UpgradeMakeCommand::class => 'command.upgrade.make',
     ];
 
     /**
@@ -52,6 +51,18 @@ class UpgradeServiceProvider extends ServiceProvider
         $this->registerMigrator();
 
         $this->registerCreator();
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return array_merge(
+            array_values(self::$commands), ['upgrade', 'upgrade.repository', 'upgrade.creator']
+        );
     }
 
     /**
@@ -105,7 +116,7 @@ class UpgradeServiceProvider extends ServiceProvider
     protected function registerCommands()
     {
         foreach (array_keys(self::$commands) as $command) {
-            call_user_func_array([$this, "register{$command}Command"], []);
+            call_user_func_array([$this, 'register'.class_basename($command)], []);
         }
 
         $this->commands(array_values(self::$commands));
@@ -119,7 +130,7 @@ class UpgradeServiceProvider extends ServiceProvider
     protected function registerUpgradeCommand()
     {
         $this->app->singleton('command.upgrade', function ($app) {
-            return new UpgradeCommand($app['upgrade']);
+            return new Commands\UpgradeCommand($app['upgrade']);
         });
     }
 
@@ -131,7 +142,7 @@ class UpgradeServiceProvider extends ServiceProvider
     protected function registerUpgradeInstallCommand()
     {
         $this->app->singleton('command.upgrade.install', function ($app) {
-            return new UpgradeInstallCommand($app['upgrade.repository']);
+            return new Commands\UpgradeInstallCommand($app['upgrade.repository']);
         });
     }
 
@@ -150,7 +161,7 @@ class UpgradeServiceProvider extends ServiceProvider
 
             $composer = $app['composer'];
 
-            return new UpgradeMakeCommand($creator, $composer);
+            return new Commands\UpgradeMakeCommand($creator, $composer);
         });
     }
 
@@ -162,7 +173,7 @@ class UpgradeServiceProvider extends ServiceProvider
     protected function registerUpgradeRefreshCommand()
     {
         $this->app->singleton('command.upgrade.refresh', function () {
-            return new UpgradeRefreshCommand;
+            return new Commands\UpgradeRefreshCommand;
         });
     }
 
@@ -174,7 +185,7 @@ class UpgradeServiceProvider extends ServiceProvider
     protected function registerUpgradeResetCommand()
     {
         $this->app->singleton('command.upgrade.reset', function ($app) {
-            return new UpgradeResetCommand($app['upgrade']);
+            return new Commands\UpgradeResetCommand($app['upgrade']);
         });
     }
 
@@ -186,7 +197,7 @@ class UpgradeServiceProvider extends ServiceProvider
     protected function registerUpgradeRollbackCommand()
     {
         $this->app->singleton('command.upgrade.rollback', function ($app) {
-            return new UpgradeRollbackCommand($app['upgrade']);
+            return new Commands\UpgradeRollbackCommand($app['upgrade']);
         });
     }
 
@@ -198,17 +209,7 @@ class UpgradeServiceProvider extends ServiceProvider
     protected function registerUpgradeStatusCommand()
     {
         $this->app->singleton('command.upgrade.status', function ($app) {
-            return new UpgradeStatusCommand($app['upgrade']);
+            return new Commands\UpgradeStatusCommand($app['upgrade']);
         });
-    }
-
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return array_merge(array_values(self::$commands), ['upgrade', 'upgrade.repository', 'upgrade.creator']);
     }
 }

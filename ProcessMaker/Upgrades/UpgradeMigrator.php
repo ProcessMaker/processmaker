@@ -3,9 +3,11 @@
 namespace ProcessMaker\Upgrades;
 
 use Throwable;
-use Illuminate\Support\Arr;
 use Composer\Semver\Comparator;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Migrations\Migrator;
 use ProcessMaker\Events\Upgrades\UpgradeMigrationEnded;
 use ProcessMaker\Exception\UpgradeMigrationUnsuccessful;
@@ -55,11 +57,6 @@ class UpgradeMigrator extends Migrator
             $files, $this->repository->getRan()
         ));
 
-        // Filter the pending upgrade migrations to ones compatible with the
-        // current running semantic app version (as set in composer.json)
-        // and the ones compatible with the request "to" semantic version
-        $migrations = $this->versionCompatibleMigrations($migrations);
-
         // Run the remaining migrations
         $this->runPending($migrations, $options);
 
@@ -87,12 +84,15 @@ class UpgradeMigrator extends Migrator
             return;
         }
 
+        // Filter the pending upgrade migrations to ones compatible with the
+        // current running semantic app version (as set in composer.json)
+        // and the ones compatible with the request "to" semantic version
+        $migrations = $this->versionCompatibleMigrations($migrations);
+
         // Next, we will get the next batch number for the migrations so we can insert
         // correct batch number in the database migrations repository when we store
         // each migration's execution. We will also extract a few of the options.
         $batch = $this->repository->getNextBatchNumber();
-
-        $pretend = $options['pretend'] ?? false;
 
         $step = $options['step'] ?? false;
 
@@ -103,7 +103,7 @@ class UpgradeMigrator extends Migrator
         // that the migration was run so we don't repeat it next time we execute.
         foreach ($migrations as $file) {
             try {
-                $this->runUp($file, $batch, $pretend);
+                $this->runUp($file, $batch, false);
             } catch (UpgradeMigrationUnsuccessful $exception) {
                 $this->note($exception->getMessage());
 
@@ -137,10 +137,6 @@ class UpgradeMigrator extends Migrator
         $migration = $this->resolve(
             $name = $this->getMigrationName($file)
         );
-
-        if ($pretend) {
-            return $this->pretendToRun($migration, 'up');
-        }
 
         $this->note("<comment>Preflight Checks For:</comment> {$name}");
 
@@ -183,6 +179,39 @@ class UpgradeMigrator extends Migrator
     }
 
     /**
+     * Run "down" a migration instance.
+     *
+     * @param  string  $file
+     * @param  object  $migration
+     * @param  bool  $pretend
+     * @return void
+     */
+    protected function runDown($file, $migration, $pretend)
+    {
+        // First we will get the file name of the migration so we can resolve out an
+        // instance of the migration. Once we get an instance we can either run a
+        // pretend execution of the migration or we can run the real migration.
+        $instance = $this->resolve(
+            $name = $this->getMigrationName($file)
+        );
+
+        $this->note("<comment>Rolling back:</comment> {$name}");
+
+        $startTime = microtime(true);
+
+        $this->runMigration($instance, 'down');
+
+        $runTime = round(microtime(true) - $startTime, 2);
+
+        // Once we have successfully run the migration "down" we will remove it from
+        // the migration repository so it will be considered to have not been run
+        // by the application then will be able to fire by any later operation.
+        $this->repository->delete($migration);
+
+        $this->note("<info>Rolled back:</info>  {$name} ({$runTime} seconds)");
+    }
+
+    /**
      * Run a migration inside a transaction if the database supports it.
      *
      * @param  object  $migration
@@ -213,9 +242,10 @@ class UpgradeMigrator extends Migrator
             $this->fireMigrationEvent(new UpgradeMigrationEnded($migration, $method));
         };
 
-        $this->getSchemaGrammar($connection)->supportsSchemaTransactions() && $migration->withinTransaction
-            ? $connection->transaction($callback)
-            : $callback();
+        $this->getSchemaGrammar($connection)->supportsSchemaTransactions()
+            && $migration->withinTransaction
+                ? $connection->transaction($callback)
+                : $callback();
     }
 
     /**
@@ -308,43 +338,6 @@ class UpgradeMigrator extends Migrator
         $this->fireMigrationEvent(new UpgradeMigrationsEnded);
 
         return $rolledBack;
-    }
-
-    /**
-     * Run "down" a migration instance.
-     *
-     * @param  string  $file
-     * @param  object  $migration
-     * @param  bool  $pretend
-     * @return void
-     */
-    protected function runDown($file, $migration, $pretend)
-    {
-        // First we will get the file name of the migration so we can resolve out an
-        // instance of the migration. Once we get an instance we can either run a
-        // pretend execution of the migration or we can run the real migration.
-        $instance = $this->resolve(
-            $name = $this->getMigrationName($file)
-        );
-
-        $this->note("<comment>Rolling back:</comment> {$name}");
-
-        if ($pretend) {
-            return $this->pretendToRun($instance, 'down');
-        }
-
-        $startTime = microtime(true);
-
-        $this->runMigration($instance, 'down');
-
-        $runTime = round(microtime(true) - $startTime, 2);
-
-        // Once we have successfully run the migration "down" we will remove it from
-        // the migration repository so it will be considered to have not been run
-        // by the application then will be able to fire by any later operation.
-        $this->repository->delete($migration);
-
-        $this->note("<info>Rolled back:</info>  {$name} ({$runTime} seconds)");
     }
 
     /**
