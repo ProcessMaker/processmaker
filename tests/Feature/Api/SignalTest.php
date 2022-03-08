@@ -25,7 +25,7 @@ class SignalTest extends TestCase
         'type'
     ];
 
-    public function createSignal($count)
+    public function createSignal($count = 1)
     {
         // Create global process for signals..
         factory(Process::class)->create(['name' => 'global_signals']);
@@ -156,5 +156,63 @@ class SignalTest extends TestCase
         ], $meta);
         //Verify the data size
         $this->assertCount($meta['count'], $data);
+    }
+
+    /**
+     * Delete signal that is not present in a process or a system process.
+     */
+    public function testDeleteSignal()
+    {
+        // Create signal
+        $signal = $this->createSignal()[0];
+
+        // Assert signal was created
+        $signalFound = SignalManager::findSignal($signal['id']);
+        $this->assertEquals($signal['id'], $signalFound->getId());
+
+        $route = route($this->resource . '.destroy', $signal['id']);
+        $response = $this->apiCall('DELETE', $route);
+
+        // Assert response 201
+        $response->assertStatus(201);
+
+        // Assert signal was deleted
+        $signalFound = SignalManager::findSignal($signal['id']);
+        $this->assertNull($signalFound);
+    }
+
+    /**
+     * Delete signal that is present in a process or a system process should return a error.
+     */
+    public function testDeleteSignalPresentInProcessShouldNotBeDeleted()
+    {
+        // Create signal
+        $signal = $this->createSignal()[0];
+
+        // Create process with the signal assigned
+        $bpmnContent = file_get_contents(__DIR__ . '/processes/SignalSimple.bpmn');
+        $process = factory(Process::class)->create([
+            'bpmn' => str_replace(['signalRef="MySignalID"', 'id="MySignalID"'], ['signalRef="'.$signal['id'].'"', 'id="'.$signal['id'].'"'], $bpmnContent)
+        ]);
+
+        // Assert signal was created
+        $signalFound = SignalManager::findSignal($signal['id']);
+        $this->assertEquals($signal['id'], $signalFound->getId());
+
+        $route = route($this->resource . '.destroy', $signal['id']);
+        $response = $this->apiCall('DELETE', $route);
+
+        // Assert response 403
+        $response->assertStatus(403);
+
+        // Assert response has the correct error message
+        $this->assertEquals(
+            $response->json()['message'],
+            __('Signals present in processes and system processes cannot be deleted.')
+        );
+
+        // Assert signal was deleted
+        $signalFound = SignalManager::findSignal($signal['id']);
+        $this->assertEquals($signal['id'], $signalFound->getId());
     }
 }
