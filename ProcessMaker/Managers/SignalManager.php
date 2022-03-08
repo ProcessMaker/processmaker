@@ -163,6 +163,20 @@ class SignalManager
     }
 
     /**
+     * @param $signalId
+     * @param $includeSystemProcesses
+     *
+     * @return array
+     */
+    public static function getSignalProcesses($signalId, $includeSystemProcesses = false)
+    {
+        $assocSignal =  SignalManager::getAllSignals($includeSystemProcesses)
+                            ->firstWhere('id', $signalId);
+
+        return $assocSignal && $assocSignal['processes'] ? $assocSignal['processes'] : [];
+    }
+
+    /**
      * @param SignalData $newSignal
      * @param SignalData | null $oldSignal In case of an insert, this variable is null
      *
