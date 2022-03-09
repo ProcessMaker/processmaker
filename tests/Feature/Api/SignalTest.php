@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\SignalData;
 use SignalSeeder;
 use Tests\Feature\Shared\RequestHelper;
@@ -209,6 +210,77 @@ class SignalTest extends TestCase
         $this->assertEquals(
             $response->json()['message'],
             __('Signals present in processes and system processes cannot be deleted.')
+        );
+
+        // Assert signal was deleted
+        $signalFound = SignalManager::findSignal($signal['id']);
+        $this->assertEquals($signal['id'], $signalFound->getId());
+    }
+
+    /**
+     * Update signal that is not a system signal.
+     */
+    public function testUpdateNotSystemSignal()
+    {
+        // Create signal
+        $signal = $this->createSignal()[0];
+
+        // Assert signal was created
+        $signalFound = SignalManager::findSignal($signal['id']);
+        $this->assertEquals($signal['id'], $signalFound->getId());
+
+        $data = [
+            'name' => $signal['name'] . '-MODIFIED',
+            'id' => $signal['id'] . '-MODIFIED',
+        ];
+        $route = route($this->resource . '.update', [$signal['id']]);
+        $response = $this->apiCall('PUT', $route, $data);
+
+        // Assert response 200
+        $response->assertStatus(200);
+
+        // Assert signal was updated
+        $signalFound = SignalManager::findSignal($data['id']);
+        $this->assertEquals($signalFound->getName(), $data['name']);
+        $this->assertEquals($signalFound->getId(), $data['id']);
+    }
+
+    /**
+     * Update signal that is a system signal should not be modified.
+     */
+    public function testUpdateSystemSignalShouldNotBeModified()
+    {
+        // Create signal
+        $signal = $this->createSignal()[0];
+
+        //Create a system category
+        $systemProcessCategory = factory(ProcessCategory::class)->create(['is_system' => true]);
+
+        // Create process with the signal assigned
+        $bpmnContent = file_get_contents(__DIR__ . '/processes/SignalSimple.bpmn');
+        $process = factory(Process::class)->create([
+            'bpmn' => str_replace(['signalRef="MySignalID"', 'id="MySignalID"'], ['signalRef="'.$signal['id'].'"', 'id="'.$signal['id'].'"'], $bpmnContent),
+            'process_category_id' => $systemProcessCategory
+        ]);
+
+        // Assert signal was created
+        $signalFound = SignalManager::findSignal($signal['id']);
+        $this->assertEquals($signal['id'], $signalFound->getId());
+
+        $data = [
+            'name' => $signal['name'] . '-MODIFIED',
+            'id' => $signal['id'] . '-MODIFIED',
+        ];
+        $route = route($this->resource . '.update', [$signal['id']]);
+        $response = $this->apiCall('PUT', $route, $data);
+
+        // Assert response 403
+        $response->assertStatus(403);
+
+        // Assert response has the correct error message
+        $this->assertEquals(
+            $response->json()['message'],
+            __('System signals cannot be modified.')
         );
 
         // Assert signal was deleted
