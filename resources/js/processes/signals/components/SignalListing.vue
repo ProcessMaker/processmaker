@@ -31,6 +31,7 @@
                 @click="onEdit(props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 :title="$t('Edit')"
+                :disabled="!isEditable(props.rowData)"
                 v-if="permission.includes('edit-processes')"
                 v-uni-aria-describedby="props.rowData.id.toString()"
               >
@@ -106,6 +107,15 @@ export default {
     isDeletable(data) {
       let catches = data.processes.reduce((carry, process) => carry + process.catches.length, 0);
       return catches === 0;
+    },
+    isEditable(data) {
+      let editable = true;
+      data.processes.forEach(process => {
+        if (process.catches.length && process.is_system) {
+          editable = false;
+        }
+      });
+      return editable;
     },
     onEdit(data, index) {
       window.location = "/designer/signals/" + data.id + "/edit";

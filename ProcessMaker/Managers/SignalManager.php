@@ -38,6 +38,7 @@ class SignalManager
                                     ? [
                                         'id' => $process->id,
                                         'name' => $process->name,
+                                        'is_system' => $process->category->is_system,
                                         'catches' => self::getSignalCatchEvents($node->getAttribute('id'), $process->getDomDocument())->toArray()
                                     ]
                                     : null
