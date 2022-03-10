@@ -109,7 +109,13 @@
                 </b-button>
 
                 <b-collapse v-model="showDataPreview" id="showDataPreview" class="mt-2">
-                  <vue-json-pretty :data="previewData" class="p-2 data-collapse"></vue-json-pretty>
+                  <monaco-editor
+                    :options="monacoOptions"
+                    class="editor"
+                    v-model="previewDataStringyfy"
+                    language="json"
+                    @editorDidMount="monacoMounted"
+                  />
                 </b-collapse>
               </b-card-body>
             </b-card>
@@ -200,8 +206,6 @@ import ComputedProperties from "@processmaker/screen-builder/src/components/comp
 import CustomCSS from "@processmaker/screen-builder/src/components/custom-css";
 import "@processmaker/screen-builder/dist/vue-form-builder.css";
 import "@processmaker/vue-form-elements/dist/vue-form-elements.css";
-import VueJsonPretty from "vue-json-pretty";
-import 'vue-json-pretty/lib/styles.css';
 import MonacoEditor from "vue-monaco";
 import mockMagicVariables from "./mockMagicVariables";
 import TopMenu from "../../components/Menu";
@@ -357,6 +361,7 @@ export default {
       watchers: [],
       config: this.screen.config || defaultConfig,
       previewData: {},
+      previewDataSaved: {},
       previewInput: "{}",
       customCSS: "",
       cssErrors: "",
@@ -364,10 +369,14 @@ export default {
       toggleValidation: true,
       showDataPreview: true,
       showDataInput: true,
+      editor: null,
       monacoOptions: {
-        automaticLayout: true,
+        language: 'json',
         lineNumbers: "off",
-        minimap: false
+        formatOnPaste: true,
+        formatOnType: true,
+        automaticLayout: true,
+        minimap: { enabled: false },
       },
       mockMagicVariables,
       previewComponents: [],
@@ -379,7 +388,6 @@ export default {
   components: {
     VueFormBuilder,
     VueFormRenderer,
-    VueJsonPretty,
     ComputedProperties,
     CustomCSS,
     WatchersPopup,
@@ -402,9 +410,15 @@ export default {
     },
     customCSS(newCustomCSS) {
       this.preview.custom_css = newCustomCSS;
-    }
+    },
   },
   computed: {
+    previewDataStringyfy() {
+      if (JSON.stringify(this.previewData) !== JSON.stringify(this.previewDataSaved)) {
+        this.formatMonaco();
+      }
+      return JSON.stringify(this.previewData);
+    },
     previewInputValid() {
       try {
         JSON.parse(this.previewInput);
@@ -465,6 +479,18 @@ export default {
     this.countElements();
   },
   methods: {
+    monacoMounted(editor) {
+      this.editor = editor;
+    },
+    formatMonaco() {
+      if (!this.editor) {
+        return;
+      }
+      this.editor.updateOptions({ readOnly:  false });
+      this.editor.getAction('editor.action.formatDocument').run().then(() => {
+        this.editor.updateOptions({ readOnly: true });
+      });
+    },
     countElements() {
       if (!this.$refs.renderer) {
         return;
@@ -851,5 +877,8 @@ export default {
 
     .data-collapse {
       height: 225px;
+    }
+    .editor {
+      height: 30em;
     }
 </style>
