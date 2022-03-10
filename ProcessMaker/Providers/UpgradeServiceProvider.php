@@ -25,8 +25,6 @@ class UpgradeServiceProvider extends ServiceProvider
     protected static $commands = [
         Commands\UpgradeCommand::class => 'command.upgrade',
         Commands\UpgradeInstallCommand::class => 'command.upgrade.install',
-        Commands\UpgradeRefreshCommand::class => 'command.upgrade.refresh',
-        Commands\UpgradeResetCommand::class => 'command.upgrade.reset',
         Commands\UpgradeRollbackCommand::class => 'command.upgrade.rollback',
         Commands\UpgradeStatusCommand::class => 'command.upgrade.status',
         Commands\UpgradeMakeCommand::class => 'command.upgrade.make',
@@ -157,30 +155,6 @@ class UpgradeServiceProvider extends ServiceProvider
             $composer = $app['composer'];
 
             return new Commands\UpgradeMakeCommand($creator, $composer);
-        });
-    }
-
-    /**
-     * Register the command.
-     *
-     * @return void
-     */
-    protected function registerUpgradeRefreshCommand()
-    {
-        $this->app->singleton('command.upgrade.refresh', function () {
-            return new Commands\UpgradeRefreshCommand;
-        });
-    }
-
-    /**
-     * Register the command.
-     *
-     * @return void
-     */
-    protected function registerUpgradeResetCommand()
-    {
-        $this->app->singleton('command.upgrade.reset', function ($app) {
-            return new Commands\UpgradeResetCommand($app['upgrade']);
         });
     }
 

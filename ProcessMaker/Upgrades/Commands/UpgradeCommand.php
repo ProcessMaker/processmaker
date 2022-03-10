@@ -15,7 +15,8 @@ class UpgradeCommand extends BaseCommand
      * @var string
      */
     protected $signature = 'upgrade 
-                            {--to= : The target version we\'re upgrading to}';
+                            {--to= : The target version we\'re upgrading to}
+                            {--pretend : Dry run the pending upgrade migrations}';
 
     /**
      * The console command description.
@@ -60,7 +61,8 @@ class UpgradeCommand extends BaseCommand
 
         $this->migrator->run($this->getMigrationPaths(), [
             'to' => $this->getMigratingToVersion(),
-            'current' => $this->getCurrentAppVersion()
+            'current' => $this->getCurrentAppVersion(),
+            'pretend' => $this->option('pretend')
         ]);
     }
 
@@ -75,7 +77,7 @@ class UpgradeCommand extends BaseCommand
                        ->setConnection($this->getDatabase());
 
         if (!$this->migrator->repositoryExists()) {
-            $this->call('upgrade:install', ['--database' => $this->getDatabase()]);
+            $this->call('upgrade:install');
         }
     }
 }

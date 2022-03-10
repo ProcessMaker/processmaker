@@ -6,8 +6,6 @@ use Throwable;
 use Composer\Semver\Comparator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Migrations\Migrator;
 use ProcessMaker\Exception\InvalidSemanticVersion;
 use ProcessMaker\Events\Upgrades\UpgradeMigrationEnded;
@@ -125,26 +123,27 @@ class UpgradeMigrator extends Migrator
     /**
      * Get an array of version-compatible upgrade migrations
      *
-     * @param  array  $migrations
+     * @param  array  $files
      *
      * @return array
      */
-    protected function versionCompatibleMigrations(array $migrations = [])
+    protected function versionCompatibleMigrations(array $files = [])
     {
-        return Collection::make($migrations)->reject(function ($file) {
+        return Collection::make($files)->reject(function ($file) {
             // Get an instance of the migration file class
             $upgrade = $this->resolve(
                 $this->getMigrationName($file)
             );
 
-            // Filter out upgrade migrations which are out of the range for the current running
-            // version of the app. For example, if we are running 4.2.28 then any upgrade
-            // migration with a "to" property of a version that's equal to or less than
-            // this version is compatible. This is because the migrations run in order
-            // of the version they were created for. We also need to filter out any
-            // migrations which are less than the requested $to version.
-            return Comparator::lessThan($this->current, $upgrade->to)
-                || Comparator::lessThanOrEqualTo($this->to, $upgrade->to);
+            // Filter out upgrade migrations which are out of the range
+            // for the current running version of the app.
+            if (Comparator::lessThan($this->current, $upgrade->to)) {
+                return true;
+            }
+
+            // We also need to filter out any migrations which are less
+            // than the requested $to version.
+            return Comparator::lessThan($this->to, $upgrade->to);
         })->values()->all();
     }
 
@@ -179,8 +178,6 @@ class UpgradeMigrator extends Migrator
         // each migration's execution. We will also extract a few of the options.
         $batch = $this->repository->getNextBatchNumber();
 
-        $step = $options['step'] ?? false;
-
         $this->fireMigrationEvent(new UpgradeMigrationsStarted);
 
         // Once we have the array of migrations, we will spin through them and run the
@@ -188,15 +185,11 @@ class UpgradeMigrator extends Migrator
         // that the migration was run so we don't repeat it next time we execute.
         foreach ($migrations as $file) {
             try {
-                $this->runUp($file, $batch, false);
+                $this->runUp($file, $batch, $options['pretend'] ?? false);
             } catch (UpgradeMigrationUnsuccessful $exception) {
                 $this->note($exception->getMessage());
 
                 break;
-            }
-
-            if ($step) {
-                $batch++;
             }
         }
 
@@ -223,7 +216,9 @@ class UpgradeMigrator extends Migrator
             $name = $this->getMigrationName($file)
         );
 
-        $this->note("<comment>Preflight Checks For:</comment> {$name}");
+        if (!$pretend) {
+            $this->note("<comment>Preflight Check:</comment> {$name}");
+        }
 
         $startTime = microtime(true);
 
@@ -239,7 +234,12 @@ class UpgradeMigrator extends Migrator
             throw new UpgradeMigrationUnsuccessful('|-- <fg=red>Upgrades Migrations Halted:</> One or more preflight checks failed for a required upgrade migration');
         }
 
-        $this->note("<info>Preflight Checks Successful: </info> {$name}");
+        $this->note("<info>Preflight Check Successful:</info> {$name}");
+
+        if ($pretend) {
+            return;
+        }
+
         $this->note("<comment>Upgrading:</comment> {$name}");
 
         try {
@@ -271,6 +271,7 @@ class UpgradeMigrator extends Migrator
      * @param  string  $file
      * @param  object  $migration
      * @param  bool  $pretend
+     *
      * @return void
      */
     protected function runDown($file, $migration, $pretend)
@@ -283,6 +284,10 @@ class UpgradeMigrator extends Migrator
         );
 
         $this->note("<comment>Rolling back:</comment> {$name}");
+
+        if ($pretend) {
+            return;
+        }
 
         $startTime = microtime(true);
 
@@ -355,7 +360,7 @@ class UpgradeMigrator extends Migrator
         try {
             $migration->preflightChecks();
         } catch (Throwable $exception) {
-            $this->note("<fg=red>Preflight Checks Failed:</> {$name}");
+            $this->note("<fg=red>Preflight Check Failed:</> {$name}");
             $this->note("|-- <comment>Failure Message:</comment> {$exception->getMessage()}");
 
             return false;
@@ -389,6 +394,27 @@ class UpgradeMigrator extends Migrator
         return $this->rollbackMigrations($migrations, $paths, $options);
     }
 
+    /**
+     * Reset the given migrations.
+     *
+     * @param  array  $migrations
+     * @param  array  $paths
+     * @param  bool  $pretend
+     * @return array
+     */
+    protected function resetMigrations(array $migrations, array $paths, $pretend = false)
+    {
+        // Since the getRan method that retrieves the migration name just gives us the
+        // migration name, we will format the names into objects with the name as a
+        // property on the objects so that we can pass it to the rollback method.
+        $migrations = collect($migrations)->map(function ($m) {
+            return (object) ['upgrade' => $m];
+        })->all();
+
+        return $this->rollbackMigrations(
+            $migrations, $paths, compact('pretend')
+        );
+    }
 
     /**
      * Rollback the given migrations.
@@ -420,7 +446,7 @@ class UpgradeMigrator extends Migrator
 
             $rolledBack[] = $file;
 
-            $this->runDown($file, $migration, false);
+            $this->runDown($file, $migration, $options['pretend'] ?? false);
         }
 
         $this->fireMigrationEvent(new UpgradeMigrationsEnded);

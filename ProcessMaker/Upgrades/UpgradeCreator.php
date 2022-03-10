@@ -2,24 +2,32 @@
 
 namespace ProcessMaker\Upgrades;
 
+use ProcessMaker\Exception\InvalidSemanticVersion;
 use Illuminate\Database\Migrations\MigrationCreator;
 
 class UpgradeCreator extends MigrationCreator
 {
+    use ValidatesSemver;
+
     /**
      * Create a new upgrade migration file at the given path
      *
      * @param $name
      * @param $path
-     * @param  null  $from
      * @param  null  $to
      * @param  null  $optional
      *
      * @return string
+     *
+     * @throws \ProcessMaker\Exception\InvalidSemanticVersion
      */
-    public function createUpgrade($name, $path, $to = null, $optional = null)
+    public function createUpgrade($name, $path, $to, $optional = null)
     {
         $this->ensureMigrationDoesntAlreadyExist($name, $path);
+
+        if (!$this->validateSemver($to)) {
+            throw new InvalidSemanticVersion("Invalid semantic version passed for the \"to\" argument: {$to}");
+        }
 
         $this->files->put(
             $path = $this->getPath($name, $path),

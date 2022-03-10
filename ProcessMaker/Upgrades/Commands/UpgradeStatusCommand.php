@@ -4,7 +4,6 @@ namespace ProcessMaker\Upgrades\Commands;
 
 use Illuminate\Support\Collection;
 use ProcessMaker\Upgrades\UpgradeMigrator;
-use Symfony\Component\Console\Input\InputOption;
 
 class UpgradeStatusCommand extends BaseCommand
 {
@@ -97,17 +96,5 @@ class UpgradeStatusCommand extends BaseCommand
     protected function getAllMigrationFiles()
     {
         return $this->migrator->getMigrationFiles($this->getMigrationPaths());
-    }
-
-    /**
-     * Get the console command options.
-     *
-     * @return array
-     */
-    protected function getOptions()
-    {
-        return [
-            ['path', null, InputOption::VALUE_OPTIONAL, 'The path of migrations files to use.'],
-        ];
     }
 }

@@ -13,10 +13,10 @@ class UpgradeMakeCommand extends BaseCommand
      *
      * @var string
      */
-    protected $signature = 'make:upgrade {name : The name of the upgrade}
-        {--optional : Designates this upgrade as optional/can be skipped when running as a set. Defaults to required}
-        {--path= : The location where the upgrade file should be created. Defaults to "upgrades"}
-        {--to= : The ProcessMaker version being upgraded to. Example: "4.2.28"}';
+    protected $signature = 'make:upgrade 
+        {name : The name of the upgrade} 
+        {to : The app version being upgraded to. (e.g. "4.2.28")}
+        {--optional : Designates this upgrade as optional/can be skipped when running as a set. Defaults to required}';
 
     /**
      * The console command description.
@@ -68,7 +68,7 @@ class UpgradeMakeCommand extends BaseCommand
         $name = Str::snake(trim($this->input->getArgument('name')));
 
         // The version we're upgrading *to* if provided
-        $to = $this->input->getOption('to');
+        $to = $this->input->getArgument('to');
 
         // Created upgrade migration is required when run as a set
         $optional = $this->input->getOption('optional');
@@ -95,20 +95,6 @@ class UpgradeMakeCommand extends BaseCommand
         // are registered by the class loaders.
         $this->composer->dumpAutoloads();
 
-        $this->line("<info>Created Upgrades File:</info> {$file}");
-    }
-
-    /**
-     * Get migration path (either specified by '--path' option or default location).
-     *
-     * @return string
-     */
-    protected function getMigrationPath()
-    {
-        if (! is_null($targetPath = $this->input->getOption('path'))) {
-            return $this->laravel->basePath().'/'.$targetPath;
-        }
-
-        return parent::getMigrationPath();
+        $this->line("<info>Created Upgrade File:</info> {$file}");
     }
 }

@@ -28,14 +28,38 @@ abstract class UpgradeMigration extends Migration
      * migrator will do this automatically and fail if the correct
      * version(s) are not present.
      *
-     * Throw a RuntimeException if the conditions to run this upgrade migration
-     * are *NOT* correct. If this is not a required upgrade, then it will be
-     * skipped. Otherwise, the thrown exception will stop the remaining
-     * upgrade migrations from running.
+     * Throw a \RuntimeException if the conditions are *NOT* correct for this
+     * upgrade migration to run. If this is not a required upgrade, then it
+     * will be skipped. Otherwise the exception thrown will be caught, noted,
+     * and will prevent the remaining migrations from continuing to run.
+     *
+     * Returning void or null denotes the checks were successful.
+     *
+     * @return void
+     *
+     * @throws \RuntimeException
+     */
+    public function preflightChecks()
+    {
+        //
+    }
+
+    /**
+     * Run the upgrade migrations.
      *
      * @return void
      */
-    public function preflightChecks()
+    public function up()
+    {
+        //
+    }
+
+    /**
+     * Reverse the upgrade migrations.
+     *
+     * @return void
+     */
+    public function down()
     {
         //
     }

@@ -14,14 +14,15 @@ class UpgradeRollbackCommand extends BaseCommand
      *
      * @var string
      */
-    protected $signature = 'upgrade:rollback';
+    protected $signature = 'upgrade:rollback
+                            {--pretend : Dry run the rollback of already run upgrade migrations}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Rollback the last upgrade migration';
+    protected $description = 'Rollback all run upgrade migrations';
 
     /**
      * The migrator instance.
@@ -56,7 +57,9 @@ class UpgradeRollbackCommand extends BaseCommand
 
         $this->prepareDatabase();
 
-        $this->migrator->rollback($this->getMigrationPaths());
+        $this->migrator->rollback($this->getMigrationPaths(), [
+            'pretend' => $this->option('pretend')
+        ]);
     }
 
     /**
@@ -70,7 +73,7 @@ class UpgradeRollbackCommand extends BaseCommand
                        ->setConnection($this->getDatabase());
 
         if (!$this->migrator->repositoryExists()) {
-            $this->call('upgrade:install', ['--database' => $this->getDatabase()]);
+            $this->call('upgrade:install');
         }
     }
 }

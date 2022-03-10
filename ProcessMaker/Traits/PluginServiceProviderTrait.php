@@ -5,9 +5,9 @@ namespace ProcessMaker\Traits;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Event;
 use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Events\ScriptBuilderStarting;
-use Illuminate\Support\Facades\Event;
 use ProcessMaker\Managers\IndexManager;
 use ProcessMaker\Managers\LoginManager;
 use ProcessMaker\Managers\PackageManager;
@@ -18,7 +18,6 @@ use ProcessMaker\Managers\PackageManager;
  */
 trait PluginServiceProviderTrait
 {
-
     private $modelerScripts = [];
 
     private $scriptBuilderScripts = [];
@@ -33,9 +32,11 @@ trait PluginServiceProviderTrait
             $key = str_replace('\\', '_', static::class);
             Cache::forever($key, static::version);
         }
+
         if (defined("static::name")) {
             $this->registerPackage(static::name);
         }
+
         Event::listen(ModelerStarting::class, [$this, 'modelerStarting']);
         Event::listen(ScriptBuilderStarting::class, [$this, 'scriptBuilderStarting']);
     }
@@ -43,7 +44,9 @@ trait PluginServiceProviderTrait
     /**
      * Executed during modeler starting
      *
-     * @param \ProcessMaker\Events\ModelerStarting $event
+     * @param  \ProcessMaker\Events\ModelerStarting  $event
+     *
+     * @throws \Exception
      */
     public function modelerStarting(ModelerStarting $event)
     {
@@ -71,7 +74,7 @@ trait PluginServiceProviderTrait
      */
     protected function updateVersion()
     {
-
+        //
     }
 
     /**
@@ -80,6 +83,7 @@ trait PluginServiceProviderTrait
     protected function isUpdated()
     {
         $key = str_replace('\\', '_', static::class);
+
         return static::version === Cache::get($key, '0.0.0');
     }
 
@@ -114,7 +118,7 @@ trait PluginServiceProviderTrait
     {
         App::make(IndexManager::class)->add($name, $model, $callback);
     }
-    
+
     /**
      * Register login addon
      *
@@ -125,7 +129,7 @@ trait PluginServiceProviderTrait
     {
         App::make(LoginManager::class)->add($view, $data);
     }
-    
+
     /**
      * Do not display standard login form
      */
@@ -158,7 +162,9 @@ trait PluginServiceProviderTrait
     /**
      * Executed during script builder starting
      *
-     * @param \ProcessMaker\Events\ScriptBuilderStarting $event
+     * @param  \ProcessMaker\Events\ScriptBuilderStarting  $event
+     *
+     * @throws \Exception
      */
     public function scriptBuilderStarting(ScriptBuilderStarting $event)
     {
@@ -167,6 +173,22 @@ trait PluginServiceProviderTrait
                 $event->manager->addScript(mix($path, $public));
             }
         }
+    }
+
+    /**
+     * Load upgrade migrations from a provided directory/ies
+     *
+     * @param $paths
+     *
+     * @return void
+     */
+    public function loadUpgradeMigrationsFrom($paths)
+    {
+        $this->callAfterResolving('upgrade', function ($migrator) use ($paths) {
+            foreach ((array) $paths as $path) {
+                $migrator->path($path);
+            }
+        });
     }
 
     /**
