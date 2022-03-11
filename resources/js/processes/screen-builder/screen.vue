@@ -413,11 +413,14 @@ export default {
     },
   },
   computed: {
-    previewDataStringyfy() {
-      if (JSON.stringify(this.previewData) !== JSON.stringify(this.previewDataSaved)) {
-        this.formatMonaco();
-      }
-      return JSON.stringify(this.previewData);
+    previewDataStringyfy: {
+      get() {
+        if (JSON.stringify(this.previewData) !== JSON.stringify(this.previewDataSaved)) {
+          this.formatMonaco();
+        }
+        return JSON.stringify(this.previewData);
+      },
+      set() {}
     },
     previewInputValid() {
       try {
