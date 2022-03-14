@@ -87,7 +87,12 @@ class TokenRepository implements TokenRepositoryInterface
         $token->process_id = $token->getInstance()->process->getKey();
         $token->process_request_id = $token->getInstance()->getKey();
         $token->load('processRequest');
-        $user = $token->getInstance()->process->getNextUser($activity, $token);
+        $isScriptOrServiceTask = $activity instanceof ScriptTaskInterface || $activity instanceof ServiceTaskInterface;
+        if ($isScriptOrServiceTask) {
+            $user = null;
+        } else {
+            $user = $token->getInstance()->process->getNextUser($activity, $token);
+        }
         $this->addUserToData($token->getInstance(), $user);
         $this->addRequestToData($token->getInstance());
         $token->user_id = $user ? $user->getKey() : null;
