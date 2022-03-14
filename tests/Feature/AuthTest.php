@@ -63,12 +63,12 @@ class AuthTest extends TestCase
             'password' => Hash::make('abc123'),
             'status' => 'ACTIVE',
         ]);
-        
+
         $response = $this->post('login', [
             'username' => 'foobar',
             'password' => 'abc123',
         ]);
-        $response->assertRedirect('/');
+        $response->assertRedirect('/requests');
         $response->assertSessionHasNoErrors();
     }
 }
