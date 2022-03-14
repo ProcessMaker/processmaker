@@ -28,9 +28,11 @@ class ProcessRequests extends ApiResource
     
     private function filterMagicVariables($data)
     {
-        foreach ($data as $key => $datum) {
-            if (stripos($key, '_') === 0) {
-                unset($data[$key]);
+        if (!empty($data)) {
+            foreach ($data as $key => $datum) {
+                if (stripos($key, '_') === 0) {
+                    unset($data[$key]);
+                }
             }
         }
         

@@ -161,6 +161,7 @@ class ProcessRequestController extends Controller
                 )->paginate($request->input('per_page', 10));
                 $total = $response->total();
             }
+            \Log::debug($query->toSql());
         } catch(QueryException $e) {
             throw $e;
             $rawMessage = $e->getMessage();

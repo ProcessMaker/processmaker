@@ -62,6 +62,8 @@ abstract class BpmnAction implements ShouldQueue
 
             //Run engine to the next state
             $this->engine->runToNextState();
+            // \Log::debug('RESPONSE UID: ' . $response->getProperty('uniqid'));
+            // \Log::debug($response->getDataStore()->getData());
         } catch (Throwable $exception) {
             Log::error($exception->getMessage());
             // Change the Request to error status
@@ -82,7 +84,6 @@ abstract class BpmnAction implements ShouldQueue
             $this->instance = null;
             gc_collect_cycles();
         }
-
         return $response;
     }
 

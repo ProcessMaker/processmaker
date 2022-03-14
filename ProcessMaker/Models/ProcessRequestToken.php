@@ -297,6 +297,12 @@ class ProcessRequestToken extends Model implements TokenInterface
      */
     public function getDefinition($asObject = false)
     {
+        $owner = $this->getOwner() && $this->getOwnerElement() ? $this->getOwnerElement() : null;
+        if ($owner && $asObject) {
+            return $owner;
+        } elseif ($owner && !$asObject) {
+            return $owner->getProperties();
+        }
         $request = $this->processRequest ?: $this->getInstance();
         $process = $request->processVersion ?: $request->process;
         $definitions = $process->getDefinitions();

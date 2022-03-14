@@ -58,33 +58,46 @@ class CallActivity implements CallActivityInterface
      */
     protected function callSubprocess(TokenInterface $token, $startId)
     {
+        perfStart();
         $callable = $this->getCalledElement();
+        perfLog("CallActivity::callSubprocess 1");
         $dataStore = $callable->getRepository()->createDataStore();
+        perfLog("CallActivity::callSubprocess 2");
         // The entire data model is sent to the target
         $dataManager = new DataManager();
+        perfLog("CallActivity::callSubprocess 3");
         $data = $dataManager->getData($token);
+        perfLog("CallActivity::callSubprocess 4");
 
         // Add info about parent (Note MultiInstance also adds _parent info)
         if (!isset($data['_parent'])) {
             $data['_parent'] = [];
         }
+        perfLog("CallActivity::callSubprocess 5");
 
         $data['_parent']['process_id'] = $token->getInstance()->process_id;
         $data['_parent']['request_id'] = $token->getInstance()->id;
         $data['_parent']['node_id'] = $token->element_id;
 
+        perfLog("CallActivity::callSubprocess 6");
         $configString = $this->getProperty('config');
+        perfLog("CallActivity::callSubprocess 7");
         if ($configString) {
             $config = json_decode($configString, true);
             $data['_parent']['config'] = $config;
         }
+        perfLog("CallActivity::callSubprocess 8");
 
         $startEvent = $startId ? $callable->getOwnerDocument()->getElementInstanceById($startId) : null;
+        perfLog("CallActivity::callSubprocess 9");
 
         $dataStore->setData($data);
+        perfLog("CallActivity::callSubprocess A");
         $instance = $callable->call($dataStore, $startEvent);
+        perfLog("CallActivity::callSubprocess B");
 
         CopyRequestFiles::dispatch($token->getInstance(), $instance);
+        perfLog("CallActivity::callSubprocess C");
 
         return $instance;
     }
@@ -130,6 +143,7 @@ class CallActivity implements CallActivityInterface
      */
     protected function catchSubprocessError(TokenInterface $token, ErrorInterface $error = null, ExecutionInstanceInterface $instance)
     {
+        \Log::debug('ERROR IN SUBPOCCESS: ' . $token->getId());
         $this->catchSubprocessErrorBase($token, $error);
         // Log subprocess error message
         $message = [];
@@ -224,14 +238,16 @@ class CallActivity implements CallActivityInterface
     }
 
     /**
-     * Syncronize two process instances
+     * Synchronize two process instances
      *
      * @param ExecutionInstanceInterface $instance
      * @param ExecutionInstanceInterface $currentInstance
      */
     private function syncronizeInstances(ExecutionInstanceInterface $instance, ExecutionInstanceInterface $currentInstance)
     {
-        if ($instance->process->id !== $currentInstance->process->id) {
+        $process = $instance->getProcess()->getOwnerDocument()->getModel();
+        $currentProcess = $currentInstance->getProcess()->getOwnerDocument()->getModel();
+        if ($process->id !== $currentProcess->id) {
             $currentInstance->getProcess()->getEngine()->runToNextState();
         }
     }

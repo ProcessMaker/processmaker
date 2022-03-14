@@ -101,7 +101,7 @@ class BpmnSubscriber
         if ($event->instance->isNonPersistent()) {
             return;
         }
-        Log::info('Process created: ' . json_encode($event->instance->getProperties()));
+        Log::info(\microtime(true) . ' Process created: ' . json_encode($event->instance->getProperties()));
 
         $notifiables = $event->instance->getNotifiables('started');
         Notification::send($notifiables, new ProcessCreatedNotification($event->instance));
@@ -189,7 +189,7 @@ class BpmnSubscriber
             WorkflowManager::runScripTask($scriptTask, $token);
         }
         catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::Error('Unhandled error when running a script task:' . $e->getMessage());
+            Log::Error('Unhandled error when running a script task:' . $e->getMessage());
         }
     }
 
@@ -206,7 +206,7 @@ class BpmnSubscriber
             WorkflowManager::runServiceTask($serviceTask, $token);
         }
         catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::Error('Unhandled error when running a service task:' . $e->getMessage());
+            Log::Error('Unhandled error when running a service task:' . $e->getMessage());
         }
     }
 
@@ -302,6 +302,13 @@ class BpmnSubscriber
         $events->listen(ActivityInterface::EVENT_ACTIVITY_EXCEPTION, static::class . '@onActivityException');
 
         $events->listen(IntermediateCatchEventInterface::EVENT_CATCH_TOKEN_ARRIVES, static::class . '@onIntermediateCatchEventActivated');
+        $events->listen('*', function($e) {
+            //\Log::debug(\gettype($e));
+            // if $e does not include \\
+            if (strpos($e, '\\') === false) {
+                error_log(microtime(true) . ' : ' . $e);
+            }
+        });
     }
 
 }

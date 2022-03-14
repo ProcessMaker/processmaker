@@ -187,6 +187,16 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     public function __construct(array $argument = [])
     {
+        // $this->setProperty('uniqid', uniqid());
+        // $gg = \debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS, 6);
+        // if (basename($gg[0]['file']) === 'ExecutionInstanceRepository.php') {
+        //     Log::debug('ProcessRequest=' . $this->getProperty('uniqid'));
+        //     $hh = '';
+        //     foreach($gg as $g) {
+        //         $hh .= "\n" . (isset($g['file']) ? ($g['file'] . ':' . @$g['line']) : json_encode($g));
+        //     }
+        //     Log::debug($hh);
+        // }
         parent::__construct($argument);
         $this->bootElement([]);
     }

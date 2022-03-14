@@ -87,7 +87,10 @@ class TokenRepository implements TokenRepositoryInterface
         $token->process_id = $token->getInstance()->process->getKey();
         $token->process_request_id = $token->getInstance()->getKey();
         $token->load('processRequest');
-        $user = $token->getInstance()->process->getNextUser($activity, $token);
+        // next user should by a fixed value for service tasks
+        $user = $token->getInstance()->process->getNextUser($activity, $token);   //20ms
+
+        // son necesarios? mejorar su performance
         $this->addUserToData($token->getInstance(), $user);
         $this->addRequestToData($token->getInstance());
         $token->user_id = $user ? $user->getKey() : null;
@@ -111,7 +114,8 @@ class TokenRepository implements TokenRepositoryInterface
         $token->initiated_at = null;
         $token->riskchanges_at = $due ? Carbon::now()->addHours($due * 0.7) : null;
         $token->updateTokenProperties();
-        $token->getInstance()->updateCatchEvents();
+        // updatecatchevents es lento, mejorar la performace
+        $token->getInstance()->updateCatchEvents();     //30ms
         $token->saveOrFail();
         $token->setId($token->getKey());
         $request = $token->getInstance();
@@ -216,6 +220,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->setId($token->getKey());
         $request = $token->getInstance();
         $request->notifyProcessUpdated('ACTIVITY_COMPLETED');
+        //\Log::debug('persistActivityCompleted2=' . \microtime(true));
     }
 
     /**

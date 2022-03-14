@@ -42,6 +42,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      */
     public function loadExecutionInstanceByUid($instanceId, StorageInterface $storage)
     {
+        \Log::debug('loadExecutionInstanceByUid 1=' . \microtime(true));
         $instance = Instance::find($instanceId);
         if (!$instance) {
             abort(404, 'Instance not found');
@@ -68,6 +69,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
             $element = $storage->getElementInstanceById($tokenInfo['element_ref']);
             $element->addToken($instance, $token);
         }
+        \Log::debug('loadExecutionInstanceByUid 1=' . \microtime(true));
         return $instance;
     }
 
@@ -92,6 +94,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      */
     public function persistInstanceCreated(ExecutionInstanceInterface $instance)
     {
+        \Log::debug('persistInstanceCreated 1=' . \microtime(true));
         //Get instance data
         $data = $instance->getDataStore()->getData();
         //Get the process
@@ -116,6 +119,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->setId($instance->getKey());
 
         $this->persistCollaboration($instance);
+        \Log::debug('persistInstanceCreated 2=' . \microtime(true));
     }
 
     private function findParticipantFor(ExecutionInstanceInterface $instance)

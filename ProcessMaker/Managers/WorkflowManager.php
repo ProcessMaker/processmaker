@@ -53,6 +53,8 @@ class WorkflowManager
      */
     protected $serviceTaskImplementations = [];
 
+    protected $synchronous = true;
+
     /**
      * Complete a task.
      *
@@ -125,7 +127,14 @@ class WorkflowManager
         //Validate data
         $this->validateData($data, $definitions, $event);
         //Schedule BPMN Action
-        return StartEvent::dispatchNow($definitions, $event, $data);
+        $response = StartEvent::dispatchNow($definitions, $event, $data);
+        if ($response) {
+            // reload model
+            // $response->refresh();
+        }
+        $response->data = $response->getDataStore()->getData();
+        $response->save();
+        return $response;
     }
 
     /**
@@ -159,7 +168,11 @@ class WorkflowManager
         Log::info('Dispatch a script task: ' . $scriptTask->getId() . ' #' . $token->getId());
         $instance = $token->processRequest;
         $process = $instance->process;
-        RunScriptTask::dispatch($process, $instance, $token, [])->onQueue('bpmn');
+        if ($this->synchronous) {
+            RunScriptTask::dispatchNow($process, $instance, $token, []);
+        } else {
+            RunScriptTask::dispatch($process, $instance, $token, [])->onQueue('bpmn');
+        }
     }
 
     /**
@@ -171,9 +184,21 @@ class WorkflowManager
     public function runServiceTask(ServiceTaskInterface $serviceTask, Token $token)
     {
         Log::info('Dispatch a service task: ' . $serviceTask->getId());
-        $instance = $token->processRequest;
-        $process = $instance->process;
-        RunServiceTask::dispatch($process, $instance, $token, [])->onQueue('bpmn');
+        if ($this->synchronous) {
+            $instance = $token->getInstance();
+            $process = $instance->getProcess()->getOwnerDocument()->getModel();
+            $element = $token->getDefinition(true);
+            $job = new RunServiceTask($process, $instance, $token, []);
+            $response = $job->runService($token, $element);
+            $dataManager = new DataManager();
+            $dataManager->updateData($token, $response['output']);
+            \Log::debug($response['output']);
+            $element->complete($token);
+        } else {
+            $instance = $token->processRequest;
+            $process = $instance->process;
+            RunServiceTask::dispatch($process, $instance, $token, [])->onQueue('bpmn');
+        }
     }
 
     /**
