@@ -227,7 +227,7 @@ class CallActivity implements CallActivityInterface
      */
     private function syncronizeInstances(ExecutionInstanceInterface $instance, ExecutionInstanceInterface $currentInstance)
     {
-        if ($instance->process->id !== $currentInstance->process->id) {
+        if ($instance->getProcess()->getOwnerDocument()->getModel()->id !== $currentInstance->getProcess()->getOwnerDocument()->getModel()->id) {
             $currentInstance->getProcess()->getEngine()->runToNextState();
         }
     }

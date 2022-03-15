@@ -95,7 +95,6 @@ class TokenRepository implements TokenRepositoryInterface
         $token->element_name = $activity->getName();
         $token->process_id = $token->getInstance()->process->getKey();
         $token->process_request_id = $token->getInstance()->getKey();
-        $token->load('processRequest');
 
         $token->is_self_service = 0;
         if ($token->getAssignmentRule() === 'self_service') {
@@ -108,7 +107,7 @@ class TokenRepository implements TokenRepositoryInterface
             }
         }
 
-        $selfServiceTasks = $token->processRequest->processVersion->self_service_tasks;        
+        $selfServiceTasks = $token->getInstance()->processVersion->self_service_tasks;
         $token->self_service_groups = $selfServiceTasks && isset($selfServiceTasks[$activity->getId()]) ? $selfServiceTasks[$activity->getId()] : [];
         //Default 3 days of due date
         $due = $activity->getProperty('dueIn', '72');
