@@ -3,6 +3,7 @@
 namespace ProcessMaker\Upgrades\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
 use ProcessMaker\Upgrades\ValidatesSemver;
 use ProcessMaker\Exception\InvalidSemanticVersion;
 use function config;
@@ -94,6 +95,8 @@ class BaseCommand extends Command
      */
     protected function getMigrationPath()
     {
-        return base_path('upgrades');
+        File::ensureDirectoryExists($path = base_path('upgrades'));
+
+        return $path;
     }
 }
