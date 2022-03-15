@@ -1558,6 +1558,9 @@
   "Signal Payload": "Signal Payload",
   "Signals present in processes and system processes cannot be deleted.": "Signals present in processes and system processes cannot be deleted.",
   "System signals cannot be modified.": "System signals cannot be modified.",
+  "Cannot edit system signals.": "Cannot edit system signals.",
+  "Cannot delete System signals.": "Cannot delete System signals.",
+  "Cannot delete signals present in a process.": "Cannot delete signals present in a process.",
   "Display contents of docker file that will be prepended to your customizations below.": "Display contents of docker file that will be prepended to your customizations below.",
   "Downloading files is not available.": "Downloading files is not available."
 }
