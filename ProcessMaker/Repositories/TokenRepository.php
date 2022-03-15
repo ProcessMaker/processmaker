@@ -79,14 +79,6 @@ class TokenRepository implements TokenRepositoryInterface
         if ($process->isNonPersistent()) {
             return;
         }
-        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
-        $token->status = ActivityInterface::TOKEN_STATE_ACTIVE;
-        $token->element_id = $activity->getId();
-        $token->element_type = $this->getActivityType($activity);
-        $token->element_name = $activity->getName();
-        $token->process_id = $token->getInstance()->process->getKey();
-        $token->process_request_id = $token->getInstance()->getKey();
-        $token->load('processRequest');
         $isScriptOrServiceTask = $activity instanceof ScriptTaskInterface || $activity instanceof ServiceTaskInterface;
         if ($isScriptOrServiceTask) {
             $user = null;
@@ -96,6 +88,14 @@ class TokenRepository implements TokenRepositoryInterface
         $this->addUserToData($token->getInstance(), $user);
         $this->addRequestToData($token->getInstance());
         $token->user_id = $user ? $user->getKey() : null;
+        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
+        $token->status = ActivityInterface::TOKEN_STATE_ACTIVE;
+        $token->element_id = $activity->getId();
+        $token->element_type = $this->getActivityType($activity);
+        $token->element_name = $activity->getName();
+        $token->process_id = $token->getInstance()->process->getKey();
+        $token->process_request_id = $token->getInstance()->getKey();
+        $token->load('processRequest');
 
         $token->is_self_service = 0;
         if ($token->getAssignmentRule() === 'self_service') {
@@ -439,7 +439,6 @@ class TokenRepository implements TokenRepositoryInterface
             unset($userData['remember_token']);
             $instance->getDataStore()->putData('_user', $userData);
         }
-        $this->instanceRepository->persistInstanceUpdated($instance);
     }
 
     /**
@@ -462,7 +461,6 @@ class TokenRepository implements TokenRepositoryInterface
     {
         if (!$instance->getDataStore()->getData('_request')) {
             $instance->getDataStore()->putData('_request', $instance->attributesToArray());
-            $this->instanceRepository->persistInstanceUpdated($instance);
         }
     }
 
