@@ -788,7 +788,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public function mergeLatestStoredData()
     {
         $store = $this->getDataStore();
-        $latest = ProcessRequest::find($this->getId());
+        $latest = ProcessRequest::select('data')->find($this->getId());
         $this->data = $store->updateArray($latest->data);
         return $this->data;
     }
