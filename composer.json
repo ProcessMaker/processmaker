@@ -12,6 +12,7 @@
   "require": {
     "php": ">=7.2.0",
     "babenkoivan/elastic-scout-driver": "^1.2",
+    "composer/semver": "^3.3",
     "darkaonline/l5-swagger": "6.0.*",
     "doctrine/dbal": "^2.9",
     "fideloper/proxy": "^4.0",
