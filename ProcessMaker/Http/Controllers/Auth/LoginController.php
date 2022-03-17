@@ -9,6 +9,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use ProcessMaker\Traits\HasControllerAddons;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 
 class LoginController extends Controller
 {
@@ -62,7 +63,7 @@ class LoginController extends Controller
     }
 
     public function loginWithIntendedCheck(Request $request) {
-        $intended = redirect()->intended()->getTargetUrl();
+        $intended = Cookie::get('processmaker_intended');
         if ($intended) {
             // Check if the route is a fallback, meaning it's invalid (like favicon.ico)
             $route = app('router')->getRoutes() ->match(
@@ -75,7 +76,7 @@ class LoginController extends Controller
             // Getting intended deletes it, so put in back
             $request->session()->put('url.intended', $intended);
         }
-        
+
         // Check the status of the user
         $user = User::where('username', $request->input('username'))->first();
         if (!$user || $user->status === 'INACTIVE') {
