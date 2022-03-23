@@ -52,9 +52,14 @@ class TaskController extends Controller
         }
 
         //Mark as unread any not read notification for the task
-        Notification::where('data->url', '/' . Request::path())
+        \DB::enableQueryLog();
+        Notification::whereRaw("json_valid(data)")
+            ->where('data->url', '/' . Request::path())
             ->whereNull('read_at')
             ->update(['read_at' => Carbon::now()]);
+        $query = \DB::getQueryLog();
+        \Illuminate\Support\Facades\Log::Critical(__FILE__ . "-". __LINE__ ." query = " . print_r($query, true));
+
 
         $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, $task->getScreenVersion() ? $task->getScreenVersion()->type : 'FORM'));

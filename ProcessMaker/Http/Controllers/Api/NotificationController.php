@@ -87,6 +87,7 @@ class NotificationController extends Controller
             'data->userName as userName',
             'data->request_id as request_id',
             'data->url as url')
+            ->whereRaw("json_valid(data)")
             ->where('notifiable_type', User::class)
             ->where('notifiable_id', Auth::user()->id);
 
