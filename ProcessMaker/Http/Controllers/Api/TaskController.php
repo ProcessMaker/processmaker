@@ -94,18 +94,18 @@ class TaskController extends Controller
         $query->select('process_request_tokens.*');
 
         $include  = $request->input('include') ? explode(',',$request->input('include')) : [];
-        
+
         if (in_array('data', $include)) {
             unset($include[array_search('data', $include)]);
         }
-        
+
         $query->with($include);
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $query->filter($filter);
         }
-        
+
         $filterByFields = ['process_id', 'process_request_tokens.user_id' => 'user_id', 'process_request_tokens.status' => 'status', 'element_id', 'element_name', 'process_request_id'];
         $parameters = $request->all();
         foreach ($parameters as $column => $fieldFilter) {
@@ -181,12 +181,12 @@ class TaskController extends Controller
                 return Auth::user()->can('view', $processRequestToken);
             })->values();
         }
-        
+
         //Map each item through its resource
         $response = $response->map(function ($processRequestToken) use ($request) {
             return new Resource($processRequestToken);
         });
-        
+
         $response->inOverdue = $inOverdue;
 
         return new TaskCollection($response);
@@ -198,7 +198,7 @@ class TaskController extends Controller
      * @param ProcessRequestToken $task
      *
      * @return Resource
-     * 
+     *
      * @OA\Get(
      *     path="/tasks/{task_id}",
      *     summary="Get a single task by ID",
@@ -275,7 +275,7 @@ class TaskController extends Controller
             }
             // Skip ConvertEmptyStringsToNull and TrimStrings middlewares
             $data = json_decode($request->getContent(), true);
-            $data = SanitizeHelper::sanitizeData($data['data'], $task->getScreenVersion());
+            $data = SanitizeHelper::sanitizeData($data['data'], $task);
             //Call the manager to trigger the start event
             $process = $task->process;
             $instance = $task->processRequest;
