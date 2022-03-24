@@ -76,7 +76,7 @@ class UpgradeStatusCommand extends BaseCommand
         );
 
         $sorted_migrations = Collection::make(
-            $this->migrator->sortMigrationsBySemanticVersion($files)
+            $this->migrator->sortBySemanticVersion($files)
         );
 
         return $sorted_migrations->map(function ($migration) use ($ran) {

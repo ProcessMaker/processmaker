@@ -3,6 +3,7 @@
 namespace ProcessMaker\Upgrades;
 
 use Throwable;
+use Exception;
 use Composer\Semver\Comparator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -77,7 +78,7 @@ class UpgradeMigrator extends Migrator
             })->values()->all()
         );
 
-        return $this->sortMigrationsBySemanticVersion($migrations);
+        return $this->sortBySemanticVersion($migrations);
     }
 
     /**
@@ -87,17 +88,25 @@ class UpgradeMigrator extends Migrator
      *
      * @return array
      */
-    public function sortMigrationsBySemanticVersion(array $migrations)
+    public function sortBySemanticVersion(array $migrations)
     {
         return Collection::make($migrations)->sort(function ($first, $second) {
 
-            $first = $this->resolve(
-                $first_name = $this->getMigrationName($first)
-            );
+            if (!is_object($first)) {
+                $first = $this->resolve(
+                    $first_name = $this->getMigrationName($first)
+                );
+            } else {
+                $first_name = $first->upgrade;
+            }
 
-            $second = $this->resolve(
-                $second_name = $this->getMigrationName($second)
-            );
+            if (!is_object($second)) {
+                $second = $this->resolve(
+                    $second_name = $this->getMigrationName($second)
+                );
+            } else {
+                $second_name = $second->upgrade;
+            }
 
             if (!$this->validateSemver($first->to)) {
                 throw new InvalidSemanticVersion("Invalid semantic version found in: {$first_name}.php");
@@ -395,6 +404,17 @@ class UpgradeMigrator extends Migrator
     }
 
     /**
+     * Get the migrations for a rollback operation.
+     *
+     * @param  array  $options
+     * @return array
+     */
+    protected function getMigrationsForRollback(array $options)
+    {
+        return $this->repository->getLast();
+    }
+
+    /**
      * Reset the given migrations.
      *
      * @param  array  $migrations
@@ -417,11 +437,47 @@ class UpgradeMigrator extends Migrator
     }
 
     /**
+     * Binds the "to" property from the migration file to corresponding
+     * migration objects with a matching name
+     *
+     * @param  array  $migrations
+     * @param  array  $files
+     *
+     * @return array
+     */
+    protected function bindVersions(array $migrations, array $files)
+    {
+        return array_filter(Collection::make($migrations)->transform(function ($migration) use ($files) {
+            // Filter out any non-object values
+            if (!is_object($migration)) {
+                return null;
+            }
+
+            // If we didn't find the migration file name as one of the keys in $files,
+            // we know we don't have that particular migration file to run
+            if (!array_key_exists($migration->upgrade, $files)) {
+                return null;
+            }
+
+            // Try to resolve the migration and retrieve the
+            // version it's intended upgrade is intended for
+            try {
+                $migration->to = $this->resolve($migration->upgrade)->to;
+            }  catch (Exception $exception) {
+                return null;
+            }
+
+            return $migration;
+        })->toArray());
+    }
+
+    /**
      * Rollback the given migrations.
      *
      * @param  array  $migrations
      * @param  array|string  $paths
      * @param  array  $options
+     *
      * @return array
      */
     protected function rollbackMigrations(array $migrations, $paths, array $options)
@@ -429,6 +485,13 @@ class UpgradeMigrator extends Migrator
         $rolledBack = [];
 
         $this->requireFiles($files = $this->getMigrationFiles($paths));
+
+        // Add the version to each migration object (found in their respective file),
+        // then sort the array by their semantic version,
+        // then reverse the order for the rollback
+        $migrations = array_reverse(
+            $this->sortBySemanticVersion($this->bindVersions($migrations, $files))
+        );
 
         $this->fireMigrationEvent(new UpgradeMigrationsStarted);
 
