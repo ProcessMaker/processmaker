@@ -74,7 +74,7 @@ export default {
                 let deletedUserExists = false;
                 for (let key of ['username', 'email']) {
                     if (key in this.addError ) {
-                        let message = this.addError[key].find(m => m.startsWith('A user with the'));
+                        let message = this.addError[key].find(m => m.startsWith('The Username has already been taken.'));
                         if (message) {
                             deletedUserExists = message;
                         }
