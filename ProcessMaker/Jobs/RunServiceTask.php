@@ -32,7 +32,8 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
      */
     public function __construct(Definitions $definitions, ProcessRequest $instance, ProcessRequestToken $token, array $data)
     {
-        $this->onQueue('bpmn');
+        $pmConfig = json_decode($token->getOwnerElement()->getProperty('config'), true);
+        $this->onQueue($pmConfig['queue'] ?? 'bpmn');
         $this->definitionsId = $definitions->getKey();
         $this->instanceId = $instance->getKey();
         $this->tokenId = $token->getKey();
