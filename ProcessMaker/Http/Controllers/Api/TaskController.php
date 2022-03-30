@@ -128,6 +128,8 @@ class TaskController extends Controller
                             });
                         });
                     });
+                } elseif ($column === 'process_request_id') {
+                    $query->where('process_request_id', $fieldFilter);
                 } else {
                     $key = array_search($column, $filterByFields);
                     $query->where(is_string($key) ? $key : $column, 'like', $fieldFilter);
