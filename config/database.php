@@ -86,6 +86,17 @@ return [
     |
     */
     'migrations' => 'migrations',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Upgrade Repository Table
+    |--------------------------------------------------------------------------
+    |
+    | This table keeps track of all the upgrades that have already run.
+    |
+    */
+    'upgrades' => 'upgrade_migrations',
+
     /*
     |--------------------------------------------------------------------------
     | Redis Databases
