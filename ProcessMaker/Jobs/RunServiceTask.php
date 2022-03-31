@@ -22,6 +22,9 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
     public $tokenId;
     public $data;
 
+    public $tries = 3;
+    public $retryAfter = 60;
+
     /**
      * Create a new job instance.
      *
