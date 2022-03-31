@@ -26,27 +26,30 @@
         <template slot="actions" slot-scope="props">
           <div class="actions">
             <div class="popout">
-              <b-btn
-                variant="link"
-                @click="onEdit(props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
-                :title="$t('Edit')"
-                v-if="permission.includes('edit-processes')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-pen-square fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                variant="link"
-                @click="onReview(props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
-                :title="isCollection(props.rowData) ? $t('View Collection') : $t('Delete')"
-                :disabled="(!isDeletable(props.rowData) || !permission.includes('edit-processes')) && !isCollection(props.rowData)"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i v-if="isCollection(props.rowData)" class="fas fa-external-link-alt fa-lg fa-fw"></i>
-                <i v-else class="fas fa-trash-alt fa-lg fa-fw"></i>
-              </b-btn>
+              <span v-b-tooltip.hover
+                    :title="isEditable(props.rowData) ? $t('Edit') : $t('Cannot edit system signals.')">
+                <b-btn
+                    variant="link"
+                    @click="onEdit(props.rowData, props.rowIndex)"
+                    :disabled="!isEditable(props.rowData)"
+                    v-if="permission.includes('edit-processes')"
+                    v-uni-aria-describedby="props.rowData.id.toString()"
+                >
+                    <i class="fas fa-pen-square fa-lg fa-fw"></i>
+                </b-btn>
+              </span>
+              <span v-b-tooltip.hover
+                :title="getDeleteButtonTitle(props.rowData)">
+                <b-btn
+                    variant="link"
+                    @click="onReview(props.rowData, props.rowIndex)"
+                    :disabled="(!isDeletable(props.rowData) || !permission.includes('edit-processes')) && !isCollection(props.rowData)"
+                    v-uni-aria-describedby="props.rowData.id.toString()"
+                >
+                    <i v-if="isCollection(props.rowData)" class="fas fa-external-link-alt fa-lg fa-fw"></i>
+                    <i v-else class="fas fa-trash-alt fa-lg fa-fw"></i>
+                </b-btn>
+              </span>
             </div>
           </div>
         </template>
@@ -106,6 +109,30 @@ export default {
     isDeletable(data) {
       let catches = data.processes.reduce((carry, process) => carry + process.catches.length, 0);
       return catches === 0;
+    },
+    isEditable(data) {
+      let editable = true;
+      data.processes.forEach(process => {
+        if (process.catches.length && process.is_system) {
+          editable = false;
+        }
+      });
+      return editable;
+    },
+    getDeleteButtonTitle(rowData) {
+        if (this.isCollection(rowData)) {
+            return this.$t('View Collection');
+        }
+        if (!this.isDeletable(rowData) && this.isEditable(rowData)) {
+            return this.$t('Cannot delete signals present in a process.');
+        }
+        if (!this.isDeletable(rowData) && !this.isEditable(rowData)) {
+            return this.$t('Cannot delete system signals.');
+        }
+        if (!this.permission.includes('edit-processes')) {
+            return this.$t('You do not have permission to delete signals');
+        }
+        return this.$t('Delete');
     },
     onEdit(data, index) {
       window.location = "/designer/signals/" + data.id + "/edit";
