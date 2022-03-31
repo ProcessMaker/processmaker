@@ -116,6 +116,7 @@ return [
         ProcessMaker\Providers\BroadcastServiceProvider::class,
         ProcessMaker\Providers\WorkflowServiceProvider::class,
         ProcessMaker\Providers\SettingServiceProvider::class,
+        ProcessMaker\Providers\UpgradeServiceProvider::class,
         Laravel\Passport\PassportServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
         TeamTNT\Scout\TNTSearchScoutServiceProvider::class,
@@ -174,10 +175,10 @@ return [
          */
         'Theme' => Igaster\LaravelTheme\Facades\Theme::class,
         'Menu'      => Lavary\Menu\Facade::class,
-        
+
         /**
          * Overwrite package classes
-         */        
+         */
         'ElasticScoutDriver\Factories\SearchRequestFactory' => ProcessMaker\Factories\SearchRequestFactory::class,
 
 
