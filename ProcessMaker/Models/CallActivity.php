@@ -46,7 +46,7 @@ class CallActivity implements CallActivityInterface
                     ->getTokenRepository()
                     ->persistCallActivityActivated($token, $instance, $startId);
                 $this->linkProcesses($token, $instance);
-                $this->syncronizeInstances($token->getInstance(), $instance);
+                $this->synchronizeInstances($token->getInstance(), $instance);
             }
         );
     }
@@ -108,7 +108,7 @@ class CallActivity implements CallActivityInterface
 
         // Complete the sub process call
         $this->completeSubprocessBase($token);
-        $this->syncronizeInstances($instance, $token->getInstance());
+        $this->synchronizeInstances($instance, $token->getInstance());
 
         CopyRequestFiles::dispatch($instance, $token->getInstance());
         
@@ -144,7 +144,7 @@ class CallActivity implements CallActivityInterface
         }
         $token->getInstance()->logError(new Exception(implode("\n", $message)), $this);
 
-        $this->syncronizeInstances($instance, $token->getInstance());
+        $this->synchronizeInstances($instance, $token->getInstance());
         return $this;
     }
 
@@ -220,12 +220,12 @@ class CallActivity implements CallActivityInterface
     }
 
     /**
-     * Syncronize two process instances
+     * Synchronize two process instances
      *
      * @param ExecutionInstanceInterface $instance
      * @param ExecutionInstanceInterface $currentInstance
      */
-    private function syncronizeInstances(ExecutionInstanceInterface $instance, ExecutionInstanceInterface $currentInstance)
+    private function synchronizeInstances(ExecutionInstanceInterface $instance, ExecutionInstanceInterface $currentInstance)
     {
         $parentProcessId = optional($instance->getProcess()->getOwnerDocument()->getModel())->id;
         $childProcessId = optional($currentInstance->getProcess()->getOwnerDocument()->getModel())->id;
