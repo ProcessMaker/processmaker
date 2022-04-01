@@ -38,6 +38,7 @@ class SignalManager
                                     ? [
                                         'id' => $process->id,
                                         'name' => $process->name,
+                                        'is_system' => $process->category->is_system,
                                         'catches' => self::getSignalCatchEvents($node->getAttribute('id'), $process->getDomDocument())->toArray()
                                     ]
                                     : null
@@ -160,6 +161,20 @@ class SignalManager
         $assocSignal =  SignalManager::getAllSignals()
                             ->firstWhere('id', $signalId);
         return $assocSignal ? self::associativeToSignal($assocSignal) : null;
+    }
+
+    /**
+     * @param $signalId
+     * @param $includeSystemProcesses
+     *
+     * @return array
+     */
+    public static function getSignalProcesses($signalId, $includeSystemProcesses = false)
+    {
+        $assocSignal =  SignalManager::getAllSignals($includeSystemProcesses)
+                            ->firstWhere('id', $signalId);
+
+        return $assocSignal && $assocSignal['processes'] ? $assocSignal['processes'] : [];
     }
 
     /**

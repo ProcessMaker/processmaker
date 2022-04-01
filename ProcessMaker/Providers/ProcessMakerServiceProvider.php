@@ -63,6 +63,12 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return preg_match('/^[\pL\s\-\_\d\.\']+$/u', $val);
         });
 
+        //Custom validator for variable names. Eg: correct var names _myvar, myvar, myvar1, _myvar1. Eg: incorrect variable names 1_myvar, 1myvar, myvar a
+        Validator::extend('valid_variable', function ($attr, $val) {
+            $key = explode(".", $attr)[1];
+            return preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $key);
+        });
+
         parent::boot();
     }
 
@@ -79,7 +85,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton(PackageManager::class, function () {
             return new PackageManager();
         });
-        
+
         $this->app->singleton(LoginManager::class, function () {
             return new LoginManager();
         });
@@ -129,11 +135,11 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton(GlobalScriptsManager::class, function($app) {
             return new GlobalScriptsManager();
         });
-        
+
         $this->app->singleton(AnonymousUser::class, function($app) {
             return AnonymousUser::where('username', AnonymousUser::ANONYMOUS_USERNAME)->firstOrFail();
         });
-        
+
         $this->app->singleton(PolicyExtension::class, function($app) {
             return new PolicyExtension();
         });

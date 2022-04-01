@@ -166,6 +166,10 @@ export default {
         "px; padding:0; cursor: pointer;";
     },
     formatValue(value) {
+      if (value === null) {
+        value = {};
+      }
+
       let profileUrl = null;
       if (value.id) {
         if (value.id === '#') {

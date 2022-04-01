@@ -90,6 +90,9 @@ class ProcessController extends Controller
         if ($status === 'archived') {
             $processes = Process::archived()->with($include);
         }
+        if ($status === 'all') {
+            $processes = Process::active()->with($include);
+        }
         $filter = $request->input('filter');
         $processes = $processes->select('processes.*')
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
@@ -512,6 +515,12 @@ class ProcessController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
      *     @OA\Parameter(ref="#/components/parameters/include"),
+     *     @OA\Parameter(
+     *         description="If true return only processes that haven't start event definitions",
+     *         in="path",
+     *         name="without_event_definitions",
+     *         required=false
+     *     ),
      *
      *     @OA\Response(
      *         response=200,
@@ -577,6 +586,17 @@ class ProcessController extends Controller
 
                 return !$eventIsTimerStart && !$eventIsWebEntry;
             })->values();
+
+            // Filter all processes that have event definitions (start events like message event, conditional event, signal event, timer event)
+            if ($request->has('without_event_definitions') && $request->input('without_event_definitions') == 'true') {
+                $startEvents = $process->events->filter(function ($event) {
+                    return collect($event['eventDefinitions'])->isEmpty();
+                });
+
+                if ($startEvents->isEmpty()) {
+                    $processes->forget($key);
+                }
+            }
 
             if (count($process->startEvents) === 0) {
                 $processes->forget($key);
@@ -875,8 +895,8 @@ class ProcessController extends Controller
             $watcherDataSources = [];
             foreach ($assignable as $assign) {
                 if ($assign['type'] === 'script' && array_key_exists('value', $assign) && array_key_exists('id', $assign['value'])) {
-                    Script::where('id', $assign['id'])
-                        ->update(['run_as_user_id' => $assign['value']['id']]);
+                    $script = Script::where('id', $assign['id'])->firstOrFail();
+                    $script->update(['run_as_user_id' => $assign['value']['id']]);
                 } elseif ($assign['type'] === 'callActivity') {
                     $callActivity[] = $assign;
                 } elseif ($assign['type'] === 'watcherDataSource') {
@@ -897,7 +917,7 @@ class ProcessController extends Controller
                         if ($assign['id'] == $id && array_key_exists('value', $assign) && array_key_exists('id', $assign['value'])) {
                             $value = $assign['value']['id'];
                             if (is_int($value)) {
-                                $element->setAttribute('pm:assignment', 'user');
+                                $element->setAttribute('pm:assignment', 'user_group');
                                 $element->setAttribute('pm:assignedUsers', $value);
                             } elseif (strpos($value, '-') !== false) {
                                 $value = explode('-', $value);

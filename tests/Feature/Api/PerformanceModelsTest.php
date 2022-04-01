@@ -33,6 +33,7 @@ class PerformanceModelsTest extends TestCase
     private $exceptions = [
         // Hi payload because of password hash
         //'ProcessMaker\Models\User' => 27*6/100,
+        'ProcessMaker\Models\SecurityLog' => 0,
     ];
 
     /**

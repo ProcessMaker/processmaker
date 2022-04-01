@@ -127,27 +127,6 @@ class RequestController extends Controller
         ));
     }
 
-    /**
-     * Redirect to owner task of a subprocess
-     *
-     * @param ProcessRequest $request
-     *
-     * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
-     */
-    public function showOwner(ProcessRequest $request)
-    {
-        $ownerTask = $request->ownerTask;
-        if (!$ownerTask) {
-            return abort(404);
-        }
-        $interstitial = $ownerTask->getInterstitial();
-        if ($interstitial['allow_interstitial']) {
-            return redirect(route('tasks.edit', ['task' => $ownerTask->id]));
-        } else {
-            return redirect(route('requests.show', ['request' => $request->id]));
-        }
-    }
-
     public function screenPreview(ProcessRequest $request, ProcessRequestToken $task, ScreenVersion $screen)
     {
         $this->authorize('view', $request);

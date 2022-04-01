@@ -84,6 +84,7 @@
                     title: @json($user['fullname']),
                     initials: @json(mb_substr($user['firstname'], 0, 1)) + @json(mb_substr($user['lastname'], 0, 1))
                 }],
+                focusErrors: 'errors',
             }
         },
         methods: {
@@ -130,7 +131,7 @@
                 ProcessMaker.apiClient.put('password/change', this.formData)
                     .then(response => {
                         if (response.status === 200) {
-                            window.location.href = '/requests';
+                            window.location.href = '/';
                         }
                     })
                     .catch(error => {

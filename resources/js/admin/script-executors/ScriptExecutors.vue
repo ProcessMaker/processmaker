@@ -3,7 +3,7 @@
     <div class="d-flex mb-2" v-show="!shouldShowLoader">
       <div class="mr-auto"></div>
       <div>
-        <b-button :aria-label="$('Add New Script Executor')" type="button" @click="add()">
+        <b-button :aria-label="$t('Add New Script Executor')" type="button" @click="add()">
           <i class="fa fa-plus" /> {{ $t("Script Executor") }}
         </b-button>
       </div>
@@ -77,36 +77,47 @@
       header-close-content="&times;"
     >
       <b-container class="mb-2">
+        <required></required>
         <b-row>
           <b-col>
-            <b-row class="mb-1">
-              <b-input
-                :class="{ 'is-invalid': getError('title') }"
-                v-model="formData.title"
-                :placeholder="$t('Name')"
-              >
-              </b-input>
-              <div v-if="getError('title')" class="invalid-feedback" role="alert">
-                {{ getError("title") }}
-              </div>
-            </b-row>
             <b-row>
+              <b-col class="p-0">
+              <b-form-group
+                required
+                :label="$t('Name')"
+                :state="!getError('title')"
+                :invalid-feedback="getError('title') || ''"
+                role="alert"
+              >
+                <b-input
+                  required
+                  v-model="formData.title"
+                  name="title"
+                ></b-input>
+              </b-form-group>
+              <b-form-group
+                required
+                :label="$t('Language')"
+                :state="!getError('language')"
+                :invalid-feedback="getError('language') || ''"
+              >
               <b-form-select
-                :class="{ 'is-invalid': getError('language') }"
+                required
                 v-model="formData.language"
                 :options="languagesSelect"
+                name="language"
               >
               </b-form-select>
-              <div v-if="getError('language')" class="invalid-feedback" role="alert">
-                {{ getError("language") }}
-              </div>
+              </b-form-group>
+              </b-col>
             </b-row>
           </b-col>
           <b-col class="d-flex flex-column">
+            <label>{{ $t('Description') }}</label>
             <b-textarea
               v-model="formData.description"
-              :placeholder="$t('Description')"
               class="flex-grow-1"
+              name="description"
             ></b-textarea>
           </b-col>
         </b-row>

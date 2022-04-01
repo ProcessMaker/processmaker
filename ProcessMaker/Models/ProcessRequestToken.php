@@ -7,10 +7,11 @@ use DB;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Notification;
 use Laravel\Scout\Searchable;
 use Log;
+use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Facades\WorkflowManager;
-use ProcessMaker\BpmnEngine;
 use ProcessMaker\Facades\WorkflowUserManager;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
@@ -21,6 +22,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\MultiInstanceLoopCharacteristicsInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\SerializeToIso8601;
+use ProcessMaker\Notifications\ActivityActivatedNotification;
 use Throwable;
 
 /**
@@ -83,6 +85,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     use TokenTrait;
     use SerializeToIso8601;
     use Searchable;
+    use HideSystemResources;
 
     protected $connection = 'processmaker';
 
@@ -336,7 +339,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     public function getScreenVersion()
     {
         $screen = $this->getScreen();
-        
+
         if (!$screen) {
             return null;
         }
@@ -346,17 +349,31 @@ class ProcessRequestToken extends Model implements TokenInterface
 
     /**
      * Get the ID of the task screen (if set) and any nested screens
-     * 
+     *
      * @return int[] Array of screen IDs
      */
     public function getScreenAndNestedIds()
     {
         $taskScreen = $this->getScreen();
+        $interstitialScreen = $this->getInterstitial()['interstitial_screen'];
+        $screenIds = [];
+
+        if (!$taskScreen && !$interstitialScreen) {
+            $screenIds = [];
+        }
+
         if ($taskScreen) {
             $screenIds = $taskScreen->nestedScreenIds($this->processRequest);
             $screenIds[] = $taskScreen->id;
-        } else {
-            $screenIds = [];
+        }
+
+        if ($interstitialScreen && $interstitialScreen->config) {
+            if (isset($screenIds) && count($screenIds)) {
+                $screenIds = array_merge($interstitialScreen->nestedScreenIds($this->processRequest), $screenIds);
+            } else {
+                $screenIds = $interstitialScreen->nestedScreenIds($this->processRequest);
+            }
+            $screenIds[] = $interstitialScreen->id;
         }
         return $screenIds;
     }
@@ -371,7 +388,7 @@ class ProcessRequestToken extends Model implements TokenInterface
         $definition = $this->getDefinition();
         return empty($definition['scriptRef']) ? null : Script::find($definition['scriptRef']);
     }
-    
+
     /**
      * Get the script assigned to the task at the time the request started
      *
@@ -380,7 +397,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     public function getScriptVersion()
     {
         $script = $this->getScript();
-        
+
         if (!$script) {
             return null;
         }
@@ -439,7 +456,7 @@ class ProcessRequestToken extends Model implements TokenInterface
 
     /**
      * Check if this task can be escalated to the manager by the assignee
-     * 
+     *
      * @return true if the task can be escalated
      * @throws AuthorizationException if it can not
      */
@@ -452,7 +469,7 @@ class ProcessRequestToken extends Model implements TokenInterface
                 return true;
             }
         }
-        
+
         throw new AuthorizationException("Not authorized to escalate to manager");
     }
 
@@ -474,7 +491,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     {
         return $this->belongsTo(ProcessRequest::class, 'subprocess_request_id');
     }
-    
+
     /**
      * Filter tokens with a string
      *
@@ -504,7 +521,7 @@ class ProcessRequestToken extends Model implements TokenInterface
                     ->orWhere('updated_at', 'like', $filter);
             });
         }
-        
+
         return $query;
     }
 
@@ -512,7 +529,7 @@ class ProcessRequestToken extends Model implements TokenInterface
      * PMQL field alias (started = created_at)
      *
      * @return string
-     */    
+     */
     public function fieldAliasStarted()
     {
         return 'created_at';
@@ -522,7 +539,7 @@ class ProcessRequestToken extends Model implements TokenInterface
      * PMQL field alias (created = created_at)
      *
      * @return string
-     */    
+     */
     public function fieldAliasCreated()
     {
         return 'created_at';
@@ -532,7 +549,7 @@ class ProcessRequestToken extends Model implements TokenInterface
      * PMQL field alias (modified = updated_at)
      *
      * @return string
-     */    
+     */
     public function fieldAliasModified()
     {
         return 'updated_at';
@@ -542,7 +559,7 @@ class ProcessRequestToken extends Model implements TokenInterface
      * PMQL field alias (due = due_at)
      *
      * @return string
-     */    
+     */
     public function fieldAliasDue()
     {
         return 'due_at';
@@ -552,35 +569,35 @@ class ProcessRequestToken extends Model implements TokenInterface
      * PMQL field alias (completed = completed_at)
      *
      * @return string
-     */    
+     */
     public function fieldAliasCompleted()
     {
         return 'completed_at';
     }
-    
+
     /**
      * PMQL value alias for status field
      *
      * @param string $value
      * @param ProcessMaker\Query\Expression $expression
-     * 
+     *
      * @return callback
-     */        
+     */
     public function valueAliasStatus($value, $expression, $callback = null, User $user = null)
     {
         $statusMap = [
             'in progress' => ['ACTIVE'],
             'completed' => ['CLOSED', 'COMPLETED'],
         ];
-        
+
         $value = mb_strtolower($value);
-    
+
         return function($query) use ($value, $statusMap, $expression, $user) {
             if ($value === 'self service') {
                 if (!$user) {
                     $user = auth()->user();
                 }
-                
+
                 if ($user) {
                     $taskIds = $user->availableSelfServiceTaskIds();
                     $query->whereIn('id', $taskIds);
@@ -600,13 +617,13 @@ class ProcessRequestToken extends Model implements TokenInterface
             }
         };
     }
-    
+
     /**
      * PMQL value alias for request field
      *
      * @param string $value
      * @param ProcessMaker\Query\Expression $expression
-     * 
+     *
      * @return callback
      */
     public function valueAliasRequest($value, $expression)
@@ -616,7 +633,7 @@ class ProcessRequestToken extends Model implements TokenInterface
             $query->whereIn('process_request_tokens.process_request_id', $processRequests->pluck('id'));
         };
     }
-    
+
     /**
      * PMQL value alias for task field
      *
@@ -631,7 +648,7 @@ class ProcessRequestToken extends Model implements TokenInterface
             $query->where('process_request_tokens.element_name', $expression->operator, $value);
         };
     }
-    
+
     /**
      * PMQL wildcard for process request & data fields
      *
@@ -666,7 +683,7 @@ class ProcessRequestToken extends Model implements TokenInterface
                 };
             }
         }
-    } 
+    }
     /**
      * Save version of the executable artifact (screen, script)
      *
@@ -746,17 +763,17 @@ class ProcessRequestToken extends Model implements TokenInterface
             'interstitial_screen' => $interstitialScreen
         ];
     }
-    
+
     public function persistUserData($user)
     {
         if (! is_a($user, User::class)) {
             $user = User::find($user);
         }
-        
+
         $userData = $user->attributesToArray();
         $data = $this->processRequest->data;
         $data['_user'] = $userData;
-        
+
         $this->processRequest->data = $data;
         $this->processRequest->save();
     }
@@ -814,7 +831,7 @@ class ProcessRequestToken extends Model implements TokenInterface
         $token->process_id = $token->getInstance()->process->getKey();
         $token->process_request_id = $token->getInstance()->getKey();
         $token->saveOrFail();
-        $token->setId($token->getKey());        
+        $token->setId($token->getKey());
     }
 
     /**
@@ -871,5 +888,34 @@ class ProcessRequestToken extends Model implements TokenInterface
             return $loop && $loop->isExecutable() && $loop instanceof MultiInstanceLoopCharacteristicsInterface;
         }
         return false;
+    }
+
+    /**
+     * Get a config parameter from the bpmn element definition.
+     *
+     * @param string $key
+     * @param mixed $default
+     *
+     * @return mixed
+     */
+    public function getConfigParam($key, $default = null)
+    {
+        $definition = $this->getDefinition(true);
+        $config = json_decode($definition->getProperty('config', '{}'), true);
+        if (!empty($config) && \is_array($config)) {
+            return Arr::get($config, $key, $default);
+        }
+        return $default;
+    }
+
+    /**
+     * Send notifications when the task activates
+     *
+     * @return void
+     */
+    public function sendActivityActivatedNotifications()
+    {
+        $notifiables = $this->getNotifiables('assigned');
+        Notification::send($notifiables, new ActivityActivatedNotification($this));
     }
 }

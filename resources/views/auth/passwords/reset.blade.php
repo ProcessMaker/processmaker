@@ -1,5 +1,9 @@
 @extends('layouts.minimal')
 
+@section('title')
+{{__('Welcome', ['name' => $username])}}
+@endsection
+
 @section('content')
 <div align="center">
   <div class="formContainer">

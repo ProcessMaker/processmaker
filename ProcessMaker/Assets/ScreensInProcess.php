@@ -26,6 +26,7 @@ class ScreensInProcess
         // Screens used in BPMN
         $xpath = new DOMXPath($process->getDefinitions());
         $xpath->registerNamespace('pm', WorkflowServiceProvider::PROCESS_MAKER_NS);
+        $xpath->registerNamespace('bpmn', 'http://www.omg.org/spec/BPMN/20100524/MODEL');
         // Used in screenRef
         $nodes = $xpath->query("//*[@pm:screenRef!='']");
         foreach ($nodes as $node) {
@@ -62,13 +63,18 @@ class ScreensInProcess
         $definitions = $process->getDefinitions();
         $xpath = new DOMXPath($definitions);
         $xpath->registerNamespace('pm', WorkflowServiceProvider::PROCESS_MAKER_NS);
+        $xpath->registerNamespace('bpmn', 'http://www.omg.org/spec/BPMN/20100524/MODEL');
 
         // Used in screenRef
         $nodes = $xpath->query("//*[@pm:screenRef!='']");
         foreach ($nodes as $node) {
             $oldRef = $node->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef');
-            $newRef = $references[Screen::class][$oldRef]->getKey();
-            $node->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef', $newRef);
+            if (array_key_exists($oldRef, $references[Screen::class])) {
+                $newRef = $references[Screen::class][$oldRef]->getKey();
+                $node->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef', $newRef);
+            } else {
+                $node->removeAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef');
+            }
         }
         // interstitialScreenRef
         $nodes = $xpath->query("//*[@pm:interstitialScreenRef!='']");

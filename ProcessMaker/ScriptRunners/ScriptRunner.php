@@ -55,4 +55,16 @@ class ScriptRunner
             return new $class($executor);
         }
     }
+
+    /**
+     * Set the tokenId of reference.
+     * 
+     * @param string $tokenId
+     *
+     * @return void
+     */
+    public function setTokenId($tokenId)
+    {
+        $this->runner->setTokenId($tokenId);
+    }
 }

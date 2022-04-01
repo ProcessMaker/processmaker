@@ -140,7 +140,8 @@
             this.filter +
             "&order_by=category.name,name" +
             "&order_direction=asc,asc" +
-            "&include=events,categories"
+            "&include=events,categories" +
+            "&without_event_definitions=true"
           )
           .then(response => {
             let data = response.data;

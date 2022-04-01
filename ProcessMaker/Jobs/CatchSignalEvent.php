@@ -8,7 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Nayra\Bpmn\Models\SignalEventDefinition;
+use ProcessMaker\Nayra\Contracts\Bpmn\SignalEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 
@@ -37,7 +37,7 @@ class CatchSignalEvent implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(ThrowEventInterface $throwEvent, SignalEventDefinition $sourceEventDefinition, TokenInterface $token)
+    public function __construct(ThrowEventInterface $throwEvent, SignalEventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
     {
         $this->collaborationId = $token->getInstance() ? $token->getInstance()->process_collaboration_id : null;
         $this->eventDefinition = $sourceEventDefinition;

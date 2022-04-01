@@ -376,7 +376,8 @@ export default {
                   "&per_page=" +
                   this.perPage +
                   filterParams +
-                  this.getSortParam(),
+                  this.getSortParam() +
+                  "&non_system=true",
                 {
                   cancelToken: new CancelToken(c => {
                     this.cancelToken = c;

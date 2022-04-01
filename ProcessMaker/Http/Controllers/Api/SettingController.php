@@ -204,6 +204,7 @@ class SettingController extends Controller
      */
     public function update(Setting $setting, Request $request)
     {
+        $request->validate(Setting::rules($setting, $request->input('key') == 'users.properties'), Setting::messages());
         $setting->config = $request->input('config');
         $setting->save();
 
@@ -259,6 +260,7 @@ class SettingController extends Controller
                 }
                 $copyTo = $mustache->render(str_replace('.', '_', $setting->ui->copy_to), $settingsData);
                 if ($copyTo) {
+                    $this->createStoragePathIfNotExists(storage_path($copyTo));
                     copy (
                         storage_path('app/private/settings/') . $collectionName,
                         // Saving upload file into storage folder
@@ -272,6 +274,14 @@ class SettingController extends Controller
                 $eventClass = $setting->ui->dispatch_event;
                 event(new $eventClass($setting));
             }
+        }
+    }
+
+    private function createStoragePathIfNotExists($path)
+    {
+        $dir = pathinfo($path, PATHINFO_DIRNAME);
+        if (!file_exists($dir)) {
+            mkdir($dir, 0755, true);
         }
     }
 

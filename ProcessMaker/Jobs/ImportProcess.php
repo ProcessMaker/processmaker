@@ -95,6 +95,13 @@ class ImportProcess implements ShouldQueue
     protected $user;
 
     /**
+     * Prevent duplicate processes from being imported if this job fails
+     *
+     * @var int
+     */
+    public $tries = 1;
+
+    /**
      * In order to handle backwards compatibility with previous packages, an
      * array with a previous package name as the key, and the updated
      * package name as the value.
@@ -204,8 +211,16 @@ class ImportProcess implements ShouldQueue
                 $number = 2;
             }
 
-            //Return the name appended with the number
-            return $name . ' ' . $number;
+            //the name appended with the number
+            $name = $name . ' ' . $number;
+
+            //verify existence of the new name
+            if ($model->where($field, $name)->exists()) {
+                return $this->formatName($name, $field, $class);
+            } else {
+                //Return the new name
+                return $name;
+            }
         } else {
             //Return the original name (if there are no dupes)
             return $name;
@@ -335,7 +350,7 @@ class ImportProcess implements ShouldQueue
             ]);
         }
     }
-    
+
     /**
      * Look for any watchers in screens and add them to the assignable list.
      *
@@ -429,7 +444,7 @@ class ImportProcess implements ShouldQueue
             $this->finishStatus('screens', true);
         }
     }
-    
+
     /**
      * Create a new Screen model for an individual screen, then save it.
      *
@@ -459,12 +474,12 @@ class ImportProcess implements ShouldQueue
                     $new->categories()->save($category);
                 }
             }
-            
+
             return $new;
         } catch (\Exception $e) {
             return false;
         }
-    }    
+    }
 
     /**
      * Pass an old script ID and a new script ID, then replace any references
@@ -894,6 +909,8 @@ class ImportProcess implements ShouldQueue
      */
     protected function finishStatus($element, $error = false)
     {
+        $label = ucwords(implode(" ", explode('_', $element)));
+        $this->status[$element]['label'] = __($label);
         $this->status[$element]['success'] = true;
         $this->status[$element]['message'] = __('Successfully imported');
         if ($error) {

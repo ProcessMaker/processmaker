@@ -6,11 +6,13 @@ use Carbon\Carbon;
 use DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Arr;
 use Laravel\Scout\Searchable;
 use Log;
 use ProcessMaker\Events\ProcessUpdated;
 use ProcessMaker\Exception\PmqlMethodException;
 use ProcessMaker\Managers\DataManager;
+use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\IntermediateCatchEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\SignalEventDefinitionInterface;
@@ -131,6 +133,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         'initiated_at' => 'datetime:c',
         'data' => 'array',
         'errors' => 'array',
+        'do_not_sanitize' => 'array',
         'signal_events' => 'array',
         'locked_at' => 'datetime:c',
     ];
@@ -400,7 +403,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
                 ->with('user')
                 ->whereNotIn('element_type', ['scriptTask']);
     }
-    
+
     /**
      * Filter processes with a string
      *
@@ -416,7 +419,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
                 $query->whereIn('id', [$filter]);
             } else {
                 $matches = ProcessRequest::search($filter)->take(10000)->get()->pluck('id');
-                $query->whereIn('id', $matches);            
+                $query->whereIn('id', $matches);
             }
         } else {
             $filter = '%' . mb_strtolower($filter) . '%';
@@ -430,7 +433,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
                     ->orWhere('updated_at', 'like', $filter);
             });
         }
-        
+
         return $query;
     }
 
@@ -664,9 +667,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $user = User::where('username', $value)->get()->first();
 
         if ($user) {
-            $requests = ProcessRequest::where('user_id', $expression->operator, $user->id)->get();
-            return function ($query) use ($requests) {
-                $query->whereIn('id', $requests->pluck('id'));
+            return function ($query) use ($user, $expression) {
+                $query->where('user_id', $expression->operator, $user->id);
             };
         } else {
             throw new PmqlMethodException('requester', 'The specified requester username does not exist.');
@@ -685,7 +687,11 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $user = User::where('username', $value)->get()->first();
 
         if ($user) {
-            $tokens = ProcessRequestToken::where('user_id', $expression->operator, $user->id)->get();
+            $tokens = ProcessRequestToken::select('process_request_id')
+                ->where('user_id', $expression->operator, $user->id)
+                ->whereIn('element_type', ['task', 'userTask', 'startEvent'])
+                ->distinct()
+                ->get();
 
             return function ($query) use ($tokens) {
                 $query->whereIn('id', $tokens->pluck('process_request_id'));
@@ -755,6 +761,20 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
                     }
                 }
             }
+            // Activity with a boundary signal event
+            if ($element instanceof ActivityInterface) {
+                $boundaryElements = $element->getBoundaryEvents();
+                foreach ($boundaryElements as $boundary) {
+                    foreach ($boundary->getEventDefinitions() as $eventDefinition) {
+                        if ($eventDefinition instanceof SignalEventDefinitionInterface) {
+                            $signal = $eventDefinition->getProperty('signal');
+                            if ($signal) {
+                                $signalEvents[]= $signal->getId();
+                            }
+                        }
+                    }
+                }
+            }
         }
         $this->signal_events = $signalEvents;
         $this->save();
@@ -771,46 +791,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $latest = ProcessRequest::find($this->getId());
         $this->data = $store->updateArray($latest->data);
         return $this->data;
-    }
-
-    /**
-     * Locks required to the request
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function locks()
-    {
-        return $this->hasMany(ProcessRequestLock::class);
-    }
-
-    /**
-     * Request a lock
-     *
-     * @param int $tokenId
-     *
-     * @return ProcessRequestLock
-     */
-    public function requestLock($tokenId)
-    {
-        return $this->locks()->create(['process_request_token_id' => $tokenId]);
-    }
-
-    /**
-     * @return void
-     */
-    public function unlock()
-    {
-        $this->locks()->whereNotNull('due_at')->delete();
-    }
-
-    /**
-     * Get current lock for $this request
-     *
-     * @return ProcessRequestLock
-     */
-    public function currentLock()
-    {
-        return $this->locks()->whereNotDue()->orderBy('id')->limit(1)->first();
     }
 
     /**
@@ -888,5 +868,26 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public function ownerTask()
     {
         return $this->hasOne(ProcessRequestToken::class, 'subprocess_request_id', 'id');
+    }
+
+    /**
+     * Media files formatted for screen builder file controls
+     *
+     * @return Object
+     */
+    public function requestFiles(bool $includeToken = false)
+    {
+        return (object) $this->getMedia()->mapToGroups(function($file) use ($includeToken) {
+            $dataName = $file->getCustomProperty('data_name');
+            $info = [
+                'id' => $file->id,
+                'file_name' => $file->file_name,
+                'mime_type' => $file->mime_type,
+            ];
+            if ($includeToken) {
+                $info['token'] = md5($dataName . $file->id . $file->created_at);
+            }
+            return [ $dataName => $info ];
+        })->toArray();
     }
 }

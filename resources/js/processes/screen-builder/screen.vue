@@ -25,7 +25,7 @@
 
         <!-- Preview -->
         <b-row class="h-100 m-0" id="preview" v-show="displayPreview">
-          
+
           <b-col class="overflow-auto h-100">
             <vue-form-renderer
               v-if="renderComponent === 'task-screen'"
@@ -276,6 +276,24 @@ export default {
         section: "right",
         items: [
           {
+            id: "button_calcs",
+            type: "button",
+            title: this.$t("Calculated Properties"),
+            name: this.$t("Calcs"),
+            variant: "secondary",
+            icon: "fas fa-flask",
+            action: 'openComputedProperties()'
+          },
+          {
+            id: "button_custom_css",
+            type: "button",
+            title: this.$t("Custom CSS"),
+            name: this.$t("CSS"),
+            variant: "secondary",
+            icon: "fab fa-css3",
+            action: 'openCustomCSS()'
+          },
+          {
             id: "button_watchers",
             type: "button",
             title: this.$t("Watchers"),
@@ -309,26 +327,6 @@ export default {
         }
       }
     ];
-
-    const calcsOption = {
-      id: "button_calcs",
-      type: "button",
-      title: this.$t("Calculated Properties"),
-      name: this.$t("Calcs"),
-      variant: "secondary",
-      icon: "fas fa-flask",
-      action: 'openComputedProperties()'
-    };
-
-    const customCssOption = {
-      id: "button_custom_css",
-      type: "button",
-      title: this.$t("Custom CSS"),
-      name: this.$t("CSS"),
-      variant: "secondary",
-      icon: "fab fa-css3",
-      action: 'openCustomCSS()'
-    };
 
     return {
       numberOfElements: 0,
@@ -374,8 +372,6 @@ export default {
       mockMagicVariables,
       previewComponents: [],
       optionsMenu: options,
-      calcsOption: calcsOption,
-      customCssOption: customCssOption,
       rendererKey: 0,
       renderComponent: 'task-screen'
     };
@@ -467,22 +463,8 @@ export default {
     this.countElements = debounce(this.countElements, 2000);
     this.mountWhenTranslationAvailable();
     this.countElements();
-    this.addCalcsButton();
-    this.addCustomCssBtn();
   },
   methods: {
-    addCalcsButton() {
-      if (this.type !== formTypes.form) {
-        return;
-      }
-      this.optionsMenu[1].items.unshift(this.calcsOption);
-    },
-    addCustomCssBtn() {
-      if (this.type !== formTypes.form) {
-        return;
-      }
-      this.optionsMenu[1].items.splice(1, 0, this.customCssOption);
-    },
     countElements() {
       if (!this.$refs.renderer) {
         return;
@@ -493,13 +475,13 @@ export default {
     },
     validationWarnings() {
       const warnings = [];
-      
+
       if (this.type === formTypes.form && !this.containsSubmitButton()) {
         warnings.push(
           this.$t("Warning: Screens without save buttons cannot be executed.")
         );
       }
-      
+
       warnings.push(...this.ariaWarnings());
 
       return warnings;

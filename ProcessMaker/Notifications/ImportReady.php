@@ -58,7 +58,7 @@ class ImportReady extends Notification
             'code' => $this->code,
             'data' => $this->data,
             'name' => __('Process imported'),
-            'processName' => $this->data['process']['name'],
+            'processName' => $this->data['process']['name'] ?? '',
         ];
     }
 

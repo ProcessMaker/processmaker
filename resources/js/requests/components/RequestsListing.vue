@@ -21,7 +21,7 @@
         ref="vuetable"
       >
         <template slot="ids" slot-scope="props">
-          <b-link :href="openRequest(props.rowData, props.rowIndex)">#{{props.rowData.id}}</b-link>
+          <b-link class="text-nowrap" :href="openRequest(props.rowData, props.rowIndex)">#{{props.rowData.id}}</b-link>
         </template>
         <template slot="name" slot-scope="props">
           <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.name }}</span>
@@ -106,7 +106,7 @@ export default {
       if (this.savedSearch !== false) {
         return `saved-searches/${this.savedSearch}/results`;
       }
-      
+
       return 'requests';
     },
   },
@@ -116,12 +116,12 @@ export default {
   methods: {
     setupColumns() {
       let columns = this.getColumns();
-      
+
       columns.forEach(column => {
         let field = {
           title: () => this.$t(column.label)
         };
-        
+
         switch (column.field) {
           case 'id':
             field.name = '__slot:ids';
@@ -136,7 +136,7 @@ export default {
           default:
             field.name = column.field;
         }
-        
+
         if (!field.field) {
           field.field = column.field;
         }
@@ -152,10 +152,10 @@ export default {
         if (column.sortable === true && !field.sortField) {
           field.sortField = column.field;
         }
-        
+
         this.fields.push(field);
       });
-      
+
       this.fields.push({
         name: "__slot:actions",
         title: ""
@@ -206,7 +206,7 @@ export default {
             "field": "completed_at",
             "sortable": true,
             "default": true
-          }          
+          }
         ];
       }
     },
@@ -264,13 +264,13 @@ export default {
     fetch() {
         Vue.nextTick(() => {
             let pmql = '';
-            
+
             if (this.pmql !== undefined) {
                 pmql = this.pmql;
             }
-                    
+
             let filter = this.filter;
-            
+
             if (filter && filter.length) {
               if (filter.isPMQL()) {
                 pmql = `(${pmql}) and (${filter})`;
@@ -283,11 +283,11 @@ export default {
             }
 
             this.previousFilter = filter;
-            
+
             if (this.previousPmql !== pmql) {
               this.page = 1;
             }
-            
+
             this.previousPmql = pmql;
 
             // Load from our api client
@@ -312,14 +312,14 @@ export default {
                 this.data = this.transform(response.data);
               }).catch(error => {
                 if (_.has(error, 'response.data.message')) {
-                  ProcessMaker.alert(error.response.data.message, 'danger');  
+                  ProcessMaker.alert(error.response.data.message, 'danger');
                 } else if(_.has(error, 'response.data.error')) {
                   return;
                 }  else {
                   throw error;
                 }
               });
-            
+
         });
     }
   }

@@ -20,8 +20,9 @@ function lavaryMenuArray($menu, $includeSubMenus = false)
             $children[] = lavaryMenuArray($child);
         }
     }
+
     return [
-        'title' => $menu->title,
+        'title' => __($menu->title),
         'id' => $menu->id,
         'attributes' => $menu->attributes,
         'url' => $menu->url(),
@@ -43,9 +44,9 @@ function lavaryMenuJson($menu)
 
 /**
  * Check if a package exists based on its provider name
- * 
+ *
  * @param string $name
- * 
+ *
  * @return bool
  */
 function hasPackage($name)
@@ -57,7 +58,7 @@ function hasPackage($name)
 
 /**
  * Check both the web and api middleware for an existing user
- * 
+ *
  * @return User
  */
 function pmUser()
@@ -74,4 +75,30 @@ function pmUser()
 function sanitizeVueExp($expression)
 {
     return SanitizeHelper::sanitizeVueExp($expression);
+}
+
+function packTemporalData($data)
+{
+    // Store data into store/app/private
+    $uid = uniqid('data_', true);
+    $path = storage_path('app/private/' . $uid);
+    file_put_contents($path, \json_encode($data));
+    return $uid;
+}
+
+function unpackTemporalData($uid)
+{
+    $path = storage_path('app/private/' . $uid);
+    if (file_exists($path)) {
+        return \json_decode(file_get_contents($path), true);
+    }
+    return [];
+}
+
+function removeTemporalData($uid)
+{
+    $path = storage_path('app/private/' . $uid);
+    if (file_exists($path)) {
+        unlink($path);
+    }
 }

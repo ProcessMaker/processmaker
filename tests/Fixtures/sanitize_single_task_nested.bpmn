@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd" xmlns:tns="http://sourceforge.net/bpmn/definitions/_1530553328908" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bpmn.io/schema/bpmn" exporter="ProcessMaker Modeler" exporterVersion="1.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+    <bpmn:process id="ProcessId" name="ProcessName" isExecutable="true">
+        <bpmn:startEvent id="node_1" name="Start Event" pm:allowInterstitial="false" pm:config="{&#34;web_entry&#34;:null}">
+            <bpmn:outgoing>node_5</bpmn:outgoing>
+        </bpmn:startEvent>
+        <bpmn:endEvent id="node_2" name="End Event">
+            <bpmn:incoming>node_15</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:task id="node_3" name="Form Task 1 Nested" pm:screenRef="1" pm:allowInterstitial="false" pm:assignment="requester" pm:assignmentLock="false" pm:allowReassignment="false" pm:config="{&#34;web_entry&#34;:null,&#34;email_notifications&#34;:{&#34;notifications&#34;:[]}}">
+            <bpmn:incoming>node_5</bpmn:incoming>
+            <bpmn:outgoing>node_11</bpmn:outgoing>
+        </bpmn:task>
+        <bpmn:sequenceFlow id="node_5" name="" sourceRef="node_1" targetRef="node_3" />
+        <bpmn:task id="node_8" name="Form Task 2 Nested" pm:screenRef="147" pm:allowInterstitial="false" pm:assignment="requester" pm:assignmentLock="false" pm:allowReassignment="false" pm:config="{&#34;web_entry&#34;:null,&#34;email_notifications&#34;:{&#34;notifications&#34;:[]}}">
+            <bpmn:incoming>node_11</bpmn:incoming>
+            <bpmn:outgoing>node_13</bpmn:outgoing>
+        </bpmn:task>
+        <bpmn:task id="node_9" name="Form Task 3 Nested" pm:screenRef="146" pm:allowInterstitial="false" pm:assignment="requester" pm:assignmentLock="false" pm:allowReassignment="false" pm:config="{&#34;web_entry&#34;:null,&#34;email_notifications&#34;:{&#34;notifications&#34;:[]}}">
+            <bpmn:incoming>node_13</bpmn:incoming>
+            <bpmn:outgoing>node_15</bpmn:outgoing>
+        </bpmn:task>
+        <bpmn:sequenceFlow id="node_11" name="" sourceRef="node_3" targetRef="node_8" />
+        <bpmn:sequenceFlow id="node_13" name="" sourceRef="node_8" targetRef="node_9" />
+        <bpmn:sequenceFlow id="node_15" name="" sourceRef="node_9" targetRef="node_2" />
+        <bpmn:textAnnotation id="node_16">
+            <bpmn:text>form_text_area_1 with rich text option inside Nested screen</bpmn:text>
+        </bpmn:textAnnotation>
+        <bpmn:textAnnotation id="node_17">
+            <bpmn:text>rich text with content: {{{form_text_area_1}}} inside Nested screen</bpmn:text>
+        </bpmn:textAnnotation>
+        <bpmn:textAnnotation id="node_18">
+            <bpmn:text>form_text_area_1 with rich text option inside Nested screen</bpmn:text>
+        </bpmn:textAnnotation>
+        <bpmn:textAnnotation id="node_21">
+            <bpmn:text>Case 2:</bpmn:text>
+        </bpmn:textAnnotation>
+        <bpmn:textAnnotation id="node_4">
+            <bpmn:text>Maybe same solution that case 1 but with the difference that we should search also inside nested components on getExceptions methods</bpmn:text>
+        </bpmn:textAnnotation>
+    </bpmn:process>
+    <bpmndi:BPMNDiagram id="BPMNDiagramId">
+        <bpmndi:BPMNPlane id="BPMNPlaneId" bpmnElement="ProcessId">
+            <bpmndi:BPMNShape id="node_1_di" bpmnElement="node_1">
+                <dc:Bounds x="220" y="160" width="36" height="36" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="node_2_di" bpmnElement="node_2">
+                <dc:Bounds x="840" y="160" width="36" height="36" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="node_3_di" bpmnElement="node_3">
+                <dc:Bounds x="320" y="140" width="116" height="76" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge id="node_5_di" bpmnElement="node_5">
+                <di:waypoint x="238" y="178" />
+                <di:waypoint x="378" y="178" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNShape id="node_8_di" bpmnElement="node_8">
+                <dc:Bounds x="490" y="140" width="116" height="76" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="node_9_di" bpmnElement="node_9">
+                <dc:Bounds x="660" y="140" width="116" height="76" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge id="node_11_di" bpmnElement="node_11">
+                <di:waypoint x="378" y="178" />
+                <di:waypoint x="548" y="178" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="node_13_di" bpmnElement="node_13">
+                <di:waypoint x="548" y="178" />
+                <di:waypoint x="718" y="178" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="node_15_di" bpmnElement="node_15">
+                <di:waypoint x="718" y="178" />
+                <di:waypoint x="858" y="178" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNShape id="node_16_di" bpmnElement="node_16">
+                <dc:Bounds x="300" y="280" width="150" height="30" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="node_17_di" bpmnElement="node_17">
+                <dc:Bounds x="470" y="280" width="150" height="30" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="node_18_di" bpmnElement="node_18">
+                <dc:Bounds x="650" y="280" width="150" height="30" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="node_21_di" bpmnElement="node_21">
+                <dc:Bounds x="300" y="0" width="150" height="30" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="node_4_di" bpmnElement="node_4">
+                <dc:Bounds x="480" y="-10" width="150" height="30" />
+            </bpmndi:BPMNShape>
+        </bpmndi:BPMNPlane>
+    </bpmndi:BPMNDiagram>
+</bpmn:definitions>

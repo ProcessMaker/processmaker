@@ -35,14 +35,14 @@ class SignalController extends Controller
             }
         }
 
-        $signals = SignalManager::getAllSignals(false, $query->get()->all());
+        $signals = SignalManager::getAllSignals(true, $query->get()->all());
 
         $collections = [];
         $collectionsEnabled = [];
 
         if(hasPackage('package-collections')) {
             $collection = \ProcessMaker\Plugins\Collections\Models\Collection::get();
-            
+
             foreach ($collection as $item) {
                 $collectionsEnabled[] = $item->id;
                 if (!$item->signal_create) {
@@ -107,14 +107,23 @@ class SignalController extends Controller
             'sort_order' => strtolower($orderDirection),
             'to' => $perPage * ($page - 1) + $perPage,
             'total' => $signals->count(),
-            'total_pages' => $lastPage
+            'total_pages' => ceil($signals->count() / $perPage)
         ];
 
-        $signals = $signals->count() === 0 ? $signals : $signals->chunk($perPage)[$page - 1];
+        if ($signals->count() === 0) {
+            $signals = $signals;
+        } else {
+            $chunked = $signals->chunk($perPage);
+            if (isset($chunked[$page - 1])) {
+                $signals = $chunked[$page - 1];
+            } else {
+                $signals = collect([]);
+            }
+        }
         $meta['count'] = $signals->count();
 
         return response()->json([
-            'data' => $signals,
+            'data' => $signals->values(),
             'meta' => $meta
         ]);
     }
@@ -164,6 +173,18 @@ class SignalController extends Controller
         );
 
         $oldSignal = SignalManager::findSignal($signalId);
+        $oldSignalProcesses = SignalManager::getSignalProcesses($signalId, true);
+
+        $editable = true;
+        foreach ($oldSignalProcesses as $process) {
+            if (count($process['catches']) && $process['is_system']) {
+                $editable = false;
+            }
+        }
+
+        if (!$editable) {
+            return abort(403, __('System signals cannot be modified.'));
+        }
 
         $errorValidations = SignalManager::validateSignal($newSignal, $oldSignal);
         if (count($errorValidations) > 0) {
@@ -178,9 +199,22 @@ class SignalController extends Controller
     public function destroy($signalId)
     {
         $signal = SignalManager::findSignal($signalId);
+        $signalProcesses = SignalManager::getSignalProcesses($signalId, true);
+
+        $catches = array_reduce($signalProcesses, function ($carry, $process) {
+                return $carry + count($process['catches']);
+            },
+            0
+        );
+
+        if ($catches) {
+            return abort(403, __('Signals present in processes and system processes cannot be deleted.'));
+        }
+
         if ($signal) {
             SignalManager::removeSignal($signal);
         }
+
         return response('', 201);
     }
 }

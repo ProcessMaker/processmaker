@@ -7,6 +7,7 @@ use Carbon\CarbonTimeZone;
 use Illuminate\Database\Eloquent\Builder;
 use ProcessMaker\Models\User;
 use ProcessMaker\Query\Expression;
+use ProcessMaker\Query\IntervalExpression;
 use ProcessMaker\Query\Traits\PMQL;
 use Throwable;
 
@@ -25,7 +26,7 @@ trait ExtendedPMQL
      * @param callable $callback
      *
      * @return mixed
-     */    
+     */
     public function scopePMQL(Builder $builder, string $query, callable $callback = null, User $user = null)
     {
         if (! $callback) {
@@ -47,22 +48,22 @@ trait ExtendedPMQL
      * @param \Illuminate\Database\Eloquent\Builder $builder
      *
      * @return mixed
-     */    
+     */
     private function handle(Expression $expression, Builder $builder, User $user = null)
     {
         // Setup our needed variables
         $field = $expression->field->field();
         $model = $builder->getModel();
-        
+
         if (is_string($field)) {
             // Parse our value
             $value = $this->parseValue($expression);
-            
+
             // PMQL Interval expressions do not have values
             if (method_exists($expression->value, 'setValue')) {
                 $expression->value->setValue($value);
             }
-            
+
             // Title case our field name so we can suffix it to our method names
             $fieldMethodName = ucfirst(strtolower($field));
 
@@ -84,7 +85,7 @@ trait ExtendedPMQL
 
                         // Always use equal operator in alias methods because
                         // we can negate results with whereNotExists for "not in"
-                        $expression->setOperator('='); 
+                        $expression->setOperator('=');
 
                         foreach ($value as $v) {
                             if($originalOperator === Expression::OPERATOR_IN) {
@@ -113,7 +114,7 @@ trait ExtendedPMQL
             }
         }
     }
-    
+
     /**
      * Set the value as a string if possible. Also convert to the logged-in
      * user's timezone if the value is parsable by Carbon as a date.
@@ -132,18 +133,39 @@ trait ExtendedPMQL
         } else {
             $value = $expression->value;
         }
-        
+
         // Check to see if the value is parsable as a date
-        if (! is_numeric($value)) {
-            try {
-                $parsed = Carbon::parse($value, auth()->user()->timezone);
-                $parsed->setTimezone(config('app.timezone'));
-                $value = $parsed->toDateTimeString();
-            } catch (Throwable $e) {
-                //Ignore parsing errors and just return the original
+        if ((is_string($value) && strlen($value) > 1)) {
+            switch ($value) {
+                case $value instanceof IntervalExpression: 
+                    $value = $this->parseDate($value);
+                    break;
+                default: 
+                    // Check to see if the value is a date/datetime formatted if not return original value
+                    $isDateFormatted = Carbon::hasFormatWithModifiers($value, 'Y#m#d');
+                    $isDateTimeFormatted = Carbon::hasFormatWithModifiers($value, 'Y#m#d H:i:s');
+                    if ($isDateFormatted || $isDateTimeFormatted) {
+                        $value = $this->parseDate($value);
+                    }
+                    break;
+                }
             }
-        }
-        
         return $value;
+    }
+
+    private function parseDate($value) {
+        try {
+            $parsed = Carbon::parse($value, auth()->user()->timezone);
+            $parsed->setTimezone(config('app.timezone'));
+            if ($parsed->isMidnight()) {
+                return $parsed->toDateString();
+            } else {
+                $parsed->setTimezone(config('app.timezone'));
+                return $parsed->toDateTimeString();
+            }  
+        } catch (Throwable $e) {
+            //Ignore parsing errors and just return the original
+            return $value;
+        }  
     }
 }

@@ -2,38 +2,37 @@
 
 namespace Tests\Feature;
 
+use ProcessMaker\Jobs\BpmnAction;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestLock;
 use Tests\TestCase;
 
 class RequestLockTest extends TestCase
 {
     public function testExitJobWithoutUnlock()
     {
-        $request = factory(ProcessRequest::class)->create();
-        $tokenId = null;
-        $request->requestLock($tokenId);
-        $locks = $request->locks()->get();
+        $request = new TestBpmnActionLock;
+        $request->requestLock([1]);
+        $locks = ProcessRequestLock::get();
         $this->assertCount(1, $locks);
         $this->assertNull($locks[0]->due_at);
     }
 
     public function testCurrentLock()
     {
-        $request = factory(ProcessRequest::class)->create();
-        $tokenId = null;
-        $request->requestLock($tokenId);
-        $currentLock = $request->currentLock();
+        $request = new TestBpmnActionLock;
+        $request->requestLock([1]);
+        $currentLock = $request->currentLock([1]);
         $this->assertNotNull($currentLock);
         $this->assertNull($currentLock->due_at);
     }
 
     public function testRequestLockInParallel()
     {
-        $request = factory(ProcessRequest::class)->create();
-        $tokenId = null;
-        $lock = $request->requestLock($tokenId);
-        $request->requestLock($tokenId);
-        $currentLock = $request->currentLock();
+        $request = new TestBpmnActionLock;
+        $lock = $request->requestLock([1]);
+        $request->requestLock([1]);
+        $currentLock = $request->currentLock([1]);
         $this->assertNotNull($currentLock);
         $this->assertNull($currentLock->due_at);
         $this->assertEquals($lock->id, $currentLock->id);
@@ -41,50 +40,72 @@ class RequestLockTest extends TestCase
 
     public function testUnlock()
     {
-        $request = factory(ProcessRequest::class)->create();
-        $tokenId = null;
-        $request->requestLock($tokenId);
-        $request->requestLock($tokenId);
+        $request = new TestBpmnActionLock;
+        $request->requestLock([1]);
+        $request->requestLock([1]);
         $request->unlock();
-        $locksInQueue = $request->locks()->get();
-        $locksActive = $request->locks()->whereNotNull('due_at')->get();
+        $locksInQueue = ProcessRequestLock::get();
+        $locksActive = ProcessRequestLock::whereNotNull('due_at')->get();
         $this->assertCount(2, $locksInQueue);
         $this->assertCount(0, $locksActive);
     }
 
     public function testActivateLock()
     {
-        $request = factory(ProcessRequest::class)->create();
-        $tokenId = null;
-        $lock = $request->requestLock($tokenId);
-        $request->requestLock($tokenId);
+        $request = new TestBpmnActionLock;
+        $lock = $request->requestLock([1]);
+        $request->requestLock([1]);
         $request->unlock();
-        $lock->activate();
-        $locksInQueue = $request->locks()->get();
-        $locksActive = $request->locks()->whereNotNull('due_at')->get();
+        $request->activateLock($lock);
+        $locksInQueue = ProcessRequestLock::get();
+        $locksActive = ProcessRequestLock::whereNotNull('due_at')->get();
         $this->assertCount(2, $locksInQueue);
         $this->assertCount(1, $locksActive);
     }
 
     public function testActivateLocksThenUnlock()
     {
-        $request = factory(ProcessRequest::class)->create();
-        $tokenId = null;
-        $lock1 = $request->requestLock($tokenId);
-        $lock2 = $request->requestLock($tokenId);
+        $request = new TestBpmnActionLock;
+        $lock1 = $request->requestLock([1]);
+        $lock2 = $request->requestLock([1]);
         $request->unlock();
-        $lock1->activate();
+        $request->activateLock($lock1);
         $request->unlock();
-        $locksInQueue = $request->locks()->get();
-        $locksActive = $request->locks()->whereNotNull('due_at')->get();
+        $locksInQueue = ProcessRequestLock::get();
+        $locksActive = ProcessRequestLock::whereNotNull('due_at')->get();
         $this->assertCount(1, $locksInQueue);
         $this->assertCount(0, $locksActive);
 
-        $lock2->activate();
+        $request->activateLock($lock2);
         $request->unlock();
-        $locksInQueue = $request->locks()->get();
-        $locksActive = $request->locks()->whereNotNull('due_at')->get();
+        $locksInQueue = ProcessRequestLock::get();
+        $locksActive = ProcessRequestLock::whereNotNull('due_at')->get();
         $this->assertCount(0, $locksInQueue);
         $this->assertCount(0, $locksActive);
+    }
+}
+
+class TestBpmnActionLock extends BpmnAction
+{
+    protected $instanceId = 1;
+
+    public function requestLock($ids)
+    {
+        return parent::requestLock($ids);
+    }
+
+    public function currentLock($ids)
+    {
+        return parent::currentLock($ids);
+    }
+
+    public function activateLock(ProcessRequestLock $lock)
+    {
+        return parent::activateLock($lock);
+    }
+
+    public function unlock()
+    {
+        return parent::unlock();
     }
 }

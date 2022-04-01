@@ -104,26 +104,66 @@ class Setting extends Model implements HasMedia
      *
      * @return array
      */
-    public static function rules($existing = null)
+    public static function rules($existing = null, $validateConfig = false)
     {
         $unique = Rule::unique('settings')->ignore($existing);
 
         return [
             'key' => ['required', $unique],
-            'config' => 'required',
+            'config.*' => ($validateConfig ? ['required', 'valid_variable'] : [])
+        ];
+    }
+
+    public static function messages()
+    {
+        return [
+            'config.*.valid_variable' => trans('environmentVariables.validation.name.invalid_variable_name'),
         ];
     }
 
     /**
      * Get setting by key
      *
-     * @param $key
+     * @param  string  $key
      *
-     * @return null|Setting
+     * @return \ProcessMaker\Models\Setting|null
+     * @throws \Exception
      */
-    public static function byKey($key)
+    public static function byKey(string $key)
     {
-        return self::where('key', $key)->first();
+        $cache = cache()->tags('setting');
+
+        if ($cache->has($key)) {
+            return $cache->get($key);
+        }
+
+        $setting = (new self)->where('key', $key)
+                             ->first();
+
+        if (!$setting instanceof self) {
+            return null;
+        }
+
+        // Check the global config for the
+        // setting key and value. Add it in
+        // if it's not present.
+        $setting->addToConfig();
+
+        // Cache the found Settings model for 7 days
+        $cache->put($setting->key, $setting, 60 * 60 * 24 * 7);
+
+        return $setting;
+    }
+
+    public function addToConfig()
+    {
+        if (!$this->exists) {
+            return;
+        }
+
+        if (!config()->has($this->key)) {
+            config([$this->key => $this->config]);
+        }
     }
 
     /**
@@ -131,16 +171,14 @@ class Setting extends Model implements HasMedia
      *
      * @param $key
      *
-     * @return null|Setting
+     * @return array|null
+     * @throws \Exception
      */
     public static function configByKey($key)
     {
         $setting = self::byKey($key);
-        if ($setting) {
-            return $setting->config;
-        } else {
-            return null;
-        }
+
+        return $setting instanceof self ? $setting->config : null;
     }
 
     public function scopeHidden($query)
@@ -225,7 +263,7 @@ class Setting extends Model implements HasMedia
 
         return $query;
     }
-    
+
     public static function loginIsDefault()
     {
         if (stripos(self::getLogin(), 'processmaker-login') !== false) {

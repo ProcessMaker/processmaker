@@ -39,7 +39,7 @@ Vue.filter('javascript', function(value) {
       line = line.replace('{dataVariable}',  `data`);
       line = line.replace('{configVariable}',  `config`);
       line = line.replace('{apiExample}',  `getUserById(id, (error, data, response) => {})`);
-      line = line.replace('{apiDocsUrl}', `https://github.com/ProcessMaker/sdk-node#documentation-for-api-endpoints`);
+      line = line.replace('{apiDocsUrl}', `https://github.com/ProcessMaker/docker-executor-node/tree/master/docs/sdk`);
       format = ' * ' + line;
     }
     content.push(format);
@@ -64,7 +64,7 @@ Vue.filter('lua', function(value) {
       line = line.replace('{dataVariable}',  `data`);
       line = line.replace('{configVariable}',  `config`);
       line = line.replace('{apiExample}',  `users_api:get_users(filter, order_by, order_direction, per_page, include)`);
-      line = line.replace('{apiDocsUrl}', `https://github.com/ProcessMaker/sdk-lua#documentation-for-api-endpoints`);
+      line = line.replace('{apiDocsUrl}', `https://processmaker.gitbook.io/processmaker/designing-processes/scripts/script-editor#processmaker-and-environment-variable-syntax-usage-sdk-and-examples`);
       format = '  ' + line;
     }
     content.push(format);
@@ -89,7 +89,7 @@ Vue.filter('csharp', function(value) {
       line = line.replace('{dataVariable}',  `data`);
       line = line.replace('{configVariable}',  `config`);
       line = line.replace('{apiExample}',  `apiInstance.GetUserById(id)`);
-      line = line.replace('{apiDocsUrl}', `https://github.com/ProcessMaker/package-csharp#documentation-for-api-endpoints`);
+      line = line.replace('{apiDocsUrl}', `https://processmaker.gitbook.io/processmaker/designing-processes/scripts/script-editor#processmaker-and-environment-variable-syntax-usage-sdk-and-examples`);
       format = line;
     }
     content.push(format);
@@ -114,7 +114,7 @@ Vue.filter('java', function(value) {
       line = line.replace('{dataVariable}',  `data`);
       line = line.replace('{configVariable}',  `config`);
       line = line.replace('{apiExample}',  `apiInstance.getUserByID(id);`);
-      line = line.replace('{apiDocsUrl}', `https://github.com/ProcessMaker/sdk-java#documentation-for-api-endpoints`);
+      line = line.replace('{apiDocsUrl}', `https://processmaker.gitbook.io/processmaker/designing-processes/scripts/script-editor#processmaker-and-environment-variable-syntax-usage-sdk-and-examples`);
       format = ' * ' + line;
     }
     content.push(format);
@@ -135,7 +135,7 @@ Vue.filter('python', function(value) {
     line = line.replace('{dataVariable}',  `the data variable`);
     line = line.replace('{configVariable}',  `the config variable`);
     line = line.replace('{apiExample}',  ':');
-    line = line.replace('{apiDocsUrl}', `https://github.com/ProcessMaker/sdk-python#documentation-for-api-endpoints`);
+    line = line.replace('{apiDocsUrl}', `https://processmaker.gitbook.io/processmaker/designing-processes/scripts/script-editor#processmaker-and-environment-variable-syntax-usage-sdk-and-examples`);
     format = '# ' + line;
     content.push(format);
   });

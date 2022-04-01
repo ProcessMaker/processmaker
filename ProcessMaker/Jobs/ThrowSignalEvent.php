@@ -18,7 +18,7 @@ class ThrowSignalEvent implements ShouldQueue
     private const maxJobs = 10;
 
     public $signalRef;
-    public $data;
+    public $data_uid;
     public $excludeProcesses;
     public $excludeRequests;
 
@@ -30,13 +30,14 @@ class ThrowSignalEvent implements ShouldQueue
     public function __construct($signalRef, array $data = [], array $excludeProcesses = [], array $excludeRequests = [])
     {
         $this->signalRef = $signalRef;
-        $this->data = $data;
+        $this->data_uid = packTemporalData($data);
         $this->excludeProcesses = $excludeProcesses;
         $this->excludeRequests = $excludeRequests;
     }
 
     public function handle()
     {
+        $this->data = unpackTemporalData($this->data_uid);
         $processes = Process::whereNotIn('id', $this->excludeProcesses)
             ->whereJsonContains('signal_events', $this->signalRef)
             ->where('status', 'ACTIVE')
@@ -62,14 +63,15 @@ class ThrowSignalEvent implements ShouldQueue
             $requests = $requests->orderBy('id')
                 ->pluck('id')
                 ->toArray();
-            $chuncks = array_chunk($requests, $perJob);
-            foreach ($chuncks as $chunck) {
+            $chunks = array_chunk($requests, $perJob);
+            foreach ($chunks as $chunk) {
                 CatchSignalEventRequest::dispatch(
-                    $chunck,
+                    $chunk,
                     $this->signalRef,
                     $this->data
                 )->onQueue('bpmn');
             }
         }
+        removeTemporalData($this->data_uid);
     }
 }

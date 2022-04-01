@@ -20,7 +20,7 @@ use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Managers\WorkflowManager;
 use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\Nayra\Bpmn\Models\EventDefinitionBus;
-use ProcessMaker\Nayra\Bpmn\Models\SignalEventDefinition;
+use ProcessMaker\Models\SignalEventDefinition;
 use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\EventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowNodeInterface;
@@ -188,6 +188,7 @@ class WorkflowServiceProvider extends ServiceProvider
             $op = new MustacheOptions;
             return new Mustache_Engine([
                 'helpers' => $op->helpers,
+                'pragmas' => [Mustache_Engine::PRAGMA_FILTERS],
             ]);
         });
 

@@ -36,6 +36,7 @@
                 <div class="tab-content" id="nav-tabContent">
                     <div class="card card-body border-top-0 tab-pane p-3 show active" id="nav-home" role="tabpanel"
                          aria-labelledby="nav-home-tab">
+                        <required></required>
                         <div class="form-group">
                             {!! Form::label('name', __('Name') . '<small class="ml-1">*</small>', [], false) !!}
                             {!! Form::text('name', null, [
@@ -43,7 +44,7 @@
                             'class'=> 'form-control',
                             'maxlength' => '255',
                             'v-model' => 'formData.name',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}', 'required', 'aria-required' => 'true']) !!}
                             <small class="form-text text-muted">{{__('Group name must be unique')}}</small>
                             <div class="invalid-feedback" role="alert" v-if="errors.name">@{{errors.name[0]}}</div>
                         </div>
@@ -141,19 +142,20 @@
 
             <pm-modal ref="addUser" id="addUser" title="{{__('Add Users')}}" @hidden="onCloseAddUser" @ok.prevent="onSave" style="display: none;">
                 <div class="form-user">
+                    <required></required>
                     {!!Form::label('users', __('Users') . '<small class="ml-1">*</small>', [], false)!!}
                     <multiselect id="users"
                                  v-model="selectedUsers"
                                  placeholder="{{__('Select user or type here to search users')}}"
-                                 :options="availableUsers"
+                                 :options="availableUsersFormatted"
                                  :multiple="true"
-                                 track-by="fullname"
+                                 track-by="username"
                                  :custom-label="customLabel"
                                  :show-labels="false"
                                  :searchable="true"
                                  :internal-search="false"
                                  @search-change="loadUsers"
-                                 label="fullname">
+                                 label="username">
 
                         <template slot="noResult" >
                             {{ __('No elements found. Consider changing the search query.') }}
@@ -176,7 +178,7 @@
 
                         <template slot="option" slot-scope="props">
                             <div class="option__desc d-flex align-items-center">
-                                <span class="option__title mr-1">@{{ props.option.fullname }} (@{{ props.option.username }})</span>
+                                <span class="option__title mr-1">@{{ props.option.fullname }}</span>
                             </div>
                         </template>
                     </multiselect>
@@ -185,6 +187,7 @@
 
             <pm-modal ref="addGroup" id="addGroup" title="{{__('Add Groups')}}" @hidden="onCloseAddGroup" @ok.prevent="onSaveGroups" style="display: none;">
                 <div class="form-user">
+                    <required></required>
                     {!!Form::label('groups', __('Groups') . '<small class="ml-1">*</small>', [], false)!!}
                     <multiselect id="groups"
                                  v-model="selectedGroups"
@@ -264,6 +267,11 @@
               this.selectAll = false;
             }
           }
+        },
+        computed: {
+            availableUsersFormatted() {
+                return this.availableUsers.map(user => ({...user, fullname: `${user.fullname} (${user.username})`}));
+            }
         },
         methods: {
           checkCreate(sibling, $event) {

@@ -103,18 +103,18 @@ class TaskController extends Controller
         $query->select('process_request_tokens.*');
 
         $include  = $request->input('include') ? explode(',',$request->input('include')) : [];
-        
+
         if (in_array('data', $include)) {
             unset($include[array_search('data', $include)]);
         }
-        
+
         $query->with($include);
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $query->filter($filter);
         }
-        
+
         $filterByFields = ['process_id', 'process_request_tokens.user_id' => 'user_id', 'process_request_tokens.status' => 'status', 'element_id', 'element_name', 'process_request_id'];
         $parameters = $request->all();
         foreach ($parameters as $column => $fieldFilter) {
@@ -156,7 +156,11 @@ class TaskController extends Controller
         }
 
         //list only display elements type task
-        $query->where('element_type', '=', 'task');
+        $nonSystem = filter_var($request->input('non_system'), FILTER_VALIDATE_BOOLEAN);
+        $query->where('element_type', '=', 'task')
+            ->when($nonSystem, function ($query) {
+                $query->nonSystem();
+            });
 
         // order by one or more columns
         $orderColumns = explode(',', $request->input('order_by', 'updated_at'));
@@ -184,19 +188,25 @@ class TaskController extends Controller
                 return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
             }
         }
-        
+
         // If only the total is being requested (by a Saved Search), send it now
         if ($getTotal === true) {
             return $query->count();
         }
-        
+
         $inOverdueQuery = ProcessRequestToken::where('user_id', $user->id)
             ->where('status', 'ACTIVE')
             ->where('due_at', '<', Carbon::now());
 
         $inOverdue = $inOverdueQuery->count();
-        
-        $response = $this->handleOrderByRequestName($request, $query->get());
+
+        try {
+            $response = $this->handleOrderByRequestName($request, $query->get());
+        } catch(\Illuminate\Database\QueryException $e){
+            $regex = '~Column not found: 1054 Unknown column \'(.*?)\' in \'where clause\'~';
+            preg_match($regex, $e->getMessage(), $m);
+            return response(['message' => __('PMQL Is Invalid.') . ' ' . __('Column not found: ') . '"' . $m[1] . '"',], 422);
+        }
 
         // Only filter results if the user id was specified
         if ($request->input('user_id') === $user->id) {
@@ -207,12 +217,12 @@ class TaskController extends Controller
                 return $user->can('view', $processRequestToken);
             })->values();
         }
-                
+
         //Map each item through its resource
         $response = $response->map(function ($processRequestToken) use ($request) {
             return new Resource($processRequestToken);
         });
-        
+
         $response->inOverdue = $inOverdue;
 
         return new TaskCollection($response);
@@ -224,7 +234,7 @@ class TaskController extends Controller
      * @param ProcessRequestToken $task
      *
      * @return Resource
-     * 
+     *
      * @OA\Get(
      *     path="/tasks/{task_id}",
      *     summary="Get a single task by ID",
@@ -301,7 +311,7 @@ class TaskController extends Controller
             }
             // Skip ConvertEmptyStringsToNull and TrimStrings middlewares
             $data = json_decode($request->getContent(), true);
-            $data = SanitizeHelper::sanitizeData($data['data'], $task->getScreenVersion());
+            $data = SanitizeHelper::sanitizeData($data['data'], $task);
             //Call the manager to trigger the start event
             $process = $task->process;
             $instance = $task->processRequest;
@@ -309,11 +319,13 @@ class TaskController extends Controller
             return new Resource($task->refresh());
         } elseif (!empty($request->input('user_id'))) {
             $userToAssign = $request->input('user_id');
+            $sendActivityActivatedNotifications = false;
             if ($task->is_self_service && $userToAssign == Auth::id() && !$task->user_id) {
                 // Claim task
                 $task->is_self_service = 0;
                 $task->user_id = $userToAssign;
                 $task->persistUserData($userToAssign);
+                $sendActivityActivatedNotifications = true;
             } elseif ($userToAssign === '#manager') {
                 // Reassign to manager
                 $task->authorizeAssigneeEscalateToManager();
@@ -327,6 +339,10 @@ class TaskController extends Controller
                 $task->persistUserData($userToAssign);
             }
             $task->save();
+
+            if ($sendActivityActivatedNotifications) {
+                $task->sendActivityActivatedNotifications();
+            }
 
             // Send a notification to the user
             $notification = new TaskReassignmentNotification($task);

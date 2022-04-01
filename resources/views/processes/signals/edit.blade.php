@@ -17,7 +17,7 @@
 @endsection
 
 @section('content')
-<div class="px-3" id="editSignal">
+<div class="container" id="editSignal">
   <div class="row">
     <div class="col-12">
       <nav>
@@ -35,16 +35,17 @@
 
         <div class="card card-body border-top-0 tab-pane p-3 fade show active" id="nav-detail" role="tabpanel" aria-labelledby="nav-detail-tab">
           <div class="modal-body">
+            <required></required>
             <div class="form-group">
-              {!! Form::label('name', __('Signal Name')) !!}
+              {!! Form::label('name', __('Signal Name') . '<small class="ml-1">*</small>', [], false) !!}
               {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' =>
-              'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
+              'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}', 'required', 'aria-required' => 'true']) !!}
               <div class="invalid-feedback" role="alert" v-for="name in errors.name">@{{name}}</div>
             </div>
             <div class="form-group">
-              {!! Form::label('id', __('Signal ID')) !!}
+              {!! Form::label('id', __('Signal ID') . '<small class="ml-1">*</small>', [], false) !!}
               {!! Form::text('id', null, ['id' => 'id','class'=> 'form-control', 'v-model' =>
-              'formData.id', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.id}']) !!}
+              'formData.id', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.id}', 'required', 'aria-required' => 'true']) !!}
               <small id="emailHelp" class="form-text text-muted"></small>
               <div class="invalid-feedback" role="alert" v-for="id in errors.id">@{{id}}</div>
             </div>

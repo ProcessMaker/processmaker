@@ -61,6 +61,7 @@
                               @completed="completed"
                               @@error="error"
                               @closed="closed"
+                              @redirect="redirectToTask"
                           ></task>
                           @endcan
                             @can('view-comments')
@@ -321,16 +322,13 @@
             if(this.task.component && this.task.component === 'AdvancedScreenFrame') {
               return;
             }
-            // If it is inside a subprocess
-            if(this.task.process_request.parent_request_id) {
-              this.redirect(`/requests/${this.task.process_request_id}/owner`);
-              return;
-            }
-
             this.redirect(`/requests/${processRequestId}`);
           },
           error(processRequestId) {
             this.redirect(`/requests/${this.task.process_request_id}`);
+          },
+          redirectToTask(task, force = false) {
+            this.redirect(`/tasks/${task}/edit`, force);
           },
           closed(taskId) {
             // avoid redirection if using a customized renderer
@@ -394,8 +392,8 @@
                 });
             }
           },
-          redirect(to) {
-            if (this.redirectInProcess) {
+          redirect(to, forceRedirect = false) {
+            if (this.redirectInProcess && !forceRedirect) {
               return;
             }
             this.redirectInProcess = true;
@@ -437,6 +435,12 @@
               .catch(error => {
                 // If there are errors, the user will be redirected to the request page
                 // to view error details. This is done in loadTask in Task.vue
+                if (error.response?.status && error.response?.status === 422) {
+                  // Validation error
+                  Object.entries(error.response.data.errors).forEach(([key, value]) => {
+                    window.ProcessMaker.alert(`${key}: ${value[0]}`, 'danger', 0);
+                  });
+                }
               }).finally(() => {
                 this.submitting = false;
               })

@@ -42,10 +42,21 @@ class CssOverrideTest extends TestCase
         $response->assertStatus(422);
     }
 
+    /**
+     * Verifies that the reset css works
+     */
+    public function testResetCss()
+    {
+        $data = $this->cssValues('#ff0000');
+        $data['reset'] = true;
+        $response = $this->actingAs($this->user, 'api')->call('POST', '/api/1.0/customize-ui', $data);
+        $response->assertStatus(201);
+    }
+
     private function cssValues($testColor)
     {
         return [
-           'key'  => 'css-override',
+            'key' => 'css-override',
             'variables' => json_encode([
                 [
                     'id' => '$primary',

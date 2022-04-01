@@ -1,17 +1,18 @@
 <?php
 namespace Tests\Feature\Api;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithFaker;
-use ProcessMaker\Managers\TaskSchedulerManager;
+use Illuminate\Support\Facades\Bus;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ScheduledTask;
+use Tests\Feature\Shared\ProcessTestingTrait;
+use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
-use Tests\Feature\Shared\RequestHelper;
-use Tests\Feature\Shared\ProcessTestingTrait;
-use Carbon\Carbon;
-use ProcessMaker\Models\ProcessRequest;
 
 /**
  * Test the process execution with requests
@@ -94,14 +95,12 @@ class IntermediateTimerEventTest extends TestCase
         $task->process_request_id = $request->id;
         $task->configuration = '{"type":"TimeCycle","interval":"R4\/2019-02-13T13:08:00Z\/PT1M", "element_id" : "_5"}';
         $task->type= 'INTERMEDIATE_TIMER_EVENT';
+
+        Bus::fake();
         $manager->executeIntermediateTimerEvent($task, json_decode($task->configuration));
 
-        // executing a second time
-        $task->configuration = '{"type":"TimeCycle","interval":"R4\/2019-02-13T13:08:00Z\/PT1M", "element_id" : "_5"}';
-        $manager->executeIntermediateTimerEvent($task, json_decode($task->configuration));
-
-        // If no exception has been thrown, this assertion will be executed
-        $this->assertTrue(true);
+        //Assert that the job was dispatched
+        Bus::assertDispatched(\ProcessMaker\Jobs\CatchEvent::class);
     }
 
     /**

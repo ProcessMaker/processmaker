@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6bdbf6d5f7f6e7e36a0f87bc70c816e9",
+    "content-hash": "fed9d6c59dd9bce494e4bf16a4c55338",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -276,6 +276,87 @@
                 "source": "https://github.com/cakephp/chronos"
             },
             "time": "2019-11-30T02:33:19+00:00"
+        },
+        {
+            "name": "composer/semver",
+            "version": "3.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/composer/semver.git",
+                "reference": "f79c90ad4e9b41ac4dfc5d77bf398cf61fbd718b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/composer/semver/zipball/f79c90ad4e9b41ac4dfc5d77bf398cf61fbd718b",
+                "reference": "f79c90ad4e9b41ac4dfc5d77bf398cf61fbd718b",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.3.2 || ^7.0 || ^8.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.4",
+                "symfony/phpunit-bridge": "^4.2 || ^5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Composer\\Semver\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nils Adermann",
+                    "email": "naderman@naderman.de",
+                    "homepage": "http://www.naderman.de"
+                },
+                {
+                    "name": "Jordi Boggiano",
+                    "email": "j.boggiano@seld.be",
+                    "homepage": "http://seld.be"
+                },
+                {
+                    "name": "Rob Bast",
+                    "email": "rob.bast@gmail.com",
+                    "homepage": "http://robbast.nl"
+                }
+            ],
+            "description": "Semver library that offers utilities, version constraint parsing and validation.",
+            "keywords": [
+                "semantic",
+                "semver",
+                "validation",
+                "versioning"
+            ],
+            "support": {
+                "irc": "irc://irc.freenode.org/composer",
+                "issues": "https://github.com/composer/semver/issues",
+                "source": "https://github.com/composer/semver/tree/3.3.0"
+            },
+            "funding": [
+                {
+                    "url": "https://packagist.com",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/composer",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/composer/composer",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2022-03-15T08:35:57+00:00"
         },
         {
             "name": "darkaonline/l5-swagger",
@@ -4690,16 +4771,16 @@
         },
         {
             "name": "processmaker/nayra",
-            "version": "1.7.0-RC4",
+            "version": "1.9.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/nayra.git",
-                "reference": "c7b94f15edbdee11a8c963d592b599dba26a2db1"
+                "reference": "94fc60308555b774c44ab9005558243e00190283"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/c7b94f15edbdee11a8c963d592b599dba26a2db1",
-                "reference": "c7b94f15edbdee11a8c963d592b599dba26a2db1",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/94fc60308555b774c44ab9005558243e00190283",
+                "reference": "94fc60308555b774c44ab9005558243e00190283",
                 "shasum": ""
             },
             "require-dev": {
@@ -4718,22 +4799,22 @@
             "description": "BPMN compliant engine",
             "support": {
                 "issues": "https://github.com/ProcessMaker/nayra/issues",
-                "source": "https://github.com/ProcessMaker/nayra/tree/v1.7.0-RC4"
+                "source": "https://github.com/ProcessMaker/nayra/tree/v1.9.2"
             },
-            "time": "2021-10-27T15:49:10+00:00"
+            "time": "2021-12-23T21:13:50+00:00"
         },
         {
             "name": "processmaker/pmql",
-            "version": "1.4.0",
+            "version": "1.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/pmql.git",
-                "reference": "7b7758a98f7e5c38a1c285a73d2c3dcbfebf16d9"
+                "reference": "97a151405ee39c4ffa03e905904f4c1e5d703aaa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/7b7758a98f7e5c38a1c285a73d2c3dcbfebf16d9",
-                "reference": "7b7758a98f7e5c38a1c285a73d2c3dcbfebf16d9",
+                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/97a151405ee39c4ffa03e905904f4c1e5d703aaa",
+                "reference": "97a151405ee39c4ffa03e905904f4c1e5d703aaa",
                 "shasum": ""
             },
             "require": {
@@ -4764,9 +4845,9 @@
             "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent",
             "support": {
                 "issues": "https://github.com/ProcessMaker/pmql/issues",
-                "source": "https://github.com/ProcessMaker/pmql/tree/v1.4.0"
+                "source": "https://github.com/ProcessMaker/pmql/tree/v1.5.1"
             },
-            "time": "2021-07-01T14:32:17+00:00"
+            "time": "2022-01-28T22:54:49+00:00"
         },
         {
             "name": "psr/cache",
@@ -11371,5 +11452,5 @@
         "php": ">=7.2.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.2.0"
 }

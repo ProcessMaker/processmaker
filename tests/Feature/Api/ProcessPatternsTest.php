@@ -60,6 +60,7 @@ class ProcessPatternsTest extends TestCase
         $tests = $this->prepareTestCases('Conditional_IntermediateEvent.bpmn', $tests);
         $tests = $this->prepareTestCases('MultiInstance_SequentialCallActivity.bpmn', $tests);
         $tests = $this->prepareTestCases('Loop_Task.bpmn', $tests);
+        $tests = $this->prepareTestCases('SignalWithCustomPayload.bpmn', $tests);
         return $tests;
     }
 
@@ -110,7 +111,7 @@ class ProcessPatternsTest extends TestCase
         foreach ($startEvents as $startEvent) {
             $data = [];
             $result = [];
-            $this->runProcess($bpmnFile, $data, $startEvent->getAttribute('id'), $result, [], []);
+            $this->runProcess($bpmnFile, $data, $startEvent->getAttribute('id'), $result, [], [], []);
         }
     }
 
@@ -134,7 +135,7 @@ class ProcessPatternsTest extends TestCase
                 ]);
             }
         }
-        $this->runProcess($bpmnFile, $context['data'], $context['startEvent'], $context['result'], $events, $output);
+        $this->runProcess($bpmnFile, $context['data'], $context['startEvent'], $context['result'], $events, $output, $context);
     }
 
     /**
@@ -148,7 +149,7 @@ class ProcessPatternsTest extends TestCase
      *
      * @return void
      */
-    private function runProcess($bpmnFile, $data = [], $startEvent, $expectedResult, $events, $output)
+    private function runProcess($bpmnFile, $data = [], $startEvent, $expectedResult, $events, $output, $context)
     {
         Cache::store('global_variables')->flush();
         $process = $this->createProcess(file_get_contents("{$this->basePath}{$bpmnFile}"));
@@ -217,6 +218,15 @@ class ProcessPatternsTest extends TestCase
         if ($output) {
             $request->refresh();
             $this->assertData($output, $request->data);
+        }
+        if (isset($context['requests_output'])) {
+            // Get all requests data
+            $requests_data = ProcessRequest::pluck('data');
+            $count = count($context['requests_output']);
+            $this->assertCount($count, $requests_data, "Expected {$count} request(s)");
+            foreach ($context['requests_output'] as $index => $expected) {
+                $this->assertData($expected, $requests_data[$index]);
+            }
         }
     }
 

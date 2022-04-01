@@ -16,6 +16,8 @@ abstract class Base
     use ScriptDockerCopyingFilesTrait;
     use ScriptDockerBindingFilesTrait;
 
+    private $tokenId = '';
+
     /**
      * Prepare the docker configuration.
      *
@@ -105,7 +107,7 @@ abstract class Base
         // Execute docker
         $executeMethod = config('app.processmaker_scripts_docker_mode') === 'binding'
             ? 'executeBinding' : 'executeCopying';
-        Log::debug('Executing docker', [
+        Log::debug('Executing docker ' . $this->getRunId() . ':', [
             'executeMethod' => $executeMethod,
         ]);
         $response = $this->$executeMethod($dockerConfig);
@@ -119,7 +121,7 @@ abstract class Base
         $returnCode = $response['returnCode'];
         $stdOutput = $response['output'];
         $output = $response['outputs']['response'];
-        \Log::debug("Docker returned: " . substr(json_encode($response), 0, 500));
+        Log::debug("Docker returned " . $this->getRunId(). ': ' . substr(json_encode($response), 0, 500));
         if ($returnCode || $stdOutput) {
             // Has an error code
             throw new RuntimeException("(Code: {$returnCode})" . implode("\n", $stdOutput));
@@ -150,5 +152,22 @@ abstract class Base
         $variablesParameter[] = 'HOST_URL=' . escapeshellarg(config('app.docker_host_url'));
 
         return $variablesParameter;
+    }
+
+    /**
+     * Set the tokenId of reference.
+     * 
+     * @param string $tokenId
+     *
+     * @return void
+     */
+    public function setTokenId($tokenId)
+    {
+        $this->tokenId = $tokenId;
+    }
+
+    private function getRunId()
+    {
+        return $this->tokenId ? '#' . $this->tokenId : '';
     }
 }

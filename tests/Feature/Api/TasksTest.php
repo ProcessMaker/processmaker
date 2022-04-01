@@ -17,6 +17,10 @@ use Tests\Feature\Shared\RequestHelper;
 use ProcessMaker\Facades\WorkflowManager;
 use PermissionSeeder;
 use ProcessMaker\Providers\AuthServiceProvider;
+use ProcessMaker\Models\ProcessNotificationSetting;
+use Illuminate\Support\Facades\Notification;
+use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Notifications\ActivityActivatedNotification;
 
 /**
  * Tests routes related to tokens list and show
@@ -142,6 +146,43 @@ class TasksTest extends TestCase
     }
 
     /**
+     * You only see non system type tasks.
+     */
+    public function testGetListNonSystemTasks()
+    {
+        $user_1 = factory(User::class)->create();
+        $user_2 = factory(User::class)->create();
+
+        $process = factory(Process::class)->create();
+        $category = factory(ProcessCategory::class)->create(['status' => 'ACTIVE', 'is_system' => true]);
+        $systemProcess = factory(Process::class)->create(['process_category_id' => $category->id]);
+        // Create some tokens
+        factory(ProcessRequestToken::class, 2)->create([
+            'process_id' => $process->id,
+            'status' => 'ACTIVE',
+            'user_id' => $user_1->id
+        ]);
+        factory(ProcessRequestToken::class, 3)->create([
+            'process_id' => $process->id,
+            'status' => 'ACTIVE',
+            'user_id' => $user_2->id
+        ]);
+        factory(ProcessRequestToken::class, 1)->create([
+            'process_id' => $systemProcess->id,
+            'status' => 'ACTIVE',
+            'user_id' => $user_1->id
+        ]);
+
+        // Get a page of tokens
+        // Since PR #4189, non_system = true is a default parameter
+        $route = route('api.' . $this->resource . '.index', ['user_id' => $user_1->id, 'non_system' => true]);
+        $response = $this->apiCall('GET', $route);
+
+        // should only see the user's 2 tasks
+        $this->assertEquals(2, count($response->json()['data']));
+    }
+
+    /**
      * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
      */
     public function testTaskListDates()
@@ -225,12 +266,12 @@ class TasksTest extends TestCase
         //Get tasks
         $route = route('api.' . $this->resource . '.index', ['per_page' => 100]);
         $response = $this->apiCall('GET', $route);
-        
+
         //Verify the status
         $response->assertStatus(200);
-        
+
         //Verify the element types
-        $types = collect($response->json()['data'])->pluck('element_type')->unique()->toArray();        
+        $types = collect($response->json()['data'])->pluck('element_type')->unique()->toArray();
         $this->assertEquals($types, ['task']);
     }
 
@@ -391,7 +432,7 @@ class TasksTest extends TestCase
         $response = $this->apiCall('PUT', '/tasks/' . $token->id, $params);
         $this->assertStatus(200, $response);
     }
-    
+
     public function testUpdateTaskRichText()
     {
         // $this->user = factory(User::class)->create(); // normal user
@@ -402,7 +443,7 @@ class TasksTest extends TestCase
                 )
             )
         ]);
-        
+
         $bpmn = file_get_contents(base_path('tests/Fixtures/single_task_with_screen.bpmn'));
         $bpmn = str_replace('pm:screenRef="1"', 'pm:screenRef="' . $screen->id .'"', $bpmn);
         $process = factory(Process::class)->create([
@@ -526,5 +567,37 @@ class TasksTest extends TestCase
         $actualIds = collect($response->json()['data'])->pluck('id');
 
         $this->assertEquals($expectedTaskIds, $actualIds);
+    }
+
+    public function testSelfServeNotifications()
+    {
+        Notification::fake();
+
+        $bpmn = str_replace(
+            '[self_serve_user_id]',
+            $this->user->id,
+            file_get_contents(__DIR__ . '/../../Fixtures/self_serve_notifications_process.bpmn')
+        );
+        $process = factory(Process::class)->create([
+            'bpmn' => $bpmn,
+        ]);
+        factory(ProcessNotificationSetting::class)->create([
+            'process_id' => $process->id,
+            'element_id' => 'node_3',
+            'notifiable_type' => 'requester',
+            'notification_type' => 'assigned',
+        ]);
+
+        $route = route('api.process_events.trigger', [$process->id, 'event' => 'node_1']);
+        $response = $this->apiCall('POST', $route, []);
+        $processRequest = ProcessRequest::findOrFail($response->json()['id']);
+
+        Notification::assertNothingSent();
+
+        $task = $processRequest->tokens->where('status', 'ACTIVE')->first();
+        $route = route('api.tasks.update', [$task->id]);
+        $response = $this->apiCall('PUT', $route, ['user_id' => $this->user->id]);
+
+        Notification::assertSentTo([$this->user], ActivityActivatedNotification::class);
     }
 }

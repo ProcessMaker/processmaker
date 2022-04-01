@@ -81,9 +81,10 @@
                     {
                         src: @json($currentUser['avatar']),
                         title: @json($currentUser['fullname']),
-                        initials: @json($currentUser['firstname'][0]) + @json($currentUser['lastname'][0])
-                    }
-                ]
+                        initials: "{{mb_substr($currentUser['firstname'],0,1, "utf-8")}}" + "{{mb_substr($currentUser['lastname'],0,1, "utf-8")}}"
+        }
+                ],
+                focusErrors: 'errors',
             },
             created() {
               if (this.meta) {
@@ -167,7 +168,7 @@
             }
         });
     </script>
-    
+
     <script>
         let modalVueInstance = new Vue({
             el: '#updateAvatarModal',

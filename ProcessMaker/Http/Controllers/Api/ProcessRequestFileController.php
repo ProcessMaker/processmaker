@@ -265,6 +265,7 @@ class ProcessRequestFileController extends Controller
         $data_name = $laravelRequest->input('data_name', $file->getClientOriginalName());
         $rowId = $laravelRequest->input('row_id', null);
         $parent = (int)$laravelRequest->input('parent', null);
+        $multiple = $laravelRequest->input('multiple', null);
 
         foreach($processRequest->getMedia() as $mediaItem) {
             if(
@@ -273,7 +274,9 @@ class ProcessRequestFileController extends Controller
                 $mediaItem->getCustomProperty('row_id') == $rowId)
             {
                 $originalCreatedBy = $mediaItem->getCustomProperty('createdBy');
-                $mediaItem->delete();
+                if (empty($multiple)) {
+                    $mediaItem->delete();
+                }
             }
         }
 

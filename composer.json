@@ -1,6 +1,6 @@
 {
   "name": "processmaker/processmaker",
-  "version": "4.2.16-RC",
+  "version": "4.2.29-RC2",
   "description": "BPM PHP Software",
   "keywords": [
     "php bpm processmaker"
@@ -12,6 +12,7 @@
   "require": {
     "php": ">=7.2.0",
     "babenkoivan/elastic-scout-driver": "^1.2",
+    "composer/semver": "^3.3",
     "darkaonline/l5-swagger": "6.0.*",
     "doctrine/dbal": "^2.9",
     "fideloper/proxy": "^4.0",
@@ -36,8 +37,8 @@
     "processmaker/docker-executor-node": "^1.0",
     "processmaker/docker-executor-php": "^1.0",
     "processmaker/laravel-i18next": "dev-master",
-    "processmaker/nayra": "1.7.0-RC4",
-    "processmaker/pmql": "1.4.0",
+    "processmaker/nayra": "1.9.2",
+    "processmaker/pmql": "1.5.1",
     "pusher/pusher-php-server": "^4.0",
     "ralouphie/getallheaders": "^2.0",
     "spatie/laravel-fractal": "^5.3",
@@ -83,6 +84,9 @@
         "laravel/dusk",
         "laravel/passport"
       ]
+    },
+    "processmaker": {
+      "build": "9a02a430"
     }
   },
   "scripts": {
@@ -99,8 +103,8 @@
   },
   "repositories": [
     {
-        "type": "vcs",
-        "url": "https://github.com/ProcessMaker/SocialiteProviders"
+      "type": "vcs",
+      "url": "https://github.com/ProcessMaker/SocialiteProviders"
     }
   ],
   "config": {

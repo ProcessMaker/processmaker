@@ -23,6 +23,7 @@ use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Nayra\Contracts\Bpmn\ConditionalEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ErrorInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TransitionInterface;
 use ProcessMaker\Notifications\ProcessCreatedNotification;
@@ -39,6 +40,40 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TimerEventDefinitionInterface;
  */
 class BpmnSubscriber
 {
+    private $memory;
+
+    /**
+     * @param $element
+     * @param TokenInterface|null $token
+     * @return $this
+     */
+    public function registerErrorHandler($element, TokenInterface $token = null)
+    {
+        // This storage is freed on error (case of allowed memory exhausted)
+        $this->memory = str_repeat('*', 1024 * 1024);
+
+        $path = storage_path('app/private');
+
+        if (empty($token)) {
+            return;
+        }
+
+        register_shutdown_function(function() use ($path, $element, $token) {
+            $this->errorHandler($path, $token);
+        });
+    }
+
+    public function errorHandler($path, $token)
+    {
+        // free the reserved memory
+        $this->memory = null;
+
+        file_put_contents($path . '/unhandled_error.txt', $token->id . "\n", FILE_APPEND);
+        if (!is_null($err = error_get_last()) && in_array($err['type'], [E_ERROR])) {
+            Log::error('Script/Service task failed with unhandled system error: ' . print_r($err, true));
+        }
+    }
+
     /**
      * When a process instance is completed.
      *
@@ -85,8 +120,12 @@ class BpmnSubscriber
         }
         Log::info('Activity activated: ' . json_encode($token->getProperties()));
 
-        $notifiables = $token->getNotifiables('assigned');
-        Notification::send($notifiables, new ActivityActivatedNotification($token));
+        // Do not send activated notification for self service tasks since
+        // they do not have a user assigned yet.
+        if ($token->user_id) {
+            $token->sendActivityActivatedNotifications();
+        }
+
         event(new ActivityAssigned($event->token));
     }
 
@@ -137,6 +176,8 @@ class BpmnSubscriber
         }
     }
 
+
+
     /**
      * When a script task is activated.
      *
@@ -145,8 +186,13 @@ class BpmnSubscriber
      */
     public function onScriptTaskActivated(ScriptTaskInterface $scriptTask, TokenInterface $token)
     {
-        // Log::info('ScriptTaskActivated: ' . $scriptTask->getId());
-        WorkflowManager::runScripTask($scriptTask, $token);
+        $this->registerErrorHandler($scriptTask, $token);
+        try {
+            WorkflowManager::runScripTask($scriptTask, $token);
+        }
+        catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::Error('Unhandled error when running a script task:' . $e->getMessage());
+        }
     }
 
     /**
@@ -157,14 +203,21 @@ class BpmnSubscriber
      */
     public function onServiceTaskActivated(ServiceTaskInterface $serviceTask, TokenInterface $token)
     {
-        WorkflowManager::runServiceTask($serviceTask, $token);
+        $this->registerErrorHandler($serviceTask, $token);
+        try {
+            WorkflowManager::runServiceTask($serviceTask, $token);
+        }
+        catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::Error('Unhandled error when running a service task:' . $e->getMessage());
+        }
     }
 
     public function onIntermediateCatchEventActivated(IntermediateCatchEventInterface $event, TokenInterface $token)
     {
         $messages = [
             MessageEventDefinitionInterface::class => 'System is waiting to receive message ":event"',
-            TimerEventDefinitionInterface::class => 'System has scheduled timer: ":event"'
+            TimerEventDefinitionInterface::class => 'System is waiting for the scheduled timer: ":event"',
+            ConditionalEventDefinitionInterface::class => 'System is waiting for the conditional event: ":event"',
         ];
         foreach ($event->getEventDefinitions() as $eventDefinition) {
             foreach ($messages as $interface => $message) {
@@ -252,4 +305,5 @@ class BpmnSubscriber
 
         $events->listen(IntermediateCatchEventInterface::EVENT_CATCH_TOKEN_ARRIVES, static::class . '@onIntermediateCatchEventActivated');
     }
+
 }

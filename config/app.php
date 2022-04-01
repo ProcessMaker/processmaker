@@ -60,8 +60,14 @@ return [
     'processmaker_scripts_docker_mode' => env('PROCESSMAKER_SCRIPTS_DOCKER_MODE', 'binding'),
     'processmaker_scripts_docker_host' => env('PROCESSMAKER_SCRIPTS_DOCKER_HOST', ''),
     'processmaker_scripts_timeout' => env('PROCESSMAKER_SCRIPTS_TIMEOUT', 'timeout'),
+    'processmaker_system_scripts_timeout_seconds' => env('PROCESSMAKER_SYSTEM_SCRIPTS_TIMEOUT_SECONDS', 300),
     'timer_events_seconds' => env('TIMER_EVENTS_SECONDS', 'truncate'),
     'bpmn_actions_max_lock_time' => intval(env('BPMN_ACTIONS_MAX_LOCK_TIME', 60)),
+    // Maximum time to wait for a lock to be released. Default 60000 [ms]
+    // If the processes are going to have thousands of concurrent parallel instances, increase this number.
+    'bpmn_actions_max_lock_timeout' => intval(env('BPMN_ACTIONS_MAX_LOCK_TIMEOUT', 60000)),
+    // Lock check interval. Default every second. 1000 [ms]
+    'bpmn_actions_lock_check_interval' => intval(env('BPMN_ACTIONS_LOCK_CHECK_INTERVAL', 1000)),
 
     // The url of our host from inside the docker
     'docker_host_url' => env('DOCKER_HOST_URL', preg_replace('/(\w+):\/\/([^:\/]+)(\:\d+)?/', '$1://172.17.0.1$3',
@@ -110,6 +116,7 @@ return [
         ProcessMaker\Providers\BroadcastServiceProvider::class,
         ProcessMaker\Providers\WorkflowServiceProvider::class,
         ProcessMaker\Providers\SettingServiceProvider::class,
+        ProcessMaker\Providers\UpgradeServiceProvider::class,
         Laravel\Passport\PassportServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
         TeamTNT\Scout\TNTSearchScoutServiceProvider::class,
@@ -168,10 +175,10 @@ return [
          */
         'Theme' => Igaster\LaravelTheme\Facades\Theme::class,
         'Menu'      => Lavary\Menu\Facade::class,
-        
+
         /**
          * Overwrite package classes
-         */        
+         */
         'ElasticScoutDriver\Factories\SearchRequestFactory' => ProcessMaker\Factories\SearchRequestFactory::class,
 
 

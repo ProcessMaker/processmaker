@@ -74,7 +74,7 @@ use Throwable;
  *   @OA\Property(property="package_key", type="string"),
  *   @OA\Property(property="start_events", type="array", @OA\Items(ref="#/components/schemas/ProcessStartEvents")),
  *   @OA\Property(property="warnings", type="string"),
- *   @OA\Property(property="self_service_tasks", type="array", @OA\Items(type="object")),
+ *   @OA\Property(property="self_service_tasks", type="object"),
  *   @OA\Property(property="signal_events", type="array", @OA\Items(type="object")),
  *   @OA\Property(property="category", @OA\Schema(ref="#/components/schemas/ProcessCategory")),
  *   @OA\Property(property="manager_id", type="integer", format="id"),
@@ -96,14 +96,12 @@ use Throwable;
  * ),
  * @OA\Schema(
  *     schema="ProcessStartEvents",
- *     @OA\Schema(
- *         @OA\Property(property="eventDefinitions", type="object"),
- *         @OA\Property(property="parallelMultiple", type="boolean"),
- *         @OA\Property(property="outgoing", type="object"),
- *         @OA\Property(property="incoming", type="object"),
- *         @OA\Property(property="id", type="string"),
- *         @OA\Property(property="name", type="string"),
- *     )
+ *     @OA\Property(property="eventDefinitions", type="object"),
+ *     @OA\Property(property="parallelMultiple", type="boolean"),
+ *     @OA\Property(property="outgoing", type="object"),
+ *     @OA\Property(property="incoming", type="object"),
+ *     @OA\Property(property="id", type="string"),
+ *     @OA\Property(property="name", type="string"),
  * ),
  * @OA\Schema(
  *     schema="ProcessWithStartEvents",
@@ -413,6 +411,8 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     {
         return $query->where('processes.status', 'ARCHIVED');
     }
+
+
 
     public function getCollaborations()
     {
@@ -1256,6 +1256,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
                 $this->validateCallActivity($callActivity->getBpmnElementInstance());
             }
         } catch (Throwable $exception) {
+            \Log::error($exception);
             $warning = [
                 'title' => __('Invalid process'),
                 'text' => $exception->getMessage(),
