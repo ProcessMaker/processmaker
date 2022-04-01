@@ -376,6 +376,7 @@ export default {
         formatOnPaste: true,
         formatOnType: true,
         automaticLayout: true,
+        readOnly: true,
         minimap: { enabled: false },
       },
       mockMagicVariables,
