@@ -1,6 +1,6 @@
 describe('Designer page', () => {
   beforeEach(() => {
-    cy.visit('processes');
+    cy.visit('/processes');
   })
   describe('should go to the scripts page', () => {
   });
