@@ -18,8 +18,8 @@
         "test": "cross-env NODE_ENV=test jest",
         "test-watch": "npm run test -- --watch --notify",
         "lint": "eslint --fix --ignore-path .eslintignore resources/**",
-        "e2e": "cypress run",
-        "e2e:open": "cypress open"
+        "e2e": "cypress run --project tests",
+        "e2e:open": "cypress open --project tests"
     },
     "devDependencies": {
         "@vue/test-utils": "^1.1.1",
