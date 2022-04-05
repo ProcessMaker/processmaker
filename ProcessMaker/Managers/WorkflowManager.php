@@ -173,7 +173,7 @@ class WorkflowManager
         Log::info('Dispatch a service task: ' . $serviceTask->getId());
         $instance = $token->processRequest;
         $process = $instance->process;
-        RunServiceTask::dispatch($process, $instance, $token, [])->onQueue('bpmn');
+        RunServiceTask::dispatch($process, $instance, $token, []);
     }
 
     /**

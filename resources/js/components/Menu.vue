@@ -10,6 +10,7 @@
               class="text-capitalize"
               :title="button.title"
               :key="indexButton"
+              tabindex="1"
               @click="executeFunction(button.action)"
               v-if="button.hide !== true"
             >

@@ -156,7 +156,6 @@ trait ExtendedPMQL
     private function parseDate($value) {
         try {
             $parsed = Carbon::parse($value, auth()->user()->timezone);
-            $parsed->setTimezone(config('app.timezone'));
             if ($parsed->isMidnight()) {
                 return $parsed->toDateString();
             } else {
