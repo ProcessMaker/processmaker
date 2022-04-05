@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0432e8d99a11c59192defafcbca11569",
+    "content-hash": "0991f0fd82662559f0d81f89d4834050",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -4721,47 +4721,6 @@
                 "source": "https://github.com/ProcessMaker/nayra/tree/v1.9.2"
             },
             "time": "2021-12-23T21:13:50+00:00"
-        },
-        {
-            "name": "processmaker/package-webentry",
-            "version": "2.3.7",
-            "dist": {
-                "type": "path",
-                "url": "/Users/nolan/src/pm-packages/ProcessMaker/package-webentry",
-                "reference": "037ce9000677fae216f2c6b3bb4053e339fe8139"
-            },
-            "require-dev": {
-                "processmaker/processmaker": "^4.1"
-            },
-            "type": "project",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "ProcessMaker\\Package\\WebEntry\\WebEntryServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "ProcessMaker\\Package\\WebEntry\\": "src",
-                    "TestHelpers\\": "tests/Helpers"
-                }
-            },
-            "authors": [
-                {
-                    "name": "Nolan Ehrstrom",
-                    "email": "nolan.ehrstrom@processmaker.com"
-                },
-                {
-                    "name": "Dante Loayza",
-                    "email": "dante.loayza@processmaker.com"
-                }
-            ],
-            "description": "Provide to end users the ability to complete tasks from outside the core system",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
         },
         {
             "name": "processmaker/pmql",
