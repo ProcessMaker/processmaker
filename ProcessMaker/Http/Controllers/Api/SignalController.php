@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use DOMXPath;
 use Illuminate\Support\Arr;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
@@ -21,17 +22,18 @@ class SignalController extends Controller
      *
      * @param Request $request
      *
-     * @return Response
+     * @return JsonResponse
      */
     public function index(Request $request)
     {
         $query = Process::query()->orderBy('updated_at', 'desc');
         $pmql = $request->input('pmql', '');
+
         if (!empty($pmql)) {
             try {
                 $query->pmql($pmql);
             } catch (SyntaxError $e) {
-                return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
+                return response()->json(['message' => __('Your PMQL contains invalid syntax.')], 400);
             }
         }
 
@@ -54,7 +56,7 @@ class SignalController extends Controller
                 if (!$item->signal_delete) {
                     $collections[] = 'collection_' . $item->id . '_delete';
                 }
-            };
+            }
         }
 
         //verify active signals
@@ -77,7 +79,7 @@ class SignalController extends Controller
         if ($filter) {
             $signals = $signals->filter(function ($signal, $key) use($filter) {
                 return mb_stripos($signal['name'], $filter) !== false
-                        || mb_stripos($signal['id'], $filter) !== false;
+                    || mb_stripos($signal['id'], $filter) !== false;
             });
         }
 
@@ -85,14 +87,14 @@ class SignalController extends Controller
         $orderDirection = $request->input('order_direction', 'ASC');
 
         $signals = strcasecmp($orderDirection, 'DESC') === 0
-                ? $signals->sortByDesc($orderBy)->values()
-                : $signals->sortBy($orderBy)->values();
+            ? $signals->sortByDesc($orderBy)->values()
+            : $signals->sortBy($orderBy)->values();
 
         $perPage = $request->input('per_page', 10);
         $lastPage = intval(floor($signals->count() / $perPage)) + 1;
         $page = $request->input('page', 1) > $lastPage
-                ? $lastPage
-                : $request->input('page', 1);
+            ? $lastPage
+            : $request->input('page', 1);
         $page = (int)$page;
 
         $meta = [
@@ -120,7 +122,38 @@ class SignalController extends Controller
                 $signals = collect([]);
             }
         }
+
         $meta['count'] = $signals->count();
+
+        // Check for "system_only" in query and if it's set and
+        // set to "true" (or 1), filter out all signals except
+        // for system signals
+        if ($request->has('system_only')) {
+
+            $system_only = $request->boolean('system_only');
+
+            $signals = $signals->reject(function ($signal) use ($system_only) {
+                if (!array_key_exists('processes', $signal)) {
+                    return true;
+                }
+
+                if (!is_array($processes = $signal['processes']) || blank($processes)) {
+                    return true;
+                }
+
+                foreach ($processes as $process) {
+                    if (array_key_exists('is_system', $process)) {
+                        if ($process['is_system'] === 1 ||
+                            $process['is_system'] === true) {
+
+                            return ! $system_only;
+                        }
+                    }
+                }
+
+                return $system_only;
+            });
+        }
 
         return response()->json([
             'data' => $signals->values(),
@@ -202,8 +235,8 @@ class SignalController extends Controller
         $signalProcesses = SignalManager::getSignalProcesses($signalId, true);
 
         $catches = array_reduce($signalProcesses, function ($carry, $process) {
-                return $carry + count($process['catches']);
-            },
+            return $carry + count($process['catches']);
+        },
             0
         );
 

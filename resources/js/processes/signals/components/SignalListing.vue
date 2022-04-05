@@ -78,7 +78,8 @@ export default {
   data() {
     return {
       orderBy: "id",
-
+      localLoadOnStart: true,
+      systemOnly: false,
       sortOrder: [
         {
           field: "id",
@@ -104,6 +105,15 @@ export default {
         },
       ],
     };
+  },
+  created() {
+    ProcessMaker.EventBus.$on('api-data-system-signals', (val) => {
+      this.localLoadOnStart = val;
+      this.systemOnly = true;
+      this.fetch();
+      this.apiDataLoading = false;
+      this.apiNoResults = false;
+    });
   },
   methods: {
     isDeletable(data) {
@@ -175,20 +185,22 @@ export default {
     },
     fetch() {
       this.loading = true;
+
+      let query = "signals?page=" +
+          this.page +
+          "&per_page=" +
+          this.perPage +
+          "&filter=" +
+          this.filter +
+          "&order_by=" +
+          this.orderBy +
+          "&order_direction=" +
+          this.orderDirection +
+          "&system_only=" + (this.systemOnly ? '1' : '0');
+
       // Load from our api client
       ProcessMaker.apiClient
-        .get(
-          "signals?page=" +
-            this.page +
-            "&per_page=" +
-            this.perPage +
-            "&filter=" +
-            this.filter +
-            "&order_by=" +
-            this.orderBy +
-            "&order_direction=" +
-            this.orderDirection
-        )
+        .get(query)
         .then((response) => {
           this.data = this.transform(response.data);
           this.loading = false;
