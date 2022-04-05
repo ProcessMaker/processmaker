@@ -532,7 +532,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
                 $user = null;
         }
         $user = $this->scalateToManagerIfEnabled($user, $activity, $token, $assignmentType);
-        return $this->checkAssignment($token->processRequest, $activity, $assignmentType, $escalateToManager, $user ? User::where('id', $user)->first() : null);
+        return $this->checkAssignment($token->getInstance(), $activity, $assignmentType, $escalateToManager, $user ? User::where('id', $user)->first() : null);
     }
 
     /**

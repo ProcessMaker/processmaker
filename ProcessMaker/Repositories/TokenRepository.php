@@ -79,15 +79,18 @@ class TokenRepository implements TokenRepositoryInterface
         if ($process->isNonPersistent()) {
             return;
         }
-        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $token->status = ActivityInterface::TOKEN_STATE_ACTIVE;
         $token->element_id = $activity->getId();
         $token->element_type = $this->getActivityType($activity);
         $token->element_name = $activity->getName();
         $token->process_id = $token->getInstance()->process->getKey();
         $token->process_request_id = $token->getInstance()->getKey();
-        $token->load('processRequest');
-        $user = $token->getInstance()->process->getNextUser($activity, $token);
+        $isScriptOrServiceTask = $activity instanceof ScriptTaskInterface || $activity instanceof ServiceTaskInterface;
+        if ($isScriptOrServiceTask) {
+            $user = null;
+        } else {
+            $user = $token->getInstance()->getProcess()->getOwnerDocument()->getModel()->getNextUser($activity, $token);
+        }
         $this->addUserToData($token->getInstance(), $user);
         $this->addRequestToData($token->getInstance());
         $token->user_id = $user ? $user->getKey() : null;
@@ -103,7 +106,7 @@ class TokenRepository implements TokenRepositoryInterface
             }
         }
 
-        $selfServiceTasks = $token->processRequest->processVersion->self_service_tasks;        
+        $selfServiceTasks = $token->getInstance()->processVersion->self_service_tasks;
         $token->self_service_groups = $selfServiceTasks && isset($selfServiceTasks[$activity->getId()]) ? $selfServiceTasks[$activity->getId()] : [];
         //Default 3 days of due date
         $due = $activity->getProperty('dueIn', '72');
@@ -116,6 +119,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->setId($token->getKey());
         $request = $token->getInstance();
         $request->notifyProcessUpdated('ACTIVITY_ACTIVATED');
+        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
     }
 
     /**
@@ -139,7 +143,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->element_id = $startEvent->getId();
         $token->element_type = $startEvent instanceof StartEventInterface ? 'startEvent' : 'task';
         $token->element_name = $startEvent->getName();
-        $token->process_id = $token->getInstance()->process->getKey();
+        $token->process_id = $token->getInstance()->getProcess()->getOwnerDocument()->getModel()->getKey();
         $token->process_request_id = $token->getInstance()->getKey();
         $token->user_id = empty(Auth::user()) ? null : Auth::user()->id;
 
@@ -251,12 +255,11 @@ class TokenRepository implements TokenRepositoryInterface
         if ($process->isNonPersistent()) {
             return;
         }
-        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $token->status = $token->getStatus();
         $token->element_id = $intermediateCatchEvent->getId();
         $token->element_type = 'event';
         $token->element_name = $intermediateCatchEvent->getName();
-        $token->process_id = $token->getInstance()->process->getKey();
+        $token->process_id = $token->getInstance()->process_id;
         $token->process_request_id = $token->getInstance()->getKey();
         $token->user_id = null;
         $token->due_at = null;
@@ -266,6 +269,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->saveOrFail();
         $token->setId($token->getKey());
         $token->getInstance()->updateCatchEvents();
+        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
     }
 
     public function persistCatchEventTokenConsumed(CatchEventInterface $intermediateCatchEvent, TokenInterface $token)
@@ -295,7 +299,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->element_id = $intermediateCatchEvent->getId();
         $token->element_type = 'event';
         $token->element_name = $intermediateCatchEvent->getName();
-        $token->process_id = $token->getInstance()->process->getKey();
+        $token->process_id = $token->getInstance()->process_id;
         $token->process_request_id = $token->getInstance()->getKey();
         $token->user_id = null;
         $token->due_at = null;
@@ -341,7 +345,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->element_id = $gateway->getId();
         $token->element_type = 'gateway';
         $token->element_name = $gateway->getName();
-        $token->process_id = $token->getInstance()->process->getKey();
+        $token->process_id = $token->getInstance()->process_id;
         $token->process_request_id = $token->getInstance()->getKey();
         $token->user_id = null;
         $token->due_at = null;
@@ -361,7 +365,7 @@ class TokenRepository implements TokenRepositoryInterface
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $token->status = 'CLOSED';
         $token->element_id = $gateway->getId();
-        $token->process_id = $token->getInstance()->process->getKey();
+        $token->process_id = $token->getInstance()->process_id;
         $token->process_request_id = $token->getInstance()->getKey();
         $token->completed_at = Carbon::now();
         $token->updateTokenProperties();
@@ -390,7 +394,7 @@ class TokenRepository implements TokenRepositoryInterface
             $token->element_id = $event->getId();
             $token->element_type = 'end_event';
             $token->element_name = $event->getName();
-            $token->process_id = $token->getInstance()->process->getKey();
+            $token->process_id = $token->getInstance()->process_id;
             $token->process_request_id = $token->getInstance()->getKey();
             $token->user_id = null;
             $token->due_at = null;
@@ -434,7 +438,6 @@ class TokenRepository implements TokenRepositoryInterface
             unset($userData['remember_token']);
             $instance->getDataStore()->putData('_user', $userData);
         }
-        $this->instanceRepository->persistInstanceUpdated($instance);
     }
 
     /**
@@ -457,7 +460,6 @@ class TokenRepository implements TokenRepositoryInterface
     {
         if (!$instance->getDataStore()->getData('_request')) {
             $instance->getDataStore()->putData('_request', $instance->attributesToArray());
-            $this->instanceRepository->persistInstanceUpdated($instance);
         }
     }
 

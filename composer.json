@@ -1,6 +1,6 @@
 {
   "name": "processmaker/processmaker",
-  "version": "4.2.29-RC2",
+  "version": "4.2.30-RC1",
   "description": "BPM PHP Software",
   "keywords": [
     "php bpm processmaker"
@@ -12,6 +12,7 @@
   "require": {
     "php": ">=7.2.0",
     "babenkoivan/elastic-scout-driver": "^1.2",
+    "composer/semver": "^3.3",
     "darkaonline/l5-swagger": "6.0.*",
     "doctrine/dbal": "^2.9",
     "fideloper/proxy": "^4.0",
@@ -87,7 +88,7 @@
       ]
     },
     "processmaker": {
-      "build": "9a02a430",
+      "build": "5ab4bb58",
       "enterprise": {
         "connector-docusign": "0.1.5-RC",
         "connector-pdf-print": "1.7.4-RC",
@@ -131,8 +132,8 @@
   },
   "repositories": [
     {
-        "type": "vcs",
-        "url": "https://github.com/ProcessMaker/SocialiteProviders"
+      "type": "vcs",
+      "url": "https://github.com/ProcessMaker/SocialiteProviders"
     }
   ],
   "config": {

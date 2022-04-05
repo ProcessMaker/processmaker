@@ -22,6 +22,9 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
     public $tokenId;
     public $data;
 
+    public $tries = 3;
+    public $retryAfter = 60;
+
     /**
      * Create a new job instance.
      *
@@ -32,7 +35,12 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
      */
     public function __construct(Definitions $definitions, ProcessRequest $instance, ProcessRequestToken $token, array $data)
     {
-        $this->onQueue('bpmn');
+        if ($token->getOwner()) {
+            $pmConfig = json_decode($token->getOwnerElement()->getProperty('config', '{}'), true);
+        } else {
+            $pmConfig = [];
+        }
+        $this->onQueue($pmConfig['queue'] ?? 'bpmn');
         $this->definitionsId = $definitions->getKey();
         $this->instanceId = $instance->getKey();
         $this->tokenId = $token->getKey();
