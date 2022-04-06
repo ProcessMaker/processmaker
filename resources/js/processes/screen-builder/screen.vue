@@ -110,7 +110,6 @@
 
                 <b-collapse v-model="showDataPreview" id="showDataPreview" class="mt-2">
                   <monaco-editor
-                    ref="dataPreviewEditor"
                     :options="monacoOptions"
                     class="editor"
                     v-model="previewDataStringyfy"
@@ -478,7 +477,6 @@ export default {
     },
   },
   mounted() {
-    this.$refs.dataPreviewEditor.updateOptions({readOnly: true});
     this.countElements = debounce(this.countElements, 2000);
     this.mountWhenTranslationAvailable();
     this.countElements();
