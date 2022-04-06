@@ -1,4 +1,9 @@
 {
   "baseUrl": "http://localhost:8080",
-  "video": false
+  "video": false,
+  "integrationFolder": "./",
+  "testFiles": [
+    "./cypress/integration/**/*.spec.*",
+    "./vendor/processmaker/**/cypress/integration/**/*.spec.*"
+  ]
 }
