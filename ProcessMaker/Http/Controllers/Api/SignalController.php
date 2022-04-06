@@ -37,7 +37,23 @@ class SignalController extends Controller
             }
         }
 
-        $signals = SignalManager::getAllSignals(true, $query->get()->all());
+        $processes = $query->get()->all();
+
+        $exclude_custom = $request->has('exclude_custom_signals')
+            ? $request->boolean('exclude_custom_signals')
+            : false;
+
+        $exclude_system = $request->has('exclude_system_signals')
+            ? $request->boolean('exclude_system_signals')
+            : false;
+
+        if ($exclude_custom && !$exclude_system) {
+            $signals = SignalManager::getSystemSignals($processes);
+        } else if (!$exclude_custom && $exclude_system) {
+            $signals = SignalManager::getNonSystemSignals($processes);
+        } else {
+            $signals = SignalManager::getAllSignals(true, $processes);
+        }
 
         $collections = [];
         $collectionsEnabled = [];
@@ -124,36 +140,6 @@ class SignalController extends Controller
         }
 
         $meta['count'] = $signals->count();
-
-        // Check for "system_only" in query and if it's set and
-        // set to "true" (or 1), filter out all signals except
-        // for system signals
-        if ($request->has('system_only')) {
-
-            $system_only = $request->boolean('system_only');
-
-            $signals = $signals->reject(function ($signal) use ($system_only) {
-                if (!array_key_exists('processes', $signal)) {
-                    return true;
-                }
-
-                if (!is_array($processes = $signal['processes']) || blank($processes)) {
-                    return true;
-                }
-
-                foreach ($processes as $process) {
-                    if (array_key_exists('is_system', $process)) {
-                        if ($process['is_system'] === 1 ||
-                            $process['is_system'] === true) {
-
-                            return ! $system_only;
-                        }
-                    }
-                }
-
-                return $system_only;
-            });
-        }
 
         return response()->json([
             'data' => $signals->values(),

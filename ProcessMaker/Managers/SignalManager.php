@@ -12,6 +12,69 @@ class SignalManager
     const PROCESS_NAME = 'global_signals';
 
     /**
+     * Check if a provided signal is system-level
+     *
+     * @param  array  $signal
+     *
+     * @return bool
+     */
+    private static function isSystemSignal(array $signal)
+    {
+        if (!array_key_exists('processes', $signal)) {
+            return false;
+        }
+
+        if (!is_array($signal['processes'])) {
+            return false;
+        }
+
+        foreach ($signal['processes'] as $process) {
+
+            if (!array_key_exists('catches', $process)) {
+                continue;
+            }
+
+            if (!array_key_exists('is_system', $process)) {
+                continue;
+            }
+
+            if (count($process['catches']) > 0 && $process['is_system']) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns a collection of all non-system signals
+     *
+     * @param $processes
+     *
+     * @return mixed
+     */
+    public static function getNonSystemSignals($processes = null)
+    {
+        return self::getAllSignals(true, $processes)->reject(function ($signal) {
+            return self::isSystemSignal($signal);
+        });
+    }
+
+    /**
+     * Returns a collection of all system signals
+     *
+     * @param $processes
+     *
+     * @return mixed
+     */
+    public static function getSystemSignals($processes = null)
+    {
+        return self::getAllSignals(true, $processes)->reject(function ($signal) {
+            return ! self::isSystemSignal($signal);
+        });
+    }
+
+    /**
      * Return the list of all signals in the system
      *
      * @param false $includeSystemProcesses, true if the signals that will be included can pertain to system processes

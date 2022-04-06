@@ -70,6 +70,7 @@
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import { createUniqIdsMixin } from "vue-uniq-ids";
+import _ from 'lodash';
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
@@ -79,7 +80,8 @@ export default {
     return {
       orderBy: "id",
       localLoadOnStart: true,
-      systemOnly: false,
+      showSystemSignals: true,
+      showCustomSignals: true,
       sortOrder: [
         {
           field: "id",
@@ -107,9 +109,19 @@ export default {
     };
   },
   created() {
+    ProcessMaker.EventBus.$on('api-data-custom-signals', (val) => {
+      this.localLoadOnStart = val;
+      this.showSystemSignals = false;
+      this.showCustomSignals = true;
+      this.fetch();
+      this.apiDataLoading = false;
+      this.apiNoResults = false;
+    });
+
     ProcessMaker.EventBus.$on('api-data-system-signals', (val) => {
       this.localLoadOnStart = val;
-      this.systemOnly = true;
+      this.showSystemSignals = true;
+      this.showCustomSignals = false;
       this.fetch();
       this.apiDataLoading = false;
       this.apiNoResults = false;
@@ -120,14 +132,17 @@ export default {
       let catches = data.processes.reduce((carry, process) => carry + process.catches.length, 0);
       return catches === 0;
     },
-    isEditable(data) {
-      let editable = true;
-      data.processes.forEach(process => {
+    isSystemSignal(signal) {
+      for (let process of signal.processes) {
         if (process.catches.length && process.is_system) {
-          editable = false;
+          return true;
         }
-      });
-      return editable;
+      }
+
+      return false;
+    },
+    isEditable(data) {
+      return ! this.isSystemSignal(data);
     },
     getDeleteButtonTitle(rowData) {
         if (this.isCollection(rowData)) {
@@ -195,8 +210,15 @@ export default {
           "&order_by=" +
           this.orderBy +
           "&order_direction=" +
-          this.orderDirection +
-          "&system_only=" + (this.systemOnly ? '1' : '0');
+          this.orderDirection;
+
+      if (!this.showCustomSignals) {
+        query = query + "&exclude_custom_signals=1";
+      }
+
+      if (!this.showSystemSignals) {
+        query = query + "&exclude_system_signals=1";
+      }
 
       // Load from our api client
       ProcessMaker.apiClient
