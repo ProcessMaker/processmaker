@@ -137,6 +137,7 @@ import SettingText from './SettingText';
 import SettingTextArea from './SettingTextArea';
 import SettingsImport from './SettingsImport';
 import SettingsExport from './SettingsExport';
+import SettingsRange from './SettingsRange';
 import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -152,7 +153,8 @@ export default {
     SettingText,
     SettingTextArea,
     SettingsImport,
-    SettingsExport
+    SettingsExport,
+    SettingsRange
   },
   mixins:[uniqIdsMixin],
   props: ['group'],
@@ -251,6 +253,8 @@ export default {
           return window['__setting_component_' + setting.ui.component];
         case 'file':
           return 'setting-file';
+        case 'range':
+          return 'settings-range';
         default:
           return 'setting-text-area';
       }
