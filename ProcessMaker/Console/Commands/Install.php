@@ -292,12 +292,14 @@ class Install extends Command
 
             $this->call('vendor:publish', ['--tag'=>'telescope-assets', '--force' =>true]);
 
-            $this->info(__("Installing the :lang script executor", ['lang' => 'php']));
-            \Artisan::call('docker-executor-php:install');
-            $this->info(__("Installing the :lang script executor", ['lang' => 'lua']));
-            \Artisan::call('docker-executor-lua:install');
-            $this->info(__("Installing the :lang script executor", ['lang' => 'node']));
-            \Artisan::call('docker-executor-node:install');
+            if (!env('SKIP_EXECUTORS')) {
+                $this->info(__("Installing the :lang script executor", ['lang' => 'php']));
+                \Artisan::call('docker-executor-php:install');
+                $this->info(__("Installing the :lang script executor", ['lang' => 'lua']));
+                \Artisan::call('docker-executor-lua:install');
+                $this->info(__("Installing the :lang script executor", ['lang' => 'node']));
+                \Artisan::call('docker-executor-node:install');
+            }
 
             $this->info(__("ProcessMaker installation is complete. Please visit the URL in your browser to continue."));
             $this->info(__("Installer completed. Consult ProcessMaker documentation on how to configure email, jobs and notifications."));
