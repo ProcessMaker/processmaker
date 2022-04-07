@@ -1,6 +1,6 @@
 {
   "baseUrl": "http://localhost:8080",
-  "video": false,
+  "video": true,
   "integrationFolder": "./",
   "projectId": "53fcaa",
   "defaultCommandTimeout": 10000,
