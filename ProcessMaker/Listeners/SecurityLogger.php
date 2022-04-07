@@ -73,19 +73,19 @@ class SecurityLogger
            ]
         ];
         
-        if ($parsed->browser->name) {
+        if (isset($parsed->browser->name)) {
             $object->browser->name = $parsed->browser->name;
         }
         
-        if ($parsed->browser->version) {
+        if (isset($parsed->browser->version)) {
             $object->browser->version = $parsed->browser->version->toString();
         }
         
-        if ($parsed->os->name) {
+        if (isset($parsed->os->name)) {
             $object->os->name = $parsed->os->name;
         }
         
-        if ($parsed->os->version) {
+        if (isset($parsed->os->version)) {
             $object->os->version = $parsed->os->version->toString();
         }
         
