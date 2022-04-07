@@ -749,8 +749,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public function updateCatchEvents()
     {
         $signalEvents = [];
-        foreach ($this->tokens as $token) {
-            $element = $token->getDefinition(true, $this->tokens->toArray());
+        foreach ($this->getTokens() as $token) {
+            $element = $token->getOwnerElement();
             if ($element instanceof IntermediateCatchEventInterface) {
                 foreach ($element->getEventDefinitions() as $eventDefinition) {
                     if ($eventDefinition instanceof SignalEventDefinitionInterface) {
@@ -777,7 +777,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
             }
         }
         $this->signal_events = $signalEvents;
-        $this->save();
     }
 
     /**
@@ -788,7 +787,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public function mergeLatestStoredData()
     {
         $store = $this->getDataStore();
-        $latest = ProcessRequest::find($this->getId());
+        $latest = ProcessRequest::select('data')->find($this->getId());
         $this->data = $store->updateArray($latest->data);
         return $this->data;
     }
