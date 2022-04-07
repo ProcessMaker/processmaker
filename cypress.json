@@ -1,0 +1,10 @@
+{
+  "baseUrl": "http://localhost:8080",
+  "video": false,
+  "integrationFolder": "./",
+	"projectId": "53fcaa",
+  "testFiles": [
+    "./cypress/integration/**/*.spec.*",
+    "./vendor/processmaker/**/cypress/integration/**/*.spec.*"
+  ]
+}
