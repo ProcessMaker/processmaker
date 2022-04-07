@@ -2,7 +2,8 @@
   "baseUrl": "http://localhost:8080",
   "video": false,
   "integrationFolder": "./",
-	"projectId": "53fcaa",
+  "projectId": "53fcaa",
+  "defaultCommandTimeout": 10000,
   "testFiles": [
     "./cypress/integration/**/*.spec.*",
     "./vendor/processmaker/**/cypress/integration/**/*.spec.*"
