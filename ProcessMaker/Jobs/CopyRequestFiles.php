@@ -2,12 +2,13 @@
 
 namespace ProcessMaker\Jobs;
 
+use Illuminate\Support\Arr;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
+use ProcessMaker\Models\ProcessRequest;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use ProcessMaker\Models\ProcessRequest;
 
 class CopyRequestFiles implements ShouldQueue
 {
@@ -47,6 +48,13 @@ class CopyRequestFiles implements ShouldQueue
             $newFile = $fileToCopy->copy($this->to);
             $newFile->setCustomProperty('createdBy', $originalCreatedBy);
             $newFile->save();
+
+            //update the file with new ID
+            $processRequest = ProcessRequest::find($newFile->model_id);
+            $data = $processRequest->data;
+            Arr::set($data, $fileToCopy->getCustomProperty('data_name'), $newFile->id);
+            $processRequest->data = $data;
+            $processRequest->save();
         }
     }
 }
