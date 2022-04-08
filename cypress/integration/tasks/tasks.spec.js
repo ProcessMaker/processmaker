@@ -3,7 +3,7 @@ describe('Tasks page', () => {
     cy.visit("/tasks");
   });
 
-  describe("Task Table", () => {
+  xdescribe("Task Table", () => {
     it("should task table be visible", function () {
       cy.get(".table-card")
         .should("be.visible");
