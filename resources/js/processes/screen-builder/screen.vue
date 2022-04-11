@@ -402,7 +402,6 @@ export default {
       this.previewData = {};
     },
     previewInput() {
-      console.log('previewInput');
       if (this.previewInputValid) {
         // Copy data over
         this.previewData = JSON.parse(this.previewInput);
