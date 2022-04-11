@@ -3,7 +3,7 @@ describe('Tasks page', () => {
     cy.visit("/tasks");
   });
 
-  xdescribe("Task Table", () => {
+  describe("Task Table", () => {
     beforeEach(() => {
       cy.title().should("include", "To Do Tasks");
     });
@@ -21,7 +21,7 @@ describe('Tasks page', () => {
 
   describe('Completed tab', () => {
     it("should go to the completed tab", function () {
-      cy.get('[data-cy="completed"]').click();
+      cy.get('[data-cy="Completed"]').click();
       cy.title().should("include", "Completed Tasks");
     });
   })
