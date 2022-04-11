@@ -1,5 +1,5 @@
 <template>
-  <div id="tasksPage" class="data-table">
+  <div class="data-table">
     <data-loading
       :for=/tasks\?page|results\?page/
       v-show="shouldShowLoader"
