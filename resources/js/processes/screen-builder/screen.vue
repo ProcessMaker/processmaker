@@ -402,6 +402,7 @@ export default {
       this.previewData = {};
     },
     previewInput() {
+      console.log('previewInput');
       if (this.previewInputValid) {
         // Copy data over
         this.previewData = JSON.parse(this.previewInput);
@@ -417,6 +418,7 @@ export default {
     previewDataStringyfy: {
       get() {
         if (JSON.stringify(this.previewData) !== JSON.stringify(this.previewDataSaved)) {
+          Object.assign(this.previewDataSaved, this.previewData);
           this.formatMonaco();
         }
         return JSON.stringify(this.previewData);
