@@ -149,6 +149,7 @@ return [
                 'processes' => 16,
                 'tries' => 1,
                 'timeout' => 3600,
+                'sleep' => intval(env('BPMN_QUEUE_INTERVAL', 3000))*0.001,
             ],
             'supervisor-1' => [
                 'connection' => 'redis',
@@ -168,6 +169,7 @@ return [
                 'processes' => 8,
                 'tries' => 1,
                 'timeout' => 3600,
+                'sleep' => intval(env('BPMN_QUEUE_INTERVAL', 3000))*0.001,
             ],
             'supervisor-1' => [
                 'connection' => 'redis',
@@ -187,6 +189,7 @@ return [
                 'processes' => 8,
                 'tries' => 1,
                 'timeout' => 3600,
+                'sleep' => intval(env('BPMN_QUEUE_INTERVAL', 3000))*0.001,
             ],
             'supervisor-1' => [
                 'connection' => 'redis',
