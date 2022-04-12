@@ -80,11 +80,16 @@
       <div class="text-right p-2">
         <b-button
           v-for="(btn,index) in buttons"
+          :ref="formatGroupName(btn.group)"
           :key="`btn-${index}`"
           class="ml-2"
           v-bind="btn.ui.props"
           @click="handler(btn)"
-          >{{btn.name}}</b-button>
+          :disabled="false"
+          >
+          <b-spinner small ref="b-spinner" :hidden="true"></b-spinner>
+          {{btn.name}}
+          </b-button>
       </div>
       <div v-if="totalRows" class="settings-table-footer text-secondary d-flex align-items-center p-2 w-100">
         <div class="flex-grow-1">
@@ -374,6 +379,9 @@ export default {
     refresh() {
       this.$refs.table.refresh();
       this.$emit('refresh');
+    },
+    formatGroupName(name)  {
+      return name.toLowerCase().replace(" ", '-');
     }
   }
 };
