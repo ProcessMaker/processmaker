@@ -30,5 +30,6 @@ describe("Tasks page", () => {
       cy.title()
         .should("include", "Completed");
     });
+
   });
 });
