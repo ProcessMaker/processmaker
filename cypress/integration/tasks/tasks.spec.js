@@ -24,13 +24,11 @@ describe("Tasks page", () => {
   });
 
   describe("Completed tab", () => {
-    beforeEach(() => {
-      cy.title()
-        .should("include", "Completed");
-    });
     it("should go to the completed tab", function () {
       cy.get("[data-cy='Completed']")
         .click();
+      cy.title()
+        .should("include", "Completed");
     });
   });
 });
