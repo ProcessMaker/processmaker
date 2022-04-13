@@ -2,11 +2,15 @@
 
 namespace ProcessMaker\ScriptRunners;
 use Illuminate\Support\Str;
+use Mustache_Engine;
 
 class MockRunner
 {
-    public function __construct($_executor)
+    private $executor;
+
+    public function __construct($executor)
     {
+        $this->executor = $executor;
     }
 
     public function run($code, $data, $config, $timeout, $user) {
@@ -18,6 +22,11 @@ class MockRunner
             $res = eval(str_replace('<?php', '', $code));
         } else {
             $res = ['response' => 1];
+            $language = $this->executor->language;
+            $runnerConfig = config("script-runners.{$language}");
+            if ($runnerConfig && isset($runnerConfig['mock_response'])) {
+                $res = $runnerConfig['mock_response']($code, $data, $config, $timeout, $user);
+            }
         }
         return ['output' => $res];
     }
