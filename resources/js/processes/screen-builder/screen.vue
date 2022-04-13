@@ -623,10 +623,13 @@ export default {
       this.previewData = this.previewInputValid ? JSON.parse(this.previewInput) : {};
       this.rendererKey++;
       if (mode == 'preview') {
+        this.$dataProvider.flushScreenCache();
         this.preview.config = cloneDeep(this.config);
         this.preview.computed = cloneDeep(this.computed);
         this.preview.customCSS = cloneDeep(this.customCSS);
         this.preview.watchers = cloneDeep(this.watchers);
+      } else {
+        this.$refs.builder.refreshContent();
       }
     },
     onUpdate(data) {
