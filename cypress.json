@@ -3,7 +3,7 @@
   "video": true,
   "integrationFolder": "./",
   "projectId": "53fcaa",
-  "defaultCommandTimeout": 10000,
+  "defaultCommandTimeout": 20000,
   "testFiles": [
     "./cypress/integration/**/*.spec.*",
     "./vendor/processmaker/**/cypress/integration/**/*.spec.*"
