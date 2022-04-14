@@ -14,7 +14,7 @@ describe('Requests page', () => {
         .should("be.visible");
     });
   });
-  describe("In Progress Request page", function () {
+  xdescribe("In Progress Request page", function () {
     it("should be in the Request/In Progress page", function () {
       cy.get("[data-cy='In Progress'")
         .click();
@@ -22,7 +22,7 @@ describe('Requests page', () => {
         .should("include", "Requests In Progress");
     });
   });
-  describe("Completed page", function () {
+  xdescribe("Completed page", function () {
     it("should be in the Request/Completed page", function () {
       cy.get("[data-cy='Completed'")
         .click();
@@ -30,7 +30,7 @@ describe('Requests page', () => {
         .should("include", "Completed Requests");
     });
   });
-  describe("All Requests page", function () {
+  xdescribe("All Requests page", function () {
     it("should be in the Request/All Requests page", function () {
       cy.get("[data-cy='All Requests'")
         .click();
