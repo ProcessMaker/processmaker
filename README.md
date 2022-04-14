@@ -54,9 +54,9 @@ All PRs for PM4 and it's packages should be accompanied by a test.
 Ideally both a PHPUnit test and a Cypress end-to-end test, but should have at least one.
 
 ### Running tests in PRs
-When ever you open or update a PR, an instance is created and the entire tests suite is run with all packages installed.
+When ever you open or update a PR, an instance is created and the entire test suite is run with all packages installed.
 
-If your PR requires branches in other packges or core, you can specify the branch anywhere in the PR body with this form:
+If your PR requires branches in other packges or core, you can specify the branch anywhere in the PR body with this tag:
 
 `ci:< package name >:< branch name>`
 
@@ -68,7 +68,9 @@ This works in package PRs as well. To specify a branch in core, use:
 
 `ci:processmaker:my-branch-in-core`
 
-A full QA environment will be built with the branches you specify and a link will be posted in the PR comments when it's ready.
+If no branches are specified in the PR body, the develop branch of each package will be used.
+
+A full working instance will be built and a link will be posted in the PR comments when it's ready.
 
 Note that this currently takes 10 to 30 minutes before the instance is ready.
 
