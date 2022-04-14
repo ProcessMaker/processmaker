@@ -2,7 +2,7 @@
     <div class="jumbotron jumbotron-fluid">
         <div class="container text-center">
 
-            <div v-if="noResults">
+            <div v-if="noResults" data-cy="no-results-message">
                 <div class="icon-container">
                     <div v-if="emptyIconType() === 'beach'">
                         <i class="fas fa-umbrella-beach"></i>
@@ -14,7 +14,7 @@
                 <h3 class="display-6">{{ emptyText() }}</h3>
                 <p class="lead">{{ emptyDescText() }}</p>
             </div>
-            <div v-else-if="error">
+            <div v-else-if="error" data-cy="error-message">
                 <div class="icon-container">
                     <i class="fas fa-exclamation-triangle"></i>
                 </div>

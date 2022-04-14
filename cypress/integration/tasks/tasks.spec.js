@@ -1,21 +1,35 @@
-describe('Tasks page', () => {
+describe("Tasks page", () => {
   beforeEach(() => {
     cy.visit("/tasks");
   });
 
   describe("Task Table", () => {
-    it("should task table be visible", function () {
-      cy.get(".table-card")
+    beforeEach(() => {
+      cy.title()
+        .should("include", "To Do Tasks");
+    });
+    it("task table shouldn't be visible", function () {
+      cy.get("[data-cy='no-results-message']")
+        .should("be.visible")
+        .contains("Congratulations");
+      cy.get("[data-cy='tasks-table']")
+        .should("not.be.visible");
+    });
+    xit("task table should be visible", function () {
+      cy.get("[data-cy='no-results-message']")
+        .should("not.be.visible");
+      cy.get("[data-cy='tasks-table']")
         .should("be.visible");
-      cy.title().should("include", "To Do Tasks");
     });
   });
 
-  // TODO add data-cy to nav bar
-  xdescribe('Completed tab', () => {
+  describe("Completed tab", () => {
     it("should go to the completed tab", function () {
-      cy.get('[aria-label]="completed"').click();
-      cy.title().should("include", "Completed Tasks");
+      cy.get("[data-cy='Completed']")
+        .click();
+      cy.title()
+        .should("include", "Completed");
     });
-  })
+
+  });
 });
