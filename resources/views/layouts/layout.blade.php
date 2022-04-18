@@ -69,7 +69,12 @@
             @endif
         @endforeach
     @endisset
-
+    
+    @if (config('global_header'))
+        <!-- Start Global Header -->
+        {!! config('global_header') !!} 
+        <!-- End Global Header -->
+    @endif
 </head>
 
 <body>
