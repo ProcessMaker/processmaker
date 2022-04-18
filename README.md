@@ -53,6 +53,29 @@ https://processmaker.gitbook.io/processmaker/
 All PRs for PM4 and it's packages should be accompanied by a test.
 Ideally both a PHPUnit test and a Cypress end-to-end test, but should have at least one.
 
+### Running tests in PRs
+When ever you open or update a PR, an instance is created and the entire test suite is run with all packages installed.
+
+If your PR requires branches in other packges or core, you can specify the branch anywhere in the PR body with this tag:
+
+`ci:< package name >:< branch name>`
+
+For example, if you open a PR in core that requires a bugfix branch in connector-send-email, put this in your core PR body text:
+
+`ci:connector-send-email:bugfix/FOUR-5059`
+
+This works in package PRs as well. To specify a branch in core, use:
+
+`ci:processmaker:my-branch-in-core`
+
+If no branches are specified in the PR body, the develop branch of each package will be used.
+
+A full working instance will be built and a link will be posted in the PR comments when it's ready.
+
+Note that this currently takes 10 to 30 minutes before the instance is ready.
+
+The instance will stay active until the PR is merged or 1 week has passed, which ever happens first.
+
 ### PHPUnit Tests
 We use PHPUnit for both integration and unit testing. Most of our PHPUnit tests are integration tests that use the framework and database.
 
