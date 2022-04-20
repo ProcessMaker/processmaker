@@ -381,7 +381,7 @@ export default {
       this.$emit('refresh');
     },
     formatGroupName(name)  {
-      return name.toLowerCase().replace(" ", '-');
+      return name.toLowerCase().replaceAll(" ", '-');
     }
   }
 };
