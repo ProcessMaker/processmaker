@@ -2,7 +2,7 @@
 /**
  * Class alias map to ensures backwards compatibility.
  */
-return array(
+return [
     'actionsByEmailCoreClass' => ActionsByEmailCoreClass::class,
     'AppDocumentDrive' => AppDocumentDrive::class,
     'ApplicationAPP_DATAUnserializeException' => ApplicationAppDataUnserializeException::class,
@@ -145,4 +145,4 @@ return array(
     'XmlForm_Field_XmlMenu' => XmlFormFieldXmlMenu::class,
     'XmlForm_Field_YesNo' => XmlFormFieldYesNo::class,
     'XMLResult' => XMLResult::class,
-);
+];

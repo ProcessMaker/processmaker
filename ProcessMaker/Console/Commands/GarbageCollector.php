@@ -195,7 +195,7 @@ class GarbageCollector extends Command
 
     private function getTaskList()
     {
-        $tasks = ProcessRequestToken::whereIn('status', array('FAILING', 'ACTIVE'))->whereIn('element_type', ['scriptTask', 'serviceTask']);
+        $tasks = ProcessRequestToken::whereIn('status', ['FAILING', 'ACTIVE'])->whereIn('element_type', ['scriptTask', 'serviceTask']);
         return $tasks->get();
     }
 

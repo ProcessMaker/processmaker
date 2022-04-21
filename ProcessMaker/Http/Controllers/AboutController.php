@@ -32,7 +32,7 @@ class AboutController extends Controller
             $indexedSearch = false;
         }
 
-        $packages = array();
+        $packages = [];
 
         foreach($vendor_directories as $directory) {
             $content = json_decode(file_get_contents($vendor_path . '/' . basename($directory) . '/composer.json'));

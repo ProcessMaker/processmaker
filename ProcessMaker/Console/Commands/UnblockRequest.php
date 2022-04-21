@@ -90,7 +90,7 @@ class UnblockRequest extends Command
      * @return mixed
      */
     private function getOpenTasks($requestId) {
-        return ProcessRequestToken::whereIn('status', array('FAILING', 'ACTIVE', 'ERROR'))
+        return ProcessRequestToken::whereIn('status', ['FAILING', 'ACTIVE', 'ERROR'])
             ->whereIn('element_type', ['scriptTask', 'serviceTask', 'task'])
             ->where('process_request_id', $requestId)
             ->get()
