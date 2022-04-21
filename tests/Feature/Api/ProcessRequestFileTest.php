@@ -2,21 +2,21 @@
 
 namespace Tests\Feature\Api;
 
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use ProcessMaker\Models\ProcessRequest;
-use Illuminate\Support\Facades\Storage;
-use Tests\Feature\Shared\RequestHelper;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Models\Media;
-use ProcessMaker\Models\User;
+use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\Testing\File;
-
+use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Models\Media;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\User;
+use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class ProcessRequestFileTest extends TestCase
 {
     use RequestHelper;
+
     /**
      * test process request files index
      */
@@ -34,16 +34,13 @@ class ProcessRequestFileTest extends TestCase
             ->withCustomProperties(['data_name' => 'test'])
             ->toMediaCollection();
 
-        $response = $this->apiCall('GET', '/requests/' . $process_request->id . '/files');
+        $response = $this->apiCall('GET', '/requests/'.$process_request->id.'/files');
         $response->assertStatus(200);
         $this->assertEquals($response->json()['data'][0]['file_name'], 'photo.jpg');
     }
 
-
     /**
      * Test file upload associated with a process request id
-     *
-     *
      */
     public function testFileUploadWithProcessRequestID()
     {
@@ -51,13 +48,12 @@ class ProcessRequestFileTest extends TestCase
         $process_request = factory(ProcessRequest::class)->create();
 
         //post photo id with the request
-        $response = $this->apiCall('POST', '/requests/' . $process_request->id . '/files', [
+        $response = $this->apiCall('POST', '/requests/'.$process_request->id.'/files', [
             'file' => File::image('photo.jpg'),
-            'data_name' => 'photo'
+            'data_name' => 'photo',
         ]);
         $response->assertStatus(200);
         $this->assertEquals($process_request->getMedia()[0]->file_name, 'photo.jpg');
-
     }
 
     /**
@@ -78,7 +74,7 @@ class ProcessRequestFileTest extends TestCase
         $process_request->getMedia()[0]->delete();
         $process_request->refresh();
         //confirm the file was deleted
-        $this->assertEquals($process_request->getMedia()->count(),0);
+        $this->assertEquals($process_request->getMedia()->count(), 0);
     }
 
     /**
@@ -103,7 +99,7 @@ class ProcessRequestFileTest extends TestCase
             ->withCustomProperties(['data_name' => 'test'])
             ->toMediaCollection();
 
-        $response = $this->apiCall('GET', '/requests/' . $process_request->id . '/files/' . $file2->id);
+        $response = $this->apiCall('GET', '/requests/'.$process_request->id.'/files/'.$file2->id);
         $response->assertStatus(200);
         $this->assertEquals(
             'attachment; filename=photo2.jpg',

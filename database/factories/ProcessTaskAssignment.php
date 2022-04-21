@@ -10,7 +10,6 @@ use ProcessMaker\Models\User;
  * Model factory for a Process Task Assignment
  */
 $factory->define(ProcessTaskAssignment::class, function (Faker $faker) {
-
     $model = $faker->randomElement([
         User::class,
         Group::class,
@@ -24,7 +23,7 @@ $factory->define(ProcessTaskAssignment::class, function (Faker $faker) {
         'assignment_id' => function () use ($model) {
             return factory($model)->create()->getKey();
         },
-        'assignment_type' => $model
+        'assignment_type' => $model,
     ];
 });
 
@@ -34,8 +33,9 @@ $factory->defineAs(ProcessTaskAssignment::class, 'user', function () use ($facto
         'assignment_id' => function () {
             return factory(User::class)->create()->getKey();
         },
-        'assignment_type' => User::class
+        'assignment_type' => User::class,
     ];
+
     return array_merge($follow, $extras);
 });
 
@@ -45,7 +45,8 @@ $factory->defineAs(ProcessTaskAssignment::class, 'group', function () use ($fact
         'assignment_id' => function () {
             return factory(Group::class)->create()->getKey();
         },
-        'assignment_type' => Group::class
+        'assignment_type' => Group::class,
     ];
+
     return array_merge($follow, $extras);
 });

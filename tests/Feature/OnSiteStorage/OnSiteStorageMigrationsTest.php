@@ -22,15 +22,15 @@ class OnSiteStorageMigrationsTest extends TestCase
 
         // Run the migrations that create the tables
         Artisan::call('migrate:refresh',
-                    array('--path' => 'database/migrations/2019_01_14_201209_create_comments_table.php',
-                            '--force' => true));
+                    ['--path' => 'database/migrations/2019_01_14_201209_create_comments_table.php',
+                        '--force' => true, ]);
 
         Artisan::call('migrate:refresh',
-            array('--path' => 'database/migrations/2018_09_07_174154_create_process_requests_table.php',
-                '--force' => true));
+            ['--path' => 'database/migrations/2018_09_07_174154_create_process_requests_table.php',
+                '--force' => true, ]);
 
         // Assert that the migrations created the tables
-        $this->assertEquals(True, Schema::connection('data')->hasTable('comments'));
-        $this->assertEquals(True, Schema::connection('data')->hasTable('process_requests'));
+        $this->assertEquals(true, Schema::connection('data')->hasTable('comments'));
+        $this->assertEquals(true, Schema::connection('data')->hasTable('process_requests'));
     }
 }

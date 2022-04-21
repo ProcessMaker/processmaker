@@ -12,7 +12,7 @@ $factory->define(ProcessMaker\Models\Setting::class, function (Faker $faker) {
         'object',
         'boolean',
     ]);
-    
+
     switch ($format) {
         case 'text':
             $config = $faker->sentence();
@@ -27,7 +27,7 @@ $factory->define(ProcessMaker\Models\Setting::class, function (Faker $faker) {
             $config = $faker->randomElement([0, 1]);
             break;
     }
-    
+
     return [
         'key' => $faker->word(),
         'config' => $config,

@@ -25,8 +25,8 @@ class ScreenSystemSeeder extends Seeder
                     $screen->save();
                 }
             }
-            
-            if (!$screen) {
+
+            if (! $screen) {
                 $screen = new Screen();
                 $screen->fill([
                     'title' => $json[0]->name,
@@ -34,13 +34,12 @@ class ScreenSystemSeeder extends Seeder
                     'type' => 'DISPLAY',
                     'config' => $json,
                     'key' => 'interstitial',
-                    'screen_category_id' => null 
+                    'screen_category_id' => null,
                 ]);
                 $screen->save();
             }
+
             return $screen;
         }
-
-
     }
 }

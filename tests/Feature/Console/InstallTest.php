@@ -1,13 +1,14 @@
 <?php
+
 namespace Tests\Feature\Console;
 
-use Tests\TestCase;
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Artisan;
 use Tests\Feature\Shared\InstallParameter as Param;
+use Tests\TestCase;
 
 class InstallTest extends TestCase
-{    
+{
     /**
      * Parse the table output of the Artisan command
      *
@@ -16,18 +17,18 @@ class InstallTest extends TestCase
     private function parseOutput($output)
     {
         $matchCount = preg_match_all('/\|\s+(\w+)\s+\|\s+(\S+)\s+/', $output, $matches);
-        
+
         $lines = [];
-        
+
         if ($matchCount) {
             foreach ($matches[0] as $key => $value) {
                 $lines[$matches[1][$key]] = $matches[2][$key];
             }
         }
-        
+
         return $lines;
     }
-    
+
     /**
      * Generate parameters to feed into the console command
      *
@@ -36,7 +37,7 @@ class InstallTest extends TestCase
     private function generateParameters()
     {
         $faker = Faker::create();
-        
+
         $params = collect([]);
         $params->push(new Param('--pretend'));
         $params->push(new Param('--no-interaction'));
@@ -65,47 +66,47 @@ class InstallTest extends TestCase
         $params->push(new Param('--pusher-app-secret', 'PUSHER_APP_SECRET', $faker->sha1));
         $params->push(new Param('--pusher-cluster', 'PUSHER_CLUSTER', $faker->word));
         $params->push(new Param('--pusher-tls', 'PUSHER_TLS', $faker->boolean));
-        
+
         return $params;
     }
-    
+
     /**
      * Test to determine if non-interactive install works
      *
      * @return void
      */
     public function testNonInteractiveInstall()
-    {        
+    {
         // Setup our collection of parameters
         $params = $this->generateParameters();
-                
+
         // Setup arguments in a format acceptable to Artisan::call()
-        $arguments = [];    
+        $arguments = [];
         foreach ($params as $param) {
             $arguments[$param->flag] = $param->value;
         }
-        
+
         // Make the call
         $returnCode = Artisan::call('processmaker:install', $arguments);
 
         // Assert the return code is correct
         $this->assertEquals(0, $returnCode);
-        
+
         // Retrieve the output of the call
         $output = $this->parseOutput(Artisan::output());
-        
+
         // For each of the params...
         foreach ($params as $param) {
             // If there's a corresponding item in the env file...
             if ($param->env) {
                 // Set the output value
                 $outputValue = $output[$param->env];
-                
+
                 // Convert the output value if it should be boolean
                 if (is_bool($param->value)) {
                     $outputValue = filter_var($outputValue, FILTER_VALIDATE_BOOLEAN);
                 }
-                
+
                 // Assert the value equals the output
                 $this->assertEquals($param->value, $outputValue);
             }

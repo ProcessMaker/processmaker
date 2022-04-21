@@ -16,6 +16,7 @@ class SettingsTest extends TestCase
     use RequestHelper;
 
     protected $resource = 'setting';
+
     protected $structure = [
         'config',
         'process_request_id',
@@ -45,10 +46,10 @@ class SettingsTest extends TestCase
             'config' => [
                 '_myVar' => 'This is my variable 1',
                 'myVar' => 'This is my variable 2',
-                'myVar1' => 'This is my variable 3'
+                'myVar1' => 'This is my variable 3',
             ],
             'key' => $setting->key,
-            'id' => $setting->id
+            'id' => $setting->id,
         ];
 
         //Update setting config
@@ -76,7 +77,7 @@ class SettingsTest extends TestCase
                 'my-Var' => 'This is my variable 3',
             ],
             'key' => $setting->key,
-            'id' => $setting->id
+            'id' => $setting->id,
         ];
         //Update setting config
         $route = route('api.settings.update', [$setting->id]);
@@ -84,20 +85,20 @@ class SettingsTest extends TestCase
         //Verify the status
         $response->assertStatus(422);
         //Verify response error
-        $response->assertJson (
+        $response->assertJson(
             [
                 'message' => 'The given data was invalid.',
                 'errors' => [
                     'config.1myVar' => [
-                        'Name has to start with a letter and can contain only letters, numbers, and underscores (_).'
+                        'Name has to start with a letter and can contain only letters, numbers, and underscores (_).',
                     ],
                     'config.myVar space' => [
-                        'Name has to start with a letter and can contain only letters, numbers, and underscores (_).'
+                        'Name has to start with a letter and can contain only letters, numbers, and underscores (_).',
                     ],
                     'config.my-Var' => [
-                        'Name has to start with a letter and can contain only letters, numbers, and underscores (_).'
-                    ]
-                ]
+                        'Name has to start with a letter and can contain only letters, numbers, and underscores (_).',
+                    ],
+                ],
             ]
         );
         //Verify variable were not updated

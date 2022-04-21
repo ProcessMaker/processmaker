@@ -14,7 +14,7 @@ $factory->define(ProcessRequestToken::class, function (Faker $faker) {
         'element_type' => 'TASK',
         'element_id' => $faker->randomDigit,
         'element_name' => $faker->name,
-        'status' => $faker->randomElement(['ACTIVE','FAILING','COMPLETED','CLOSED','EVENT_CATCH']),
+        'status' => $faker->randomElement(['ACTIVE', 'FAILING', 'COMPLETED', 'CLOSED', 'EVENT_CATCH']),
         'process_id' => function () {
             return factory(Process::class)->create()->getKey();
         },
@@ -27,6 +27,6 @@ $factory->define(ProcessRequestToken::class, function (Faker $faker) {
         'completed_at' => $faker->dateTimeBetween($startDate = '-15 years', $endDate = 'now'),
         'due_at' => $faker->dateTimeBetween($startDate = '-15 years', $endDate = 'now'),
         'initiated_at' => $faker->dateTimeBetween($startDate = '-15 years', $endDate = 'now'),
-        'riskchanges_at' => $faker->dateTimeBetween($startDate = '-15 years', $endDate = 'now')
+        'riskchanges_at' => $faker->dateTimeBetween($startDate = '-15 years', $endDate = 'now'),
     ];
 });

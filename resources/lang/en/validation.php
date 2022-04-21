@@ -1,4 +1,5 @@
 <?php
+
 return [
 
     /*
@@ -87,7 +88,6 @@ return [
     'uploaded'             => 'The :Attribute failed to upload.',
     'url'                  => 'The :Attribute format is invalid.',
 
-
     'custom' => [
         'path' => [
             'filemanager.drive_from_path' => 'Invalid value specified for: :Attribute',
@@ -98,24 +98,24 @@ return [
                 'store_only_html_to_templates' => 'The file has an incorrect extension. Please check the file and upload again.',
                 'do_not_store_exe_in_public' => 'The file has an incorrect extension. Please check the file and upload again.',
                 'do_not_store_php_in_public' => 'The upload of php files was disabled.',
-            ]
+            ],
         ],
         'processFile' => [
             'filemanager' => [
                 'file_is_not_used_at_email_events' => 'You can not delete the template :path because it has a relationship with Email Event',
                 'file_is_not_used_as_routing_screen' => 'You can not delete the template :path because it is used as a routing screen.',
-            ]
+            ],
         ],
         'processCategory' => [
             'process_category_manager' => [
                 'category_does_not_have_processes' => 'The category cannot be deleted while it is still assigned to processes.',
-            ]
-        ]
+            ],
+        ],
     ],
 
     'attributes' => [
         'title' => 'name',
         'firstname' => 'First Name',
-        'lastname' => "Last Name"
+        'lastname' => 'Last Name',
     ],
 ];

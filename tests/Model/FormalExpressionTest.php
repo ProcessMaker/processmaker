@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Tests\Model;
-
 
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Models\FormalExpression;
@@ -10,7 +8,6 @@ use Tests\TestCase;
 
 class FormalExpressionTest extends TestCase
 {
-
     public function testEvaluateSimpleExpression()
     {
         $formalExp = new FormalExpression();
@@ -44,5 +41,4 @@ class FormalExpressionTest extends TestCase
         $eval = $formalExp(['expression' => "condition == 'passed'", 'condition' => 'passed']);
         $this->assertTrue($eval);
     }
-
 }

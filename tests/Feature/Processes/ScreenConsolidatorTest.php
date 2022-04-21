@@ -35,7 +35,7 @@ class ScreenConsolidatorTest extends TestCase
         ]);
 
         // Save the file contents and convert them to an UploadedFile
-        $fileName = realpath(__DIR__ . '/../../Fixtures/test_nested_record_list.json');
+        $fileName = realpath(__DIR__.'/../../Fixtures/test_nested_record_list.json');
         $file = new UploadedFile($fileName, 'test_nested_record_list.json', null, null, null, true);
 
         // Test to ensure our standard user cannot import a screen
@@ -77,174 +77,174 @@ class ScreenConsolidatorTest extends TestCase
                                                                 'content' => 'Nombre',
                                                             ],
                                                         ],
-                                  'removeIndex' => null,
-                                  'showJsonEditor' => false,
-                                  'showOptionCard' => false,
-                                  'showRemoveWarning' => false,
+                                                        'removeIndex' => null,
+                                                        'showJsonEditor' => false,
+                                                        'showOptionCard' => false,
+                                                        'showRemoveWarning' => false,
+                                                    ],
+                                                    'editable' => true,
+                                                ],
+                                                'component' => 'FormRecordList',
+                                                'editor-control' => 'FormRecordList',
+                                                'editor-component' => 'FormText',
+                                            ],
+                                        ],
+                                        'label' => 'Loop',
+                                        'config' => [
+                                            'icon' => 'fas fa-redo',
+                                            'name' => 'loop_1',
+                                            'label' => null,
+                                            'settings' => [
+                                                'add' => false,
+                                                'type' => 'new',
+                                                'times' => '3',
+                                                'varname' => 'loop_1',
+                                            ],
+                                        ],
+                                        'component' => 'FormLoop',
+                                        'container' => true,
+                                        'editor-control' => 'Loop',
+                                        'editor-component' => 'Loop',
+                                    ],
                                 ],
-                                'editable' => true,
-                              ],
-                              'component' => 'FormRecordList',
-                              'editor-control' => 'FormRecordList',
-                              'editor-component' => 'FormText',
+                                [
+                                    // Record List imported from Nested Screen (2)
+                                    [
+                                        'label' => 'Record List',
+                                        'config' => [
+                                            'form' => 2,
+                                            'icon' => 'fas fa-th-list',
+                                            'name' => 'form_record_list_1',
+                                            'label' => 'Relevant Activities',
+                                            'fields' => [
+                                                'jsonData' => '[{"content":"Edad","value":"age"},{"content":"Nombre","value":"name"}]',
+                                                'editIndex' => null,
+                                                'dataSource' => 'provideData',
+                                                'optionsList' => [
+                                                    [
+                                                        'value' => 'age',
+                                                        'content' => 'Edad',
+                                                    ],
+                                                    [
+                                                        'value' => 'name',
+                                                        'content' => 'Nombre',
+                                                    ],
+                                                ],
+                                                'removeIndex' => null,
+                                                'showJsonEditor' => false,
+                                                'showOptionCard' => false,
+                                                'showRemoveWarning' => false,
+                                            ],
+                                            'editable' => true,
+                                        ],
+                                        'component' => 'FormRecordList',
+                                        'editor-control' => 'FormRecordList',
+                                        'editor-component' => 'FormText',
+                                    ],
+                                ],
                             ],
-                          ],
-                          'label' => 'Loop',
-                          'config' => [
-                              'icon' => 'fas fa-redo',
-                              'name' => 'loop_1',
-                              'label' => null,
-                              'settings' => [
-                                  'add' => false,
-                                  'type' => 'new',
-                                  'times' => '3',
-                                  'varname' => 'loop_1',
-                              ],
-                          ],
-                          'component' => 'FormLoop',
-                          'container' => true,
-                          'editor-control' => 'Loop',
-                          'editor-component' => 'Loop',
-                        ],
-                      ],
-                      [
-                          // Record List imported from Nested Screen (2)
-                          [
-                              'label' => 'Record List',
-                              'config' => [
-                                  'form' => 2,
-                                  'icon' => 'fas fa-th-list',
-                                  'name' => 'form_record_list_1',
-                                  'label' => 'Relevant Activities',
-                                  'fields' => [
-                                      'jsonData' => '[{"content":"Edad","value":"age"},{"content":"Nombre","value":"name"}]',
-                                      'editIndex' => null,
-                                      'dataSource' => 'provideData',
-                                      'optionsList' => [
-                                          [
-                                              'value' => 'age',
-                                              'content' => 'Edad',
-                                          ],
-                                          [
-                                              'value' => 'name',
-                                              'content' => 'Nombre',
-                                          ],
-                                      ],
-                              'removeIndex' => null,
-                              'showJsonEditor' => false,
-                              'showOptionCard' => false,
-                              'showRemoveWarning' => false,
+                            'label' => 'Multicolumn / Table',
+                            'config' => [
+                                'icon' => 'fas fa-table',
+                                'label' => null,
+                                'options' => [
+                                    [
+                                        'value' => '1',
+                                        'content' => '6',
+                                    ],
+                                    [
+                                        'value' => '2',
+                                        'content' => '6',
+                                    ],
+                                ],
                             ],
-                            'editable' => true,
-                          ],
-                          'component' => 'FormRecordList',
-                          'editor-control' => 'FormRecordList',
-                          'editor-component' => 'FormText',
-                        ],
-                      ],
-                    ],
-                    'label' => 'Multicolumn / Table',
-                    'config' => [
-                        'icon' => 'fas fa-table',
-                        'label' => null,
-                        'options' => [
-                            [
-                                'value' => '1',
-                                'content' => '6',
-                            ],
-                            [
-                                'value' => '2',
-                                'content' => '6',
-                            ],
+                            'component' => 'FormMultiColumn',
+                            'container' => true,
+                            'editor-control' => 'MultiColumn',
+                            'editor-component' => 'MultiColumn',
                         ],
                     ],
-                    'component' => 'FormMultiColumn',
-                    'container' => true,
-                    'editor-control' => 'MultiColumn',
-                    'editor-component' => 'MultiColumn',
-                  ],
                 ],
-              ],
-              // Page imported from nested screen (1)
-              [
-                  'name' => 'data',
-                  'items' => [
-                      [
-                          'label' => 'Line Input',
-                          'config' => [
-                              'icon' => 'far fa-square',
-                              'name' => 'name',
-                              'type' => 'text',
-                              'label' => 'name',
-                              'helper' => null,
-                              'readonly' => false,
-                              'dataFormat' => 'string',
-                              'validation' => [],
-                              'placeholder' => null,
-                          ],
-                          'component' => 'FormInput',
-                          'editor-control' => 'FormInput',
-                          'editor-component' => 'FormInput',
-                  ],
-                  [
-                      'label' => 'Line Input',
-                      'config' => [
-                          'icon' => 'far fa-square',
-                          'name' => 'age',
-                          'type' => 'text',
-                          'label' => 'age',
-                          'helper' => null,
-                          'readonly' => false,
-                          'dataFormat' => 'int',
-                          'validation' => [],
-                          'placeholder' => null,
-                      ],
-                      'component' => 'FormInput',
-                      'editor-control' => 'FormInput',
-                      'editor-component' => 'FormInput',
-                  ],
+                // Page imported from nested screen (1)
+                [
+                    'name' => 'data',
+                    'items' => [
+                        [
+                            'label' => 'Line Input',
+                            'config' => [
+                                'icon' => 'far fa-square',
+                                'name' => 'name',
+                                'type' => 'text',
+                                'label' => 'name',
+                                'helper' => null,
+                                'readonly' => false,
+                                'dataFormat' => 'string',
+                                'validation' => [],
+                                'placeholder' => null,
+                            ],
+                            'component' => 'FormInput',
+                            'editor-control' => 'FormInput',
+                            'editor-component' => 'FormInput',
+                        ],
+                        [
+                            'label' => 'Line Input',
+                            'config' => [
+                                'icon' => 'far fa-square',
+                                'name' => 'age',
+                                'type' => 'text',
+                                'label' => 'age',
+                                'helper' => null,
+                                'readonly' => false,
+                                'dataFormat' => 'int',
+                                'validation' => [],
+                                'placeholder' => null,
+                            ],
+                            'component' => 'FormInput',
+                            'editor-control' => 'FormInput',
+                            'editor-component' => 'FormInput',
+                        ],
+                    ],
                 ],
-              ],
-              // Page imported from nested screen (2)
-              [
-                  'name' => 'data',
-                  'items' => [
-                      [
-                          'label' => 'Line Input',
-                          'config' => [
-                              'icon' => 'far fa-square',
-                              'name' => 'name',
-                              'type' => 'text',
-                              'label' => 'name',
-                              'helper' => null,
-                              'readonly' => false,
-                              'dataFormat' => 'string',
-                              'validation' => [],
-                              'placeholder' => null,
-                          ],
-                          'component' => 'FormInput',
-                          'editor-control' => 'FormInput',
-                          'editor-component' => 'FormInput',
-                  ],
-                  [
-                      'label' => 'Line Input',
-                      'config' => [
-                          'icon' => 'far fa-square',
-                          'name' => 'age',
-                          'type' => 'text',
-                          'label' => 'age',
-                          'helper' => null,
-                          'readonly' => false,
-                          'dataFormat' => 'int',
-                          'validation' => [],
-                          'placeholder' => null,
-                      ],
-                      'component' => 'FormInput',
-                      'editor-control' => 'FormInput',
-                      'editor-component' => 'FormInput',
-                  ],
+                // Page imported from nested screen (2)
+                [
+                    'name' => 'data',
+                    'items' => [
+                        [
+                            'label' => 'Line Input',
+                            'config' => [
+                                'icon' => 'far fa-square',
+                                'name' => 'name',
+                                'type' => 'text',
+                                'label' => 'name',
+                                'helper' => null,
+                                'readonly' => false,
+                                'dataFormat' => 'string',
+                                'validation' => [],
+                                'placeholder' => null,
+                            ],
+                            'component' => 'FormInput',
+                            'editor-control' => 'FormInput',
+                            'editor-component' => 'FormInput',
+                        ],
+                        [
+                            'label' => 'Line Input',
+                            'config' => [
+                                'icon' => 'far fa-square',
+                                'name' => 'age',
+                                'type' => 'text',
+                                'label' => 'age',
+                                'helper' => null,
+                                'readonly' => false,
+                                'dataFormat' => 'int',
+                                'validation' => [],
+                                'placeholder' => null,
+                            ],
+                            'component' => 'FormInput',
+                            'editor-control' => 'FormInput',
+                            'editor-component' => 'FormInput',
+                        ],
+                    ],
                 ],
-              ],
             ],
             'watchers' => [],
             'custom_css' => '',
@@ -270,7 +270,7 @@ class ScreenConsolidatorTest extends TestCase
         ]);
 
         // Save the file contents and convert them to an UploadedFile
-        $fileName = realpath(__DIR__ . '/../../Fixtures/nested_with_navbar.json');
+        $fileName = realpath(__DIR__.'/../../Fixtures/nested_with_navbar.json');
         $file = new UploadedFile($fileName, 'nested_with_navbar.json', null, null, null, true);
 
         // Test to ensure our standard user cannot import a screen
@@ -337,7 +337,7 @@ class ScreenConsolidatorTest extends TestCase
         ]);
 
         // Save the file contents and convert them to an UploadedFile
-        $fileName = realpath(__DIR__ . '/../../Fixtures/record_without_record_form.json');
+        $fileName = realpath(__DIR__.'/../../Fixtures/record_without_record_form.json');
         $file = new UploadedFile($fileName, 'record_without_record_form.json', null, null, null, true);
 
         // Test to ensure our standard user cannot import a screen
@@ -374,11 +374,11 @@ class ScreenConsolidatorTest extends TestCase
                         break;
                     }
                 }
-                if (!$found) {
+                if (! $found) {
                     return false;
                 }
             } else {
-                if (!isset($page[$key])) {
+                if (! isset($page[$key])) {
                     return false;
                 }
                 $item = $page[$key];
@@ -391,6 +391,7 @@ class ScreenConsolidatorTest extends TestCase
                 }
             }
         }
+
         return true;
     }
 }

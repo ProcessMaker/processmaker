@@ -6,8 +6,8 @@ use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\User;
-use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 /**
  * Test the process execution with requests
@@ -16,13 +16,11 @@ use Tests\Feature\Shared\RequestHelper;
  */
 class ProcessCollaborationTest extends TestCase
 {
-
     use WithFaker;
     use RequestHelper;
 
     /**
-     *
-     * @var User $user
+     * @var User
      */
     protected $user;
 
@@ -34,7 +32,7 @@ class ProcessCollaborationTest extends TestCase
         'name',
         'initiated_at',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
@@ -43,7 +41,7 @@ class ProcessCollaborationTest extends TestCase
     private function createTestCollaborationProcess()
     {
         $process = factory(Process::class)->create([
-            'bpmn' => Process::getProcessTemplate('Collaboration.bpmn')
+            'bpmn' => Process::getProcessTemplate('Collaboration.bpmn'),
         ]);
         //Assign the task to $this->user
         factory(ProcessTaskAssignment::class)->create([
@@ -64,6 +62,7 @@ class ProcessCollaborationTest extends TestCase
             'assignment_id' => $this->user->id,
             'assignment_type' => 'user',
         ]);
+
         return $process;
     }
 
@@ -122,7 +121,7 @@ class ProcessCollaborationTest extends TestCase
      * @param array $tasks
      * @param string $name
      *
-     * @return integer
+     * @return int
      */
     private function findTaskByName(array $tasks, $name)
     {
@@ -131,6 +130,7 @@ class ProcessCollaborationTest extends TestCase
                 break;
             }
         }
+
         return $index;
     }
 }

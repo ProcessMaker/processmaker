@@ -22,7 +22,7 @@
           </tr>
         </thead>
         <tbody>
-<?php foreach($measurements as $measure): ?>
+<?php foreach ($measurements as $measure): ?>
           <tr>
             <th class="<?=$measure['color']?>" scope="row"><?=$measure['route']?> (<?=json_encode($measure['params'])?>)</th>
             <td class="<?=$measure['color']?> text-right"><?=$measure['time']?></td>

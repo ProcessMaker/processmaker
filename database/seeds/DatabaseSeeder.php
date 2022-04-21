@@ -5,7 +5,6 @@ use ProcessMaker\Traits\LoadPluginSeeders;
 
 class DatabaseSeeder extends Seeder
 {
-
     use LoadPluginSeeders;
 
     /**

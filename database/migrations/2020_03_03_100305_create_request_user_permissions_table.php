@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
 
@@ -28,7 +28,7 @@ class CreateRequestUserPermissionsTable extends Migration
             $table->index(['user_id']);
         });
         // Populate the request_user_permissions for the first time
-        foreach(User::all() as $user) {
+        foreach (User::all() as $user) {
             $user->updatePermissionsToRequests();
         }
     }

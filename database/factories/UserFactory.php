@@ -9,8 +9,7 @@ $onePassword = Hash::make('oneOnlyPassword');
 /**
  * Model factory for a User
  */
-$factory->define(User::class, function (Faker $faker) use($onePassword) {
-
+$factory->define(User::class, function (Faker $faker) use ($onePassword) {
     return [
         'username' => $faker->unique()->userName,
         'email' => $faker->unique()->email,

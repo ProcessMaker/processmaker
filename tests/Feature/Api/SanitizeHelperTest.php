@@ -4,7 +4,6 @@ namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Tests\Feature\Shared\ProcessTestingTrait;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -14,6 +13,7 @@ use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Models\User;
 use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\SanitizeHelper;
+use Tests\Feature\Shared\ProcessTestingTrait;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
@@ -22,7 +22,13 @@ class SanitizeHelperTest extends TestCase
 {
     use ProcessTestingTrait, WithFaker, RequestHelper, ResourceAssertionsTrait;
 
-    protected $screen, $screenVersion, $process, $processRequest;
+    protected $screen;
+
+    protected $screenVersion;
+
+    protected $process;
+
+    protected $processRequest;
 
     protected function withUserSetup()
     {
@@ -63,7 +69,7 @@ class SanitizeHelperTest extends TestCase
         $childScreen = $this->screen;
         $this->createScreen('tests/Fixtures/sanitize_single_rich_text_nested_screen.json');
         // Configure childId screen to nested screen
-        $config = str_replace('"screen":1', '"screen":' . $childScreen->id, json_encode($this->screen->config));
+        $config = str_replace('"screen":1', '"screen":'.$childScreen->id, json_encode($this->screen->config));
         $this->screen->config = json_decode($config);
         $this->screen->save();
         $this->createProcess('tests/Fixtures/sanitize_single_task_nested.bpmn');
@@ -121,7 +127,7 @@ class SanitizeHelperTest extends TestCase
         $childScreen = $this->screen;
         $this->createScreen('tests/Fixtures/sanitize_single_rich_text_nested_loop_screen.json');
         // Configure childId screen to nested screen
-        $config = str_replace('"screen":1', '"screen":' . $childScreen->id, json_encode($this->screen->config));
+        $config = str_replace('"screen":1', '"screen":'.$childScreen->id, json_encode($this->screen->config));
         $this->screen->config = json_decode($config);
         $this->screen->save();
         $this->createProcess('tests/Fixtures/sanitize_single_task_nested_loop.bpmn');
@@ -272,7 +278,7 @@ class SanitizeHelperTest extends TestCase
 
         // Assert do_not_sanitize was updated successfully ..
         $response->assertJsonFragment([
-            'do_not_sanitize' => ['loop_1.form_text_area_3','form_text_area_1','loop_2.form_text_area_4'],
+            'do_not_sanitize' => ['loop_1.form_text_area_3', 'form_text_area_1', 'loop_2.form_text_area_4'],
         ]);
 
         // Assert data was sanitized or not if rich text ..
@@ -288,21 +294,21 @@ class SanitizeHelperTest extends TestCase
     private function createScreen($screenConfigFilePath)
     {
         $this->screen = factory(Screen::class)->create([
-            'config' => json_decode(file_get_contents(base_path($screenConfigFilePath)))
+            'config' => json_decode(file_get_contents(base_path($screenConfigFilePath))),
         ]);
 
         $this->screenVersion = factory(ScreenVersion::class)->create([
             'screen_id' => $this->screen->id,
             'type' => 'FORM',
             'config' => $this->screen->config,
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
         ]);
     }
 
     private function createProcess($processFilePath)
     {
         $bpmn = file_get_contents(base_path($processFilePath));
-        $bpmn = str_replace('pm:screenRef="1"', 'pm:screenRef="' . $this->screen->id .'"', $bpmn);
+        $bpmn = str_replace('pm:screenRef="1"', 'pm:screenRef="'.$this->screen->id.'"', $bpmn);
         $this->process = factory(Process::class)->create([
             'bpmn' => $bpmn,
             'user_id' => $this->user->id,
@@ -331,158 +337,159 @@ class SanitizeHelperTest extends TestCase
             'element_id' => $node,
             'element_type' => 'task',
             'status' => 'ACTIVE',
-            'process_request_id' => $processRequestId
+            'process_request_id' => $processRequestId,
         ]);
+
         return $task;
     }
 
     private function dataSingleTask()
     {
         return [
-            "_user" => [
-                "id" => 1
+            '_user' => [
+                'id' => 1,
             ],
-            "_request" => [
-                "id" => 1
+            '_request' => [
+                'id' => 1,
             ],
-            "form_text_area_1" => "<p><strong>Do not sanitize<\/strong><\/p>",
-            "input_1" => "<p><strong>Sanitize<\/strong><\/p>"
+            'form_text_area_1' => "<p><strong>Do not sanitize<\/strong><\/p>",
+            'input_1' => "<p><strong>Sanitize<\/strong><\/p>",
         ];
     }
 
     private function dataSingleTaskNestedLoop()
     {
-       return [
-            "_user" => [
-                "id" => 1
+        return [
+            '_user' => [
+                'id' => 1,
             ],
-            "_request" => [
-                "id" => 1
+            '_request' => [
+                'id' => 1,
             ],
-            "loop_1" => [
+            'loop_1' => [
                 [
-                    "form_text_area_4" => "<p><strong>Do not sanitize<\/strong><\/p>",
-                    "form_input_1" => "<p><strong>Sanitize<\/strong><\/p>"
-                ]
-            ]
+                    'form_text_area_4' => "<p><strong>Do not sanitize<\/strong><\/p>",
+                    'form_input_1' => "<p><strong>Sanitize<\/strong><\/p>",
+                ],
+            ],
         ];
     }
 
     private function dataTwoTask()
     {
         return [
-            "_user" => [
-                "id" => 1
+            '_user' => [
+                'id' => 1,
             ],
-            "_request" => [
-                "id" => 1
+            '_request' => [
+                'id' => 1,
             ],
-            "form_text_area_1" => "<p><strong>Do not sanitize<\/strong><\/p>",
-            "form_text_area_20" => "<p><strong>Do not sanitize<\/strong><\/p>",
-            "form_text_area_10" => "<p><strong>Sanitize<\/strong><\/p>",
-            "input_1" => "<p><strong>Sanitize<\/strong><\/p>"
+            'form_text_area_1' => "<p><strong>Do not sanitize<\/strong><\/p>",
+            'form_text_area_20' => "<p><strong>Do not sanitize<\/strong><\/p>",
+            'form_text_area_10' => "<p><strong>Sanitize<\/strong><\/p>",
+            'input_1' => "<p><strong>Sanitize<\/strong><\/p>",
         ];
     }
 
     private function dataSingleTaskLoop()
     {
         return [
-            "_user" => [
-                "id" => 1
+            '_user' => [
+                'id' => 1,
             ],
-            "_request" => [
-                "id" => 1
+            '_request' => [
+                'id' => 1,
             ],
-            "loop_1" => [
+            'loop_1' => [
                 [
-                    "form_text_area_3" => "<p><strong>Do not sanitize<\/strong><\/p>",
-                    "form_input_1" => "<p><strong>Sanitize<\/strong><\/p>"
-                ]
-            ]
+                    'form_text_area_3' => "<p><strong>Do not sanitize<\/strong><\/p>",
+                    'form_input_1' => "<p><strong>Sanitize<\/strong><\/p>",
+                ],
+            ],
         ];
     }
 
     private function dataSingleTaskTwoPages()
     {
         return [
-            "_user" => [
-                "id" => 1
+            '_user' => [
+                'id' => 1,
             ],
-            "_request" => [
-                "id" => 1
+            '_request' => [
+                'id' => 1,
             ],
-            "form_text_area_1" => "<p><strong>Do not sanitize page 2<\/strong><\/p>",
-            "form_text_area_2" => "<p><strong>Do not sanitize page 1<\/strong><\/p>",
-            "input_1" => "<p><strong>Sanitize<\/strong><\/p>"
+            'form_text_area_1' => "<p><strong>Do not sanitize page 2<\/strong><\/p>",
+            'form_text_area_2' => "<p><strong>Do not sanitize page 1<\/strong><\/p>",
+            'input_1' => "<p><strong>Sanitize<\/strong><\/p>",
         ];
     }
 
     private function dataSingleTaskNestedVariableName()
     {
         return [
-            "_user" => [
-                "id" => 1
+            '_user' => [
+                'id' => 1,
             ],
-            "_request" => [
-                "id" => 1
+            '_request' => [
+                'id' => 1,
             ],
-            "foo" => [
-                "bar" => [
-                    "baz" => "<p><strong>Do not sanitize<\/strong><\/p>"
-                ]
+            'foo' => [
+                'bar' => [
+                    'baz' => "<p><strong>Do not sanitize<\/strong><\/p>",
+                ],
             ],
-            "input_1" => "<p><strong>Sanitize<\/strong><\/p>"
+            'input_1' => "<p><strong>Sanitize<\/strong><\/p>",
         ];
     }
 
     private function dataSingleTaskSameNameDifferentScope()
     {
         return [
-            "_user" => [
-                "id" => 1
+            '_user' => [
+                'id' => 1,
             ],
-            "_request" => [
-                "id" => 1
+            '_request' => [
+                'id' => 1,
             ],
-            "loop_1" => [
+            'loop_1' => [
                 [
-                    "form_text_area_1" => "<p><strong>Do not sanitize<\/strong><\/p>",
+                    'form_text_area_1' => "<p><strong>Do not sanitize<\/strong><\/p>",
                 ],
                 [
-                    "form_text_area_1" => "<p><strong>Do not sanitize 2<\/strong><\/p>",
-                ]
+                    'form_text_area_1' => "<p><strong>Do not sanitize 2<\/strong><\/p>",
+                ],
             ],
-            "form_text_area_1" => "<p><strong>Sanitize<\/strong><\/p>",
+            'form_text_area_1' => "<p><strong>Sanitize<\/strong><\/p>",
         ];
     }
 
     private function dataSingleTaskTableAndLoop()
     {
         return [
-            "_user" => [
-                "id" => 1
+            '_user' => [
+                'id' => 1,
             ],
-            "_request" => [
-                "id" => 1
+            '_request' => [
+                'id' => 1,
             ],
-            "loop_1" => [
+            'loop_1' => [
                 [
-                    "form_text_area_3" => "<p><strong>Inside loop outside table 1</strong><strong>do not sanitize</strong></p>"
+                    'form_text_area_3' => '<p><strong>Inside loop outside table 1</strong><strong>do not sanitize</strong></p>',
                 ],
                 [
-                    "form_text_area_3" => "<p><strong>Inside loop outside table 2</strong><strong>do not sanitize</strong></p>"
-                ]
+                    'form_text_area_3' => '<p><strong>Inside loop outside table 2</strong><strong>do not sanitize</strong></p>',
+                ],
             ],
-            "form_text_area_1" => "<p><strong>Inside table do not sanitize</strong></p>",
-            "loop_2" => [
+            'form_text_area_1' => '<p><strong>Inside table do not sanitize</strong></p>',
+            'loop_2' => [
                 [
-                    "form_text_area_4" => "<p><strong>Inside loop inside table 1 </strong><strong>do not sanitize</strong></p>"
+                    'form_text_area_4' => '<p><strong>Inside loop inside table 1 </strong><strong>do not sanitize</strong></p>',
                 ],
                 [
-                    "form_text_area_4" => "<p><strong>Inside loop inside table 2 </strong><strong>do not sanitize</strong></p>"
-                ]
+                    'form_text_area_4' => '<p><strong>Inside loop inside table 2 </strong><strong>do not sanitize</strong></p>',
+                ],
             ],
-            "form_text_area_2" => "<b>Inside table SANITIZE</b>"
+            'form_text_area_2' => '<b>Inside table SANITIZE</b>',
         ];
     }
 }

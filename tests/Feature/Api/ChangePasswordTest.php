@@ -2,11 +2,11 @@
 
 namespace Tests\Feature\Api;
 
-use Tests\TestCase;
-use Tests\Feature\Shared\RequestHelper;
-use ProcessMaker\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Models\User;
+use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class ChangePasswordTest extends TestCase
 {
@@ -24,7 +24,7 @@ class ChangePasswordTest extends TestCase
         // Password must be at least 8 characters long
         $response = $this->apiCall('PUT', self::API_TEST_URL, [
             'password' => 'Proce5s',
-            'confpassword' => 'Proce5s'
+            'confpassword' => 'Proce5s',
         ]);
 
         $response->assertStatus(422)
@@ -33,7 +33,7 @@ class ChangePasswordTest extends TestCase
         // Password must contain one or more uppercase characters
         $response = $this->apiCall('PUT', self::API_TEST_URL, [
             'password' => 'process1',
-            'confpassword' => 'process1'
+            'confpassword' => 'process1',
         ]);
 
         $response->assertStatus(422)
@@ -42,7 +42,7 @@ class ChangePasswordTest extends TestCase
         // Password must contain a number or special character
         $response = $this->apiCall('PUT', self::API_TEST_URL, [
             'password' => 'ProcessMaker',
-            'confpassword' => 'ProcessMaker'
+            'confpassword' => 'ProcessMaker',
         ]);
 
         $response->assertStatus(422)
@@ -57,7 +57,7 @@ class ChangePasswordTest extends TestCase
         // changed to 0 after password change
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
-            'force_change_password' => 0
+            'force_change_password' => 0,
         ]);
     }
 
@@ -73,7 +73,7 @@ class ChangePasswordTest extends TestCase
         // Post data with new password
         $response = $this->apiCall('PUT', self::API_TEST_URL, [
             'password' => 'ProcessMaker1',
-            'confpassword' => 'ProcessMaker1'
+            'confpassword' => 'ProcessMaker1',
         ]);
 
         // Validate the header status code
@@ -88,7 +88,7 @@ class ChangePasswordTest extends TestCase
         // changed to 0 after password change
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
-            'force_change_password' => 0
+            'force_change_password' => 0,
         ]);
     }
 

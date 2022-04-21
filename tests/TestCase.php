@@ -2,8 +2,8 @@
 
 namespace Tests;
 
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Artisan;
 
 abstract class TestCase extends BaseTestCase
@@ -15,7 +15,6 @@ abstract class TestCase extends BaseTestCase
 
     /**
      * Run additional setUps from traits.
-     *
      */
     protected function setUp(): void
     {
@@ -30,7 +29,6 @@ abstract class TestCase extends BaseTestCase
 
     /**
      * Run additional tearDowns from traits.
-     *
      */
     protected function tearDown(): void
     {

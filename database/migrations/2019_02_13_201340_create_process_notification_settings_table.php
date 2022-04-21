@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateProcessNotificationSettingsTable extends Migration
 {
@@ -18,7 +18,7 @@ class CreateProcessNotificationSettingsTable extends Migration
             $table->string('element_id')->nullable();
             $table->string('notifiable_type');
             $table->string('notification_type');
-            
+
             $table->foreign('process_id')->references('id')->on('processes');
         });
     }

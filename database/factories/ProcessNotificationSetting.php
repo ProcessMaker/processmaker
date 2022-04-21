@@ -21,6 +21,6 @@ $factory->define(ProcessNotificationSetting::class, function (Faker $faker) {
             'started',
             'canceled',
             'completed',
-        ])
+        ]),
     ];
 });

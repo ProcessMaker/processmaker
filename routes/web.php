@@ -46,11 +46,11 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection', 'force
         Route::get('signals/{signalId}/edit', 'SignalController@edit')->name('signals.edit')->middleware('can:edit-signals');
     });
 
-    Route::get('designer/processes/categories', 'ProcessController@index')->name('process-categories.index') ->middleware ('can:view-process-categories');
+    Route::get('designer/processes/categories', 'ProcessController@index')->name('process-categories.index')->middleware('can:view-process-categories');
 
-    Route::get('designer/screens/categories', 'Process\ScreenController@index')->name('screen-categories.index')->middleware ('can:view-screen-categories');
+    Route::get('designer/screens/categories', 'Process\ScreenController@index')->name('screen-categories.index')->middleware('can:view-screen-categories');
 
-    Route::get('designer/scripts/categories', 'Process\ScriptController@index')->name('script-categories.index') ->middleware('can:view-script-categories');
+    Route::get('designer/scripts/categories', 'Process\ScriptController@index')->name('script-categories.index')->middleware('can:view-script-categories');
 
     Route::get('processes', 'ProcessController@index')->name('processes.index');
     Route::get('processes/{process}/edit', 'ProcessController@edit')->name('processes.edit')->middleware('can:edit-processes');

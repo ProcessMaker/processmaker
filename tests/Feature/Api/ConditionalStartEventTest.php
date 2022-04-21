@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Api;
 
-use ProcessMaker\Managers\TaskSchedulerManager;
-use ProcessMaker\Jobs\StartEventConditional;
 use ProcessMaker\Jobs\ImportProcess;
+use ProcessMaker\Jobs\StartEventConditional;
+use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Models\Process;
 use Tests\TestCase;
 
@@ -14,7 +14,7 @@ class ConditionalStartEventTest extends TestCase
     {
         //Create a conditional process with ACTIVE status by default
         ImportProcess::dispatchNow(
-            file_get_contents(__DIR__ . '/../../Fixtures/conditional_event_process.json')
+            file_get_contents(__DIR__.'/../../Fixtures/conditional_event_process.json')
         );
 
         //Evaluates that StartEventConditional is triggering
@@ -28,7 +28,7 @@ class ConditionalStartEventTest extends TestCase
     {
         //Create a conditional process with ACTIVE status by default
         ImportProcess::dispatchNow(
-            file_get_contents(__DIR__ . '/../../Fixtures/conditional_event_process.json')
+            file_get_contents(__DIR__.'/../../Fixtures/conditional_event_process.json')
         );
 
         //Get created process and set status to INACTIVE

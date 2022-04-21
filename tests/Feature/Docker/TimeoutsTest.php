@@ -30,7 +30,7 @@ class TimeoutsTest extends TestCase
      */
     private function skipWithoutDocker()
     {
-        if (!file_exists(config('app.processmaker_scripts_home')) || !file_exists(config('app.processmaker_scripts_docker'))) {
+        if (! file_exists(config('app.processmaker_scripts_home')) || ! file_exists(config('app.processmaker_scripts_docker'))) {
             return $this->markTestSkipped('This test requires docker');
         }
 
@@ -40,7 +40,6 @@ class TimeoutsTest extends TestCase
 
     /**
      * Make sure we have a personal access client set up
-     *
      */
     public function setUpWithPersonalAccessClient()
     {
@@ -75,6 +74,7 @@ class TimeoutsTest extends TestCase
         // Assertion: An exception is notified to usr through broadcast channel
         Event::assertDispatched(ScriptResponseEvent::class, function ($event) {
             $response = $event->response;
+
             return $response['exception'] === ScriptTimeoutException::class;
         });
     }
@@ -101,6 +101,7 @@ class TimeoutsTest extends TestCase
         // Assertion: The script output is sent to usr through broadcast channel
         Event::assertDispatched(ScriptResponseEvent::class, function ($event) {
             $response = $event->response;
+
             return $response['output'] === ['response' => 1];
         });
     }
@@ -114,9 +115,9 @@ class TimeoutsTest extends TestCase
 
         $this->assertTimeoutExceeded([
             'data' => '{}',
-            'code' => 'os.execute("sleep ' . self::SLEEP_EXCEED . '") return {response=1}',
+            'code' => 'os.execute("sleep '.self::SLEEP_EXCEED.'") return {response=1}',
             'language' => 'lua',
-            'timeout' => self::TIMEOUT_LENGTH
+            'timeout' => self::TIMEOUT_LENGTH,
         ]);
     }
 
@@ -129,9 +130,9 @@ class TimeoutsTest extends TestCase
 
         $this->assertTimeoutNotExceeded([
             'data' => '{}',
-            'code' => 'os.execute("sleep ' . self::SLEEP_NOT_EXCEED . '") return {response=1}',
+            'code' => 'os.execute("sleep '.self::SLEEP_NOT_EXCEED.'") return {response=1}',
             'language' => 'lua',
-            'timeout' => self::TIMEOUT_LENGTH
+            'timeout' => self::TIMEOUT_LENGTH,
         ]);
 
         ScriptExecutor::setTestConfig('lua');
@@ -147,9 +148,9 @@ class TimeoutsTest extends TestCase
 
         $this->assertTimeoutExceeded([
             'data' => '{}',
-            'code' => '<?php sleep(' . self::SLEEP_EXCEED . '); return ["response"=>1];',
+            'code' => '<?php sleep('.self::SLEEP_EXCEED.'); return ["response"=>1];',
             'language' => 'php',
-            'timeout' => self::TIMEOUT_LENGTH
+            'timeout' => self::TIMEOUT_LENGTH,
         ]);
     }
 
@@ -162,9 +163,9 @@ class TimeoutsTest extends TestCase
 
         $this->assertTimeoutNotExceeded([
             'data' => '{}',
-            'code' => '<?php sleep(' . self::SLEEP_NOT_EXCEED . '); return ["response"=>1];',
+            'code' => '<?php sleep('.self::SLEEP_NOT_EXCEED.'); return ["response"=>1];',
             'language' => 'php',
-            'timeout' => self::TIMEOUT_LENGTH
+            'timeout' => self::TIMEOUT_LENGTH,
         ]);
     }
 
@@ -172,7 +173,7 @@ class TimeoutsTest extends TestCase
      * A helper method to generate a script object from the factory
      *
      * @param string $language
-     * @param integer $timeout
+     * @param int $timeout
      * @return Script
      */
     private function getScript($language, $timeout)

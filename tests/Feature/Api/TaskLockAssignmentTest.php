@@ -17,12 +17,12 @@ class TaskLockAssignmentTest extends TestCase
     use RequestHelper;
 
     /**
-     * @var \ProcessMaker\Models\User $user1
+     * @var \ProcessMaker\Models\User
      */
     protected $user1;
 
     /**
-     * @var \ProcessMaker\Models\User $user2
+     * @var \ProcessMaker\Models\User
      */
     protected $user2;
 
@@ -37,7 +37,7 @@ class TaskLockAssignmentTest extends TestCase
         $this->process = factory(Process::class)->create();
 
         // Load a single task process
-        $this->process->bpmn = file_get_contents(__DIR__ . '/processes/' . $processFileName);
+        $this->process->bpmn = file_get_contents(__DIR__.'/processes/'.$processFileName);
 
         $this->process->save();
 
@@ -156,6 +156,7 @@ class TaskLockAssignmentTest extends TestCase
         $activeTask = $request->tokens()->where('status', 'ACTIVE')->first();
         $this->assertEquals($this->user2->id, $activeTask->user_id);
     }
+
     /**
      * Complete task
      *
@@ -170,6 +171,7 @@ class TaskLockAssignmentTest extends TestCase
         $process = $task->process;
         $instance = $task->processRequest;
         WorkflowManager::completeTask($process, $instance, $task, $data);
+
         return $task->refresh();
     }
 }

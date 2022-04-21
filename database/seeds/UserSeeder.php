@@ -2,19 +2,23 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Models\User;
+use Laravel\Passport\ClientRepository;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
-use Laravel\Passport\ClientRepository;
+use ProcessMaker\Models\User;
 
 class UserSeeder extends Seeder
 {
+    public static $INSTALLER_ADMIN_USERNAME = 'admin';
 
-    static $INSTALLER_ADMIN_USERNAME = 'admin';
-    static $INSTALLER_ADMIN_PASSWORD = 'admin';
-    static $INSTALLER_ADMIN_EMAIL = 'admin@processmaker.com';
-    static $INSTALLER_ADMIN_FIRSTNAME = 'Admin';
-    static $INSTALLER_ADMIN_LASTNAME = 'User';
+    public static $INSTALLER_ADMIN_PASSWORD = 'admin';
+
+    public static $INSTALLER_ADMIN_EMAIL = 'admin@processmaker.com';
+
+    public static $INSTALLER_ADMIN_FIRSTNAME = 'Admin';
+
+    public static $INSTALLER_ADMIN_LASTNAME = 'User';
+
     /**
      * Run the database seeds.
      *
@@ -26,7 +30,7 @@ class UserSeeder extends Seeder
         $user = User::updateOrCreate([
             'username' => self::$INSTALLER_ADMIN_USERNAME,
             'is_administrator' => true,
-        ],[
+        ], [
             'username' => self::$INSTALLER_ADMIN_USERNAME,
             'password' => Hash::make(self::$INSTALLER_ADMIN_PASSWORD),
             'email' => self::$INSTALLER_ADMIN_EMAIL,
@@ -59,9 +63,9 @@ class UserSeeder extends Seeder
         $clients->create(
             null,
             'Swagger UI Auth',
-            env('APP_URL', 'http://localhost') . '/api/oauth2-callback'
+            env('APP_URL', 'http://localhost').'/api/oauth2-callback'
         );
-        
+
         // Allow users get at token using the password grant flow
         $clients->createPasswordGrantClient(
             null, 'Password Grant', 'http://localhost'

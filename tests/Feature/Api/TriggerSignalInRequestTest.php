@@ -1,9 +1,13 @@
 <?php
+
 namespace Tests\Feature\Api;
 
 use Faker\Provider\DateTime;
 use Illuminate\Foundation\Testing\WithFaker;
+use Laravel\Passport\Passport;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Jobs\ImportProcess;
+use ProcessMaker\Jobs\ThrowSignalEvent;
 use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Managers\WorkflowEventManager;
 use ProcessMaker\Models\Process;
@@ -12,12 +16,9 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ScheduledTask;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\ProcessTestingTrait;
+use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
-use Tests\Feature\Shared\RequestHelper;
-use ProcessMaker\Jobs\ImportProcess;
-use Laravel\Passport\Passport;
-use ProcessMaker\Jobs\ThrowSignalEvent;
 
 /**
  * Tests boundary signal events in Jobs triggers the right number of requests
@@ -31,13 +32,13 @@ class TriggerSignalInRequestTest extends TestCase
 
     /**
      * Tests one process with boundary signal event and one with start signal event.
-     * 
+     *
      **/
     public function testScheduleStartEvent()
     {
         $process = $this->createProcess([
             'id' => 1,
-            'bpmn' => file_get_contents(__DIR__ . '/processes/TriggerSignalInRequestTest.bpmn')
+            'bpmn' => file_get_contents(__DIR__.'/processes/TriggerSignalInRequestTest.bpmn'),
         ]);
 
         // Start process from normal start event node_9
@@ -58,10 +59,10 @@ class TriggerSignalInRequestTest extends TestCase
         $event = $process->getDefinitions()->getEvent('node_1');
         Passport::actingAs($this->user);
         $processRequest = WorkflowManager::triggerStartEvent($process, $event, [
-            'array' => [1,2],
-            'user_id' => $this->user->id]
+            'array' => [1, 2],
+            'user_id' => $this->user->id, ]
         );
-        $formTasks = $processRequest->tokens->filter(function($task) {
+        $formTasks = $processRequest->tokens->filter(function ($task) {
             return $task->element_name === 'Form Task';
         });
         $this->assertCount(2, $formTasks);
@@ -69,16 +70,16 @@ class TriggerSignalInRequestTest extends TestCase
         WorkflowManager::completeTask($process, $processRequest, $formTasks->first(), []);
         $this->assertEquals('COMPLETED', $formTasks->first()->refresh()->status);
         $this->assertEquals('ACTIVE', $formTasks->last()->refresh()->status);
-        
+
         WorkflowManager::throwSignalEvent('collection_1_update');
         $this->assertEquals('CLOSED', $formTasks->last()->refresh()->status);
 
         $lastTask = $processRequest->refresh()->tokens->last();
         $this->assertEquals('After Boundary', $lastTask->element_name);
-        
+
         WorkflowManager::completeTask($process, $processRequest, $lastTask, []);
         $this->assertEquals('CLOSED', $lastTask->refresh()->status);
-        
+
         $this->assertEquals('COMPLETED', $processRequest->refresh()->status);
     }
 }

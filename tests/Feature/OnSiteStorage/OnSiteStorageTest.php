@@ -10,8 +10,8 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\User;
-use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class OnSiteStorageTest extends TestCase
 {
@@ -19,7 +19,7 @@ class OnSiteStorageTest extends TestCase
     use WithFaker;
 
     /**
-     * @var Process $process
+     * @var Process
      */
     protected $process;
 
@@ -31,12 +31,11 @@ class OnSiteStorageTest extends TestCase
         'name',
         'initiated_at',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
      * Initialize the controller tests
-     *
      */
     protected function withUserSetUp()
     {
@@ -58,6 +57,7 @@ class OnSiteStorageTest extends TestCase
             'assignment_id' => $this->user->id,
             'assignment_type' => User::class,
         ]);
+
         return $process;
     }
 
@@ -66,10 +66,7 @@ class OnSiteStorageTest extends TestCase
      */
     public function testDataIsStoredInExternalConnection()
     {
-
-        
         $this->markTestSkipped();
-
 
         //Start a process request
         $route = route('api.process_events.trigger', [$this->process->id, 'event' => 'StartEventUID']);
@@ -102,9 +99,8 @@ class OnSiteStorageTest extends TestCase
 
         // Assert that the data was stored in the correct connection
         $storedRequest = DB::connection('data')->table('process_requests')->get()->first();
-        $this->assertEquals($data, (array)json_decode($storedRequest->data));
+        $this->assertEquals($data, (array) json_decode($storedRequest->data));
     }
-
 
     /**
      * Tests if restrictions are applied when deleting a request
@@ -115,9 +111,9 @@ class OnSiteStorageTest extends TestCase
         $request = factory(ProcessRequest::class, 1)->create()->first();
         $requestToken = factory(ProcessRequestToken::class, 1)
                         ->create([
-                                    'process_request_id' => $request->id,
-                                    'process_id' => $request->process_id
-                                ])
+                            'process_request_id' => $request->id,
+                            'process_id' => $request->process_id,
+                        ])
                         ->first();
 
         // A process can be deleted if it has requests

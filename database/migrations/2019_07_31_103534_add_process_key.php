@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class AddProcessKey extends Migration
 {
@@ -34,5 +34,6 @@ class AddProcessKey extends Migration
      * @return void
      */
     public function down()
-    { }
+    {
+    }
 }

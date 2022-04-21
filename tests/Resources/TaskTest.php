@@ -1,18 +1,19 @@
 <?php
+
 namespace Tests\Resources;
 
-use Tests\TestCase;
-use ProcessMaker\Models\User;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
-use ProcessMaker\Models\Screen;
+use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
-use ProcessMaker\Facades\WorkflowManager;
-use Illuminate\Http\UploadedFile;
+use Tests\TestCase;
 
-class TaskTest extends TestCase {
-
+class TaskTest extends TestCase
+{
     use RequestHelper;
 
     public function testScreens()
@@ -21,7 +22,7 @@ class TaskTest extends TestCase {
         $this->be($this->user);
 
         $content = file_get_contents(
-            __DIR__ . '/../Fixtures/nested_screen_process.json'
+            __DIR__.'/../Fixtures/nested_screen_process.json'
         );
         $import = ImportProcess::dispatchNow($content);
 
@@ -42,9 +43,9 @@ class TaskTest extends TestCase {
             $import->process->getDefinitions()->getEvent('node_1'),
             []
         );
-        
+
         Carbon::setTestNow($date->addDays(2));
-        
+
         // Update description after the request is created
         $parent->update(['description' => 'new parent description']);
         $child->update(['description' => 'new child description']);
@@ -60,7 +61,7 @@ class TaskTest extends TestCase {
         $this->assertEquals('parent', $json['screen']['title']);
         $this->assertCount(3, $json['screen']['nested']);
         $this->assertEquals('child', $json['screen']['nested'][0]['title']);
-        
+
         // Skipping version lock check until the feature is re-enabled
         // $this->assertEquals('original child description', $json['screen']['nested'][0]['description']);
         // $this->assertEquals('original child2 description', $json['screen']['nested'][1]['description']);
@@ -86,10 +87,11 @@ class TaskTest extends TestCase {
 
         // Include token
         $r = $processRequest->requestFiles(true);
-        $this->assertEquals($r->single[0]['token'], md5('single' . $media1->id . $media1->created_at));
+        $this->assertEquals($r->single[0]['token'], md5('single'.$media1->id.$media1->created_at));
     }
 
-    public function tearDown() : void {
+    public function tearDown() : void
+    {
         Carbon::setTestNow(); // reset
     }
 }

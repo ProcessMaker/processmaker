@@ -1,13 +1,14 @@
 <?php
+
 namespace Tests\Resources;
 
-use Tests\TestCase;
-use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Jobs\ImportProcess;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
-class ScreenTest extends TestCase {
-
+class ScreenTest extends TestCase
+{
     use RequestHelper;
 
     public function testScreens()
@@ -15,7 +16,7 @@ class ScreenTest extends TestCase {
         $this->be($this->user);
 
         $content = file_get_contents(
-            __DIR__ . '/../Fixtures/nested_screen_process.json'
+            __DIR__.'/../Fixtures/nested_screen_process.json'
         );
         $import = ImportProcess::dispatchNow($content);
 

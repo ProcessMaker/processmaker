@@ -1,8 +1,10 @@
 <?php
+
 namespace Tests;
-use ProcessMaker\Models\User;
-use ProcessMaker\Models\Screen;
+
 use ProcessMaker\Jobs\ImportProcess;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\User;
 use ProcessMaker\ScreenConsolidator;
 
 class ScreenConsolidatorTest extends TestCase
@@ -12,7 +14,7 @@ class ScreenConsolidatorTest extends TestCase
         $this->be(factory(User::class)->create());
 
         $content = file_get_contents(
-            __DIR__ . '/Fixtures/nested_screen_process.json'
+            __DIR__.'/Fixtures/nested_screen_process.json'
         );
         ImportProcess::dispatchNow($content);
 
@@ -20,12 +22,12 @@ class ScreenConsolidatorTest extends TestCase
 
         $consolidator = new ScreenConsolidator($screen);
         $result = $consolidator->call();
- 
+
         $this->assertCount(2, $result['config']);
         $this->assertCount(6, $result['config'][0]['items']);
 
         $parent = $result['config'][0]['items'];
-        
+
         $this->assertEquals('FormMultiColumn', $parent[1]['component']);
         $multiColumn = $parent[1]['items'];
         $this->assertEquals('FormInput', $multiColumn[0][0]['component']);
@@ -46,7 +48,7 @@ class ScreenConsolidatorTest extends TestCase
 
         $this->assertEquals(1, $result['computed'][0]['id']);
         $this->assertEquals(2, $result['computed'][1]['id']);
-        
+
         $this->assertEquals("* { color: blue }\n* { color: red }", $result['custom_css']);
     }
 }

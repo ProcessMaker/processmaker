@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\Process;
 
 class AddStartEventsToProcess extends Migration
@@ -20,7 +20,7 @@ class AddStartEventsToProcess extends Migration
         Schema::table('process_versions', function (Blueprint $table) {
             $table->json('start_events');
         });
-        foreach(Process::all() as $process) {
+        foreach (Process::all() as $process) {
             $process->start_events = $process->getUpdatedStartEvents();
             $process->save();
         }

@@ -10,13 +10,12 @@ use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
-use Tests\Feature\Shared\RequestHelper;
 use ProcessMaker\Providers\AuthServiceProvider;
+use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
 class CommentTest extends TestCase
 {
-
     use RequestHelper;
 
     const API_TEST_URL = '/comments';
@@ -31,14 +30,14 @@ class CommentTest extends TestCase
         'hidden',
         'type',
         'updated_at',
-        'created_at'
+        'created_at',
     ];
 
     protected function withUserSetup()
     {
         // Seed the permissions table.
         Artisan::call('db:seed', ['--class' => 'PermissionSeeder']);
-        
+
         // Reboot our AuthServiceProvider. This is necessary so that it can
         // pick up the new permissions and setup gates for each of them.
         $asp = new AuthServiceProvider(app());
@@ -60,13 +59,13 @@ class CommentTest extends TestCase
         factory(Comment::class, 10)->create([
             'commentable_id' => $model->getKey(),
             'commentable_type' => get_class($model),
-            'hidden' => false
+            'hidden' => false,
         ]);
 
         factory(Comment::class, 5)->create([
             'commentable_id' => $model->getKey(),
             'commentable_type' => get_class($model),
-            'hidden' => true
+            'hidden' => true,
         ]);
 
         $response = $this->apiCall('GET', self::API_TEST_URL);
@@ -88,13 +87,13 @@ class CommentTest extends TestCase
         factory(Comment::class, 10)->create([
             'commentable_id' => $model->getKey(),
             'commentable_type' => get_class($model),
-            'hidden' => false
+            'hidden' => false,
         ]);
 
         factory(Comment::class, 5)->create([
             'commentable_id' => $model->getKey(),
             'commentable_type' => get_class($model),
-            'hidden' => true
+            'hidden' => true,
         ]);
 
         $this->user = factory(User::class)->create([
@@ -118,13 +117,13 @@ class CommentTest extends TestCase
         factory(Comment::class, 10)->create([
             'commentable_id' => $model->getKey(),
             'commentable_type' => get_class($model),
-            'hidden' => false
+            'hidden' => false,
         ]);
 
         factory(Comment::class, 5)->create([
             'commentable_id' => $model->getKey(),
             'commentable_type' => get_class($model),
-            'hidden' => true
+            'hidden' => true,
         ]);
 
         $model2 = factory(ProcessRequest::class)->create();
@@ -132,13 +131,13 @@ class CommentTest extends TestCase
         factory(Comment::class, 10)->create([
             'commentable_id' => $model2->getKey(),
             'commentable_type' => get_class($model2),
-            'hidden' => false
+            'hidden' => false,
         ]);
 
         factory(Comment::class, 5)->create([
             'commentable_id' => $model2->getKey(),
             'commentable_type' => get_class($model2),
-            'hidden' => true
+            'hidden' => true,
         ]);
 
         $this->user = factory(User::class)->create([
@@ -148,7 +147,7 @@ class CommentTest extends TestCase
 
         $this->user->permissions()->attach(Permission::byName($permission)->id);
 
-        $response = $this->apiCall('GET', self::API_TEST_URL . '?commentable_type=' . get_class($model2));
+        $response = $this->apiCall('GET', self::API_TEST_URL.'?commentable_type='.get_class($model2));
         $json = $response->json('data');
         $this->assertCount(10, $json);
     }
@@ -190,7 +189,7 @@ class CommentTest extends TestCase
         $comment = factory(Comment::class)->create()->id;
 
         //load api
-        $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $comment);
+        $response = $this->apiCall('GET', self::API_TEST_URL.'/'.$comment);
 
         //Validate the status is correct
         $response->assertStatus(200);
@@ -205,7 +204,7 @@ class CommentTest extends TestCase
     public function testDeleteComment()
     {
         //Remove comment
-        $url = self::API_TEST_URL . '/' . factory(Comment::class)->create(['user_id' => $this->user->getKey()])->id;
+        $url = self::API_TEST_URL.'/'.factory(Comment::class)->create(['user_id' => $this->user->getKey()])->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code
@@ -218,11 +217,10 @@ class CommentTest extends TestCase
     public function testDeleteCommentNotExist()
     {
         //Comment not exist
-        $url = self::API_TEST_URL . '/' . factory(Comment::class)->make()->id;
+        $url = self::API_TEST_URL.'/'.factory(Comment::class)->make()->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code
         $response->assertStatus(405);
     }
-
 }

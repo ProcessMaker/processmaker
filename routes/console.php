@@ -33,8 +33,8 @@ Artisan::command('check {path}', function ($path) {
     $dom = new DOMDocument;
     $dom->load($path);
     $query = new DOMXPath($dom);
-    $nodes = $query->evaluate("//*[@bpmnElement]");
-    foreach($nodes as $node) {
+    $nodes = $query->evaluate('//*[@bpmnElement]');
+    foreach ($nodes as $node) {
         $id = $node->getAttribute('bpmnElement');
         $elem = $query->evaluate("//*[@id='$id']")->item(0);
         dump($elem);
