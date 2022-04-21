@@ -3,8 +3,10 @@
 namespace ProcessMaker\Jobs;
 
 use Illuminate\Bus\Queueable;
+use ProcessMaker\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -88,15 +90,6 @@ class SanitizeUsernames implements ShouldQueue
         if($unique_username_query->exists()) {
             goto build_username_query;
         }
-
-        // Grab the User model rules
-        //        $rules = (object) User::rules($username);
-
-        // Make sure the new, filtered username is valid
-        // with the User-model provided rules
-        //        Validator::make($rules->username,
-        //            ['username' => $username]
-        //        )->validate();
 
         // Once we know it's a unique, valid
         // username, send it back

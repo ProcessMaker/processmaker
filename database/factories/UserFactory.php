@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Arr;
 use Faker\Generator as Faker;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\User;
@@ -10,33 +9,10 @@ $onePassword = Hash::make('oneOnlyPassword');
 /**
  * Model factory for a User
  */
-$factory->define(User::class, function (Faker $faker) use ($onePassword) {
-
-    $username = static function ($generated = '') use ($faker) {
-        try {
-            $username_generator = static function () use ($faker, &$generated) {
-                $generated = \random_int(1, 100) > \random_int(1, 50)
-                    ? $faker->unique()->userName.Arr::random(
-                        ['\'','"','~','`','-','_','/','','$','|','@','!','%','=','*',')','(','+','#', '.']
-                    ) : str_replace('.', '', $faker->unique()->userName);
-            };
-
-            $username_generator();
-
-            while (User::where('username', '=', $generated)->exists()) {
-                $username_generator();
-            }
-
-            return $generated;
-        } catch (Exception $exception) {
-            dump($exception);
-
-            return $faker->unique()->userName;
-        }
-    };
+$factory->define(User::class, function (Faker $faker) use($onePassword) {
 
     return [
-        'username' => $username(),
+        'username' => $faker->unique()->userName,
         'email' => $faker->unique()->email,
         'password' => $onePassword,
 
