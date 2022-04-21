@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Str;
+
 return [
 
     /*
@@ -11,7 +13,8 @@ return [
     | using this caching library. This connection is used when another is
     | not explicitly specified when executing a given caching function.
     |
-    | Supported: "apc", "array", "database", "file", "memcached", "redis"
+    | Supported: "apc", "array", "database", "file",
+    |            "memcached", "redis", "dynamodb"
     |
     */
 
@@ -36,6 +39,7 @@ return [
 
         'array' => [
             'driver' => 'array',
+            'serialize' => false,
         ],
 
         'database' => [
@@ -62,13 +66,8 @@ return [
                 env('MEMCACHED_USERNAME'),
                 env('MEMCACHED_PASSWORD'),
             ],
-            /**
-             * Memcached options, example:
-             *      Memcached::OPT_CONNECT_TIMEOUT  => 2000,
-             *
-             * @link http://php.net/manual/en/memcached.constants.php
-             */
             'options' => [
+                // Memcached::OPT_CONNECT_TIMEOUT => 2000,
             ],
             'servers' => [
                 [
@@ -84,6 +83,15 @@ return [
             'connection' => 'default',
         ],
 
+        'dynamodb' => [
+            'driver' => 'dynamodb',
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+            'table' => env('DYNAMODB_CACHE_TABLE', 'cache'),
+            'endpoint' => env('DYNAMODB_ENDPOINT'),
+        ],
+
     ],
 
     /*
@@ -97,6 +105,6 @@ return [
     |
     */
 
-    'prefix' => 'processmaker',
+    'prefix' => env('CACHE_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_cache'),
 
 ];
