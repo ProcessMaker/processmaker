@@ -14,7 +14,7 @@ return [
     |            "processmakerpost", "log", "array"
     |
     */
-    'driver' => env('MAIL_DRIVER', 'log'),
+    'driver' => env('MAIL_MAILER', 'log'),
     /*
     |--------------------------------------------------------------------------
     | SMTP Host Address

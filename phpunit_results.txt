@@ -11064,7 +11064,7 @@ PHPUnit\TextUI\Command::main();\n
 </td>\n
               </tr>\n
                           <tr>\n
-                <td>MAIL_DRIVER</td>\n
+                <td>MAIL_MAILER</td>\n
                 <td><pre class=sf-dump id=sf-dump-1254469842 data-indent-pad="  ">"<span class=sf-dump-str title="4 characters">smtp</span>"\n
 </pre><script>Sfdump("sf-dump-1254469842")</script>\n
 </td>\n
@@ -11621,7 +11621,7 @@ PHPUnit\TextUI\Command::main();\n
 </td>\n
               </tr>\n
                           <tr>\n
-                <td>MAIL_DRIVER</td>\n
+                <td>MAIL_MAILER</td>\n
                 <td><pre class=sf-dump id=sf-dump-993752064 data-indent-pad="  ">"<span class=sf-dump-str title="4 characters">smtp</span>"\n
 </pre><script>Sfdump("sf-dump-993752064")</script>\n
 </td>\n
