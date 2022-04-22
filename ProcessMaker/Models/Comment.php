@@ -145,7 +145,7 @@ class Comment extends Model
     public function setBodyAttribute($value)
     {
         // Get al mentions and replace with the user id in mustaches
-        $value = preg_replace_callback('/(^|\s)([@][\p{L}\p{N}\-_]++)/', function ($matches) {
+        $value = mb_ereg_replace_callback('(^|\s)([@][\p{L}\p{N}\-_]+)', function ($matches) {
             $username = str_replace([' @','@'], '', $matches[0]);
             $user = User::where('username', $username)->first();
             if ($user) {
