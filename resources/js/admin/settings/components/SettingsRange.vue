@@ -1,10 +1,10 @@
 <template>
     <div class="setting-text">
         <div v-if="!!input" class="font-italic text-black-50">
-            Empty
+            {{ input }}
         </div>
         <div v-else>
-            {{ input }}
+            {{ $t('Empty') }}
         </div>
          <b-modal class="setting-object-modal" v-model="showModal" size="lg" @hidden="onModalHidden" @shown="onModalShown">
             <template v-slot:modal-header class="d-block">
