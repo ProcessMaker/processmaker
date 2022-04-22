@@ -63,6 +63,11 @@ class BuildScriptExecutors extends Command
      */
     public function handle()
     {
+        if (env('PM_CI', false)) {
+            // Do not run in CI environment
+            return;
+        }
+
         $this->userId = $this->argument('user');
         try {
             $this->buildExecutor();

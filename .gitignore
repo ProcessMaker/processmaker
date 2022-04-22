@@ -34,3 +34,6 @@ npm.sh
 laravel-echo-server.lock
 public/.htaccess
 coverage
+cypress/screenshots
+cypress/videos
+cypress/downloads

@@ -17,12 +17,6 @@ class HideSystemCategoriesTest extends TestCase
 {
     use RequestHelper;
 
-    protected function setUpExecutor()
-    {
-        ScriptExecutor::setTestConfig('php');
-        ScriptExecutor::setTestConfig('lua');
-    }
-
     private function categoryFiltered($model) {
         $prefix = strtolower(substr(strrchr($model, '\\'), 1));
         $category = factory($model . 'Category')->create([

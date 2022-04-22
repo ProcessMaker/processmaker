@@ -148,29 +148,6 @@ class ScriptExecutor extends Model
         return in_array($this->dockerImageName(), $images);
     }
 
-    /**
-     * If we need to run a docker image in a test, chances are the Executor IDs wont
-     * match up with the docker image names. To prevent errors, lets just grab the first
-     * image available on the testing machine and explicitly set the executor image.
-     * When 'image' is set in the config, it will ignore the one provided by the factory executor.
-     *
-     * @param string $language
-     * @return void
-     */
-    public static function setTestConfig($language)
-    {
-        ScriptExecutor::firstOrCreate(
-            ['language' => $language],
-            ['title' => 'Test Executor']
-        );
-
-        $images = self::listOfExecutorImages($language);
-        if (count($images) === 0) {
-            throw new \Exception("No matching docker image for $language");
-        }
-        config(["script-runners.${language}.image" => $images[0]]);
-    }
-
     public static function listOfExecutorImages($filterByLanguage = null)
     {
         exec('docker images | awk \'{r=$1":"$2; print r}\'', $result);

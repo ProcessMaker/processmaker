@@ -9,7 +9,7 @@ $factory->define(Script::class, function (Faker $faker) {
     return [
         'key' => null,
         'title' => $faker->sentence,
-        'language' => $faker->randomElement(['php', 'lua']),
+        'language' => 'php',
         'code' => $faker->sentence($faker->randomDigitNotNull),
         'description' => $faker->sentence,
         'run_as_user_id' => function () {
