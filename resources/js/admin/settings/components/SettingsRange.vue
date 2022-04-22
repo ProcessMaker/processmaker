@@ -1,6 +1,6 @@
 <template>
     <div class="setting-text">
-        <div v-if="input === null || !input.length" class="font-italic text-black-50">
+        <div v-if="!!input" class="font-italic text-black-50">
             Empty
         </div>
         <div v-else>
