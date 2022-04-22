@@ -52,6 +52,23 @@
       </b-form-group>
       
       <b-form-group
+          :description="$t('Use a transparent PNG at {{size}} pixels for best results.', { size: '32x32'})"
+          :label="$t('Custom Favicon')"
+          label-for="custom-favicon"
+          class="mb-3"
+          :state="fieldState('fileFavicon')"
+          :invalid-feedback="errorMessage('fileFavicon')"
+      >
+          <b-form-file
+              id="custom-favicon"
+              :placeholder="placeholder(fileFavicon, $t('Choose icon image'))"
+              ref="customFileFavicon"
+              accept="image/x-png,image/gif,image/jpeg"
+              @change.prevent="onFileChangeFavicon"
+          ></b-form-file>
+      </b-form-group>
+      
+      <b-form-group
           :description="$t('Enter the alt text that should accompany the logos and icon.')"
           label="Alternative Text"
           label-for="alt-text"
@@ -196,6 +213,10 @@ export default {
         file: null,
         selectedFile: null,
       },
+      fileFavicon: {
+        file: null,
+        selectedFile: null,
+      },
       colors: null,
       selectedSansSerifFont: {
         'id': "'Open Sans'",
@@ -309,6 +330,7 @@ export default {
         'login': null,
         'logo': null,
         'icon': null,
+        'favicon': null,
         'colors': null,
       }
     }
@@ -328,6 +350,9 @@ export default {
         }
         if (this.config.config.icon != "null") {
           this.fileIcon.selectedFile = this.config.config.icon;
+        }
+        if (this.config.config.favicon != "null") {
+          this.fileFavicon.selectedFile = this.config.config.favicon;
         }
         if (this.config.config.sansSerifFont != "null") {
           this.selectedSansSerifFont = JSON.parse(this.config.config.sansSerifFont);
@@ -402,9 +427,11 @@ export default {
       formData.append('fileLoginName', this.fileLogin.selectedFile);
       formData.append('fileLogoName', this.fileLogo.selectedFile);
       formData.append('fileIconName', this.fileIcon.selectedFile);
+      formData.append('fileFaviconName', this.fileFavicon.selectedFile);
       formData.append('fileLogin', this.fileLogin.file);
       formData.append('fileLogo', this.fileLogo.file);
       formData.append('fileIcon', this.fileIcon.file);
+      formData.append('fileFavicon', this.fileFavicon.file);
       formData.append('variables', JSON.stringify(this.customColors));
       formData.append('sansSerifFont', JSON.stringify(this.selectedSansSerifFont));
       formData.append('loginFooter', this.loginFooter);
@@ -424,8 +451,10 @@ export default {
           formData.append('reset', 'true');
           formData.append('fileLogoName', '');
           formData.append('fileIconName', '');
+          formData.append('fileFaviconName', '');
           formData.append('fileLogo', '');
           formData.append('fileIcon', '');
+          formData.append('fileFavicon', '');
           formData.append('variables', JSON.stringify(this.colorDefault));
           formData.append('sansSerifFont', JSON.stringify({id:"'Open Sans'", value:'Open Sans'}));
           formData.append('loginFooter', '');
@@ -502,6 +531,19 @@ export default {
 
       this.fileIcon.selectedFile = files[0].name;
       this.fileIcon.file = files[0];
+    },
+    browseFavicon() {
+      this.$refs.customFileFavicon.click();
+    },
+    onFileChangeFavicon(e) {
+      let files = e.target.files || e.dataTransfer.files;
+    
+      if (!files.length) {
+        return;
+      }
+    
+      this.fileFavicon.selectedFile = files[0].name;
+      this.fileFavicon.file = files[0];
     },
   }
 };

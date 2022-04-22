@@ -63,6 +63,7 @@ class Setting extends Model implements HasMedia
     public const COLLECTION_CSS_LOGIN = 'login';
     public const COLLECTION_CSS_LOGO = 'logo';
     public const COLLECTION_CSS_ICON = 'icon';
+    public const COLLECTION_CSS_FAVICON = 'favicon';
 
     /**
      * The attributes that aren't mass assignable.
@@ -321,6 +322,22 @@ class Setting extends Model implements HasMedia
             }
         }
 
+        return $url . '?id=' . bin2hex(random_bytes(16));
+    }
+    
+    public static function getFavicon()
+    {
+        //default icon
+        $url = asset(env('FAVICON_PATH', '/favicon.png'));
+        //custom icon
+        $setting = self::byKey('css-override');
+        if ($setting) {
+            $mediaFile = $setting->getMedia(self::COLLECTION_CSS_FAVICON);
+    
+            foreach ($mediaFile as $media) {
+                $url = $media->getFullUrl();
+            }
+        }
         return $url . '?id=' . bin2hex(random_bytes(16));
     }
 }
