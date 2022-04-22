@@ -92,7 +92,7 @@ class SanitizeUsernames implements ShouldQueue
 
         foreach ($comments_with_username as $comment) {
             DB::table('comments')->where('id', $comment->id)->update([
-                'body' => str_replace("@{$previous_username}", "@$new_username", $comment->body)
+                'body' => str_replace("@{$previous_username} ", "@$new_username ", $comment->body)
             ]);
         }
     }
@@ -111,7 +111,7 @@ class SanitizeUsernames implements ShouldQueue
         $i = 0;
 
         $generator = static function () use ($username, &$i): string {
-            if (blank($username = mb_ereg_match("[^\p{L}\p{N}\-_\s]", $username))) {
+            if (blank($username = mb_ereg_replace('[^\p{L}\p{N}\-_\s]', '', $username))) {
                 $username = 'user_'.random_bytes(4);
             }
 
