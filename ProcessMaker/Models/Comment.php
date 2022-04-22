@@ -144,12 +144,9 @@ class Comment extends Model
 
     public function setBodyAttribute($value)
     {
-        $value = preg_replace_callback('/(^|\s)([@][\.a-zA-Z\d\-_]+)/', function ($matches) {
+        // Get al mentions and replace with the user id in mustaches
+        $value = preg_replace_callback('/(^|\s)([@][a-zA-Z-zÀ-ÖØ-öø-ÿ0-9_-]+)/', function ($matches) {
             $username = str_replace([' @','@'], '', $matches[0]);
-
-            // Apply here script algorythm to convert old username format to new one
-            // ...
-
             $user = User::where('username', $username)->first();
             if ($user) {
                 return ' {{' . $user->id . '}}';
@@ -169,11 +166,6 @@ class Comment extends Model
             }
         }, $body);
         return $body;
-
-        // Old format user with special characters
-        // 2 users: myUser_ and myUser     OLD FORMAT
-        // After upgrade to no formate and remove special characters
-        // 2 users myUser and myUser
     }
 
     /**
