@@ -216,7 +216,7 @@ import "@processmaker/vue-form-elements/dist/vue-form-elements.css";
 import MonacoEditor from "vue-monaco";
 import mockMagicVariables from "./mockMagicVariables";
 import TopMenu from "../../components/Menu";
-import { cloneDeep, debounce } from 'lodash';
+import { cloneDeep, debounce , isEqual} from 'lodash';
 import i18next from 'i18next';
 
 // Bring in our initial set of controls
@@ -422,7 +422,8 @@ export default {
   computed: {
     previewDataStringyfy: {
       get() {
-        if (JSON.stringify(this.previewData) !== JSON.stringify(this.previewDataSaved)) {
+        if (!isEqual(this.previewData, this.previewDataSaved)) {
+          Object.assign(this.previewDataSaved, this.previewData);
           this.formatMonaco();
         }
         return JSON.stringify(this.previewData);
@@ -628,10 +629,13 @@ export default {
       this.previewData = this.previewInputValid ? JSON.parse(this.previewInput) : {};
       this.rendererKey++;
       if (mode == 'preview') {
+        this.$dataProvider.flushScreenCache();
         this.preview.config = cloneDeep(this.config);
         this.preview.computed = cloneDeep(this.computed);
         this.preview.customCSS = cloneDeep(this.customCSS);
         this.preview.watchers = cloneDeep(this.watchers);
+      } else {
+        this.$refs.builder.refreshContent();
       }
     },
     onUpdate(data) {
