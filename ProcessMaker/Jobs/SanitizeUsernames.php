@@ -6,6 +6,8 @@ use Illuminate\Bus\Queueable;
 use ProcessMaker\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -47,18 +49,51 @@ class SanitizeUsernames implements ShouldQueue
             }
 
             // Set the valid username to the user
-            $update = DB::table('users')->where('id', $user->id)->update([
+            $updated = DB::table('users')->where('id', $user->id)->update([
                 'username' => $updated_username
             ]);
 
             // Log the result and continue
-            if ($update) {
-                logger()->info("Username Updated From ({$pre_update_username}) to ({$user->username})", [
+            if ($updated) {
+                // Search through comments and replace the previous username
+                // with the recently updated, valid username
+                self::findAndReplaceUsernameInComments($pre_update_username, $updated_username);
+
+                // Log the the changes
+                logger()->info("Username Updated From ({$pre_update_username}) to ({$updated_username})", [
                     'user_id' => $user->id,
                     'updated_from_username' => $pre_update_username,
-                    'updated_to_username' => $user->username
+                    'updated_to_username' => $updated_username
                 ]);
             }
+        }
+    }
+
+    /**
+     * Search through existing comments for usernames in plain text and swap out
+     * the username with disallowed characters with the filtered/validated one
+     *
+     * @param  string  $previous_username
+     * @param  string  $new_username
+     *
+     * @return void
+     */
+    public static function findAndReplaceUsernameInComments(string $previous_username, string $new_username)
+    {
+        if (!self::packageCommentsInstalled()) {
+            return;
+        }
+
+        $comments_with_username = DB::table('comments')
+                                    ->where('body', 'like', "%@{$previous_username}%")
+                                    ->select('id','body')
+                                    ->orderBy('id')
+                                    ->get();
+
+        foreach ($comments_with_username as $comment) {
+            DB::table('comments')->where('id', $comment->id)->update([
+                'body' => str_replace("@{$previous_username}", "@$new_username", $comment->body)
+            ]);
         }
     }
 
@@ -75,7 +110,7 @@ class SanitizeUsernames implements ShouldQueue
         $i = 0;
 
         $generator = static function () use ($username, &$i): string {
-            preg_match_all('/[^a-zA-Z\d\s_-]/m', $username, $invalid_chars, PREG_SET_ORDER, 0);
+            preg_match_all('/[^A-Za-zÀ-ÖØ-öø-ÿ\d\s_-]/u', $username, $invalid_chars, PREG_SET_ORDER, 0);
             $invalid_chars = collect($invalid_chars)->flatten()->unique()->values();
             $username = ! blank($invalid_chars) ? str_replace($invalid_chars->all(), '', $username) : $username;
             return $i++ !== 0 ? $username.$i : $username;
@@ -83,16 +118,27 @@ class SanitizeUsernames implements ShouldQueue
 
         // Ensure uniqueness for the username
         build_username_query:
-        $unique_username_query = DB::table('users')->where('username', $username = $generator())
+        $unique_username_query = DB::table('users')
+                                   ->where('username', $username = $generator())
                                    ->where('id', '!=', $id)
                                    ->orderBy('id');
 
-        if($unique_username_query->exists()) {
+        if ($unique_username_query->exists()) {
             goto build_username_query;
         }
 
         // Once we know it's a unique, valid
         // username, send it back
         return $username;
+    }
+
+    /**
+     * ProcessMaker-specific package comments is installed or now
+     *
+     * @return bool
+     */
+    public static function packageCommentsInstalled(): bool
+    {
+        return File::exists(base_path('vendor/processmaker/package-comments'));
     }
 }
