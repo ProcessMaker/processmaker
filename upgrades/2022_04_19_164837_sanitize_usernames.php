@@ -6,6 +6,8 @@ use ProcessMaker\Upgrades\UpgradeMigration as Upgrade;
 
 class SanitizeUsernames extends Upgrade
 {
+    public $to = '4.2.30-RC';
+
     /**
      * Run any validations/pre-run checks to ensure the environment, settings,
      * packages installed, etc. are right correct to run this upgrade.
