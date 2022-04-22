@@ -104,28 +104,28 @@ class SanitizeUsernames implements ShouldQueue
      * @param  int  $id
      *
      * @return string
+     * @throws \Exception
      */
     public static function filterAndValidateUsername(string $username, int $id): string
     {
         $i = 0;
 
         $generator = static function () use ($username, &$i): string {
-            preg_match_all('/[^A-Za-zÀ-ÖØ-öø-ÿ\d\s_-]/u', $username, $invalid_chars, PREG_SET_ORDER, 0);
-            $invalid_chars = collect($invalid_chars)->flatten()->unique()->values();
-            $username = ! blank($invalid_chars) ? str_replace($invalid_chars->all(), '', $username) : $username;
+            if (blank($username = mb_ereg_match("[^\p{L}\p{N}\-_\s]", $username))) {
+                $username = 'user_'.random_bytes(4);
+            }
+
             return $i++ !== 0 ? $username.$i : $username;
         };
 
-        // Ensure uniqueness for the username
-        build_username_query:
-        $unique_username_query = DB::table('users')
-                                   ->where('username', $username = $generator())
-                                   ->where('id', '!=', $id)
-                                   ->orderBy('id');
+        do {
+            // Ensure uniqueness for the username
+            $unique_username_query = DB::table('users')
+                                       ->where('username', $username = $generator())
+                                       ->where('id', '!=', $id)
+                                       ->orderBy('id');
+        } while ($unique_username_query->exists());
 
-        if ($unique_username_query->exists()) {
-            goto build_username_query;
-        }
 
         // Once we know it's a unique, valid
         // username, send it back
