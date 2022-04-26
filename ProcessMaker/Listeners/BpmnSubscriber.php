@@ -84,7 +84,13 @@ class BpmnSubscriber
         if ($event->instance->isNonPersistent()) {
             return;
         }
-        Log::info('Process completed: ' . json_encode($event->instance->getProperties()));
+        Log::info(
+            'Process completed:',
+            array_merge(
+                $event->instance->getProperties(),
+                ['timestamp' => microtime()]
+            )
+        );
 
         $notifiables = $event->instance->getNotifiables('completed');
         Notification::send($notifiables, new ProcessCompletedNotification($event->instance));
@@ -101,7 +107,13 @@ class BpmnSubscriber
         if ($event->instance->isNonPersistent()) {
             return;
         }
-        Log::info('Process created: ' . json_encode($event->instance->getProperties()));
+        Log::info(
+            'Process created:',
+            array_merge(
+                $event->instance->getProperties(),
+                ['timestamp' => microtime()]
+            )
+        );
 
         $notifiables = $event->instance->getNotifiables('started');
         Notification::send($notifiables, new ProcessCreatedNotification($event->instance));
