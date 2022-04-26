@@ -241,7 +241,7 @@ class ClearRequestsTest extends TestCase
         $fileUpload = UploadedFile::fake()->create('request_test_file456.txt', 1);
   
         // We create a model (in this case a user) and associate to him the file
-        $model = ProcessRequest::find(1);
+        $model = ProcessRequest::orderBy('id', 'desc')->first();
         $model->addMedia($fileUpload)
             ->withCustomProperties(['data_name' => 'test'])
             ->toMediaCollection('local');
@@ -276,6 +276,8 @@ class ClearRequestsTest extends TestCase
   
     public function testCommandClearRequests()
     {
+        $existingProcessIds = Process::pluck('id');
+        
         // Run process with timers
         $this->runProcessWithTimers();
 
@@ -306,6 +308,12 @@ class ClearRequestsTest extends TestCase
         // 3 comments about Process should remain
         $this->assertEquals(3, Comment::count());
         $this->assertEquals(1, Media::count());
+
+        // We need to do our own teardown here since were not using
+        // transactions for this test
+        $currentProcessIds = Process::pluck('id');
+        $createdProcessIds = $currentProcessIds->diff($existingProcessIds);
+        Process::destroy($createdProcessIds);
     }
 
     /**

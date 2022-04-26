@@ -23,8 +23,6 @@ class CallActivityTest extends TestCase
      */
     public function testCallActivity()
     {
-        ScriptExecutor::setTestConfig('php');
-
         // Script task requires passport installed (oauth token)
         Artisan::call('passport:install', ['-vvv' => true]);
 
@@ -147,8 +145,6 @@ class CallActivityTest extends TestCase
 
     public function testCallActivityWithUpdateInProgress()
     {
-        ScriptExecutor::setTestConfig('php');
-
         // Script task requires passport installed (oauth token)
         Artisan::call('passport:install', ['-vvv' => true]);
 
@@ -295,8 +291,6 @@ class CallActivityTest extends TestCase
 
     public function testProcessLoop()
     {
-        ScriptExecutor::setTestConfig('php');
-
         // Script task requires passport installed (oauth token)
         Artisan::call('passport:install', ['-vvv' => true]);
 

@@ -81,6 +81,13 @@ class ScreenController extends Controller
 
         $include = $request->input('include', '');
 
+        // sparse fields
+        $fields = $request->input('fields', '');
+        if ($fields) {
+            $fields = explode(',', $fields);
+            $query->select($fields);
+        }
+
         if ($include) {
             $include = explode(',', $include);
             $count = array_search('categoryCount', $include);

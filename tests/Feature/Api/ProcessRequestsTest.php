@@ -462,16 +462,121 @@ class ProcessRequestsTest extends TestCase
     }
 
     /**
-     * Delete request in process
+     * Delete request and request tokens in parent process, and children processes
      */
-    public function testDeleteProcessRequest()
+    public function testDeleteParentProcessRequestShouldRemoveRequestAndTokensForParentAndChildren()
     {
+        $user = factory(User::class)->create();
+        // Prepare data
+        $parentProcessRequest = factory(ProcessRequest::class)->create(['status' => 'ACTIVE']);
+
+        $childProcessRequest1 = factory(ProcessRequest::class)->create([
+            'status' => 'ACTIVE',
+            'parent_request_id' => $parentProcessRequest->id
+        ]);
+
+        $childProcessRequest2 = factory(ProcessRequest::class)->create([
+            'status' => 'ACTIVE',
+            'parent_request_id' => $childProcessRequest1->id
+        ]);
+
+        $parentTokens = factory(ProcessRequestToken::class, 3)->create([
+            'process_request_id' => $parentProcessRequest->id
+        ]);
+
+        $childTokens1 = factory(ProcessRequestToken::class, 4)->create([
+            'process_request_id' => $childProcessRequest1->id
+        ]);
+
+        $childTokens2 = factory(ProcessRequestToken::class, 5)->create([
+            'process_request_id' => $childProcessRequest2->id
+        ]);
+
+        // Assert database has parent and child requests
+        $this->assertEquals(1, ProcessRequest::where('id', $parentProcessRequest->id)->count());
+        $this->assertEquals(1, ProcessRequest::where('id', $childProcessRequest1->id)->count());
+        $this->assertEquals(1, ProcessRequest::where('id', $childProcessRequest2->id)->count());
+
+        // Assert count database has tokens for parent and child requests
+        $this->assertEquals(3, ProcessRequestToken::where('process_request_id', $parentProcessRequest->id)->count());
+        $this->assertEquals(4, ProcessRequestToken::where('process_request_id', $childProcessRequest1->id)->count());
+        $this->assertEquals(5, ProcessRequestToken::where('process_request_id', $childProcessRequest2->id)->count());
+
         //Remove request
-        $url = self::API_TEST_URL . '/' . factory(ProcessRequest::class)->create()->id;
+        $url = self::API_TEST_URL . '/' . $parentProcessRequest->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code
         $response->assertStatus(204);
+
+        // Assert database does not has parent and child requests
+        $this->assertEquals(0, ProcessRequest::where('id', $parentProcessRequest->id)->count());
+        $this->assertEquals(0, ProcessRequest::where('id', $childProcessRequest1->id)->count());
+        $this->assertEquals(0, ProcessRequest::where('id', $childProcessRequest2->id)->count());
+
+        // Assert database does not has parent and child requests tokens
+        $this->assertEquals(0, ProcessRequestToken::where('process_request_id', $parentProcessRequest->id)->count());
+        $this->assertEquals(0, ProcessRequestToken::where('process_request_id', $childProcessRequest1->id)->count());
+        $this->assertEquals(0, ProcessRequestToken::where('process_request_id', $childProcessRequest2->id)->count());
+    }
+
+    /**
+     * Delete request and request tokens in subprocess and child process
+     */
+    public function testDeleteChildProcessRequestShouldRemoveRequestAndTokensForChildren()
+    {
+        $user = factory(User::class)->create();
+        // Prepare data
+        $parentProcessRequest = factory(ProcessRequest::class)->create(['status' => 'ACTIVE']);
+
+        $childProcessRequest1 = factory(ProcessRequest::class)->create([
+            'status' => 'ACTIVE',
+            'parent_request_id' => $parentProcessRequest->id
+        ]);
+
+        $childProcessRequest2 = factory(ProcessRequest::class)->create([
+            'status' => 'ACTIVE',
+            'parent_request_id' => $childProcessRequest1->id
+        ]);
+
+        $parentTokens = factory(ProcessRequestToken::class, 3)->create([
+            'process_request_id' => $parentProcessRequest->id
+        ]);
+
+        $childTokens1 = factory(ProcessRequestToken::class, 4)->create([
+            'process_request_id' => $childProcessRequest1->id
+        ]);
+
+        $childTokens2 = factory(ProcessRequestToken::class, 5)->create([
+            'process_request_id' => $childProcessRequest2->id
+        ]);
+
+        // Assert database has parent and child requests
+        $this->assertEquals(1, ProcessRequest::where('id', $parentProcessRequest->id)->count());
+        $this->assertEquals(1, ProcessRequest::where('id', $childProcessRequest1->id)->count());
+        $this->assertEquals(1, ProcessRequest::where('id', $childProcessRequest2->id)->count());
+
+        // Assert count database has tokens for parent and child requests
+        $this->assertEquals(3, ProcessRequestToken::where('process_request_id', $parentProcessRequest->id)->count());
+        $this->assertEquals(4, ProcessRequestToken::where('process_request_id', $childProcessRequest1->id)->count());
+        $this->assertEquals(5, ProcessRequestToken::where('process_request_id', $childProcessRequest2->id)->count());
+
+        //Remove request
+        $url = self::API_TEST_URL . '/' . $childProcessRequest1->id;
+        $response = $this->apiCall('DELETE', $url);
+
+        //Validate the header status code
+        $response->assertStatus(204);
+
+        // Assert database does not has parent and child requests
+        $this->assertEquals(1, ProcessRequest::where('id', $parentProcessRequest->id)->count());
+        $this->assertEquals(0, ProcessRequest::where('id', $childProcessRequest1->id)->count());
+        $this->assertEquals(0, ProcessRequest::where('id', $childProcessRequest2->id)->count());
+
+        // Assert database does not has parent and child requests tokens
+        $this->assertEquals(3, ProcessRequestToken::where('process_request_id', $parentProcessRequest->id)->count());
+        $this->assertEquals(0, ProcessRequestToken::where('process_request_id', $childProcessRequest1->id)->count());
+        $this->assertEquals(0, ProcessRequestToken::where('process_request_id', $childProcessRequest2->id)->count());
     }
 
     /**

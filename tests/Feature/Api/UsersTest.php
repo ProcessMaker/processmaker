@@ -8,6 +8,7 @@ use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class UsersTest extends TestCase
 {
@@ -461,6 +462,7 @@ class UsersTest extends TestCase
      */
     public function testUpdateUserAvatar()
     {
+
         //Create a new user
         $user = factory(User::class)->create([
             'username' => 'AvatarUser',
@@ -495,10 +497,12 @@ class UsersTest extends TestCase
         //Assert that the 'avatar' key exists
         $getResponse->assertJsonStructure(['avatar']);
 
-        //Assert that the file exists in the correct location
+        //Assert that the file was saved
         $json = $getResponse->json();
         $path = parse_url($json['avatar'], PHP_URL_PATH);
-        $this->assertFileExists('public' . $path);
+        $media = $user->getMedia('profile')[0];
+        $this->assertEquals("/storage/profile/$media->id/img.png", $path);
+        $this->assertFileExists($media->getPath());
     }
 
     /**

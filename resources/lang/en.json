@@ -1,4 +1,5 @@
 {
+  "ProcessMaker": "ProcessMaker",
   "Skip to Content": "Skip to Content",
   " pending": " pending",
   ":user has completed the task :task_name": ":user has completed the task :task_name",
@@ -197,6 +198,7 @@
   "Current Local Time": "Current Local Time",
   "Custom Colors": "Custom Colors",
   "Custom CSS": "Custom CSS",
+  "Custom Favicon": "Custom Favicon",
   "Custom Icon": "Custom Icon",
   "Custom Logo": "Custom Logo",
   "Customize UI": "Customize UI",

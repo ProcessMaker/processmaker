@@ -27,6 +27,13 @@
         <b-row class="h-100 m-0" id="preview" v-show="displayPreview">
 
           <b-col class="overflow-auto h-100">
+            <div v-if="$store.getters['globalErrorsModule/isValidScreen'] === false" class="alert alert-danger mt-3">
+              <i class="fas fa-exclamation-circle"/>
+              {{ $store.getters['globalErrorsModule/getErrorMessage'] }}
+              <button type="button" class="close" aria-label="Close" @click="$store.dispatch('globalErrorsModule/close')">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
             <vue-form-renderer
               v-if="renderComponent === 'task-screen'"
               ref="renderer"
@@ -109,7 +116,13 @@
                 </b-button>
 
                 <b-collapse v-model="showDataPreview" id="showDataPreview" class="mt-2">
-                  <vue-json-pretty :data="previewData" class="p-2 data-collapse"></vue-json-pretty>
+                  <monaco-editor
+                    :options="monacoOptions"
+                    class="editor"
+                    v-model="previewDataStringyfy"
+                    language="json"
+                    @editorDidMount="monacoMounted"
+                  />
                 </b-collapse>
               </b-card-body>
             </b-card>
@@ -200,12 +213,10 @@ import ComputedProperties from "@processmaker/screen-builder/src/components/comp
 import CustomCSS from "@processmaker/screen-builder/src/components/custom-css";
 import "@processmaker/screen-builder/dist/vue-form-builder.css";
 import "@processmaker/vue-form-elements/dist/vue-form-elements.css";
-import VueJsonPretty from "vue-json-pretty";
-import 'vue-json-pretty/lib/styles.css';
 import MonacoEditor from "vue-monaco";
 import mockMagicVariables from "./mockMagicVariables";
 import TopMenu from "../../components/Menu";
-import { cloneDeep, debounce } from 'lodash';
+import { cloneDeep, debounce , isEqual} from 'lodash';
 import i18next from 'i18next';
 
 // Bring in our initial set of controls
@@ -357,6 +368,7 @@ export default {
       watchers: [],
       config: this.screen.config || defaultConfig,
       previewData: {},
+      previewDataSaved: {},
       previewInput: "{}",
       customCSS: "",
       cssErrors: "",
@@ -364,10 +376,14 @@ export default {
       toggleValidation: true,
       showDataPreview: true,
       showDataInput: true,
+      editor: null,
       monacoOptions: {
-        automaticLayout: true,
+        language: 'json',
         lineNumbers: "off",
-        minimap: false
+        formatOnPaste: true,
+        formatOnType: true,
+        automaticLayout: true,
+        minimap: { enabled: false },
       },
       mockMagicVariables,
       previewComponents: [],
@@ -379,7 +395,6 @@ export default {
   components: {
     VueFormBuilder,
     VueFormRenderer,
-    VueJsonPretty,
     ComputedProperties,
     CustomCSS,
     WatchersPopup,
@@ -402,9 +417,19 @@ export default {
     },
     customCSS(newCustomCSS) {
       this.preview.custom_css = newCustomCSS;
-    }
+    },
   },
   computed: {
+    previewDataStringyfy: {
+      get() {
+        if (!isEqual(this.previewData, this.previewDataSaved)) {
+          Object.assign(this.previewDataSaved, this.previewData);
+          this.formatMonaco();
+        }
+        return JSON.stringify(this.previewData);
+      },
+      set() {}
+    },
     previewInputValid() {
       try {
         JSON.parse(this.previewInput);
@@ -465,6 +490,18 @@ export default {
     this.countElements();
   },
   methods: {
+    monacoMounted(editor) {
+      this.editor = editor;
+    },
+    formatMonaco() {
+      if (!this.editor) {
+        return;
+      }
+      this.editor.updateOptions({ readOnly:  false });
+      this.editor.getAction('editor.action.formatDocument').run().then(() => {
+        this.editor.updateOptions({ readOnly: true });
+      });
+    },
     countElements() {
       if (!this.$refs.renderer) {
         return;
@@ -592,10 +629,13 @@ export default {
       this.previewData = this.previewInputValid ? JSON.parse(this.previewInput) : {};
       this.rendererKey++;
       if (mode == 'preview') {
+        this.$dataProvider.flushScreenCache();
         this.preview.config = cloneDeep(this.config);
         this.preview.computed = cloneDeep(this.computed);
         this.preview.customCSS = cloneDeep(this.customCSS);
         this.preview.watchers = cloneDeep(this.watchers);
+      } else {
+        this.$refs.builder.refreshContent();
       }
     },
     onUpdate(data) {
@@ -851,5 +891,8 @@ export default {
 
     .data-collapse {
       height: 225px;
+    }
+    .editor {
+      height: 30em;
     }
 </style>

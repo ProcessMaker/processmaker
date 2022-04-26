@@ -26,6 +26,9 @@ class ProcessRequestObserver
         //A Process Request Token delete child requests in cascade
         ProcessRequestToken::where('subprocess_request_id', $request->id)
             ->delete();
+        // Delete all tokens for subprocesses
+        $childRequests = ProcessRequest::where('parent_request_id', $request->id)->get();
+        foreach($childRequests as $child) $child->delete();
         //A request delete child requests in cascade
         ProcessRequest::where('parent_request_id', $request->id)
             ->delete();
