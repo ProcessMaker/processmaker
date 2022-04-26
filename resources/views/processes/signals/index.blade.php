@@ -63,7 +63,7 @@
     <script src="{{ mix('js/processes/signals/index.js') }}"></script>
     <script>
         new Vue({
-            el: '#listSignals',
+            el: '#listCustomSignals',
             data() {
                 return {
                     filter: '',
@@ -97,7 +97,7 @@
                     });
                 },
                 reload() {
-                    this.$refs.signalList.dataManager([
+                    this.$refs.signalCustomList.dataManager([
                         {
                             field: 'name',
                             direction: 'desc',
