@@ -80,8 +80,8 @@ export default {
     return {
       orderBy: "id",
       localLoadOnStart: true,
-      showSystemSignals: false,
-      showCustomSignals: true,
+      showSystemSignals: true,
+      showCustomSignals: false,
       sortOrder: [
         {
           field: "id",
@@ -109,23 +109,23 @@ export default {
     };
   },
   created() {
-    ProcessMaker.EventBus.$on('api-data-custom-signals', (val) => {
-      this.localLoadOnStart = val;
-      this.showSystemSignals = false;
-      this.showCustomSignals = true;
-      this.fetch();
-      this.apiDataLoading = false;
-      this.apiNoResults = false;
-    });
-
-    // ProcessMaker.EventBus.$on('api-data-system-signals', (val) => {
+    // ProcessMaker.EventBus.$on('api-data-custom-signals', (val) => {
     //   this.localLoadOnStart = val;
-    //   this.showSystemSignals = true;
-    //   this.showCustomSignals = false;
+    //   this.showSystemSignals = false;
+    //   this.showCustomSignals = true;
     //   this.fetch();
     //   this.apiDataLoading = false;
     //   this.apiNoResults = false;
     // });
+
+    ProcessMaker.EventBus.$on('api-data-system-signals', (val) => {
+      this.localLoadOnStart = val;
+      this.showSystemSignals = true;
+      this.showCustomSignals = false;
+      this.fetch();
+      this.apiDataLoading = false;
+      this.apiNoResults = false;
+    });
   },
   methods: {
     isDeletable(data) {

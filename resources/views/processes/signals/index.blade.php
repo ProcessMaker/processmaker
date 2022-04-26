@@ -36,13 +36,13 @@
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="nav-custom-signals" role="tabpanel" aria-labelledby="custom-signals-tab">
                     <div class="card card-body p-3 border-top-0">
-{{--                        @include('admin.users.list')--}}
+                        @include('processes.signals.listCustom')
                     </div>
                 </div>
 
                 <div class="tab-pane fade show" id="nav-system-signals" role="tabpanel" aria-labelledby="nav-system-signals-tab">
                     <div class="card card-body p-3 border-top-0">
-                        @include('processes.signals.list')
+                        @include('processes.signals.listSystem')
                     </div>
                 </div>
             </div>
@@ -52,7 +52,7 @@
 
 <script>
     loadCustomSignals = function () {
-        // ProcessMaker.EventBus.$emit("api-data-users", true);
+        ProcessMaker.EventBus.$emit('api-data-custom-signals', true);
     };
     loadSystemSignals = function () {
         ProcessMaker.EventBus.$emit('api-data-system-signals', true);
@@ -98,6 +98,79 @@
                 },
                 reload() {
                     this.$refs.signalList.dataManager([
+                        {
+                            field: 'name',
+                            direction: 'desc',
+                        },
+                    ]);
+                    this.$refs.signalSystemList.dataManager([
+                        {
+                            field: 'name',
+                            direction: 'desc',
+                        },
+                    ]);
+                },
+                onSubmit() {
+                    this.resetErrors();
+                    //single click
+                    if (this.disabled) {
+                        return;
+                    }
+                    this.disabled = true;
+                    ProcessMaker.apiClient.post('signals', this.formData).then(response => {
+                        ProcessMaker.alert("{{__('The signal was created.')}}", 'success');
+                        //redirect list signal
+                        window.location = '/designer/signals';
+                    }).catch(error => {
+                        this.disabled = false;
+                        //define how display errors
+                        if (error.response.status && error.response.status === 422) {
+                            // Validation error
+                            this.errors = error.response.data.errors;
+                            //ProcessMaker.alert(this.errors, 'warning');
+                        }
+                    });
+                },
+            },
+        });
+    </script>
+    <script>
+        new Vue({
+            el: '#listSystemSignals',
+            data() {
+                return {
+                    filter: '',
+                    formData: {},
+                    errors: {
+                        'name': null,
+                        'id': null,
+                    },
+                    disabled: false,
+                };
+            },
+            mounted() {
+                this.resetFormData();
+                this.resetErrors();
+            },
+            methods: {
+                onClose() {
+                    this.resetFormData();
+                    this.resetErrors();
+                },
+                resetFormData() {
+                    this.formData = Object.assign({}, {
+                        name: null,
+                        id: null,
+                    });
+                },
+                resetErrors() {
+                    this.errors = Object.assign({}, {
+                        name: null,
+                        id: null,
+                    });
+                },
+                reload() {
+                    this.$refs.signalSystemList.dataManager([
                         {
                             field: 'name',
                             direction: 'desc',
