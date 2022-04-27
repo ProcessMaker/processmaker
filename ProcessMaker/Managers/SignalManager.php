@@ -18,7 +18,7 @@ class SignalManager
      *
      * @return bool
      */
-    private static function isSystemSignal(array $signal)
+    public static function isSystemSignal(array $signal)
     {
         if (!array_key_exists('processes', $signal)) {
             return false;

@@ -32,10 +32,14 @@ class SignalController extends Controller
      */
     public function edit($id)
     {
-        $signal = SignalManager::getAllSignals()->firstWhere('id', $id);
+        $signal = SignalManager::getAllSignals(true)->firstWhere('id', $id);
+
+        $view = SignalManager::isSystemSignal($signal) 
+            ? 'processes.signals.systemEdit' 
+            : 'processes.signals.edit';
 
         $addons = $this->getPluginAddons('edit', compact(['signal']));
 
-        return view('processes.signals.edit', compact('signal', 'addons'));
+        return view($view, compact('signal', 'addons'));
     }
 }

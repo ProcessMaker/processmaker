@@ -38,18 +38,6 @@
                     <i class="fas fa-edit fa-lg fa-fw"></i>
                 </b-btn>
               </span>
-              <span v-b-tooltip.hover
-                :title="getDeleteButtonTitle(props.rowData)">
-                <b-btn
-                    variant="link"
-                    @click="onReview(props.rowData, props.rowIndex)"
-                    :disabled="(!isDeletable(props.rowData) || !permission.includes('edit-processes')) && !isCollection(props.rowData)"
-                    v-uni-aria-describedby="props.rowData.id.toString()"
-                >
-                    <i v-if="isCollection(props.rowData)" class="fas fa-database fa-lg fa-fw"></i>
-                    <i v-else class="fas fa-trash-alt fa-lg fa-fw"></i>
-                </b-btn>
-              </span>
             </div>
           </div>
         </template>
@@ -142,23 +130,23 @@ export default {
       return false;
     },
     isEditable(data) {
-      return ! this.isSystemSignal(data);
+      return this.isSystemSignal(data);
     },
-    getDeleteButtonTitle(rowData) {
-        if (this.isCollection(rowData)) {
-            return this.$t('View Collection');
-        }
-        if (!this.isDeletable(rowData) && this.isEditable(rowData)) {
-            return this.$t('Cannot delete signals present in a process.');
-        }
-        if (!this.isDeletable(rowData) && !this.isEditable(rowData)) {
-            return this.$t('Cannot delete system signals.');
-        }
-        if (!this.permission.includes('edit-processes')) {
-            return this.$t('You do not have permission to delete signals');
-        }
-        return this.$t('Delete');
-    },
+    // getDeleteButtonTitle(rowData) {
+    //     if (this.isCollection(rowData)) {
+    //         return this.$t('View Collection');
+    //     }
+    //     if (!this.isDeletable(rowData) && this.isEditable(rowData)) {
+    //         return this.$t('Cannot delete signals present in a process.');
+    //     }
+    //     if (!this.isDeletable(rowData) && !this.isEditable(rowData)) {
+    //         return this.$t('Cannot delete system signals.');
+    //     }
+    //     if (!this.permission.includes('edit-processes')) {
+    //         return this.$t('You do not have permission to delete signals');
+    //     }
+    //     return this.$t('Delete');
+    // },
     onEdit(data, index) {
       window.location = "/designer/signals/" + data.id + "/edit";
     },
