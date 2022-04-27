@@ -11,7 +11,7 @@ class LogsTest extends TestCase
     use RequestHelper;
 
     private $params = [
-        'search' => 'Process created:,Process completed:',
+        'request_id' => 9,
         'all' => 0
     ];
 
@@ -23,12 +23,12 @@ class LogsTest extends TestCase
         mkdir($storageDir . '/logs');
 
         $log = <<<LOG
-            [2022-04-26 00:04:54] local.INFO: Process created: {"id":9,"timestamp":"0.00251600 1650931494"} 
+            [2022-04-26 00:04:54] local.INFO: Process created: {"id":9,"timestamp":1650931494.001} 
             [2022-04-26 00:04:54] local.DEBUG: Sending request started notification to  (users: )  
             [2022-04-26 00:04:54] local.INFO: Activity activated: {"id":26,"status":"ACTIVE","index":0}  
             [2022-04-26 00:04:54] local.INFO: Dispatch a script task: node_3 #26  
             [2022-04-26 00:04:56] local.INFO: ActivityClosed: {"id":26,"status":"CLOSED","index":0,"element_ref":"node_3"}  
-            [2022-04-26 00:04:56] local.INFO: Process completed: {"id":9,"timestamp":"0.59631100 1650931496"} 
+            [2022-04-26 00:04:56] local.INFO: Process completed: {"id":9,"timestamp":1650931496.005} 
             [2022-04-26 00:04:56] local.DEBUG: Sending request completed notification to  (users: ) 
             LOG;
         $date = new \DateTime();
@@ -46,12 +46,12 @@ class LogsTest extends TestCase
         $result = $result->json();
 
         $this->assertCount(2, $result);
-        $this->assertEquals('Process created:', $result[0]['search']);
+        $this->assertEquals('Process created', $result[0]['type']);
         $this->assertEquals(9, $result[0]['id']);
-        $this->assertEquals('0.00251600 1650931494', $result[0]['timestamp']);
-        $this->assertEquals('Process completed:', $result[1]['search']);
+        $this->assertEquals(1650931494.001, $result[0]['timestamp']);
+        $this->assertEquals('Process completed', $result[1]['type']);
         $this->assertEquals(9, $result[1]['id']);
-        $this->assertEquals('0.59631100 1650931496', $result[1]['timestamp']);
+        $this->assertEquals(1650931496.005, $result[1]['timestamp']);
     }
 
     public function testWithAllLogFiles()

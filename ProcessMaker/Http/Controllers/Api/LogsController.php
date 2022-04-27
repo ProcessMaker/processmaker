@@ -21,19 +21,14 @@ use function PHPUnit\Framework\matches;
 class LogsController extends Controller
 {
     private $results = [];
-    private $searches = [];
+    private $requestId = null;
+    private $searches = ['Process created', 'Process completed'];
 
     public function index(Request $request)
     {
-        $this->searches = array_filter(
-            explode(
-                ',', 
-                $request->input('search')
-            )
-        );
-
-        if (count($this->searches) === 0) {
-            throw new \Exception('No search');
+        $this->requestId = (int) $request->input('request_id');
+        if (!$this->requestId) {
+            throw new \Exception('No request id');
         }
 
         $files = collect(scandir(storage_path('logs')));
@@ -68,18 +63,18 @@ class LogsController extends Controller
     {
         foreach($this->searches as $search) {
             if (str_contains($line, $search)) {
-                $this->addResult($search, $line);
+                $this->searchJson($search, $line);
                 break;
             }
         }
     }
 
-    private function addResult($search, $line)
+    private function searchJson($search, $line)
     {
         if (preg_match('/(\{.*\})/', $line, $matches)) {
             $json = json_decode($matches[1], true);
-            if ($json) {
-                $this->results[] = array_merge(['search' => $search], $json);
+            if ($json && $json['id'] === $this->requestId) {
+                $this->results[] = array_merge(['type' => $search], $json);
             }
         }
     }

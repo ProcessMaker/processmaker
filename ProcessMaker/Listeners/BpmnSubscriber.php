@@ -88,7 +88,7 @@ class BpmnSubscriber
             'Process completed:',
             array_merge(
                 $event->instance->getProperties(),
-                ['timestamp' => microtime()]
+                ['timestamp' => microtime(true)]
             )
         );
 
@@ -111,7 +111,7 @@ class BpmnSubscriber
             'Process created:',
             array_merge(
                 $event->instance->getProperties(),
-                ['timestamp' => microtime()]
+                ['timestamp' => microtime(true)]
             )
         );
 
