@@ -93,6 +93,12 @@ return [
             'root' => storage_path('app/private/settings'),
             'visibility' => 'private',
         ],
+        'tmp' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/tmp'),
+            'url' => env('APP_URL').'/storage/tmp',
+            'visibility' => 'public',
+        ],
     ]
 
 
