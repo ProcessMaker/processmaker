@@ -88,7 +88,7 @@
       ]
     },
     "processmaker": {
-      "build": "f23292be",
+      "build": "42877748",
       "enterprise": {
         "connector-docusign": "0.1.8",
         "connector-pdf-print": "1.7.7",
