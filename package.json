@@ -1,6 +1,6 @@
 {
     "name": "@processmaker/processmaker",
-    "version": "4.2.30-RC2",
+    "version": "4.2.30-RC3",
     "description": "ProcessMaker 4",
     "author": "DevOps <devops@processmaker.com>",
     "license": "ISC",
@@ -62,7 +62,7 @@
         "@panter/vue-i18next": "^0.15.2",
         "@processmaker/modeler": "1.21.1",
         "@processmaker/processmaker-bpmn-moddle": "0.12.0",
-        "@processmaker/screen-builder": "2.26.0",
+        "@processmaker/screen-builder": "2.27.1",
         "@processmaker/vue-form-elements": "0.28.7",
         "@processmaker/vue-multiselect": "2.2.0",
         "bootstrap": "^4.5.3",

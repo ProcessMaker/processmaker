@@ -7,7 +7,6 @@ use Illuminate\Database\Migrations\DatabaseMigrationRepository as DMR;
 
 class UpgradeMigrationRepository extends DMR implements MigrationRepositoryInterface
 {
-
     /**
      * The database connection resolver instance.
      *
@@ -114,6 +113,20 @@ class UpgradeMigrationRepository extends DMR implements MigrationRepositoryInter
     }
 
     /**
+     * Get the completed migrations with their batch numbers.
+     *
+     * @return array
+     */
+    public function getMigrationBatches()
+    {
+        return $this->table()
+                    ->orderBy('batch', 'asc')
+                    ->orderBy('upgrade', 'asc')
+                    ->pluck('batch', 'upgrade')
+                    ->all();
+    }
+
+    /**
      * Create the migration repository data store.
      *
      * @return void
@@ -139,9 +152,7 @@ class UpgradeMigrationRepository extends DMR implements MigrationRepositoryInter
      */
     public function repositoryExists()
     {
-        $schema = $this->getConnection()->getSchemaBuilder();
-
-        return $schema->hasTable($this->table);
+        return $this->getConnection()->getSchemaBuilder()->hasTable($this->table);
     }
 
     /**

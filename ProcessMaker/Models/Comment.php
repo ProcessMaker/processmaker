@@ -123,7 +123,7 @@ class Comment extends Model
             ->where('commentable_type', Comment::class)
             ->with('user');
     }
-    
+
     /**
      * Get element_name attribute for notifications
      */
@@ -137,11 +137,37 @@ class Comment extends Model
             return $this->commentable->manager_name;
         } elseif ($this->commentable instanceof Comment) {
             return $this->commentable->element_name;
-        } else {          
+        } else {
             return get_class($this->commentable);
         }
     }
-    
+
+    public function setBodyAttribute($value)
+    {
+        // Get al mentions and replace with the user id in mustaches
+        $value = mb_ereg_replace_callback('(^|\s)([@][\p{L}\p{N}\-_]+)', function ($matches) {
+            $username = str_replace([' @','@'], '', $matches[0]);
+            $user = User::where('username', $username)->first();
+            if ($user) {
+                return ' {{' . $user->id . '}}';
+            }
+            return $matches[0];
+        }, $value);
+        $this->attributes['body'] = $value;
+    }
+
+    public function getBodyAttribute($body)
+    {
+        // Replace mustache user id with username
+        $body = preg_replace_callback('/\{\{(\d+)\}\}/', function ($matches) {
+            $user = User::find($matches[1]);
+            if ($user) {
+                return '@' . $user->username;
+            }
+        }, $body);
+        return $body;
+    }
+
     /**
      * Get url attribute for notifications
      */
@@ -150,7 +176,7 @@ class Comment extends Model
         if (! $id) {
             $id = $this->id;
         }
-        
+
         if ($this->commentable instanceof ProcessRequest) {
             return sprintf('/requests/%s#comment-%s', $this->commentable->id, $id);
         } elseif ($this->commentable instanceof ProcessRequestToken) {
@@ -159,7 +185,7 @@ class Comment extends Model
             return $this->commentable->manager_url;
         } elseif ($this->commentable instanceof Comment) {
             return $this->commentable->getUrlAttribute($this->id);
-        } else {          
+        } else {
             return '/';
         }
     }
