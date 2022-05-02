@@ -30,15 +30,13 @@ module.exports = {
       ignoreComments: true,
     }],
   },
-  // overrides: [
-  // 	{
-  // 		files: [
-  // 			'**/__tests__/*.{j,t}s?(x)',
-  // 			'**/tests/unit/**/*.spec.{j,t}s?(x)'
-  // 		],
-  // 		env: {
-  // 			jest: true
-  // 		}
-  // 	}
-  // ]
+  overrides: [
+    {
+      files: [
+        "tests/**/*.js",
+      ],
+      plugins: ["jest"],
+      extends: ["plugin:jest/recommended"],
+    },
+  ],
 };
