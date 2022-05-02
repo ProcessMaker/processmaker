@@ -16,9 +16,9 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @OA\Schema(
  *   schema="taskAssignmentsEditable",
- *   @OA\Property(property="process_id", type="string", format="id"),
- *   @OA\Property(property="process_task_id", type="string", format="id"),
- *   @OA\Property(property="assignment_id", type="string", format="id"),
+ *   @OA\Property(property="process_id", type="integer", format="id"),
+ *   @OA\Property(property="process_task_id", type="integer", format="id"),
+ *   @OA\Property(property="assignment_id", type="integer", format="id"),
  *   @OA\Property(property="assignment_type", type="string", enum={"ProcessMaker\Models\User", "ProcessMaker\Models\Group"})
  * ),
  * @OA\Schema(
