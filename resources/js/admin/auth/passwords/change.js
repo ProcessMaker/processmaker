@@ -1,6 +1,6 @@
 import Vue from "vue";
-import AvatarImage from "../../../components/AvatarImage.vue";
 import VuePassword from "vue-password";
+import AvatarImage from "../../../components/AvatarImage.vue";
 
-Vue.component("avatar-image", AvatarImage);
-Vue.component("vue-password", VuePassword);
+Vue.component("AvatarImage", AvatarImage);
+Vue.component("VuePassword", VuePassword);

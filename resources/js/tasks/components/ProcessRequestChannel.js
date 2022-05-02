@@ -1,22 +1,22 @@
 export default {
-  data () {
+  data() {
     return {
-      socketListeners: []
+      socketListeners: [],
     };
   },
-  mounted () {
+  mounted() {
     this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, ".ActivityAssigned", (data) => {
       if (data.payloadUrl) {
         this.obtainPayload(data.payloadUrl)
-          .then(response => {
+          .then((response) => {
             this.$emit("activity-assigned", response);
-          });        
+          });
       }
     });
     this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, ".ProcessCompleted", (data) => {
       if (data.payloadUrl) {
         this.obtainPayload(data.payloadUrl)
-          .then(response => {
+          .then((response) => {
             this.$emit("process-completed", response);
           });
       }
@@ -24,7 +24,7 @@ export default {
     this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, ".ProcessUpdated", (data) => {
       if (data.payloadUrl) {
         this.obtainPayload(data.payloadUrl)
-          .then(response => {
+          .then((response) => {
             if (data.event) {
               response.event = data.event;
             }
@@ -34,31 +34,31 @@ export default {
     });
   },
   methods: {
-    addSocketListener (channel, event, callback) {
+    addSocketListener(channel, event, callback) {
       this.socketListeners.push({
         channel,
-        event
+        event,
       });
       window.Echo.private(channel).listen(
         event,
-        callback
+        callback,
       );
     },
     obtainPayload(url) {
       return new Promise((resolve, reject) => {
         ProcessMaker.apiClient
           .get(url)
-          .then(response => {
+          .then((response) => {
             resolve(response.data);
-          }).catch(error => {
+          }).catch((error) => {
             // User does not have access to the resource. Ignore.
           });
       });
-    }
+    },
   },
-  destroyed () {
+  destroyed() {
     this.socketListeners.forEach((element) => {
       window.Echo.private(element.channel).stopListening(element.event);
     });
-  }
+  },
 };

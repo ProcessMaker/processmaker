@@ -1,5 +1,5 @@
-const validateScreenRef = () => ProcessMaker.EventBus.$on('modeler-validate', (node, reporter) => {
-  if (!['bpmn:Task', 'bpmn:ManualTask'].includes(node.$type)) {
+const validateScreenRef = () => ProcessMaker.EventBus.$on("modeler-validate", (node, reporter) => {
+  if (!["bpmn:Task", "bpmn:ManualTask"].includes(node.$type)) {
     return;
   }
 
@@ -7,7 +7,7 @@ const validateScreenRef = () => ProcessMaker.EventBus.$on('modeler-validate', (n
     return;
   }
 
-  reporter.report(node.id, 'Please select an input screen');
+  reporter.report(node.id, "Please select an input screen");
 });
 
 export default validateScreenRef;

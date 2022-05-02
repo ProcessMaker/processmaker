@@ -17,7 +17,7 @@
         "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
         "test": "cross-env NODE_ENV=test jest",
         "test-watch": "npm run test -- --watch --notify",
-        "lint": "eslint --fix --ignore-path .eslintignore resources/**",
+        "lint": "eslint --fix --ignore-path .eslintignore resources/",
         "e2e": "cypress run",
         "e2e:open": "cypress open"
     },

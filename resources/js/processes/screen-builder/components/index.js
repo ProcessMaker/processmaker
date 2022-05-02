@@ -1,11 +1,11 @@
-import {renderer} from '@processmaker/screen-builder';
+import { renderer } from "@processmaker/screen-builder";
 
 const {
   FileDownload,
-  FileUpload
+  FileUpload,
 } = renderer;
 
 export {
   FileDownload,
-  FileUpload
+  FileUpload,
 };

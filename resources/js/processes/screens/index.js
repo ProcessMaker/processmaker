@@ -1,36 +1,36 @@
-import Vue from 'vue'
-import ScreenListing from './components/ScreenListing'
-import CreateScreenModal from './components/CreateScreenModal'
+import Vue from "vue";
+import ScreenListing from "./components/ScreenListing";
+import CreateScreenModal from "./components/CreateScreenModal";
 import CategorySelect from "../categories/components/CategorySelect";
 
-Vue.component('category-select', CategorySelect);
+Vue.component("CategorySelect", CategorySelect);
 
 new Vue({
-    el: '#screenIndex',
-    data: {
-        filter: '',
-        screenModal: false,
-        screenId: null
+  el: "#screenIndex",
+  components: {
+    CreateScreenModal,
+    ScreenListing,
+  },
+  data: {
+    filter: "",
+    screenModal: false,
+    screenId: null,
+  },
+  methods: {
+    goToImport() {
+      window.location = "/designer/screens/import";
     },
-    components: {
-        CreateScreenModal,
-        ScreenListing,
+    show() {
+      this.screenId = null;
+      this.screenModal = true;
     },
-    methods: {
-        goToImport() {
-          window.location = '/designer/screens/import';
+    reload() {
+      this.$refs.screenListing.dataManager([
+        {
+          field: "updated_at",
+          direction: "desc",
         },
-        show() {
-            this.screenId = null;
-            this.screenModal = true;
-        },
-        reload() {
-            this.$refs.screenListing.dataManager([
-                {
-                    field: 'updated_at',
-                    direction: 'desc'
-                }
-            ]);
-        }
-    }
+      ]);
+    },
+  },
 });

@@ -3,30 +3,30 @@ import ScriptListing from "./components/ScriptListing";
 import CreateScriptModal from "./components/CreateScriptModal";
 import CategorySelect from "../categories/components/CategorySelect";
 
-Vue.component('category-select', CategorySelect);
+Vue.component("CategorySelect", CategorySelect);
 
 new Vue({
-    el: "#scriptIndex",
-    data: {
-        filter: ""
+  el: "#scriptIndex",
+  components: {
+    CreateScriptModal,
+    ScriptListing,
+  },
+  data: {
+    filter: "",
+  },
+  methods: {
+    __(variable) {
+      return __(variable);
     },
-    components: {
-        CreateScriptModal,
-        ScriptListing
+    deleteScript(data) {
+      ProcessMaker.apiClient.delete(`scripts/${data.id}`)
+        .then((response) => {
+          ProcessMaker.alert(this.$t("The script was deleted."), "success");
+          this.reload();
+        });
     },
-    methods: {
-        __(variable) {
-            return __(variable);
-        },
-        deleteScript(data) {
-            ProcessMaker.apiClient.delete(`scripts/${data.id}`)
-                .then((response) => {
-                    ProcessMaker.alert(this.$t("The script was deleted."), "success");
-                    this.reload();
-                });
-        },
-        reload() {
-            this.$refs.listScript.fetch();
-        }
-    }
+    reload() {
+      this.$refs.listScript.fetch();
+    },
+  },
 });

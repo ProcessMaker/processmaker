@@ -1,24 +1,24 @@
 import Vue from "vue";
 import globalProperties from "@processmaker/screen-builder/src/global-properties";
-import {renderer, FormBuilderControls} from "@processmaker/screen-builder";
+import { renderer, FormBuilderControls } from "@processmaker/screen-builder";
 import formTypes from "./formTypes";
 
 const {
-  FormText
+  FormText,
 } = renderer;
 
-const TableControl = FormBuilderControls.find(control => control.rendererBinding === "FormMultiColumn");
-const RichTextControl = FormBuilderControls.find(control => control.rendererBinding === "FormHtmlEditor");
-let FormRecordList = FormBuilderControls.find(control => control.rendererBinding === "FormRecordList");
-const FormImage = FormBuilderControls.find(control => control.rendererBinding === "FormImage");
-const FormLoop = FormBuilderControls.find(control => control.rendererBinding === "FormLoop");
-const FormNestedScreen = FormBuilderControls.find(control => control.rendererBinding === "FormNestedScreen");
-const FileDownloadControl = FormBuilderControls.find(control => control.builderBinding === "FileDownload");
+const TableControl = FormBuilderControls.find((control) => control.rendererBinding === "FormMultiColumn");
+const RichTextControl = FormBuilderControls.find((control) => control.rendererBinding === "FormHtmlEditor");
+const FormRecordList = FormBuilderControls.find((control) => control.rendererBinding === "FormRecordList");
+const FormImage = FormBuilderControls.find((control) => control.rendererBinding === "FormImage");
+const FormLoop = FormBuilderControls.find((control) => control.rendererBinding === "FormLoop");
+const FormNestedScreen = FormBuilderControls.find((control) => control.rendererBinding === "FormNestedScreen");
+const FileDownloadControl = FormBuilderControls.find((control) => control.builderBinding === "FileDownload");
 
 // Remove editable inspector props
-FormRecordList.control.inspector = FormRecordList.control.inspector.filter(prop => prop.field !== "editable" && prop.field !== "form");
+FormRecordList.control.inspector = FormRecordList.control.inspector.filter((prop) => prop.field !== "editable" && prop.field !== "form");
 
-let controlsDisplay = [
+const controlsDisplay = [
   RichTextControl,
   TableControl,
   FormRecordList,
@@ -37,7 +37,7 @@ ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
       item.rendererComponent,
       item.rendererBinding,
       item.builderComponent,
-      item.builderBinding
+      item.builderBinding,
     );
   });
 });
