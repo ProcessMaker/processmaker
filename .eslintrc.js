@@ -2,7 +2,6 @@ module.exports = {
   root: true,
   env: {
     node: true,
-    es6: true,
     browser: true,
   },
   globals: {
@@ -16,6 +15,7 @@ module.exports = {
   parserOptions: {
     parser: "@babel/eslint-parser",
     sourceType: "module",
+    ecmaVersion: 2020,
     babelOptions: {
       configFile: "./babel.config.json",
     },
