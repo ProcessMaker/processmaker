@@ -70,7 +70,7 @@ export default {
       localLoadOnStart: true,
       showSystemSignals: true,
       showCustomSignals: false,
-      showControllerSignals: false,
+      showCollectionSignals: false,
       sortOrder: [
         {
           field: "id",
@@ -102,7 +102,7 @@ export default {
       this.localLoadOnStart = val;
       this.showSystemSignals = true;
       this.showCustomSignals = false;
-      this.ShowControllerSignals = false;
+      this.ShowCollectionSignals = false;
       this.fetch();
       this.apiDataLoading = false;
       this.apiNoResults = false;
@@ -201,8 +201,8 @@ export default {
         query = query + "&exclude_system_signals=1";
       }
 
-      if (!this.showControllerSignals) {
-        query = query + "&exclude_controller_signals=1";
+      if (!this.showCollectionSignals) {
+        query = query + "&exclude_collection_signals=1";
       }
 
       // Load from our api client

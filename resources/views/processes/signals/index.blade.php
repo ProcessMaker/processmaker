@@ -31,9 +31,9 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-item nav-link" id="nav-controller-signals-tab" data-toggle="tab" href="#nav-controller-signals" role="tab"
-                   onclick="loadControllerSignals()" aria-controls="nav-controller-signals" aria-selected="true">
-                    {{ __('Controller Signals') }}
+                <a class="nav-item nav-link" id="nav-collection-signals-tab" data-toggle="tab" href="#nav-collection-signals" role="tab"
+                   onclick="loadCollectionSignals()" aria-controls="nav-collection-signals" aria-selected="true">
+                    {{ __('Collection Signals') }}
                 </a>
             </li>
         </ul>
@@ -52,9 +52,9 @@
                     </div>
                 </div>
 
-                <div class="tab-pane fade show" id="nav-controrller-signals" role="tabpanel" aria-labelledby="nav-controller-signals-tab">
+                <div class="tab-pane fade show" id="nav-collection-signals" role="tabpanel" aria-labelledby="nav-collection-signals-tab">
                     <div class="card card-body p-3 border-top-0">
-                        @include('processes.signals.listController')
+                        @include('processes.signals.listCollection')
                     </div>
                 </div>
             </div>
@@ -69,8 +69,8 @@
     loadSystemSignals = function () {
         ProcessMaker.EventBus.$emit('api-data-system-signals', true);
     };
-    loadControllerSignals = function () {
-        ProcessMaker.EventBus.$emit('api-data-controller-signals', true);
+    loadCollectionSignals = function () {
+        ProcessMaker.EventBus.$emit('api-data-collection-signals', true);
     };
 </script>
 
@@ -218,7 +218,7 @@
     </script>
     <script>
         new Vue({
-            el: '#listControllerSignals',
+            el: '#listCollectionSignals',
             data() {
                 return {
                     filter: '',
@@ -252,7 +252,7 @@
                     });
                 },
                 reload() {
-                    this.$refs.signalControllerList.dataManager([
+                    this.$refs.signalCollectionList.dataManager([
                         {
                             field: 'name',
                             direction: 'desc',
