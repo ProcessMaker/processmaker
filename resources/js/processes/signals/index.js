@@ -1,6 +1,8 @@
 import Vue from "vue";
 import CustomSignalsListing from "./components/CustomSignalListing";
-import SystemSignalListing from "./components/SystemSignalListing";
+import SystemSignalsListing from "./components/SystemSignalsListing";
+import ControllerSignalsListing from "./components/ControllerSignalsListing";
 
 Vue.component('custom-signals-listing', CustomSignalsListing);
-Vue.component('system-signals-listing', SystemSignalListing);
+Vue.component('system-signals-listing', SystemSignalsListing);
+Vue.component('controller-signals-listing', ControllerSignalsListing);

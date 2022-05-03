@@ -70,6 +70,7 @@ export default {
       localLoadOnStart: true,
       showSystemSignals: true,
       showCustomSignals: false,
+      showControllerSignals: false,
       sortOrder: [
         {
           field: "id",
@@ -97,19 +98,11 @@ export default {
     };
   },
   created() {
-    // ProcessMaker.EventBus.$on('api-data-custom-signals', (val) => {
-    //   this.localLoadOnStart = val;
-    //   this.showSystemSignals = false;
-    //   this.showCustomSignals = true;
-    //   this.fetch();
-    //   this.apiDataLoading = false;
-    //   this.apiNoResults = false;
-    // });
-
     ProcessMaker.EventBus.$on('api-data-system-signals', (val) => {
       this.localLoadOnStart = val;
       this.showSystemSignals = true;
       this.showCustomSignals = false;
+      this.ShowControllerSignals = false;
       this.fetch();
       this.apiDataLoading = false;
       this.apiNoResults = false;
@@ -206,6 +199,10 @@ export default {
 
       if (!this.showSystemSignals) {
         query = query + "&exclude_system_signals=1";
+      }
+
+      if (!this.showControllerSignals) {
+        query = query + "&exclude_controller_signals=1";
       }
 
       // Load from our api client

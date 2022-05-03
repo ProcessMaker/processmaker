@@ -81,8 +81,8 @@ export default {
       orderBy: "id",
       localLoadOnStart: true,
       showSystemSignals: false,
-      showCustomSignals: true,
-      showControllerSignals: false,
+      showCustomSignals: false,
+      showControllerSignals: true,
       sortOrder: [
         {
           field: "id",
@@ -110,11 +110,11 @@ export default {
     };
   },
   created() {
-    ProcessMaker.EventBus.$on('api-data-custom-signals', (val) => {
+    ProcessMaker.EventBus.$on('api-data-controller-signals', (val) => {
       this.localLoadOnStart = val;
       this.showSystemSignals = false;
-      this.showCustomSignals = true;
-      this.ShowControllerSignals = false;
+      this.showCustomSignals = false;
+      this.showControllerSignals = true;
       this.fetch();
       this.apiDataLoading = false;
       this.apiNoResults = false;
