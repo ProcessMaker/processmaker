@@ -24,7 +24,7 @@
 		</div>
 	</div>
 
-	@can('create-processes')
+	<!-- @can('create-processes')
 		<pm-modal ref="createSignal" id="createSignal" title="{{__('New Signal')}}" @hidden="onClose"
 				  @ok.prevent="onSubmit" :ok-disabled="disabled" style="display: none;">
 			<required></required>
@@ -48,5 +48,5 @@
 			</div>
 		</pm-modal>
 	@endcan
-</div>
+</div> -->
 

@@ -1,5 +1,5 @@
 import Vue from "vue";
-import CustomSignalsListing from "./components/CustomSignalListing";
+import CustomSignalsListing from "./components/CustomSignalsListing";
 import SystemSignalsListing from "./components/SystemSignalsListing";
 import CollectionSignalsListing from "./components/CollectionSignalsListing";
 

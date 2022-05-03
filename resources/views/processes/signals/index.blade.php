@@ -124,6 +124,12 @@
                             direction: 'desc',
                         },
                     ]);
+                    this.$refs.signalCollectionList.dataManager([
+                        {
+                            field: 'name',
+                            direction: 'desc',
+                        },
+                    ]);
                 },
                 onSubmit() {
                     this.resetErrors();
