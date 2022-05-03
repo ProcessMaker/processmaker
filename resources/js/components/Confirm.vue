@@ -2,8 +2,8 @@
     <b-modal dialog-class="top-20" v-model="showModal" @hide="onClose" :title="title">
         <div class="my-3" :class="classMessage" v-html="message"></div>
         <template #modal-footer>
-            <b-button class="m-0" variant="outline-secondary" @click="onDeny">Cancel</b-button>
-            <b-button class="m-0" @click="onConfirm">Confirm</b-button>
+            <b-button class="m-0" variant="outline-secondary" @click="onDeny">{{$t('Cancel')}}</b-button>
+            <b-button class="m-0" @click="onConfirm">{{$t('Confirm')}}</b-button>
         </template>
     </b-modal>
 </template>
