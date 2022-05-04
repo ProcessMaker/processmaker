@@ -50,6 +50,41 @@ class UserTokenController extends Controller
 
     /**
      * Display listing of access tokens for the specified user
+     *
+     * @OA\Get(
+     *     path="/users/{user_id}/tokens",
+     *     summary="Returns a specific user's tokens",
+     *     operationId="getTokens",
+     *     tags={"Personal Tokens"},
+     *     @OA\Parameter(
+     *         description="User id",
+     *         in="query",
+     *         name="user_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="integer",
+     *         )
+     *     ),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="list of tokens",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/UserToken"),
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 ref="#/components/schemas/metadata",
+     *             ),
+     *         ),
+     *     ),
+     * )
      */
     public function index(Request $request, User $user)
     {
@@ -76,6 +111,36 @@ class UserTokenController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Laravel\Passport\PersonalAccessTokenResult
+     *
+     * /**
+     * Display listing of access tokens for the specified user
+     *
+     * @OA\Post(
+     *     path="/users/{user_id}/tokens",
+     *     summary="Create new token for a specific user",
+     *     operationId="createTokens",
+     *     tags={"Personal Tokens"},
+     *     @OA\Parameter(
+     *         description="User id",
+     *         in="query",
+     *         name="user_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="integer",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+    *          required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="name", type="string"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="New token instance",
+     *         @OA\JsonContent(ref="#/components/schemas/UserToken"),
+     *     ),
+     * )
      */
     public function store(Request $request, User $user)
     {
@@ -98,6 +163,36 @@ class UserTokenController extends Controller
 
     /**
      * Show a personal access token for the user
+     *
+     * *     @OA\Get(
+     *     path="/users/{user_id}/tokens/{token_id}",
+     *     summary="Get single token by ID",
+     *     operationId="getTokenById",
+     *     tags={"Scripts"},
+     *     @OA\Parameter(
+     *         description="ID of user",
+     *         in="path",
+     *         name="user_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="integer",
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         description="ID of token to return",
+     *         in="path",
+     *         name="token_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully found the token",
+     *         @OA\JsonContent(ref="#/components/schemas/UserToken")
+     *     ),
+     * )
      */
     public function show(Request $request, User $user, $tokenId)
     {
@@ -121,6 +216,34 @@ class UserTokenController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @param  string  $tokenId
      * @return \Illuminate\Http\Response
+     * @OA\Delete(
+     *     path="users/{user_id}/tokens/{token_id}",
+     *     summary="Delete a token",
+     *     operationId="deleteToken",
+     *     tags={"Personal Tokens"},
+     *     @OA\Parameter(
+     *         description="User ID",
+     *         in="path",
+     *         name="user_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="integer",
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         description="Token ID",
+     *         in="path",
+     *         name="token_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="success"
+     *     ),
+     * )
      */
 
     public function destroy(Request $request, User $user, $tokenId)
