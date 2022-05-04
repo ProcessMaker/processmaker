@@ -554,526 +554,6 @@
                 }
             }
         },
-        "/data_source_categories": {
-            "get": {
-                "tags": [
-                    "DataSourcesCategories"
-                ],
-                "summary": "Returns all Data Connectors categories that the user has access to",
-                "description": "Display a listing of the Data Connector Categories.",
-                "operationId": "getDataSourceCategories",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/filter"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_by"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_direction"
-                    },
-                    {
-                        "$ref": "#/components/parameters/per_page"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "list of Data Connectors categories",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/DataSourceCategory"
-                                            }
-                                        },
-                                        "meta": {
-                                            "type": "object",
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/components/schemas/metadata"
-                                                }
-                                            ]
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "DataSourcesCategories"
-                ],
-                "summary": "Save a new Data Connector Category",
-                "description": "Store a newly created Data Connector Category in storage",
-                "operationId": "createDataSourceCategory",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/dataSourceCategoryEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/DataSourceCategory"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/data_source_categories/{data_source_category_id}": {
-            "get": {
-                "tags": [
-                    "DataSourcesCategories"
-                ],
-                "summary": "Get single Data Connector category by ID",
-                "description": "Display the specified data Source category.",
-                "operationId": "getDatasourceCategoryById",
-                "parameters": [
-                    {
-                        "name": "data_source_category_id",
-                        "in": "path",
-                        "description": "ID of Data Connector category to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully found the Data Connector",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/DataSourceCategory"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "DataSourcesCategories"
-                ],
-                "summary": "Update a Data Connector Category",
-                "description": "Updates the current element",
-                "operationId": "updateDatasourceCategory",
-                "parameters": [
-                    {
-                        "name": "data_source_category_id",
-                        "in": "path",
-                        "description": "ID of Data Connector category to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/dataSourceCategoryEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/DataSourceCategory"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "DataSourcesCategories"
-                ],
-                "summary": "Delete a Data Connector category",
-                "description": "Remove the specified resource from storage.",
-                "operationId": "deleteDataSourceCategory",
-                "parameters": [
-                    {
-                        "name": "data_source_category_id",
-                        "in": "path",
-                        "description": "ID of Data Connector category to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "success"
-                    }
-                }
-            }
-        },
-        "/data_sources": {
-            "get": {
-                "tags": [
-                    "DataSources"
-                ],
-                "summary": "Returns all Data Connectors that the user has access to",
-                "description": "Get the list of records of a Data Connector",
-                "operationId": "getDataSources",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/filter"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_by"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_direction"
-                    },
-                    {
-                        "$ref": "#/components/parameters/per_page"
-                    },
-                    {
-                        "$ref": "#/components/parameters/include"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "list of Data Connectors",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/dataSource"
-                                            }
-                                        },
-                                        "meta": {
-                                            "type": "object",
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/components/schemas/metadata"
-                                                }
-                                            ]
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "DataSources"
-                ],
-                "summary": "Save a new Data Connector",
-                "description": "Create a new Data Connector.",
-                "operationId": "createDataSource",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/dataSourceEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/dataSource"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/data_sources/data_source_id": {
-            "get": {
-                "tags": [
-                    "DataSources"
-                ],
-                "summary": "Get single Data Connector by ID",
-                "description": "Get a single Data Connector.",
-                "operationId": "getDataSourceById",
-                "parameters": [
-                    {
-                        "name": "data_source_id",
-                        "in": "path",
-                        "description": "ID of Data Connector to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully found the Data Connector",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/dataSource"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "DataSources"
-                ],
-                "summary": "Update a Data Connector",
-                "description": "Update a Data Connector.",
-                "operationId": "updateDataSource",
-                "parameters": [
-                    {
-                        "name": "data_source_id",
-                        "in": "path",
-                        "description": "ID of Data Connector to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/dataSourceEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "204": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/dataSource"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "DataSources"
-                ],
-                "summary": "Delete a Data Connector",
-                "description": "Delete a Data Connector.",
-                "operationId": "deleteDataSource",
-                "parameters": [
-                    {
-                        "name": "data_source_id",
-                        "in": "path",
-                        "description": "ID of Data Connector to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/dataSource"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/data_sources/data_source_id/test": {
-            "post": {
-                "tags": [
-                    "DataSources"
-                ],
-                "summary": "Send a Data Connector request",
-                "description": "Send a Data Connector request.",
-                "operationId": "sendDataSource",
-                "parameters": [
-                    {
-                        "name": "data_source_id",
-                        "in": "path",
-                        "description": "ID of Data Connector to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/dataSourceEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "204": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/dataSource"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/requests/{request_id}/data_sources/{data_source_id}": {
-            "post": {
-                "tags": [
-                    "DataSources"
-                ],
-                "summary": "execute Data Source",
-                "description": "Execute a data Source endpoint",
-                "operationId": "executeDataSourceForRequest",
-                "parameters": [
-                    {
-                        "name": "request_id",
-                        "in": "path",
-                        "description": "ID of the request in whose context the datasource will be executed",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "data_source_id",
-                        "in": "path",
-                        "description": "ID of DataSource to be run",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "config": {
-                                        "$ref": "#/components/schemas/DataSourceCallParameters"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/DataSourceResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/requests/data_sources/{data_source_id}": {
-            "post": {
-                "tags": [
-                    "DataSources"
-                ],
-                "summary": "execute Data Source",
-                "operationId": "executeDataSource",
-                "parameters": [
-                    {
-                        "name": "data_source_id",
-                        "in": "path",
-                        "description": "ID of DataSource to be run",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "config": {
-                                        "$ref": "#/components/schemas/DataSourceCallParameters"
-                                    },
-                                    "data": {
-                                        "type": "object"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/DataSourceResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/saved-searches/{saved_search_id}/charts": {
             "get": {
                 "tags": [
@@ -5842,6 +5322,176 @@
                     }
                 }
             }
+        },
+        "/users/{user_id}/tokens": {
+            "get": {
+                "tags": [
+                    "Personal Tokens"
+                ],
+                "summary": "Returns a specific user's tokens",
+                "description": "Display listing of access tokens for the specified user",
+                "operationId": "getTokens",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "description": "User id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of tokens",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/UserToken"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/metadata"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Personal Tokens"
+                ],
+                "summary": "Create new token for a specific user",
+                "description": "Create a new personal access token for the user.",
+                "operationId": "createTokens",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "description": "User id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "New token instance",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserToken"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{user_id}/tokens/{token_id}": {
+            "get": {
+                "tags": [
+                    "Scripts"
+                ],
+                "summary": "Get single token by ID",
+                "description": "Show a personal access token for the user",
+                "operationId": "getTokenById",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "ID of user",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "token_id",
+                        "in": "path",
+                        "description": "ID of token to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserToken"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "users/{user_id}/tokens/{token_id}": {
+            "delete": {
+                "tags": [
+                    "Personal Tokens"
+                ],
+                "summary": "Delete a token",
+                "description": "Delete the given token for a user",
+                "operationId": "deleteToken",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "token_id",
+                        "in": "path",
+                        "description": "Token ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -5892,9 +5542,6 @@
             "collections": {
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/collectionsEditable"
-                    },
-                    {
                         "properties": {
                             "id": {
                                 "type": "integer"
@@ -5923,6 +5570,9 @@
                             }
                         },
                         "type": "object"
+                    },
+                    {
+                        "$ref": "#/components/schemas/collectionsEditable"
                     }
                 ]
             },
@@ -5937,9 +5587,6 @@
             "records": {
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/recordsEditable"
-                    },
-                    {
                         "properties": {
                             "id": {
                                 "type": "integer"
@@ -5950,147 +5597,9 @@
                             }
                         },
                         "type": "object"
-                    }
-                ]
-            },
-            "DataSourceCallParameters": {
-                "properties": {
-                    "endpoint": {
-                        "type": "string"
-                    },
-                    "dataMapping": {
-                        "type": "array",
-                        "items": {
-                            "properties": {
-                                "key": {
-                                    "type": "string"
-                                },
-                                "value": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    },
-                    "outboundConfig": {
-                        "type": "array",
-                        "items": {
-                            "properties": {
-                                "key": {
-                                    "type": "string"
-                                },
-                                "value": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    }
-                },
-                "type": "object"
-            },
-            "DataSourceResponse": {
-                "properties": {
-                    "status": {
-                        "type": "integer"
-                    },
-                    "response": {
-                        "type": "object"
-                    }
-                },
-                "type": "object"
-            },
-            "dataSourceEditable": {
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "format": "id"
-                    },
-                    "name": {
-                        "type": "string"
-                    },
-                    "description": {
-                        "type": "string"
-                    },
-                    "endpoints": {
-                        "type": "string"
-                    },
-                    "mappings": {
-                        "type": "string"
-                    },
-                    "authtype": {
-                        "type": "string"
-                    },
-                    "credentials": {
-                        "type": "string"
-                    },
-                    "status": {
-                        "type": "string"
-                    },
-                    "data_source_category_id": {
-                        "type": "string"
-                    }
-                },
-                "type": "object"
-            },
-            "dataSource": {
-                "description": "Class DataSource",
-                "type": "object",
-                "allOf": [
-                    {
-                        "$ref": "#/components/schemas/dataSourceEditable"
                     },
                     {
-                        "properties": {
-                            "created_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            },
-                            "updated_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            }
-                        }
-                    }
-                ]
-            },
-            "dataSourceCategoryEditable": {
-                "properties": {
-                    "name": {
-                        "type": "string"
-                    },
-                    "status": {
-                        "type": "string",
-                        "enum": [
-                            "ACTIVE",
-                            "INACTIVE"
-                        ]
-                    }
-                },
-                "type": "object"
-            },
-            "DataSourceCategory": {
-                "description": "Represents a business data Source category definition.",
-                "type": "object",
-                "allOf": [
-                    {
-                        "$ref": "#/components/schemas/dataSourceCategoryEditable"
-                    },
-                    {
-                        "properties": {
-                            "id": {
-                                "type": "string",
-                                "format": "id"
-                            },
-                            "created_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            },
-                            "updated_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            }
-                        }
+                        "$ref": "#/components/schemas/recordsEditable"
                     }
                 ]
             },
@@ -6353,10 +5862,8 @@
                 "type": "object"
             },
             "taskMetadata": {
+                "type": "object",
                 "allOf": [
-                    {
-                        "$ref": "#/components/schemas/metadata"
-                    },
                     {
                         "properties": {
                             "filter": {
@@ -6402,8 +5909,10 @@
                             "in_overdue": {
                                 "type": "integer"
                             }
-                        },
-                        "type": "object"
+                        }
+                    },
+                    {
+                        "$ref": "#/components/schemas/metadata"
                     }
                 ]
             },
@@ -6477,9 +5986,6 @@
                 "type": "object",
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/commentsEditable"
-                    },
-                    {
                         "properties": {
                             "created_at": {
                                 "type": "string",
@@ -6490,6 +5996,9 @@
                                 "format": "date-time"
                             }
                         }
+                    },
+                    {
+                        "$ref": "#/components/schemas/commentsEditable"
                     }
                 ]
             },
@@ -6510,9 +6019,6 @@
             "EnvironmentVariable": {
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/EnvironmentVariableEditable"
-                    },
-                    {
                         "properties": {
                             "id": {
                                 "type": "integer",
@@ -6528,6 +6034,9 @@
                             }
                         },
                         "type": "object"
+                    },
+                    {
+                        "$ref": "#/components/schemas/EnvironmentVariableEditable"
                     }
                 ]
             },
@@ -6557,9 +6066,6 @@
                 "description": "Represents a group definition.",
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/groupsEditable"
-                    },
-                    {
                         "properties": {
                             "created_at": {
                                 "type": "string",
@@ -6575,6 +6081,9 @@
                             }
                         },
                         "type": "object"
+                    },
+                    {
+                        "$ref": "#/components/schemas/groupsEditable"
                     }
                 ]
             },
@@ -6600,9 +6109,6 @@
             "groupMembers": {
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/groupMembersEditable"
-                    },
-                    {
                         "properties": {
                             "id": {
                                 "type": "string",
@@ -6618,14 +6124,14 @@
                             }
                         },
                         "type": "object"
+                    },
+                    {
+                        "$ref": "#/components/schemas/groupMembersEditable"
                     }
                 ]
             },
             "createGroupMembers": {
                 "allOf": [
-                    {
-                        "$ref": "#/components/schemas/groupMembersEditable"
-                    },
                     {
                         "properties": {
                             "id": {
@@ -6648,6 +6154,9 @@
                             }
                         },
                         "type": "object"
+                    },
+                    {
+                        "$ref": "#/components/schemas/groupMembersEditable"
                     }
                 ]
             },
@@ -6769,9 +6278,6 @@
                 "type": "object",
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/mediaEditable"
-                    },
-                    {
                         "properties": {
                             "created_at": {
                                 "type": "string",
@@ -6782,6 +6288,9 @@
                                 "format": "date-time"
                             }
                         }
+                    },
+                    {
+                        "$ref": "#/components/schemas/mediaEditable"
                     }
                 ]
             },
@@ -6830,9 +6339,6 @@
                 "description": "Represents a notification definition.",
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/NotificationEditable"
-                    },
-                    {
                         "properties": {
                             "id": {
                                 "type": "string"
@@ -6851,6 +6357,9 @@
                             }
                         },
                         "type": "object"
+                    },
+                    {
+                        "$ref": "#/components/schemas/NotificationEditable"
                     }
                 ]
             },
@@ -6922,9 +6431,6 @@
             "Process": {
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/ProcessEditable"
-                    },
-                    {
                         "properties": {
                             "user_id": {
                                 "type": "integer",
@@ -6954,6 +6460,9 @@
                             }
                         },
                         "type": "object"
+                    },
+                    {
+                        "$ref": "#/components/schemas/ProcessEditable"
                     }
                 ]
             },
@@ -6983,9 +6492,6 @@
             "ProcessWithStartEvents": {
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/Process"
-                    },
-                    {
                         "properties": {
                             "events": {
                                 "type": "array",
@@ -6995,14 +6501,14 @@
                             }
                         },
                         "type": "object"
+                    },
+                    {
+                        "$ref": "#/components/schemas/Process"
                     }
                 ]
             },
             "ProcessImport": {
                 "allOf": [
-                    {
-                        "$ref": "#/components/schemas/ProcessEditable"
-                    },
                     {
                         "properties": {
                             "status": {
@@ -7020,6 +6526,9 @@
                             "process": {}
                         },
                         "type": "object"
+                    },
+                    {
+                        "$ref": "#/components/schemas/ProcessEditable"
                     }
                 ]
             },
@@ -7060,9 +6569,6 @@
                 "description": "Represents a business process category definition.",
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/ProcessCategoryEditable"
-                    },
-                    {
                         "properties": {
                             "id": {
                                 "type": "string",
@@ -7078,6 +6584,9 @@
                             }
                         },
                         "type": "object"
+                    },
+                    {
+                        "$ref": "#/components/schemas/ProcessCategoryEditable"
                     }
                 ]
             },
@@ -7110,9 +6619,6 @@
                 "type": "object",
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/processPermissionsEditable"
-                    },
-                    {
                         "properties": {
                             "created_at": {
                                 "type": "string",
@@ -7123,6 +6629,9 @@
                                 "format": "date-time"
                             }
                         }
+                    },
+                    {
+                        "$ref": "#/components/schemas/processPermissionsEditable"
                     }
                 ]
             },
@@ -7164,9 +6673,6 @@
                 "description": "Represents an Eloquent model of a Request which is an instance of a Process.",
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/processRequestEditable"
-                    },
-                    {
                         "properties": {
                             "id": {
                                 "type": "string",
@@ -7205,6 +6711,9 @@
                             }
                         },
                         "type": "object"
+                    },
+                    {
+                        "$ref": "#/components/schemas/processRequestEditable"
                     }
                 ]
             },
@@ -7240,9 +6749,6 @@
             "processRequestToken": {
                 "description": "ProcessRequestToken is used to store the state of a token of the\nNayra engine",
                 "allOf": [
-                    {
-                        "$ref": "#/components/schemas/processRequestTokenEditable"
-                    },
                     {
                         "properties": {
                             "id": {
@@ -7294,6 +6800,9 @@
                             "process_request": {}
                         },
                         "type": "object"
+                    },
+                    {
+                        "$ref": "#/components/schemas/processRequestTokenEditable"
                     }
                 ]
             },
@@ -7326,9 +6835,6 @@
                 "type": "object",
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/taskAssignmentsEditable"
-                    },
-                    {
                         "properties": {
                             "id": {
                                 "type": "string",
@@ -7343,6 +6849,9 @@
                                 "format": "date-time"
                             }
                         }
+                    },
+                    {
+                        "$ref": "#/components/schemas/taskAssignmentsEditable"
                     }
                 ]
             },
@@ -7387,9 +6896,6 @@
             "screens": {
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/screensEditable"
-                    },
-                    {
                         "properties": {
                             "id": {
                                 "type": "string",
@@ -7405,6 +6911,9 @@
                             }
                         },
                         "type": "object"
+                    },
+                    {
+                        "$ref": "#/components/schemas/screensEditable"
                     }
                 ]
             },
@@ -7436,9 +6945,6 @@
                 "description": "Represents a business screen category definition.",
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/ScreenCategoryEditable"
-                    },
-                    {
                         "properties": {
                             "id": {
                                 "type": "string",
@@ -7454,6 +6960,9 @@
                             }
                         },
                         "type": "object"
+                    },
+                    {
+                        "$ref": "#/components/schemas/ScreenCategoryEditable"
                     }
                 ]
             },
@@ -7469,9 +6978,6 @@
                 "description": "Represents a business screen Type definition.",
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/ScreenTypeEditable"
-                    },
-                    {
                         "properties": {
                             "id": {
                                 "type": "string",
@@ -7479,6 +6985,9 @@
                             }
                         },
                         "type": "object"
+                    },
+                    {
+                        "$ref": "#/components/schemas/ScreenTypeEditable"
                     }
                 ]
             },
@@ -7514,9 +7023,6 @@
             "scripts": {
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/scriptsEditable"
-                    },
-                    {
                         "properties": {
                             "id": {
                                 "type": "integer",
@@ -7532,6 +7038,9 @@
                             }
                         },
                         "type": "object"
+                    },
+                    {
+                        "$ref": "#/components/schemas/scriptsEditable"
                     }
                 ]
             },
@@ -7566,9 +7075,6 @@
                 "description": "Represents a business script category definition.",
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/ScriptCategoryEditable"
-                    },
-                    {
                         "properties": {
                             "id": {
                                 "type": "string",
@@ -7584,6 +7090,9 @@
                             }
                         },
                         "type": "object"
+                    },
+                    {
+                        "$ref": "#/components/schemas/ScriptCategoryEditable"
                     }
                 ]
             },
@@ -7629,9 +7138,6 @@
                 "description": "Class Settings",
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/settingsEditable"
-                    },
-                    {
                         "properties": {
                             "id": {
                                 "type": "string",
@@ -7647,6 +7153,9 @@
                             }
                         },
                         "type": "object"
+                    },
+                    {
+                        "$ref": "#/components/schemas/settingsEditable"
                     }
                 ]
             },
@@ -7763,9 +7272,6 @@
                 "description": "The attributes that are mass assignable.",
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/usersEditable"
-                    },
-                    {
                         "properties": {
                             "id": {
                                 "type": "integer"
@@ -7784,8 +7290,37 @@
                             }
                         },
                         "type": "object"
+                    },
+                    {
+                        "$ref": "#/components/schemas/usersEditable"
                     }
                 ]
+            },
+            "UserToken": {
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "revoked": {
+                        "type": "boolean"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "expires_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
             }
         },
         "responses": {
