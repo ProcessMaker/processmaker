@@ -15,7 +15,8 @@ class MockRunner
         }
         putenv('HOST_URL=' . config('app.docker_host_url'));
         if (Str::startsWith($code, '<?php')) {
-            $res = eval(str_replace('<?php', '', $code));
+            $runner = new PhpInlineRunner();
+            $res = $runner->run($code, $data, $config, $timeout, $user);
         } else {
             $res = ['response' => 1];
         }
