@@ -58,7 +58,7 @@ class UserTokenController extends Controller
      *     tags={"Personal Tokens"},
      *     @OA\Parameter(
      *         description="User id",
-     *         in="query",
+     *         in="path",
      *         name="user_id",
      *         required=true,
      *         @OA\Schema(
@@ -122,7 +122,7 @@ class UserTokenController extends Controller
      *     tags={"Personal Tokens"},
      *     @OA\Parameter(
      *         description="User id",
-     *         in="query",
+     *         in="path",
      *         name="user_id",
      *         required=true,
      *         @OA\Schema(
