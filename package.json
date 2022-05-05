@@ -139,5 +139,10 @@
         ],
         "collectCoverage": true,
         "coverageDirectory": "<rootDir>/tests/js/coverage"
-    }
+    },
+    "engines": {
+        "npm": ">=8",
+        "node": ">=14 <18"
+    },
+    "engineStrict": true
 }
