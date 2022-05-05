@@ -5334,7 +5334,7 @@
                 "parameters": [
                     {
                         "name": "user_id",
-                        "in": "query",
+                        "in": "path",
                         "description": "User id",
                         "required": true,
                         "schema": {
@@ -5379,7 +5379,7 @@
                 "parameters": [
                     {
                         "name": "user_id",
-                        "in": "query",
+                        "in": "path",
                         "description": "User id",
                         "required": true,
                         "schema": {
@@ -5419,7 +5419,7 @@
         "/users/{user_id}/tokens/{token_id}": {
             "get": {
                 "tags": [
-                    "Scripts"
+                    "Personal Tokens"
                 ],
                 "summary": "Get single token by ID",
                 "description": "Show a personal access token for the user",
@@ -7159,6 +7159,40 @@
                     }
                 ]
             },
+            "TokenClient": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "user_id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "provider": {
+                        "type": "string"
+                    },
+                    "redirect": {
+                        "type": "string"
+                    },
+                    "personal_access_client": {
+                        "type": "boolean"
+                    },
+                    "revoked": {
+                        "type": "boolean"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
             "usersEditable": {
                 "properties": {
                     "email": {
@@ -7304,8 +7338,20 @@
                     "name": {
                         "type": "string"
                     },
+                    "user_id": {
+                        "type": "integer"
+                    },
+                    "client_id": {
+                        "type": "integer"
+                    },
+                    "scopes": {
+                        "type": "object"
+                    },
                     "revoked": {
                         "type": "boolean"
+                    },
+                    "client": {
+                        "$ref": "#/components/schemas/TokenClient"
                     },
                     "created_at": {
                         "type": "string",
