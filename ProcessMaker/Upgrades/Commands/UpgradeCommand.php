@@ -72,8 +72,7 @@ class UpgradeCommand extends BaseCommand
      */
     protected function prepareDatabase()
     {
-        $this->migrator->setOutput($this->output)
-                       ->setConnection($this->getDatabase());
+        $this->migrator->setOutput($this->output);
 
         if (!$this->migrator->repositoryExists()) {
             $this->call('upgrade:install');

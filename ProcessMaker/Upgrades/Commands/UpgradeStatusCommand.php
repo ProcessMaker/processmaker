@@ -42,8 +42,6 @@ class UpgradeStatusCommand extends BaseCommand
      */
     public function handle()
     {
-        $this->migrator->setConnection($this->getDatabase());
-
         if (!$this->migrator->repositoryExists()) {
             $this->error('No upgrade migrations found.');
 
