@@ -168,7 +168,7 @@ class UserTokenController extends Controller
      *     path="/users/{user_id}/tokens/{token_id}",
      *     summary="Get single token by ID",
      *     operationId="getTokenById",
-     *     tags={"Scripts"},
+     *     tags={"Personal Tokens"},
      *     @OA\Parameter(
      *         description="ID of user",
      *         in="path",
