@@ -185,34 +185,39 @@ class SignalController extends Controller
 
     public function update(Request $request, $signalId)
     {
-        $newSignal = new SignalData(
-            $request->input('id'),
-            $request->input('name'),
-            $request->input('detail', '')
-        );
+        $isSystem = false;
 
         $oldSignal = SignalManager::findSignal($signalId);
         $oldSignalProcesses = SignalManager::getSignalProcesses($signalId, true);
 
-        $editable = true;
         foreach ($oldSignalProcesses as $process) {
             if (count($process['catches']) && $process['is_system']) {
-                $editable = false;
+                $isSystem = true;
             }
         }
 
-        if (!$editable) {
-            return abort(403, __('System signals cannot be modified.'));
-        }
+        $newSignal = new SignalData(
+            $isSystem ? $oldSignal->getId() : $request->input('id'),
+            $isSystem ? $oldSignal->getName() : $request->input('name'),
+            $request->input('detail', '')
+        );
 
         $errorValidations = SignalManager::validateSignal($newSignal, $oldSignal);
+
         if (count($errorValidations) > 0) {
             return response(["errors" => $errorValidations], 422);
         }
 
-        SignalManager::replaceSignal($newSignal, $oldSignal, ['detail' => $request->input('detail', '')]);
+        SignalManager::replaceSignal(
+            $newSignal,
+            $oldSignal,
+            ['detail' => $request->input('detail', '')]
+        );
 
-        return response(['id' => $newSignal->getId(), 'name' => $newSignal->getName()], 200);
+        return response([
+            'id' => $newSignal->getId(),
+            'name' => $newSignal->getName()
+        ], 200);
     }
 
     public function destroy($signalId)
