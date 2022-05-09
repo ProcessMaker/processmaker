@@ -9,6 +9,7 @@ use Illuminate\Validation\Rule;
 use Laravel\Scout\Searchable;
 use Log;
 use ProcessMaker\Exception\PmqlMethodException;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\IntermediateCatchEventInterface;
@@ -35,15 +36,18 @@ use ProcessMaker\Traits\HideSystemResources;
  * @property string $participant_id
  * @property string $name
  * @property string $status
- * @property string $data
+ * @property array $data
  * @property \Carbon\Carbon $initiated_at
  * @property \Carbon\Carbon $completed_at
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  * @property Process $process
+ * @property ProcessRequestToken[]|Collection $tokens
  * @property ProcessRequestLock[] $locks
  * @method static ProcessRequest find($id)
  * @method static ProcessRequest findOrFail($id)
+ * @method DataStore getDataStore()
+ * @method Process getProcess()
  *
  * @OA\Schema(
  *   schema="processRequestEditable",
@@ -541,7 +545,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $errors[] = $error;
         $this->errors = $errors;
         $this->status = 'ERROR';
-        \Log::error($exception);
+        Log::error($exception);
         $this->save();
     }
 
@@ -774,43 +778,41 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     }
 
     /**
-     * Locks required to the request
+     * Returns true if the request persists
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return boolean
      */
-    public function locks()
+    public function isNonPersistent()
     {
-        return $this->hasMany(ProcessRequestLock::class);
+        return $this->getProcess()->isNonPersistent();
     }
 
     /**
-     * Request a lock
+     * Get managed data from the process request
      *
-     * @param int $tokenId
-     *
-     * @return ProcessRequestLock
+     * @return array
      */
-    public function requestLock($tokenId)
+    public function getRequestData()
     {
-        return $this->locks()->create(['process_request_token_id' => $tokenId]);
+        $dataManager = new DataManager();
+        return $dataManager->getRequestData($this);
     }
 
     /**
-     * @return void
+     * @return self
      */
-    public function unlock()
+    public function loadProcessRequestInstance()
     {
-        $this->locks()->whereNotNull('due_at')->delete();
-    }
-
-    /**
-     * Get current lock for $this request
-     *
-     * @return ProcessRequestLock
-     */
-    public function currentLock()
-    {
-        return $this->locks()->whereNotDue()->orderBy('id')->limit(1)->first();
+        $process = $this->processVersion ?? $this->processVersion()->first() ?? $this->process ?? $this->process()->first();
+        $storage = $process->getDefinitions();
+        $callableId = $this->callable_id;
+        $process = $storage->getProcess($callableId);
+        $dataStore = $storage->getFactory()->createDataStore();
+        $dataStore->setData($this->data);
+        $this->setId($this->getKey());
+        $this->setProcess($process);
+        $this->setDataStore($dataStore);
+        return $this;
     }
 
     /**

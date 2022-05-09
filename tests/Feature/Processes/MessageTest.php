@@ -8,6 +8,9 @@ use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 use ProcessMaker\Facades\WorkflowManager;
 
+/**
+ * @group process_tests
+ */
 class MessageTest extends TestCase
 {
     use RequestHelper;
