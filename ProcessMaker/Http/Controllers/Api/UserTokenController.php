@@ -17,7 +17,6 @@ use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-
 class UserTokenController extends Controller
 {
     /**
@@ -95,7 +94,7 @@ class UserTokenController extends Controller
         $tokens = $this->tokenRepository->forUser($user->id);
 
         $results =  $tokens->load('client')->filter(function ($token) {
-            return $token->client->personal_access_client && ! $token->revoked;
+            return $token->client->personal_access_client && !$token->revoked;
         })->values();
 
         // Paginate
@@ -130,7 +129,7 @@ class UserTokenController extends Controller
      *         )
      *     ),
      *     @OA\RequestBody(
-    *          required=true,
+     *         required=true,
      *         @OA\JsonContent(
      *             @OA\Property(property="name", type="string"),
      *         )
@@ -150,15 +149,15 @@ class UserTokenController extends Controller
 
         $this->validation->make($request->all(), [
             'name' => 'required|max:255',
-            'scopes' => 'array|in:'.implode(',', Passport::scopeIds()),
+            'scopes' => 'array|in:' . implode(',', Passport::scopeIds()),
         ])->validate();
 
         $token =  $user->createToken(
-            $request->name, $request->scopes ?: []
+            $request->name,
+            $request->scopes ?: []
         );
 
         return new UserTokenResource($token);
-
     }
 
     /**
@@ -201,13 +200,14 @@ class UserTokenController extends Controller
         }
 
         $token = $this->tokenRepository->findForUser(
-            $tokenId, $user->getKey()
+            $tokenId,
+            $user->getKey()
         );
 
         if (is_null($token)) {
-            return new Response('', 404);
+            return response([], 404);
         }
-       return new UserTokenResource($token);
+        return new UserTokenResource($token);
     }
 
     /**
@@ -217,7 +217,7 @@ class UserTokenController extends Controller
      * @param  string  $tokenId
      * @return \Illuminate\Http\Response
      * @OA\Delete(
-     *     path="users/{user_id}/tokens/{token_id}",
+     *     path="/users/{user_id}/tokens/{token_id}",
      *     summary="Delete a token",
      *     operationId="deleteToken",
      *     tags={"Personal Tokens"},
@@ -245,7 +245,6 @@ class UserTokenController extends Controller
      *     ),
      * )
      */
-
     public function destroy(Request $request, User $user, $tokenId)
     {
         if (!Auth::user()->can('edit', $user)) {
@@ -253,7 +252,8 @@ class UserTokenController extends Controller
         }
 
         $token = $this->tokenRepository->findForUser(
-            $tokenId, $user->getKey()
+            $tokenId,
+            $user->getKey()
         );
 
         if (is_null($token)) {
@@ -264,6 +264,4 @@ class UserTokenController extends Controller
 
         return response([], 204);
     }
-
-
 }

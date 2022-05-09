@@ -17,7 +17,7 @@ class UserToken extends Token
      *   @OA\Property(property="name", type="string"),
      *   @OA\Property(property="user_id", type="integer"),
      *   @OA\Property(property="client_id", type="integer"),
-     *   @OA\Property(property="scopes", type="object"),
+     *   @OA\Property(property="scopes", type="array"),
      *   @OA\Property(property="revoked", type="boolean"),
      *   @OA\Property(property="client", type="object", ref="#/components/schemas/TokenClient"),
      *   @OA\Property(property="created_at", type="string", format="date-time"),
