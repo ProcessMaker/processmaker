@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ProcessMaker Oauth2 Server</title>
+    <title>{{ __('ProcessMaker') }} Oauth2 Server</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Style sheets -->

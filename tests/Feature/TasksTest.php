@@ -29,10 +29,10 @@ class TasksTest extends TestCase
     }
 
     public function testIndex() {
-        $response = $this->webGet(self::TASKS_URL, []); 
+        $response = $this->webGet(self::TASKS_URL, []);
         $response->assertStatus(200);
-        $response->assertViewIs('tasks.index'); 
-        $response->assertSee('Tasks'); 
+        $response->assertViewIs('tasks.index');
+        $response->assertSee('Tasks');
     }
 
     public function testViewTaskWithComments() {
@@ -48,7 +48,9 @@ class TasksTest extends TestCase
         $task = $response->json('data')[0];
 
         // A user without permissions for the task should generate a 403 error
-        $this->user = factory(User::class)->create();
+        $this->user = factory(User::class)->create([
+            'username' => 'testuser',
+        ]);
         $response = $this->webGet(self::TASKS_URL . '/' . $task['id'] . '/edit', []);
         $response->assertStatus(403);
 

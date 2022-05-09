@@ -27,8 +27,8 @@
       <meta name="alertMessage" content="{{$message}}">
     @endif
 
-    <title>@yield('title',__('Welcome')) - ProcessMaker</title>
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
+    <title>@yield('title',__('Welcome')) - {{ __('ProcessMaker') }}</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="{{ mix('css/sidebar.css') }}" rel="stylesheet">
     <link href="/css/bpmn-symbols/css/bpmn.css" rel="stylesheet">
@@ -69,7 +69,12 @@
             @endif
         @endforeach
     @endisset
-
+    
+    @if (config('global_header'))
+        <!-- Start Global Header -->
+        {!! config('global_header') !!} 
+        <!-- End Global Header -->
+    @endif
 </head>
 
 <body>
