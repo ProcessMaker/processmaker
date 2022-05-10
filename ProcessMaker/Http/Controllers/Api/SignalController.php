@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 use DOMXPath;
 use Illuminate\Support\Arr;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Collection;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
@@ -43,55 +44,40 @@ class SignalController extends Controller
             ? $request->boolean('exclude_custom_signals')
             : false;
 
+        $exclude_collection = $request->has('exclude_collection_signals')
+            ? $request->boolean('exclude_collection_signals')
+            : false;
+
         $exclude_system = $request->has('exclude_system_signals')
             ? $request->boolean('exclude_system_signals')
             : false;
 
-        if ($exclude_custom && !$exclude_system) {
-            $signals = SignalManager::getSystemSignals($processes);
-        } else if (!$exclude_custom && $exclude_system) {
-            $signals = SignalManager::getNonSystemSignals($processes);
-        } else {
-            $signals = SignalManager::getAllSignals(true, $processes);
+        $signals = new Collection();
+
+        if (!$exclude_custom) {
+            $signals = $signals->merge(
+                SignalManager::getNonSystemSignals($processes)
+            );
         }
 
-        $collections = [];
-        $collectionsEnabled = [];
-
-        if(hasPackage('package-collections')) {
-            $collection = \ProcessMaker\Plugins\Collections\Models\Collection::get();
-
-            foreach ($collection as $item) {
-                $collectionsEnabled[] = $item->id;
-                if (!$item->signal_create) {
-                    $collections[] = 'collection_' . $item->id . '_create';
-                }
-                if (!$item->signal_update) {
-                    $collections[] = 'collection_' . $item->id . '_update';
-                }
-                if (!$item->signal_delete) {
-                    $collections[] = 'collection_' . $item->id . '_delete';
-                }
-            }
+        if (!$exclude_collection) {
+            $signals = $signals->merge(
+                SignalManager::getCollectionSignals($processes)
+            );
         }
 
-        //verify active signals
-        $replace = ['collection_', '_create', '_update', '_delete'];
-        $signals = $signals->transform(function($item) use($collections, $collectionsEnabled, $replace) {
-            if (!in_array($item['id'], $collections)) {
-                $item['type'] = 'signal';
-
-                if (preg_match('/\bcollection_[0-9]+_(create|update|delete)\b/', $item['id']) && in_array(str_replace($replace, '', $item['id']), $collectionsEnabled)) {
-                    $item['type'] = 'collection';
-                }
-                return $item;
-            }
-        });
+        if (!$exclude_system) {
+            $signals = $signals->merge(
+                SignalManager::getSystemSignals($processes)->reject(function ($signal) {
+                    return SignalManager::isCollectionSignal($signal);
+                })
+            );
+        }
 
         //remove items nulls
         $signals = $signals->filter();
-
         $filter = $request->input('filter', '');
+
         if ($filter) {
             $signals = $signals->filter(function ($signal, $key) use($filter) {
                 return mb_stripos($signal['name'], $filter) !== false
@@ -111,7 +97,7 @@ class SignalController extends Controller
         $page = $request->input('page', 1) > $lastPage
             ? $lastPage
             : $request->input('page', 1);
-        $page = (int)$page;
+        $page = (int) $page;
 
         $meta = [
             'count' => $signals->count(),

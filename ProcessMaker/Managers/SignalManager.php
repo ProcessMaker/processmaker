@@ -4,6 +4,7 @@ namespace ProcessMaker\Managers;
 
 use DOMXPath;
 use ProcessMaker\Models\Process;
+use Illuminate\Support\Collection;
 use ProcessMaker\Models\SignalData;
 use ProcessMaker\Repositories\BpmnDocument;
 
@@ -44,6 +45,78 @@ class SignalManager
         }
 
         return false;
+    }
+
+    /**
+     * Is a given signal a Collection-specific signal
+     *
+     * @param  array  $signal
+     *
+     * @return bool
+     */
+    public static function isCollectionSignal(array $signal)
+    {
+        if (!array_key_exists('id', $signal)) {
+            return false;
+        }
+
+        return (bool) preg_match('/\bcollection_[0-9]+_(create|update|delete)\b/', $signal['id']);
+    }
+
+    /**
+     * Get all enabled, ProcessMaker Collection signals
+     *
+     * @param  array|null  $processes
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getCollectionSignals(array $processes = null)
+    {
+        if (!hasPackage('package-collections')) {
+            return new Collection();
+        }
+
+        $signals = self::getAllSignals(true, $processes);
+
+        $collection_signals = [];
+        $collections_enabled = [];
+
+        foreach (\ProcessMaker\Plugins\Collections\Models\Collection::get() as $collection) {
+            $collections_enabled[] = $collection->id;
+
+            if (!$collection->signal_create) {
+                $collection_signals[] = 'collection_' . $collection->id . '_create';
+            }
+
+            if (!$collection->signal_update) {
+                $collection_signals[] = 'collection_' . $collection->id . '_update';
+            }
+
+            if (!$collection->signal_delete) {
+                $collection_signals[] = 'collection_' . $collection->id . '_delete';
+            }
+        }
+
+        return $signals->transform(function ($signal) use ($collection_signals, $collections_enabled) {
+            if (!in_array($signal['id'], $collection_signals)) {
+                $signal['type'] = 'signal';
+
+                $replace = ['collection_', '_create', '_update', '_delete'];
+
+                if (self::isCollectionSignal($signal) &&
+                    in_array(str_replace($replace, '', $signal['id']), $collections_enabled)) {
+                    $signal['type'] = 'collection';
+                }
+
+                return $signal;
+            }
+        })->reject(function ($signal) {
+            if (!array_key_exists('type', $signal)) {
+                return true;
+            }
+
+            return $signal['type'] !== 'collection';
+        })->values();
     }
 
     /**

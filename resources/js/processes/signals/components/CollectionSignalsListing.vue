@@ -137,6 +137,9 @@ export default {
     isEditable(data) {
       return ! this.isSystemSignal(data);
     },
+    isCollection(data) {
+      return data.type === 'collection';
+    },
     getDeleteButtonTitle(rowData) {
         if (this.isCollection(rowData)) {
             return this.$t('View Collection');
@@ -161,35 +164,12 @@ export default {
                 .replace('_update', '')
                 .replace('_delete', '');
     },
-    isCollection(data) {
-      return data.type === 'collection';
-    },
     onReview(data, index) {
       if (this.isCollection(data)) {
         window.location = "/collections/" + this.getIdCollection(data);
         return;
       }
       this.onDelete(data, index);
-    },
-    onDelete(data, index) {
-      let that = this;
-      ProcessMaker.confirmModal(
-        this.$t("Caution!"),
-        "<b>" +
-          this.$t("Are you sure you want to delete {{item}}?", {
-            item: data.name,
-          }) +
-          "</b>",
-        "",
-        function () {
-          ProcessMaker.apiClient
-            .delete("signals/" + data.id)
-            .then((response) => {
-              ProcessMaker.alert(this.$t("The signal was deleted."), "success");
-              that.fetch();
-            });
-        }
-      );
     },
     fetch() {
       this.loading = true;
