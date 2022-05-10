@@ -48,11 +48,11 @@ class UserTokenController extends Controller
 
 
     /**
-     * Display listing of access tokens for the specified user
+     * Display listing of access tokens for the specified user.
      *
      * @OA\Get(
      *     path="/users/{user_id}/tokens",
-     *     summary="Returns a specific user's tokens",
+     *     summary="Display listing of access tokens for the specified user.",
      *     operationId="getTokens",
      *     tags={"Personal Tokens"},
      *     @OA\Parameter(
@@ -68,7 +68,7 @@ class UserTokenController extends Controller
      *
      *     @OA\Response(
      *         response=200,
-     *         description="list of tokens",
+     *         description="List of tokens.",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(
@@ -110,9 +110,6 @@ class UserTokenController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Laravel\Passport\PersonalAccessTokenResult
-     *
-     * /**
-     * Display listing of access tokens for the specified user
      *
      * @OA\Post(
      *     path="/users/{user_id}/tokens",
@@ -163,7 +160,7 @@ class UserTokenController extends Controller
     /**
      * Show a personal access token for the user
      *
-     * *     @OA\Get(
+     * @OA\Get(
      *     path="/users/{user_id}/tokens/{token_id}",
      *     summary="Get single token by ID",
      *     operationId="getTokenById",
@@ -207,6 +204,7 @@ class UserTokenController extends Controller
         if (is_null($token)) {
             return response([], 404);
         }
+
         return new UserTokenResource($token);
     }
 
@@ -216,6 +214,7 @@ class UserTokenController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @param  string  $tokenId
      * @return \Illuminate\Http\Response
+     *
      * @OA\Delete(
      *     path="/users/{user_id}/tokens/{token_id}",
      *     summary="Delete a token",

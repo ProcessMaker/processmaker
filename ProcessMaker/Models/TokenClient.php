@@ -1,8 +1,6 @@
 <?php
 
-
 namespace ProcessMaker\Models;
-
 
 use Laravel\Passport\Client;
 
@@ -25,5 +23,4 @@ class TokenClient extends Client
      *   @OA\Property(property="updated_at", type="string", format="date-time"),
      * )
      */
-
 }
