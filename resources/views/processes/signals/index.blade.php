@@ -30,12 +30,14 @@
                     {{ __('System Signals') }}
                 </a>
             </li>
+            @if(hasPackage('package-collections'))
             <li class="nav-item">
                 <a class="nav-item nav-link" id="nav-collection-signals-tab" data-toggle="tab" href="#nav-collection-signals" role="tab"
                    onclick="loadCollectionSignals()" aria-controls="nav-collection-signals" aria-selected="true">
                     {{ __('Collection Signals') }}
                 </a>
             </li>
+            @endif
         </ul>
 
         <div>
@@ -51,12 +53,13 @@
                         @include('processes.signals.listSystem')
                     </div>
                 </div>
-
+                @if(hasPackage('package-collections'))
                 <div class="tab-pane fade show" id="nav-collection-signals" role="tabpanel" aria-labelledby="nav-collection-signals-tab">
                     <div class="card card-body p-3 border-top-0">
                         @include('processes.signals.listCollection')
                     </div>
                 </div>
+                @endif
             </div>
         </div>
     </div>
@@ -69,10 +72,15 @@
     loadSystemSignals = function () {
         ProcessMaker.EventBus.$emit('api-data-system-signals', true);
     };
-    loadCollectionSignals = function () {
-        ProcessMaker.EventBus.$emit('api-data-collection-signals', true);
-    };
 </script>
+
+@if(hasPackage('package-collections'))
+    <script>
+        loadCollectionSignals = function () {
+            ProcessMaker.EventBus.$emit('api-data-collection-signals', true);
+        };
+    </script>
+@endif    
 
 @section('js')
     <script src="{{ mix('js/processes/signals/index.js') }}"></script>
@@ -113,18 +121,6 @@
                 },
                 reload() {
                     this.$refs.signalCustomList.dataManager([
-                        {
-                            field: 'name',
-                            direction: 'desc',
-                        },
-                    ]);
-                    this.$refs.signalSystemList.dataManager([
-                        {
-                            field: 'name',
-                            direction: 'desc',
-                        },
-                    ]);
-                    this.$refs.signalCollectionList.dataManager([
                         {
                             field: 'name',
                             direction: 'desc',
@@ -222,6 +218,7 @@
             },
         });
     </script>
+    @if(hasPackage('package-collections'))
     <script>
         new Vue({
             el: '#listCollectionSignals',
@@ -289,4 +286,5 @@
             },
         });
     </script>
+    @endif
 @endsection
