@@ -27,18 +27,6 @@
           <div class="actions">
             <div class="popout">
               <span v-b-tooltip.hover
-                    :title="isEditable(props.rowData) ? $t('Edit') : $t('Cannot edit system signals.')">
-                <b-btn
-                    variant="link"
-                    @click="onEdit(props.rowData, props.rowIndex)"
-                    :disabled="!isEditable(props.rowData)"
-                    v-if="permission.includes('edit-processes')"
-                    v-uni-aria-describedby="props.rowData.id.toString()"
-                >
-                    <i class="fas fa-edit fa-lg fa-fw"></i>
-                </b-btn>
-              </span>
-              <span v-b-tooltip.hover
                 :title="getDeleteButtonTitle(props.rowData)">
                 <b-btn
                     variant="link"

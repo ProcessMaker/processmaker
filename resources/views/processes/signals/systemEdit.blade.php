@@ -32,7 +32,6 @@
       </nav>
 
       <div class="tab-content" id="nav-tabContent">
-
         <div class="card card-body border-top-0 tab-pane p-3 fade show active" id="nav-detail" role="tabpanel" aria-labelledby="nav-detail-tab">
           <div class="modal-body">
             <div class="form-group">
@@ -55,15 +54,15 @@
               <div class="invalid-feedback" role="alert" v-if="errors.detail">@{{errors.detail[0]}}</div>
             </div>
           </div>
-          @isset($addons)
+          <!-- @isset($addons)
             @foreach ($addons as $addon)
               {!! __($addon['content']) !!}
             @endforeach
-          @endisset
-          @if(!hasPackage('package-data-sources'))
-          <div class="card-footer text-right mt-3">
+          @endisset -->
+          @if(hasPackage('package-data-sources'))
+          <div class="card-footer border-0 pb-0 px-0 text-right mt-3 bg-transparent">
             {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-            {!! Form::button(__('Confirm and Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'onUpdate', 'id'=>'saveSingal']) !!}
+            {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'onUpdate', 'id'=>'saveSingal']) !!}
           </div>
           @endif
         </div>
