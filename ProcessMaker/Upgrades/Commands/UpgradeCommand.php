@@ -16,6 +16,7 @@ class UpgradeCommand extends BaseCommand
      */
     protected $signature = 'upgrade
                             {--pretend : Dry run the pending upgrade migrations}
+                            {--force : Force the upgrades to run even in production}
                             {--step : Force the upgrade migrations to be run so they can be rolled back individually}';
 
     /**
@@ -60,6 +61,7 @@ class UpgradeCommand extends BaseCommand
         $this->prepareDatabase();
 
         $this->migrator->run($this->getMigrationPaths(), [
+            'force' => $this->option('force'),
             'pretend' => $this->option('pretend'),
             'step' => $this->option('step'),
         ]);
