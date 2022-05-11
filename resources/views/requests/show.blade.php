@@ -32,7 +32,7 @@
                                        aria-controls="errors" aria-selected="false">{{__('Errors')}}</a>
                                 </li>
                             @endif
-                            <li class="nav-item" v-if="status !== 'COMPLETED' || status !== 'PENDING'">
+                            <li class="nav-item" v-if="showTasks">
                                 <a class="nav-link" :class="{ active: activePending }" id="pending-tab"
                                    data-toggle="tab" @click="switchTab('pending')" href="#pending" role="tab"
                                    aria-controls="pending" aria-selected="true">{{__('Tasks')}}</a>
@@ -103,7 +103,7 @@
                             <request-errors :errors="errorLogs"></request-errors>
                         </div>
                         <div class="tab-pane fade show card card-body border-top-0 p-0" :class="{ active: activePending }" id="pending" role="tabpanel"
-                             aria-labelledby="pending-tab" v-if="status !== 'COMPLETED' || status !== 'PENDING'">
+                             aria-labelledby="pending-tab">
                             <request-detail ref="pending" :process-request-id="requestId" status="ACTIVE" :is-admin="{{Auth::user()->is_administrator ? 'true' : 'false'}}">
                             </request-detail>
                         </div>
@@ -389,6 +389,13 @@
            */
           showSummary() {
             return this.request.status === 'ACTIVE' || this.request.status === 'COMPLETED' || this.request.status === 'CANCELED';
+          },
+          /**
+           * Show tasks if request status is not completed or pending
+           *
+           */
+          showTasks() {
+            return this.request.status !== 'COMPLETED' && this.request.status !== 'PENDING';
           },
           /**
            * If the screen summary is configured.
