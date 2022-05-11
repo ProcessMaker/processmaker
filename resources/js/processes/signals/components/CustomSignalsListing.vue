@@ -114,7 +114,7 @@ export default {
       this.localLoadOnStart = val;
       this.showSystemSignals = false;
       this.showCustomSignals = true;
-      this.ShowCollectionSignals = false;
+      this.showCollectionSignals = false;
       this.fetch();
       this.apiDataLoading = false;
       this.apiNoResults = false;

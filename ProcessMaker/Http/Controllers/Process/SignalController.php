@@ -34,12 +34,18 @@ class SignalController extends Controller
     {
         $signal = SignalManager::getAllSignals(true)->firstWhere('id', $id);
 
-        $view = SignalManager::isSystemSignal($signal) 
-            ? 'processes.signals.systemEdit' 
-            : 'processes.signals.edit';
+        $isSystemSignal = SignalManager::isSystemSignal($signal);
+
+        $view = $isSystemSignal ? 'processes.signals.systemEdit' : 'processes.signals.edit';
 
         $addons = $this->getPluginAddons('edit', compact(['signal']));
 
+        if ($isSystemSignal) {
+            $addons = array_filter($addons, function ($addon) {
+                return $addon['view'] !== 'package-data-sources::webhook/signal';
+            });
+        }
+        
         return view($view, compact('signal', 'addons'));
     }
 }

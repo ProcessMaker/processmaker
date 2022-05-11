@@ -59,12 +59,10 @@
               {!! __($addon['content']) !!}
             @endforeach
           @endisset
-          @if(!hasPackage('package-data-sources'))
-          <div class="card-footer text-right mt-3">
+          <div class="card-footer border-0 pb-0 px-0 text-right bg-transparent">
             {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-            {!! Form::button(__('Confirm and Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'onUpdate', 'id'=>'saveSingal']) !!}
+            {!! Form::button(__('Save'), ['class'=>'btn btn-secondary', '@click' => 'onUpdate', 'id'=>'saveSingal']) !!}
           </div>
-          @endif
         </div>
         <div class="card card-body border-top-0 tab-pane p-3 fade" id="nav-catch" role="tabpanel" aria-labelledby="nav-catch-tab">
           <catch-listing ref="catchList" :filter="filter" items="{{json_encode($signal['processes'])}}" />
