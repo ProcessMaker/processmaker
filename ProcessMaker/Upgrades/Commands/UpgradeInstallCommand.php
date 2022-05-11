@@ -48,8 +48,6 @@ class UpgradeInstallCommand extends BaseCommand
      */
     public function handle()
     {
-        $this->repository->setSource($this->getDatabase());
-
         if ($this->repository->repositoryExists()) {
             return $this->warn('Upgrade migration table already exists.');
         }
