@@ -3505,6 +3505,267 @@
                 }
             }
         },
+        "/script-executors": {
+            "get": {
+                "tags": [
+                    "Rebuild Script Executors"
+                ],
+                "summary": "Returns all script executors that the user has access to",
+                "description": "Get a list of script executors.",
+                "operationId": "getScriptExecutors",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of script executors",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/scriptExecutors"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Rebuild Script Executors"
+                ],
+                "summary": "Create a script executor",
+                "description": "Create a script executor",
+                "operationId": "createScriptExecutor",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/scriptExecutorsEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "id": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/script-executors/{script_executor}": {
+            "put": {
+                "tags": [
+                    "Rebuild Script Executors"
+                ],
+                "summary": "Update script executor",
+                "description": "Update and rebuild the script executor",
+                "operationId": "updateScriptExecutor",
+                "parameters": [
+                    {
+                        "name": "script_executor",
+                        "in": "path",
+                        "description": "ID of script executor to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/scriptExecutorsEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Rebuild Script Executors"
+                ],
+                "summary": "Delete a script executor",
+                "description": "Delete a script executor",
+                "operationId": "deleteScriptExecutor",
+                "parameters": [
+                    {
+                        "name": "script_executor",
+                        "in": "path",
+                        "description": "ID of script executor to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/script-executors/cancel": {
+            "post": {
+                "tags": [
+                    "Rebuild Script Executors"
+                ],
+                "summary": "Cancel a script executor",
+                "description": "Cancel a script executor",
+                "operationId": "cancelScriptExecutor",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "pidFile": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string"
+                                        },
+                                        "id": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/script-executors/available-languages": {
+            "get": {
+                "tags": [
+                    "Rebuild Script Executors"
+                ],
+                "summary": "Returns all available languages",
+                "description": "Get a list of available languages.",
+                "operationId": "getAvailableLanguages",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of available languages",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/availableLanguages"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/security-logs": {
             "get": {
                 "tags": [
@@ -5731,6 +5992,62 @@
                         "$ref": "#/components/schemas/ScriptCategoryEditable"
                     }
                 ]
+            },
+            "scriptExecutorsEditable": {
+                "properties": {
+                    "title": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "language": {
+                        "type": "string"
+                    },
+                    "config": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "scriptExecutors": {
+                "allOf": [
+                    {
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "format": "id"
+                            },
+                            "created_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    {
+                        "$ref": "#/components/schemas/scriptExecutorsEditable"
+                    }
+                ]
+            },
+            "availableLanguages": {
+                "description": "Represents an Eloquent model of a Script Executor",
+                "properties": {
+                    "text": {
+                        "type": "string"
+                    },
+                    "value": {
+                        "type": "string"
+                    },
+                    "initDockerFile": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
             },
             "securityLog": {
                 "description": "Class SecurityLog",

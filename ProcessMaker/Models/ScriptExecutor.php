@@ -8,6 +8,47 @@ use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 
+/**
+ * Represents an Eloquent model of a Script Executor
+ *
+ * @package ProcessMaker\Model
+ *
+ * @property integer id
+ * @property string title
+ * @property text description
+ * @property string language
+ * @property text config
+ * @property string value
+ * @property text initDockerFile
+ *
+ * @OA\Schema(
+ *   schema="scriptExecutorsEditable",
+ *   @OA\Property(property="title", type="string"),
+ *   @OA\Property(property="description", type="string"),
+ *   @OA\Property(property="language", type="string"),
+ *   @OA\Property(property="config", type="string"),
+ * ),
+ * @OA\Schema(
+ *   schema="scriptExecutors",
+ *   allOf={
+ *     @OA\Schema(ref="#/components/schemas/scriptExecutorsEditable"),
+ *     @OA\Schema(
+ *       @OA\Property(property="id", type="integer", format="id"),
+ *       @OA\Property(property="created_at", type="string", format="date-time"),
+ *       @OA\Property(property="updated_at", type="string", format="date-time"),
+ *     )
+ *   },
+ * ),
+ *
+ * @OA\Schema(
+ *   schema="availableLanguages",
+ *   @OA\Property(property="text", type="string"),
+ *   @OA\Property(property="value", type="string"),
+ *   @OA\Property(property="initDockerFile", type="string"),
+ * ),
+ *
+ */
+
 class ScriptExecutor extends Model
 {
     use HasVersioning;
