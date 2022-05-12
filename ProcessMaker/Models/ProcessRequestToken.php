@@ -246,7 +246,7 @@ class ProcessRequestToken extends Model implements TokenInterface
                 break;
             case 'manager':
                 $process = $this->process()->first();
-                return collect([$process->properties['manager_id'] ?? null]);
+                return collect([optional($process)->manager_id]);
                 break;
             default:
                 return collect([]);
