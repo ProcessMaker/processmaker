@@ -141,7 +141,7 @@
       
       <br>
       <div class="d-flex">
-          <b-button variant="outline-danger" @click="onReset">
+          <b-button variant="outline-danger" :disabled="isLoading" @click="onReset">
               <i class="fas fa-undo"></i> {{ $t('Reset') }}
           </b-button>
           
@@ -149,7 +149,7 @@
               {{ $t('Cancel') }}
           </b-button>
           
-          <b-button variant="secondary" class="ml-3" @click="onSubmit">
+          <b-button variant="secondary" class="ml-3" :disabled="isLoading" @click="onSubmit">
               {{ $t('Save') }}
           </b-button>
       </div>
@@ -187,6 +187,7 @@
 export default {
   data() {
     return {
+      isLoading: false,
       altText: '',
       loginFooter: '',
       editorSettings: {
@@ -465,6 +466,7 @@ export default {
       );
     },
     onCreate(data) {
+      this.isLoading = true;
       ProcessMaker.apiClient.post('customize-ui', data)
         .then(response => {
           this.$refs.modalLoading.show();
@@ -477,6 +479,9 @@ export default {
           if (error.response.status && error.response.status === 422) {
             this.errors = error.response.data.errors;
           }
+        })
+        .finally(() => {
+          this.isLoading = false;
         });
     },
     onUpdate(data) {
