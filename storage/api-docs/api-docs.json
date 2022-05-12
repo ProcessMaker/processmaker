@@ -18,1323 +18,6 @@
         }
     ],
     "paths": {
-        "/collections": {
-            "get": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Returns all collections that the user has access to",
-                "description": "Get a list of Collections.",
-                "operationId": "getCollections",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/filter"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_by"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_direction"
-                    },
-                    {
-                        "$ref": "#/components/parameters/per_page"
-                    },
-                    {
-                        "$ref": "#/components/parameters/include"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "list of collections",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/collections"
-                                            }
-                                        },
-                                        "meta": {
-                                            "$ref": "#/components/schemas/metadata"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Save a new collections",
-                "description": "Create a new Collection.",
-                "operationId": "createCollection",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/collectionsEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/collections"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/collections/{collection_id}": {
-            "get": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Get single collections by ID",
-                "description": "Get a single Collection.",
-                "operationId": "getCollectionById",
-                "parameters": [
-                    {
-                        "name": "collection_id",
-                        "in": "path",
-                        "description": "ID of collection to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully found the collections",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/collections"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Update a collection",
-                "description": "Update a Collection.",
-                "operationId": "updateCollection",
-                "parameters": [
-                    {
-                        "name": "collection_id",
-                        "in": "path",
-                        "description": "ID of collection to update",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/collectionsEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "204": {
-                        "description": "success"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Delete a collection",
-                "description": "Delete a Collection.",
-                "operationId": "deleteCollection",
-                "parameters": [
-                    {
-                        "name": "collection_id",
-                        "in": "path",
-                        "description": "ID of collection to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "success"
-                    }
-                }
-            }
-        },
-        "/collections/{collection_id}/export": {
-            "post": {
-                "tags": [
-                    "Screens"
-                ],
-                "summary": "Trigger export collections job",
-                "description": "Export the specified collection.",
-                "operationId": "exportCollection",
-                "parameters": [
-                    {
-                        "name": "collection_id",
-                        "in": "path",
-                        "description": "ID of the collection to export",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "202": {
-                        "description": "success"
-                    }
-                }
-            }
-        },
-        "/collections/import": {
-            "post": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Import a new collection",
-                "description": "Import the specified collection.",
-                "operationId": "importCollection",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "required": [
-                                    "file"
-                                ],
-                                "properties": {
-                                    "file": {
-                                        "description": "file to upload",
-                                        "type": "file",
-                                        "format": "file"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/collections"
-                                }
-                            }
-                        }
-                    },
-                    "200": {
-                        "description": "success"
-                    }
-                }
-            }
-        },
-        "/collections/{collection_id}/truncate": {
-            "delete": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Deletes all records in a collection",
-                "description": "Truncate a Collection.",
-                "operationId": "truncateCollection",
-                "parameters": [
-                    {
-                        "name": "collection_id",
-                        "in": "path",
-                        "description": "ID of collection to truncate",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "success"
-                    }
-                }
-            }
-        },
-        "/collections/{collection_id}/records": {
-            "get": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Returns all records",
-                "description": "Get the list of records of a collection.",
-                "operationId": "getRecords",
-                "parameters": [
-                    {
-                        "name": "collection_id",
-                        "in": "path",
-                        "description": "ID of collection to get records for",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "pmql",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "$ref": "#/components/parameters/per_page"
-                    },
-                    {
-                        "$ref": "#/components/parameters/filter"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_by"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_direction"
-                    },
-                    {
-                        "$ref": "#/components/parameters/include"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "list of records of a collection",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/records"
-                                            }
-                                        },
-                                        "meta": {
-                                            "$ref": "#/components/schemas/metadata"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Save a new record in a collection",
-                "description": "Create a new record in a Collection.",
-                "operationId": "createRecord",
-                "parameters": [
-                    {
-                        "name": "collection_id",
-                        "in": "path",
-                        "description": "ID of the collection",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/recordsEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/records"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/collections/{collection_id}/records/{record_id}": {
-            "get": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Get single record of a collection",
-                "description": "Get a single record of a Collection.",
-                "operationId": "getRecordById",
-                "parameters": [
-                    {
-                        "name": "collection_id",
-                        "in": "path",
-                        "description": "ID of the collection",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "record_id",
-                        "in": "path",
-                        "description": "ID of the record to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully found the record",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/records"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Update a record",
-                "description": "Update a record in a Collection.",
-                "operationId": "updateRecord",
-                "parameters": [
-                    {
-                        "name": "collection_id",
-                        "in": "path",
-                        "description": "ID of collection",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "record_id",
-                        "in": "path",
-                        "description": "ID of the record ",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/recordsEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "204": {
-                        "description": "success"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Delete a collection record",
-                "description": "Delete a record of a Collection.",
-                "operationId": "deleteRecord",
-                "parameters": [
-                    {
-                        "name": "collection_id",
-                        "in": "path",
-                        "description": "ID of collection",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "record_id",
-                        "in": "path",
-                        "description": "ID of record in collection",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "success"
-                    }
-                }
-            },
-            "patch": {
-                "tags": [
-                    "Collections"
-                ],
-                "summary": "Partial update of a record",
-                "description": "Implements a partial update of a record in a Collection.",
-                "operationId": "patchRecord",
-                "parameters": [
-                    {
-                        "name": "collection_id",
-                        "in": "path",
-                        "description": "ID of collection ",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "record_id",
-                        "in": "path",
-                        "description": "ID of the record ",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/collectionsEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "success"
-                    }
-                }
-            }
-        },
-        "/saved-searches/{saved_search_id}/charts": {
-            "get": {
-                "tags": [
-                    "SavedSearchCharts"
-                ],
-                "summary": "Returns all saved search charts that the user has access to",
-                "description": "Get a list of SavedSearchCharts.",
-                "operationId": "getSavedSearchCharts",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/filter"
-                    },
-                    {
-                        "name": "type",
-                        "in": "query",
-                        "description": "Only return saved searches by type",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "enum": [
-                                "request",
-                                "task",
-                                "collection"
-                            ]
-                        }
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_by"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_direction"
-                    },
-                    {
-                        "$ref": "#/components/parameters/per_page"
-                    },
-                    {
-                        "$ref": "#/components/parameters/include"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "list of saved search charts",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/SavedSearchChart"
-                                            }
-                                        },
-                                        "meta": {
-                                            "type": "object",
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/components/schemas/metadata"
-                                                }
-                                            ]
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "SavedSearchCharts"
-                ],
-                "summary": "Update several saved search charts at once",
-                "description": "Batch update several SavedSearchCharts.",
-                "operationId": "batchUpdateSavedSearchCharts",
-                "parameters": [
-                    {
-                        "name": "saved_search_id",
-                        "in": "path",
-                        "description": "ID of saved search to which these charts will be saved",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/components/schemas/SavedSearchChart"
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "204": {
-                        "description": "success"
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "SavedSearchCharts"
-                ],
-                "summary": "Save a new saved search chart",
-                "description": "Create a new SavedSearchChart.",
-                "operationId": "createSavedSearchChart",
-                "parameters": [
-                    {
-                        "name": "saved_search_id",
-                        "in": "path",
-                        "description": "ID of saved search to which this chart will be saved",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/SavedSearchChartEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SavedSearchChart"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/saved-searches/charts/{chart_id}": {
-            "get": {
-                "tags": [
-                    "SavedSearchCharts"
-                ],
-                "summary": "Get single saved search chart by ID",
-                "description": "Get a single SavedSearchChart.",
-                "operationId": "getSavedSearchChartById",
-                "parameters": [
-                    {
-                        "name": "chart_id",
-                        "in": "path",
-                        "description": "ID of chart to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully found the saved search chart",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SavedSearchChart"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "SavedSearchCharts"
-                ],
-                "summary": "Update a saved search chart",
-                "description": "Update a SavedSearchChart.",
-                "operationId": "updateSavedSearchChart",
-                "parameters": [
-                    {
-                        "name": "chart_id",
-                        "in": "path",
-                        "description": "ID of chart to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/SavedSearchChartEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SavedSearchChart"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "SavedSearchCharts"
-                ],
-                "summary": "Delete a saved search chart",
-                "description": "Delete a SavedSearchChart.",
-                "operationId": "deleteSavedSearchChart",
-                "parameters": [
-                    {
-                        "name": "chart_id",
-                        "in": "path",
-                        "description": "ID of chart to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "success"
-                    }
-                }
-            }
-        },
-        "/saved-searches/charts/{chart_id}/fields": {
-            "get": {
-                "tags": [
-                    "SavedSearchCharts"
-                ],
-                "summary": "Get available chart fields for a Saved Search by ID",
-                "description": "Get available chart fields for a Saved Search.",
-                "operationId": "getSavedSearchFieldsById",
-                "parameters": [
-                    {
-                        "name": "chart_id",
-                        "in": "path",
-                        "description": "ID of Saved Search to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully found the saved search",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SavedSearch"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/saved-searches/reports": {
-            "post": {
-                "tags": [
-                    "Reports"
-                ],
-                "summary": "Save a new report",
-                "operationId": "createReport",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ReportEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Report"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/saved-searches/reports/{reportId}": {
-            "put": {
-                "tags": [
-                    "SavedSearches"
-                ],
-                "summary": "Update a saved search",
-                "description": "Update a Report",
-                "operationId": "updateReport",
-                "parameters": [
-                    {
-                        "name": "reportId",
-                        "in": "path",
-                        "description": "ID of report",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/SavedSearchEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SavedSearch"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/saved-searches": {
-            "get": {
-                "tags": [
-                    "SavedSearches"
-                ],
-                "summary": "Returns all saved searches that the user has access to",
-                "description": "Get a list of SavedSearches.",
-                "operationId": "getSavedSearches",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/filter"
-                    },
-                    {
-                        "name": "type",
-                        "in": "query",
-                        "description": "Only return saved searches by type",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "enum": [
-                                "request",
-                                "task",
-                                "collection"
-                            ]
-                        }
-                    },
-                    {
-                        "name": "subset",
-                        "in": "query",
-                        "description": "Only return saved searches that are yours or those that have been shared with you",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "enum": [
-                                "mine",
-                                "shared"
-                            ]
-                        }
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_by"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_direction"
-                    },
-                    {
-                        "$ref": "#/components/parameters/per_page"
-                    },
-                    {
-                        "$ref": "#/components/parameters/include"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "list of saved searches",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/SavedSearch"
-                                            }
-                                        },
-                                        "meta": {
-                                            "type": "object",
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/components/schemas/metadata"
-                                                }
-                                            ]
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "tags": [
-                    "SavedSearches"
-                ],
-                "summary": "Save a new saved search",
-                "description": "Create a new SavedSearch.",
-                "operationId": "createSavedSearch",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/SavedSearchEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SavedSearch"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/saved-searches/{savedSearchId}": {
-            "get": {
-                "tags": [
-                    "SavedSearches"
-                ],
-                "summary": "Get single saved searches by ID",
-                "description": "Get a single SavedSearch.",
-                "operationId": "getSavedSearchById",
-                "parameters": [
-                    {
-                        "name": "savedSearchId",
-                        "in": "path",
-                        "description": "ID of saved search to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully found the saved search",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SavedSearch"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "SavedSearches"
-                ],
-                "summary": "Update a saved search",
-                "description": "Update a SavedSearch.",
-                "operationId": "updateSavedSearch",
-                "parameters": [
-                    {
-                        "name": "savedSearchId",
-                        "in": "path",
-                        "description": "ID of saved search to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/SavedSearchEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/SavedSearch"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/saved-searches/{savedSearchId}/columns": {
-            "get": {
-                "tags": [
-                    "SavedSearches"
-                ],
-                "summary": "Returns all columns associated with a Saved Search",
-                "description": "Display a listing of columns.",
-                "operationId": "getSavedSearchColumns",
-                "parameters": [
-                    {
-                        "name": "savedSearchId",
-                        "in": "path",
-                        "description": "ID of saved search to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "include",
-                        "in": "query",
-                        "description": "Include specific categories. Comma separated list.",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "enum": [
-                                    "current",
-                                    "default",
-                                    "available",
-                                    "data"
-                                ]
-                            },
-                            "uniqueItems": false
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Categorized list of columns",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "current": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/columns"
-                                            }
-                                        },
-                                        "default": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/columns"
-                                            }
-                                        },
-                                        "available": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/columns"
-                                            }
-                                        },
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/columns"
-                                            }
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/saved-searches/{savedSearchId}/users": {
-            "get": {
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Returns all users",
-                "description": "Display a listing of the resource.",
-                "operationId": "getSavedSearchUsers",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/filter"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_by"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_direction"
-                    },
-                    {
-                        "$ref": "#/components/parameters/per_page"
-                    },
-                    {
-                        "$ref": "#/components/parameters/include"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "list of users",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/users"
-                                            }
-                                        },
-                                        "meta": {
-                                            "$ref": "#/components/schemas/metadata"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/saved-searches/{savedSearchId}/groups": {
-            "get": {
-                "tags": [
-                    "Groups"
-                ],
-                "summary": "Returns all groups that the user has access to",
-                "description": "Display a listing of the resource.",
-                "operationId": "getSavedSearchGroups",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/order_by"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_direction"
-                    },
-                    {
-                        "$ref": "#/components/parameters/per_page"
-                    },
-                    {
-                        "$ref": "#/components/parameters/include"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "list of groups",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/groups"
-                                            }
-                                        },
-                                        "meta": {
-                                            "$ref": "#/components/schemas/metadata"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/saved-searches/{saved_search_id}": {
-            "delete": {
-                "tags": [
-                    "SavedSearches"
-                ],
-                "summary": "Delete a saved search",
-                "description": "Delete a SavedSearch.",
-                "operationId": "deleteSavedSearch",
-                "parameters": [
-                    {
-                        "name": "saved_search_id",
-                        "in": "path",
-                        "description": "ID of saved search to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "success"
-                    }
-                }
-            }
-        },
-        "/saved-searches/icons": {
-            "get": {
-                "tags": [
-                    "SavedSearches"
-                ],
-                "summary": "Returns all icons for saved searches",
-                "description": "Get a list of icons available for SavedSearches.",
-                "operationId": "getSavedSearchesIcons",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/per_page"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "list of icons for saved searches",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/SavedSearchIcon"
-                                            }
-                                        },
-                                        "meta": {
-                                            "type": "object",
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/components/schemas/metadata"
-                                                }
-                                            ]
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/customize-ui": {
             "post": {
                 "tags": [
@@ -4822,6 +3505,94 @@
                 }
             }
         },
+        "/security-logs": {
+            "get": {
+                "tags": [
+                    "Secuirty Logs"
+                ],
+                "summary": "Returns all security logs",
+                "description": "Get a list of Security Logs.",
+                "operationId": "getSecurityLogs",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of security logs",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/securityLog"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/security-logs/{securityLog}": {
+            "get": {
+                "tags": [
+                    "Secuirty Logs"
+                ],
+                "summary": "Get single security log by ID",
+                "description": "Display the specified resource.",
+                "operationId": "getSecurityLogs",
+                "parameters": [
+                    {
+                        "name": "securityLog",
+                        "in": "path",
+                        "description": "ID of security log to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the security log",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/securityLog"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/settings": {
             "get": {
                 "tags": [
@@ -5495,6 +4266,174 @@
                     }
                 }
             }
+        },
+        "/users/{user_id}/tokens": {
+            "get": {
+                "tags": [
+                    "Personal Tokens"
+                ],
+                "summary": "Display listing of access tokens for the specified user.",
+                "description": "Display listing of access tokens for the specified user.",
+                "operationId": "getTokens",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "User id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of tokens.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/UserToken"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/metadata"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Personal Tokens"
+                ],
+                "summary": "Create new token for a specific user",
+                "description": "Create a new personal access token for the user.",
+                "operationId": "createTokens",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "User id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "New token instance",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserToken"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{user_id}/tokens/{token_id}": {
+            "get": {
+                "tags": [
+                    "Personal Tokens"
+                ],
+                "summary": "Get single token by ID",
+                "description": "Show a personal access token for the user",
+                "operationId": "getTokenById",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "ID of user",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "token_id",
+                        "in": "path",
+                        "description": "ID of token to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserToken"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Personal Tokens"
+                ],
+                "summary": "Delete a token",
+                "description": "Delete the given token for a user",
+                "operationId": "deleteToken",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "token_id",
+                        "in": "path",
+                        "description": "Token ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -5506,295 +4445,6 @@
                     }
                 },
                 "type": "object"
-            },
-            "collectionsEditable": {
-                "properties": {
-                    "name": {
-                        "type": "string"
-                    },
-                    "description": {
-                        "type": "string"
-                    },
-                    "custom_title": {
-                        "type": "string"
-                    },
-                    "create_screen_id": {
-                        "type": "string",
-                        "format": "id"
-                    },
-                    "read_screen_id": {
-                        "type": "string",
-                        "format": "id"
-                    },
-                    "update_screen_id": {
-                        "type": "string",
-                        "format": "id"
-                    },
-                    "signal_create": {
-                        "type": "boolean"
-                    },
-                    "signal_update": {
-                        "type": "boolean"
-                    },
-                    "signal_delete": {
-                        "type": "boolean"
-                    }
-                },
-                "type": "object"
-            },
-            "collections": {
-                "allOf": [
-                    {
-                        "properties": {
-                            "id": {
-                                "type": "integer"
-                            },
-                            "created_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            },
-                            "updated_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            },
-                            "created_by_id": {
-                                "type": "string",
-                                "format": "id"
-                            },
-                            "updated_by_id": {
-                                "type": "string",
-                                "format": "id"
-                            },
-                            "columns": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object"
-                                }
-                            }
-                        },
-                        "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/collectionsEditable"
-                    }
-                ]
-            },
-            "recordsEditable": {
-                "properties": {
-                    "data": {
-                        "type": "object"
-                    }
-                },
-                "type": "object"
-            },
-            "records": {
-                "allOf": [
-                    {
-                        "properties": {
-                            "id": {
-                                "type": "integer"
-                            },
-                            "collection_id": {
-                                "type": "string",
-                                "format": "id"
-                            }
-                        },
-                        "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/recordsEditable"
-                    }
-                ]
-            },
-            "SavedSearchEditable": {
-                "properties": {
-                    "meta": {
-                        "type": "object",
-                        "additionalProperties": "true"
-                    },
-                    "pmql": {
-                        "type": "string"
-                    },
-                    "title": {
-                        "type": "string"
-                    },
-                    "type": {
-                        "type": "string",
-                        "enum": [
-                            "task",
-                            "request"
-                        ]
-                    }
-                },
-                "type": "object"
-            },
-            "SavedSearch": {
-                "allOf": [
-                    {
-                        "properties": {
-                            "id": {
-                                "type": "string",
-                                "format": "id"
-                            },
-                            "user_id": {
-                                "type": "string",
-                                "format": "id"
-                            },
-                            "created_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            },
-                            "updated_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            }
-                        },
-                        "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/SavedSearchEditable"
-                    }
-                ]
-            },
-            "SavedSearchIcon": {
-                "description": "Represents an Eloquent model of a Saved Search.",
-                "properties": {
-                    "name": {
-                        "type": "string"
-                    },
-                    "value": {
-                        "type": "string"
-                    }
-                },
-                "type": "object"
-            },
-            "SavedSearchChartEditable": {
-                "properties": {
-                    "title": {
-                        "type": "string"
-                    },
-                    "type": {
-                        "type": "string",
-                        "enum": [
-                            "bar",
-                            "bar-vertical",
-                            "line",
-                            "pie",
-                            "doughnut"
-                        ]
-                    },
-                    "config": {
-                        "type": "object",
-                        "additionalProperties": "true"
-                    },
-                    "sort": {
-                        "type": "integer"
-                    }
-                },
-                "type": "object"
-            },
-            "SavedSearchChart": {
-                "description": "Represents an Eloquent model of a Saved Search Chart.",
-                "allOf": [
-                    {
-                        "properties": {
-                            "id": {
-                                "type": "string",
-                                "format": "id"
-                            },
-                            "saved_search_id": {
-                                "type": "string",
-                                "format": "id"
-                            },
-                            "user_id": {
-                                "type": "string",
-                                "format": "id"
-                            },
-                            "created_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            },
-                            "updated_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            },
-                            "deleted_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            }
-                        },
-                        "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/SavedSearchChartEditable"
-                    }
-                ]
-            },
-            "ReportEditable": {
-                "properties": {
-                    "type": {
-                        "type": "string",
-                        "enum": [
-                            "adhoc",
-                            "scheduled"
-                        ]
-                    },
-                    "format": {
-                        "type": "string",
-                        "enum": [
-                            "csv",
-                            "xlsx"
-                        ]
-                    },
-                    "saved_search_id": {
-                        "type": "integer"
-                    },
-                    "config": {
-                        "type": "object",
-                        "additionalProperties": "true"
-                    },
-                    "to": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "subject": {
-                        "type": "string"
-                    },
-                    "body": {
-                        "type": "string"
-                    }
-                },
-                "type": "object"
-            },
-            "Report": {
-                "allOf": [
-                    {
-                        "properties": {
-                            "id": {
-                                "type": "string",
-                                "format": "id"
-                            },
-                            "user_id": {
-                                "type": "string",
-                                "format": "id"
-                            },
-                            "created_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            },
-                            "updated_at": {
-                                "type": "string",
-                                "format": "date-time"
-                            }
-                        },
-                        "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/SavedSearchEditable"
-                    }
-                ]
             },
             "updateUserGroups": {
                 "description": "Update a user's groups",
@@ -7166,6 +5816,66 @@
                     }
                 ]
             },
+            "securityLog": {
+                "description": "Class SecurityLog",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "event": {
+                        "type": "string"
+                    },
+                    "ip": {
+                        "type": "string"
+                    },
+                    "meta": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "os": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "version": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "browser": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "version": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "user_agent": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "user_id": {
+                        "type": "integer"
+                    },
+                    "occured_at": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
             "settingsEditable": {
                 "properties": {
                     "key": {
@@ -7228,6 +5938,43 @@
                         "$ref": "#/components/schemas/settingsEditable"
                     }
                 ]
+            },
+            "TokenClient": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "user_id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "provider": {
+                        "type": "string"
+                    },
+                    "redirect": {
+                        "type": "string"
+                    },
+                    "personal_access_client": {
+                        "type": "boolean"
+                    },
+                    "password_client": {
+                        "type": "boolean"
+                    },
+                    "revoked": {
+                        "type": "boolean"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
             },
             "usersEditable": {
                 "properties": {
@@ -7365,6 +6112,44 @@
                         "$ref": "#/components/schemas/usersEditable"
                     }
                 ]
+            },
+            "UserToken": {
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "user_id": {
+                        "type": "integer"
+                    },
+                    "client_id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "scopes": {
+                        "type": "object"
+                    },
+                    "revoked": {
+                        "type": "boolean"
+                    },
+                    "client": {
+                        "$ref": "#/components/schemas/TokenClient"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "expires_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
             }
         },
         "responses": {

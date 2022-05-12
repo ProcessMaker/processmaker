@@ -87,7 +87,8 @@ export default {
                         deletedUserExists + ' ' + this.$t('Would you like to save and reactivate their account?')
                     ]);
                     let restoreData = {
-                        email: this.email
+                        email: this.email,
+                        username: this.username
                     };
                     this.showMsgBox(messageVNode, restoreData);
                 }
