@@ -80,11 +80,16 @@
       <div class="text-right p-2">
         <b-button
           v-for="(btn,index) in buttons"
+          :ref="formatGroupName(btn.group)"
           :key="`btn-${index}`"
           class="ml-2"
           v-bind="btn.ui.props"
           @click="handler(btn)"
-          >{{btn.name}}</b-button>
+          :disabled="false"
+          >
+          <b-spinner small ref="b-spinner" :hidden="true"></b-spinner>
+          {{btn.name}}
+          </b-button>
       </div>
       <div v-if="totalRows" class="settings-table-footer text-secondary d-flex align-items-center p-2 w-100">
         <div class="flex-grow-1">
@@ -137,6 +142,7 @@ import SettingText from './SettingText';
 import SettingTextArea from './SettingTextArea';
 import SettingsImport from './SettingsImport';
 import SettingsExport from './SettingsExport';
+import SettingsRange from './SettingsRange';
 import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -152,7 +158,8 @@ export default {
     SettingText,
     SettingTextArea,
     SettingsImport,
-    SettingsExport
+    SettingsExport,
+    SettingsRange
   },
   mixins:[uniqIdsMixin],
   props: ['group'],
@@ -251,6 +258,8 @@ export default {
           return window['__setting_component_' + setting.ui.component];
         case 'file':
           return 'setting-file';
+        case 'range':
+          return 'settings-range';
         default:
           return 'setting-text-area';
       }
@@ -370,6 +379,9 @@ export default {
     refresh() {
       this.$refs.table.refresh();
       this.$emit('refresh');
+    },
+    formatGroupName(name)  {
+      return name.toLowerCase().replaceAll(" ", '-');
     }
   }
 };
