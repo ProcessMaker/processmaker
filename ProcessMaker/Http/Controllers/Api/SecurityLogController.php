@@ -10,11 +10,42 @@ use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
 
 class SecurityLogController extends Controller
-{
+{ 
     /**
-     * Display a listing of the resource.
+     * Get a list of Security Logs.
+     *
+     * @param Request $request
      *
      * @return \Illuminate\Http\Response
+     *
+     * @OA\Get(
+     *     path="/security-logs",
+     *     summary="Returns all security logs",
+     *     operationId="getSecurityLogs",
+     *     tags={"Secuirty Logs"},
+     *     @OA\Parameter(ref="#/components/parameters/filter"),
+     *     @OA\Parameter(ref="#/components/parameters/order_by"),
+     *     @OA\Parameter(ref="#/components/parameters/order_direction"),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     
+     *     @OA\Response(
+     *         response=200,
+     *         description="list of security logs",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/securityLog"),
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 @OA\Schema(ref="#/components/schemas/metadata"),
+     *             ),
+     *         ),
+     *     ),
+     * )
      */
     public function index(Request $request)
     {
@@ -49,11 +80,40 @@ class SecurityLogController extends Controller
         return new ApiCollection($response);
     }
 
-    /**
+     /**
      * Display the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
+     *
+     * @OA\Get(
+     *     path="/security-logs/{securityLog}",
+     *     summary="Get single security log by ID",
+     *     operationId="getSecurityLogs",
+     *     tags={"Secuirty Logs"},
+     *     @OA\Parameter(
+     *         description="ID of security log to return",
+     *         in="path",
+     *         name="securityLog",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully found the security log",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/securityLog"),
+     *             )
+     *         ),
+     *     ),
+     * )
      */
     public function show(SecurityLog $securityLog)
     {
