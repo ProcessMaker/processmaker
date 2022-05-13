@@ -139,6 +139,9 @@
   "config": {
     "preferred-install": "dist",
     "sort-packages": true,
-    "optimize-autoloader": true
+    "optimize-autoloader": true,
+    "allow-plugins": {
+      "typo3/class-alias-loader": true
+    }
   }
 }
