@@ -1,24 +1,24 @@
 <template>
   <div class="data-table">
     <data-loading
-      :for="/signals\?page/"
-      v-show="shouldShowLoader"
-      :empty="$t('No Data Available')"
-      :empty-desc="$t('')"
-      empty-icon="noData"
+        :for="/signals\?page/"
+        v-show="shouldShowLoader"
+        :empty="$t('No Data Available')"
+        :empty-desc="$t('')"
+        empty-icon="noData"
     />
     <div v-show="!shouldShowLoader" class="card card-body table-card">
       <vuetable
-        :dataManager="dataManager"
-        :sortOrder="sortOrder"
-        :css="css"
-        :api-mode="false"
-        @vuetable:pagination-data="onPaginationData"
-        :fields="fields"
-        :data="data"
-        data-path="data"
-        pagination-path="meta"
-        :noDataTemplate="$t('No Data Available')"
+          :dataManager="dataManager"
+          :sortOrder="sortOrder"
+          :css="css"
+          :api-mode="false"
+          @vuetable:pagination-data="onPaginationData"
+          :fields="fields"
+          :data="data"
+          data-path="data"
+          pagination-path="meta"
+          :noDataTemplate="$t('No Data Available')"
       >
         <template slot="name" slot-scope="props">
           <span v-uni-id="props.rowData.id.toString()">{{props.rowData.name }}</span>
@@ -27,15 +27,15 @@
           <div class="actions">
             <div class="popout">
               <span v-b-tooltip.hover
-                :title="getDeleteButtonTitle(props.rowData)">
+                    :title="isEditable(props.rowData) ? $t('Edit') : $t('Cannot edit system signals.')">
                 <b-btn
                     variant="link"
-                    @click="onReview(props.rowData, props.rowIndex)"
-                    :disabled="(!isDeletable(props.rowData) || !permission.includes('edit-processes')) && !isCollection(props.rowData)"
+                    @click="onEdit(props.rowData, props.rowIndex)"
+                    :disabled="!isEditable(props.rowData)"
+                    v-if="permission.includes('edit-processes')"
                     v-uni-aria-describedby="props.rowData.id.toString()"
                 >
-                    <i v-if="isCollection(props.rowData)" class="fas fa-database fa-lg fa-fw"></i>
-                    <i v-else class="fas fa-trash-alt fa-lg fa-fw"></i>
+                    <i class="fas fa-edit fa-lg fa-fw"></i>
                 </b-btn>
               </span>
             </div>
@@ -43,56 +43,53 @@
         </template>
       </vuetable>
       <pagination
-        :single="$t('Signal')"
-        :plural="$t('Signals')"
-        :perPageSelectEnabled="true"
-        @changePerPage="changePerPage"
-        @vuetable-pagination:change-page="onPageChange"
-        ref="pagination"
+          :single="$t('Signal')"
+          :plural="$t('Signals')"
+          :perPageSelectEnabled="true"
+          @changePerPage="changePerPage"
+          @vuetable-pagination:change-page="onPageChange"
+          ref="pagination"
       ></pagination>
     </div>
   </div>
 </template>
 
 <script>
-import datatableMixin from "../../../components/common/mixins/datatable";
-import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
-import { createUniqIdsMixin } from "vue-uniq-ids";
-import _ from 'lodash';
+import datatableMixin from '../../../components/common/mixins/datatable';
+import dataLoadingMixin from '../../../components/common/mixins/apiDataLoading';
+import { createUniqIdsMixin } from 'vue-uniq-ids';
+
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
-  props: ["filter", "permission"],
+  props: ['filter', 'permission'],
   data() {
     return {
-      orderBy: "id",
-      localLoadOnStart: true,
+      orderBy: 'id',
+      localLoadOnStart: false,
       showSystemSignals: false,
       showCustomSignals: false,
       showCollectionSignals: true,
-      sortOrder: [
-        {
-          field: "id",
-          sortField: "id",
-          direction: "asc",
-        },
-      ],
+      sortOrder: [{
+          field: 'id',
+          sortField: 'id',
+          direction: 'asc',
+      }],
       fields: [
         {
-          title: () => this.$t("ID"),
-          name: "id",
-          sortField: "id",
+          title: () => this.$t('ID'),
+          name: 'id',
+          sortField: 'id',
         },
         {
-          title: () => this.$t("Name"),
-          name: "__slot:name",
-          sortField: "Name",
+          title: () => this.$t('Name'),
+          name: '__slot:name',
+          sortField: 'Name',
         },
         {
-          title: () => this.$t("Actions"),
-          name: "__slot:actions",
-          title: "",
+          title: () => '',
+          name: '__slot:actions',
         },
       ],
     };
@@ -144,7 +141,7 @@ export default {
         return this.$t('Delete');
     },
     onEdit(data, index) {
-      window.location = "/designer/signals/" + data.id + "/edit";
+      window.location = '/designer/signals/' + data.id + '/edit';
     },
     getIdCollection(data) {
       return data.id.replace('collection_', '')
@@ -154,7 +151,7 @@ export default {
     },
     onReview(data, index) {
       if (this.isCollection(data)) {
-        window.location = "/collections/" + this.getIdCollection(data);
+        window.location = '/collections/' + this.getIdCollection(data);
         return;
       }
       this.onDelete(data, index);
@@ -162,27 +159,27 @@ export default {
     fetch() {
       this.loading = true;
 
-      let query = "signals?page=" +
+      let query = 'signals?page=' +
           this.page +
-          "&per_page=" +
+          '&per_page=' +
           this.perPage +
-          "&filter=" +
+          '&filter=' +
           this.filter +
-          "&order_by=" +
+          '&order_by=' +
           this.orderBy +
-          "&order_direction=" +
+          '&order_direction=' +
           this.orderDirection;
 
       if (!this.showCustomSignals) {
-        query = query + "&exclude_custom_signals=1";
+        query = query + '&exclude_custom_signals=1';
       }
 
       if (!this.showSystemSignals) {
-        query = query + "&exclude_system_signals=1";
+        query = query + '&exclude_system_signals=1';
       }
 
       if (!this.showCollectionSignals) {
-        query = query + "&exclude_collection_signals=1";
+        query = query + '&exclude_collection_signals=1';
       }
 
       // Load from our api client

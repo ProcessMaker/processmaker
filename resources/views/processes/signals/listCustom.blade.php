@@ -1,6 +1,6 @@
 <div id="listCustomSignals">
 	<div class="px-3">
-		<div id="search-bar" class="search mb-3" vcloak>
+		<div id="search-bar" class="search mb-3">
 			<div class="d-flex flex-column flex-md-row">
 				<div class="flex-grow-1">
 					<div id="search" class="mb-3 mb-md-0">
@@ -26,10 +26,10 @@
 			</div>
 		</div>
 		<div class="container-fluid">
-			<custom-signals-listing ref="signalCustomList"
-							 :filter="filter"
-							 :permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"
-							 v-on:reload="reload"></custom-signals-listing>
+			<custom-signals-listing
+					:filter="filter"
+					:permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"
+					v-on:reload="reload"></custom-signals-listing>
 		</div>
 	</div>
 
@@ -57,5 +57,6 @@
 			</div>
 		</pm-modal>
 	@endcan
+
 </div>
 

@@ -58,7 +58,7 @@
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import { createUniqIdsMixin } from "vue-uniq-ids";
-import _ from 'lodash';
+
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
@@ -67,7 +67,7 @@ export default {
   data() {
     return {
       orderBy: "id",
-      localLoadOnStart: true,
+      localLoadOnStart: false,
       showSystemSignals: true,
       showCustomSignals: false,
       showCollectionSignals: false,
@@ -90,9 +90,8 @@ export default {
           sortField: "Name",
         },
         {
-          title: () => this.$t("Actions"),
+          title: () => '',
           name: "__slot:actions",
-          title: "",
         },
       ],
     };
