@@ -117,7 +117,6 @@ return [
         ProcessMaker\Providers\WorkflowServiceProvider::class,
         ProcessMaker\Providers\SettingServiceProvider::class,
         ProcessMaker\Providers\UpgradeServiceProvider::class,
-        ProcessMaker\Providers\PhpInlineServiceProvider::class,
         Laravel\Passport\PassportServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
         TeamTNT\Scout\TNTSearchScoutServiceProvider::class,

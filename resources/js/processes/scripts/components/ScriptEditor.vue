@@ -190,9 +190,6 @@ export default {
   },
   computed: {
     language() {
-      if (this.scriptExecutor.language === 'php-inline') {
-        return 'php';
-      }
       return this.scriptExecutor.language;
     }
   },
