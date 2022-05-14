@@ -3,6 +3,7 @@
 use ProcessMaker\SanitizeHelper;
 
 use function GuzzleHttp\json_encode;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Convert the Laravy menu into associative array
@@ -101,4 +102,26 @@ function removeTemporalData($uid)
     if (file_exists($path)) {
         unlink($path);
     }
+}
+
+/**
+ * This function is run by providers so it must be low-impact
+ */
+function databaseInitialized()
+{
+    if (Cache::has('databaseInitialized')) {
+        return true;
+    }
+
+    $initialized = false;
+    try {
+        $initialized = \Schema::hasTable('settings');
+    } catch (\Exception $e) {
+        $initialized = false;
+    }
+
+    if ($initialized) {
+        Cache::forever('databaseInitialized', true);
+    }
+    return $initialized;
 }

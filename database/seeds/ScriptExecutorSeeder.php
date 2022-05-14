@@ -7,6 +7,10 @@ class ScriptExecutorSeeder extends Seeder
 {
     public function run()
     {
+        if (env('SKIP_EXECUTORS')) {
+            return;
+        }
+        
         foreach (config('script-runners') as $key => $config) {
             if ($key === 'javascript') {
                 $key = 'node';

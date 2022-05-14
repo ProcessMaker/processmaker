@@ -63,8 +63,15 @@ class UserSeeder extends Seeder
         );
         
         // Allow users get at token using the password grant flow
-        $clients->createPasswordGrantClient(
+        $passwordGrantClient = $clients->createPasswordGrantClient(
             null, 'Password Grant', 'http://localhost'
         );
+
+        // Allow CI builds to generate a bearer token without a
+        // client secret for e2e tests and benchmarks
+        if (env('CI_PROJECT')) {
+            $passwordGrantClient->secret = '';
+            $passwordGrantClient->saveOrFail();
+        }
     }
 }

@@ -187,6 +187,9 @@ Route::group(
     // Security logs
     Route::get('security-logs', 'SecurityLogController@index')->name('security-logs.index')->middleware('can:view-security-logs');
     Route::get('security-logs/{securityLog}', 'SecurityLogController@show')->name('security-logs.show')->middleware('can:view-security-logs');
+    
+    // System Logs
+    Route::get('logs', 'LogsController@index')->name('logs.index')->middleware('can:view-security-logs');
 
     // Settings
     Route::get('settings', 'SettingController@index')->name('settings.index')->middleware('can:view-settings');
