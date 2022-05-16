@@ -62,7 +62,7 @@
         "@panter/vue-i18next": "^0.15.2",
         "@processmaker/modeler": "1.7.10",
         "@processmaker/processmaker-bpmn-moddle": "0.13.0",
-        "@processmaker/screen-builder": "2.5.30-PATCH4",
+        "@processmaker/screen-builder": "2.5.30-PATCH4A",
         "@processmaker/vue-form-elements": "0.18.4-R",
         "babel-eslint": "^10.1.0",
         "babel-plugin-transform-object-rest-spread": "^6.26.0",
