@@ -3773,7 +3773,7 @@
                 ],
                 "summary": "Returns all security logs",
                 "description": "Get a list of Security Logs.",
-                "operationId": "getSecurityLogs",
+                "operationId": "listSecurityLogs",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/filter"
