@@ -21,7 +21,7 @@ class SecurityLogController extends Controller
      * @OA\Get(
      *     path="/security-logs",
      *     summary="Returns all security logs",
-     *     operationId="getSecurityLogs",
+     *     operationId="listSecurityLogs",
      *     tags={"Secuirty Logs"},
      *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
