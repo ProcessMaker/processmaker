@@ -103,25 +103,3 @@ function removeTemporalData($uid)
         unlink($path);
     }
 }
-
-/**
- * This function is run by providers so it must be low-impact
- */
-function databaseInitialized()
-{
-    if (Cache::has('databaseInitialized')) {
-        return true;
-    }
-
-    $initialized = false;
-    try {
-        $initialized = \Schema::hasTable('settings');
-    } catch (\Exception $e) {
-        $initialized = false;
-    }
-
-    if ($initialized) {
-        Cache::forever('databaseInitialized', true);
-    }
-    return $initialized;
-}
