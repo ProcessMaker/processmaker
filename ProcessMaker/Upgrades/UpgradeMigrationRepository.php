@@ -26,7 +26,7 @@ class UpgradeMigrationRepository extends DMR implements MigrationRepositoryInter
      *
      * @var string
      */
-    protected $connection;
+    protected $connection = 'processmaker';
 
     /**
      * Get the ran migrations.
@@ -185,14 +185,4 @@ class UpgradeMigrationRepository extends DMR implements MigrationRepositoryInter
         return $this->resolver->connection($this->connection);
     }
 
-    /**
-     * Set the information source to gather data.
-     *
-     * @param  string  $name
-     * @return void
-     */
-    public function setSource($name)
-    {
-        $this->connection = $name;
-    }
 }

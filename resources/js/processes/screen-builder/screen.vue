@@ -422,7 +422,7 @@ export default {
   computed: {
     previewDataStringyfy: {
       get() {
-        if (!isEqual(this.previewData, this.previewDataSaved)) {
+        if (this.previewInputValid && !isEqual(this.previewData, this.previewDataSaved)) {
           Object.assign(this.previewDataSaved, this.previewData);
           this.formatMonaco();
         }
