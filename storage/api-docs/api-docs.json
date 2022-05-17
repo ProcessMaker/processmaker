@@ -3820,7 +3820,7 @@
                 ],
                 "summary": "Get single security log by ID",
                 "description": "Display the specified resource.",
-                "operationId": "getSecurityLogs",
+                "operationId": "getSecurityLog",
                 "parameters": [
                     {
                         "name": "securityLog",

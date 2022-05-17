@@ -10,7 +10,7 @@ use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
 
 class SecurityLogController extends Controller
-{ 
+{
     /**
      * Get a list of Security Logs.
      *
@@ -27,7 +27,7 @@ class SecurityLogController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
-     *     
+     *
      *     @OA\Response(
      *         response=200,
      *         description="list of security logs",
@@ -50,7 +50,7 @@ class SecurityLogController extends Controller
     public function index(Request $request)
     {
         $query = SecurityLog::query();
-        
+
         if ($filter = $request->input('filter')) {
             $filter = '%' . mb_strtolower($filter) . '%';
             $query->where('event', 'like', $filter)
@@ -58,25 +58,25 @@ class SecurityLogController extends Controller
                   ->orWhere(DB::raw("LOWER(meta->>'$.browser.name')"), 'like', $filter)
                   ->orWhere(DB::raw("LOWER(meta->>'$.os.name')"), 'like', $filter);
         }
-        
+
         if ($orderBy = $request->input('order_by')) {
             $orderBy = DB::raw(preg_replace('/\.(.+)/', "->>'\$.$1'", $orderBy, 1));
-            
+
             $orderDirection = $request->input('order_direction');
-            
+
             if (! $orderDirection) {
                 $orderDirection = 'asc';
             }
-            
+
             $query->orderBy($orderBy, $orderDirection);
         }
 
         if ($pmql = $request->input('pmql')) {
             $query->pmql($pmql);
         }
-        
+
         $response = $query->get();
-        
+
         return new ApiCollection($response);
     }
 
@@ -89,7 +89,7 @@ class SecurityLogController extends Controller
      * @OA\Get(
      *     path="/security-logs/{securityLog}",
      *     summary="Get single security log by ID",
-     *     operationId="getSecurityLogs",
+     *     operationId="getSecurityLog",
      *     tags={"Secuirty Logs"},
      *     @OA\Parameter(
      *         description="ID of security log to return",
@@ -100,7 +100,7 @@ class SecurityLogController extends Controller
      *           type="string",
      *         )
      *     ),
-     *     
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Successfully found the security log",
