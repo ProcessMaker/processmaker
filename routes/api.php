@@ -262,3 +262,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('openai/recent-searches', [OpenAIController::class, 'recentSearches'])->name('openai.recent-searches');
     Route::delete('openai/recent-searches', [OpenAIController::class, 'deleteRecentSearches'])->name('openai.recent-searches.delete');
 });
+
+Route::post('nayra_cb', function () {
+    \Log::debug('nayra_cb');
+    \Log::debug(request()->all());
+})->name('workflow.callback');

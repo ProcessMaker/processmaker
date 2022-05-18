@@ -176,7 +176,8 @@ class WorkflowManager
             "params" => [
                 "element_id" => $event->getId(),
                 "data"=> $data,
-            ]
+            ],
+            "callback" => route('workflow.callback'),
         ], [
             'process_id' => $definitions->id,
             'user_id' => Auth::id(),
@@ -336,7 +337,7 @@ class WorkflowManager
         return $merged;
     }
 
-    private function storeEntities(array $transactions, array $extra_properties = [])
+    public function storeEntities(array $transactions, array $extra_properties = [])
     {
         $entities = [
             'request' => ProcessRequest::class,
