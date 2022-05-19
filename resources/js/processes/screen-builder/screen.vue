@@ -492,15 +492,12 @@ export default {
   methods: {
     monacoMounted(editor) {
       this.editor = editor;
+      this.editor.updateOptions({ readOnly:  true });
     },
     formatMonaco() {
       if (!this.editor) {
         return;
       }
-      this.editor.updateOptions({ readOnly:  false });
-      this.editor.getAction('editor.action.formatDocument').run().then(() => {
-        this.editor.updateOptions({ readOnly: true });
-      });
     },
     countElements() {
       if (!this.$refs.renderer) {
