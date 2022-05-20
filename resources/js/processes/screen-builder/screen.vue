@@ -424,6 +424,7 @@ export default {
       get() {
         if (this.previewInputValid && !isEqual(this.previewData, this.previewDataSaved)) {
           Object.assign(this.previewDataSaved, this.previewData);
+          this.formatMonaco();
         }
         return JSON.stringify(this.previewData);
       },
@@ -492,6 +493,17 @@ export default {
     monacoMounted(editor) {
       this.editor = editor;
       this.editor.updateOptions({ readOnly:  true });
+    },
+    formatMonaco() {
+      if (!this.editor) {
+        return;
+      }
+      this.editor.updateOptions({ readOnly:  false });
+      setTimeout(() => {
+        this.editor.getAction('editor.action.formatDocument').run().then(() => {
+          this.editor.updateOptions({ readOnly:  true });
+        });
+      }, 300);
     },
     countElements() {
       if (!this.$refs.renderer) {
