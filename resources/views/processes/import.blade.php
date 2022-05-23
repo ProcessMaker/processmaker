@@ -510,13 +510,16 @@
             });
             return response;
           },
+          formatValueScreen(item) {
+            return (item && item.id) ? item.id : null
+          },
           onAssignmentSave() {
             ProcessMaker.apiClient.post('/processes/' + this.processId + '/import/assignments',
               {
                 "assignable": this.assignable,
                 'cancel_request': this.formatAssignee(this.cancelRequest),
                 'edit_data': this.formatAssignee(this.processEditData),
-                'manager_id': this.manager,
+                'manager_id': this.formatValueScreen(this.manager),
                 'status': this.status,
               })
               .then(response => {
@@ -583,7 +586,7 @@
             }
             this.assignable = response.data.assignable;
             this.processId = response.data.process.id;
-            
+
             if (_.get(response, 'data.process.properties.manager_can_cancel_request', false)) {
               this.cancelRequest.push(this.managerOption);
             }

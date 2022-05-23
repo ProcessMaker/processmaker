@@ -159,7 +159,7 @@ window.ProcessMaker = {
 
 window.ProcessMaker.i18nPromise = i18next.use(Backend).init({
   lng: document.documentElement.lang,
-  keySeparator: false,
+  nsSeparator: false,keySeparator: false,
   parseMissingKeyHandler(value) {
     if (!translationsLoaded) { return value; }
     // Report that a translation is missing
