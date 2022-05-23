@@ -1,6 +1,6 @@
 {
     "name": "@processmaker/processmaker",
-    "version": "4.2.30-RC3",
+    "version": "4.2.30-RC5",
     "description": "ProcessMaker 4",
     "author": "DevOps <devops@processmaker.com>",
     "license": "ISC",
@@ -61,10 +61,10 @@
         "@fortawesome/free-solid-svg-icons": "^5.15.1",
         "@fortawesome/vue-fontawesome": "^0.1.9",
         "@panter/vue-i18next": "^0.15.2",
-        "@processmaker/modeler": "1.21.1",
-        "@processmaker/processmaker-bpmn-moddle": "0.12.0",
-        "@processmaker/screen-builder": "2.27.1",
-        "@processmaker/vue-form-elements": "0.28.7",
+        "@processmaker/modeler": "1.22.0",
+        "@processmaker/processmaker-bpmn-moddle": "0.13.0",
+        "@processmaker/screen-builder": "2.28.1",
+        "@processmaker/vue-form-elements": "0.29.0",
         "@processmaker/vue-multiselect": "2.2.0",
         "bootstrap": "^4.5.3",
         "bootstrap-vue": "^2.18.1",
@@ -85,7 +85,6 @@
         "luxon": "^1.25.0",
         "monaco-editor": "^0.20.0",
         "monaco-editor-webpack-plugin": "^1.9.1",
-        "npm": "^6.14.8",
         "npm-font-open-sans": "^1.1.0",
         "phpunserialize": "^1.0.1",
         "popper.js": "^1.16.1",
@@ -135,5 +134,9 @@
         ],
         "collectCoverage": true,
         "coverageDirectory": "<rootDir>/tests/js/coverage"
+    },
+    "engines": {
+        "npm": ">=8",
+        "node": ">=16 <18"
     }
 }

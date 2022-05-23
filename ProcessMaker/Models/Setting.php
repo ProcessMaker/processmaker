@@ -208,6 +208,7 @@ class Setting extends Model implements HasMedia
             case 'textarea':
             case 'file':
             case 'choice':
+            case 'range':
                 return $this->attributes['config'] = $this->attributes['config'];
             case 'boolean':
                 return $this->attributes['config'] = (boolean) $this->attributes['config'];
