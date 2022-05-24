@@ -6,7 +6,7 @@
  * See https://github.com/egoist/vue-monaco#use-amd-version
  *
  */
-import MonacoEditor from "vue-monaco/dist";
+import MonacoEditor from "vue-monaco";
 
 export default {
   extends: MonacoEditor,
