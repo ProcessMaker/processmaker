@@ -519,7 +519,10 @@ class ProcessController extends Controller
      *         description="If true return only processes that haven't start event definitions",
      *         in="path",
      *         name="without_event_definitions",
-     *         required=false
+     *         required=false,
+     *         @OA\Schema(
+     *           type="boolean",
+     *         )
      *     ),
      *
      *     @OA\Response(
