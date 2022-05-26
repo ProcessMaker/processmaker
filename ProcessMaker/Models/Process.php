@@ -41,6 +41,7 @@ use ProcessMaker\Traits\ProcessTaskAssignmentsTrait;
 use ProcessMaker\Traits\ProcessTimerEventsTrait;
 use ProcessMaker\Traits\ProcessTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
+use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Throwable;
@@ -904,6 +905,22 @@ class Process extends Model implements HasMedia, ProcessModelInterface
             $properties['ownerProcessId'] = $startEvent->parentNode->getAttribute('id');
             $properties['ownerProcessName'] = $startEvent->parentNode->getAttribute('name');
             $startEvent->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'timerEventDefinition');
+
+            $webEntryProperties = (isset(json_decode($properties['config'])->web_entry) ? json_decode($properties['config'])->web_entry : null);
+            if ($webEntryProperties && isset($webEntryProperties->webentryRouteConfig)) {
+                $webentryRouteConfig = $webEntryProperties->webentryRouteConfig;
+                $webentryRoute = WebentryRoute::updateOrCreate(
+                    [
+                        'first_segment' => $webentryRouteConfig->firstUrlSegment,
+                    ],
+                    [
+                        'process_id' => $webentryRouteConfig->processId,
+                        'node_id' => $webentryRouteConfig->nodeId,
+                        'params' => $webentryRouteConfig->parameters,
+                    ]
+                );
+            }
+
             $properties['eventDefinitions'] = [];
             foreach ($startEvent->childNodes as $node) {
                 if (substr($node->localName, -15) === 'EventDefinition') {
@@ -994,6 +1011,14 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     public function versions()
     {
         return $this->hasMany(ProcessVersion::class);
+    }
+
+    /**
+     * Get the associated webEntryRoute
+     */
+    public function webentryRoute()
+    {
+        return $this->hasOne(WebentryRoute::class);
     }
 
     /**
