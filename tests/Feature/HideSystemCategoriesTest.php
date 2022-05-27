@@ -19,6 +19,10 @@ class HideSystemCategoriesTest extends TestCase
 
     private function categoryFiltered($model) {
         $prefix = strtolower(substr(strrchr($model, '\\'), 1));
+        $response = $this->apiCall('GET', route('api.' . $prefix . '_categories.index'));
+        $json = $response->json();
+        $existingCount = count($json['data']);
+
         $category = factory($model . 'Category')->create([
             'is_system' => false,
         ]);
@@ -29,7 +33,7 @@ class HideSystemCategoriesTest extends TestCase
         $json = $response->json();
         $ids = array_map(function($d) { return $d['id']; }, $json['data']);
 
-        $this->assertCount(1, $ids);
+        $this->assertCount($existingCount + 1, $ids);
         $this->assertNotContains($hiddenCategory->id, $ids);
         $this->assertContains($category->id, $ids);
     }
@@ -42,6 +46,10 @@ class HideSystemCategoriesTest extends TestCase
     
     private function resourceInCategoryFiltered($model) {
         $prefix = strtolower(substr(strrchr($model, '\\'), 1));
+        $response = $this->apiCall('GET', route('api.' . Str::plural($prefix) . '.index'));
+        $json = $response->json();
+        $existingCount = count($json['data']);
+
         $category = factory($model . 'Category')->create([
             'is_system' => false,
         ]);
@@ -59,7 +67,7 @@ class HideSystemCategoriesTest extends TestCase
         $json = $response->json();
         $ids = array_map(function($d) { return $d['id']; }, $json['data']);
 
-        $this->assertCount(1, $ids);
+        $this->assertCount($existingCount + 1, $ids);
         $this->assertNotContains($hiddenInstance->id, $ids);
         $this->assertContains($instance->id, $ids);
     }
@@ -72,6 +80,10 @@ class HideSystemCategoriesTest extends TestCase
     
     private function resourceWithoutCategoryNotFiltered($model) {
         $prefix = strtolower(substr(strrchr($model, '\\'), 1));
+        $response = $this->apiCall('GET', route('api.' . Str::plural($prefix) . '.index'));
+        $json = $response->json();
+        $existingCount = count($json['data']);
+
         $instance = factory($model)->create([
             $prefix . '_category_id' => null
         ]);
@@ -80,7 +92,7 @@ class HideSystemCategoriesTest extends TestCase
         $json = $response->json();
         $ids = array_map(function($d) { return $d['id']; }, $json['data']);
 
-        $this->assertCount(1, $ids);
+        $this->assertCount($existingCount + 1, $ids);
         $this->assertContains($instance->id, $ids);
     }
     
@@ -91,6 +103,10 @@ class HideSystemCategoriesTest extends TestCase
     }
 
     public function testProcessRequestFiltered() {
+        $response = $this->apiCall('GET', route('api.requests.index'));
+        $json = $response->json();
+        $existingCount = count($json['data']);
+
         $category = factory(ProcessCategory::class)->create([
             'is_system' => false,
         ]);
@@ -114,7 +130,7 @@ class HideSystemCategoriesTest extends TestCase
         $json = $response->json();
         $ids = array_map(function($d) { return $d['id']; }, $json['data']);
 
-        $this->assertCount(1, $ids);
+        $this->assertCount($existingCount + 1, $ids);
         $this->assertNotContains($hiddenProcessRequest->id, $ids);
         $this->assertContains($processRequest->id, $ids);
     }
