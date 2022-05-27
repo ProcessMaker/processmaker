@@ -26,11 +26,6 @@ class GarbageCollectorTest extends TestCase
             'status' => 'FAILING',
             'element_type' => 'serviceTask']);
 
-        $all = ProcessRequestToken::all();
-
-        // verify that we have 2 tokens
-        $this->assertTrue($all->count() == 2);
-
         // Run the garbage collector
         $this->artisan('processmaker:garbage-collect');
 
