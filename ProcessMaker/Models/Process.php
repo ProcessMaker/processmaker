@@ -906,21 +906,6 @@ class Process extends Model implements HasMedia, ProcessModelInterface
             $properties['ownerProcessName'] = $startEvent->parentNode->getAttribute('name');
             $startEvent->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'timerEventDefinition');
 
-            $webEntryProperties = (isset(json_decode($properties['config'])->web_entry) ? json_decode($properties['config'])->web_entry : null);
-            if ($webEntryProperties && isset($webEntryProperties->webentryRouteConfig)) {
-                $webentryRouteConfig = $webEntryProperties->webentryRouteConfig;
-                $webentryRoute = WebentryRoute::updateOrCreate(
-                    [
-                        'first_segment' => $webentryRouteConfig->firstUrlSegment,
-                    ],
-                    [
-                        'process_id' => $webentryRouteConfig->processId,
-                        'node_id' => $webentryRouteConfig->nodeId,
-                        'params' => $webentryRouteConfig->parameters,
-                    ]
-                );
-            }
-
             $properties['eventDefinitions'] = [];
             foreach ($startEvent->childNodes as $node) {
                 if (substr($node->localName, -15) === 'EventDefinition') {
@@ -932,6 +917,32 @@ class Process extends Model implements HasMedia, ProcessModelInterface
             $response[] = $properties;
         }
         return $response;
+    }
+
+    /**
+     * Create or update custom routes for webentry
+     *
+     * @return void
+     */
+    public function manageCustomRoutes()
+    {
+        foreach ($this->start_events as $startEvent) {
+            $webEntryProperties = (isset(json_decode($startEvent['config'])->web_entry) ? json_decode($startEvent['config'])->web_entry : null);
+
+            if ($webEntryProperties && isset($webEntryProperties->webentryRouteConfig) && $webEntryProperties->webentryRouteConfig->firstUrlSegment != '') {
+                $webentryRouteConfig = $webEntryProperties->webentryRouteConfig;
+                WebentryRoute::updateOrCreate(
+                    [
+                        'process_id' => $webentryRouteConfig->processId,
+                        'node_id' => $webentryRouteConfig->nodeId,
+                    ],
+                    [
+                        'first_segment' => $webentryRouteConfig->firstUrlSegment,
+                        'params' => $webentryRouteConfig->parameters,
+                    ]
+                );
+            }
+        }
     }
 
     /**
