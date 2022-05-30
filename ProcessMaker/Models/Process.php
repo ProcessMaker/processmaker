@@ -931,9 +931,10 @@ class Process extends Model implements HasMedia, ProcessModelInterface
 
             if ($webEntryProperties && isset($webEntryProperties->webentryRouteConfig) && $webEntryProperties->webentryRouteConfig->firstUrlSegment != '') {
                 $webentryRouteConfig = $webEntryProperties->webentryRouteConfig;
-                WebentryRoute::updateOrCreate(
+                try {
+                    WebentryRoute::updateOrCreate(
                     [
-                        'process_id' => $webentryRouteConfig->processId,
+                        'process_id' => $this->id,
                         'node_id' => $webentryRouteConfig->nodeId,
                     ],
                     [
@@ -941,6 +942,10 @@ class Process extends Model implements HasMedia, ProcessModelInterface
                         'params' => $webentryRouteConfig->parameters,
                     ]
                 );
+                } catch (\Exception $e) {
+                    \Log::info('*** Error: '. $e->getMessage());
+                }
+
             }
         }
     }
