@@ -138,8 +138,8 @@ button:focus.navbar-toggler {
   // font-size: 14px;
 }
 
-.multiselect.is-invalid .multiselect__tags {
-  border-color: $danger;
+.is-invalid .multiselect__tags {
+  border-color: $danger !important;
 }
 
 .multiselect.is-invalid ~ .invalid-feedback {
