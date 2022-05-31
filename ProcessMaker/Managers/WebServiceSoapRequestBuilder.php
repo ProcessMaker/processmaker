@@ -12,7 +12,7 @@ class WebServiceSoapRequestBuilder implements WebServiceRequestBuilderInterface
         'trace' => true,
     ];
 
-    public function build(array $config, array $data)
+    public function build(array $config, array $data): array
     {
         switch ($config['authentication_method']) {
             case 'password':

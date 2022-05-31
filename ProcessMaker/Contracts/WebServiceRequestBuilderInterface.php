@@ -10,7 +10,7 @@ interface WebServiceRequestBuilderInterface
      * @param array $config
      * @param array $data
      *
-     * @return mixed
+     * @return array
      */
-    public function build(array $config, array $data);
+    public function build(array $config, array $data): array;
 }
