@@ -88,6 +88,10 @@ return [
             'url' => env('APP_URL').'/storage/setting',
             'visibility' => 'public',
         ],
+        'soap_certificates' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/soap_certificates'),
+        ],
         'private_settings' => [
             'driver' => 'local',
             'root' => storage_path('app/private/settings'),
