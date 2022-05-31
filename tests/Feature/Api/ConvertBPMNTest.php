@@ -27,13 +27,14 @@ class ConvertBPMNTest extends TestCase
      * Test convert subProcess to callActivity
      */
     public function testConvertSubProcess()
-    {
+    {   
+        $initialProcessesCount = Process::count();
         $process = factory(Process::class)->create([
             'status' => 'ACTIVE',
             'bpmn' => file_get_contents(__DIR__ . '/processes/CP.01.00 Create new customer.bpmn'),
         ]);
         $this->assertStringNotContainsString('subProcess', $process->bpmn);
-        $this->assertEquals(2, Process::count());
+        $this->assertEquals($initialProcessesCount + 2, Process::count());
     }
 
     /**
