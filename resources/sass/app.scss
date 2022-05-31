@@ -146,6 +146,15 @@ button:focus.navbar-toggler {
   display: block;
 }
 
+.hasError {
+  border: 1px solid $danger !important;
+
+  .form-element-header {
+    border-bottom: 1px solid $danger !important;
+    color: $danger !important;
+  }
+}
+
 .btn-save-search {
   @extend .ml-2;
   height: 40px;
