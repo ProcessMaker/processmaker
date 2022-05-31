@@ -11,7 +11,7 @@ class LogsTest extends TestCase
     use RequestHelper;
 
     private $params = [
-        'request_id' => 9,
+        'request_ids' => 9,
         'all' => 0
     ];
 
