@@ -4,7 +4,7 @@
           <div class="d-flex flex-row justify-content-between ">
               <div>
                   <div class="handle pl-1 pr-2" :class="{'without-format': withoutFormat}">
-                      <i class="fa fa-fw fa-bars handle-bars"></i>
+                      <i class="fas fa-grip-vertical handle-bars"></i>
                       <div v-show="!withoutFormat">{{ $t(format) }}</div>
                   </div>
                   <span class="column-label" :class="{'without-format': withoutFormat}">{{ item.label }}</span>
