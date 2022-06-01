@@ -155,6 +155,10 @@ button:focus.navbar-toggler {
   }
 }
 
+.signature-container.required {
+  border: 1px solid $danger !important;
+}
+
 .btn-save-search {
   @extend .ml-2;
   height: 40px;
