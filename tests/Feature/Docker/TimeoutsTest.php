@@ -94,6 +94,8 @@ class TimeoutsTest extends TestCase
      */
     public function testPhpScriptTimeoutExceeded()
     {
+        $this->markTestSkipped('This test requires docker');
+
         config(["script-runners.php.runner" => 'PhpRunner']);
         config(['app.processmaker_scripts_docker' => 'sleep ' . self::SLEEP_EXCEED . ' &&']);
 
@@ -108,6 +110,8 @@ class TimeoutsTest extends TestCase
      */
     public function testPhpScriptTimeoutNotExceeded()
     {
+        $this->markTestSkipped('This test requires docker');
+        
         config(["script-runners.php.runner" => 'PhpRunner']);
         config(['app.processmaker_scripts_docker' => 'sleep ' . self::SLEEP_NOT_EXCEED . ' && exit 0;']);
 
