@@ -311,14 +311,10 @@ class SanitizeHelperTest extends TestCase
 
     private function createProcessRequest()
     {
-        $this->processRequest = ProcessRequest::create([
-            'name' => $this->faker->sentence(3),
-            'data' => [],
+        $this->processRequest = factory(ProcessRequest::class)->create([
             'status' => 'ACTIVE',
-            'callable_id' => 'ProcessId',
             'user_id' => $this->user->id,
             'process_id' => $this->process->getKey(),
-            'process_collaboration_id' => null,
         ]);
     }
 
