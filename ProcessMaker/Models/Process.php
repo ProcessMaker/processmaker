@@ -235,7 +235,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
      */
     public function category()
     {
-        return $this->belongsTo(ProcessCategory::class, 'process_category_id');
+        return $this->belongsTo(ProcessCategory::class, 'process_category_id')->withDefault();
     }
 
     /**
