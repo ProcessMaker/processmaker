@@ -80,10 +80,12 @@ class UsersTest extends TestCase
     {
         $url = self::API_TEST_URL;
 
-        $deletedUser = factory(User::class)->create([
-            'deleted_at' => '2019-01-01',
-            'status' => 'ACTIVE'
-        ]);
+        $deletedUser = User::withoutEvents(function() {
+            return factory(User::class)->create([
+                'deleted_at' => '2019-01-01',
+                'status' => 'ACTIVE'
+            ]);
+        });
 
         $params = [
             'username' => $deletedUser->username,
