@@ -72,7 +72,11 @@
                                                 @{{ $t(item.prefix) }} <strong>@{{item.name }}</strong> @{{ $t(item.suffix) }}
                                                 <i class="assignable-arrow fas fa-long-arrow-alt-right"></i>
                                             </td>
-                                            <td class="assignable-entity">
+                                            <td v-if="item.type === 'webentryCustomRoute'" class="assinable-entity">
+                                              <b-form-input v-model="item.value" :state="item.error ? false : true"></b-form-input>
+                                              <div class="invalid-feedback" v-if="item.error" role="alert">@{{item.error}}</div>
+                                            </td>
+                                            <td v-else class="assignable-entity">
                                                 <label for="search-task-text" class="d-none">{{__('Type to search task')}}</label>
                                                 <multiselect id="search-task-text"
                                                              v-model="item.value"
