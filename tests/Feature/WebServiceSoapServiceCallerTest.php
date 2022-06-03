@@ -7,9 +7,6 @@ use Mockery;
 use Mockery\MockInterface;
 use ProcessMaker\Contracts\SoapClientInterface;
 use ProcessMaker\Managers\WebServiceSoapServiceCaller;
-use SoapClient;
-use SoapHeader;
-use SoapVar;
 use Tests\TestCase;
 
 class WebServiceSoapServiceCallerTest extends TestCase
