@@ -20,7 +20,7 @@ class WebServiceSoapServiceCallerTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::__construct();
+        parent::setUp();
         $this->manager = new WebServiceSoapServiceCaller;
         $this->app = app();
     }
