@@ -54,6 +54,10 @@ class PerformanceModelsTest extends TestCase
 
         $models = [];
         foreach ($definitions as $model => $definition) {
+            if ($model === "ProcessMaker\Plugins\Collections\Models\Collection") {
+                continue;
+            }
+            
             $models[] = [$model, $baseTime];
         }
         return $models;
