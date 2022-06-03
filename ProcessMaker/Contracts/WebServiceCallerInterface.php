@@ -11,5 +11,5 @@ interface WebServiceCallerInterface
      *
      * @return mixed
      */
-    public function call(array $request): array;
+    public function call(array $request);
 }
