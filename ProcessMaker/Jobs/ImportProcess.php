@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Notifications\ImportReady;
+use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
 
 class ImportProcess implements ShouldQueue
 {
@@ -289,7 +290,8 @@ class ImportProcess implements ShouldQueue
                     $error = null;
                     $existingRoute = WebentryRoute::where('first_segment', $webEntryRouteConfig['firstUrlSegment'])->first();
                     if ($existingRoute) {
-                        $error = __('Route Already Exists, please update this Route.');
+                        $existingProcess = Process::select('name')->where('id', $existingRoute->process_id)->first();
+                        $error = __('Route should be unique. Used in process: :process_name in node ID: :node_id', ['process_name' => $existingProcess->name, 'node_id' => $existingRoute->node_id]);
                     }
 
                     $this->assignable->push((object) [
