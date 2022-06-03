@@ -10,7 +10,11 @@ interface SoapClientInterface
      * @param array $method
      * @param array $parameters
      *
-     * @return array
+     * @return mixed
      */
-    public function callMethod(string $method, array $parameters): array;
+    public function callMethod(string $method, array $parameters);
+
+    public function getServices(): array;
+
+    public function selectServicePort(string $portName);
 }
