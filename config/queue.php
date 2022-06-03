@@ -52,7 +52,6 @@ return [
             'connection' => 'default',
             'queue' => 'default',
             'retry_after' => 630,
-            'block_for' => 0,
         ],
     ],
     /*
