@@ -64,7 +64,7 @@ class GarbageCollectorTest extends TestCase
         Bus::assertDispatched(RunScriptTask::class);
 
         // Verify that the file has been deleted
-        $this->assertFileNotExists($errorFile);
+        $this->assertFileDoesNotExist($errorFile);
     }
 
     public function testProcessDuplicatedTimerEvents()
