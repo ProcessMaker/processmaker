@@ -46,8 +46,9 @@ class CompileSass implements ShouldQueue
      */
     public function handle()
     {
+        $this->checkSass();
         chdir(app()->basePath());
-        $this->runCmd("node_modules/sass/sass.js --no-source-map "
+        $this->runCmd("sass --no-source-map "
             . $this->properties['origin'] . ' ' . $this->properties['target']);
 
         if (Str::contains($this->properties['tag'], 'app')) {
@@ -110,5 +111,22 @@ class CompileSass implements ShouldQueue
         $file = preg_replace($re, '": "/css/admin/queues.css?id=' . $guid . '"', $file );
 
         file_put_contents('public/mix-manifest.json', $file);
+    }
+
+    /**
+     * Check if sass is installed globally. If not, install it.
+     *
+     * @return void
+     */
+    private function checkSass()
+    {
+        exec('npm list -g sass', $_, $npmListResult);
+        if ($npmListResult) {
+            exec('npm install -g sass@^1.52.1', $output, $npmInstallResult);
+            if ($npmInstallResult) {
+                throw new \Exception("Error installing sass globally: " . join(',', $output));
+            }
+            \Log::info("Installed sass globally");
+        }
     }
 }
