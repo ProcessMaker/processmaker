@@ -6,7 +6,8 @@
  * See https://github.com/egoist/vue-monaco#use-amd-version
  *
  */
-import MonacoEditor from "vue-monaco";
+/* eslint-disable-next-line */
+import MonacoEditor from "../../node_modules/vue-monaco";
 
 export default {
   extends: MonacoEditor,
