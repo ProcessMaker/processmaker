@@ -4,8 +4,12 @@ namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Mockery;
+use Mockery\MockInterface;
 use ProcessMaker\Contracts\SoapClientInterface;
 use ProcessMaker\Managers\WebServiceSoapServiceCaller;
+use SoapClient;
+use SoapHeader;
+use SoapVar;
 use Tests\TestCase;
 
 class WebServiceSoapServiceCallerTest extends TestCase
@@ -20,9 +24,9 @@ class WebServiceSoapServiceCallerTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::__construct();
+        parent::setUp();
         $this->manager = new WebServiceSoapServiceCaller;
-        $this->app = app();
+        $this->app = $this->createApplication();
     }
 
     public function testBuildUserPasswordAuthRequest()
@@ -39,6 +43,7 @@ class WebServiceSoapServiceCallerTest extends TestCase
             'options' => [
                 'exceptions' => true,
                 'trace' => true,
+                'authentication_method' => 'password',
                 'login' => 'admin',
                 'password' => 'password',
             ],
@@ -50,5 +55,36 @@ class WebServiceSoapServiceCallerTest extends TestCase
         ];
         $response = $this->manager->call($request);
         $this->assertEquals('success', $response['response']);
+    }
+
+    public function testSoapClientServicePort()
+    {
+        $mock = $this->partialMock(SoapClientInterface::class, function (MockInterface $mock) {
+            $mock->shouldReceive('selectServicePort')->with('CustomerServiceSoap');
+            $mock->shouldReceive('callMethod')->once()->andReturn((object)['PingRs' => (object)["_" => 'success']]);
+        });
+        $this->app->bind(SoapClientInterface::class, function () use ($mock) {
+            return $mock;
+        });
+        $wsdl = __DIR__ . '/../Fixtures/WithServicePort.wsdl';
+        $request = [
+            'wsdl' => $wsdl,
+            'options' => [
+                'exceptions' => true,
+                'trace' => true,
+                'authentication_method' => 'password',
+                'login' => 'testing@jxtest.local',
+                'password' => 'abcdef1234567890',
+            ],
+            'service_port' => 'CustomerServiceSoap',
+            'method' => 'Ping',
+            'parameters' => [
+                'body' => [
+                    'PingRq' => 'success',
+                ],
+            ],
+        ];
+        $response = $this->manager->call($request);
+        $this->assertEquals('success', $response->PingRs->_);
     }
 }
