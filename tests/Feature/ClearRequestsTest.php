@@ -157,10 +157,7 @@ class ClearRequestsTest extends TestCase
         // Add comments to Tokens
         $model = factory(ProcessRequestToken::class)->create([
             'process_id' => $process->id,
-            'process_request_id' => ProcessRequest::create([
-                'name' => $this->faker->sentence(3),
-                'data' => [],
-                'status' => $this->faker->randomElement(['DRAFT', 'ACTIVE', 'COMPLETED']),
+            'process_request_id' => factory(ProcessRequest::class)->create([
                 'callable_id' => $bpmnProcessId,
                 'user_id' => $this->user->id,
                 'process_id' => $process->getKey(),
