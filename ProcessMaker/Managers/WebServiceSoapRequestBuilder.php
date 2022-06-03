@@ -19,6 +19,7 @@ class WebServiceSoapRequestBuilder implements WebServiceRequestBuilderInterface
                 $parameters = [
                     'wsdl' => $config['wsdl'],
                     'options' => array_merge(self::base_options, [
+                        'authentication_method' => $config['authentication_method'],
                         'login' => $config['username'],
                         'password' => $config['password'],
                     ]),
