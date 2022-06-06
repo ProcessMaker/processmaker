@@ -93,6 +93,11 @@ return [
             'root' => storage_path('app/private/settings'),
             'visibility' => 'private',
         ],
+        'web_services' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/web_services'),
+            'visibility' => 'private',
+        ],
         'tmp' => [
             'driver' => 'local',
             'root' => storage_path('app/public/tmp'),

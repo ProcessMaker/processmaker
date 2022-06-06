@@ -11,6 +11,7 @@ use ProcessMaker\Assets\ScriptsInProcess;
 use ProcessMaker\Assets\ScriptsInScreen;
 use ProcessMaker\Bpmn\MustacheOptions;
 use ProcessMaker\BpmnEngine;
+use ProcessMaker\Contracts\SoapClientInterface;
 use ProcessMaker\Contracts\TimerExpressionInterface;
 use ProcessMaker\Facades\WorkflowManager as WorkflowManagerFacade;
 use ProcessMaker\Listeners\BpmnSubscriber;
@@ -195,5 +196,8 @@ class WorkflowServiceProvider extends ServiceProvider
         $this->app->bind('workflow.FormalExpression', function ($app) {
             return new FormalExpression();
         });
+
+        // @todo: SoapClientImpl::class
+        $this->app->bind(SoapClientInterface::class, SoapClientImpl::class);
     }
 }
