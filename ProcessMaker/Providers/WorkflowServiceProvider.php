@@ -14,6 +14,7 @@ use ProcessMaker\BpmnEngine;
 use ProcessMaker\Contracts\SoapClientInterface;
 use ProcessMaker\Contracts\TimerExpressionInterface;
 use ProcessMaker\Facades\WorkflowManager as WorkflowManagerFacade;
+use ProcessMaker\Factories\SoapClientFactory;
 use ProcessMaker\Listeners\BpmnSubscriber;
 use ProcessMaker\Listeners\CommentsSubscriber;
 use ProcessMaker\Managers\ExportManager;
@@ -197,7 +198,9 @@ class WorkflowServiceProvider extends ServiceProvider
             return new FormalExpression();
         });
 
-        // @todo: SoapClientImpl::class
-        $this->app->bind(SoapClientInterface::class, SoapClientImpl::class);
+        $this->app->bind(SoapClientInterface::class, function ($app, $request_config) {
+            $factory = new SoapClientFactory();
+            return $factory->createNativeSoapClient($request_config['wsdl'], $request_config['options']);
+        });
     }
 }
