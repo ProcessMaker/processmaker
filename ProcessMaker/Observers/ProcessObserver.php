@@ -56,6 +56,9 @@ class ProcessObserver
         foreach ($customRoutes as $route) {
             $deleteRoute = true;
             $process = $processes->firstWhere('id', $route->process_id);
+            if (!$process) {
+                return;
+            }
             $startEvents = $process->start_events;
 
             foreach ($startEvents as $startEvent) {
