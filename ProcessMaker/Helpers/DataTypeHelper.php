@@ -112,4 +112,9 @@ class DataTypeHelper
         
         return 'string';
     }
+
+    public static function isJson($str) {
+        json_decode($str);
+        return (json_last_error() == JSON_ERROR_NONE);
+    }
 }

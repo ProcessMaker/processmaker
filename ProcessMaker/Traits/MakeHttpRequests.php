@@ -12,6 +12,7 @@ use Illuminate\Support\Arr;
 use Mustache_Engine;
 use ProcessMaker\Exception\HttpInvalidArgumentException;
 use ProcessMaker\Exception\HttpResponseException;
+use ProcessMaker\Helpers\DataTypeHelper;
 use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\WebServices\JsonResponseMapper;
 use ProcessMaker\WebServices\RestRequestBuilder;
@@ -48,13 +49,13 @@ trait MakeHttpRequests
     public function prepareRequestWithOutboundConfig($data, $config)
     {
         $configBuilder = new WebServiceConfigBuilder();
-        $requestBuilder = new RestRequestBuilder();
+        $requestBuilder = new RestRequestBuilder($this->client ?? null);
         $dsConfig = ['endpoints' => $this->endpoints, 'credentials' => $this->credentials, 'authtype' => $this->authtype];
         //TODO mover para que config no necesite una prop. privada
         $config = $configBuilder->build($config, $dsConfig, $data);
         $this->config = $config;
         //TODO como en el caso del dsConfig ver que no sea necesario el client
-        $request = $requestBuilder->build($config, $data, $this->client ?? null);
+        $request = $requestBuilder->build($config, $data);
         return $request;
     }
 
@@ -71,7 +72,7 @@ trait MakeHttpRequests
             $responseHeaders = $response->getHeaders();
         }
 
-        if (!$this->isJson($bodyContent)) {
+        if (!DataTypeHelper::isJson($bodyContent)) {
             return ["response" => $bodyContent, "status" => $status];
         }
 
@@ -91,11 +92,6 @@ trait MakeHttpRequests
         $mapped = $mapper->map($content, $status, $responseHeaders, $config, $dsConfig, $data);
 
         return $mapped;
-    }
-
-    private function isJson($str) {
-        json_decode($str);
-        return (json_last_error() == JSON_ERROR_NONE);
     }
 
     //private function call($method, $url, array $headers, $body, $bodyType)

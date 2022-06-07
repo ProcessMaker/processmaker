@@ -8,6 +8,7 @@ use GuzzleHttp\Psr7\Response;
 use Mustache_Engine;
 use ProcessMaker\Exception\HttpInvalidArgumentException;
 use ProcessMaker\Exception\HttpResponseException;
+use ProcessMaker\Helpers\DataTypeHelper;
 
 class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
 {
@@ -22,7 +23,16 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
 
     private $client;
 
-    public function build($config, $requestData, $client)
+    /**
+     * @param $client
+     */
+    public function __construct($client)
+    {
+        $this->client = $client;
+    }
+
+
+    public function build($config, $requestData)
     {
 //**        $outboundConfig = $config['outboundConfig'] ?? [];
 //**        $endpoint = $this->endpoints[$config['endpoint']];
@@ -36,7 +46,6 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
 
         //TODO ver si se puede mover para evitar la var. global config
         $this->config = $config;
-        $this->client = $client;
 
         $url = $this->addQueryStringsParamsToUrl($config['endpoint'], $config, $requestData, $config['params']);
         $method = $config['method'];
@@ -248,7 +257,7 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
     {
         $status = $response->getStatusCode();
         $bodyContent = $response->getBody()->getContents();
-        if (!$this->isJson($bodyContent)) {
+        if (!DataTypeHelper::isJson($bodyContent)) {
             return ["response" => $bodyContent, "status" => $status];
         }
 
@@ -291,10 +300,4 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
         $request = new Request($method, $url, $headers, $body);
         return $client->send($request, $options);
     }
-
-    function isJson($str) {
-        json_decode($str);
-        return (json_last_error() == JSON_ERROR_NONE);
-    }
-
 }

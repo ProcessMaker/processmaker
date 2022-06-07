@@ -5,6 +5,7 @@ namespace ProcessMaker\WebServices;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use ProcessMaker\Exception\HttpResponseException;
+use ProcessMaker\Helpers\DataTypeHelper;
 use ProcessMaker\WebServices\Contracts\WebServiceCallerInterface;
 
 class RestServiceCaller implements WebServiceCallerInterface
@@ -35,8 +36,7 @@ class RestServiceCaller implements WebServiceCallerInterface
 
         $status =  $response->getStatusCode();
         $bodyContent = $response->getBody()->getContents();
-
-        if (!$this->isJson($bodyContent)) {
+        if (!DataTypeHelper::isJson($bodyContent)) {
             return ["response" => $bodyContent, "status" => $status];
         }
 
@@ -53,11 +53,5 @@ class RestServiceCaller implements WebServiceCallerInterface
 
         return ['response' => $content, 'status' => $status, 'headers' => $response->getHeaders()];
 //**        return $content;
-    }
-
-    // TODO: has que este método esté en un solo lugar
-    private function isJson($str) {
-        json_decode($str);
-        return (json_last_error() == JSON_ERROR_NONE);
     }
 }
