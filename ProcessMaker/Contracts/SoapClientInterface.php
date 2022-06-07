@@ -28,7 +28,7 @@ interface SoapClientInterface
      * 
      * @return array
      */
-    public function getOperations(string $serviceName): array;
+    public function getOperations(string $serviceName = ''): array;
 
     /**
      * Select a service port
