@@ -73,8 +73,8 @@
                                                 <i class="assignable-arrow fas fa-long-arrow-alt-right"></i>
                                             </td>
                                             <td v-if="item.type === 'webentryCustomRoute'" class="assinable-entity">
-                                              <b-form-input v-model="item.value" :state="item.error ? false : true"></b-form-input>
-                                              <div class="invalid-feedback" v-if="item.error" role="alert">@{{item.error}}</div>
+                                              <b-input v-model="item.value" @change="checkForExistingRoute(item)" :class="{'is-invalid': item.error }"></b-input>
+                                              <div class="invalid-feedback" v-if="item.error" role="alert"><div v-html="item.error"></div></div>
                                             </td>
                                             <td v-else class="assignable-entity">
                                                 <label for="search-task-text" class="d-none">{{__('Type to search task')}}</label>
@@ -531,6 +531,7 @@
                 this.onCancel();
               })
               .catch(error => {
+                console.log("error", error);
                 ProcessMaker.alert(this.$t('Unable cannot save the assignments.'), 'danger');
               });
           },
@@ -605,6 +606,15 @@
             }
             ProcessMaker.alert(message, variant);
           },
+          checkForExistingRoute(item) {
+            ProcessMaker.apiClient.get(`/webentry/custom_route/check/${item.value}`)
+              .then(response => {
+                item.error = null;
+              })
+              .catch(error => {
+                item.error = error.response.data.error;
+              });
+          }
         },
         mounted() {
           let received = false;

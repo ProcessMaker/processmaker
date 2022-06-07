@@ -1159,9 +1159,10 @@ class ProcessController extends Controller
     }
 
     private function checkForExistingRoute($route) 
-    {
-        if (WebentryRoute::where('first_segment', $route)->first()) {
-            return response('', 422);
+    {   
+        $existingRoute = WebentryRoute::where('first_segment', $route)->first();
+        if ($existingRoute) {
+            throw new \Exception('Segment should be unique. Used in process ' . $existingRoute->process_id . 'node ID: "' . $existingRoute->node_id . '"');
         }
     }
 
