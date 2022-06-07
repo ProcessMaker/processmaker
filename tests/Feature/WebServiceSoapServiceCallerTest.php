@@ -44,7 +44,7 @@ class WebServiceSoapServiceCallerTest extends TestCase
                 'login' => 'admin',
                 'password' => 'password',
             ],
-            'method' => 'test',
+            'operation' => 'test',
             'parameters' => [
                 'param1' => 'value1',
                 'param2' => 'value2',
@@ -58,7 +58,7 @@ class WebServiceSoapServiceCallerTest extends TestCase
     {
         $mock = $this->partialMock(SoapClientInterface::class, function (MockInterface $mock) {
             $mock->shouldReceive('selectServicePort')->with('CustomerServiceSoap');
-            $mock->shouldReceive('callMethod')->once()->andReturn((object)['PingRs' => (object)["_" => 'success']]);
+            $mock->shouldReceive('callMethod')->with('Ping', ['body'=>['PingRq' => 'success']])->once()->andReturn((object)['PingRs' => (object)["_" => 'success']]);
         });
         $this->app->bind(SoapClientInterface::class, function () use ($mock) {
             return $mock;
@@ -74,11 +74,9 @@ class WebServiceSoapServiceCallerTest extends TestCase
                 'password' => 'abcdef1234567890',
             ],
             'service_port' => 'CustomerServiceSoap',
-            'method' => 'Ping',
+            'operation' => 'Ping',
             'parameters' => [
-                'body' => [
-                    'PingRq' => 'success',
-                ],
+                'PingRq' => 'success',
             ],
         ];
         $response = $this->manager->call($request);

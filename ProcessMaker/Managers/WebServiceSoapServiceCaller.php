@@ -13,7 +13,7 @@ class WebServiceSoapServiceCaller implements WebServiceCallerInterface
         if (isset($request['service_port'])) {
             $client->selectServicePort($request['service_port']);
         }
-        $response = $client->callMethod($request['method'], $request['parameters']);
+        $response = $client->callMethod($request['operation'], ['body' => $request['parameters']]);
         return $response;
     }
 }
