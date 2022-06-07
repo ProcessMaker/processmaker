@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Soap;
+namespace ProcessMaker\WebServices;
 
 use DOMDocument;
 use DOMXPath;

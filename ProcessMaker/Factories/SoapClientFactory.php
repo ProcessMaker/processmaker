@@ -3,7 +3,7 @@
 namespace ProcessMaker\Factories;
 
 use ProcessMaker\Contracts\SoapClientInterface;
-use ProcessMaker\Soap\NativeSoapClient;
+use ProcessMaker\WebServices\NativeSoapClient;
 
 class SoapClientFactory
 {
