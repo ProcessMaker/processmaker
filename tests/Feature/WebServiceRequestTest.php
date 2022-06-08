@@ -36,7 +36,7 @@ class WebServiceRequestTest extends TestCase
                 ])
                 ->andReturn((object)[
                     "PingRs" => (object)[
-                        "_" => "ping"
+                        "_" => "success"
                     ]
                 ]);
         });
@@ -110,7 +110,7 @@ class WebServiceRequestTest extends TestCase
         $this->assertEquals([
             'response' => (object)[
                 "PingRs" => (object)[
-                    "_" => "ping"
+                    "_" => "success"
                 ]
             ]
         ], $response);
