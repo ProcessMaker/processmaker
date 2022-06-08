@@ -610,8 +610,9 @@
             if (!item.value) {
               item.error = 'Segment is required';
               return
-            } 
-            
+            }
+            item.value = item.value.replace(/\s+/g, '-').toLowerCase();
+
             ProcessMaker.apiClient.get(`/webentry/custom_route/check/${item.value}`)
               .then(response => {
                 item.error = null;
