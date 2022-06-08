@@ -9,6 +9,8 @@ use ProcessMaker\Models\FormalExpression;
 
 class WebServiceSoapConfigBuilder implements WebServiceConfigBuilderInterface
 {
+    private $mustache = null;
+
     public function build(array $serviceTaskConfig, array $dataSourceConfig, array $data): array
     {
         $config = $serviceTaskConfig;
