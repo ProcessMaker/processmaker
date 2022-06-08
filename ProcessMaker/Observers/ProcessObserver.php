@@ -45,32 +45,6 @@ class ProcessObserver
      * @param Process $process
      */
     public function saved(Process $process) {
-        $this->deleteUnusedCustomRoutes();
         $process->manageCustomRoutes();
-    }
-
-    private function deleteUnusedCustomRoutes() {
-        $processes = Process::all();
-        $customRoutes = WebentryRoute::all();
-
-        foreach ($customRoutes as $route) {
-            $deleteRoute = true;
-            $process = $processes->firstWhere('id', $route->process_id);
-            if (!$process) {
-                return;
-            }
-            $startEvents = $process->start_events;
-
-            foreach ($startEvents as $startEvent) {
-                if (!isset($startEvent['config']) || (!isset(json_decode($startEvent['config'])->web_entry))) {
-                    continue;
-                } else if ($route->node_id == $startEvent['id']) {
-                    $deleteRoute = false;
-                }
-            }
-            if ($deleteRoute) {
-                $route->delete();
-            }
-        }
     }
 }
