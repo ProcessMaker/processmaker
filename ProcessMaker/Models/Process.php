@@ -929,7 +929,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         foreach ($this->start_events as $startEvent) {
             $webEntryProperties = (isset(json_decode($startEvent['config'])->web_entry) ? json_decode($startEvent['config'])->web_entry : null);
             
-            if ($webEntryProperties && isset($webEntryProperties->webentryRouteConfig) && $webEntryProperties->webentryRouteConfig->firstUrlSegment !== '') {
+            if ($webEntryProperties && isset($webEntryProperties->webentryRouteConfig)) {
                 switch ($webEntryProperties->webentryRouteConfig->urlType) {
                     case 'standard-url':
                         $this->deleteUnusedCustomRoutes(
@@ -940,20 +940,22 @@ class Process extends Model implements HasMedia, ProcessModelInterface
                         break;
                     
                     default:
-                        $webentryRouteConfig = $webEntryProperties->webentryRouteConfig;
-                        try {
-                            WebentryRoute::updateOrCreate(
-                            [
-                                'process_id' => $this->id,
-                                'node_id' => $webentryRouteConfig->nodeId,
-                            ],
-                            [
-                                'first_segment' => $webentryRouteConfig->firstUrlSegment,
-                                'params' => $webentryRouteConfig->parameters,
-                            ]
-                        );
-                        } catch (\Exception $e) {
-                            \Log::info('*** Error: '. $e->getMessage());
+                        if ($webEntryProperties->webentryRouteConfig->firstUrlSegment !== '') {
+                            $webentryRouteConfig = $webEntryProperties->webentryRouteConfig;
+                            try {
+                                WebentryRoute::updateOrCreate(
+                                [
+                                    'process_id' => $this->id,
+                                    'node_id' => $webentryRouteConfig->nodeId,
+                                ],
+                                [
+                                    'first_segment' => $webentryRouteConfig->firstUrlSegment,
+                                    'params' => $webentryRouteConfig->parameters,
+                                ]
+                            );
+                            } catch (\Exception $e) {
+                                \Log::info('*** Error: '. $e->getMessage());
+                            } 
                         }
                         break;
                 }
@@ -1382,7 +1384,12 @@ class Process extends Model implements HasMedia, ProcessModelInterface
 
     private function deleteUnusedCustomRoutes($url, $processId, $nodeId) {
         // Delete unused custom routes
-        $customRoute = WebentryRoute::where('first_segment', $url)->where('process_id', $processId)->where('node_id', $nodeId)->first();
+        $customRoute = null;
+        if (!$url) {
+            $customRoute = webentryRoute::where('process_id', $processId)->where('node_id', $nodeId)->first();
+        } else {
+            $customRoute = WebentryRoute::where('first_segment', $url)->where('process_id', $processId)->where('node_id', $nodeId)->first();
+        }
         if ($customRoute) {
             $customRoute->delete();
         }
