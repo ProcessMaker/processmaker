@@ -32,7 +32,7 @@ class WebServiceRequest
     public function execute(array $data, array $serviceTaskConfig)
     {
         $dataSourceConfig = $this->dataSource->toArray();
-        $dataSourceConfig['credentials'] = json_decode($this->dataSource->credentials);
+        $dataSourceConfig['credentials'] = $this->dataSource->credentials;
         $config = $this->config->build($serviceTaskConfig, $dataSourceConfig, $data);
         $request = $this->request->build($config, $data);
         $response = $this->requestCaller->call($request, $config);
