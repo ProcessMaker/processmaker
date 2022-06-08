@@ -607,6 +607,11 @@
             ProcessMaker.alert(message, variant);
           },
           checkForExistingRoute(item) {
+            if (!item.value) {
+              item.error = 'Segment is required';
+              return
+            } 
+            
             ProcessMaker.apiClient.get(`/webentry/custom_route/check/${item.value}`)
               .then(response => {
                 item.error = null;
