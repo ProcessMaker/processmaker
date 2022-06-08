@@ -49,8 +49,7 @@ class WebServiceRequestTest extends TestCase
                 "username"=>"test",
                 "password"=>"password",
                 "location"=>"https://jxtest.processmaker.local/jxchange/2008/ServiceGateway/Customer.svc",
-                "authentication_method"=>"password",
-                "debug_mode"=>false
+                "authentication_method"=>"password"
             ]);
             $mock->shouldReceive('toArray')->andReturn([
                 'id' => 1,
@@ -67,6 +66,7 @@ class WebServiceRequestTest extends TestCase
                         ]
                     ]
                 ],
+                "debug_mode"=>false
             ]);
         });
         $serviceTask = app('WebServiceRequest', ['dataSource' => $mockDataSource]);

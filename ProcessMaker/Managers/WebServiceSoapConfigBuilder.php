@@ -19,7 +19,7 @@ class WebServiceSoapConfigBuilder implements WebServiceConfigBuilderInterface
         $config['username'] = $credentials['username'];
         $config['password'] = $credentials['password'];
         $config['authentication_method'] = $credentials['authentication_method'];
-        $config['debug_mode'] = $credentials['debug_mode'];
+        $config['debug_mode'] = $dataSourceConfig['debug_mode'];
         $config['location'] = $credentials['location'];
         // Prepare endpoint params and dataMapping
         $endpoint = $serviceTaskConfig['endpoint'];
