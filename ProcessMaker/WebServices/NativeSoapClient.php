@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Soap;
+namespace ProcessMaker\WebServices;
 
 use DOMDocument;
 use DOMXPath;
@@ -83,5 +83,11 @@ class NativeSoapClient implements SoapClientInterface
                 ]);
                 break;
         }
+    }
+
+    public function getOperations(string $serviceName = ''): array
+    {
+        $response = $this->soapClient->__getFunctions();
+        return $response;
     }
 }
