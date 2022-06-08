@@ -917,7 +917,7 @@ class ProcessController extends Controller
                     $id = $element->getAttributeNode('id')->value;
                     foreach ($xmlAssignable as $assign) {
                         if ($assign['type'] === 'webentryCustomRoute' && $assign['id'] == $id) {
-                            $this->checkForExistingRoute($assign['value']);
+                            $this->checkForExistingRoute($process->id, $assign['value']);
                             $this->updateRoute($element, $assign['value']);
                         } elseif ($assign['id'] == $id && array_key_exists('value', $assign) && array_key_exists('id', $assign['value'])) {
                             $value = $assign['value']['id'];
@@ -1158,9 +1158,9 @@ class ProcessController extends Controller
         return $isDecoded && $validType && $validVersion;
     }
 
-    private function checkForExistingRoute($route) 
+    private function checkForExistingRoute($processId, $route) 
     {   
-        $existingRoute = WebentryRoute::where('first_segment', $route)->first();
+        $existingRoute = WebentryRoute::where('first_segment', $route)->where('process_id','!=', $processId)->first();
         if ($existingRoute) {
             throw new \Exception('Segment should be unique. Used in process ' . $existingRoute->process_id . 'node ID: "' . $existingRoute->node_id . '"');
         }
