@@ -138,11 +138,11 @@ button:focus.navbar-toggler {
   // font-size: 14px;
 }
 
-.is-invalid .multiselect__tags {
+.has-errors .multiselect__tags {
   border-color: $danger !important;
 }
 
-.multiselect.is-invalid ~ .invalid-feedback {
+.multiselect.has-errors ~ .invalid-feedback {
   display: block;
 }
 
