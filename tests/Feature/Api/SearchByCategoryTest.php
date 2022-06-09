@@ -32,6 +32,7 @@ class SearchByCategoryTest extends TestCase
      */
     public function testSearchProcessesByCategory()
     {
+        $initialProcessCount = Process::active()->count();
         $cata = factory(ProcessCategory::class)->create(['name' => 'category_a']);
         $catb = factory(ProcessCategory::class)->create(['name' => 'category_b']);
         $catc = factory(ProcessCategory::class)->create(['name' => 'category_c']);
@@ -58,8 +59,8 @@ class SearchByCategoryTest extends TestCase
         $response = $this->apiCall('GET', $route . '?filter=ACTIVE&per_page=10');
         $data = $response->json('data');
         $meta = $response->json('meta');
-        $this->assertCount(4, $data);
-        $this->assertEquals(4, $meta['count']);
+        $this->assertCount($initialProcessCount + 4, $data);
+        $this->assertEquals($initialProcessCount + 4, $meta['count']);
 
         // check that the returned list and metadata shows all the processes with category_a
         $response = $this->apiCall('GET', $route . '?filter=category_a&per_page=10');
