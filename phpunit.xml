@@ -16,7 +16,7 @@
         <directory>tests/Managers</directory>
         <directory>tests/Model</directory>
         <directory>tests/Resources</directory>
-        <directory>tests/sdk</directory>
+        <directory>tests/Sdk</directory>
         <directory>tests/Traits</directory>
         <directory>tests/unit</directory>
       </testsuite>
