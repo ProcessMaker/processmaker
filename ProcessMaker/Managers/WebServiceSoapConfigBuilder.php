@@ -24,7 +24,7 @@ class WebServiceSoapConfigBuilder implements WebServiceConfigBuilderInterface
         // @todo add the authentication_method in datasource settings
         $config['authentication_method'] = $credentials['authentication_method'] ?? 'password';
         $config['debug_mode'] = $dataSourceConfig['debug_mode'];
-        $config['location'] = $credentials['location'];
+        $config['location'] = $credentials['location'] ?? '';
         // Prepare endpoint params and dataMapping
         if (!empty($serviceTaskConfig['endpoint'])) {
             $endpoint = $serviceTaskConfig['endpoint'];

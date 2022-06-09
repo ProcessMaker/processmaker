@@ -46,6 +46,15 @@ class WebServiceRequest
         if (!$this->dataSource->credentials) {
             return [];
         }
+
+        if (!isset($this->dataSource->wsdlFile)) {
+            return [];
+        }
+
+        if (!isset($this->dataSource->credentials['location'])) {
+            return [];
+        }
+
         $dataSourceConfig = [
             'id' => $this->dataSource->id,
             'name' => $this->dataSource->name,
@@ -68,7 +77,7 @@ class WebServiceRequest
 
     public function getTypes()
     {
-        if (!$this->dataSource->credentials) {
+        if (!$this->dataSource->wsdlFile) {
             return [];
         }
         $dataSourceConfig = [
