@@ -927,7 +927,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     public function manageCustomRoutes()
     {
         foreach ($this->start_events as $startEvent) {
-            $webEntryProperties = (isset(json_decode($startEvent['config'])->web_entry) ? json_decode($startEvent['config'])->web_entry : null);
+            $webEntryProperties = (isset($startEvent['config']) && isset(json_decode($startEvent['config'])->web_entry) ? json_decode($startEvent['config'])->web_entry : null);
             
             if ($webEntryProperties && isset($webEntryProperties->webentryRouteConfig)) {
                 switch ($webEntryProperties->webentryRouteConfig->urlType) {
