@@ -120,7 +120,7 @@ class CompileSass implements ShouldQueue
      */
     private function checkSass()
     {
-        exec('npm list -g sass', $_, $npmListResult);
+        exec('which sass', $_, $npmListResult);
         if ($npmListResult) {
             exec('npm install -g sass@^1.52.1', $output, $npmInstallResult);
             if ($npmInstallResult) {
