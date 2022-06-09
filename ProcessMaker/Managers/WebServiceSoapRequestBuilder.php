@@ -3,6 +3,7 @@
 namespace ProcessMaker\Managers;
 
 use Exception;
+use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Contracts\WebServiceRequestBuilderInterface;
 
 class WebServiceSoapRequestBuilder implements WebServiceRequestBuilderInterface
@@ -17,12 +18,15 @@ class WebServiceSoapRequestBuilder implements WebServiceRequestBuilderInterface
         switch ($config['authentication_method']) {
             case 'password':
                 $parameters = [
-                    'wsdl' => $config['wsdl'],
+                    'wsdl' => Storage::disk('web_services')->path($config['wsdl']),
                     'options' => array_merge(self::base_options, [
                         'authentication_method' => $config['authentication_method'],
                         'login' => $config['username'],
                         'password' => $config['password'],
+                        'location' => $config['location'],
                     ]),
+                    'operation' => $config['operation'],
+                    'parameters' => $config['parameters'],
                 ];
             break;
             case 'certificate':
