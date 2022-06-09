@@ -2,12 +2,6 @@
 
 namespace ProcessMaker\WebServices;
 
-<<<<<<< HEAD
-class WebServiceRequest
-{
-
-}
-=======
 use ProcessMaker\Contracts\WebServiceCallerInterface;
 use ProcessMaker\Contracts\WebServiceConfigBuilderInterface;
 use ProcessMaker\Contracts\WebServiceRequestBuilderInterface;
@@ -46,4 +40,3 @@ class WebServiceRequest
         return $result;
     }
 }
->>>>>>> origin/feature/soap
