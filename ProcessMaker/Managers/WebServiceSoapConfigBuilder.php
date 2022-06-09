@@ -18,7 +18,7 @@ class WebServiceSoapConfigBuilder implements WebServiceConfigBuilderInterface
         if (!$credentials) {
             throw new Exception('Credentials are required');
         }
-        $config['wsdl'] = $dataSourceConfig['wsdlFile']['path'];
+        $config['wsdl'] = $credentials['wsdl'] ?? $dataSourceConfig['wsdlFile']['path'];
         $config['username'] = $credentials['user'];
         $config['password'] = $credentials['password'];
         // @todo add the authentication_method in datasource settings

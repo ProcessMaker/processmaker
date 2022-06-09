@@ -114,11 +114,14 @@ class NativeSoapClient implements SoapClientInterface
             $type = substr($struct[0], 7, -2);
             $fields = \array_slice($struct, 1, -1);
             $params = [];
-            foreach($fields as $field) {
+            $rand = ['not_defined', 'non_required'];
+            foreach($fields as $i => $field) {
                 list($type, $name) = explode(' ', trim($field, ' ;'));
                 $params[] = [
                     'type' => $type,
                     'name' => $name,
+                    // @todo implement required
+                    'required' => substr($name, -2) === 'Rq' ? 'required' : $rand[$i % 2],
                 ];
             }
             $response[$type] = $params;
@@ -130,6 +133,7 @@ class NativeSoapClient implements SoapClientInterface
     {
         $parameters = explode(',', $parameters);
         $params = [];
+        $rand = ['not_defined', 'non_required'];
         foreach($parameters as $parameter) {
             list($type, $name) = explode(' ', trim($parameter));
             foreach ($types as $struct) {
@@ -137,11 +141,13 @@ class NativeSoapClient implements SoapClientInterface
                 $struct[0] = trim($struct[0]);
                 if ($struct[0]==="struct {$type} {") {
                     $fields = \array_slice($struct, 1, -1);
-                    foreach($fields as $field) {
+                    foreach($fields as $i => $field) {
                         list($type, $name) = explode(' ', trim($field, ' ;'));
                         $params[] = [
                             'type' => $type,
                             'name' => $name,
+                            // @todo implement required
+                            'required' => substr($name, -2) === 'Rq' ? 'required' : $rand[$i % 2],
                         ];
                     }
                 }
