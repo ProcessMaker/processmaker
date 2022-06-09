@@ -1384,12 +1384,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
 
     private function deleteUnusedCustomRoutes($url, $processId, $nodeId) {
         // Delete unused custom routes
-        $customRoute = null;
-        if (!$url) {
-            $customRoute = webentryRoute::where('process_id', $processId)->where('node_id', $nodeId)->first();
-        } else {
-            $customRoute = WebentryRoute::where('first_segment', $url)->where('process_id', $processId)->where('node_id', $nodeId)->first();
-        }
+        $customRoute = webentryRoute::where('process_id', $processId)->where('node_id', $nodeId)->first();
         if ($customRoute) {
             $customRoute->delete();
         }
