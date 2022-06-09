@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\WebServices;
 
+use ProcessMaker\Contracts\SoapClientInterface;
 use ProcessMaker\Contracts\WebServiceCallerInterface;
 use ProcessMaker\Contracts\WebServiceConfigBuilderInterface;
 use ProcessMaker\Contracts\WebServiceRequestBuilderInterface;
@@ -38,5 +39,25 @@ class WebServiceRequest
         $response = $this->requestCaller->call($request, $config);
         $result = $this->responseMapper->map($response, $config, $data);
         return $result;
+    }
+
+    public function getOperations()
+    {
+        $dataSourceConfig = $this->dataSource->toArray();
+        $dataSourceConfig['credentials'] = $this->dataSource->credentials;
+        $config = $this->config->build([], $dataSourceConfig, []);
+        $request = $this->request->build($config, []);
+        $client = app(SoapClientInterface::class, $request);
+        return $client->getOperations();
+    }
+
+    public function getTypes()
+    {
+        $dataSourceConfig = $this->dataSource->toArray();
+        $dataSourceConfig['credentials'] = $this->dataSource->credentials;
+        $config = $this->config->build([], $dataSourceConfig, []);
+        $request = $this->request->build($config, []);
+        $client = app(SoapClientInterface::class, $request);
+        return $client->getTypes();
     }
 }
