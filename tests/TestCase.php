@@ -81,9 +81,9 @@ abstract class TestCase extends BaseTestCase
     private function cleanDatabaseIfTransactionsNotUsed()
     {
         if (empty($this->connectionsToTransact())) {
-            $databaseConnectionName = DB::connection()->getName();
-            Artisan::call('db:wipe', ['--database' => $databaseConnectionName]);
-            Artisan::call('migrate:fresh', []);
+            testLog("Restoring from mysqldump after " . $this->getName());
+            $databaseHelper = new DatabaseHelper();
+            $databaseHelper->replaceCurrentDatabase();
         }
     }
 }
