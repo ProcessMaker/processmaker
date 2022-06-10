@@ -22,8 +22,9 @@ function testLog($txt) {
 // Bootstrap laravel
 app()->make(Kernel::class)->bootstrap();
 
-testLog('Bootstrap starting ' . join(" ", $_SERVER['argv']));
-
+$argString = end($_SERVER['argv']);
+$parts = explode('/', $argString);
+testLog('Bootstrap starting ' . end($parts));
 
 $databaseHelper = new DatabaseHelper();
 
@@ -57,10 +58,8 @@ if(env('POPULATE_DATABASE') && !env('TEST_TOKEN')) {
         ['title' => 'Test Executor']
     );
 
-    if (env('PARALLEL_TEST_PROCESSES')) {
-        testLog("Duplicating test databases");
-        $databaseHelper->createTestDBs();
-    }
+    testLog("Creating test databases");
+    $databaseHelper->createTestDBs();
 }
 
 testLog("Booststrap done");

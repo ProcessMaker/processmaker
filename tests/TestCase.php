@@ -23,6 +23,7 @@ abstract class TestCase extends BaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->cleanDatabaseIfTransactionsNotUsed();
         foreach (get_class_methods($this) as $method) {
             $imethod = strtolower($method);
             if (strpos($imethod, 'setup') === 0 && $imethod !== 'setup') {
@@ -43,7 +44,6 @@ abstract class TestCase extends BaseTestCase
      */
     protected function tearDown(): void
     {
-        $this->cleanDatabaseIfTransactionsNotUsed();
         parent::tearDown();
         foreach (get_class_methods($this) as $method) {
             $imethod = strtolower($method);
@@ -81,9 +81,11 @@ abstract class TestCase extends BaseTestCase
     private function cleanDatabaseIfTransactionsNotUsed()
     {
         if (empty($this->connectionsToTransact())) {
-            testLog("Restoring from mysqldump after " . $this->getName());
-            $databaseHelper = new DatabaseHelper();
-            $databaseHelper->replaceCurrentDatabase();
+            $this->beforeApplicationDestroyed(function() {
+                testLog("Restoring from mysqldump after " . $this->getName());
+                $databaseHelper = new DatabaseHelper();
+                $databaseHelper->replaceCurrentDatabase();
+            });
         }
     }
 }

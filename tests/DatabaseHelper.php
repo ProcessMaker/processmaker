@@ -5,6 +5,7 @@ namespace Tests;
 use Exception;
 use Symfony\Component\Process\Process;
 use DB;
+use Artisan;
 
 class DatabaseHelper {
 
@@ -18,20 +19,23 @@ class DatabaseHelper {
         $this->dumpFile = $dumpFile;
     }
 
-    private function dbConnectionArgs()
+    private function dbConnectionArgs($connection)
     {
-        return '-h ' . env('DB_HOSTNAME') . ' -P ' . env('DB_PORT') . ' -u ' . env('DB_USERNAME') . " -p'" . env('DB_PASSWORD') . "'";
+        $config = $connection->getConfig();
+        return '-h ' . $config['host'] . ' -P ' . $config['port'] . ' -u ' . $config['username'] . " -p'" . $config['password'] . "'";
     }
 
     public function createTestDBs()
     {
-        $processes = env('PARALLEL_TEST_PROCESSES');
-        if (!$processes) {
-            throw new Exception('PARALLEL_TEST_PROCESSES not set');
-        }
-        $dbConnectionArgs = $this->dbConnectionArgs();
+        $connection = DB::connection();
+        $dbConnectionArgs = $this->dbConnectionArgs($connection);
         $cmd = "mysqldump $dbConnectionArgs " . env('DB_DATABASE') . " > " . $this->dumpFile;
         (new Process($cmd))->mustRun();
+        
+        $processes = env('PARALLEL_TEST_PROCESSES');
+        if (!$processes) {
+            return;
+        }
 
         $importCommands = [];
         foreach (range(1, $processes) as $process) {
@@ -73,11 +77,18 @@ class DatabaseHelper {
 
     public function replaceCurrentDatabase()
     {
-            $database = DB::connection()->getDatabaseName();
-            $dbConnectionArgs = $this->dbConnectionArgs();
+
+            $connection1 = DB::connection('processmaker');
+            $connection2 = DB::connection('data');
+            $database = $connection1->getDatabaseName();
+            $dbConnectionArgs = $this->dbConnectionArgs($connection1);
+            $connection1->disconnect();
+            $connection2->disconnect();
 
             $cmd = "mysql $dbConnectionArgs -e 'DROP DATABASE $database; CREATE DATABASE $database'";
-            (new Process($cmd))->mustRun();
+            (new Process($cmd))->run();
+            // Artisan::call("db:wipe", ['database' => Db::connection()->getName()]);
+            // testLog("db:wipe " . Artisan::output());
 
             $cmd = "mysql $dbConnectionArgs $database < " . $this->dumpFile;
             (new Process($cmd))->mustRun();
