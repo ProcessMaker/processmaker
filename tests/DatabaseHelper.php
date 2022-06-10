@@ -22,7 +22,8 @@ class DatabaseHelper {
     private function dbConnectionArgs($connection)
     {
         $config = $connection->getConfig();
-        return '-h ' . $config['host'] . ' -P ' . $config['port'] . ' -u ' . $config['username'] . " -p'" . $config['password'] . "'";
+        $passwordPart = empty($config['password']) ? '' : " -p'" . $config['password'] . "'";
+        return '-h ' . $config['host'] . ' -P ' . $config['port'] . ' -u ' . $config['username'] . $passwordPart;
     }
 
     public function createTestDBs()
@@ -77,7 +78,6 @@ class DatabaseHelper {
 
     public function replaceCurrentDatabase()
     {
-
             $connection1 = DB::connection('processmaker');
             $connection2 = DB::connection('data');
             $database = $connection1->getDatabaseName();
