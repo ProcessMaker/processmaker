@@ -8,11 +8,11 @@ use DomXpath;
 
 class PackageTestHelper {
 
-    public function addPackageTestsToPhpuntXml()
+    public function addPackageTestsToPhpuntXml($xmlFile, $composerFile, $directoryExistsFn)
     {
-        $xmlFile = base_path('phpunit.xml');
-        $composerFile = base_path('composer.json');
         $composer = json_decode(file_get_contents($composerFile), true);
+
+
         $list = array_keys(Arr::get($composer, 'extra.processmaker.enterprise', []));
 
         $dom = new DOMDocument();
@@ -22,11 +22,10 @@ class PackageTestHelper {
 
         $xpath = new DOMXpath($dom);
         $directories = $xpath->query('//testsuite[@name="Features"]')[0];
-
         foreach ($list as $package)
         {
             $testsDirectory = "vendor/processmaker/$package/tests";
-            if (is_dir(base_path($testsDirectory))) {
+            if ($directoryExistsFn($testsDirectory)) {
                 $directory = $dom->createElement('directory', $testsDirectory);
                 $directories->appendChild($directory);
             }

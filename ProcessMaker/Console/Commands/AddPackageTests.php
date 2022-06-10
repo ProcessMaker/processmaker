@@ -28,6 +28,12 @@ class AddPackageTests extends Command
      */
     public function handle()
     {
-        (new PackageTestHelper)->addPackageTestsToPhpuntXml();
+        $xmlFile = base_path('phpunit.xml');
+        $composerFile = base_path('composer.json');
+        $directoryExistsFn = function($dir) {
+            return is_dir(base_path($dir));
+        };
+        (new PackageTestHelper)->addPackageTestsToPhpuntXml($xmlFile, $composerFile, $directoryExistsFn);
+
     }
 }
