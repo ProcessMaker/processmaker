@@ -49,6 +49,7 @@ class CreateTestDBs extends Command
         $cmd = "mysqldump $dbConnectionArgs " . env('DB_DATABASE') . " > $file";
         (new Process($cmd))->mustRun();
 
+        $importCommands = [];
         foreach (range(1, $processes) as $process) {
             $database = "test_$process";
             $this->info("Creating database $database");
@@ -60,7 +61,30 @@ class CreateTestDBs extends Command
             (new Process($cmd))->mustRun();
 
             $cmd = "mysql $dbConnectionArgs $database < $file";
-            (new Process($cmd))->mustRun();
+            // (new Process($cmd))->mustRun();
+            $importCommands[] = $cmd;
         }
+
+        $processes = [];
+        foreach ($importCommands as $importCommand) {
+            $process = new Process($importCommand);
+            $process->start();
+            $processes[] = $process;
+        }
+
+        $timeout = 10;
+        $start = time();
+        while (count($processes) > 0) {
+            if ((time() - $start) > $timeout) {
+                throw new \Exception("Timeout");
+            }
+            foreach($processes as $i => $process) {
+                if (!$process->isRunning()) {
+                    unset($processes[$i]);
+                }
+            }
+            usleep(100);
+        }
+
     }
 }

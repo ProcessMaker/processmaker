@@ -42,7 +42,7 @@ class HasVersioningTest extends TestCase
         $this->assertEquals('second version', $screenVersion->description);
     }
 
-    public function tearDown() : void {
+    public function tearDownCarbon() {
         Carbon::setTestNow(); // reset
     }
 }
