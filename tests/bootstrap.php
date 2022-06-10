@@ -9,93 +9,44 @@ require_once __DIR__ . '/../bootstrap/app.php';
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\ScriptExecutor;
+use Tests\DatabaseHelper;
+
+// To view these logs you must set LOG_CHANNEL=stack env var
+function testLog($txt) {
+    $token = env('TEST_TOKEN') ?: 'BASE';
+    if (class_exists(\Log::class)) {
+        \Log::info("[testlog] [$token] $txt");
+    }
+}
 
 // Bootstrap laravel
 app()->make(Kernel::class)->bootstrap();
 
-// Clear cache so we don't overwrite our local development database
-Artisan::call('config:clear', ['--env' => 'testing']);
-
-//Ensure storage directory is linked
-Artisan::call('storage:link', []);
-
-if (env('RUN_MSSQL_TESTS')) {
-    // Setup our testexternal database
-    config(['database.connections.testexternal' => [
-        'driver' => 'mysql',
-        'host' => env('DB_HOST', '127.0.0.1'),
-        'port' => env('DB_PORT', '3306'),
-        // We set database to null to ensure we can create the testexternal database
-        'database' => null,
-        'username' => env('DB_USERNAME', 'root'),
-        'password' => env('DB_PASSWORD', ''),
-        'unix_socket' => env('DB_SOCKET', ''),
-        'prefix' => '',
-        'strict' => true,
-        'engine' => null,
-    ]]);
-
-    // First create the test external mysql database as well as our test database
-    DB::connection('testexternal')->unprepared('CREATE DATABASE IF NOT EXISTS testexternal');
-
-    // First create the test external mysql database as well as our test database
-    DB::connection('testexternal')->unprepared('CREATE DATABASE IF NOT EXISTS userexternal');
-
-    // Now set the database name properly
-    config(['database.connections.testexternal.database' => env('DB_TESTEXTERNAL_DB', 'testexternal')]);
-    DB::connection('testexternal')->reconnect();
-
-    // Now, drop all test tables and repopulate with schema
-    Schema::connection('testexternal')->dropIfExists('test');
-
-    Schema::connection('testexternal')->create('test', function ($table) {
-        $table->increments('id');
-        $table->string('value');
-    });
-    DB::connection('testexternal')->table('test')->insert([
-        'value' => 'testvalue'
-    ]);
-
-    // Only do if we are supporting MSSql tests
-
-    config(['database.connections.mssql' => [
-        'driver' => 'sqlsrv',
-        'host' => env('MSSQL_HOST', '127.0.0.1'),
-        'database' => null,
-        'username' => env('MSSQL_USERNAME', 'root'),
-        'password' => env('MSSQL_PASSWORD', ''),
-    ]]);
-
-    $mssqlDBName = env('MSSQL_DATABASE', 'testexternal');
-
-    // First create the test external mysql database as well as our test database
-    DB::connection('mssql')->unprepared("if db_id('" . $mssqlDBName . "') is null\nCREATE DATABASE " . $mssqlDBName);
-
-    // Now set the database name properly
-    config(['database.connections.mssql.database' => $mssqlDBName]);
-
-    DB::connection('mssql')->reconnect();
-
-    Schema::connection('mssql')->dropIfExists('test');
-    Schema::connection('mssql')->create('test', function ($table) {
-        $table->increments('id');
-        $table->string('value');
-    });
-    DB::connection('mssql')->table('test')->insert([
-        'value' => 'testvalue'
-    ]);
-}
+testLog('Bootstrap starting ' . join(" ", $_SERVER['argv']));
 
 
-// setup parallel test databases
+$databaseHelper = new DatabaseHelper();
+
+// if TEST_TOKEN is present, we are in a parallel test process
 if (env('TEST_TOKEN')) {
     $database = 'test_' . env('TEST_TOKEN');
     $_ENV['DB_DATABASE'] = $database;
     $_ENV['DATA_DB_DATABASE'] = $database;
 
-} elseif (env('POPULATE_DATABASE')) {
+} else {
+    // Clear cache so we don't overwrite our local development database
+    Artisan::call('config:clear', ['--env' => 'testing']);
+
+    //Ensure storage directory is linked
+    Artisan::call('storage:link', []);
+}
+
+// Do not run in parallel test processes since this already ran once at the beginning
+if(env('POPULATE_DATABASE') && !env('TEST_TOKEN')) {
     Artisan::call('db:wipe', ['--database' => \DB::connection()->getName()]);
+    testLog('db:wipe output: ' . Artisan::output());
     Artisan::call('migrate:fresh', []);
+    testLog('migrate:fresh output: ' . Artisan::output());
 
     ScriptExecutor::firstOrCreate(
         ['language' => 'php'],
@@ -105,8 +56,11 @@ if (env('TEST_TOKEN')) {
         ['language' => 'lua'],
         ['title' => 'Test Executor']
     );
-    
+
     if (env('PARALLEL_TEST_PROCESSES')) {
-        Artisan::call('processmaker:create-test-dbs');
+        testLog("Duplicating test databases");
+        $databaseHelper->createTestDBs();
     }
 }
+
+testLog("Booststrap done");
