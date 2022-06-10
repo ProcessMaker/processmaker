@@ -9,6 +9,7 @@
          stopOnFailure="false"
          bootstrap="tests/bootstrap.php"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+         cacheResult="false"
 >
     <testsuites>
       <testsuite name="Features">
@@ -20,6 +21,10 @@
         <directory>tests/Traits</directory>
         <directory>tests/unit</directory>
       </testsuite>
+      <testsuite name="Performance">
+        <directory>tests/Performance</directory>
+      </testsuite>
+
   </testsuites>
 
   <coverage includeUncoveredFiles="true" processUncoveredFiles="false">
