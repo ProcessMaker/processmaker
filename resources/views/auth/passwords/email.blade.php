@@ -8,8 +8,17 @@
 
 <div align="container">
   <div align="center" class="p-5">
-    <img class="mb-4" src={{asset(env('LOGIN_LOGO_PATH', '/img/processmaker_login.png'))}}>
-     <h3>{{__('Forgot Your Password?')}}</h3>
+    @php
+      $loginLogo = \ProcessMaker\Models\Setting::getLogin();
+      $isDefault = \ProcessMaker\Models\Setting::loginIsDefault();
+      if ($isDefault) {
+          $class = 'login-logo-default';
+      } else {
+          $class = 'login-logo-custom';
+      }
+    @endphp
+    <img src={{$loginLogo}} alt="{{ config('logo-alt-text', 'ProcessMaker') }}" class="{{ $class }}">
+    <h3>{{__('Forgot Your Password?')}}</h3>
     <p>{{__("Enter your email address and we'll send you a reset link.")}}</p>
   </div>
 

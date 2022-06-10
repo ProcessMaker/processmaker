@@ -7,7 +7,16 @@
 @section('content')
 <div align="center">
   <div class="formContainer">
-    <img src="/img/processmaker_login.png">
+    @php
+      $loginLogo = \ProcessMaker\Models\Setting::getLogin();
+      $isDefault = \ProcessMaker\Models\Setting::loginIsDefault();
+      if ($isDefault) {
+          $class = 'login-logo-default';
+      } else {
+          $class = 'login-logo-custom';
+      }
+    @endphp
+    <img src={{$loginLogo}} alt="{{ config('logo-alt-text', 'ProcessMaker') }}" class="{{ $class }}">
     <h3>{{__('Reset Your Password')}}</h3>
     <form role="form" class="form" method="POST" action="{{ url('/password/reset') }}">
       {{ csrf_field() }}
