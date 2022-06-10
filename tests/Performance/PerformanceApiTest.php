@@ -132,7 +132,7 @@ class PerformanceApiTest extends TestCase
             ]);
         }
         // Create a process assigned to group (id=10)
-        $bpmn = file_get_contents(__DIR__ . '/processes/AssignedToGroup.bpmn');
+        $bpmn = file_get_contents(__DIR__ . '/../Feature/Api/processes/AssignedToGroup.bpmn');
         factory(Process::class)->create(['bpmn' => $bpmn]);
         $tInit = microtime(true);
         // Call API with a non admin user

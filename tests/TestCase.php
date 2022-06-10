@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Artisan;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
+use DB;
 
 abstract class TestCase extends BaseTestCase
 {
