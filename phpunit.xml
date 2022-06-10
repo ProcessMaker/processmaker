@@ -38,6 +38,7 @@
       <env name="TELESCOPE_ENABLED" value="false" />
       <env name="LOG_AUTH_EVENTS" value="false" />
       <env name="BROADCAST_DRIVER" value="log"/>
+      <env name="SAVED_SEARCH_COUNT" value="false"/>
 
       <!-- Caching config -->
       <env name="CACHE_DRIVER" value="array" />
