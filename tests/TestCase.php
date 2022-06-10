@@ -42,6 +42,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function tearDown(): void
     {
+        $this->cleanDatabaseIfTransactionsNotUsed();
         parent::tearDown();
         foreach (get_class_methods($this) as $method) {
             $imethod = strtolower($method);
@@ -69,5 +70,19 @@ abstract class TestCase extends BaseTestCase
     protected function connectionsToTransact()
     {
         return ['processmaker', 'data'];
+    }
+
+    /**
+     * If we disable transactions, we must reset the db (the slow way) between tests
+     *
+     * @return void
+     */
+    private function cleanDatabaseIfTransactionsNotUsed()
+    {
+        if (empty($this->connectionsToTransact())) {
+            $databaseConnectionName = DB::connection()->getName();
+            Artisan::call('db:wipe', ['--database' => $databaseConnectionName]);
+            Artisan::call('migrate:fresh', []);
+        }
     }
 }
