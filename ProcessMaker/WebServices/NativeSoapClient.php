@@ -87,7 +87,73 @@ class NativeSoapClient implements SoapClientInterface
 
     public function getOperations(string $serviceName = ''): array
     {
-        $response = $this->soapClient->__getFunctions();
+        $functions = $this->soapClient->__getFunctions();
+        $types = $this->soapClient->__getTypes();
+        $operations = [];
+        foreach($functions as $definition) {
+            preg_match('/([\w\d_]+)\s([\w\d_]+)\((.+)\)/', $definition, $matches);
+            $type = $matches[1];
+            $operation = $matches[2];
+            $parameters = $this->explodeParameters($matches[3], $types);
+            $operations[$operation] = [
+                'type' => $type,
+                'name' => $operation,
+                'parameters' => $parameters,
+            ];
+        }
+        return $operations;
+    }
+
+    public function getTypes(): array
+    {
+        $types = $this->soapClient->__getTypes();
+        $response = [];
+        foreach ($types as $struct) {
+            $struct = explode("\n", $struct);
+            $struct[0] = trim($struct[0]);
+            $type = substr($struct[0], 7, -2);
+            $fields = \array_slice($struct, 1, -1);
+            $params = [];
+            $rand = ['not_defined', 'non_required'];
+            foreach($fields as $i => $field) {
+                list($type, $name) = explode(' ', trim($field, ' ;'));
+                $params[] = [
+                    'type' => $type,
+                    'name' => $name,
+                    // @todo implement required
+                    'required' => substr($name, -2) === 'Rq' ? 'required' : $rand[$i % 2],
+                ];
+            }
+            $response[$type] = $params;
+        }
         return $response;
+    }
+
+    private function explodeParameters($parameters, array $types)
+    {
+        $parameters = explode(',', $parameters);
+        $params = [];
+        $rand = ['not_defined', 'non_required'];
+        foreach($parameters as $parameter) {
+            list($type, $name) = explode(' ', trim($parameter));
+            foreach ($types as $struct) {
+                $struct = explode("\n", $struct);
+                $struct[0] = trim($struct[0]);
+                if ($struct[0]==="struct {$type} {") {
+                    $fields = \array_slice($struct, 1, -1);
+                    foreach($fields as $i => $field) {
+                        list($type, $name) = explode(' ', trim($field, ' ;'));
+                        $params[] = [
+                            'type' => $type,
+                            'name' => $name,
+                            // @todo implement required
+                            'required' => substr($name, -2) === 'Rq' ? 'required' : $rand[$i % 2],
+                        ];
+                    }
+                }
+            }
+            return $params;
+        }
+        return $parameters;
     }
 }

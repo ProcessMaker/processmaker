@@ -31,6 +31,13 @@ interface SoapClientInterface
     public function getOperations(string $serviceName = ''): array;
 
     /**
+     * Get a list of types available
+     * 
+     * @return array
+     */
+    public function getTypes(): array;
+
+    /**
      * Select a service port
      * 
      * @param string $portName

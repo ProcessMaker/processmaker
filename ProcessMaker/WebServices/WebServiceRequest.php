@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\WebServices;
 
+use ProcessMaker\Contracts\SoapClientInterface;
 use ProcessMaker\Contracts\WebServiceCallerInterface;
 use ProcessMaker\Contracts\WebServiceConfigBuilderInterface;
 use ProcessMaker\Contracts\WebServiceRequestBuilderInterface;
@@ -38,5 +39,55 @@ class WebServiceRequest
         $response = $this->requestCaller->call($request, $config);
         $result = $this->responseMapper->map($response, $config, $data);
         return $result;
+    }
+
+    public function getOperations()
+    {
+        if (!$this->dataSource->credentials) {
+            return [];
+        }
+        $dataSourceConfig = [
+            'id' => $this->dataSource->id,
+            'name' => $this->dataSource->name,
+            'description' => $this->dataSource->description,
+            'endpoints' => $this->dataSource->endpoints,
+            'mappings' => $this->dataSource->mappings,
+            'type' => $this->dataSource->type,
+            'authtype' => $this->dataSource->authtype,
+            'debug_mode' => $this->dataSource->debug_mode,
+            'credentials' => $this->dataSource->credentials,
+            'status' => $this->dataSource->status,
+            'data_source_category_id' => $this->dataSource->data_source_category_id,
+            'wsdlFile' => $this->dataSource->wsdlFile,
+        ];
+        $config = $this->config->build([], $dataSourceConfig, []);
+        $request = $this->request->build($config, []);
+        $client = app(SoapClientInterface::class, $request);
+        return $client->getOperations();
+    }
+
+    public function getTypes()
+    {
+        if (!$this->dataSource->credentials) {
+            return [];
+        }
+        $dataSourceConfig = [
+            'id' => $this->dataSource->id,
+            'name' => $this->dataSource->name,
+            'description' => $this->dataSource->description,
+            'endpoints' => $this->dataSource->endpoints,
+            'mappings' => $this->dataSource->mappings,
+            'type' => $this->dataSource->type,
+            'authtype' => $this->dataSource->authtype,
+            'debug_mode' => $this->dataSource->debug_mode,
+            'credentials' => $this->dataSource->credentials,
+            'status' => $this->dataSource->status,
+            'data_source_category_id' => $this->dataSource->data_source_category_id,
+            'wsdlFile' => $this->dataSource->wsdlFile,
+        ];
+        $config = $this->config->build([], $dataSourceConfig, []);
+        $request = $this->request->build($config, []);
+        $client = app(SoapClientInterface::class, $request);
+        return $client->getTypes();
     }
 }

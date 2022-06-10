@@ -15,33 +15,42 @@ class WebServiceSoapConfigBuilder implements WebServiceConfigBuilderInterface
     {
         $config = $serviceTaskConfig;
         $credentials = $dataSourceConfig['credentials'];
-        $config['wsdl'] = $credentials['wsdl'];
-        $config['username'] = $credentials['username'];
+        if (!$credentials) {
+            throw new Exception('Credentials are required');
+        }
+        $config['wsdl'] = $credentials['wsdl'] ?? $dataSourceConfig['wsdlFile']['path'];
+        $config['username'] = $credentials['user'];
         $config['password'] = $credentials['password'];
-        $config['authentication_method'] = $credentials['authentication_method'];
-        $config['debug_mode'] = $credentials['debug_mode'];
+        // @todo add the authentication_method in datasource settings
+        $config['authentication_method'] = $credentials['authentication_method'] ?? 'password';
+        $config['debug_mode'] = $dataSourceConfig['debug_mode'];
         $config['location'] = $credentials['location'];
         // Prepare endpoint params and dataMapping
-        $endpoint = $serviceTaskConfig['endpoint'];
-        $endpointDefinition = $dataSourceConfig['endpoints'][$endpoint];
-        $config['operation'] = $endpointDefinition['operation'];
-        $outboundConfig = $serviceTaskConfig['outboundConfig'];
-        $parameters = [];
-        foreach ($outboundConfig as $map) {
-            if ($map['type'] !== 'PARAM') {
-                continue;
+        if (!empty($serviceTaskConfig['endpoint'])) {
+            $endpoint = $serviceTaskConfig['endpoint'];
+            $endpointDefinition = $dataSourceConfig['endpoints'][$endpoint];
+            $config['operation'] = $endpointDefinition['operation'];
+            $outboundConfig = $serviceTaskConfig['outboundConfig'];
+            $parameters = [];
+            foreach ($outboundConfig as $map) {
+                if ($map['type'] !== 'PARAM') {
+                    continue;
+                }
+                $format = $map['format'];
+                if ($format === 'mustache') {
+                    $value = $this->evalMustache($map['value'], $data);
+                } elseif ($format === 'feel') {
+                    $value = $this->evalExpression($map['value'], $data);
+                } else {
+                    throw new Exception('Invalid format: ' . $format . ' for ' . $map['key']);
+                }
+                $parameters[$map['key']] = $value;
             }
-            $format = $map['format'];
-            if ($format === 'mustache') {
-                $value = $this->evalMustache($map['value'], $data);
-            } elseif ($format === 'feel') {
-                $value = $this->evalExpression($map['value'], $data);
-            } else {
-                throw new Exception('Invalid format: ' . $format . ' for ' . $map['key']);
-            }
-            $parameters[$map['key']] = $value;
+            $config['parameters'] = $parameters;
+        } else {
+            $config['operation'] = '';
+            $config['parameters'] = [];
         }
-        $config['parameters'] = $parameters;
         return $config;
     }
 
