@@ -15,7 +15,7 @@ use ProcessMaker\Exception\HttpResponseException;
 use ProcessMaker\Models\FormalExpression;
 use Psr\Http\Message\ResponseInterface;
 
-trait MakeHttpRequests
+trait MakeHttpRequests2
 {
     private $authTypes = [
         'BASIC' => 'basicAuthorization',

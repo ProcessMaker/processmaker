@@ -53,8 +53,9 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
         $body = $config['body'];
         $bodyType = $config['bodyType'];
 
-        $request = [$method, $url, $headers, $body, $bodyType];
-        $request = $this->addAuthorizationHeaders($config, ...$request);
+        //** $request = [$method, $url, $headers, $body, $bodyType];
+        $request = compact('method', 'url', 'headers', 'body', 'bodyType');
+        $request = $this->addAuthorizationHeaders($config, $request);
         return $request;
     }
 
@@ -165,8 +166,9 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
      *
      * @return array
      */
-    private function addAuthorizationHeaders($config, ...$request)
+    private function addAuthorizationHeaders($config, $requestData)
     {
+        $request = array_values($requestData);
         if (isset($this->authTypes[$config['authtype']])) {
             $callable = [$this, $this->authTypes[$config['authtype']]];
             return call_user_func_array($callable, $request);

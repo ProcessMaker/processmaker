@@ -58,7 +58,7 @@ class MakeHttpRequestTest extends TestCase
             'prepareRequestWithOutboundConfig',
             [$requestData, &$endpointConfig]);
         $this->assertNotNull($request);
-        [$method, $url, $headers, $body, $bodyType] = $request;
+        [$method, $url, $headers, $body, $bodyType] = array_values($request);
 
         // Verify all the request data parts
         $this->assertEquals('PUT', $method);
@@ -111,7 +111,7 @@ class MakeHttpRequestTest extends TestCase
             'prepareRequestWithOutboundConfig',
             [$requestData, &$endpointConfig]);
         $this->assertNotNull($request);
-        [$method, $url, $headers, $body, $bodyType] = $request;
+        [$method, $url, $headers, $body, $bodyType] = array_values($request);
 
         $this->assertEquals('PUT', $method);
         // we configured the url ($testStub->endpoints) without server so the current server must be added
@@ -228,7 +228,7 @@ class MakeHttpRequestTest extends TestCase
             'prepareRequestWithOutboundConfig',
             [$requestData, &$endpointConfig]);
 
-        [$method, $url, $headers, $body, $bodyType] = $request;
+        [$method, $url, $headers, $body, $bodyType] = array_values($request);
 
         $mock = new MockHandler([
             new Response(200, ['Content-Type' => 'application/json'], '{"id": 1}'),
