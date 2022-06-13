@@ -175,7 +175,7 @@ export default {
       key: "name",
       label: "Setting",
       sortable: true,
-      tdClass: "td-name",
+      tdClass: "align-middle td-name",
     });
 
     this.fields.push({
@@ -189,7 +189,7 @@ export default {
       key: "actions",
       label: "",
       sortable: false,
-      tdClass: "text-right",
+      tdClass: "align-middle text-right",
     });
 
     this.loadButtons();
