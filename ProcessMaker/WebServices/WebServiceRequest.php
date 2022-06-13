@@ -51,10 +51,6 @@ class WebServiceRequest
             return [];
         }
 
-        if (!isset($this->dataSource->credentials['location'])) {
-            return [];
-        }
-
         $dataSourceConfig = [
             'id' => $this->dataSource->id,
             'name' => $this->dataSource->name,
@@ -69,6 +65,7 @@ class WebServiceRequest
             'data_source_category_id' => $this->dataSource->data_source_category_id,
             'wsdlFile' => $this->dataSource->wsdlFile,
         ];
+
         $config = $this->config->build([], $dataSourceConfig, []);
         $request = $this->request->build($config, []);
         $client = app(SoapClientInterface::class, $request);
