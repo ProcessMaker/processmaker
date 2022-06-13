@@ -34,8 +34,8 @@
                 :disabled="row.item.readonly" 
                 @click="onEdit(row)" 
                 variant="link" 
-                size="lg">
-                  <i class="fa fa-pen-square"></i>
+               >
+                  <i class="fa-lg fas fa-edit"></i>
                 </b-button>
             </span>
             <b-button 
@@ -43,10 +43,9 @@
               v-uni-aria-describedby="row.item.id.toString()"
               @click="onCopy(row)"
               variant="link"
-              size="lg"
               v-b-tooltip.hover
               :title="$t('Copy to Clipboard')">
-                <i class="fa fa-paste"></i>
+                <i class="fa-lg fas fa-copy"></i>
               </b-button>
 
             <span v-b-tooltip.hover v-if="!['boolean', 'object', 'button'].includes(row.item.format)" :title="$t('Clear')">
@@ -56,8 +55,8 @@
               :disabled="row.item.readonly" 
               @click="onClear(row)" 
               variant="link" 
-              size="lg">
-                <i class="fas fa-trash-alt"></i>
+             >
+                <i class="fa-lg fas fa-trash-alt"></i>
               </b-button>
             </span>
             <span v-else class="invisible">
