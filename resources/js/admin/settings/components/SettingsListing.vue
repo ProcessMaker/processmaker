@@ -91,39 +91,6 @@
           {{btn.name}}
           </b-button>
       </div>
-      <div v-if="totalRows" class="settings-table-footer text-secondary d-flex align-items-center p-2 w-100">
-        <div class="flex-grow-1">
-          <span v-if="totalRows">
-            <span v-if="from == to">
-              {{from}}
-            </span>
-            <span v-else>
-              {{from}} - {{to}}
-            </span>
-            of {{totalRows}}
-            <span v-if="totalRows == 1">
-              {{ $t('Setting') }}
-            </span>
-            <span v-else>
-              {{ $t('Settings') }}
-            </span>
-          </span>
-        </div>
-        <b-pagination
-          class="m-0"
-          v-model="currentPage"
-          :total-rows="totalRows"
-          :per-page="perPage"
-          hide-ellipsis
-          limit="3"
-          :aria-label="$t('Pagination')"
-        >
-          <template v-slot:first-text><i class="fas fa-step-backward fa-sm"></i></template>
-          <template v-slot:last-text><i class="fas fa-step-forward fa-sm"></i></template>
-          <template v-slot:prev-text><i class="fas fa-caret-left fa-lg" style="padding-top: 9px;"></i></template>
-          <template v-slot:next-text><i class="fas fa-caret-right fa-lg" style="padding-top: 9px;"></i></template>
-        </b-pagination>
-      </div>
     </div>
   </div>
 </template>
