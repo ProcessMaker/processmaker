@@ -16,7 +16,7 @@
         responsive
       >
         <template v-slot:cell(name)="row">
-          <div v-if="row.item.name" v-uni-id="row.item.id.toString()">{{ $t(row.item.name) }}</div>
+          <div v-if="row.item.name" v-uni-id="row.item.id.toString()" class="capitalize">{{ $t(row.item.name) }}</div>
           <div v-else v-uni-id="row.item.id.toString()">{{ row.item.key }}</div>
           <b-form-text v-if="row.item.helper">{{ $t(row.item.helper) }}</b-form-text>
         </template>
@@ -354,7 +354,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import '../../../../sass/colors';
 
 .preview-renderer {
@@ -364,44 +364,7 @@ export default {
   }
 }
 
-.b-pagination {
-  .page-item {
-    .page-link {
-      background-color: lighten($secondary, 44%);
-      border-radius: 2px;
-      color: $secondary;
-      cursor: pointer;
-      font-size: 12px;
-      height: 29px;
-      line-height: 29px;
-      margin: 1px;
-      padding: 0;
-      text-align: center;
-      width: 29px;
-    }
-    &:hover {
-      .page-link {
-        background-color: lighten($secondary, 40%);
-      }
-    }
-    &.disabled {
-      cursor: not-allowed;
-      opacity: .5;
-      .page-link {
-        background-color: lighten($secondary, 44%);
-      }
-    }
-    &.active {
-      .page-link {
-        background-color: lighten($secondary, 15%);
-        color: white;
-      }
-      &:hover {
-        .page-link {
-          background-color: lighten($secondary, 11%);
-        }
-      }
-    }
-  }
+.capitalize {
+  text-transform: capitalize;
 }
 </style>
