@@ -81,7 +81,7 @@ if (!function_exists('cache_settings')) {
     function cache_settings(bool $force = false)
     {
         try {
-            if ((new Setting())->exists()) {
+            if (Setting::exists()) {
                 $cache = cache()->tags('setting');
 
                 // If $force is true, flush the settings cache

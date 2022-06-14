@@ -107,6 +107,7 @@ return [
         /**
          * ProcessMaker Providers
          */
+        ProcessMaker\Providers\SettingServiceProvider::class,
         ProcessMaker\Providers\ProcessMakerServiceProvider::class,
         ProcessMaker\Providers\AuthServiceProvider::class,
         ProcessMaker\Providers\EventServiceProvider::class,
@@ -115,7 +116,6 @@ return [
         ProcessMaker\Providers\RouteServiceProvider::class,
         ProcessMaker\Providers\BroadcastServiceProvider::class,
         ProcessMaker\Providers\WorkflowServiceProvider::class,
-        ProcessMaker\Providers\SettingServiceProvider::class,
         ProcessMaker\Providers\UpgradeServiceProvider::class,
         Laravel\Passport\PassportServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
