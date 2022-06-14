@@ -41,6 +41,7 @@ use ProcessMaker\Traits\ProcessTaskAssignmentsTrait;
 use ProcessMaker\Traits\ProcessTimerEventsTrait;
 use ProcessMaker\Traits\ProcessTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
+use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Throwable;
@@ -904,6 +905,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
             $properties['ownerProcessId'] = $startEvent->parentNode->getAttribute('id');
             $properties['ownerProcessName'] = $startEvent->parentNode->getAttribute('name');
             $startEvent->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'timerEventDefinition');
+
             $properties['eventDefinitions'] = [];
             foreach ($startEvent->childNodes as $node) {
                 if (substr($node->localName, -15) === 'EventDefinition') {
@@ -915,6 +917,50 @@ class Process extends Model implements HasMedia, ProcessModelInterface
             $response[] = $properties;
         }
         return $response;
+    }
+
+    /**
+     * Create or update custom routes for webentry
+     *
+     * @return void
+     */
+    public function manageCustomRoutes()
+    {
+        foreach ($this->start_events as $startEvent) {
+            $webEntryProperties = (isset($startEvent['config']) && isset(json_decode($startEvent['config'])->web_entry) ? json_decode($startEvent['config'])->web_entry : null);
+            
+            if ($webEntryProperties && isset($webEntryProperties->webentryRouteConfig)) {
+                switch ($webEntryProperties->webentryRouteConfig->urlType) {
+                    case 'standard-url':
+                        $this->deleteUnusedCustomRoutes(
+                            $webEntryProperties->webentryRouteConfig->firstUrlSegment,
+                            $webEntryProperties->webentryRouteConfig->processId, 
+                            $webEntryProperties->webentryRouteConfig->nodeId
+                        );
+                        break;
+                    
+                    default:
+                        if ($webEntryProperties->webentryRouteConfig->firstUrlSegment !== '') {
+                            $webentryRouteConfig = $webEntryProperties->webentryRouteConfig;
+                            try {
+                                WebentryRoute::updateOrCreate(
+                                [
+                                    'process_id' => $this->id,
+                                    'node_id' => $webentryRouteConfig->nodeId,
+                                ],
+                                [
+                                    'first_segment' => $webentryRouteConfig->firstUrlSegment,
+                                    'params' => $webentryRouteConfig->parameters,
+                                ]
+                            );
+                            } catch (\Exception $e) {
+                                \Log::info('*** Error: '. $e->getMessage());
+                            } 
+                        }
+                        break;
+                }
+            }
+        }
     }
 
     /**
@@ -994,6 +1040,14 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     public function versions()
     {
         return $this->hasMany(ProcessVersion::class);
+    }
+
+    /**
+     * Get the associated webEntryRoute
+     */
+    public function webentryRoute()
+    {
+        return $this->hasOne(WebentryRoute::class);
     }
 
     /**
@@ -1326,5 +1380,13 @@ class Process extends Model implements HasMedia, ProcessModelInterface
             ];
         }
         return $schemaErrors;
+    }
+
+    private function deleteUnusedCustomRoutes($url, $processId, $nodeId) {
+        // Delete unused custom routes
+        $customRoute = webentryRoute::where('process_id', $processId)->where('node_id', $nodeId)->first();
+        if ($customRoute) {
+            $customRoute->delete();
+        }
     }
 }

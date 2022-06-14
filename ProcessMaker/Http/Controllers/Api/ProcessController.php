@@ -26,6 +26,8 @@ use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Nayra\Exceptions\ElementNotFoundException;
 use ProcessMaker\Nayra\Storage\BpmnElement;
 use ProcessMaker\Rules\BPMNValidation;
+use ProcessMaker\Providers\WorkflowServiceProvider;
+use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
 use Throwable;
 
 class ProcessController extends Controller
@@ -917,7 +919,10 @@ class ProcessController extends Controller
                 foreach ($elements as $element) {
                     $id = $element->getAttributeNode('id')->value;
                     foreach ($xmlAssignable as $assign) {
-                        if ($assign['id'] == $id && array_key_exists('value', $assign) && array_key_exists('id', $assign['value'])) {
+                        if ($assign['type'] === 'webentryCustomRoute' && $assign['id'] == $id) {
+                            $this->checkForExistingRoute($process->id, $assign['value']);
+                            $this->updateRoute($element, $assign['value']);
+                        } elseif ($assign['id'] == $id && array_key_exists('value', $assign) && array_key_exists('id', $assign['value'])) {
                             $value = $assign['value']['id'];
                             if (is_int($value)) {
                                 $element->setAttribute('pm:assignment', 'user_group');
@@ -1154,5 +1159,28 @@ class ProcessController extends Controller
         $hasVersion = $isDecoded && isset($decoded->version) && is_string($decoded->version);
         $validVersion = $hasVersion && method_exists(ImportProcess::class, "parseFileV{$decoded->version}");
         return $isDecoded && $validType && $validVersion;
+    }
+
+    private function checkForExistingRoute($processId, $route) 
+    {   
+        $existingRoute = WebentryRoute::where('first_segment', $route)->where('process_id','!=', $processId)->first();
+        if ($existingRoute) {
+            throw new \Exception('Segment should be unique. Used in process ' . $existingRoute->process_id . 'node ID: "' . $existingRoute->node_id . '"');
+        }
+    }
+
+    private function updateRoute($node, $route) 
+    {
+        $config = json_decode($node->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'config'), true);
+        if ($config['web_entry']['webentryRouteConfig']['firstUrlSegment'] !== $route) {
+            // update firstUrlSegment to new route
+            $config['web_entry']['webentryRouteConfig']['firstUrlSegment'] = $route;
+            
+            // update entryUrl to new route
+            $path = parse_url($config['web_entry']['webentryRouteConfig']['entryUrl'], PHP_URL_PATH);
+            $newEntryUrl = str_replace($config['web_entry']['webentryRouteConfig']['firstUrlSegment'], $route, $path);
+            $config['web_entry']['webentryRouteConfig']['entryUrl'] = $newEntryUrl;
+            $node->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'config', json_encode($config));
+        }
     }
 }
