@@ -13,6 +13,7 @@ class NativeSoapClient implements SoapClientInterface
 {
     private $soapClient;
     private $services = [];
+    private $debug = false;
 
     public function __construct(string $wsdl, array $options)
     {
@@ -34,6 +35,7 @@ class NativeSoapClient implements SoapClientInterface
                 'location' => $servicePortLocation,
             ];
         }
+        $this->debug = $options['debug_mode'] ?? false;
         // Add Soap Auth Headers
         $this->addSoapAuthHeaders($options);
     }
@@ -54,6 +56,13 @@ class NativeSoapClient implements SoapClientInterface
     public function callMethod(string $method, array $parameters)
     {
         $response = $this->soapClient->__soapCall($method, $parameters);
+
+        if ($this->debug) {
+            \Log::channel('data-source')->info($this->soapClient->​_​getLastRequest());
+            \Log::channel('data-source')->info($this->soapClient->_​_​getLastRequestHeaders());
+            \Log::channel('data-source')->info($this->soapClient->​_​_​getLastResponse());
+            \Log::channel('data-source')->info($this->soapClient->_​_​getLastResponseHeaders());
+        }
         return $response;
     }
 
@@ -87,6 +96,7 @@ class NativeSoapClient implements SoapClientInterface
 
     public function getOperations(string $serviceName = ''): array
     {
+        \Log::debug('getOperations');
         $functions = $this->soapClient->__getFunctions();
         $types = $this->soapClient->__getTypes();
         $operations = [];
@@ -101,6 +111,7 @@ class NativeSoapClient implements SoapClientInterface
                 'parameters' => $parameters,
             ];
         }
+        \Log::debug($operations);
         return $operations;
     }
 
