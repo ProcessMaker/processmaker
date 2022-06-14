@@ -16,7 +16,11 @@ class BuildScriptExecutors extends Command
      *
      * @var string
      */
-    protected $signature = 'processmaker:build-script-executor {lang} {user?} {--rebuild} {--sdk}';
+    protected $signature = 'processmaker:build-script-executor
+                            {lang : Script executor language}
+                            {user? : user waiting for the push notification }
+                            {--rebuild : Rebuild the script executor }
+                            {--sdk : Build SDK before to build script executor}';
 
     /**
      * The console command description.
