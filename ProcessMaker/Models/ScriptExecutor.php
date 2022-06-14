@@ -68,6 +68,9 @@ class ScriptExecutor extends Model
         }
 
         if ($initialExecutor) {
+            // Reinstalling docker executor should skip default config.
+            unset($params['config']);
+
             $initialExecutor->update($params);
         } else {
             $initialExecutor = self::create($params);

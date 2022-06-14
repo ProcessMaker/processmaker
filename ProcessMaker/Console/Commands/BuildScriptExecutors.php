@@ -16,7 +16,7 @@ class BuildScriptExecutors extends Command
      *
      * @var string
      */
-    protected $signature = 'processmaker:build-script-executor {lang} {user?} {--rebuild}';
+    protected $signature = 'processmaker:build-script-executor {lang} {user?} {--rebuild} {--sdk}';
 
     /**
      * The console command description.
@@ -120,16 +120,15 @@ class BuildScriptExecutors extends Command
 
         $sdkLanguage = $scriptExecutor->language;
         $config = ScriptExecutor::config($scriptExecutor->language);
-        if (isset($config['sdk'])) {
-            $sdkLanguage = $config['sdk'];
-        }
-        if ($sdkLanguage) {
+        if ($this->option("sdk")) {
+            if (isset($config['sdk'])) {
+                $sdkLanguage = $config['sdk'];
+            }
             $this->info("Building for language: $sdkLanguage");
             $this->info("Generating SDK json document");
             $this->artisan('l5-swagger:generate');
 
             $sdkDir = $packagePath . "/sdk";
-
             if (!is_dir($sdkDir)) {
                 mkdir($sdkDir, 0755, true);
             }
@@ -139,7 +138,7 @@ class BuildScriptExecutors extends Command
             if ($this->userId) {
                 $cmd .= ' --user-id=' . $this->userId;
             }
-            $this->artisan($cmd);;
+            $this->artisan($cmd);
             $this->info("SDK is at ${sdkDir}");
         }
 
@@ -151,7 +150,9 @@ class BuildScriptExecutors extends Command
         $this->info("Building the docker executor");
 
         $image = $scriptExecutor->dockerImageName();
-        $command = Docker::command()." build --build-arg SDK_DIR=/sdk -t ${image} -f ${packagePath}/Dockerfile.custom ${packagePath}";
+        
+        $buildArg = $this->option("sdk") ? "--build-arg SDK_DIR=/sdk" : "";
+        $command = Docker::command()." build " . $buildArg . " -t ${image} -f ${packagePath}/Dockerfile.custom ${packagePath}";
 
         if ($this->userId) {
             $this->runProc(
