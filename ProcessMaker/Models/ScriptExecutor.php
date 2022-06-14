@@ -7,6 +7,7 @@ use ProcessMaker\Traits\HasVersioning;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
+use ProcessMaker\Facades\Docker;
 
 /**
  * Represents an Eloquent model of a Script Executor
@@ -191,7 +192,7 @@ class ScriptExecutor extends Model
 
     public static function listOfExecutorImages($filterByLanguage = null)
     {
-        exec('docker images | awk \'{r=$1":"$2; print r}\'', $result);
+        exec(Docker::command() . ' images | awk \'{r=$1":"$2; print r}\'', $result);
 
         $instance = config('app.instance');
         return array_values(array_filter($result, function($image) use ($filterByLanguage, $instance) {
