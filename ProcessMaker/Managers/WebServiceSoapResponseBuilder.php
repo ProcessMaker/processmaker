@@ -18,10 +18,13 @@ class WebServiceSoapResponseBuilder implements WebServiceResponseMapperInterface
      */
     public function map($response, array $config, array $data): array
     {
-        $result = [
-            'response' => $response,
-        ];
+        //**
+//        $result = [
+//            'response' => $response,
+//        ];
 
+        $responseArray = json_decode(json_encode($response), true);
+        $result = (array_key_exists('response', $responseArray)) ? $response : ['response' => $responseArray, 'status' => 200];
         return $result;
     }
 }

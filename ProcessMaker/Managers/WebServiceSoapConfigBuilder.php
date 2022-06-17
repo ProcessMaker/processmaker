@@ -33,23 +33,29 @@ class WebServiceSoapConfigBuilder implements WebServiceConfigBuilderInterface
             $outboundConfig = $serviceTaskConfig['outboundConfig'];
             $parameters = [];
             foreach ($outboundConfig as $map) {
-                if ($map['type'] !== 'PARAM') {
-                    continue;
-                }
+//                if ($map['type'] !== 'PARAM') {
+//                    continue;
+//                }
                 $format = $map['format'];
-                if ($format === 'mustache') {
-                    $value = $this->evalMustache($map['value'], $data);
-                } elseif ($format === 'feel') {
-                    $value = $this->evalExpression($map['value'], $data);
-                } else {
-                    throw new Exception('Invalid format: ' . $format . ' for ' . $map['key']);
-                }
-                $parameters[$map['key']] = $value;
+//                if ($format === 'mustache') {
+//                    $value = $this->evalMustache($map['value'], $data);
+//                } elseif ($format === 'feel') {
+                $value = $this->evalExpression($map['value'], $data);
+//                } else {
+//                    throw new Exception('Invalid format: ' . $format . ' for ' . $map['key']);
+//                }
+                //$parameters[$map['key']] = $value;
+                //$parameters[array_keys($value)[0]] = array_merge()
+                $parameters = array_merge($parameters, json_decode(json_encode($value), true));
             }
             $config['parameters'] = $parameters;
         } else {
             $config['operation'] = '';
             $config['parameters'] = [];
+        }
+
+        if (!empty($config['isTest']) && $config['isTest'] === true) {
+            $config['parameters'] = $data;
         }
         return $config;
     }
