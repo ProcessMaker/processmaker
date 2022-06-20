@@ -6,19 +6,12 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
-use Illuminate\Support\Arr;
-use Mustache_Engine;
-use ProcessMaker\Exception\HttpInvalidArgumentException;
 use ProcessMaker\Exception\HttpResponseException;
 use ProcessMaker\Helpers\DataTypeHelper;
-use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\WebServices\JsonResponseMapper;
 use ProcessMaker\WebServices\RestRequestBuilder;
 use ProcessMaker\WebServices\RestServiceCaller;
 use ProcessMaker\WebServices\WebServiceConfigBuilder;
-use Psr\Http\Message\ResponseInterface;
 
 trait MakeHttpRequests
 {
@@ -39,7 +32,7 @@ trait MakeHttpRequests
     {
         try {
             $request = $this->prepareRequestWithOutboundConfig($requestData, $config);
-            $response = $this->call($config, ...$request);
+            $response = $this->call(...$request);
             return $this->responseWithHeaderData($response, $requestData, $config);
         } catch (ClientException $exception) {
             throw new HttpResponseException($exception->getResponse());
@@ -95,7 +88,7 @@ trait MakeHttpRequests
     }
 
     //private function call($method, $url, array $headers, $body, $bodyType)
-    private function call($config, ...$request)
+    private function call(...$request)
     {
         $client = $this->client ?? new Client(['verify' => $this->verifySsl]);
         $caller = new RestServiceCaller($client);

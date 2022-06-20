@@ -239,7 +239,7 @@ class MakeHttpRequestTest extends TestCase
 
         $response = $this->callMethod($testStub,
             'call',
-            [$endpointConfig, $method, $url, $headers, $body, $bodyType]);
+            [$method, $url, $headers, $body, $bodyType]);
 
         //$body = $response->getBody()->getContents();
         $body = $response['response'];
