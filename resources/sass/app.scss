@@ -138,12 +138,25 @@ button:focus.navbar-toggler {
   // font-size: 14px;
 }
 
-.multiselect.is-invalid .multiselect__tags {
-  border-color: $danger;
+.has-errors .multiselect__tags {
+  border-color: $danger !important;
 }
 
-.multiselect.is-invalid ~ .invalid-feedback {
+.multiselect.has-errors ~ .invalid-feedback {
   display: block;
+}
+
+.hasError {
+  border: 1px solid $danger !important;
+
+  .form-element-header {
+    border-bottom: 1px solid $danger !important;
+    color: $danger !important;
+  }
+}
+
+.signature-container.required {
+  border: 1px solid $danger !important;
 }
 
 .btn-save-search {

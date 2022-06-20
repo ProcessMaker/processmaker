@@ -3,6 +3,7 @@
 namespace ProcessMaker\Managers;
 
 use ProcessMaker\Contracts\WebServiceResponseMapperInterface;
+use ProcessMaker\Models\FormalExpression;
 
 class WebServiceSoapResponseBuilder implements WebServiceResponseMapperInterface
 {
@@ -18,10 +19,35 @@ class WebServiceSoapResponseBuilder implements WebServiceResponseMapperInterface
      */
     public function map($response, array $config, array $data): array
     {
-        $result = [
-            'response' => $response,
-        ];
+        $responseArray = json_decode(json_encode($response), true);
+
+        if (array_key_exists('response', $responseArray)) {
+            return $response;
+        }
+
+        $mappings = $config['dataMapping'] ?? [];
+
+        $result = [];
+        foreach($mappings as $mapping) {
+            if (!empty($mapping['value'])) {
+                $result[$mapping['key']] = $this->evalExpression($mapping['value'], $responseArray) ;
+            }
+            else {
+                $result[$mapping['key']] = $responseArray ;
+            }
+        }
 
         return $result;
+    }
+
+    private function evalExpression($expression, array $data)
+    {
+        try {
+            $formal = new FormalExpression();
+            $formal->setBody($expression);
+            return $formal($data);
+        } catch (Exception $exception) {
+            return "{$expression}: " . $exception->getMessage();
+        }
     }
 }

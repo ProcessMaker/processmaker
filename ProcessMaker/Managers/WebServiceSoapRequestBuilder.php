@@ -24,6 +24,7 @@ class WebServiceSoapRequestBuilder implements WebServiceRequestBuilderInterface
                         'login' => $config['username'],
                         'password' => $config['password'],
                         'location' => $config['location'],
+                        'debug_mode' => $config['debug_mode'],
                     ]),
                     'operation' => $config['operation'],
                     'parameters' => $config['parameters'],

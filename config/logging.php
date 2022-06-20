@@ -59,5 +59,11 @@ return [
             'driver' => 'errorlog',
             'level' => 'debug',
         ],
+        'data-source' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/data-source.log'),
+            'level' => 'debug',
+            'days' => env('DATA_SOURCE_CLEAR_LOG', 7),
+        ],
     ],
 ];

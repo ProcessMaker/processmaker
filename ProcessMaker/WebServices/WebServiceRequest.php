@@ -2,6 +2,9 @@
 
 namespace ProcessMaker\WebServices;
 
+use DOMDocument;
+use DOMXPath;
+use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Contracts\SoapClientInterface;
 use ProcessMaker\Contracts\WebServiceCallerInterface;
 use ProcessMaker\Contracts\WebServiceConfigBuilderInterface;
@@ -46,6 +49,11 @@ class WebServiceRequest
         if (!$this->dataSource->credentials) {
             return [];
         }
+
+        if (!isset($this->dataSource->wsdlFile)) {
+            return [];
+        }
+
         $dataSourceConfig = [
             'id' => $this->dataSource->id,
             'name' => $this->dataSource->name,
@@ -60,15 +68,46 @@ class WebServiceRequest
             'data_source_category_id' => $this->dataSource->data_source_category_id,
             'wsdlFile' => $this->dataSource->wsdlFile,
         ];
+
         $config = $this->config->build([], $dataSourceConfig, []);
         $request = $this->request->build($config, []);
         $client = app(SoapClientInterface::class, $request);
         return $client->getOperations();
     }
 
+    public function getValidOperations($files = []): array
+    {
+        $allOperations = $this->getOperations();
+        $operations = [];
+
+        foreach ($allOperations as $operation) {
+            $operation['missed_reference'] = true;
+            foreach ($files as $file) {
+                if (!$operation['missed_reference']) {
+                    continue;
+                }
+
+                $fileContent = Storage::disk($file['disk'])->get($file['path']);
+                $dom = new DOMDocument();
+                $dom->loadXML($fileContent);
+                $xpath = new DOMXPath($dom);
+
+                // Search for operation reference
+                $query = "//*[local-name()='element'][@ref='".$operation['name']."']";
+                $elements = $xpath->query($query);
+                if ($elements->length) {
+                    $operation['missed_reference'] = false;
+                }
+                $operations[$operation['name']] = $operation;
+            }
+        }
+
+        return $operations;
+    }
+
     public function getTypes()
     {
-        if (!$this->dataSource->credentials) {
+        if (!$this->dataSource->wsdlFile) {
             return [];
         }
         $dataSourceConfig = [

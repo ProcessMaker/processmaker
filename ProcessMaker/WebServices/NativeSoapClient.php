@@ -13,6 +13,7 @@ class NativeSoapClient implements SoapClientInterface
 {
     private $soapClient;
     private $services = [];
+    private $debug = false;
 
     public function __construct(string $wsdl, array $options)
     {
@@ -34,6 +35,7 @@ class NativeSoapClient implements SoapClientInterface
                 'location' => $servicePortLocation,
             ];
         }
+        $this->debug = $options['debug_mode'] ?? false;
         // Add Soap Auth Headers
         $this->addSoapAuthHeaders($options);
     }
@@ -53,7 +55,21 @@ class NativeSoapClient implements SoapClientInterface
      */
     public function callMethod(string $method, array $parameters)
     {
-        $response = $this->soapClient->__soapCall($method, $parameters);
+        try {
+            $response = $this->soapClient->__soapCall($method, $parameters);
+        }
+        catch (\Throwable $e) {
+            $lastMsg = $e->getMessage();
+            $lastResponse = $this->soapClient->__getLastResponse();
+            $response = ['response' => $lastMsg . ': ' . $lastResponse, 'status' => 401];
+        }
+
+        if ($this->debug) {
+            \Log::channel('data-source')->info($this->soapClient->__getLastRequest());
+            \Log::channel('data-source')->info($this->soapClient->__getLastRequestHeaders());
+            \Log::channel('data-source')->info($this->soapClient->__getLastResponse());
+            \Log::channel('data-source')->info($this->soapClient->__getLastResponseHeaders());
+        }
         return $response;
     }
 
