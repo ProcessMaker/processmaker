@@ -78,17 +78,22 @@ class NativeSoapClient implements SoapClientInterface
         if (!$log) {
             return;
         }
-        $doc = new DOMDocument();
-        $doc->formatOutput = true;
-        $doc->loadXML($log);
+        try {
+            $doc = new DOMDocument();
+            $doc->formatOutput = true;
+            $doc->loadXML($log);
 
-        $creddentials = $doc->getElementsByTagName('UsernameToken');
-        if ($creddentials->length) {
-            $doc->getElementsByTagName("Username")->item(0)->nodeValue = '************';
-            $doc->getElementsByTagName("Password")->item(0)->nodeValue = '************';
+            $creddentials = $doc->getElementsByTagName('UsernameToken');
+            if ($creddentials->length) {
+                $doc->getElementsByTagName("Username")->item(0)->nodeValue = '************';
+                $doc->getElementsByTagName("Password")->item(0)->nodeValue = '************';
+            }
+            
+            \Log::channel('data-source')->info($doc->saveXML());
+        } catch (\Throwable $th) {
+            \Log::channel('data-source')->info($log);
         }
         
-        \Log::channel('data-source')->info($doc->saveXML());
     }
 
     public function selectServicePort(string $portName)
