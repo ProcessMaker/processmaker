@@ -25,6 +25,10 @@ class WebServiceSoapResponseBuilder implements WebServiceResponseMapperInterface
             return $response;
         }
 
+        if ($config['isTest'] ?? false) {
+            return ['response' => $responseArray, 'status' => 200];
+        }
+
         $mappings = $config['dataMapping'] ?? [];
 
         $result = [];
