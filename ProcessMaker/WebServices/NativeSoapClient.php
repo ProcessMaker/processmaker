@@ -65,12 +65,30 @@ class NativeSoapClient implements SoapClientInterface
         }
 
         if ($this->debug) {
-            \Log::channel('data-source')->info($this->soapClient->__getLastRequest());
-            \Log::channel('data-source')->info($this->soapClient->__getLastRequestHeaders());
-            \Log::channel('data-source')->info($this->soapClient->__getLastResponse());
-            \Log::channel('data-source')->info($this->soapClient->__getLastResponseHeaders());
+            $this->logSoap($this->soapClient->__getLastRequest());
+            $this->logSoap($this->soapClient->__getLastRequestHeaders());
+            $this->logSoap($this->soapClient->__getLastResponse());
+            $this->logSoap($this->soapClient->__getLastResponseHeaders());
         }
         return $response;
+    }
+
+    private function logSoap($log)
+    {
+        if (!$log) {
+            return;
+        }
+        $doc = new DOMDocument();
+        $doc->formatOutput = true;
+        $doc->loadXML($log);
+
+        $creddentials = $doc->getElementsByTagName('UsernameToken');
+        if ($creddentials->length) {
+            $doc->getElementsByTagName("Username")->item(0)->nodeValue = '************';
+            $doc->getElementsByTagName("Password")->item(0)->nodeValue = '************';
+        }
+        
+        \Log::channel('data-source')->info($doc->saveXML());
     }
 
     public function selectServicePort(string $portName)
