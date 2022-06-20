@@ -23,8 +23,12 @@ class WebServiceSoapResponseBuilder implements WebServiceResponseMapperInterface
 //            'response' => $response,
 //        ];
 
+        $requestVariable = !empty($config['dataMapping']) && count($config['dataMapping']) > 0
+            ? $config['dataMapping'][0]['key']
+            : 'response';
         $responseArray = json_decode(json_encode($response), true);
-        $result = (array_key_exists('response', $responseArray)) ? $response : ['response' => $responseArray, 'status' => 200];
-        return $result;
+        return (array_key_exists('response', $responseArray))
+            ? $response
+            : [$requestVariable => $responseArray, 'status' => 200];
     }
 }
