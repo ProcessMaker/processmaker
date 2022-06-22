@@ -1,6 +1,23 @@
 <template>
   <div class="settings-listing data-table">
-    <basic-search class="mb-3" @submit="onSearch"></basic-search>
+    <div class="d-flex mb-3">
+      <basic-search @submit="onSearch"></basic-search>
+      <div v-if="topButtons" class="d-flex">
+        <b-button
+            v-for="(btn,index) in topButtons"
+            :ref="formatGroupName(btn.group)"
+            :key="`btn-${index}`"
+            class="ml-2 nowrap"
+            v-bind="btn.ui.props"
+            @click="handler(btn)"
+            :disabled="false"
+            >
+            <b-spinner small ref="b-spinner" :hidden="true"></b-spinner>
+            <span v-html="btn.icon"></span>
+            {{btn.name}}
+        </b-button>
+      </div>
+    </div>
     <div class="card card-body table-card">
       <b-table
         class="settings-table table table-responsive-lg text-break m-0 h-100 w-100"
@@ -78,7 +95,7 @@
       </b-table>
       <div class="text-right p-2">
         <b-button
-          v-for="(btn,index) in buttons"
+          v-for="(btn,index) in bottomButtons"
           :ref="formatGroupName(btn.group)"
           :key="`btn-${index}`"
           class="ml-2"
@@ -87,8 +104,9 @@
           :disabled="false"
           >
           <b-spinner small ref="b-spinner" :hidden="true"></b-spinner>
+          <span v-html="btn.icon"></span>
           {{btn.name}}
-          </b-button>
+        </b-button>
       </div>
     </div>
   </div>
@@ -132,7 +150,8 @@ export default {
   data() {
     return {
       tableKey: 0,
-      buttons: [],
+      bottomButtons: [],
+      topButtons: [],
       currentPage: 1,
       fields: [],
       filter: '',
@@ -197,7 +216,13 @@ export default {
     loadButtons() {
       ProcessMaker.apiClient.get(`/settings/group/${this.group}/buttons`)
         .then((response) => {
-          this.buttons = response.data;
+          this.topButtons = response.data.filter(btn => {
+            return btn.position === 'top';
+          });
+          this.bottomButtons = response.data.filter(btn => {
+            return btn.position === 'bottom';
+          });
+          // this.buttons = response.data;
         });
     },
     apiGet() {
@@ -365,5 +390,9 @@ export default {
 
 .capitalize {
   text-transform: capitalize;
+}
+
+.nowrap {
+  white-space: nowrap;
 }
 </style>
