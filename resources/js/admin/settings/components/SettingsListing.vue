@@ -217,6 +217,9 @@ export default {
       ProcessMaker.apiClient.get(`/settings/group/${this.group}/buttons`)
         .then((response) => {
           this.topButtons = response.data.filter(btn => {
+            if (this.group !== 'Email Default Settings') {
+              return btn.position === 'top' && !btn.key.includes('EMAIL_CONNECTOR_ADD_MAIL_SERVER_');
+            }
             return btn.position === 'top';
           });
           this.bottomButtons = response.data.filter(btn => {
