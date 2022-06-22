@@ -96,7 +96,7 @@ import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import AvatarImage from "../../components/AvatarImage";
 import isPMQL from "../../modules/isPMQL";
-import moment from "moment";
+import { differenceInHours } from "date-fns";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -294,9 +294,9 @@ export default {
       }
     },
     classDueDate(value) {
-      let dueDate = moment(value);
-      let now = moment();
-      let diff = dueDate.diff(now, "hours");
+      let dueDate = new Date(value);
+      let now = new Date();
+      let diff = differenceInHours(dueDate, now);
       return diff < 0
         ? "text-danger"
         : diff <= 1

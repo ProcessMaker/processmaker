@@ -31,7 +31,7 @@
   import Vue from "vue";
   import {VueFormRenderer} from "@processmaker/screen-builder";
   import VueFormElements from "@processmaker/vue-form-elements";
-  import moment from "moment";
+  import { format } from "date-fns";
 
   Vue.use(VueFormElements);
 
@@ -91,7 +91,7 @@
        * @returns {string}
        */
       formatDate(date) {
-        return moment(date).format('YYYY-MM-DD hh:mm');
+        return format(new Date(date), ('YYYY-MM-dd hh:mm'));
       },
       /**
        * Disable the form items.

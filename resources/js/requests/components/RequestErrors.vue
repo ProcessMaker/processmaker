@@ -24,7 +24,7 @@
 
 <script>
     import datatableMixin from "../../components/common/mixins/datatable";
-    import moment from "moment";
+    import { formatRelative } from "date-fns";
     export default {
         mixins: [datatableMixin],
         props: ["errors"],
@@ -52,7 +52,9 @@
         },
         methods: {
             formatDate(date) {
-                return moment(date).fromNow();
+                let baseDate = new Date(date);
+                let now = new Date();
+                return formatRelative(baseDate, now);
             },
             fetch() {
 
