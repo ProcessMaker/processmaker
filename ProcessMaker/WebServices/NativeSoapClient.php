@@ -2,12 +2,13 @@
 
 namespace ProcessMaker\WebServices;
 
-use DOMDocument;
+use SoapVar;
 use DOMXPath;
-use ProcessMaker\Contracts\SoapClientInterface;
 use SoapClient;
 use SoapHeader;
-use SoapVar;
+use DOMDocument;
+use Illuminate\Support\Facades\Log;
+use ProcessMaker\Contracts\SoapClientInterface;
 
 class NativeSoapClient implements SoapClientInterface
 {
@@ -65,15 +66,15 @@ class NativeSoapClient implements SoapClientInterface
         }
 
         if ($this->debug) {
-            $this->logSoap($this->soapClient->__getLastRequest());
-            $this->logSoap($this->soapClient->__getLastRequestHeaders());
-            $this->logSoap($this->soapClient->__getLastResponse());
-            $this->logSoap($this->soapClient->__getLastResponseHeaders());
+            $this->logSoap('Request: ', $this->soapClient->__getLastRequest());
+            $this->logSoap('Request Headers: ', $this->soapClient->__getLastRequestHeaders());
+            $this->logSoap('Response: ', $this->soapClient->__getLastResponse());
+            $this->logSoap('Response headers: ', $this->soapClient->__getLastResponseHeaders());
         }
         return $response;
     }
 
-    private function logSoap($log)
+    private function logSoap($label, $log)
     {
         if (!$log) {
             return;
@@ -89,9 +90,9 @@ class NativeSoapClient implements SoapClientInterface
                 $doc->getElementsByTagName("Password")->item(0)->nodeValue = '************';
             }
             
-            \Log::channel('data-source')->info($doc->saveXML());
+            Log::channel('data-source')->info($label . $doc->saveXML());
         } catch (\Throwable $th) {
-            \Log::channel('data-source')->info($log);
+            Log::channel('data-source')->info($label . $log);
         }
         
     }
