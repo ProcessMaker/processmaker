@@ -46,7 +46,12 @@ class WebServiceSoapConfigBuilder implements WebServiceConfigBuilderInterface
 //                }
                 //$parameters[$map['key']] = $value;
                 //$parameters[array_keys($value)[0]] = array_merge()
-                $parameters = array_merge($parameters, json_decode(json_encode($value), true));
+                if (is_object($value)) {
+                    $parameters = array_merge($parameters, json_decode(json_encode($value), true));
+                }
+                else {
+                    $parameters[$map['key']] = $value;
+                }
             }
             $config['parameters'] = $parameters;
         } else {
