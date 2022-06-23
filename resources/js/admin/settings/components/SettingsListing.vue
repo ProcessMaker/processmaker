@@ -13,7 +13,7 @@
             :disabled="false"
             >
             <b-spinner small ref="b-spinner" :hidden="true"></b-spinner>
-            <span v-html="btn.icon"></span>
+            <i v-if="btn.ui.props.icon" :class="btn.ui.props.icon"></i>
             {{btn.name}}
         </b-button>
       </div>
@@ -105,6 +105,7 @@
           >
           <b-spinner small ref="b-spinner" :hidden="true"></b-spinner>
           <span v-html="btn.icon"></span>
+          <i v-if="btn.ui.props.icon" :class="btn.ui.props.icon"></i>
           {{btn.name}}
         </b-button>
       </div>
@@ -218,14 +219,13 @@ export default {
         .then((response) => {
           this.topButtons = response.data.filter(btn => {
             if (this.group !== 'Email Default Settings') {
-              return btn.position === 'top' && !btn.key.includes('EMAIL_CONNECTOR_ADD_MAIL_SERVER_');
+              return btn.ui.props.position === 'top' && !btn.key.includes('EMAIL_CONNECTOR_ADD_MAIL_SERVER_');
             }
-            return btn.position === 'top';
+            return btn.ui.props.position === 'top';
           });
           this.bottomButtons = response.data.filter(btn => {
-            return btn.position === 'bottom';
+            return btn.ui.props.position === 'bottom';
           });
-          // this.buttons = response.data;
         });
     },
     apiGet() {
