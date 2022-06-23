@@ -31,27 +31,44 @@ class WebServiceSoapConfigBuilder implements WebServiceConfigBuilderInterface
             $endpointDefinition = $dataSourceConfig['endpoints'][$endpoint];
             $config['operation'] = $endpointDefinition['operation'];
             $outboundConfig = $serviceTaskConfig['outboundConfig'];
-            $parameters = [];
+            $parameters = $data;
             foreach ($outboundConfig as $map) {
+                switch ($map['key']) {
+                    case 'ObjectDef':
+                        $evaluated = $this->evalMustache($map['value'], $data);
+                        $parameters = json_decode($evaluated, true);
+                        break;
+                    case 'RequestVariable':
+                        $value = $this->evalExpression($map['value'], $data);
+                        $parameters = json_decode(json_encode($value), true);
+                        break;
+                    default:
+                        $parameters = json_decode(json_encode($map['value']));
+                }
+
+
+
+
 //                if ($map['type'] !== 'PARAM') {
 //                    continue;
 //                }
-                $format = $map['format'];
+                //**$format = $map['format'];
+
 //                if ($format === 'mustache') {
 //                    $value = $this->evalMustache($map['value'], $data);
 //                } elseif ($format === 'feel') {
-                $value = $this->evalExpression($map['value'], $data);
+                //**$value = $this->evalExpression($map['value'], $data);
 //                } else {
 //                    throw new Exception('Invalid format: ' . $format . ' for ' . $map['key']);
 //                }
                 //$parameters[$map['key']] = $value;
                 //$parameters[array_keys($value)[0]] = array_merge()
-                if (is_object($value)) {
-                    $parameters = array_merge($parameters, json_decode(json_encode($value), true));
-                }
-                else {
-                    $parameters[$map['key']] = $value;
-                }
+                //**if (is_object($value)) {
+                //**    $parameters = array_merge($parameters, json_decode(json_encode($value), true));
+                //**}
+                //**else {
+                //**    $parameters[$map['key']] = $value;
+                //**}
             }
             $config['parameters'] = $parameters;
         } else {
