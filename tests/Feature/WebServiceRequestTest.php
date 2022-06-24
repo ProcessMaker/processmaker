@@ -80,7 +80,13 @@ class WebServiceRequestTest extends TestCase
             [
                 "dataSource" => 1,
                 "endpoint" => "Ping",
-                "dataMapping" => [],
+                "dataMapping" => [
+                    [
+                        "value" => "",
+                        "key" => "response",
+                        "format" => "dotNotation"
+                    ]
+                ],
                 "outboundConfig" => [],
             ]
         );
