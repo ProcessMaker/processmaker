@@ -15,7 +15,29 @@ class ChangeButtonsUiInSettingsTable extends Migration
      */
     public function up()
     {
-        // Update buttons UI
+
+        $this->updateEmailServerUi();
+        $this->updateAbeUi();
+        $this->updateDocusignUi();
+        $this->updateLdapUi();
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+
+        $this->revertEmailServerUi();
+        $this->revertAbeUi();
+        $this->revertDocusignUi();
+        $this->revertLdapUi();
+    }
+
+    private function updateEmailServerUi() {
+        // Update Email Server buttons UI
         Setting::where('key', 'LIKE', '%EMAIL_CONNECTOR_ADD_MAIL_SERVER%')->update([
             'name' => 'Mail Server', 
             'ui' => '{"props":{"variant":"primary", "position": "top", "order": "100", "icon": "fas fa-plus"},"handler":"addMailServer"}',
@@ -36,15 +58,9 @@ class ChangeButtonsUiInSettingsTable extends Migration
         ]);
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
+    protected function revertEmailServerUi() {
         // Revert buttons UI
-        Setting::where('key', 'LIKE', '%EMAIL_CONNECTOR_ADD_MAIL_SERVER%')->update([
+         Setting::where('key', 'LIKE', '%EMAIL_CONNECTOR_ADD_MAIL_SERVER%')->update([
             'name' => '+ Mail Server',
         ]);
 
@@ -60,6 +76,49 @@ class ChangeButtonsUiInSettingsTable extends Migration
         // Revert Mail Driver Options
         Setting::where('key', 'LIKE', '%EMAIL_CONNECTOR_MAIL_DRIVER%')->update([
             'ui' => '{"options": ["smtp", "sendmail", "mailgun", "postmark", "ses"]}',
+        ]);
+
+    }
+
+    protected function updateAbeUi() {
+        // Update ABE Buttons
+        Setting::where('key', 'abe_imap_test_connection')->update([
+            'ui' => '{"props":{"variant":"primary", "position": "top", "order":"100"},"handler":"imapTest"}',
+        ]);
+    }
+
+    protected function revertAbeUi() {
+         // Revert ABE Buttons
+         Setting::where('key', 'abe_imap_test_connection')->update([
+            'ui' => '{"props":{"variant":"primary"},"handler":"imapTest"}'
+        ]);
+    }
+
+    protected function updateDocusignUi() {
+        // Update Docusign Buttons
+        Setting::where('key', 'docusign_grant_access')->update([
+            'ui' => '{"props":{"variant":"primary","href":"/docusign/grant", "position": "top", "order":"100"}}',
+        ]);
+    }
+
+    protected function revertDocusignUi() {
+        // Revert Docusign Buttons
+        Setting::where('key', 'docusign_grant_access')->update([
+            'ui' => '{"props":{"variant":"primary","href":"/docusign/grant"}}',
+        ]);
+    }
+
+    protected function updateLdapUi() {
+        // Update LDAP Buttons
+        Setting::where('key', 'services.ldap.log')->update([
+            'ui' => '{"props":{"variant":"primary","target":"_blank","href":"/admin/ldap-logs", "position": "top", "order":"100"}}',
+        ]);
+    }
+
+    protected function revertLdapUi() {
+        // Revert LDAP Buttons
+        Setting::where('key', 'services.ldap.log')->update([
+            'ui' => '{"props":{"variant":"primary","target":"_blank","href":"/admin/ldap-logs"}}',
         ]);
     }
 }
