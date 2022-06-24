@@ -6,6 +6,10 @@ use ProcessMaker\BuildSdk;
 
 class BuildSdkTest extends TestCase
 {
+    public function setUpSkipped() {
+        $this->markTestSkipped('Refactor to not use docker');
+    }
+    
     public function setUpSuppressOutput() : void
     {
         $this->setOutputCallback(function() {});
