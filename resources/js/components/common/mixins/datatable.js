@@ -5,6 +5,7 @@
  */
 import Vuetable from "vuetable-2/src/components/Vuetable";
 import Pagination from "../../../components/common/Pagination";
+import { format as formatDateFns} from "date-fns"; 
 
 export default {
     components: {
@@ -25,10 +26,11 @@ export default {
     methods: {
         // Handler to properly format date/time columns according to localized format
         formatDate(value, format) {
-            format = format || '';
+            let userFormat = window.ProcessMaker.user.datetime_format;
+            format = userFormat || '';
             if (value) {
-                return window.moment(value)
-                    .format(format);
+                let date = new Date(value);
+                return formatDateFns(date, format.toString());
             }
             return "n/a";
         },
@@ -44,8 +46,8 @@ export default {
                 }
             }
             if (value) {
-                return window.moment(value)
-                    .format(config);
+                let date = new Date(value);
+                return formatDateFns(date, format(config));
             }
             return "n/a";
         },

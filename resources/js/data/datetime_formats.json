@@ -13,7 +13,7 @@
   },
   {
     "format": "m/d/Y H:i",
-    "momentFormat": "MM/DD/YYYY HH:mm",
+    "momentFormat": "MM/dd/yyyy HH:mm",
     "calendarFormat": "LL/dd/yyyy HH:mm",
     "title": "m/d/Y H:i (12/31/2017 23:30)"
   },

@@ -68,7 +68,6 @@ import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading.js";
 import AvatarImage from "../../components/AvatarImage";
 import isPMQL from "../../modules/isPMQL";
-import moment from "moment";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 

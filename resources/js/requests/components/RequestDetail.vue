@@ -40,7 +40,6 @@
 
 <script>
   import datatableMixin from "../../components/common/mixins/datatable";
-  import moment from "moment";
 
   export default {
     mixins: [datatableMixin],

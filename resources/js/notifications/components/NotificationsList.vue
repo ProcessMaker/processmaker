@@ -43,7 +43,6 @@
 <script>
     import datatableMixin from "../../components/common/mixins/datatable";
     import AvatarImage from "../../components/AvatarImage"
-    import moment from "moment";
 
     Vue.component('avatar-image', AvatarImage);
 
