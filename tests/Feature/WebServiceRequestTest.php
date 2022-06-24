@@ -45,18 +45,21 @@ class WebServiceRequestTest extends TestCase
         });
         $mockDataSource = Mockery::mock(Model::class, function ($mock) {
             $mock->shouldReceive('getAttribute')->with('credentials')->andReturn([
-                "wsdl"=>"1/TPG_Customer.wsdl",
-                "username"=>"test",
-                "password"=>"password",
-                "location"=>"https://jxtest.processmaker.local/jxchange/2008/ServiceGateway/Customer.svc",
-                "authentication_method"=>"password"
+                "wsdl" => "1/TPG_Customer.wsdl",
+                "user" => "test",
+                "password" => "password",
+                "location" => "https://jxtest.processmaker.local/jxchange/2008/ServiceGateway/Customer.svc",
+                "authentication_method" => "password"
             ]);
             $mock->shouldReceive('toArray')->andReturn([
                 'id' => 1,
                 'endpoints' => [
                     "Ping" => [
-                        "method"=>"SOAP",
-                        "operation" => "Ping",
+                        "method" => "SOAP",
+                        "operation" => [
+                            "text" => "Ping",
+                            "value" => "Ping"
+                        ],
                         "params" => [
                             [
                                 "key" => "PingRq",
@@ -66,50 +69,24 @@ class WebServiceRequestTest extends TestCase
                         ]
                     ]
                 ],
-                "debug_mode"=>false
+                "debug_mode" => false
             ]);
         });
         $serviceTask = app('WebServiceRequest', ['dataSource' => $mockDataSource]);
         $response = $serviceTask->execute(
             [
-                'form_input_1' => 'success',
+                'PingRq' => 'success',
             ],
             [
                 "dataSource" => 1,
                 "endpoint" => "Ping",
-                "dataMapping" => [
-                    [
-                        "value" => "",
-                        "key" => "response",
-                        "format" => "dotNotation"
-                    ]
-                ],
-                "outboundConfig" => [
-                    [
-                        "value" => "{{form_input_1}}",
-                        "type" => "PARAM",
-                        "key" => "PingRq",
-                        "format" => "mustache"
-                    ]
-                ],
-                "callback" => false,
-                "callback_url" => "callback_url",
-                "callback_variable" => "callback",
-                "callback_methods" => [
-                    "POST"
-                ],
-                "callback_data_types" => [
-                    "FORM"
-                ],
-                "callback_authentication" => null,
-                "callback_authentication_username" => "",
-                "callback_authentication_password" => "",
-                "callback_whitelist" => []
+                "dataMapping" => [],
+                "outboundConfig" => [],
             ]
         );
         $this->assertEquals([
-            'response' => (object)[
-                "PingRs" => (object)[
+            'response' => [
+                "PingRs" => [
                     "_" => "success"
                 ]
             ]

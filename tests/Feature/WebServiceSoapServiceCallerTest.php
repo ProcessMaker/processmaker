@@ -43,7 +43,10 @@ class WebServiceSoapServiceCallerTest extends TestCase
                 'login' => 'admin',
                 'password' => 'password',
             ],
-            'operation' => 'test',
+            "operation" => [
+                "text" => "test",
+                "value" => "test"
+            ],
             'parameters' => [
                 'param1' => 'value1',
                 'param2' => 'value2',
@@ -73,7 +76,10 @@ class WebServiceSoapServiceCallerTest extends TestCase
                 'password' => 'abcdef1234567890',
             ],
             'service_port' => 'CustomerServiceSoap',
-            'operation' => 'Ping',
+            "operation" => [
+                "text" => "Ping",
+                "value" => "Ping"
+            ],
             'parameters' => [
                 'PingRq' => 'success',
             ],
