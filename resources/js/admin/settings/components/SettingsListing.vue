@@ -210,22 +210,16 @@ export default {
       sortable: false,
       tdClass: "align-middle text-right",
     });
-
-    this.loadButtons();
   },
   methods: {
     loadButtons() {
       ProcessMaker.apiClient.get(`/settings/group/${this.group}/buttons`)
         .then((response) => {
-          this.topButtons = response.data.filter(btn => {
-            if (this.group !== 'Email Default Settings') {
-              return btn.ui.props.position === 'top' && !btn.key.includes('EMAIL_CONNECTOR_ADD_MAIL_SERVER_');
-            }
-            return btn.ui.props.position === 'top';
-          });
-          this.bottomButtons = response.data.filter(btn => {
-            return btn.ui.props.position === 'bottom';
-          });
+          if (!response.data) {
+            return;
+          }
+          this.filterTopButtons(response.data);
+          this.filterBottomButtons(response.data);
         });
     },
     apiGet() {
@@ -273,6 +267,9 @@ export default {
         this.totalRows = response.data.meta.total;
         this.from = response.data.meta.from;
         this.to = response.data.meta.to;
+
+        this.loadButtons();
+
         if (this.orderBy !== this.orderByPrevious || this.orderDesc !== this.orderDescPrevious) {
           callback([]);
         }
@@ -376,7 +373,46 @@ export default {
     },
     formatGroupName(name)  {
       return name.toLowerCase().replaceAll(" ", '-');
-    }
+    },
+    filterTopButtons(buttons) {
+      if (!this.settings) {
+        return;
+      }
+      const groupData = this.getGroupData(this.settings);
+
+      this.topButtons = buttons.filter(btn => {
+        if (this.group === 'Email Default Settings' || this.group.includes('Email Server')) {
+          return this.filterEmailServerButtons(groupData, btn);
+        }
+        return btn.ui.props.position === 'top';
+      });
+    },
+    filterBottomButtons(buttons) {
+      this.bottomButtons = buttons.filter(btn => {
+        return btn.ui.props.position === 'bottom';
+      })
+    },
+    getGroupData(settings) {
+      return settings.filter(setting => {
+        return setting.group === this.group;
+      });
+    },
+    filterEmailServerButtons(groupData, btn) {
+      const mailDriver = groupData.find(data => data.key.includes("EMAIL_CONNECTOR_MAIL_DRIVER"));
+      const selectedMailDriver = mailDriver ? mailDriver.ui.options[mailDriver.config] : null;
+      const showAuthAccBtn = selectedMailDriver && (selectedMailDriver === 'Gmail' || selectedMailDriver === 'Office 365') ? true : false;
+      
+      if (this.group.includes('Email Server') && !showAuthAccBtn)  {
+        // Returns all 'top' position buttons except the '+ Mail Server' and 'Authorize Account' buttons for email server tabs
+        return btn.ui.props.position === 'top' && !btn.key.includes('EMAIL_CONNECTOR_ADD_MAIL_SERVER_') && !btn.key.includes('EMAIL_CONNECTOR_AUTHORIZE_ACCOUNT');
+      } else if (this.group.includes('Email Server') && showAuthAccBtn) {
+        // Returns all 'top' position buttons except the '+ Mail Server' button for email server tabs
+        return btn.ui.props.position === 'top' && !btn.key.includes('EMAIL_CONNECTOR_ADD_MAIL_SERVER_');
+      } else if (!showAuthAccBtn) {
+        // Returns all 'top' position buttons except the 'Authorize Account' button for email default settings tab
+        return btn.ui.props.position === 'top' && !btn.key.includes('EMAIL_CONNECTOR_AUTHORIZE_ACCOUNT');
+      }
+    },
   }
 };
 </script>
