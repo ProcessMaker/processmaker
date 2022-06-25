@@ -2,7 +2,9 @@ module.exports = {
   setupFiles: [
     "<rootDir>/jest/globals.js"
   ],
-  testURL: "http://localhost",
+  testEnvironmentOptions: {
+    url: "http://localhost"
+  },
   moduleFileExtensions: [
     "vue",
     "json",
@@ -23,5 +25,6 @@ module.exports = {
     "<rootDir>/tests/js/"
   ],
   collectCoverage: true,
+  testEnvironment: "jsdom",
   coverageDirectory: "<rootDir>/tests/js/coverage"
 }

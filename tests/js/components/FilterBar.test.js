@@ -1,13 +1,19 @@
-import { mount } from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils'
 
 import FilterBar from '../../../resources/js/components/FilterBar'
 
+const $t = () => {
+    };
 
 let wrapper = null;
 
 describe("FilterBar", () => {
     beforeEach(() => {
-        wrapper = mount(FilterBar)
+        wrapper = shallowMount(FilterBar, {
+            mocks: {
+                $t
+            }
+        })
 
     })
     test("should have empty filter text to begin", () => {

@@ -46,6 +46,7 @@
         "eslint-plugin-standard": "^3.1.0",
         "eslint-plugin-vue": "^4.7.1",
         "jest": "^28.1.1",
+        "jest-environment-jsdom": "^28.1.1",
         "jquery": "^3.5.1",
         "js-yaml-loader": "^1.2.2",
         "laravel-mix": "^5.0.9",
