@@ -232,7 +232,7 @@ if (userID) {
     };
     datetime_format.forEach(value => {
         if (formatDate.content === value.format) {
-            window.ProcessMaker.user.datetime_format = value.momentFormat;
+            window.ProcessMaker.user.datetime_format = value.dateFnsFormat;
             window.ProcessMaker.user.calendar_format = value.calendarFormat;
         }
     });
