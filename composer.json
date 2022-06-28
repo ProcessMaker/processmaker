@@ -17,7 +17,7 @@
     "doctrine/dbal": "^2.9",
     "fideloper/proxy": "^4.0",
     "fzaninotto/faker": "^1.4",
-    "guzzlehttp/guzzle": "^6.5",
+    "guzzlehttp/guzzle": "^6.5.7",
     "igaster/laravel-theme": "2.0.*",
     "laravel/framework": "^6.18.35",
     "laravel/horizon": "~3.0",
