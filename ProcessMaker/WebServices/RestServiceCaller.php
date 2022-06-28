@@ -20,18 +20,13 @@ class RestServiceCaller implements WebServiceCallerInterface
         $this->client = $client;
     }
 
-    public function call($config, ...$requestParts)
+    public function call($requestParts)
     {
-        [$method, $url, $headers, $body, $bodyType] = $requestParts;
+        ['method' => $method, 'url' => $url, 'headers' => $headers, 'body' => $body, 'bodyType' => $bodyType, 'options' => $options] = $requestParts;
 
         $client = $this->client;
-        //$client = new Client(['verify' => $config['verifySsl']]);
-        $options = [];
-        if ($config['bodyType'] === 'form-data') {
-            $options['form_params'] = json_decode($body, true);
-        }
 
-        $request = new Request($method, $url, $headers, $body);
+        $request = new Request($method, $url, $headers, $body, $options);
         $response = $client->send($request, $options);
 
         $status =  $response->getStatusCode();
@@ -52,6 +47,5 @@ class RestServiceCaller implements WebServiceCallerInterface
         }
 
         return ['response' => $content, 'status' => $status, 'headers' => $response->getHeaders()];
-//**        return $content;
     }
 }

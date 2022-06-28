@@ -4,5 +4,5 @@ namespace ProcessMaker\WebServices\Contracts;
 
 interface WebServiceCallerInterface
 {
-    public function call($config, ...$request);
+    public function call(array $request);
 }

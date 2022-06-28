@@ -2,7 +2,7 @@
 
 namespace ProcessMaker\WebServices;
 
-class WebServiceConfigBuilder implements Contracts\WebServiceConfigBuilderInterface
+class RestConfigBuilder implements Contracts\WebServiceConfigBuilderInterface
 {
 
     public function build($connectorConfig, $dataSourceConfig, $requestData)
@@ -20,19 +20,12 @@ class WebServiceConfigBuilder implements Contracts\WebServiceConfigBuilderInterf
         $config['endpoint'] = $endpoint;
 
         // Prepare URL
-        $config['params'] = $this->prepareData($requestData, $outboundConfig, 'PARAM');
-        //**$config['method'] = $this->evalMustache($endpoint['method'], $requestData);
+        $config['params'] = $this->prepareBodyData($requestData, $outboundConfig, 'PARAM');
         $config['method'] = ExpressionEvaluator::evaluate('mustache', $endpoint['method'], $requestData);
-        //$url = $this->addQueryStringsParamsToUrl($endpoint, $connectorConfig, $requestData, $params);
-
-        // Prepare Headers
-        //**$headers = $this->addHeaders($endpoint, $connectorConfig, $requestData);
         $config['headers'] = $this->headers($endpoint, $connectorConfig, $requestData);
+        $data = $this->prepareBodyData($requestData, $outboundConfig, 'BODY', $requestData);
 
-        // Prepare Body
-        $data = $this->prepareData($requestData, $outboundConfig, 'BODY', $requestData);
-
-        $config['body'] = ExpressionEvaluator::evaluate('mustache',$endpoint['body'], $data);
+        $config['body'] = ExpressionEvaluator::evaluate('mustache', $endpoint['body'], $data);
         $config['bodyType'] = null;
         if (isset($endpoint['body_type'])) {
             $config['bodyType'] = ExpressionEvaluator::evaluate('mustache', $endpoint['body_type'], $data);
@@ -43,10 +36,6 @@ class WebServiceConfigBuilder implements Contracts\WebServiceConfigBuilderInterf
         $config['credentials'] = $dataSourceConfig['credentials'];
         $config['endpoints'] = $dataSourceConfig['endpoints'];
         return $config;
-
-//**        $request = [$method, $url, $headers, $body, $bodyType];
-//**        $request = $this->addAuthorizationHeaders(...$request);
-//**        return $request;
     }
 
     /**
@@ -59,7 +48,7 @@ class WebServiceConfigBuilder implements Contracts\WebServiceConfigBuilderInterf
      *
      * @return array
      */
-    private function prepareData(array $requestData, array $outboundConfig, $type, $data = [])
+    private function prepareBodyData(array $requestData, array $outboundConfig, $type, $data = [])
     {
         foreach ($outboundConfig as $outbound) {
             if ($outbound['type'] === $type) {
@@ -69,14 +58,6 @@ class WebServiceConfigBuilder implements Contracts\WebServiceConfigBuilderInterf
                     $expressionType = 'feel';
                 }
                 $data[$outbound['key']] = ExpressionEvaluator::evaluate($expressionType, $outbound['value'], $requestData);
-
-//** //Default format for mapping input is { Mustache }
-//**              if (isset($outbound['format']) && $outbound['format'] === 'feel') {
-//**                  //$data[$outbound['key']] = $this->evalExpression($outbound['value'], $requestData);
-//**                  $data[$outbound['key']] = ExpressionEvaluator::evaluate($outbound['value'], $requestData);
-//**              } else {
-//**                  $data[$outbound['key']] = $this->evalMustache($outbound['value'], $requestData);
-//**              }
             }
         }
         return $data;
@@ -122,7 +103,6 @@ class WebServiceConfigBuilder implements Contracts\WebServiceConfigBuilderInterf
         }
         foreach ($dataSourceParams as $header) {
             $headerKey = ExpressionEvaluator::evaluate('mustache',$header['key'], $data);
-            //**  */$headers[$this->getMustache()->render($header['key'], $data)] = $this->getMustache()->render($header['value'], $data);
             $headers[$headerKey] = ExpressionEvaluator::evaluate('mustache', $header['value'], $data);
         }
         return $headers;

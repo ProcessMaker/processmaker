@@ -11,7 +11,7 @@ use ProcessMaker\Assets\ScriptsInProcess;
 use ProcessMaker\Assets\ScriptsInScreen;
 use ProcessMaker\Bpmn\MustacheOptions;
 use ProcessMaker\BpmnEngine;
-use ProcessMaker\Contracts\SoapClientInterface;
+use ProcessMaker\WebServices\Contracts\SoapClientInterface;
 use ProcessMaker\Contracts\TimerExpressionInterface;
 use ProcessMaker\Facades\WorkflowManager as WorkflowManagerFacade;
 use ProcessMaker\Factories\SoapClientFactory;
@@ -19,10 +19,10 @@ use ProcessMaker\Listeners\BpmnSubscriber;
 use ProcessMaker\Listeners\CommentsSubscriber;
 use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Managers\TaskSchedulerManager;
-use ProcessMaker\Managers\WebServiceSoapConfigBuilder;
-use ProcessMaker\Managers\WebServiceSoapRequestBuilder;
-use ProcessMaker\Managers\WebServiceSoapResponseBuilder;
-use ProcessMaker\Managers\WebServiceSoapServiceCaller;
+use ProcessMaker\WebServices\SoapConfigBuilder;
+use ProcessMaker\WebServices\SoapRequestBuilder;
+use ProcessMaker\WebServices\SoapResponseMapper;
+use ProcessMaker\WebServices\SoapServiceCaller;
 use ProcessMaker\Managers\WorkflowManager;
 use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\Nayra\Bpmn\Models\EventDefinitionBus;
@@ -39,6 +39,7 @@ use ProcessMaker\Nayra\Contracts\Engine\EngineInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Repositories\DefinitionsRepository;
+use ProcessMaker\WebServices\NativeSoapClient;
 use ProcessMaker\WebServices\WebServiceRequest;
 
 class WorkflowServiceProvider extends ServiceProvider
@@ -204,18 +205,17 @@ class WorkflowServiceProvider extends ServiceProvider
         });
 
         $this->app->bind(SoapClientInterface::class, function ($app, $request_config) {
-            $factory = new SoapClientFactory();
-            return $factory->createNativeSoapClient($request_config['wsdl'], $request_config['options']);
+            return new NativeSoapClient($request_config['wsdl'], $request_config['options']);
         });
 
         // @todo Complete the WebServiceRequest Factory
         $this->app->bind('WebServiceRequest', function ($app, $params) {
             $dataSource = $params['dataSource'];
             return new WebServiceRequest(
-                new WebServiceSoapConfigBuilder(),
-                new WebServiceSoapRequestBuilder(),
-                new WebServiceSoapResponseBuilder(),
-                new WebServiceSoapServiceCaller(),
+                new SoapConfigBuilder(),
+                new SoapRequestBuilder(),
+                new SoapResponseMapper(),
+                new SoapServiceCaller(),
                 $dataSource
             );
         });

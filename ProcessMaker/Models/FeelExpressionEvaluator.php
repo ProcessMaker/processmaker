@@ -12,15 +12,8 @@ use Throwable;
  */
 class FeelExpressionEvaluator implements TemplateExpressionInterface
 {
-    private $engine;
-
-    public function __construct()
-    {
-        $this->engine = new FormalExpression();
-    }
-
     /**
-     * Evaluates the template using the mustache engine, if some error is generated an empty string
+     * Evaluates the template using the feel expression engine, if some error is generated an empty string
      * is returned
      *
      * @param string $template
@@ -30,8 +23,9 @@ class FeelExpressionEvaluator implements TemplateExpressionInterface
     public function render($template, $data)
     {
         try {
-            $this->engine->setBody($template);
-            return $this->engine($data);
+            $formal = new FormalExpression();
+            $formal->setBody($template);
+            return $formal($data);
         } catch (Exception $exception) {
             return "{$template}: " . $exception->getMessage();
         }

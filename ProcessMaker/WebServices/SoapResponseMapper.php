@@ -1,11 +1,11 @@
 <?php
 
-namespace ProcessMaker\Managers;
+namespace ProcessMaker\WebServices;
 
-use ProcessMaker\Contracts\WebServiceResponseMapperInterface;
+use ProcessMaker\WebServices\Contracts\WebServiceResponseMapperInterface;
 use ProcessMaker\Models\FormalExpression;
 
-class WebServiceSoapResponseBuilder implements WebServiceResponseMapperInterface
+class SoapResponseMapper implements WebServiceResponseMapperInterface
 {
 
     /**
@@ -34,7 +34,7 @@ class WebServiceSoapResponseBuilder implements WebServiceResponseMapperInterface
         $result = [];
         foreach($mappings as $mapping) {
             if (!empty($mapping['value'])) {
-                $result[$mapping['key']] = $this->evalExpression($mapping['value'], $responseArray) ;
+                $result[$mapping['key']] = ExpressionEvaluator::evaluate('feel', $mapping['value'], $responseArray) ;
             }
             else {
                 $result[$mapping['key']] = $responseArray ;
@@ -42,16 +42,5 @@ class WebServiceSoapResponseBuilder implements WebServiceResponseMapperInterface
         }
 
         return $result;
-    }
-
-    private function evalExpression($expression, array $data)
-    {
-        try {
-            $formal = new FormalExpression();
-            $formal->setBody($expression);
-            return $formal($data);
-        } catch (Exception $exception) {
-            return "{$expression}: " . $exception->getMessage();
-        }
     }
 }
