@@ -32,18 +32,8 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
     }
 
 
-    public function build($config, $requestData)
+    public function build($config, $requestData) : array
     {
-//**        $outboundConfig = $config['outboundConfig'] ?? [];
-//**        $endpoint = $this->endpoints[$config['endpoint']];
-//**        $this->verifySsl = array_key_exists('verify_certificate', $this->credentials)
-//**            ? $this->credentials['verify_certificate']
-//**            : true;
-//**
-//**       // Prepare URL
-//**       $params = $this->prepareData($requestData, $outboundConfig, 'PARAM');
-//**       $method = $this->evalMustache($endpoint['method'], $requestData);
-
         //TODO ver si se puede mover para evitar la var. global config
         $this->config = $config;
 
@@ -53,9 +43,13 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
         $body = $config['body'];
         $bodyType = $config['bodyType'];
 
-        //** $request = [$method, $url, $headers, $body, $bodyType];
-        $request = compact('method', 'url', 'headers', 'body', 'bodyType');
-        $request = $this->addAuthorizationHeaders($config, $request);
+        $options = [];
+        if ($config['bodyType'] === 'form-data') {
+            $options['form_params'] = json_decode($body, true);
+        }
+
+        $requestParts = compact('method', 'url', 'headers', 'body', 'bodyType', 'options');
+        $request = $this->addAuthorizationHeaders($config, $requestParts);
         return $request;
     }
 
@@ -161,19 +155,20 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
 
     /**
      * Add authorization parameters
-     *
-     * @param array ...$request
-     *
-     * @return array
      */
-    private function addAuthorizationHeaders($config, $requestData)
+    private function addAuthorizationHeaders($config, $requestParts): array
     {
-        $request = array_values($requestData);
         if (isset($this->authTypes[$config['authtype']])) {
-            $callable = [$this, $this->authTypes[$config['authtype']]];
-            return call_user_func_array($callable, $request);
+            switch ($config['authtype']) {
+                case 'BASIC':
+                    return $this->basicAuthorization(...array_values($requestParts));
+                case 'OAUTH2_BEARER':
+                    return $this->bearerAuthorization(...array_values($requestParts));
+                case 'OAUTH2_PASSWORD':
+                    return $this->passwordAuthorization(...array_values($requestParts));
+            }
         }
-        return $request;
+        return $requestParts;
     }
 
 
@@ -188,12 +183,12 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
      *
      * @return array
      */
-    private function basicAuthorization($method, $url, $headers, $body, $bodyType)
+    private function basicAuthorization($method, $url, $headers, $body, $bodyType, $options)
     {
         if (isset($this->config['credentials']) && is_array($this->config['credentials'])) {
             $headers['Authorization'] = 'Basic ' . base64_encode($this->config['credentials']['username'] . ':' . $this->config['credentials']['password']);
         }
-        return [$method, $url, $headers, $body, $bodyType];
+        return compact('method', 'url', 'headers', 'body', 'bodyType', 'options');
     }
 
     /**
@@ -207,12 +202,12 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
      *
      * @return array
      */
-    private function bearerAuthorization($method, $url, $headers, $body, $bodyType)
+    private function bearerAuthorization($method, $url, $headers, $body, $bodyType, $options)
     {
         if (isset($this->config['credentials']) && is_array($this->config['credentials'])) {
             $headers['Authorization'] = 'Bearer ' . $this->config['credentials']['token'];
         }
-        return [$method, $url, $headers, $body, $bodyType];
+        return compact('method', 'url', 'headers', 'body', 'bodyType', 'options');
     }
 
     /**
@@ -226,7 +221,7 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
      *
      * @return array
      */
-    private function passwordAuthorization($method, $url, $headers, $body, $bodyType)
+    private function passwordAuthorization($method, $url, $headers, $body, $bodyType, $options)
     {
         if (isset($this->config['credentials']) && is_array($this->config['credentials'])) {
             //todo enable mustache
@@ -241,7 +236,7 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
             $token = $this->response($this->call('POST', $this->config['credentials']['url'], ['Accept' => 'application/json'], json_encode($config), 'form-data'), [], ['dataMapping' => []], new Mustache_Engine());
             $headers['Authorization'] = 'Bearer ' . $token['response']['access_token'];
         }
-        return [$method, $url, $headers, $body, $bodyType];
+        return compact('method', 'url', 'headers', 'body', 'bodyType', 'options');
     }
 
     /**
@@ -273,6 +268,7 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
             default:
                 throw new HttpResponseException($response);
         }
+
         $mapped = [];
         !is_array($content) ?: $merged = array_merge($data, $content);
         $mapped['status'] = $status;

@@ -5,12 +5,14 @@ namespace ProcessMaker\WebServices;
 use Illuminate\Support\Arr;
 use ProcessMaker\WebServices\Contracts\WebServiceResponseMapperInterface;
 
-class JsonResponseMapper implements WebServiceResponseMapperInterface
+class RestResponseMapper implements WebServiceResponseMapperInterface
 {
 
     //TODO remove headers, status and dsConfig
-    public function map($content, $status, $headers, $config, $dsConfig, $data): array
+    public function map($response, $config, $data): array
     {
+        ['content' => $content, 'status' => $status, 'headers' => $headers] = $response;
+        $dsConfig = $config['dataSourceInfo'];
         $mapped = [];
 
         if (!isset($config['dataMapping'])) {
@@ -41,10 +43,8 @@ class JsonResponseMapper implements WebServiceResponseMapperInterface
 
             $format = $map['format'] ?? 'dotNotation';
             if ($format === 'mustache') {
-                //$evaluatedApiVar = $this->evalMustache($map['value'], $merged);
                 $evaluatedApiVar = ExpressionEvaluator::evaluate('mustache', $map['value'], $merged);
             } elseif ($format === 'feel') {
-                //$evaluatedApiVar = $this->evalExpression($map['value'], $merged);
                 $evaluatedApiVar = ExpressionEvaluator::evaluate('feel', $map['value'], $merged);
             } else { // dot notation + mustache. eg `data.users{{index}}.attributes.firstname`
                 if ($map['value']) {

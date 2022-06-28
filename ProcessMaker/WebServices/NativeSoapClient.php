@@ -8,7 +8,7 @@ use SoapClient;
 use SoapHeader;
 use DOMDocument;
 use Illuminate\Support\Facades\Log;
-use ProcessMaker\Contracts\SoapClientInterface;
+use ProcessMaker\WebServices\Contracts\SoapClientInterface;
 
 class NativeSoapClient implements SoapClientInterface
 {

@@ -5,7 +5,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
-use ProcessMaker\Traits\MakeHttpRequests;
+use ProcessMaker\Traits\MakeHttpRequests as MakeHttpRequests;
 use Tests\TestCase;
 
 class MakeHttpRequestTest extends TestCase
@@ -45,7 +45,6 @@ class MakeHttpRequestTest extends TestCase
             ],
         );
 
-
         $requestData = [
             "nameValue" => 'testName',
             "ageValue"=> "testAge",
@@ -58,7 +57,7 @@ class MakeHttpRequestTest extends TestCase
             'prepareRequestWithOutboundConfig',
             [$requestData, &$endpointConfig]);
         $this->assertNotNull($request);
-        [$method, $url, $headers, $body, $bodyType] = array_values($request);
+        [$method, $url, $headers, $body, $bodyType, $options] = array_values($request);
 
         // Verify all the request data parts
         $this->assertEquals('PUT', $method);
@@ -111,7 +110,7 @@ class MakeHttpRequestTest extends TestCase
             'prepareRequestWithOutboundConfig',
             [$requestData, &$endpointConfig]);
         $this->assertNotNull($request);
-        [$method, $url, $headers, $body, $bodyType] = array_values($request);
+        [$method, $url, $headers, $body, $bodyType, $options] = array_values($request);
 
         $this->assertEquals('PUT', $method);
         // we configured the url ($testStub->endpoints) without server so the current server must be added
@@ -228,7 +227,7 @@ class MakeHttpRequestTest extends TestCase
             'prepareRequestWithOutboundConfig',
             [$requestData, &$endpointConfig]);
 
-        [$method, $url, $headers, $body, $bodyType] = array_values($request);
+        [$method, $url, $headers, $body, $bodyType, $options] = array_values($request);
 
         $mock = new MockHandler([
             new Response(200, ['Content-Type' => 'application/json'], '{"id": 1}'),
@@ -237,9 +236,7 @@ class MakeHttpRequestTest extends TestCase
         $handlerStack = HandlerStack::create($mock);
         $testStub->client = new Client(['handler' => $handlerStack]);
 
-        $response = $this->callMethod($testStub,
-            'call',
-            [$method, $url, $headers, $body, $bodyType]);
+        $response = $this->callMethod($testStub,'call', [$request]);
 
         //$body = $response->getBody()->getContents();
         $body = $response['response'];
@@ -256,31 +253,31 @@ class MakeHttpRequestTest extends TestCase
         $testStub->credentials = array('verify_certificate' => false, 'username' => 'test', 'password' => 'test');
 
         // This is the configuration that is created when configuring a connector in modeler
-        $endpointConfig = array(
+        $connectorConfig = array(
             'dataSource' => 1,
             'endpoint' => 'create',
             'dataMapping' => [
-                [ 'value' => 'id', 'key' => 'userId', 'format' => 'dotNotation', ]
+                [ 'value' => 'remoteId', 'key' => 'pmRequestId', 'format' => 'dotNotation', ]
             ],
             'outboundConfig' => [
-                [ 'value' => '{{nameValue}}', 'type' => 'BODY', 'key' => 'nameParam', 'format' => 'mustache', ],
-                [ 'value' => '{{ageValue}}', 'type' => 'BODY', 'key' => 'ageParam', 'format' => 'mustache', ],
-                [ 'value' => '{{queryStringValue}}', 'type' => 'PARAM', 'key' => 'queryStringParam', 'format' => 'mustache', ],
-                [ 'value' => '{{userIdValue}}', 'type' => 'PARAM', 'key' => 'userIdParam', 'format' => 'mustache', ],
-                [ 'value' => '{{headerValue}}', 'type' => 'HEADER', 'key' => 'headerParam', 'format' => 'mustache', ],
+                [ 'value' => '{{reqNameValue}}', 'type' => 'BODY', 'key' => 'nameParam', 'format' => 'mustache', ],
+                [ 'value' => '{{reqAgeValue}}', 'type' => 'BODY', 'key' => 'ageParam', 'format' => 'mustache', ],
+                [ 'value' => '{{reqQueryStringValue}}', 'type' => 'PARAM', 'key' => 'queryStringParam', 'format' => 'mustache', ],
+                [ 'value' => '{{reqUserIdValue}}', 'type' => 'PARAM', 'key' => 'userIdParam', 'format' => 'mustache', ],
+                [ 'value' => '{{reqHeaderValue}}', 'type' => 'HEADER', 'key' => 'headerParam', 'format' => 'mustache', ],
             ],
         );
 
         $requestData = [
-            "nameValue" => 'testName',
-            "ageValue"=> "testAge",
-            "headerValue" => "testHeader",
-            "queryStringValue" => "testQueryString",
-            "userIdValue" => 11
+            "reqNameValue" => 'testName',
+            "reqAgeValue"=> "testAge",
+            "reqHeaderValue" => "testHeader",
+            "reqQueryStringValue" => "testQueryString",
+            "reqUserIdValue" => 11
         ];
 
         $mock = new MockHandler([
-            new Response(200, ['Content-Type' => 'application/json'], '{"id": 11}'),
+            new Response(200, ['Content-Type' => 'application/json'], '{"remoteId": 11}'),
         ]);
         $handlerStack = HandlerStack::create($mock);
         $testStub->client = new Client(['handler' => $handlerStack]);
@@ -292,27 +289,26 @@ class MakeHttpRequestTest extends TestCase
 //        [$method, $url, $headers, $body, $bodyType] = $request;
 
 
-        $result = $testStub->request($requestData, $endpointConfig);
-        $this->assertEquals(["userId" => 11], $result);
-
+        $result = $testStub->request($requestData, $connectorConfig);
+        $this->assertEquals(["pmRequestId" => 11], $result);
 
         // Using BEARER Authentication
         $mock = new MockHandler([
-            new Response(200, ['Content-Type' => 'application/json'], '{"id": 11}'),
+            new Response(200, ['Content-Type' => 'application/json'], '{"remoteId": 11}'),
         ]);
         $handlerStack = HandlerStack::create($mock);
         $testStub->client = new Client(['handler' => $handlerStack]);
         $testStub->authtype = 'OAUTH2_BEARER';
         $testStub->credentials = array('verify_certificate' => false, 'token' => 'test');
-        $result = $testStub->request($requestData, $endpointConfig);
-        $this->assertEquals(["userId" => 11], $result);
+        $result = $testStub->request($requestData, $connectorConfig);
+        $this->assertEquals(["pmRequestId" => 11], $result);
 
         // Using OAUTH2_PASSWORD Authentication
         $mock = new MockHandler([
             // Response for the oauth code:
             new Response(200, ['Content-Type' => 'application/json'], '{"access_token": "fake_token"}'),
             // Response for the fake endpoint:oauth
-            new Response(200, ['Content-Type' => 'application/json'], '{"id": 11}'),
+            new Response(200, ['Content-Type' => 'application/json'], '{"remoteId": 11}'),
         ]);
         $handlerStack = HandlerStack::create($mock);
         $testStub->client = new Client(['handler' => $handlerStack]);
@@ -327,8 +323,8 @@ class MakeHttpRequestTest extends TestCase
             'client_secret' => 'testSecret',
             'url' => 'http://www.test.com',
         );
-        $result = $testStub->request($requestData, $endpointConfig);
-        $this->assertEquals(["userId" => 11], $result);
+        $result = $testStub->request($requestData, $connectorConfig);
+        $this->assertEquals(["pmRequestId" => 11], $result);
     }
 
     public function testRequestCallsWhenEndPointReturnErrors()

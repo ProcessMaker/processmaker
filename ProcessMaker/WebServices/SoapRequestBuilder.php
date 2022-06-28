@@ -1,12 +1,12 @@
 <?php
 
-namespace ProcessMaker\Managers;
+namespace ProcessMaker\WebServices;
 
 use Exception;
 use Illuminate\Support\Facades\Storage;
-use ProcessMaker\Contracts\WebServiceRequestBuilderInterface;
+use ProcessMaker\WebServices\Contracts\WebServiceRequestBuilderInterface;
 
-class WebServiceSoapRequestBuilder implements WebServiceRequestBuilderInterface
+class SoapRequestBuilder implements WebServiceRequestBuilderInterface
 {
     const base_options = [
         'exceptions' => true,

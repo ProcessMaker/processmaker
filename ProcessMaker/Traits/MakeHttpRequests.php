@@ -8,10 +8,10 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use ProcessMaker\Exception\HttpResponseException;
 use ProcessMaker\Helpers\DataTypeHelper;
-use ProcessMaker\WebServices\JsonResponseMapper;
+use ProcessMaker\WebServices\RestResponseMapper;
 use ProcessMaker\WebServices\RestRequestBuilder;
 use ProcessMaker\WebServices\RestServiceCaller;
-use ProcessMaker\WebServices\WebServiceConfigBuilder;
+use ProcessMaker\WebServices\RestConfigBuilder;
 
 trait MakeHttpRequests
 {
@@ -32,7 +32,7 @@ trait MakeHttpRequests
     {
         try {
             $request = $this->prepareRequestWithOutboundConfig($requestData, $config);
-            $response = $this->call(...$request);
+            $response = $this->call($request);
             return $this->responseWithHeaderData($response, $requestData, $config);
         } catch (ClientException $exception) {
             throw new HttpResponseException($exception->getResponse());
@@ -41,7 +41,7 @@ trait MakeHttpRequests
 
     public function prepareRequestWithOutboundConfig($data, $config)
     {
-        $configBuilder = new WebServiceConfigBuilder();
+        $configBuilder = new RestConfigBuilder();
         $requestBuilder = new RestRequestBuilder($this->client ?? null);
         $dsConfig = ['endpoints' => $this->endpoints, 'credentials' => $this->credentials, 'authtype' => $this->authtype];
         //TODO mover para que config no necesite una prop. privada
@@ -57,12 +57,12 @@ trait MakeHttpRequests
         if (is_array($response)) {
             $status = $response['status'];
             $bodyContent = $response['response'];
-            $responseHeaders = $response['headers'] ?? [];
+            $headers = $response['headers'] ?? [];
         }
         else {
             $status = $response->getStatusCode();
             $bodyContent = $response->getBody()->getContents();
-            $responseHeaders = $response->getHeaders();
+            $headers = $response->getHeaders();
         }
 
         if (!DataTypeHelper::isJson($bodyContent)) {
@@ -80,19 +80,19 @@ trait MakeHttpRequests
                 throw new HttpResponseException($response);
         }
 
-        $mapper = new JsonResponseMapper();
+        $mapper = new RestResponseMapper();
         $dsConfig = ['endpoints' => $this->endpoints, 'credentials' => $this->credentials];
-        $mapped = $mapper->map($content, $status, $responseHeaders, $config, $dsConfig, $data);
+        $responseData = compact('content', 'status', 'headers');
+        $config['dataSourceInfo'] = $dsConfig;
+        $mapped = $mapper->map($responseData, $config, $data);
 
         return $mapped;
     }
 
-    //private function call($method, $url, array $headers, $body, $bodyType)
-    private function call(...$request)
+    private function call($request)
     {
         $client = $this->client ?? new Client(['verify' => $this->verifySsl]);
         $caller = new RestServiceCaller($client);
-        return $caller->call($this->config, ...$request);
+        return $caller->call($request);
     }
-
 }

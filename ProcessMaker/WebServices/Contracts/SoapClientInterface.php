@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Contracts;
+namespace ProcessMaker\WebServices\Contracts;
 
 interface SoapClientInterface
 {

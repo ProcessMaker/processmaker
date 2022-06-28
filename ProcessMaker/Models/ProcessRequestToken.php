@@ -47,7 +47,7 @@ use Throwable;
  *   schema="processRequestTokenEditable",
  *   @OA\Property(property="user_id", type="string", format="id"),
  *   @OA\Property(property="status", type="string"),
- *   @OA\Property(property="due_at", type="date-time"),
+ *   @OA\Property(property="due_at", type="string", format="date-time"),
  *   @OA\Property(property="initiated_at", type="string", format="date-time"),
  *   @OA\Property(property="riskchanges_at", type="string", format="date-time"),
  *   @OA\Property(property="subprocess_start_event_id", type="string"),
@@ -70,9 +70,9 @@ use Throwable;
  *          @OA\Property(property="initiated_at", type="string", format="date-time"),
  *          @OA\Property(property="advanceStatus", type="string"),
  *          @OA\Property(property="due_notified", type="integer"),
- *          @OA\Property(property="user", @OA\Schema(ref="#/components/schemas/users")),
- *          @OA\Property(property="process", @OA\Schema(ref="#/components/schemas/Process")),
- *          @OA\Property(property="process_request", @OA\Schema(ref="#/components/schemas/processRequest")),
+ *          @OA\Property(property="user", type="object", @OA\Schema(ref="#/components/schemas/users")),
+ *          @OA\Property(property="process", type="object", @OA\Schema(ref="#/components/schemas/Process")),
+ *          @OA\Property(property="process_request", type="object", @OA\Schema(ref="#/components/schemas/processRequest")),
  *       )
  *   }
  * )
