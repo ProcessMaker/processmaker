@@ -11,7 +11,7 @@ use ProcessMaker\WebServices\Contracts\WebServiceConfigBuilderInterface;
 use ProcessMaker\WebServices\Contracts\WebServiceRequestBuilderInterface;
 use ProcessMaker\WebServices\Contracts\WebServiceResponseMapperInterface;
 
-class WebServiceRequest
+class WebServiceRestRequest
 {
     private $config;
     private $request;
