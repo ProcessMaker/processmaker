@@ -38,7 +38,7 @@
         "processmaker/docker-executor-php": "^1.0",
         "processmaker/laravel-i18next": "dev-master",
         "processmaker/nayra": "1.9.3",
-        "processmaker/pmql": "1.5.1",
+        "processmaker/pmql": "1.6.0",
         "pusher/pusher-php-server": "^4.0",
         "ralouphie/getallheaders": "^2.0",
         "spatie/laravel-fractal": "^5.3",
