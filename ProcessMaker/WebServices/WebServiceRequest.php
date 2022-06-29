@@ -24,7 +24,7 @@ class WebServiceRequest
         WebServiceRequestBuilderInterface $request,
         WebServiceResponseMapperInterface $responseMapper,
         WebServiceCallerInterface $requestCaller,
-        $dataSource
+        array $dataSource
     ) {
         $this->config = $config;
         $this->request = $request;
@@ -35,11 +35,13 @@ class WebServiceRequest
 
     public function execute(array $data, array $serviceTaskConfig)
     {
-        $dataSourceConfig = $this->dataSource->toArray();
-        $dataSourceConfig['credentials'] = $this->dataSource->credentials;
-        $config = $this->config->build($serviceTaskConfig, $dataSourceConfig, $data);
+        //$dataSourceConfig = $this->dataSource->toArray();
+//        $dataSourceConfig['credentials'] = $this->dataSource->credentials;
+        //$config = $this->config->build($serviceTaskConfig, $dataSourceConfig, $data);
+
+        $config = $this->config->build($serviceTaskConfig, $this->dataSource, $data);
         $request = $this->request->build($config, $data);
-        $response = $this->requestCaller->call($request, $config);
+        $response = $this->requestCaller->call($request);
         $result = $this->responseMapper->map($response, $config, $data);
         return $result;
     }
