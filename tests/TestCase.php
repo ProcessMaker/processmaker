@@ -6,7 +6,6 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Artisan;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
-use DB;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -23,7 +22,6 @@ abstract class TestCase extends BaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->cleanDatabaseIfTransactionsNotUsed();
         foreach (get_class_methods($this) as $method) {
             $imethod = strtolower($method);
             if (strpos($imethod, 'setup') === 0 && $imethod !== 'setup') {
@@ -71,21 +69,5 @@ abstract class TestCase extends BaseTestCase
     protected function connectionsToTransact()
     {
         return ['processmaker', 'data'];
-    }
-
-    /**
-     * If we disable transactions, we must reset the db (the slow way) between tests
-     *
-     * @return void
-     */
-    private function cleanDatabaseIfTransactionsNotUsed()
-    {
-        if (empty($this->connectionsToTransact())) {
-            $this->beforeApplicationDestroyed(function() {
-                testLog("Restoring from mysqldump after " . $this->getName());
-                $databaseHelper = new DatabaseHelper();
-                $databaseHelper->replaceCurrentDatabase();
-            });
-        }
     }
 }
