@@ -42,7 +42,7 @@ class TimeoutsTest extends TestCase
         Event::fake([
             ScriptResponseEvent::class,
         ]);
-        $this->assertLogIsEmpty();
+        // $this->assertLogIsEmpty();
 
         $url = route(
             'api.scripts.preview',
@@ -94,11 +94,7 @@ class TimeoutsTest extends TestCase
      */
     public function testPhpScriptTimeoutExceeded()
     {
-        $this->markTestSkipped('This test requires docker');
-
-        config(["script-runners.php.runner" => 'PhpRunner']);
-        config(['app.processmaker_scripts_docker' => 'sleep ' . self::SLEEP_EXCEED . ' &&']);
-
+        config(['simulate_timeout' => true]);
         $this->assertTimeoutExceeded([
             'language' => 'php',
             'timeout' => self::TIMEOUT_LENGTH
@@ -110,11 +106,6 @@ class TimeoutsTest extends TestCase
      */
     public function testPhpScriptTimeoutNotExceeded()
     {
-        $this->markTestSkipped('This test requires docker');
-        
-        config(["script-runners.php.runner" => 'PhpRunner']);
-        config(['app.processmaker_scripts_docker' => 'sleep ' . self::SLEEP_NOT_EXCEED . ' && exit 0;']);
-
         $this->assertTimeoutNotExceeded([
             'language' => 'php',
             'timeout' => self::TIMEOUT_LENGTH

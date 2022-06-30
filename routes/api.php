@@ -196,7 +196,7 @@ Route::group(
     Route::get('settings/groups', 'SettingController@groups')->name('settings.groups')->middleware('can:view-settings');
     Route::post('settings/import', 'SettingController@import')->name('settings.import')->middleware('can:update-settings');
     Route::put('settings/{setting}', 'SettingController@update')->name('settings.update')->middleware('can:update-settings');
-    Route::get('settings/group/{group}/buttons', 'SettingController@buttons')->name('settings.buttons')->middleware('can:view-settings');
+    Route::get('settings/group/{group}/buttons', 'SettingController@buttons')->name('settings.buttons')->middleware('can:view-settings')->where('group', '[A-Za-z0-9 -_]+');
     Route::post('settings/upload-file', 'SettingController@upload')->name('settings.upload-file')->middleware('can:update-settings');
 
     // debugging javascript errors

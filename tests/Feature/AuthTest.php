@@ -68,8 +68,10 @@ class AuthTest extends TestCase
             'username' => 'foobar',
             'password' => 'abc123',
         ]);
-        //See JIRA ticket https://processmaker.atlassian.net/browse/FOUR-6137
-        $response->assertRedirect('/');
+        
+        // See https://github.com/ProcessMaker/processmaker/pull/4375
+        $response->assertRedirect('/'); 
+
         $response->assertSessionHasNoErrors();
     }
 }
