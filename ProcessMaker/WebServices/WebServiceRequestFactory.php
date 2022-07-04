@@ -6,6 +6,7 @@ class WebServiceRequestFactory
 {
     public function create($type, $dataSource)
     {
+        $result = null;
         switch($type)
         {
             case 'soap':
@@ -22,14 +23,12 @@ class WebServiceRequestFactory
 
     private function createSoapWebService($dataSource)
     {
-        $dataSourceConfig = $dataSource->toArray();
-        $dataSourceConfig['credentials'] = $dataSource->credentials;
         return new WebServiceRequest(
             new SoapConfigBuilder(),
             new SoapRequestBuilder(),
             new SoapResponseMapper(),
             new SoapServiceCaller(),
-            $dataSourceConfig
+            $dataSource
         );
     }
 

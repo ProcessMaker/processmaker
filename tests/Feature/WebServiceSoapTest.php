@@ -11,7 +11,6 @@ use ProcessMaker\WebServices\SoapRequestBuilder;
 use ProcessMaker\WebServices\SoapResponseMapper;
 use ProcessMaker\WebServices\SoapServiceCaller;
 use ProcessMaker\WebServices\WebServiceRequest;
-use ProcessMaker\WebServices\WebServiceRequestFactory;
 use Tests\TestCase;
 
 class WebServiceSoapTest extends TestCase
@@ -76,8 +75,7 @@ class WebServiceSoapTest extends TestCase
         $wsBuilder = new SoapRequestBuilder();
         $wsMapper = new SoapResponseMapper();
         $wsCaller = new SoapServiceCaller();
-        //$wsRequest = new WebServiceRequest($wsConfig, $wsBuilder, $wsMapper, $wsCaller, $mockedDataSource);
-        $wsRequest = (new WebServiceRequestFactory())->create('soap', $mockedDataSource);
+        $wsRequest = new WebServiceRequest($wsConfig, $wsBuilder, $wsMapper, $wsCaller, $mockedDataSource);
         $requestData = ['PingRq' => 'success'];
         $connectorConfig = [ "dataSource" => 1, "endpoint" => "Ping", "dataMapping" => [ [ "value" => "", "key" => "response", "format" => "dotNotation" ] ], "outboundConfig" => []];
         $response = $wsRequest->execute($requestData, $connectorConfig);

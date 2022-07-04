@@ -41,7 +41,6 @@ use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Repositories\DefinitionsRepository;
 use ProcessMaker\WebServices\NativeSoapClient;
 use ProcessMaker\WebServices\WebServiceRequest;
-use ProcessMaker\WebServices\WebServiceRequestFactory;
 
 class WorkflowServiceProvider extends ServiceProvider
 {
@@ -212,14 +211,13 @@ class WorkflowServiceProvider extends ServiceProvider
         // @todo Complete the WebServiceRequest Factory
         $this->app->bind('WebServiceRequest', function ($app, $params) {
             $dataSource = $params['dataSource'];
-            return (new WebServiceRequestFactory())->create('soap', $dataSource);
-//            return new WebServiceRequest(
-//                new SoapConfigBuilder(),
-//                new SoapRequestBuilder(),
-//                new SoapResponseMapper(),
-//                new SoapServiceCaller(),
-//                $dataSource
-//            );
+            return new WebServiceRequest(
+                new SoapConfigBuilder(),
+                new SoapRequestBuilder(),
+                new SoapResponseMapper(),
+                new SoapServiceCaller(),
+                $dataSource
+            );
         });
     }
 }
