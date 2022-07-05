@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "05881ebe14d70a7a92a1c835427f5bec",
+    "content-hash": "2568eaa8acf368cb4854a3168805eed2",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -4673,16 +4673,16 @@
         },
         {
             "name": "processmaker/docker-executor-php",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/docker-executor-php.git",
-                "reference": "7a67c6aaa79d8ce4004b1c0600229317aab15c81"
+                "reference": "fa170f095279f6f0a55361d33ac177a6e0331310"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-php/zipball/7a67c6aaa79d8ce4004b1c0600229317aab15c81",
-                "reference": "7a67c6aaa79d8ce4004b1c0600229317aab15c81",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-php/zipball/fa170f095279f6f0a55361d33ac177a6e0331310",
+                "reference": "fa170f095279f6f0a55361d33ac177a6e0331310",
                 "shasum": ""
             },
             "type": "library",
@@ -4700,12 +4700,15 @@
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GAGPL-3.0-or-later"
+            ],
             "description": "PHP script executor for processmaker 4",
             "support": {
                 "issues": "https://github.com/ProcessMaker/docker-executor-php/issues",
-                "source": "https://github.com/ProcessMaker/docker-executor-php/tree/v1.0.0"
+                "source": "https://github.com/ProcessMaker/docker-executor-php/tree/v1.0.1"
             },
-            "time": "2020-03-31T21:45:33+00:00"
+            "time": "2022-07-05T20:26:35+00:00"
         },
         {
             "name": "processmaker/laravel-i18next",
@@ -11980,5 +11983,5 @@
         "php": ">=7.2.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.0.0"
 }
