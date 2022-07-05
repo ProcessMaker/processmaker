@@ -71,8 +71,8 @@
                     <h4 v-pre>{{ sanitizeVueExp($user->title) }}</h4>
                     <hr>
                     <h5 class="mt-2" v-pre>{{__('Current Local Time')}}</h5>
-                    <div><i class="far fa-calendar-alt fa-lg text-secondary pr-1"></i>
-                        @{{moment().format() }}</div>
+                    <i class="far fa-calendar-alt fa-lg text-secondary pr-1"></i>
+                    <format-date></format-date>
                 </div>
             </div>
         </div>

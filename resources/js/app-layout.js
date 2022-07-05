@@ -14,6 +14,7 @@ import SelectFromApi from "./components/SelectFromApi";
 import Breadcrumbs from "./components/Breadcrumbs";
 import TimelineItem from './components/TimelineItem';
 import Required from './components/shared/Required';
+import FormatDate from './components/FormatDate';
 
 import { FileUpload, FileDownload } from './processes/screen-builder/components'
 import RequiredCheckbox from './processes/screen-builder/components/inspector/RequiredCheckbox'
@@ -23,6 +24,7 @@ import RequiredCheckbox from './processes/screen-builder/components/inspector/Re
  */
 import moment from "moment";
 import moment_timezone from "moment-timezone";
+import { format } from "date-fns"; 
 import __ from "./modules/lang";
 
 require("bootstrap");
@@ -55,6 +57,7 @@ Vue.component("RequiredCheckbox", RequiredCheckbox);
 Vue.component("Breadcrumbs", Breadcrumbs);
 Vue.component("timeline-item", TimelineItem);
 Vue.component("required", Required);
+Vue.component('format-date', FormatDate);
 
 // Event bus ProcessMaker
 window.ProcessMaker.events = new Vue();

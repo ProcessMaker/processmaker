@@ -91,7 +91,7 @@
        * @returns {string}
        */
       formatDate(date) {
-        return format(new Date(date), ('YYYY-MM-dd hh:mm'));
+        return format(new Date(date), ('yyyy-MM-dd hh:mm'));
       },
       /**
        * Disable the form items.
