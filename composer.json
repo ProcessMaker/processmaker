@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.2.32-RC1",
+    "version": "4.2.32-RC2",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -35,7 +35,7 @@
         "predis/predis": "^1.1",
         "processmaker/docker-executor-lua": "^1.0",
         "processmaker/docker-executor-node": "^1.0",
-        "processmaker/docker-executor-php": "^1.0",
+        "processmaker/docker-executor-php": "1.0.1",
         "processmaker/laravel-i18next": "dev-master",
         "processmaker/nayra": "1.9.3",
         "processmaker/pmql": "1.6.0",
