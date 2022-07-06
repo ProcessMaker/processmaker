@@ -311,6 +311,7 @@ class ClearRequestsTest extends TestCase
         $currentProcessIds = Process::pluck('id');
         $createdProcessIds = $currentProcessIds->diff($existingProcessIds);
         Process::destroy($createdProcessIds);
+        User::where('username', '!=', '_pm4_anon_user')->forceDelete();
     }
 
     /**
