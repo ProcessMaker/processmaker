@@ -1,21 +1,18 @@
 <template>
-  <div>
-    {{ formatDate(date) }}
-  </div>
+  <span>
+    {{ formatDate() }}
+  </span>
 </template>
 
 <script>
 import { format } from "date-fns";
+import { timezone_format } from "../timezone.js";
 
 export default {
-  props: ['date'],
   methods: {
-    formatDate(date) {
-      //   console.log('here');
-      //   var date = new Date();
-      //   console.log(today);
-      format(date, "yyyy-MM-dd HH:mm");
-      console.log(format(date, "yyyy-MM-dd HH:mm"));
+    formatDate() {
+        const date = new Date();
+        return format(date, timezone_format());
     },
   },
 };
