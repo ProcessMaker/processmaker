@@ -7,7 +7,7 @@
     <avatar-image v-if="value.user" class="mr-1" size="24" :input-data="value.user" hide-name="true"></avatar-image>
     <img v-else class="default-user mr-1" src="/img/systemAvatar.png">
     <div class="flex-grow-1">
-      <strong :title="value.updated_at">{{moment(value.updated_at).format()}}</strong>
+      <strong :title="value.updated_at">{{ formatDate(value.updated_at) }}</strong>
       <slot v-if="hasBodySlot" name="body"></slot>
       <template v-else>
         {{value.body}}
@@ -17,11 +17,19 @@
 </template>
 
 <script>
+import { format } from "date-fns";
+import { timezone_format } from "../timezone.js";
+
 export default {
   props: {
     value: Object,
     iconClass: String,
     icon: String,
+  },
+  methods: {
+    formatDate(value) {
+        return format(new Date(value), timezone_format());
+    },
   },
   computed: {
     hasIconSlot () {

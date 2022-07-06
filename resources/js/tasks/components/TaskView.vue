@@ -32,6 +32,7 @@
   import {VueFormRenderer} from "@processmaker/screen-builder";
   import VueFormElements from "@processmaker/vue-form-elements";
   import { format } from "date-fns";
+  import { timezone_format } from "../../timezone.js";
 
   Vue.use(VueFormElements);
 
@@ -91,7 +92,7 @@
        * @returns {string}
        */
       formatDate(date) {
-        return format(new Date(date), ('yyyy-MM-dd hh:mm'));
+        return format(new Date(date), timezone_format());
       },
       /**
        * Disable the form items.
