@@ -298,7 +298,7 @@
                             <li class="list-group-item">
                                 <h5>@{{statusLabel}}</h5>
                                 <i class="far fa-calendar-alt"></i>
-                                <small>@{{ moment(statusDate).format() }}</small>
+                                <small><format-existing-date :date="statusDate"></format-existing-date></small>
                                 <br>
 
                             </li>

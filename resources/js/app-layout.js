@@ -15,6 +15,7 @@ import Breadcrumbs from "./components/Breadcrumbs";
 import TimelineItem from './components/TimelineItem';
 import Required from './components/shared/Required';
 import FormatDate from './components/FormatDate';
+import FormatExistingDate from './components/FormatExistingDate';
 
 import { FileUpload, FileDownload } from './processes/screen-builder/components'
 import RequiredCheckbox from './processes/screen-builder/components/inspector/RequiredCheckbox'
@@ -58,6 +59,7 @@ Vue.component("Breadcrumbs", Breadcrumbs);
 Vue.component("timeline-item", TimelineItem);
 Vue.component("required", Required);
 Vue.component('format-date', FormatDate);
+Vue.component('format-existing-date', FormatExistingDate);
 
 // Event bus ProcessMaker
 window.ProcessMaker.events = new Vue();
