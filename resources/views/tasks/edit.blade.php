@@ -94,19 +94,18 @@
                     <ul class="list-group list-group-flush w-100">
                         <li v-if="dateDueAt" class="list-group-item" v-if="showDueAtDates">
                             <i class='far fa-calendar-alt'></i>
-                            <small> @{{$t(dueLabel)}} @{{ moment(dateDueAt).fromNow() }}
-                            </small>
+                            <small> @{{$t(dueLabel)}} <format-date-from-now :date="dateDueAt"></format-date-from-now></small>
                             <br>
-                            @{{ moment(dateDueAt).format() }}
+                            <format-existing-date :date="dateDueAt"></format-existing-date>
                         </li>
 
 
                         <li class="list-group-item" v-if="!showDueAtDates">
                             <i class='far fa-calendar-alt'></i>
-                            <small> @{{$t(dueLabel)}} @{{ moment().to(moment(completedAt)) }}
+                            <small> @{{$t(dueLabel)}} <format-date-from-now :date="completedAt"></format-date-from-now>
                             </small>
                             <br>
-                            @{{ moment(completedAt).format() }}
+                            <format-existing-date :date="completedAt"></format-existing-date>
                         </li>
 
                         <li class="list-group-item">
@@ -180,9 +179,9 @@
                         </li>
                         <li class="list-group-item">
                             <i class="far fa-calendar-alt"></i>
-                            <small> {{__('Assigned') }} @{{ moment(createdAt).fromNow() }}</small>
+                            <small> {{__('Assigned') }} <format-date-from-now :date="createdAt"></format-date-from-now></small>
                             <br>
-                            @{{ moment(createdAt).format() }}
+                            <format-existing-date :date="createdAt"></format-existing-date>
                         </li>
                         <li class="list-group-item">
                             <h5>{{__('Request')}}</h5>
