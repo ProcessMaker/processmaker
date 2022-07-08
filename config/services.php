@@ -31,10 +31,10 @@ return [
     ],
 
     'gmail' => [
-        'access_token' => env('gmail_access_token'),
-        'expires_in' => env('gmail_token_expiration'),
-        'scope' => env('gmail_scope'),
-        'token_type' => env('gmail_token_type'),
-        'created' => env('gmail_token_created'),
+        'access_token' => env('GMAIL_API_ACCESS_TOKEN'),
+        'expires_in' => env('GMAIL_API_TOKEN_EXPIRATION'),
+        'scope' => env('GMAIL_API_SCOPE'),
+        'token_type' => env('GMAIL_API_TOKEN_TYPE'),
+        'created' => env('GMAIL_API_TOKEN_CREATED'),
     ],
 ];
