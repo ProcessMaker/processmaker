@@ -30,4 +30,11 @@ return [
         'secret' => env('PROCESSMAKERPOST_SECRET'),
     ],
 
+    'gmail' => [
+        'access_token' => env('gmail_access_token'),
+        'expires_in' => env('gmail_token_expiration'),
+        'scope' => env('gmail_scope'),
+        'token_type' => env('gmail_token_type'),
+        'created' => env('gmail_token_created'),
+    ],
 ];
