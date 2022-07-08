@@ -37,7 +37,7 @@
                 </div>
                 
                 <div class="d-flex align-items-center justify-content-end mt-2">
-                  <small class="muted" v-b-tooltip.hover :title="moment(task.created_at).format()">{{ moment(task.created_at).fromNow() }}</small>
+                  <small class="muted" v-b-tooltip.hover :title="formatDate(task.created_at)">{{ formatDateFromNow(task.created_at) }}</small>
                   <b-button
                     variant="link"
                     class="float-right ml-2 button-dismiss"
@@ -70,7 +70,8 @@
 </template>
 
 <script>
-import moment from "moment";
+import { format, formatDistanceToNow } from "date-fns"
+import { timezone_format } from "../../timezone.js";
 import { PopoverPlugin } from "bootstrap-vue"
 
 Vue.use(PopoverPlugin);
@@ -158,7 +159,13 @@ export default {
       });
     },
     formatDateTime(iso8601) {
-      return moment(iso8601).format("MM/DD/YY HH:mm");
+      return format(new Date(iso8601), "MM/dd/yy HH:mm");
+    },
+    formatDate(value) {
+      return format(new Date(value), timezone_format());
+    },
+    formatDateFromNow(value) {
+      return formatDistanceToNow(new Date(value), { addSuffix: true });
     },
     removeAll() {
       let that = this;
