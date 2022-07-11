@@ -12,9 +12,13 @@ self.addEventListener('message', function (e) {
 });
 
 self.start = function (data) {
+  // Exit if timeout control is not enabled
+  if (!data.enabled) {
+    return;
+  }
   var timestampAtStart = Math.floor(Date.now() / 1000);
   var timeoutAt = timestampAtStart + (data.timeout * 60);
-  
+
   clearInterval(self.interval);
   self.interval = setInterval(function () {
 

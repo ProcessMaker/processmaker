@@ -254,6 +254,7 @@ if (userID) {
     let timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]").content;
     window.ProcessMaker.AccountTimeoutLength = parseInt(eval(document.head.querySelector("meta[name=\"timeout-length\"]").content));
     window.ProcessMaker.AccountTimeoutWarnSeconds = parseInt(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]").content);
+    window.ProcessMaker.AccountTimeoutEnabled = document.head.querySelector("meta[name=\"timeout-enabled\"]") ? parseInt(document.head.querySelector("meta[name=\"timeout-enabled\"]").content) : 1;
     window.ProcessMaker.AccountTimeoutWorker = new Worker(timeoutScript);
     window.ProcessMaker.AccountTimeoutWorker.addEventListener('message', function (e) {
         if (e.data.method === 'countdown') {
@@ -273,7 +274,8 @@ if (userID) {
         method: 'start',
         data: {
             timeout: window.ProcessMaker.AccountTimeoutLength,
-            warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds
+            warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds,
+            enabled: window.ProcessMaker.AccountTimeoutEnabled
         }
     });
 }
