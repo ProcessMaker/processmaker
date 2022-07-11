@@ -10,7 +10,7 @@
         <span v-html="message"></span>
         <div class="progress">
             <div class="progress-bar progress-bar-striped" role="progressbar" :style="{width: percentage + '%'}">
-                <span align="left" class="pl-2">{{moment().startOf('day').seconds(time).format('mm:ss')}}</span>
+                <span align="left" class="pl-2">{{ sessionCountdown(time) }}</span>
             </div>
         </div>
         <template #modal-footer>
@@ -22,13 +22,15 @@
 
 
 <script>
+    import { format, addSeconds, startOfDay } from "date-fns";
 
     export default {
         props: ["title", "message", "time", "warnSeconds", "shown"],
         data() {
             return {
               errors: {},
-              disabled: false
+              disabled: false,
+              currentDate: startOfDay(new Date())
             }
         },
         watch: {
@@ -71,6 +73,9 @@
                     this.disabled = false;
                     this.errors = error.response.data.errors;
                   });
+            },
+            sessionCountdown(time) {
+                return format(addSeconds(this.currentDate, time), 'mm:ss')
             }
         },
         mounted() {
