@@ -24,7 +24,7 @@ class GmailTransportManager extends Transport
     
     public function send(Swift_Mime_SimpleMessage $mime, &$failedRecipients = null)
     {
-        $token = EnvironmentVariable::where('name', 'gmail_access_token')->first();
+        $token = EnvironmentVariable::where('name', 'GMAIL_API_ACCESS_TOKEN')->first();
         $client = new \Google\Client();
 
         try {
@@ -37,9 +37,7 @@ class GmailTransportManager extends Transport
             $message->setRaw($mime);
             $gmailService->users_messages->send('me', $message); 
         } catch (\Throwable $ex) {
-            Log::Error("Failed to send email with gmail driver: ", [
-                'Exception' => $ex->__toString()
-            ]);
+            throw $ex;
         }
     }
 }
