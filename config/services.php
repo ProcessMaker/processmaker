@@ -29,12 +29,4 @@ return [
     'processmakerpost' => [
         'secret' => env('PROCESSMAKERPOST_SECRET'),
     ],
-
-    'gmail' => [
-        'access_token' => env('GMAIL_API_ACCESS_TOKEN'),
-        'expires_in' => env('GMAIL_API_TOKEN_EXPIRATION'),
-        'scope' => env('GMAIL_API_SCOPE'),
-        'token_type' => env('GMAIL_API_TOKEN_TYPE'),
-        'created' => env('GMAIL_API_TOKEN_CREATED'),
-    ],
 ];
