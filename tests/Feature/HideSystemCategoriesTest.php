@@ -119,16 +119,4 @@ class HideSystemCategoriesTest extends TestCase
         $this->assertContains($processRequest->id, $ids);
     }
 
-    public function testWebRouteFiltered() {
-        $hiddenCategory = factory(ScriptCategory::class)->create([
-            'is_system' => true,
-        ]);
-        $hiddenScript = factory(Script::class)->create([
-            'script_category_id' => $hiddenCategory->id
-        ]);
-        
-        $response = $this->webCall('GET', route('scripts.edit', [$hiddenScript->id]));
-        $response->assertStatus(404);
-    }
-
 }
