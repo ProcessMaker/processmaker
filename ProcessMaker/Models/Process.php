@@ -32,6 +32,7 @@ use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Rules\BPMNValidation;
+use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasSelfServiceTasks;
 use ProcessMaker\Traits\HasVersioning;
@@ -148,6 +149,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     use HasCategories;
     use HasSelfServiceTasks;
     use ProcessTrait;
+    use Exportable;
 
     const categoryClass = ProcessCategory::class;
     const ASSIGNMENT_PROCESS = 'Assignment process';
