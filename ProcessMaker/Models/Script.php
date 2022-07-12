@@ -15,6 +15,7 @@ use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Validation\CategoryRule;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
+use ProcessMaker\Traits\Exportable;
 
 /**
  * Represents an Eloquent model of a Script
@@ -65,6 +66,7 @@ class Script extends Model implements ScriptInterface
     use HideSystemResources;
     use HasCategories;
     use HasVersioning;
+    use Exportable;
 
     const categoryClass = ScriptCategory::class;
 

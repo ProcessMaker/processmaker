@@ -18,6 +18,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Rules\StringHasNumberOrSpecialCharacter;
 use ProcessMaker\Rules\StringHasAtLeastOneUpperCaseCharacter;
+use ProcessMaker\Traits\Exportable;
 
 class User extends Authenticatable implements HasMedia
 {
@@ -29,6 +30,7 @@ class User extends Authenticatable implements HasMedia
     use SerializeToIso8601;
     use SoftDeletes;
     use HideSystemResources;
+    use Exportable;
 
     protected $connection = 'processmaker';
 

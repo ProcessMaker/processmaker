@@ -5,6 +5,7 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\HideSystemResources;
 
@@ -39,6 +40,7 @@ class ProcessCategory extends Model
 {
     use SerializeToIso8601;
     use HideSystemResources;
+    use Exportable;
 
     protected $connection = 'processmaker';
 
