@@ -8,27 +8,19 @@ use ProcessMaker\Models\EnvironmentVariable;
 
 class GmailTransportManager extends Transport
 {
-    private $key = null;
-    
-    private $secret = null;
-
-    private $redirect = null;
+    private $token = null;
 
 
     public function __construct($config)
     {
-        $this->key = $config['key'];
-        $this->secret = $config['secret'];
-        $this->redirect = $config['redirect_uri']; 
+        $this->token = $config['access_token'];
     }
     
     public function send(Swift_Mime_SimpleMessage $mime, &$failedRecipients = null)
     {
-        $token = EnvironmentVariable::where('name', 'GMAIL_API_ACCESS_TOKEN')->first();
         $client = new \Google\Client();
-
         try {
-            $client->setAccessToken($token->value);
+            $client->setAccessToken($this->token);
         
             $gmailService = new \Google\Service\Gmail($client);
             $message = new \Google_Service_Gmail_Message();
