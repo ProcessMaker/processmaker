@@ -84,7 +84,7 @@ class CallActivity implements CallActivityInterface
         $dataStore->setData($data);
         $instance = $callable->call($dataStore, $startEvent);
 
-        CopyRequestFiles::dispatch($token->getInstance(), $instance);
+        CopyRequestFiles::dispatchNow($token->getInstance(), $instance);
 
         return $instance;
     }
@@ -110,8 +110,8 @@ class CallActivity implements CallActivityInterface
         $this->completeSubprocessBase($token);
         $this->synchronizeInstances($instance, $token->getInstance());
 
-        CopyRequestFiles::dispatch($instance, $token->getInstance());
-        
+        CopyRequestFiles::dispatchNow($instance, $token->getInstance());
+
         return $this;
     }
 
