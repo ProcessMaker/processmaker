@@ -397,7 +397,7 @@ class User extends Authenticatable implements HasMedia
 
         // Find requests without permissions entries for this user
         // while limiting the select clause to save memory
-        $query = ProcessRequest::whereRaw(
+        $query = ProcessRequest::whereIn('process_id', Process::nonSystem()->select('id'))->whereRaw(
             'id not in (select request_id from request_user_permissions where user_id=?)',
             [$this->getKey()]
         )->select(
