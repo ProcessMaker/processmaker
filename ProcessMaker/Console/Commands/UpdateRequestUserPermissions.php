@@ -39,6 +39,7 @@ class UpdateRequestUserPermissions extends Command
      */
     public function handle()
     {
+        $start = time();
         $query = User::whereRaw('active_at > NOW() - INTERVAL 15 DAY');
         $count = $query->count();
 
@@ -48,6 +49,6 @@ class UpdateRequestUserPermissions extends Command
             $user->updatePermissionsToRequests();
         });
         
-        $this->info("Done");
+        $this->info("Done in " . (time() - $start) . " seconds");
     }
 }
