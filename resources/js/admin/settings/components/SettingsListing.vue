@@ -402,10 +402,10 @@ export default {
       const selectedMailDriver = mailDriver ? mailDriver.ui.options[mailDriver.config] : null;
       const showAuthAccBtn = selectedMailDriver && (selectedMailDriver === 'gmail' || selectedMailDriver === 'office 365') ? true : false;
       
-      if (this.group.includes('Email Server') && !showAuthAccBtn)  {
+      if (this.group.includes('Email Server') && !showAuthAccBtn || this.group.includes('Email Default') && !showAuthAccBtn)  {
         // Returns all 'top' position buttons except the '+ Mail Server' and 'Authorize Account' buttons for email server tabs
         return btn.ui.props.position === 'top' && !btn.key.includes('EMAIL_CONNECTOR_ADD_MAIL_SERVER_') && !btn.key.includes('EMAIL_CONNECTOR_AUTHORIZE_ACCOUNT');
-      } else if (this.group.includes('Email Server') && showAuthAccBtn) {
+      } else if (this.group.includes('Email Server') && showAuthAccBtn || this.group.includes('Email Default') && showAuthAccBtn) {
         // Returns all 'top' position buttons except the '+ Mail Server' button for email server tabs
         return btn.ui.props.position === 'top' && !btn.key.includes('EMAIL_CONNECTOR_ADD_MAIL_SERVER_');
       } else if (!showAuthAccBtn) {
