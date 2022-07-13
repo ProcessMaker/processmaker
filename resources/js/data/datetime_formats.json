@@ -19,7 +19,7 @@
   },
   {
     "format": "d/m/Y",
-    "dateFnsFormat": "DD/MM/YYYY",
+    "dateFnsFormat": "dd/MM/yyyy",
     "calendarFormat": "dd/LL/yyyy",
     "title": "d/m/Y (31/12/2017)"
   },
