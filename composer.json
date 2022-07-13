@@ -113,7 +113,7 @@
         "package-translations": "2.1.3",
         "package-versions": "1.1.5",
         "package-vocabularies": "2.5.7",
-        "package-webentry": "2.3.12-RC1+patch-1-cartegraph",
+        "package-webentry": "2.3.12-RC2+patch-1-cartegraph",
         "packages": "^0"
       }
     }
