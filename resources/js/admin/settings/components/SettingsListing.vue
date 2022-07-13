@@ -409,10 +409,9 @@ export default {
       if (showAuthAccBtn) {
         // Returns all 'top' position buttons except the '+ Mail Server' button for email server tabs
         return btn.ui.props.position === 'top' && !btn.key.includes('EMAIL_CONNECTOR_ADD_MAIL_SERVER_');
-      } else {
-        // Returns all 'top' position buttons except the 'Authorize Account' button for email default settings tab
-        return btn.ui.props.position === 'top' && !btn.key.includes('EMAIL_CONNECTOR_AUTHORIZE_ACCOUNT');
-      }
+      } 
+      // Returns all 'top' position buttons except the 'Authorize Account' button for email default settings tab
+      return btn.ui.props.position === 'top' && !btn.key.includes('EMAIL_CONNECTOR_AUTHORIZE_ACCOUNT');
     },
   }
 };
