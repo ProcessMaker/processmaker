@@ -378,9 +378,11 @@ export default {
       if (!this.settings) {
         return;
       }
+
+      const sortedButtons = this.sortButtons(buttons);
       const groupData = this.getGroupData(this.settings);
 
-      this.topButtons = buttons.filter(btn => {
+      this.topButtons = sortedButtons.filter(btn => {
         if (this.group === 'Email Default Settings' || this.group.includes('Email Server')) {
           return this.filterEmailServerButtons(this.group, groupData, btn);
         }
@@ -388,7 +390,8 @@ export default {
       });
     },
     filterBottomButtons(buttons) {
-      this.bottomButtons = buttons.filter(btn => {
+      const sortedButtons = this.sortButtons(buttons);
+      this.bottomButtons = sortedButtons.filter(btn => {
         return btn.ui.props.position === 'bottom';
       })
     },
@@ -413,6 +416,9 @@ export default {
       // Returns all 'top' position buttons except the 'Authorize Account' button for email default settings tab
       return btn.ui.props.position === 'top' && !btn.key.includes('EMAIL_CONNECTOR_AUTHORIZE_ACCOUNT');
     },
+    sortButtons(buttons) {
+      return buttons.sort((a,b) => (a.ui.props.order > b.ui.props.order) ? 1 : -1);
+    }
   }
 };
 </script>
