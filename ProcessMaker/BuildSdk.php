@@ -1,13 +1,14 @@
 <?php
+
 namespace ProcessMaker;
 
-use \Exception;
-use \ZipArchive;
-use function GuzzleHttp\json_decode;
+use DOMDocument;
+use Exception;
 use ProcessMaker\Events\BuildScriptExecutor;
 use ProcessMaker\Facades\Docker;
 
-class BuildSdk {
+class BuildSdk
+{
     private $debug = true;
     private $image = "openapitools/openapi-generator-cli";
     private $tag = "v5.1.1";
@@ -17,7 +18,8 @@ class BuildSdk {
     private $tmpfile = null;
     private $userId = null;
 
-    public function __construct($jsonPath, $outputPath) {
+    public function __construct($jsonPath, $outputPath)
+    {
         $this->jsonPath = $jsonPath;
         $this->outputPath = rtrim($outputPath, "/");
     }
@@ -90,7 +92,7 @@ class BuildSdk {
         }
         return $this->runCmd(Docker::command().' run ' . $this->imageWithTag() . ' config-help -g ' . $this->lang);
     }
-    
+
     public function getAvailableLanguages()
     {
         $result = $this->runCmd(Docker::command().' run ' . $this->imageWithTag() . ' list -s');
@@ -178,7 +180,7 @@ class BuildSdk {
             if ($this->userId) {
                 event(new BuildScriptExecutor($line, $this->userId, 'running'));
             }
-            
+
             $output .= $line;
         }
 
@@ -186,7 +188,7 @@ class BuildSdk {
         fclose($pipes[1]);
         fclose($pipes[2]);
         $returnVal = proc_close($process);
-        
+
         if ($returnVal) {
             $this->stopContainer();
 
@@ -214,7 +216,7 @@ class BuildSdk {
         if ($this->lang === 'lua') {
             $this->runCmd("find {$folder} -name '*.lua' -exec sed -i -E 's/(req\.readers:upsert.*)/-- \\1/g' {} \;");
         }
-        
+
         if ($this->lang === 'python') {
             // Replace \User with \\User since slash \U is unicode in python. Major slashitis.
             $this->runCmd(
@@ -229,9 +231,10 @@ class BuildSdk {
         if ($this->lang !== 'java') {
             return;
         }
-        $file = "{$folder}/pom.xml";
-        $dom = new \DOMDocument();
-        $dom->load($file);
+
+        $dom = new DOMDocument();
+        $dom->load($file = "{$folder}/pom.xml");
+
         $deps = $dom->getElementsByTagName('dependencies')[0];
         $dep = $dom->createDocumentFragment();
         $dep->appendXML('
@@ -241,10 +244,20 @@ class BuildSdk {
                 <version>2.3</version>
             </dependency>
         ');
+
         $deps->appendChild($dep);
+
+        $config = $dom->getElementsByTagName('configuration')
+                     ->item(0);
+
+        $add_value = $dom->createDocumentFragment();
+        $add_value->appendXML('                   <useIncrementalCompilation>false</useIncrementalCompilation>'.PHP_EOL);
+
+        $config->appendChild($add_value);
+
         file_put_contents($file, $dom->saveXml());
     }
-    
+
     private function removeDateTime($folder)
     {
         if ($this->lang === 'csharp') {
