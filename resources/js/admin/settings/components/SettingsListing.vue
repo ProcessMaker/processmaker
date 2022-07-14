@@ -386,6 +386,9 @@ export default {
         if (this.group === 'Email Default Settings' || this.group.includes('Email Server')) {
           return this.filterEmailServerButtons(this.group, groupData, btn);
         }
+        if (!btn.ui.props.hasOwnProperty('position')) {
+          return btn;
+        }
         return btn.ui.props.position === 'top';
       });
     },
