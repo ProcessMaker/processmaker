@@ -84,7 +84,21 @@ class CallActivity implements CallActivityInterface
         $dataStore->setData($data);
         $instance = $callable->call($dataStore, $startEvent);
 
-        CopyRequestFiles::dispatch($token->getInstance(), $instance);
+        \Log::info("Call activity callSubprocess-------");
+        // // CopyRequestFiles::dispatchNow($token->getInstance(), $instance);
+        // \Log::info("Token getInstance ID (FROM)");
+        // \Log::info($token->getInstance()->id);
+        // \Log::info("Instance ID (TO)");
+        // \Log::info($instance->id);
+
+        // $subProcesses = ProcessRequest::where('parent_request_id', $token->getInstance()->id)->get();
+        // \Log::info("Subprocesses count");
+        // \Log::info(count($subProcesses));
+        // foreach ($subProcesses as $subProcess) {
+        //     \Log::info("-_-_Subprocess ID (FROM)");
+        //     \Log::info($subProcess->id);
+        //     // CopyRequestFiles::dispatchNow($subProcess, $instance);
+        // }
 
         return $instance;
     }
@@ -110,8 +124,9 @@ class CallActivity implements CallActivityInterface
         $this->completeSubprocessBase($token);
         $this->synchronizeInstances($instance, $token->getInstance());
 
-        CopyRequestFiles::dispatch($instance, $token->getInstance());
-        
+        \Log::info("Call activity completeSubprocess*******");
+        // CopyRequestFiles::dispatchNow($instance, $token->getInstance());
+
         return $this;
     }
 
@@ -227,6 +242,14 @@ class CallActivity implements CallActivityInterface
      */
     private function synchronizeInstances(ExecutionInstanceInterface $instance, ExecutionInstanceInterface $currentInstance)
     {
+        \Log::info("--------");
+        \Log::info("synchronizeInstances ID (FROM)");
+        \Log::info($instance->id);
+
+        \Log::info("synchronizeInstances currentInstance (TO)");
+        \Log::info($currentInstance->id);
+        CopyRequestFiles::dispatchNow($instance, $currentInstance);
+
         $parentProcessId = optional($instance->getProcess()->getOwnerDocument()->getModel())->id;
         $childProcessId = optional($currentInstance->getProcess()->getOwnerDocument()->getModel())->id;
         if ($parentProcessId !== $childProcessId) {

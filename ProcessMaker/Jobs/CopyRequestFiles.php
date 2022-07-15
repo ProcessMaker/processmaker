@@ -34,12 +34,16 @@ class CopyRequestFiles implements ShouldQueue
      */
     public function handle()
     {
+        $media = \DB::table('media')->where('model_id', $this->from->id)->count();
+        \Log::info("Count media id: " . $this->from->id);
+        \Log::info($media);
+        \DB::enableLog();
         foreach($this->from->getMedia() as $fileToCopy) {
             $originalCreatedBy = $fileToCopy->getCustomProperty('createdBy');
             foreach($this->to->getMedia() as $mediaItem) {
                 if ($mediaItem->getCustomProperty('data_name') == $fileToCopy->getCustomProperty('data_name') &&
                     $mediaItem->getCustomProperty('parent') == $fileToCopy->getCustomProperty('parent')) {
-                    
+
                     $originalCreatedBy = $mediaItem->getCustomProperty('createdBy');
                     $mediaItem->delete();
                 }
