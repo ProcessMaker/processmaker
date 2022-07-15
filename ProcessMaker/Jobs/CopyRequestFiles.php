@@ -39,7 +39,7 @@ class CopyRequestFiles implements ShouldQueue
             foreach($this->to->getMedia() as $mediaItem) {
                 if ($mediaItem->getCustomProperty('data_name') == $fileToCopy->getCustomProperty('data_name') &&
                     $mediaItem->getCustomProperty('parent') == $fileToCopy->getCustomProperty('parent')) {
-                    
+
                     $originalCreatedBy = $mediaItem->getCustomProperty('createdBy');
                     $mediaItem->delete();
                 }
@@ -54,6 +54,7 @@ class CopyRequestFiles implements ShouldQueue
             $data = $processRequest->data;
             Arr::set($data, $fileToCopy->getCustomProperty('data_name'), $newFile->id);
             $processRequest->data = $data;
+            $this->to->getDataStore()->putData($fileToCopy->getCustomProperty('data_name'), $newFile->id);
             $processRequest->save();
         }
     }
