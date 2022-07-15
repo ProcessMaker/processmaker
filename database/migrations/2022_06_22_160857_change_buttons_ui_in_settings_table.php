@@ -54,7 +54,7 @@ class ChangeButtonsUiInSettingsTable extends Migration
 
         // Add Mail Driver Options
         Setting::where('key', 'LIKE', '%EMAIL_CONNECTOR_MAIL_DRIVER%')->update([
-            'ui' => '{"options": ["smtp", "sendmail", "mailgun", "postmark", "ses", "gmail", "office 365"]}',
+            'ui' => '{"options": ["smtp", "sendmail", "mailgun", "postmark", "ses", "gmail"]}',
         ]);
     }
 
