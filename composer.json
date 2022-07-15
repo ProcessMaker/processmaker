@@ -107,13 +107,13 @@
                 "package-googleplaces": "1.2.0",
                 "package-process-documenter": "1.1.0",
                 "package-process-optimization": "1.2.0",
-                "package-savedsearch": "1.17.0",
+                "package-savedsearch": "1.17.1",
                 "package-sentry": "1.2.0",
                 "package-signature": "1.3.0",
                 "package-translations": "2.2.0",
                 "package-versions": "1.2.0",
                 "package-vocabularies": "2.6.0",
-                "package-webentry": "2.4.0",
+                "package-webentry": "2.4.1",
                 "packages": "^0"
             }
         }
