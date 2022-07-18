@@ -34,10 +34,16 @@ class CopyRequestFiles implements ShouldQueue
      */
     public function handle()
     {
+        \DB::enableQueryLog();
+
         $media = \DB::table('media')->where('model_id', $this->from->id)->count();
-        \Log::info("Count media id: " . $this->from->id);
-        \Log::info($media);
-        \DB::enableLog();
+        \Log::info("Count media id: " . $this->from->id . " COUNT: " . $media);
+        \Log::info("Count media id: " . $this->from->id . " COUNT ->from->getMedia: " . count($this->from->getMedia()));
+        \Log::info("\DB::getQueryLog()    -----");
+        \Log::info([\DB::getQueryLog()]);
+
+        // $media = \DB::table('media')->where('model_id', $this->from->id)->get();
+        // foreach($media as $fileToCopy) {
         foreach($this->from->getMedia() as $fileToCopy) {
             $originalCreatedBy = $fileToCopy->getCustomProperty('createdBy');
             foreach($this->to->getMedia() as $mediaItem) {
@@ -58,6 +64,7 @@ class CopyRequestFiles implements ShouldQueue
             $data = $processRequest->data;
             Arr::set($data, $fileToCopy->getCustomProperty('data_name'), $newFile->id);
             $processRequest->data = $data;
+            // $this->to->getDataStore()->putData($fileToCopy->getCustomProperty('data_name'), $newFile->id);
             $processRequest->save();
         }
     }
