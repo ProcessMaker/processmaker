@@ -8,23 +8,20 @@ class AddUuidToExportableResources extends Migration
 {
 
     const TABLES = [
-        'users',
-        'processes',
-        'scripts',
-        'screens',
         'environment_variables',
-        // 'signals',
-        'data_sources',
-        'data_source_callbacks',
-        'data_source_scripts',
-        'data_source_webhooks',
-        'vocabularies',
-        'collections',
         'groups',
+        'group_members',
+        'processes',
+        'processables', // Needs model
         'process_categories',
+        'process_notification_settings',
+        'process_task_assignments',
+        'screens',
         'screen_categories',
+        'scripts',
         'script_categories',
-        'data_source_categories',
+        'script_executors',
+        'users',
     ];
 
     /**

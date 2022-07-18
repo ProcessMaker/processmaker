@@ -26,6 +26,8 @@ class AddUuids extends Upgrade
      */
     public function preflightChecks()
     {
+        // TODO: Package tables
+        // NOTE: signals and public files are part of long-running system processes
         foreach(AddUuidToExportableResources::TABLES as $table) {
             if (!Schema::hasTable($table)) {
                 throw new \RuntimeException("Table '$table' does not exist. Skipping upgrade.");
@@ -61,7 +63,7 @@ class AddUuids extends Upgrade
      */
     public function down()
     {
-        //
+        // table will be dropped in database migrations
     }
 }
 
