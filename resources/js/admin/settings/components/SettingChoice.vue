@@ -5,6 +5,10 @@
     </div>
     <div v-else>
       {{ display }}
+       <b-badge v-if="setting.config == 5 || setting.config == 6" pill :variant="setting.ui.authorizedBadge ? 'success' : 'secondary'">
+         <span v-if="setting.ui.authorizedBadge">{{ $t('Authorized') }}</span>
+         <span v-else>{{ $t('Not Authorized') }}</span>
+       </b-badge>
     </div>
     <b-modal class="setting-object-modal" v-model="showModal" size="lg" @hidden="onModalHidden">
       <template v-slot:modal-header class="d-block">
