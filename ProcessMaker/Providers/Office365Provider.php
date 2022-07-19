@@ -5,7 +5,7 @@ namespace ProcessMaker\Providers;
 use App\Helpers\Drivers\OutlookMailDriver;
 use Illuminate\Mail\MailServiceProvider;
 use Illuminate\Mail\TransportManager;
-use ProcessMaker\Package\GmailDriver;
+use ProcessMaker\Package\Office365Driver;
 
 class Office365Provider extends MailServiceProvider
 {
@@ -19,7 +19,7 @@ class Office365Provider extends MailServiceProvider
         parent::registerSwiftTransport();
         
         $this->app->extend('swift.transport', function (TransportManager $transport) {
-            $callback = new GmailDriver();
+            $callback = new Office365Driver();
             $transport->extend('office365', $callback($transport));
             return $transport;
         });
