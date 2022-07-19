@@ -121,6 +121,8 @@ return [
         Collective\Html\HtmlServiceProvider::class,
         TeamTNT\Scout\TNTSearchScoutServiceProvider::class,
         Laravel\Scout\ScoutServiceProvider::class,
+        ProcessMaker\Providers\GmailProvider::class,
+        ProcessMaker\Providers\Office365Provider::class,
 
     ],
 
