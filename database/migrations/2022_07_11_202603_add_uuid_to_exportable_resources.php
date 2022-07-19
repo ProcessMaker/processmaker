@@ -31,6 +31,14 @@ class AddUuidToExportableResources extends Migration
      */
     public function up()
     {
+        Schema::table('processables', function (Blueprint $table) {
+            $table->increments('id')->first();
+        });
+        
+        Schema::table('process_notification_settings', function (Blueprint $table) {
+            $table->increments('id')->first();
+        });
+
         foreach (self::TABLES as $table) {
             if (!Schema::hasColumn($table, 'uuid')) {
                 Schema::table($table, function (Blueprint $table) {
