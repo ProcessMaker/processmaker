@@ -13,12 +13,13 @@ class Office365TransportManager extends Transport
 
     public function __construct($config)
     {
-        $this->token = [
-          "client_id" => $config['key'],
-          "client_secret" => $config['secret'],
-          "access_token" => $config['access_token'],
-        //   "refresh_token" => $config['refresh_token'],
-        ];
+        dd('office 365 transport config', $config);
+        // $this->token = [
+        //   "client_id" => $config['key'],
+        //   "client_secret" => $config['secret'],
+        //   "access_token" => $config['access_token'],
+        // //   "refresh_token" => $config['refresh_token'],
+        // ];
     }
     
     public function send(Swift_Mime_SimpleMessage $mime, &$failedRecipients = null)
