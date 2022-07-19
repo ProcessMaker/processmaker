@@ -3,8 +3,9 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Facades\ProcessMaker\ImportExport\MigrationHelper;
 
-class AddUuidToExportableResources extends Migration
+class AddUuidsToCore extends Migration
 {
 
     const TABLES = [
@@ -39,13 +40,8 @@ class AddUuidToExportableResources extends Migration
             $table->increments('id')->first();
         });
 
-        foreach (self::TABLES as $table) {
-            if (!Schema::hasColumn($table, 'uuid')) {
-                Schema::table($table, function (Blueprint $table) {
-                    $table->uuid('uuid')->after('id')->unique()->nullable();
-                });
-            }
-        }
+        MigrationHelper::addUuidsToTables(self::TABLES);
+        MigrationHelper::populateUuids(self::TABLES);
     }
 
     /**
@@ -55,12 +51,14 @@ class AddUuidToExportableResources extends Migration
      */
     public function down()
     {
-        foreach (self::TABLES as $table) {
-            if (Schema::hasColumn($table, 'uuid')) {
-                Schema::table($table, function (Blueprint $table) {
-                    $table->dropColumn('uuid');
-                });
-            }
-        }
+        Schema::table('processables', function (Blueprint $table) {
+            $table->dropColumn('id');
+        });
+
+        Schema::table('process_notification_settings', function (Blueprint $table) {
+            $table->dropColumn('id');
+        });
+
+        MigrationHelper::removeUuidsFromTables(self::TABLES);
     }
 }
