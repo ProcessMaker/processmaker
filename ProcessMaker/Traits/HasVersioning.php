@@ -37,6 +37,7 @@ trait HasVersioning
             $attributes[$field] = $this->$field;
         }
         unset($attributes['id'],
+        $attributes['uuid'],
         $attributes['updated_at'],
         $attributes['created_at'],
         $attributes['has_timer_start_events']);
