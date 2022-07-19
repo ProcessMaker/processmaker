@@ -407,7 +407,7 @@ export default {
     filterEmailServerButtons(groupName, groupData, btn) {
       const mailDriver = groupData.find(data => data.key.includes("EMAIL_CONNECTOR_MAIL_DRIVER"));
       const selectedMailDriver = mailDriver ? mailDriver.ui.options[mailDriver.config] : null;
-      const showAuthAccBtn = selectedMailDriver && (selectedMailDriver === 'gmail' || selectedMailDriver === 'office 365') ? true : false;
+      const showAuthAccBtn = selectedMailDriver && (selectedMailDriver === 'gmail' || selectedMailDriver === 'office365') ? true : false;
 
       if (groupName.includes('Email Server') && !showAuthAccBtn)  {
         // Returns all 'top' position buttons except the '+ Mail Server' and 'Authorize Account' button for email server tabs
