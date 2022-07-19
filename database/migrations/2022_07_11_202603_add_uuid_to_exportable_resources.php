@@ -12,7 +12,7 @@ class AddUuidToExportableResources extends Migration
         'groups',
         'group_members',
         'processes',
-        'processables', // Needs model
+        'processables',
         'process_categories',
         'process_notification_settings',
         'process_task_assignments',
