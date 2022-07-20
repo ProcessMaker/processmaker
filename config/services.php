@@ -29,5 +29,4 @@ return [
     'processmakerpost' => [
         'secret' => env('PROCESSMAKERPOST_SECRET'),
     ],
-
 ];
