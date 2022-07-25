@@ -405,9 +405,9 @@ export default {
       });
     },
     filterEmailServerButtons(groupName, groupData, btn) {
-      const mailDriver = groupData.find(data => data.key.includes("EMAIL_CONNECTOR_MAIL_DRIVER"));
-      const selectedMailDriver = mailDriver ? mailDriver.ui.options[mailDriver.config] : null;
-      const showAuthAccBtn = selectedMailDriver && (selectedMailDriver === 'gmail' || selectedMailDriver === 'office 365') ? true : false;
+      const authMethod = groupData.find(data => data.key.includes("EMAIL_CONNECTOR_MAIL_AUTH_METHOD"));
+      const selectedAuthMethod = authMethod ? authMethod.ui.options[authMethod.config] : null;
+      const showAuthAccBtn = selectedAuthMethod && selectedAuthMethod === 'Google' ? true : false;
 
       if (groupName.includes('Email Server') && !showAuthAccBtn)  {
         // Returns all 'top' position buttons except the '+ Mail Server' and 'Authorize Account' button for email server tabs
