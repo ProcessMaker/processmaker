@@ -49,8 +49,25 @@ export default {
 
       // If there is an element to focus on, then do so
       if (focusableElement instanceof HTMLElement) {
+          console.log('haciendo foco');
+          //do not set focus() if it is a vue-multiselect
+          const parentVue = this.findHtmlElementParentVueComponent(focusableElement);
+          if (parentVue !== null && parentVue.$options.name == 'vue-multiselect') {
+              return;
+          }
         focusableElement.focus()
       }
+    },
+    findHtmlElementParentVueComponent(element) {
+        if(element === undefined) {
+            return null; 
+        }
+        if ('__vue__' in element) {
+            return element.__vue__; 
+        }
+        else {
+            return this.findHtmlElementParentVueComponent(element.parentNode);
+        }
     },
     hasCustomFocusErrors() {
       if (this.$root._hasCustomFocusErrors) {
