@@ -49,7 +49,6 @@ export default {
 
       // If there is an element to focus on, then do so
       if (focusableElement instanceof HTMLElement) {
-          console.log('haciendo foco');
           //do not set focus() if it is a vue-multiselect
           const parentVue = this.findHtmlElementParentVueComponent(focusableElement);
           if (parentVue !== null && parentVue.$options.name == 'vue-multiselect') {
