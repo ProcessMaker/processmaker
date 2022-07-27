@@ -10,6 +10,9 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
+        "processmaker/package-webentry": "*",
+        "processmaker/package-savedsearch": "*",
+        "processmaker/package-collections": "*",
         "php": ">=7.2.0",
         "babenkoivan/elastic-scout-driver": "^1.2",
         "composer/semver": "^3.3",
@@ -134,6 +137,106 @@
         {
             "type": "vcs",
             "url": "https://github.com/ProcessMaker/SocialiteProviders"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/ProcessMaker/packages"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/ProcessMaker/package-translations"
+        },
+        {
+            "type": "path",
+            "url": "/home/dante/desa/laravel-i18next"
+        },
+        {
+            "type": "path",
+            "url": "/home/dante/desa/package-auth"
+        },
+        {
+            "type": "path",
+            "url": "/home/dante/desa/package-webhooks"
+        },
+        {
+            "type": "path",
+            "url": "/home/dante/desa/package-files"
+        },
+        {
+            "type": "path",
+            "url": "/home/dante/desa/package-versions"
+        },
+        {
+            "type": "path",
+            "url": "/home/dante/desa/package-auth-saml"
+        },
+        {
+            "type": "path",
+            "url": "/home/dante/desa/package-advancedforms"
+        },
+        {
+            "type": "path",
+            "url": "/home/dante/desa/package-actions-by-email"
+        },
+        {
+            "type": "path",
+            "url": "/home/dante/desa/package-webentry"
+        },
+        {
+            "type": "path",
+            "url": "/home/dante/desa/package-savedsearch"
+        },
+        {
+            "type": "path",
+            "url": "/home/dante/desa/package-dynamic-ui"
+        },
+        {
+            "type": "path",
+            "url": "/home/dante/desa/package-data-sources"
+        },
+        {
+            "type": "path",
+            "url": "/home/dante/desa/package-comments"
+        },
+        {
+            "type": "path",
+            "url": "/home/dante/desa/package-vocabularies"
+        },
+        {
+            "type": "path",
+            "url": "/home/dante/desa/connector-send-email"
+        },
+        {
+            "type": "path",
+            "url": "/home/dante/desa/package-collections"
+        },
+        {
+            "type": "path",
+            "url": "/home/dante/desa/connector-skeleton"
+        },
+        {
+            "type": "path",
+            "url": "/home/dante/desa/package-process-documenter"
+        },
+        {
+            "type": "path",
+            "url": "/home/dante/desa/package-process-optimization"
+        },
+        {
+            "type": "path",
+            "url": "/home/dante/desa/connector-pdf-print"
+        },
+        {
+            "type": "path",
+            "url": "/home/dante/desa/package-signature"
+        },
+        {
+            "type": "path",
+            "url": "/home/dante/desa/connector-docusign"
+        },
+        {
+            "type": "path",
+            "url": "/home/dante/desa/package-advanced-user-manager"
         }
     ],
     "config": {
@@ -143,5 +246,24 @@
         "allow-plugins": {
             "typo3/class-alias-loader": true
         }
+    },
+    "__COMMENT": {
+        "processmaker/packages": "*",
+        "processmaker/package-auth": "*",
+        "processmaker/package-actions-by-email": "*",
+        "processmaker/package-advancedforms": "*",
+        "processmaker/package-savedsearch": "*",
+        "processmaker/package-collections": "*",
+        "processmaker/package-comments": "*",
+        "processmaker/package-data-sources": "*",
+        "processmaker/package-dynamic-ui": "*",
+        "processmaker/package-versions": "*",
+        "processmaker/package-auth-saml": "*",
+        "processmaker/package-files": "*",
+        "processmaker/package-advanced-user-manager": "*",
+        "processmaker/connector-send-email": "*",
+        "processmaker/connector-pdf-print": "*",
+        "processmaker/connector-docusign": "*",
+        "nada": "nadadadad"
     }
 }
