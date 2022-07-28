@@ -23,6 +23,7 @@ class OauthTransportManager extends TransportManager
             "access_token" => $config->get('services.gmail.access_token'),
             "refresh_token" => $config->get('services.gmail.refresh_token'),
             "expires_in" => $config->get('services.gmail.expires_in'),
+            "created" => $config->get('services.gmail.created'),
         ];
     }
     
@@ -73,6 +74,7 @@ class OauthTransportManager extends TransportManager
             $this->updateEnvVar('EMAIL_CONNECTOR_GMAIL_API_ACCESS_TOKEN_' . $index, $accessToken);
             $this->updateEnvVar('EMAIL_CONNECTOR_GMAIL_API_REFRESH_TOKEN_' . $index, $newToken['refresh_token']);
             $this->updateEnvVar('EMAIL_CONNECTOR_GMAIL_API_EXPIRES_IN_' . $index, $newToken['expires_in']);
+            $this->updateEnvVar("EMAIL_CONNECTOR_GMAIL_API_TOKEN_CREATED{$index}", $newToken['created']);
         }
         
         return $accessToken;
