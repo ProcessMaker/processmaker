@@ -17,7 +17,6 @@ class OauthTransportManager extends TransportManager
     public function __construct($config)
     {   
         $this->config = (object) $config;
-        // TODO:: Can maybe pass in the server index here
         $this->token = [
             "client_id" => $config->get('services.gmail.key'),
             "client_secret" => $config->get('services.gmail.secret'),
