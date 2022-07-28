@@ -11,11 +11,8 @@ class AddUuidsToCore extends Migration
     const TABLES = [
         'environment_variables',
         'groups',
-        'group_members',
         'processes',
         'process_categories',
-        'process_notification_settings',
-        'process_task_assignments',
         'screens',
         'screen_categories',
         'scripts',
@@ -31,10 +28,6 @@ class AddUuidsToCore extends Migration
      */
     public function up()
     {
-        Schema::table('process_notification_settings', function (Blueprint $table) {
-            $table->increments('id')->first();
-        });
-
         MigrationHelper::addUuidsToTables(self::TABLES);
         MigrationHelper::populateUuids(self::TABLES);
     }
@@ -46,14 +39,6 @@ class AddUuidsToCore extends Migration
      */
     public function down()
     {
-        Schema::table('processables', function (Blueprint $table) {
-            $table->dropColumn('id');
-        });
-
-        Schema::table('process_notification_settings', function (Blueprint $table) {
-            $table->dropColumn('id');
-        });
-
         MigrationHelper::removeUuidsFromTables(self::TABLES);
     }
 }

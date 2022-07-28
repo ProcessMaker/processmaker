@@ -3,7 +3,6 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use ProcessMaker\Traits\Exportable;
 
 /**
  * Represents a business process task assignment definition.
@@ -32,8 +31,6 @@ use ProcessMaker\Traits\Exportable;
  */
 class ProcessTaskAssignment extends Model
 {
-    use Exportable;
-    
     protected $connection = 'processmaker';
 
     protected $fillable = [

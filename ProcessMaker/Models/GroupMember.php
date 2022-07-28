@@ -3,7 +3,6 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use ProcessMaker\Traits\Exportable;
 
 /**
  * Represents a group Members definition.
@@ -81,8 +80,6 @@ use ProcessMaker\Traits\Exportable;
  */
 class GroupMember extends Model
 {
-    use Exportable;
-    
     protected $connection = 'processmaker';
 
     protected $fillable = [
