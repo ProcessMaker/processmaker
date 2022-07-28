@@ -71,10 +71,10 @@ class OauthTransportManager extends TransportManager
             $client->setAccessToken($newToken['access_token']);
             $accessToken = $newToken['access_token'];
 
-            $this->updateEnvVar('EMAIL_CONNECTOR_GMAIL_API_ACCESS_TOKEN_' . $index, $accessToken);
-            $this->updateEnvVar('EMAIL_CONNECTOR_GMAIL_API_REFRESH_TOKEN_' . $index, $newToken['refresh_token']);
-            $this->updateEnvVar('EMAIL_CONNECTOR_GMAIL_API_EXPIRES_IN_' . $index, $newToken['expires_in']);
-            $this->updateEnvVar("EMAIL_CONNECTOR_GMAIL_API_TOKEN_CREATED{$index}", $newToken['created']);
+            $this->updateEnvVar("EMAIL_CONNECTOR_GMAIL_API_ACCESS_TOKEN_{$index}", $accessToken);
+            $this->updateEnvVar("EMAIL_CONNECTOR_GMAIL_API_REFRESH_TOKEN_{$index}", $newToken['refresh_token']);
+            $this->updateEnvVar("EMAIL_CONNECTOR_GMAIL_API_EXPIRES_IN_{$index}", $newToken['expires_in']);
+            $this->updateEnvVar("EMAIL_CONNECTOR_GMAIL_API_TOKEN_CREATED_{$index}", $newToken['created']);
         }
         
         return $accessToken;
