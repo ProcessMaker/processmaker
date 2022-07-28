@@ -6,13 +6,13 @@ use Swift_Mime_SimpleMessage;
 use Illuminate\Mail\TransportManager;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Packages\Connectors\Email\EmailConfig;
+use Google\Client;
 
 class OauthTransportManager extends TransportManager
 {
     protected $config = null;
     
     private $token = null;
-
 
     public function __construct($config)
     {   
@@ -55,7 +55,7 @@ class OauthTransportManager extends TransportManager
 
     public function checkForExpiredAccessToken($index) 
     {
-        $client = new \Google\Client();
+        $client = new Client();
         $authConfig = array(
             "web" => array(
                 'client_id' => $this->token['client_id'], 
@@ -70,18 +70,16 @@ class OauthTransportManager extends TransportManager
             $newToken = $client->fetchAccessTokenWithRefreshToken($this->token['refresh_token']);
             $client->setAccessToken($newToken['access_token']);
             $accessToken = $newToken['access_token'];
-            $refreshToken = $newToken['refresh_token'];
-            $expiresIn = $newToken['expires_in'];
 
-            $this->setEnvVar('EMAIL_CONNECTOR_GMAIL_API_ACCESS_TOKEN_' . $index, $accessToken);
-            $this->setEnvVar('EMAIL_CONNECTOR_GMAIL_API_REFRESH_TOKEN_' . $index, $refreshToken);
-            $this->setEnvVar('EMAIL_CONNECTOR_GMAIL_API_EXPIRES_IN_' . $index, $expiresIn);
+            $this->updateEnvVar('EMAIL_CONNECTOR_GMAIL_API_ACCESS_TOKEN_' . $index, $accessToken);
+            $this->updateEnvVar('EMAIL_CONNECTOR_GMAIL_API_REFRESH_TOKEN_' . $index, $newToken['refresh_token']);
+            $this->updateEnvVar('EMAIL_CONNECTOR_GMAIL_API_EXPIRES_IN_' . $index, $newToken['expires_in']);
         }
         
         return $accessToken;
     }
 
-    private function setEnvVar($name, $value)
+    private function updateEnvVar($name, $value)
     {
         $env = EnvironmentVariable::updateOrCreate(
             [
