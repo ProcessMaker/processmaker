@@ -1,6 +1,7 @@
 <?php
 
 return [
+
     /*
     |--------------------------------------------------------------------------
     | Authentication Defaults
@@ -11,10 +12,12 @@ return [
     | as required, but they're a perfect start for most applications.
     |
     */
+
     'defaults' => [
         'guard' => 'web',
         'passwords' => 'users',
     ],
+
     /*
     |--------------------------------------------------------------------------
     | Authentication Guards
@@ -31,19 +34,24 @@ return [
     | Supported: "session", "token"
     |
     */
+
     'guards' => [
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
         'api' => [
             'driver' => 'passport',
             'provider' => 'users',
+            'hash' => false,
         ],
+
         'anon' => [
             'driver' => 'anon',
         ],
     ],
+
     /*
     |--------------------------------------------------------------------------
     | User Providers
@@ -57,13 +65,22 @@ return [
     | sources which represent each model / table. These sources may then
     | be assigned to any extra authentication guards you have defined.
     |
+    | Supported: "database", "eloquent"
+    |
     */
+
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
             'model' => ProcessMaker\Models\User::class,
         ],
+
+        // 'users' => [
+        //     'driver' => 'database',
+        //     'table' => 'users',
+        // ],
     ],
+
     /*
     |--------------------------------------------------------------------------
     | Resetting Passwords
@@ -78,22 +95,29 @@ return [
     | they have less time to be guessed. You may change this as needed.
     |
     */
+
     'passwords' => [
         'users' => [
             'provider' => 'users',
             'table' => 'password_resets',
             'expire' => 60,
+            'throttle' => 60,
         ],
     ],
+
+    'log_auth_events' => env('LOG_AUTH_EVENTS', true),
+
     /*
     |--------------------------------------------------------------------------
-    | Security Logging
+    | Password Confirmation Timeout
     |--------------------------------------------------------------------------
     |
-    | This controls the logging of authentication events such as login, logout,
-    | and attempts to a database table. If disabled, such events will not be
-    | logged. If enabled, the events will be displayed within user admin.
+    | Here you may define the amount of seconds before a password confirmation
+    | times out and the user is prompted to re-enter their password via the
+    | confirmation screen. By default, the timeout lasts for three hours.
     |
     */
-    'log_auth_events' => env('LOG_AUTH_EVENTS', true),
+
+    'password_timeout' => 10800,
+
 ];
