@@ -2,7 +2,7 @@
 
 namespace ProcessMaker\Exception;
 
-use Exception;
+use Throwable;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
@@ -35,11 +35,11 @@ class Handler extends ExceptionHandler
     /**
      * Report our exception. If in testing with verbosity, it will also dump exception information to the console
      *
-     * @param  Exception  $exception
+     * @param  Throwable  $exception
      *
-     * @throws Exception
+     * @throws Throwable
      */
-    public function report(Exception $exception)
+    public function report(Throwable $exception)
     {
         if (App::environment() == 'testing' && env('TESTING_VERBOSE')) {
             // If we're verbose, we should print ALL Exceptions to the screen
@@ -54,10 +54,10 @@ class Handler extends ExceptionHandler
      * Render an exception into an HTTP response.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $exception
+     * @param  \Throwable  $exception
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $exception)
+    public function render($request, Throwable $exception)
     {
         $prefix = '';
         $route = $request->route();
@@ -121,10 +121,10 @@ class Handler extends ExceptionHandler
      *
      * @note This is overridding Laravel's default exception handler in order to handle binary data in message
      *
-     * @param  \Exception  $e
+     * @param  \Throwable  $e
      * @return array
      */
-    protected function convertExceptionToArray(Exception $e)
+    protected function convertExceptionToArray(Throwable $e)
     {
         return config('app.debug') ? [
             'message' => utf8_encode($e->getMessage()),
