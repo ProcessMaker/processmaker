@@ -27,7 +27,7 @@ $factory->define(ProcessTaskAssignment::class, function (Faker $faker) {
     ];
 });
 
-$factory->defineAs(ProcessTaskAssignment::class, 'user', function () use ($factory) {
+$factory->state(ProcessTaskAssignment::class, 'user', function () use ($factory) {
     $follow = $factory->raw(ProcessTaskAssignment::class);
     $extras = [
         'assignment_id' => function () {
@@ -39,7 +39,7 @@ $factory->defineAs(ProcessTaskAssignment::class, 'user', function () use ($facto
     return array_merge($follow, $extras);
 });
 
-$factory->defineAs(ProcessTaskAssignment::class, 'group', function () use ($factory) {
+$factory->state(ProcessTaskAssignment::class, 'group', function () use ($factory) {
     $follow = $factory->raw(ProcessTaskAssignment::class);
     $extras = [
         'assignment_id' => function () {

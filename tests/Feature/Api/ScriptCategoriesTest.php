@@ -132,8 +132,8 @@ class ScriptCategoriesTest extends TestCase
             'num' => 15,
             'status' => 'INACTIVE',
         ];
-        factory(ScriptCategory::class, $scriptActive['num'])->create(['status' => $scriptActive['status']]);
-        factory(ScriptCategory::class, $scriptInactive['num'])->create(['status' => $scriptInactive['status']]);
+        factory(ScriptCategory::class)->state($scriptActive['num'])->create(['status' => $scriptActive['status']]);
+        factory(ScriptCategory::class)->state($scriptInactive['num'])->create(['status' => $scriptInactive['status']]);
 
         $name = 'Script search';
         factory(ScriptCategory::class)->create(['status' => 'ACTIVE', 'name' => $name]);
@@ -193,8 +193,8 @@ class ScriptCategoriesTest extends TestCase
             'status' => 'INACTIVE',
         ];
 
-        factory(ScriptCategory::class, $scriptActive['num'])->create(['status' => $scriptActive['status']]);
-        factory(ScriptCategory::class, $scriptInactive['num'])->create(['status' => $scriptInactive['status']]);
+        factory(ScriptCategory::class)->state($scriptActive['num'])->create(['status' => $scriptActive['status']]);
+        factory(ScriptCategory::class)->state($scriptInactive['num'])->create(['status' => $scriptInactive['status']]);
 
         //Get active script
         $route = route($this->resource.'.index');
