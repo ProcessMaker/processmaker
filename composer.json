@@ -45,7 +45,6 @@
         "symfony/expression-language": "^5.1.6",
         "teamtnt/laravel-scout-tntsearch-driver": "^11.6",
         "typo3/class-alias-loader": "^1.0",
-        "watson/validating": "^5.0",
         "whichbrowser/parser": "^2.1",
         "laravel/ui": "^2.5",
         "fakerphp/faker": "^1.9.1",
