@@ -15,15 +15,15 @@ use ProcessMaker\Rules\StringHasNumberOrSpecialCharacter;
 use ProcessMaker\Traits\HasAuthorization;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
-use Spatie\MediaLibrary\HasMedia\HasMedia;
-use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 class User extends Authenticatable implements HasMedia
 {
     use PMQL;
     use HasApiTokens;
     use Notifiable;
-    use HasMediaTrait;
+    use InteractsWithMedia;
     use HasAuthorization;
     use SerializeToIso8601;
     use SoftDeletes;
