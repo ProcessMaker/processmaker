@@ -33,7 +33,7 @@ class MigrationHelper {
             \DB::table($table)
              ->select('id')
              ->where('uuid', '=', null)
-             ->orderBy('id')->chunk(1000, function($rows) use ($table) {
+             ->orderBy('id')->chunkById(1000, function($rows) use ($table) {
                  $count = count($rows);
                  foreach ($rows as $row) {
                      $uuid = (string) Str::orderedUuid();
