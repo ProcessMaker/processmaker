@@ -41,8 +41,8 @@ use ProcessMaker\Traits\ProcessTaskAssignmentsTrait;
 use ProcessMaker\Traits\ProcessTimerEventsTrait;
 use ProcessMaker\Traits\ProcessTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
-use Spatie\MediaLibrary\HasMedia\HasMedia;
-use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Throwable;
 
 /**
@@ -136,7 +136,7 @@ use Throwable;
  */
 class Process extends Model implements HasMedia, ProcessModelInterface
 {
-    use HasMediaTrait;
+    use InteractsWithMedia;
     use SerializeToIso8601;
     use SoftDeletes;
     use ProcessTaskAssignmentsTrait;
