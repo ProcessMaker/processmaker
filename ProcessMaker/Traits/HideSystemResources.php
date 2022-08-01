@@ -10,7 +10,7 @@ use ProcessMaker\Models\User;
 
 trait HideSystemResources
 {
-    public function resolveRouteBinding($value)
+    public function resolveRouteBinding($value, $field = null)
     {
         $item = parent::resolveRouteBinding($value);
 
