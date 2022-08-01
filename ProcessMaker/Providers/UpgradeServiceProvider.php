@@ -98,7 +98,7 @@ class UpgradeServiceProvider extends ServiceProvider
     protected function registerCreator()
     {
         $this->app->singleton('upgrade.creator', function ($app) {
-            return new UpgradeCreator($app['files']);
+            return new UpgradeCreator($app['files'], $app->basePath('stubs'));
         });
     }
 
