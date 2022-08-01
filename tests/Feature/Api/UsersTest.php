@@ -8,6 +8,7 @@ use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class UsersTest extends TestCase
 {
@@ -461,6 +462,7 @@ class UsersTest extends TestCase
      */
     public function testUpdateUserAvatar()
     {
+
         //Create a new user
         $user = factory(User::class)->create([
             'username' => 'AvatarUser',
@@ -495,14 +497,17 @@ class UsersTest extends TestCase
         //Assert that the 'avatar' key exists
         $getResponse->assertJsonStructure(['avatar']);
 
-        //Assert that the file exists in the correct location
+        //Assert that the file was saved
         $json = $getResponse->json();
         $path = parse_url($json['avatar'], PHP_URL_PATH);
-        $this->assertFileExists('public' . $path);
+        $media = $user->getMedia('profile')[0];
+        $this->assertEquals("/storage/profile/$media->id/img.png", $path);
+        $this->assertFileExists($media->getPath());
     }
 
     /**
     * Tests the archiving and restoration of a process
+    * @group agustin
     */
     public function testRestoreSoftDeletedUser()
     {
@@ -545,6 +550,25 @@ class UsersTest extends TestCase
 
         // Restore the user by username
         $response = $this->apiCall('PUT', self::API_TEST_URL .'/restore', [
+            'username' => $user->username
+        ]);
+        $response->assertStatus(200);
+
+        // Assert that the user is listed
+        $response = $this->apiCall('GET', self::API_TEST_URL);
+        $response->assertJsonFragment(['id' => $id]);
+
+        // Soft delete the user
+        $response = $this->apiCall('DELETE', self::API_TEST_URL . '/'. $id);
+        $response->assertStatus(204);
+
+        // Assert that the user is not listed on the main index
+        $response = $this->apiCall('GET', self::API_TEST_URL);
+        $response->assertJsonMissing(['id' => $id]);
+
+        // Restore the user by username and different email
+        $response = $this->apiCall('PUT', self::API_TEST_URL .'/restore', [
+            'email' => 'changed' . $user->email,
             'username' => $user->username
         ]);
         $response->assertStatus(200);

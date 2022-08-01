@@ -76,7 +76,6 @@ class ProcessScriptsTest extends TestCase
                 'This test requires docker'
             );
         }
-        ScriptExecutor::setTestConfig('php');
 
         //Start a process request
         $route = route('api.process_events.trigger', [$this->process->id, 'event' => '_2']);
@@ -99,8 +98,8 @@ class ProcessScriptsTest extends TestCase
         //Check the data
         $this->assertArrayHasKey('random', $processInstance->data);
         $this->assertArrayHasKey('double', $processInstance->data);
-        $this->assertInternalType('int', $processInstance->data['random']);
-        $this->assertInternalType('int', $processInstance->data['double']);
+        $this->assertIsInt($processInstance->data['random']);
+        $this->assertIsInt($processInstance->data['double']);
         $this->assertEquals(2 * $processInstance->data['random'], $processInstance->data['double']);
     }
 }

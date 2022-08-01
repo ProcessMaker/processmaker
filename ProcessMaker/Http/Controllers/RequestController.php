@@ -84,13 +84,13 @@ class RequestController extends Controller
 
         $userHasCommentsForRequest = Comment::where('commentable_type', ProcessRequest::class)
                 ->where('commentable_id', $request->id)
-                ->where('body','like', '%@' . \Auth::user()->username . '%')
+                ->where('body','like', '%{{' . \Auth::user()->id . '}}%')
                 ->count() > 0;
 
         $requestMedia = $request->media()->get()->pluck('id');
         $userHasCommentsForMedia = Comment::where('commentable_type', \ProcessMaker\Models\Media::class)
                 ->whereIn('commentable_id', $requestMedia)
-                ->where('body','like', '%@' . \Auth::user()->username . '%')
+                ->where('body','like', '%{{' . \Auth::user()->id . '}}%')
                 ->count() > 0;
 
         if (!$userHasCommentsForMedia && !$userHasCommentsForRequest) {

@@ -21,7 +21,36 @@ class SignalController extends Controller
      *
      * @param Request $request
      *
-     * @return Response
+     * @return \Illuminate\Http\Response
+     *
+     * @OA\Get(
+     *     path="/signals",
+     *     summary="Returns all signals",
+     *     operationId="getSignals",
+     *     tags={"Signals"},
+     *     @OA\Parameter(ref="#/components/parameters/filter"),
+     *     @OA\Parameter(ref="#/components/parameters/order_by"),
+     *     @OA\Parameter(ref="#/components/parameters/order_direction"),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="list of signals",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/signals"),
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 @OA\Schema(ref="#/components/schemas/metadata"),
+     *             ),
+     *         ),
+     *     ),
+     * )
      */
     public function index(Request $request)
     {
@@ -130,9 +159,28 @@ class SignalController extends Controller
 
     /**
      * Display the specified resource.
+     * @return Resource
      *
-     * @param  mixed  $id
-     * @return Response
+     * @OA\Get(
+     *     path="/signals/{signal_id}",
+     *     summary="Get a single signal by ID",
+     *     operationId="getSignalsById",
+     *     tags={"Signals"},
+     *     @OA\Parameter(
+     *         description="signal id",
+     *         in="path",
+     *         name="signal_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/signals")
+     *     )
+     * )
      */
     public function show($id)
     {
@@ -141,10 +189,26 @@ class SignalController extends Controller
 
     /**
      * Creates a new global signal
-     *
      * @param Request $request
      *
-     * @return Application|ResponseFactory|Response
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     *
+     * @OA\Post(
+     *     path="/signals",
+     *     summary="Creates a new Global Signal",
+     *     operationId="createSignal",
+     *     tags={"Signals"},
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/signalsEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/signals")
+     *     ),
+     * )
      */
     public function store(Request $request)
     {
@@ -164,6 +228,32 @@ class SignalController extends Controller
         return response(['id' => $newSignal->getId(), 'name' => $newSignal->getName()], 200);
     }
 
+    /**
+     * @OA\Put(
+     *     path="/signals/{signal_id}",
+     *     summary="Update a signal",
+     *     operationId="updateSignal",
+     *     tags={"Signals"},
+     *     @OA\Parameter(
+     *         description="ID of signal to update",
+     *         in="path",
+     *         name="signal_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/signalsEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/signals")
+     *     ),
+     * )
+     */
     public function update(Request $request, $signalId)
     {
         $newSignal = new SignalData(
@@ -196,6 +286,27 @@ class SignalController extends Controller
         return response(['id' => $newSignal->getId(), 'name' => $newSignal->getName()], 200);
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/signals/{signal_id}",
+     *     summary="Delete a signal",
+     *     operationId="deleteSignal",
+     *     tags={"Signals"},
+     *     @OA\Parameter(
+     *         description="ID of signal to delete",
+     *         in="path",
+     *         name="signal_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="success"
+     *     ),
+     * )
+     */
     public function destroy($signalId)
     {
         $signal = SignalManager::findSignal($signalId);

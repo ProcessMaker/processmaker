@@ -2,9 +2,18 @@
 
 namespace Tests\Feature\Shared;
 
+use Illuminate\Support\Facades\Artisan;
+use Mockery;
+
 trait PerformanceReportTrait
 {
     private static $measurements = [];
+
+    public function setUpMockArtisan()
+    {
+        // Prevent saved search user observer from running artisan in test
+        Artisan::shouldReceive('call')->with('package-savedsearch:add-defaults', Mockery::any());
+    }
 
     private function addMeasurement($name, $measure)
     {

@@ -5,11 +5,13 @@ namespace Tests;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Artisan;
+use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 
 abstract class TestCase extends BaseTestCase
 {
     use DatabaseTransactions;
     use CreatesApplication;
+    use ArraySubsetAsserts;
 
     public $withPermissions = false;
 
@@ -26,6 +28,12 @@ abstract class TestCase extends BaseTestCase
                 $this->$method();
             }
         }
+    }
+
+    public static function setUpMockScriptRunners(): void
+    {
+        config()->set("script-runners.php.runner", 'MockRunner');
+        config()->set("script-runners.lua.runner", 'MockRunner');
     }
 
     /**

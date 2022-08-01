@@ -41,11 +41,6 @@ class ScriptsTest extends TestCase
         'description'
     ];
 
-    protected function setUpExecutors() {
-        ScriptExecutor::setTestConfig('php');
-        ScriptExecutor::setTestConfig('lua');
-    }
-
     public function setUpWithPersonalAccessClient()
     {
         $this->withPersonalAccessClient();
@@ -90,8 +85,6 @@ class ScriptsTest extends TestCase
 
     public function testCreateCategoryRequired()
     {
-        ScriptExecutor::setTestConfig('php');
-
         $url = route('api.scripts.store');
         $params = [
             'title' => 'Title',
@@ -389,7 +382,6 @@ class ScriptsTest extends TestCase
         Event::fake([
             ScriptResponseEvent::class,
         ]);
-        config()->set('script-runners.php.runner', 'MockRunner');
 
         $url = route('api.scripts.preview', $this->getScript('lua')->id);
         $response = $this->apiCall('POST', $url, ['data' => '{}', 'code' => 'return {response=1}']);
@@ -616,7 +608,6 @@ class ScriptsTest extends TestCase
         Event::fake([
             ScriptResponseEvent::class,
         ]);
-        config()->set('script-runners.php.runner', 'MockRunner');
 
         $script = factory(Script::class)->create([
             'run_as_user_id' => $this->user->id,

@@ -7,6 +7,41 @@ use ProcessMaker\Traits\ExtendedPMQL;
 
 class SecurityLog extends Model
 {
+    /**
+     * Class SecurityLog
+     *
+     * @package ProcessMaker\Models
+     *
+     * @property Carbon $updated_at
+     * @property Carbon $created_at
+     *
+     * @OA\Schema(
+     *   schema="securityLog",
+     *   @OA\Property(property="id", type="integer"),
+     *   @OA\Property(property="event", type="string"),
+     *   @OA\Property(property="ip", type="string"),
+     *   @OA\Property(property="meta", type="array", 
+     *      @OA\Items(type="object",
+     *         @OA\Property(property="os", type="array", 
+     *              @OA\Items(type="object",
+     *                  @OA\Property(property="name", type="string"),
+     *                  @OA\Property(property="version", type="string"), 
+     *              ),
+     *         ),
+     *         @OA\Property(property="browser", type="array", 
+     *              @OA\Items(type="object",
+     *                  @OA\Property(property="name", type="string"),
+     *                  @OA\Property(property="version", type="string"), 
+     *              ),
+     *         ),
+     *         @OA\Property(property="user_agent", type="string"), 
+     *      ), 
+     *    ),
+     *   @OA\Property(property="user_id", type="integer"),
+     *   @OA\Property(property="occured_at", type="string"),
+     * ),
+     * 
+     */
     use ExtendedPMQL;
     
     const CREATED_AT = 'occurred_at';

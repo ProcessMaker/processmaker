@@ -4,16 +4,9 @@ namespace ProcessMaker\Upgrades\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-use ProcessMaker\Upgrades\ValidatesSemver;
-use ProcessMaker\Exception\InvalidSemanticVersion;
-use function config;
-use function collect;
-use function base_path;
 
 class BaseCommand extends Command
 {
-    use ValidatesSemver;
-
     /**
      * Get all of the migration paths.
      *
@@ -33,59 +26,6 @@ class BaseCommand extends Command
         return array_merge(
             [$this->getMigrationPath()], $this->migrator->paths()
         );
-    }
-
-    /**
-     * Get the current running version of ProcessMaker (as set in composer.json)
-     *
-     * @return string|void
-     */
-    protected function getCurrentAppVersion()
-    {
-        $composer = json_decode(file_get_contents(base_path('/composer.json')), false);
-
-        if (property_exists($composer, 'version')) {
-            return $composer->version;
-        }
-    }
-
-    /**
-     * Get the version we're upgrading or rolling back to
-     *
-     * @return string|void
-     *
-     * @throws \RuntimeException
-     * @throws \ProcessMaker\Exception\InvalidSemanticVersion
-     */
-    protected function getMigratingToVersion()
-    {
-        if (!$this->hasOption('to')) {
-            return;
-        }
-
-        if (!is_string($to = $this->option('to'))) {
-            return;
-        }
-
-        if (!$this->validateSemver($to)) {
-            throw new InvalidSemanticVersion('The --to option must be a valid semantic version');
-        }
-
-        return $to;
-    }
-
-    /**
-     * Get the database name the upgrades will use
-     *
-     * @return string
-     */
-    protected function getDatabase()
-    {
-        if ($this->hasOption('database') && $database = $this->option('database')) {
-            return $database;
-        }
-
-        return (string) config('database.connections.processmaker.database');
     }
 
     /**

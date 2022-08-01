@@ -16,11 +16,6 @@ class ScreenConsolidatorTest extends TestCase
 
     public $withPermissions = true;
 
-    protected function setUpExecutor()
-    {
-        ScriptExecutor::setTestConfig('php');
-    }
-
     /**
      * Test to ensure we can export and import
      *
@@ -44,7 +39,9 @@ class ScreenConsolidatorTest extends TestCase
             'file' => $file,
         ]);
 
-        $consolidator = new ScreenConsolidator(Screen::find(2));
+        $consolidator = new ScreenConsolidator(
+            Screen::where('title', 'Test Nested Record List')->firstOrFail()
+        );
         $expectedResponse = [
             'config' => [
                 [

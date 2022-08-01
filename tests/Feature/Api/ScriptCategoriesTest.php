@@ -426,7 +426,6 @@ class ScriptCategoriesTest extends TestCase
      */
     public function testDeleteFailScriptCategory()
     {
-        ScriptExecutor::setTestConfig('lua');
         $script = factory(Script::class)->create(['language'=>'lua']);
         $route = route($this->resource . '.destroy', [$script->script_category_id]);
         $response = $this->apiCall('DELETE', $route);

@@ -30,11 +30,6 @@ class ExportImportTest extends TestCase
 
     private $definitions, $process, $screen01, $screen02, $script01, $script02;
 
-    protected function setUpExecutors() {
-        ScriptExecutor::setTestConfig('php');
-        ScriptExecutor::setTestConfig('lua');
-    }
-
     /**
      * Test to ensure screens and scripts are referenced
      * by the proper nodes upon process import.

@@ -7,7 +7,7 @@
             :empty-desc="$t('')"
             empty-icon="noData"
         />
-        <div v-show="!shouldShowLoader" class="card card-body table-card">
+        <div v-show="!shouldShowLoader" class="card card-body table-card" data-cy="categories-table">
             <vuetable
                 :dataManager="dataManager"
                 :sortOrder="sortOrder"

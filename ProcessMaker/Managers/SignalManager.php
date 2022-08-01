@@ -7,6 +7,46 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\SignalData;
 use ProcessMaker\Repositories\BpmnDocument;
 
+/**
+ * Represents a business signal definition.
+ *
+ * @property string $id
+ * @property string $name
+ * @property string $detail
+ * @property string $type
+ * @property array $processes
+ * @property \Carbon\Carbon $updated_at
+ * @property \Carbon\Carbon $created_at
+ *
+ * @OA\Schema(
+ *   schema="signalsEditable",
+ *   @OA\Property(property="id", type="string", format="id"),
+ *   @OA\Property(property="name", type="string"),
+ *   @OA\Property(property="detail", type="string"),
+ * ),
+ * @OA\Schema(
+ *   schema="signals",
+ *   allOf={
+ *     @OA\Schema(ref="#/components/schemas/signalsEditable"),
+ *     @OA\Schema(
+ *       @OA\Property(property="type", type="string"),
+ *       @OA\Property(property="processes", type="array", @OA\Items(
+ *          type="object",
+ *          @OA\Property(property="id", type="integer", format="id"),
+ *          @OA\Property(property="is_system", type="boolean"),
+ *          @OA\Property(property="name", type="string"),
+ *          @OA\Property(property="catches", type="array", @OA\Items(
+ *            type="object",
+ *            @OA\Property(property="id", type="integer", format="id"),
+ *            @OA\Property(property="name", type="string"),
+ *            @OA\Property(property="type", type="string"),
+ *          )),
+ *       )),
+ *     ),
+ *   },
+ * )
+ *
+ */
 class SignalManager
 {
     const PROCESS_NAME = 'global_signals';

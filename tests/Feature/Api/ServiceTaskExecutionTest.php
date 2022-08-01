@@ -45,7 +45,6 @@ class ServiceTaskExecutionTest extends TestCase
      */
     protected function withUserSetUp()
     {
-        ScriptExecutor::setTestConfig('php');
         factory(Script::class)->create([
             'key' => 'EchoConnector',
             'language' => 'php',

@@ -74,6 +74,10 @@ class CssOverrideController extends Controller
             $this->uploadFile($setting->refresh(), $request, 'fileIcon', Setting::COLLECTION_CSS_ICON, Setting::DISK_CSS);
             Cache::forget('css-icon');
         }
+        if ($request->has('fileFavicon')) {
+            $this->uploadFile($setting->refresh(), $request, 'fileFavicon', Setting::COLLECTION_CSS_FAVICON, Setting::DISK_CSS);
+            Cache::forget('css-favicon');
+        }
 
         if ($request->has('fileLogin')) {
           $this->uploadFile($setting->refresh(), $request, 'fileLogin', Setting::COLLECTION_CSS_LOGIN, Setting::DISK_CSS);
@@ -150,6 +154,10 @@ class CssOverrideController extends Controller
         if ($request->has('fileIcon') && $request->input('fileIcon')) {
             $this->uploadFile($setting->refresh(), $request, 'fileIcon', Setting::COLLECTION_CSS_ICON, Setting::DISK_CSS);
             Cache::forget('css-icon');
+        }
+        if ($request->has('fileFavicon') && $request->input('fileFavicon')) {
+            $this->uploadFile($setting->refresh(), $request, 'fileFavicon', Setting::COLLECTION_CSS_FAVICON, Setting::DISK_CSS);
+            Cache::forget('css-favicon');
         }
         
         $this->setLoginFooter($request);
@@ -232,6 +240,7 @@ class CssOverrideController extends Controller
             'login' => $request->input('fileLoginName', ''),
             'logo' => $request->input('fileLogoName', ''),
             'icon' => $request->input('fileIconName', ''),
+            'favicon' => $request->input('fileFaviconName', ''),
             'variables' => $request->input('variables', ''),
             'sansSerifFont' => $request->input('sansSerifFont', $this->sansSerifFontDefault()),
         ];

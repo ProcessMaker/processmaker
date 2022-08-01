@@ -62,7 +62,7 @@ class ProcessSeeder extends Seeder
                     $process->name = $collaborationDefinition->getName();
                 }
             }
-            $process->save();
+            $process->saveOrFail();
 
             $definitions = $process->getDefinitions();
 
@@ -153,7 +153,7 @@ class ProcessSeeder extends Seeder
 
             //Update the screen and script references in the BPMN of the process
             $process->bpmn = $definitions->saveXML();
-            $process->save();
+            $process->saveOrFail();
         }
     }
 

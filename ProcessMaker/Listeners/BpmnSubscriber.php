@@ -3,6 +3,7 @@
 namespace ProcessMaker\Listeners;
 
 use Exception;
+use ProcessMaker\Jobs\TerminateRequestEndEvent;
 use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
@@ -18,6 +19,7 @@ use ProcessMaker\Events\ActivityCompleted;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Bpmn\Events\ProcessInstanceCompletedEvent;
+use ProcessMaker\Nayra\Contracts\Bpmn\TerminateEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Comment;
@@ -84,7 +86,6 @@ class BpmnSubscriber
         if ($event->instance->isNonPersistent()) {
             return;
         }
-        Log::info('Process completed: ' . json_encode($event->instance->getProperties()));
 
         $notifiables = $event->instance->getNotifiables('completed');
         Notification::send($notifiables, new ProcessCompletedNotification($event->instance));
@@ -281,6 +282,14 @@ class BpmnSubscriber
         }
     }
 
+    public function onTerminateEndEvent($event)
+    {
+        $instances = collect($event->getOwnerProcess()->getInstances()->toArray());
+        $instances->each(function ($instance) {
+            TerminateRequestEndEvent::dispatch($instance);
+        });
+    }
+
     /**
      * Subscription.
      *
@@ -304,6 +313,9 @@ class BpmnSubscriber
         $events->listen(ActivityInterface::EVENT_ACTIVITY_EXCEPTION, static::class . '@onActivityException');
 
         $events->listen(IntermediateCatchEventInterface::EVENT_CATCH_TOKEN_ARRIVES, static::class . '@onIntermediateCatchEventActivated');
+
+        $events->listen(TerminateEventDefinitionInterface::EVENT_THROW_EVENT_DEFINITION, static::class . '@onTerminateEndEvent');
+
     }
 
 }

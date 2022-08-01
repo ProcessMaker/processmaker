@@ -17,11 +17,6 @@ class ExportImportScreenTest extends TestCase
 
     public $withPermissions = true;
 
-    protected function setUpExecutor()
-    {
-        ScriptExecutor::setTestConfig('php');
-    }
-
     /**
      * Test to ensure we can export and import
      *

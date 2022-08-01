@@ -1,6 +1,9 @@
 <?php
 
 namespace ProcessMaker\ScriptRunners;
+use Illuminate\Support\Str;
+use ProcessMaker\Exception\ScriptTimeoutException;
+use Log;
 
 class MockRunner
 {
@@ -12,8 +15,18 @@ class MockRunner
         if (app()->env !== 'testing') {
             throw new \Exception("MockRunner is for tests only.");
         }
+
+        if (config('simulate_timeout')) {
+            Log::error('Script timed out');
+            throw new ScriptTimeoutException('Script timed out');
+        }
+
         putenv('HOST_URL=' . config('app.docker_host_url'));
-        $res = eval(str_replace('<?php', '', $code));
+        if (Str::startsWith($code, '<?php')) {
+            $res = eval(str_replace('<?php', '', $code));
+        } else {
+            $res = ['response' => 1];
+        }
         return ['output' => $res];
     }
 

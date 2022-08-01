@@ -17,7 +17,6 @@ use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-
 class UserTokenController extends Controller
 {
     /**
@@ -49,7 +48,42 @@ class UserTokenController extends Controller
 
 
     /**
-     * Display listing of access tokens for the specified user
+     * Display listing of access tokens for the specified user.
+     *
+     * @OA\Get(
+     *     path="/users/{user_id}/tokens",
+     *     summary="Display listing of access tokens for the specified user.",
+     *     operationId="getTokens",
+     *     tags={"Personal Tokens"},
+     *     @OA\Parameter(
+     *         description="User id",
+     *         in="path",
+     *         name="user_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="integer",
+     *         )
+     *     ),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of tokens.",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/UserToken"),
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 ref="#/components/schemas/metadata",
+     *             ),
+     *         ),
+     *     ),
+     * )
      */
     public function index(Request $request, User $user)
     {
@@ -60,7 +94,7 @@ class UserTokenController extends Controller
         $tokens = $this->tokenRepository->forUser($user->id);
 
         $results =  $tokens->load('client')->filter(function ($token) {
-            return $token->client->personal_access_client && ! $token->revoked;
+            return $token->client->personal_access_client && !$token->revoked;
         })->values();
 
         // Paginate
@@ -76,6 +110,33 @@ class UserTokenController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Laravel\Passport\PersonalAccessTokenResult
+     *
+     * @OA\Post(
+     *     path="/users/{user_id}/tokens",
+     *     summary="Create new token for a specific user",
+     *     operationId="createTokens",
+     *     tags={"Personal Tokens"},
+     *     @OA\Parameter(
+     *         description="User id",
+     *         in="path",
+     *         name="user_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="integer",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="name", type="string"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="New token instance",
+     *         @OA\JsonContent(ref="#/components/schemas/UserToken"),
+     *     ),
+     * )
      */
     public function store(Request $request, User $user)
     {
@@ -85,19 +146,49 @@ class UserTokenController extends Controller
 
         $this->validation->make($request->all(), [
             'name' => 'required|max:255',
-            'scopes' => 'array|in:'.implode(',', Passport::scopeIds()),
+            'scopes' => 'array|in:' . implode(',', Passport::scopeIds()),
         ])->validate();
 
         $token =  $user->createToken(
-            $request->name, $request->scopes ?: []
+            $request->name,
+            $request->scopes ?: []
         );
 
         return new UserTokenResource($token);
-
     }
 
     /**
      * Show a personal access token for the user
+     *
+     * @OA\Get(
+     *     path="/users/{user_id}/tokens/{token_id}",
+     *     summary="Get single token by ID",
+     *     operationId="getTokenById",
+     *     tags={"Personal Tokens"},
+     *     @OA\Parameter(
+     *         description="ID of user",
+     *         in="path",
+     *         name="user_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="integer",
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         description="ID of token to return",
+     *         in="path",
+     *         name="token_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully found the token",
+     *         @OA\JsonContent(ref="#/components/schemas/UserToken")
+     *     ),
+     * )
      */
     public function show(Request $request, User $user, $tokenId)
     {
@@ -106,13 +197,15 @@ class UserTokenController extends Controller
         }
 
         $token = $this->tokenRepository->findForUser(
-            $tokenId, $user->getKey()
+            $tokenId,
+            $user->getKey()
         );
 
         if (is_null($token)) {
-            return new Response('', 404);
+            return response([], 404);
         }
-       return new UserTokenResource($token);
+
+        return new UserTokenResource($token);
     }
 
     /**
@@ -121,8 +214,36 @@ class UserTokenController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @param  string  $tokenId
      * @return \Illuminate\Http\Response
+     *
+     * @OA\Delete(
+     *     path="/users/{user_id}/tokens/{token_id}",
+     *     summary="Delete a token",
+     *     operationId="deleteToken",
+     *     tags={"Personal Tokens"},
+     *     @OA\Parameter(
+     *         description="User ID",
+     *         in="path",
+     *         name="user_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="integer",
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         description="Token ID",
+     *         in="path",
+     *         name="token_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="success"
+     *     ),
+     * )
      */
-
     public function destroy(Request $request, User $user, $tokenId)
     {
         if (!Auth::user()->can('edit', $user)) {
@@ -130,7 +251,8 @@ class UserTokenController extends Controller
         }
 
         $token = $this->tokenRepository->findForUser(
-            $tokenId, $user->getKey()
+            $tokenId,
+            $user->getKey()
         );
 
         if (is_null($token)) {
@@ -141,6 +263,4 @@ class UserTokenController extends Controller
 
         return response([], 204);
     }
-
-
 }

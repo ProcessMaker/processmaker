@@ -4,7 +4,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Laravel\Horizon\Http\Controllers\Controller;
+use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Models\Media;

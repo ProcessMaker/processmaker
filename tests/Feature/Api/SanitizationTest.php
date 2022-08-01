@@ -36,8 +36,6 @@ class SanitizationTest extends TestCase
             'run_as_user_id' => $user->id,
         ]);
 
-        ScriptExecutor::setTestConfig($script->language);
-
         // Post the process to the API
         $response = $this->apiCall('POST', '/scripts', $script->toArray());
         

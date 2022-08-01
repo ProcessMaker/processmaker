@@ -7,7 +7,7 @@
       :empty-desc="$t('You don\'t currently have any tasks assigned to you')"
       empty-icon="beach"
     />
-    <div v-show="!shouldShowLoader" class="card card-body table-card">
+    <div v-show="!shouldShowLoader" class="card card-body table-card" data-cy="tasks-table">
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
@@ -134,7 +134,7 @@ export default {
       if (this.savedSearch !== false) {
         return `saved-searches/${this.savedSearch}/results`;
       }
-      
+
       return 'tasks';
     },
   },
@@ -149,12 +149,12 @@ export default {
   methods: {
     setupColumns() {
       let columns = this.getColumns();
-      
-      columns.forEach(column => {    
+
+      columns.forEach(column => {
         let field = {
           title: () => this.$t(column.label)
         };
-        
+
         switch (column.field) {
           case 'task':
             field.name = '__slot:name';
@@ -182,7 +182,7 @@ export default {
           default:
             field.name = column.field;
         }
-        
+
         if (! field.field) {
           field.field = column.field;
         }
@@ -190,14 +190,14 @@ export default {
         if (column.format === 'datetime' || column.format === 'date') {
           field.callback = 'formatDate';
         }
-              
+
         if (column.sortable && ! field.sortField) {
           field.sortField = column.field;
         }
 
-        this.fields.push(field);    
+        this.fields.push(field);
       });
-      
+
       this.fields.push({
         name: "__slot:actions",
         title: ""
@@ -206,7 +206,7 @@ export default {
       // this is needed because fields in vuetable2 are not reactive
       this.$nextTick(()=>{
         this.$refs.vuetable.normalizeFields();
-      });      
+      });
     },
     getColumns() {
       if (this.$props.columns) {
@@ -238,7 +238,7 @@ export default {
             "default": true
           }
         ];
-        
+
         if (this.status === "CLOSED") {
           columns.push({
             "label": "Completed",
@@ -254,7 +254,7 @@ export default {
             "default": true
           });
         }
-        
+
         return columns;
       }
     },
@@ -329,16 +329,16 @@ export default {
               this.cancelToken = null;
             }
             const CancelToken = ProcessMaker.apiClient.CancelToken;
-            
+
             let pmql = '';
-            
+
             if (this.pmql !== undefined) {
                 pmql = this.pmql;
             }
 
             let filter = this.filter;
             let filterParams = '';
-            
+
             if (filter && filter.length) {
               if (filter.isPMQL()) {
                 pmql = `(${pmql}) and (${filter})`;
@@ -358,13 +358,13 @@ export default {
             }
 
             this.previousFilter = filter;
-            
+
             if (this.previousPmql !== pmql) {
               this.page = 1;
             }
-            
+
             this.previousPmql = pmql;
-            
+
             // Load from our api client
             ProcessMaker.apiClient
               .get(

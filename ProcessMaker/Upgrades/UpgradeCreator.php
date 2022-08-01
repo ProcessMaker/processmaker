@@ -7,8 +7,6 @@ use Illuminate\Database\Migrations\MigrationCreator;
 
 class UpgradeCreator extends MigrationCreator
 {
-    use ValidatesSemver;
-
     /**
      * Create a new upgrade migration file at the given path
      *
@@ -21,19 +19,13 @@ class UpgradeCreator extends MigrationCreator
      *
      * @throws \ProcessMaker\Exception\InvalidSemanticVersion
      */
-    public function createUpgrade($name, $path, $to, $optional = null)
+    public function createUpgrade($name, $path)
     {
         $this->ensureMigrationDoesntAlreadyExist($name, $path);
 
-        if (!$this->validateSemver($to)) {
-            throw new InvalidSemanticVersion("Invalid semantic version passed for the \"to\" argument: {$to}");
-        }
-
         $this->files->put(
             $path = $this->getPath($name, $path),
-            $this->populateUpgradeStub(
-                $name, $this->getStub(null, null), $to, $optional ?? false
-            )
+            $this->populateUpgradeStub($name, $this->getStub(null, null))
         );
 
         return $path;
@@ -63,16 +55,6 @@ class UpgradeCreator extends MigrationCreator
      */
     protected function populateUpgradeStub($name, $stub, $to = null, bool $optional = false)
     {
-        $stub = str_replace('DummyUpgradeClass', $this->getClassName($name), $stub);
-
-        if (! is_null($to)) {
-            $stub = str_replace('public $to = \'\';', 'public $to = \''.$to.'\';', $stub);
-        }
-
-        if (true === $optional) {
-            $stub = str_replace('public $required = true;', 'public $required = false;', $stub);
-        }
-
-        return $stub;
+        return str_replace('DummyUpgradeClass', $this->getClassName($name), $stub);
     }
 }

@@ -93,7 +93,9 @@ trait ProcessTrait
      */
     public function getManagerIdAttribute()
     {
-        return $this->getProperty('manager_id');
+        $property = $this->getProperty('manager_id');
+
+        return collect($property)->get('id', $property);
     }
 
     /**

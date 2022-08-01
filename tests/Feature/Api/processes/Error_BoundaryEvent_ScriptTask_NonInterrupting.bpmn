@@ -9,7 +9,8 @@
     <scriptTask completionQuantity="1" id="_5" isForCompensation="false" name="Task 1" scriptFormat="application/x-php" startQuantity="1">
       <incoming>_18</incoming>
       <outgoing>_15</outgoing>
-      <script><![CDATA[throw new Exception('Exception');]]></script>
+      <script><![CDATA[<?php
+throw new Exception('Exception');]]></script>
     </scriptTask>
     <boundaryEvent attachedToRef="_5" cancelActivity="false" id="_11" parallelMultiple="false">
       <extensionElements>

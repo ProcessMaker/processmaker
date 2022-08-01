@@ -230,8 +230,10 @@
     @endforeach
     <script src="{{mix('js/tasks/show.js')}}"></script>
     <script>
+      const store = new Vuex.Store();
       const main = new Vue({
         mixins:addons,
+        store: store,
         el: "#task",
         data: {
           //Edit data

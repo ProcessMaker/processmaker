@@ -1,5 +1,5 @@
 <template>
-    <li class="nav-item filter-bar justify-content-between" id="Sidebaricon" v-b-tooltip.hover.right="{ animation: false, disabled: expanded(), boundary: 'viewport', delay: { show: 0, hide: 0 }, title: item.title }">
+    <li class="nav-item filter-bar justify-content-between" id="Sidebaricon" v-b-tooltip.hover.right="{ animation: false, disabled: expanded(), boundary: 'viewport', delay: { show: 0, hide: 0 }, title: item.title }" :data-cy="item.title">
       <a :href="item.url" class="nav-link"  @click="toggle" :target="item.attributes.target" :aria-label="ariaLabel">
         <i v-if="item.attributes.icon" class="fas nav-icon" :class="item.attributes.icon" ></i>
         <i v-if="item.attributes.customicon" :class="item.attributes.customicon" ></i>

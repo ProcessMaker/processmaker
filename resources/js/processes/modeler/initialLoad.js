@@ -25,6 +25,7 @@ import {
   loopCharacteristicsInspector,
   loopCharacteristicsHandler,
   loopCharacteristicsData,
+  NodeIdentifierInput
 } from '@processmaker/modeler';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
 import UserSelect from './components/inspector/UserSelect';
@@ -60,6 +61,7 @@ Vue.component('ScriptSelect', ScriptSelect);
 Vue.component('StartPermission', StartPermission);
 Vue.component("Interstitial", Interstitial);
 Vue.component("SelectUserGroup", SelectUserGroup);
+Vue.component("NodeIdentifierInput", NodeIdentifierInput);
 
 let nodeTypes = [
   endEvent,
@@ -90,6 +92,7 @@ ProcessMaker.modelerExtensions = {
   loopCharacteristicsInspector,
   loopCharacteristicsHandler,
   loopCharacteristicsData,
+  NodeIdentifierInput
 };
 
 ProcessMaker.EventBus.$on('modeler-init', registerNodes);
@@ -140,7 +143,7 @@ ProcessMaker.EventBus.$on(
         params: {
           type: 'FORM',
           interactive: true
-        }        
+        }
       }
     });
 

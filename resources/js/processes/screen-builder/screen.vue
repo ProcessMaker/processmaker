@@ -27,6 +27,13 @@
         <b-row class="h-100 m-0" id="preview" v-show="displayPreview">
 
           <b-col class="overflow-auto h-100">
+            <div v-if="$store.getters['globalErrorsModule/isValidScreen'] === false" class="alert alert-danger mt-3">
+              <i class="fas fa-exclamation-circle"/>
+              {{ $store.getters['globalErrorsModule/getErrorMessage'] }}
+              <button type="button" class="close" aria-label="Close" @click="$store.dispatch('globalErrorsModule/close')">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
             <vue-form-renderer
               v-if="renderComponent === 'task-screen'"
               ref="renderer"
@@ -209,7 +216,7 @@ import "@processmaker/vue-form-elements/dist/vue-form-elements.css";
 import MonacoEditor from "vue-monaco";
 import mockMagicVariables from "./mockMagicVariables";
 import TopMenu from "../../components/Menu";
-import { cloneDeep, debounce } from 'lodash';
+import { cloneDeep, debounce , isEqual} from 'lodash';
 import i18next from 'i18next';
 
 // Bring in our initial set of controls
@@ -415,7 +422,8 @@ export default {
   computed: {
     previewDataStringyfy: {
       get() {
-        if (JSON.stringify(this.previewData) !== JSON.stringify(this.previewDataSaved)) {
+        if (this.previewInputValid && !isEqual(this.previewData, this.previewDataSaved)) {
+          Object.assign(this.previewDataSaved, this.previewData);
           this.formatMonaco();
         }
         return JSON.stringify(this.previewData);
@@ -484,15 +492,18 @@ export default {
   methods: {
     monacoMounted(editor) {
       this.editor = editor;
+      this.editor.updateOptions({ readOnly:  true });
     },
     formatMonaco() {
       if (!this.editor) {
         return;
       }
       this.editor.updateOptions({ readOnly:  false });
-      this.editor.getAction('editor.action.formatDocument').run().then(() => {
-        this.editor.updateOptions({ readOnly: true });
-      });
+      setTimeout(() => {
+        this.editor.getAction('editor.action.formatDocument').run().then(() => {
+          this.editor.updateOptions({ readOnly:  true });
+        });
+      }, 300);
     },
     countElements() {
       if (!this.$refs.renderer) {
@@ -621,10 +632,13 @@ export default {
       this.previewData = this.previewInputValid ? JSON.parse(this.previewInput) : {};
       this.rendererKey++;
       if (mode == 'preview') {
+        this.$dataProvider.flushScreenCache();
         this.preview.config = cloneDeep(this.config);
         this.preview.computed = cloneDeep(this.computed);
         this.preview.customCSS = cloneDeep(this.customCSS);
         this.preview.watchers = cloneDeep(this.watchers);
+      } else {
+        this.$refs.builder.refreshContent();
       }
     },
     onUpdate(data) {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit backupGlobals="false"
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false"
          backupStaticAttributes="false"
          colors="true"
          convertErrorsToExceptions="true"
@@ -8,6 +8,7 @@
          processIsolation="false"
          stopOnFailure="false"
          bootstrap="tests/bootstrap.php"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
 >
     <testsuites>
       <testsuite name="Features">
@@ -15,17 +16,17 @@
         <directory>tests/Managers</directory>
         <directory>tests/Model</directory>
         <directory>tests/Resources</directory>
-        <directory>tests/sdk</directory>
+        <directory>tests/Sdk</directory>
         <directory>tests/Traits</directory>
         <directory>tests/unit</directory>
       </testsuite>
   </testsuites>
 
-  <filter>
-    <whitelist addUncoveredFilesFromWhitelist="true" processUncoveredFilesFromWhitelist="false">
+  <coverage includeUncoveredFiles="true" processUncoveredFiles="false">
+    <include>
       <directory suffix=".php">./ProcessMaker</directory>
-    </whitelist>
-  </filter>
+    </include>
+  </coverage>
 
     <php>
       <env name="APP_DEBUG" value="true" />

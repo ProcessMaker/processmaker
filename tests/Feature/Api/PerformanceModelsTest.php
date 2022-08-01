@@ -87,9 +87,6 @@ class PerformanceModelsTest extends TestCase
      */
     public function testFactories($model, $baseTime)
     {
-        ScriptExecutor::setTestConfig('php');
-        ScriptExecutor::setTestConfig('lua');
-
         $baseCount = $this->getTotalRecords();
         $t = microtime(true);
         $times = 1;

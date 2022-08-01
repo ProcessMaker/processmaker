@@ -28,12 +28,6 @@ class UpgradeStatusCommand extends BaseCommand
      */
     protected $migrator;
 
-    /**
-     * Create a new migration rollback command instance.
-     *
-     * @param  \Illuminate\Database\Migrations\Migrator $migrator
-     * @return \Illuminate\Database\Console\Migrations\StatusCommand
-     */
     public function __construct(UpgradeMigrator $migrator)
     {
         parent::__construct();
@@ -44,22 +38,24 @@ class UpgradeStatusCommand extends BaseCommand
     /**
      * Execute the console command.
      *
-     * @return void
+     * @return void|int
      */
     public function handle()
     {
-        $this->migrator->setConnection($this->getDatabase());
-
         if (!$this->migrator->repositoryExists()) {
-            return $this->error('No upgrade migrations found.');
+            $this->error('No upgrade migrations found.');
+
+            return 1;
         }
 
         $ran = $this->migrator->getRepository()->getRan();
 
-        if (count($migrations = $this->getStatusFor($ran)) > 0) {
-            $this->table(['Ran?', 'Migration'], $migrations);
+        $batches = $this->migrator->getRepository()->getMigrationBatches();
+
+        if (count($migrations = $this->getStatusFor($ran, $batches)) > 0) {
+            $this->table(['Ran?', 'Upgrade Migration'], $migrations);
         } else {
-            $this->error('No migrations found');
+            $this->error('No upgrade migrations found');
         }
     }
 
@@ -67,25 +63,19 @@ class UpgradeStatusCommand extends BaseCommand
      * Get the status for the given ran migrations.
      *
      * @param  array  $ran
+     * @param  array  $batches
      * @return \Illuminate\Support\Collection
      */
-    protected function getStatusFor(array $ran)
+    protected function getStatusFor(array $ran, array $batches)
     {
-        $this->migrator->requireFiles(
-            $files = $this->getAllMigrationFiles()
-        );
+        return Collection::make($this->getAllMigrationFiles())
+                         ->map(function ($migration) use ($ran, $batches) {
+                             $migrationName = $this->migrator->getMigrationName($migration);
 
-        $sorted_migrations = Collection::make(
-            $this->migrator->sortBySemanticVersion($files)
-        );
-
-        return $sorted_migrations->map(function ($migration) use ($ran) {
-            $migration_name = $this->migrator->getMigrationName($migration);
-
-            return in_array($migration_name, $ran)
-                ? ['<info>Y</info>', $migration_name]
-                : ['<fg=red>N</fg=red>', $migration_name];
-        });
+                             return in_array($migrationName, $ran)
+                                 ? ['<info>Yes</info>', $migrationName, $batches[$migrationName]]
+                                 : ['<fg=red>No</fg=red>', $migrationName];
+                         });
     }
 
     /**
