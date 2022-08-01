@@ -4,19 +4,18 @@ namespace ProcessMaker\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\BroadcastMessage;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessRequestToken as Token;
-use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 
 class FileReadyNotification extends Notification
 {
     use Queueable;
 
     private $url;
+
     private $name;
+
     private $fileType;
+
     private $fileId;
 
     /**
@@ -63,9 +62,9 @@ class FileReadyNotification extends Notification
     public function toArray($notifiable)
     {
         return [
-            'type' => 'FILE_READY' ,
-            'message' => __("The :file you requested is now ready for download.", ['file' => $this->name]),
-            'name' => __("The :file you requested is now ready for download.", ['file' => $this->name]),
+            'type' => 'FILE_READY',
+            'message' => __('The :file you requested is now ready for download.', ['file' => $this->name]),
+            'name' => __('The :file you requested is now ready for download.', ['file' => $this->name]),
             'url' => $this->url,
             'fileType' => $this->fileType,
             'fileId' => $this->fileId,
@@ -82,5 +81,4 @@ class FileReadyNotification extends Notification
     {
         return new BroadcastMessage($this->toArray($notifiable));
     }
-
 }

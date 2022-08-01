@@ -1,4 +1,5 @@
 <?php
+
 return [
     'api' => [
         /*
@@ -116,13 +117,13 @@ return [
     |--------------------------------------------------------------------------
     */
     'security' => [
-       'pm_api_auth_code' => [
+        'pm_api_auth_code' => [
             'type' => 'oauth2',
             'flows' => [
                 'authorizationCode' => [
                     'authorizationUrl' => '/oauth/authorize',
                     'tokenUrl' => '/oauth/token',
-                    'scopes' => ['*' => '']
+                    'scopes' => ['*' => ''],
                 ],
             ],
         ],
@@ -135,7 +136,7 @@ return [
             'type' => 'apiKey',
             'in' => 'header',
             'name' => 'Authorization',
-        ]
+        ],
     ],
 
     /*
@@ -207,4 +208,3 @@ return [
         // We're assuming base path is the same as the swagger UI
     ],
 ];
-

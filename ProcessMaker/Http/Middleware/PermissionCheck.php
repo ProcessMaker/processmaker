@@ -56,5 +56,4 @@ class PermissionCheck
 
         return $next($request);
     }
-
 }

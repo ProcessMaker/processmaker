@@ -10,8 +10,6 @@ use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Notification;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
@@ -44,15 +42,15 @@ class TaskController extends Controller
         $dataManager = new DataManager();
         $userHasComments = Comment::where('commentable_type', ProcessRequestToken::class)
                                     ->where('commentable_id', $task->id)
-                                    ->where('body','like', '%{{' . \Auth::user()->id . '}}%')
+                                    ->where('body', 'like', '%{{'.\Auth::user()->id.'}}%')
                                     ->count() > 0;
 
-        if (!\Auth::user()->can('update', $task) && !$userHasComments) {
+        if (! \Auth::user()->can('update', $task) && ! $userHasComments) {
             $this->authorize('update', $task);
         }
 
         //Mark as unread any not read notification for the task
-        Notification::where('data->url', '/' . Request::path())
+        Notification::where('data->url', '/'.Request::path())
             ->whereNull('read_at')
             ->update(['read_at' => Carbon::now()]);
 

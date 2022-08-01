@@ -1,19 +1,19 @@
 <?php
+
 namespace Tests\Model;
 
 use Illuminate\Support\Facades\Hash;
-use Tests\TestCase;
-use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
-use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\GroupMember;
-use ProcessMaker\Models\PermissionAssignment;
+use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\User;
 use ProcessMaker\Providers\AuthServiceProvider;
+use Tests\TestCase;
 
 class UserTest extends TestCase
 {
-
-    public function testPermissions() {
+    public function testPermissions()
+    {
         $president_user = factory(User::class)->create(['password' => Hash::make('password')]);
         $technician_user = factory(User::class)->create(['password' => Hash::make('password')]);
         $mom_user = factory(User::class)->create(['password' => Hash::make('password')]);
@@ -33,7 +33,7 @@ class UserTest extends TestCase
             'member_type' => User::class,
             'member_id' => $technician_user,
         ]);
-        
+
         factory(GroupMember::class)->create([
             'group_id' => $p_group->id,
             'member_type' => User::class,
@@ -59,16 +59,16 @@ class UserTest extends TestCase
     public function testCanAny()
     {
         $user = factory(User::class)->create();
-        
+
         $p1 = factory(Permission::class)->create(['name' => 'foo']);
         $p2 = factory(Permission::class)->create(['name' => 'bar']);
         $p3 = factory(Permission::class)->create(['name' => 'baz']);
-        
+
         (new AuthServiceProvider(app()))->boot();
 
         $this->assertFalse($user->can('bar'));
         $this->assertFalse($user->canAny('foo|bar'));
-        
+
         $user->permissions()->attach($p2);
         $user->permissions()->attach($p3);
         $user->refresh();
@@ -83,27 +83,26 @@ class UserTest extends TestCase
         $testFor = [
             'processes' => 'view-process-categories',
             'scripts' => 'view-script-categories',
-            'screens' => 'view-screen-categories'
+            'screens' => 'view-screen-categories',
         ];
 
-        $testFor = function($singular, $plural) {
-
-            $viewCatPerm = factory(Permission::class)->create(['name' => 'view-' . $singular . '-categories']);
-            $editCatePerm = factory(Permission::class)->create(['name' => 'edit-' . $singular . '-categories']);
+        $testFor = function ($singular, $plural) {
+            $viewCatPerm = factory(Permission::class)->create(['name' => 'view-'.$singular.'-categories']);
+            $editCatePerm = factory(Permission::class)->create(['name' => 'edit-'.$singular.'-categories']);
 
             foreach (['create', 'edit'] as $method) {
                 $user = factory(User::class)->create();
-                
+
                 $perm = factory(Permission::class)->create(['name' => "{$method}-{$plural}"]);
-                
+
                 (new AuthServiceProvider(app()))->boot();
-                
+
                 $this->assertFalse($user->can($perm->name));
                 $this->assertFalse($user->can($viewCatPerm->name));
 
                 $user->permissions()->attach($perm);
                 $user->refresh();
-                
+
                 $this->assertTrue($user->can($viewCatPerm->name));
                 $this->assertFalse($user->can($editCatePerm->name));
             }
@@ -112,6 +111,5 @@ class UserTest extends TestCase
         $testFor('process', 'processes');
         $testFor('screen', 'screens');
         $testFor('script', 'scripts');
-
     }
 }

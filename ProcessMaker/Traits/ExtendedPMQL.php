@@ -3,7 +3,6 @@
 namespace ProcessMaker\Traits;
 
 use Carbon\Carbon;
-use Carbon\CarbonTimeZone;
 use Illuminate\Database\Eloquent\Builder;
 use ProcessMaker\Models\User;
 use ProcessMaker\Query\Expression;
@@ -21,17 +20,16 @@ trait ExtendedPMQL
      * PMQL scope that extends the standard PMQL scope by supporting any custom
      * aliases specified in the model.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $builder
-     * @param string $query
-     * @param callable $callback
-     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param  string  $query
+     * @param  callable  $callback
      * @return mixed
      */
     public function scopePMQL(Builder $builder, string $query, callable $callback = null, User $user = null)
     {
         if (! $callback) {
             // If a callback isn't passed to the scope, we handle it here
-            return $this->parentScopePMQL($builder, $query, function($expression) use ($builder, $user) {
+            return $this->parentScopePMQL($builder, $query, function ($expression) use ($builder, $user) {
                 return $this->handle($expression, $builder, $user);
             });
         } else {
@@ -44,9 +42,8 @@ trait ExtendedPMQL
      * Callback function to check for and handle any field aliases, value
      * aliases, or field wildcards specified in the given model.
      *
-     * @param \ProcessMaker\Query\Expression $expression
-     * @param \Illuminate\Database\Eloquent\Builder $builder
-     *
+     * @param  \ProcessMaker\Query\Expression  $expression
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      * @return mixed
      */
     private function handle(Expression $expression, Builder $builder, User $user = null)
@@ -80,7 +77,7 @@ trait ExtendedPMQL
             if (method_exists($model, $method)) {
                 if (is_array($value)) {
                     // For "IN" and "NOT IN" Operators, convert to a series of "where"s
-                    return function($query) use ($model, $method, $value, $expression, $builder, $user) {
+                    return function ($query) use ($model, $method, $value, $expression, $builder, $user) {
                         $originalOperator = $expression->operator;
 
                         // Always use equal operator in alias methods because
@@ -88,7 +85,7 @@ trait ExtendedPMQL
                         $expression->setOperator('=');
 
                         foreach ($value as $v) {
-                            if($originalOperator === Expression::OPERATOR_IN) {
+                            if ($originalOperator === Expression::OPERATOR_IN) {
                                 $query->orWhere(
                                     $model->{$method}($v, $expression, $builder, $user)
                                 );
@@ -108,7 +105,7 @@ trait ExtendedPMQL
             // alias to a callback function for any needed processing. If the
             // callback returns void, the PMQL is parsed as if there is
             // no callback.
-            $method = "fieldWildcard";
+            $method = 'fieldWildcard';
             if (method_exists($model, $method)) {
                 return $model->{$method}($value, $expression, $builder, $user);
             }
@@ -119,8 +116,7 @@ trait ExtendedPMQL
      * Set the value as a string if possible. Also convert to the logged-in
      * user's timezone if the value is parsable by Carbon as a date.
      *
-     * @param \ProcessMaker\Query\Expression $expression
-     *
+     * @param  \ProcessMaker\Query\Expression  $expression
      * @return mixed
      */
     private function parseValue($expression)
@@ -137,10 +133,10 @@ trait ExtendedPMQL
         // Check to see if the value is parsable as a date
         if ((is_string($value) && strlen($value) > 1)) {
             switch ($value) {
-                case $value instanceof IntervalExpression: 
+                case $value instanceof IntervalExpression:
                     $value = $this->parseDate($value);
                     break;
-                default: 
+                default:
                     // Check to see if the value is a date/datetime formatted if not return original value
                     $isDateFormatted = Carbon::hasFormatWithModifiers($value, 'Y#m#d');
                     $isDateTimeFormatted = Carbon::hasFormatWithModifiers($value, 'Y#m#d H:i:s');
@@ -149,22 +145,25 @@ trait ExtendedPMQL
                     }
                     break;
                 }
-            }
+        }
+
         return $value;
     }
 
-    private function parseDate($value) {
+    private function parseDate($value)
+    {
         try {
             $parsed = Carbon::parse($value, auth()->user()->timezone);
             if ($parsed->isMidnight()) {
                 return $parsed->toDateString();
             } else {
                 $parsed->setTimezone(config('app.timezone'));
+
                 return $parsed->toDateTimeString();
-            }  
+            }
         } catch (Throwable $e) {
             //Ignore parsing errors and just return the original
             return $value;
-        }  
+        }
     }
 }

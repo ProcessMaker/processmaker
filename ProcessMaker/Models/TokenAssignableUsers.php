@@ -1,18 +1,17 @@
 <?php
+
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 /**
  * Process events relationship
- *
  */
 class TokenAssignableUsers extends Relation
 {
-
     /**
-     * @var User[] $models
+     * @var User[]
      */
     private $models = [];
 
@@ -45,13 +44,14 @@ class TokenAssignableUsers extends Relation
     public function getResults()
     {
         $ids = $this->parent->process->getAssignableUsers($this->element_id);
+
         return User::whereIn('id', $ids)->get();
     }
 
     /**
      * Initialize the relation on a set of models.
      *
-     * @param  array   $models
+     * @param  array  $models
      * @param  string  $relation
      * @return array
      */
@@ -63,7 +63,7 @@ class TokenAssignableUsers extends Relation
     /**
      * Match the eagerly loaded results to their parents.
      *
-     * @param  array   $models
+     * @param  array  $models
      * @param  \Illuminate\Database\Eloquent\Collection  $results
      * @param  string  $relation
      * @return array
@@ -75,6 +75,7 @@ class TokenAssignableUsers extends Relation
             $children = collect(User::whereIn('id', $ids)->get());
             $model->setRelation($relation, $children);
         }
+
         return $models;
     }
 }

@@ -1,9 +1,8 @@
 <?php
+
 namespace Tests\Feature;
 
-use ProcessMaker\Exception\ExpressionFailedException;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
-use ProcessMaker\Exception\SyntaxErrorException;
 use ProcessMaker\Models\FormalExpression;
 use Tests\TestCase;
 
@@ -12,7 +11,6 @@ use Tests\TestCase;
  */
 class FEELFormulasTest extends TestCase
 {
-
     /**
      * Test to use an unsupported language
      */
@@ -34,13 +32,13 @@ class FEELFormulasTest extends TestCase
         $expresion->setLanguage('FEEL');
 
         // When calculation is true
-        $expresion->setBody("Height == 2 * Weight");
-        $response = $expresion( [ "Height" => 120, "Weight" => 60]);
+        $expresion->setBody('Height == 2 * Weight');
+        $response = $expresion(['Height' => 120, 'Weight' => 60]);
         $this->assertSame(true, $response);
 
         // When calculation is false
-        $expresion->setBody("Height == 1 * Weight");
-        $response = $expresion( [ "Height" => 120, "Weight" => 60]);
+        $expresion->setBody('Height == 1 * Weight');
+        $response = $expresion(['Height' => 120, 'Weight' => 60]);
         $this->assertSame(false, $response);
     }
 
@@ -54,12 +52,12 @@ class FEELFormulasTest extends TestCase
 
         // When calculation is true
         $expresion->setBody("Height == 'cm: ' ~ (2 * Weight)");
-        $response = $expresion( [ "Height" => "cm: 120", "Weight" => 60]);
+        $response = $expresion(['Height' => 'cm: 120', 'Weight' => 60]);
         $this->assertSame(true, $response);
 
         // When calculation is false
         $expresion->setBody("Height == 'cm: ' ~ (2 * Weight)");
-        $response = $expresion( [ "Height" => "km: 120", "Weight" => 60]);
+        $response = $expresion(['Height' => 'km: 120', 'Weight' => 60]);
         $this->assertSame(false, $response);
     }
 }

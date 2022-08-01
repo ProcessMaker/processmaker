@@ -2,7 +2,6 @@
 
 use Faker\Generator as Faker;
 use ProcessMaker\Models\Group;
-use ProcessMaker\Models\User;
 
 /**
  * Model factory for a Group

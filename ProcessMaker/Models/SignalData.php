@@ -2,23 +2,8 @@
 
 namespace ProcessMaker\Models;
 
-use Exception;
-use ProcessMaker\Nayra\Bpmn\ActivitySubProcessTrait;
-use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
-use ProcessMaker\Nayra\Bpmn\Events\ActivityClosedEvent;
-use ProcessMaker\Nayra\Bpmn\Events\ActivityCompletedEvent;
-use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\ErrorInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\FlowInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
-use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
-use ProcessMaker\Jobs\CopyRequestFiles;
-
 /**
  * Represents Signal Data
- *
- * @package ProcessMaker\Model
  */
 class SignalData
 {
@@ -37,7 +22,7 @@ class SignalData
     }
 
     /**
-     * @param string $id
+     * @param  string  $id
      */
     public function setId(string $id): void
     {
@@ -53,7 +38,7 @@ class SignalData
     }
 
     /**
-     * @param string $name
+     * @param  string  $name
      */
     public function setName(string $name): void
     {
@@ -69,7 +54,7 @@ class SignalData
     }
 
     /**
-     * @param string $detail
+     * @param  string  $detail
      */
     public function setDetail(string $detail): void
     {
@@ -82,5 +67,4 @@ class SignalData
         $this->name = $name ?? '';
         $this->detail = $detail ?? '';
     }
-
 }

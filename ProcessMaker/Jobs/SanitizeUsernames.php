@@ -3,16 +3,14 @@
 namespace ProcessMaker\Jobs;
 
 use Illuminate\Bus\Queueable;
-use ProcessMaker\Models\User;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use ProcessMaker\Models\User;
 
 class SanitizeUsernames implements ShouldQueue
 {
@@ -50,7 +48,7 @@ class SanitizeUsernames implements ShouldQueue
 
             // Set the valid username to the user
             $updated = DB::table('users')->where('id', $user->id)->update([
-                'username' => $updated_username
+                'username' => $updated_username,
             ]);
 
             // Log the result and continue
@@ -63,7 +61,7 @@ class SanitizeUsernames implements ShouldQueue
                 logger()->info("Username Updated From ({$pre_update_username}) to ({$updated_username})", [
                     'user_id' => $user->id,
                     'updated_from_username' => $pre_update_username,
-                    'updated_to_username' => $updated_username
+                    'updated_to_username' => $updated_username,
                 ]);
             }
         }
@@ -75,24 +73,23 @@ class SanitizeUsernames implements ShouldQueue
      *
      * @param  string  $previous_username
      * @param  string  $new_username
-     *
      * @return void
      */
     public static function findAndReplaceUsernameInComments(string $previous_username, string $new_username)
     {
-        if (!self::packageCommentsInstalled()) {
+        if (! self::packageCommentsInstalled()) {
             return;
         }
 
         $comments_with_username = DB::table('comments')
                                     ->where('body', 'like', "%@{$previous_username}%")
-                                    ->select('id','body')
+                                    ->select('id', 'body')
                                     ->orderBy('id')
                                     ->get();
 
         foreach ($comments_with_username as $comment) {
             DB::table('comments')->where('id', $comment->id)->update([
-                'body' => str_replace("@{$previous_username} ", "@$new_username ", $comment->body)
+                'body' => str_replace("@{$previous_username} ", "@$new_username ", $comment->body),
             ]);
         }
     }
@@ -102,8 +99,8 @@ class SanitizeUsernames implements ShouldQueue
      *
      * @param  string  $username
      * @param  int  $id
-     *
      * @return string
+     *
      * @throws \Exception
      */
     public static function filterAndValidateUsername(string $username, int $id): string
@@ -125,7 +122,6 @@ class SanitizeUsernames implements ShouldQueue
                                        ->where('id', '!=', $id)
                                        ->orderBy('id');
         } while ($unique_username_query->exists());
-
 
         // Once we know it's a unique, valid
         // username, send it back

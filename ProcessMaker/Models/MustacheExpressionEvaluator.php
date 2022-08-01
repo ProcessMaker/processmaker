@@ -4,11 +4,9 @@ namespace ProcessMaker\Models;
 
 use Mustache_Engine;
 use ProcessMaker\Contracts\TemplateExpressionInterface;
-use Throwable;
 
 /**
  * Class MustacheExpressionEvaluator
- * @package ProcessMaker\Models
  */
 class MustacheExpressionEvaluator implements TemplateExpressionInterface
 {
@@ -23,16 +21,15 @@ class MustacheExpressionEvaluator implements TemplateExpressionInterface
      * Evaluates the template using the mustache engine, if some error is generated an empty string
      * is returned
      *
-     * @param string $template
-     * @param string $data
+     * @param  string  $template
+     * @param  string  $data
      * @return string
      */
     public function render($template, $data)
     {
         try {
             $result = $this->engine->render($template, $data);
-        }
-        catch (\Exception $ex) {
+        } catch (\Exception $ex) {
             $result = '';
         }
 

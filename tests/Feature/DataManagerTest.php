@@ -4,18 +4,14 @@ namespace Tests\Feature;
 
 use Illuminate\Support\Facades\Hash;
 use PermissionSeeder;
-use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\PermissionAssignment;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
-use ProcessMaker\Providers\WorkflowServiceProvider;
-use Tests\Feature\Shared\RequestHelper;
 use ProcessMaker\Providers\AuthServiceProvider;
+use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
 /**
@@ -24,7 +20,7 @@ use Tests\TestCase;
 class DataManagerTest extends TestCase
 {
     use RequestHelper;
-    
+
     protected function setUp(): void
     {
         parent::setUp();

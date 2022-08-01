@@ -17,18 +17,20 @@ class TaskLockAssignmentTest extends TestCase
     use RequestHelper;
 
     /**
-     * @var \ProcessMaker\Models\User $user1
+     * @var \ProcessMaker\Models\User
      */
     protected $user1;
 
     /**
-     * @var \ProcessMaker\Models\User $user2
+     * @var \ProcessMaker\Models\User
      */
     protected $user2;
 
     /**
      * Create new task assignment type user successfully
-     * @param string $processFileName
+     *
+     * @param  string  $processFileName
+     *
      * @throws \Throwable
      */
     private function loadProcess($processFileName)
@@ -37,7 +39,7 @@ class TaskLockAssignmentTest extends TestCase
         $this->process = factory(Process::class)->create();
 
         // Load a single task process
-        $this->process->bpmn = file_get_contents(__DIR__ . '/processes/' . $processFileName);
+        $this->process->bpmn = file_get_contents(__DIR__.'/processes/'.$processFileName);
 
         $this->process->save();
 
@@ -46,7 +48,7 @@ class TaskLockAssignmentTest extends TestCase
         $this->user2 = factory(User::class)->create(['status' => 'ACTIVE']);
 
         // Group with id 100 is created and the 2 users are attached to it
-        $group = factory(Group::class)->create(['id'=>100, 'status' => 'ACTIVE']);
+        $group = factory(Group::class)->create(['id' => 100, 'status' => 'ACTIVE']);
 
         $group_member = new GroupMember();
         $group_member->group()->associate($group);
@@ -156,12 +158,12 @@ class TaskLockAssignmentTest extends TestCase
         $activeTask = $request->tokens()->where('status', 'ACTIVE')->first();
         $this->assertEquals($this->user2->id, $activeTask->user_id);
     }
+
     /**
      * Complete task
      *
-     * @param \ProcessMaker\Models\ProcessRequestToken $task
-     * @param array $data
-     *
+     * @param  \ProcessMaker\Models\ProcessRequestToken  $task
+     * @param  array  $data
      * @return \ProcessMaker\Models\ProcessRequestToken
      */
     private function completeTask(ProcessRequestToken $task, $data = [])
@@ -170,6 +172,7 @@ class TaskLockAssignmentTest extends TestCase
         $process = $task->process;
         $instance = $task->processRequest;
         WorkflowManager::completeTask($process, $instance, $task, $data);
+
         return $task->refresh();
     }
 }

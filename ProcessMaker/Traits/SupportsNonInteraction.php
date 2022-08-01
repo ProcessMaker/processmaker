@@ -3,12 +3,12 @@
 namespace ProcessMaker\Traits;
 
 trait SupportsNonInteraction
-{    
+{
     private function pretending()
     {
         return $this->option('pretend');
     }
-    
+
     private function interactive()
     {
         return ! $this->option('no-interaction');
@@ -17,7 +17,7 @@ trait SupportsNonInteraction
     private function confirmOptional($param, $question)
     {
         $option = $this->option($param);
-        
+
         if ($option) {
             return $option;
         } else {
@@ -28,11 +28,11 @@ trait SupportsNonInteraction
             }
         }
     }
-    
+
     private function choiceOptional($param, $question, $choices, $default = null)
     {
         $option = $this->option($param);
-        
+
         if ($option) {
             return $option;
         } else {
@@ -47,7 +47,7 @@ trait SupportsNonInteraction
     private function askOptional($param, $question)
     {
         $option = $this->option($param);
-        
+
         if ($option) {
             return $option;
         } else {
@@ -58,11 +58,11 @@ trait SupportsNonInteraction
             }
         }
     }
-    
+
     private function anticipateOptional($param, $question, $choices, $default = null)
     {
         $option = $this->option($param);
-        
+
         if ($option) {
             return $option;
         } else {
@@ -77,7 +77,7 @@ trait SupportsNonInteraction
     private function secretOptional($param, $question)
     {
         $option = $this->option($param);
-        
+
         if ($option) {
             return $option;
         } else {
@@ -88,7 +88,7 @@ trait SupportsNonInteraction
             }
         }
     }
-    
+
     private function infoIfInteractive($string)
     {
         if ($this->interactive()) {
@@ -99,7 +99,7 @@ trait SupportsNonInteraction
     private function errorOrExit($string)
     {
         $this->error($string);
-        
+
         if (! $this->interactive()) {
             exit(255);
         }

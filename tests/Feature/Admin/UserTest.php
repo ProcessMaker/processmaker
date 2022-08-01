@@ -2,11 +2,10 @@
 
 namespace Tests\Feature\Admin;
 
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class UserTest extends TestCase
 {
@@ -27,7 +26,6 @@ class UserTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Users');
-
     }
 
     /**
@@ -37,10 +35,9 @@ class UserTest extends TestCase
      */
     public function testEditRoute()
     {
-
         $user_id = factory(User::class)->create()->id;
         // get the URL
-        $response = $this->webCall('GET', '/admin/users/' . $user_id . '/edit');
+        $response = $this->webCall('GET', '/admin/users/'.$user_id.'/edit');
 
         $response->assertStatus(200);
         // check the correct view is called
@@ -50,6 +47,7 @@ class UserTest extends TestCase
 
     /**
      * Test to make sure the additional information shows in edit user
+     *
      * @return void
      */
     public function testCanSeeAditionalInformationInEditRoute()
@@ -59,10 +57,10 @@ class UserTest extends TestCase
             'key' => 'users.properties',
             'config' => '{"MyVar":"Test Var"}',
             'format' => 'object',
-            'group' => 'Users'
+            'group' => 'Users',
         ]);
         // get the URL
-        $response = $this->webCall('GET', '/admin/users/' . $user_id . '/edit');
+        $response = $this->webCall('GET', '/admin/users/'.$user_id.'/edit');
         $response->assertStatus(200);
         // check the correct view is called
         $response->assertViewIs('admin.users.edit');
@@ -71,6 +69,7 @@ class UserTest extends TestCase
 
     /**
      * Test to make sure the additional information not shows in profile
+     *
      * @return void
      */
     public function testCannotSeeAditionalInformationInProfileRoute()
@@ -80,7 +79,7 @@ class UserTest extends TestCase
             'key' => 'users.properties',
             'config' => '{"MyVar":"Test Var"}',
             'format' => 'object',
-            'group' => 'Users'
+            'group' => 'Users',
         ]);
         // get the URL
         $response = $this->webCall('GET', '/profile/edit');

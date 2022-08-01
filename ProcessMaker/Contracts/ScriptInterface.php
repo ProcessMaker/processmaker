@@ -2,4 +2,6 @@
 
 namespace ProcessMaker\Contracts;
 
-interface ScriptInterface { }
+interface ScriptInterface
+{
+}

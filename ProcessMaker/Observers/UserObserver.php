@@ -12,7 +12,8 @@ class UserObserver
     /**
      * Handle the user "deleting" event.
      *
-     * @param User $user
+     * @param  User  $user
+     *
      * @throws ReferentialIntegrityException
      */
     public function deleting(User $user)

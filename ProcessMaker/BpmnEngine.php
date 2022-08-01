@@ -15,8 +15,6 @@ use ProcessMaker\Repositories\BpmnDocument;
 
 /**
  * Test implementation for EngineInterface.
- *
- * @package ProcessMaker
  */
 class BpmnEngine implements EngineInterface
 {
@@ -28,7 +26,7 @@ class BpmnEngine implements EngineInterface
     private $repository;
 
     /**
-     * @var EventBusInterface $dispatcher
+     * @var EventBusInterface
      */
     private $dispatcher;
 
@@ -36,13 +34,14 @@ class BpmnEngine implements EngineInterface
      * Loaded versioned definitions
      */
     private $definitions = [];
+
     public $uid;
 
     /**
      * Test engine constructor.
      *
-     * @param RepositoryInterface $repository
-     * @param EventBusInterface $dispatcher
+     * @param  RepositoryInterface  $repository
+     * @param  EventBusInterface  $dispatcher
      */
     public function __construct(RepositoryInterface $repository, $dispatcher)
     {
@@ -61,13 +60,13 @@ class BpmnEngine implements EngineInterface
     }
 
     /**
-     * @param EventBusInterface $dispatcher
-     *
+     * @param  EventBusInterface  $dispatcher
      * @return $this
      */
     public function setDispatcher(EventBusInterface $dispatcher)
     {
         $this->dispatcher = $dispatcher;
+
         return $this;
     }
 
@@ -85,21 +84,20 @@ class BpmnEngine implements EngineInterface
     }
 
     /**
-     * @param RepositoryInterface $repository
-     *
+     * @param  RepositoryInterface  $repository
      * @return $this
      */
     public function setRepository(RepositoryInterface $repository)
     {
         $this->repository = $repository;
+
         return $this;
     }
 
     /**
      * Load an execution instance from an external storage.
      *
-     * @param ProcessRequest $instance
-     *
+     * @param  ProcessRequest  $instance
      * @return ExecutionInstanceInterface|null
      */
     public function loadProcessRequest(ProcessRequest $instance)
@@ -112,23 +110,25 @@ class BpmnEngine implements EngineInterface
         }
         $definitions = $this->getDefinition($instance->processVersion ?? $instance->process);
         $instance = $this->loadExecutionInstance($instance->getKey(), $definitions);
+
         return $instance;
     }
 
     public function getDefinition($processVersion)
     {
         $key = $processVersion->getKey();
-        if (!isset($this->definitions[$key])) {
+        if (! isset($this->definitions[$key])) {
             $this->definitions[$key] = $processVersion->getDefinitions(false, $this);
             $this->loadProcessDefinitions($this->definitions[$key]);
         }
+
         return $this->definitions[$key];
     }
 
     /**
      * Load a process definitin to the engine
      *
-     * @param BpmnDocument $definitions
+     * @param  BpmnDocument  $definitions
      * @return void
      */
     public function loadProcessDefinitions(BpmnDocument $definitions)
@@ -157,7 +157,6 @@ class BpmnEngine implements EngineInterface
                         $eventDefinition->scheduleTimerEvents($event->getOwnerProcess()->getEngine(), $event, null);
                     }
                 }
-
             }
         }
         $this->getJobManager()->disableRegisterStartEvents();

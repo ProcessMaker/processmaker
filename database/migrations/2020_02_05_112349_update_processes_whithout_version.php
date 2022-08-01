@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 use ProcessMaker\Models\Process;
 
@@ -15,7 +13,7 @@ class UpdateProcessesWhithoutVersion extends Migration
     public function up()
     {
         // Update processes without any version saved
-        foreach(Process::has('versions', 0)->get() as $process) {
+        foreach (Process::has('versions', 0)->get() as $process) {
             $process->saveVersion();
         }
     }

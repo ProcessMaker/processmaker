@@ -4,9 +4,8 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\HideSystemResources;
+use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
  * Represents a business process category definition.
@@ -45,7 +44,7 @@ class ProcessCategory extends Model
     protected $fillable = [
         'name',
         'status',
-        'is_system'
+        'is_system',
     ];
 
     public static function rules($existing = null)
@@ -54,7 +53,7 @@ class ProcessCategory extends Model
 
         return [
             'name' => ['required', 'string', 'max:100', $unique, 'alpha_spaces'],
-            'status' => 'required|string|in:ACTIVE,INACTIVE'
+            'status' => 'required|string|in:ACTIVE,INACTIVE',
         ];
     }
 

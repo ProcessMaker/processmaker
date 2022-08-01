@@ -10,7 +10,7 @@ class ProcessVersionPolicy
 {
     use HandlesAuthorization;
 
-     /**
+    /**
      * Run before all methods to determine if the
      * user is an admin and can do everything.
      *
@@ -29,7 +29,6 @@ class ProcessVersionPolicy
      *
      * @param  \ProcessMaker\Models\User  $user
      * @param  \ProcessMaker\Models\ProcessVersion  $processVersion
-     *
      * @return bool
      */
     public function cancel(User $user, ProcessVersion $processVersion)
@@ -59,7 +58,6 @@ class ProcessVersionPolicy
      *
      * @param  \ProcessMaker\Models\User  $user
      * @param  \ProcessMaker\Models\ProcessVersion  $processVersion
-     *
      * @return bool
      */
     public function editData(User $user, ProcessVersion $processVersion)

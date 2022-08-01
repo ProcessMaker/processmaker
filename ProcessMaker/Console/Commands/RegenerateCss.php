@@ -3,12 +3,9 @@
 namespace ProcessMaker\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Log;
 use ProcessMaker\Jobs\CompileSass;
 use ProcessMaker\Models\Setting;
-use ProcessMaker\PackageChecker;
 
 class RegenerateCss extends Command
 {
@@ -57,26 +54,25 @@ class RegenerateCss extends Command
             'tag' => 'sidebar',
             'origin' => 'resources/sass/sidebar/sidebar.scss',
             'target' => 'public/css/sidebar.css',
-            'user' => null
+            'user' => null,
         ]);
 
         CompileSass::dispatch([
             'tag' => 'app',
             'origin' => 'resources/sass/app.scss',
             'target' => 'public/css/app.css',
-            'user' => null
+            'user' => null,
         ]);
 
         CompileSass::dispatch([
             'tag' => 'queues',
             'origin' => 'resources/sass/admin/queues.scss',
             'target' => 'public/css/admin/queues.css',
-            'user' => null
+            'user' => null,
         ]);
 
         $this->info("\nCSS files have been generated.");
     }
-
 
     /**
      * Write variables in file
@@ -88,10 +84,9 @@ class RegenerateCss extends Command
         // Now generate the _colors.scss file
         $contents = "// Changed theme colors\n";
         foreach ($data as $key => $value) {
-            $contents .= $value['id'] . ': ' . $value['value'] . ";\n";
+            $contents .= $value['id'].': '.$value['value'].";\n";
         }
-        File::put(app()->resourcePath('sass') . '/_colors.scss', $contents);
-
+        File::put(app()->resourcePath('sass').'/_colors.scss', $contents);
     }
 
     /**
@@ -105,17 +100,16 @@ class RegenerateCss extends Command
         $sansSerif = $sansSerif ? $sansSerif : $this->sansSerifFontDefault();
         // Generate the _fonts.scss file
         $contents = "// Changed theme fonts\n";
-        $contents .= '$font-family-sans-serif: ' . $sansSerif->id . " !default;\n";
-        File::put(app()->resourcePath('sass') . '/_fonts.scss', $contents);
+        $contents .= '$font-family-sans-serif: '.$sansSerif->id." !default;\n";
+        File::put(app()->resourcePath('sass').'/_fonts.scss', $contents);
     }
-
 
     private function sansSerifFontDefault()
     {
         $data = new \stdClass();
         $data->id = "'Open Sans'";
         $data->title = "'Open Sans'";
+
         return $data;
     }
-
 }

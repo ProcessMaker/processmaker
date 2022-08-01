@@ -4,17 +4,15 @@ namespace ProcessMaker\Traits;
 
 /**
  * Include the seeders of the registered plugins.
- *
  */
 trait LoadPluginSeeders
 {
-
     private static $pluginSeeders = [];
 
     /**
      * Register a seeder that should be executed when callPluginSeeders()
      *
-     * @param string $seederClass
+     * @param  string  $seederClass
      */
     public static function registerSeeder($seederClass)
     {
@@ -23,7 +21,6 @@ trait LoadPluginSeeders
 
     /**
      * Execute the registered seeders.
-     *
      */
     protected function callPluginSeeders()
     {

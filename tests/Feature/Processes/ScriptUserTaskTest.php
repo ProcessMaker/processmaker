@@ -4,13 +4,11 @@ namespace Tests\Feature\Processes;
 
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Jobs\CompleteActivity;
-use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class ScriptUserTaskTest extends TestCase
 {
@@ -18,12 +16,7 @@ class ScriptUserTaskTest extends TestCase
 
     public function testJobThatRunsAScriptTaskWithAUser()
     {
-
-
-
         $this->markTestSkipped();
-
-
 
         $data = [];
         $data['bpmn'] = Process::getProcessTemplate('ScriptTasksWithUser.bpmn');
@@ -35,7 +28,7 @@ class ScriptUserTaskTest extends TestCase
         factory(Script::class)->create([
             'id' => 10,
             'title' => 'titletest',
-            'run_as_user_id' => $user->id
+            'run_as_user_id' => $user->id,
         ]);
 
         $definitions = $process->getDefinitions();

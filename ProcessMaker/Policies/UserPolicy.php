@@ -2,8 +2,8 @@
 
 namespace ProcessMaker\Policies;
 
-use ProcessMaker\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use ProcessMaker\Models\User;
 
 class UserPolicy
 {
@@ -15,7 +15,7 @@ class UserPolicy
      *
      * @param  \ProcessMaker\Models\User  $user
      * @return mixed
-     */    
+     */
     public function before(User $user)
     {
         if ($user->is_administrator) {
@@ -35,6 +35,7 @@ class UserPolicy
         if ($targetUser->id == $user->id) {
             return true;
         }
+
         return $user->hasPermission('view-users');
     }
 
@@ -50,6 +51,7 @@ class UserPolicy
         if ($targetUser->id == $user->id) {
             return true;
         }
+
         return $user->hasPermission('edit-users');
     }
 

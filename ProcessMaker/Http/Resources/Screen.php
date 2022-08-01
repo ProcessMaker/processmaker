@@ -21,6 +21,7 @@ class Screen extends ApiResource
             }
             $screen['nested'] = $nested;
         }
+
         return $screen;
     }
 }

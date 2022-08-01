@@ -18,8 +18,7 @@ Artisan::command('inspire', function () {
 
 Artisan::command('notifications:resend {username}', function ($username) {
     $user = ProcessMaker\Models\User::where('username', $username)->firstOrFail();
-    $tokens = ProcessMaker\Models\ProcessRequestToken
-        ::where('status', 'ACTIVE')
+    $tokens = ProcessMaker\Models\ProcessRequestToken::where('status', 'ACTIVE')
         ->where('user_id', $user->getKey())
         ->get();
     foreach ($tokens as $token) {
@@ -33,8 +32,8 @@ Artisan::command('check {path}', function ($path) {
     $dom = new DOMDocument;
     $dom->load($path);
     $query = new DOMXPath($dom);
-    $nodes = $query->evaluate("//*[@bpmnElement]");
-    foreach($nodes as $node) {
+    $nodes = $query->evaluate('//*[@bpmnElement]');
+    foreach ($nodes as $node) {
         $id = $node->getAttribute('bpmnElement');
         $elem = $query->evaluate("//*[@id='$id']")->item(0);
         dump($elem);

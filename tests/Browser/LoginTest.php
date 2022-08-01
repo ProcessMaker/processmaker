@@ -2,16 +2,14 @@
 
 namespace Tests\Browser;
 
-use Tests\DuskTestCase;
-use Laravel\Dusk\Browser;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Tests\Browser\Pages\LoginPage;
-use ProcessMaker\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Dusk\Browser;
+use ProcessMaker\Models\User;
+use Tests\Browser\Pages\LoginPage;
+use Tests\DuskTestCase;
 
 class LoginTest extends DuskTestCase
 {
-
     public function test_login_page_loads()
     {
         $this->browse(function (Browser $browser) {
@@ -22,11 +20,10 @@ class LoginTest extends DuskTestCase
 
     public function test_login_page_works()
     {
-
         $user = factory(User::class)->create([
             'username' => 'testuser',
             'password' => Hash::make('secret'),
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
         ]);
 
         $this->browse(function (Browser $browser) use ($user) {
@@ -39,11 +36,12 @@ class LoginTest extends DuskTestCase
         });
     }
 
-    public function test_inactive_user_login_fails() {
+    public function test_inactive_user_login_fails()
+    {
         $user = factory(User::class)->create([
             'username' => 'testuser',
             'password' => Hash::make('secret'),
-            'status' => 'INACTIVE'
+            'status' => 'INACTIVE',
         ]);
 
         $this->browse(function (Browser $browser) use ($user) {

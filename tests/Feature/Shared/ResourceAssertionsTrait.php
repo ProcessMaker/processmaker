@@ -6,7 +6,6 @@ use Illuminate\Foundation\Testing\TestResponse;
 
 /**
  * This trait add assertions to test a Resource Controller
- *
  */
 trait ResourceAssertionsTrait
 {
@@ -14,21 +13,20 @@ trait ResourceAssertionsTrait
 
     protected $errorStructure = [
         'message',
-        'errors'
+        'errors',
     ];
 
     /**
      * Verify the list returned by the index API.
      *
-     * @param type $query
-     * @param type $expectedMeta
-     *
+     * @param  type  $query
+     * @param  type  $expectedMeta
      * @return \Illuminate\Foundation\Testing\TestResponse
      */
     protected function assertCorrectModelListing($query, $expectedMeta = [])
     {
-        $route = route('api.' . $this->resource . '.index');
-        $response = $this->apiCall('GET', $route . $query);
+        $route = route('api.'.$this->resource.'.index');
+        $response = $this->apiCall('GET', $route.$query);
         //Verify the status
         $this->assertStatus(200, $response);
         //Verify the structure
@@ -39,6 +37,7 @@ trait ResourceAssertionsTrait
         $this->assertArraySubset($expectedMeta, $meta);
         //Verify the data size
         $this->assertCount($meta['count'], $data);
+
         return $response;
     }
 
@@ -53,14 +52,13 @@ trait ResourceAssertionsTrait
     /**
      * Verify the creation of a model using valid attributes.
      *
-     * @param string $modelClass
-     * @param array $attributes
-     *
+     * @param  string  $modelClass
+     * @param  array  $attributes
      * @return \Illuminate\Foundation\Testing\TestResponse
      */
     protected function assertCorrectModelCreation($modelClass, array $attributes = [])
     {
-        $route = route('api.' . $this->resource . '.store');
+        $route = route('api.'.$this->resource.'.store');
         $base = factory($modelClass)->make($attributes);
         $array = $base->toArray();
         foreach ($attributes as $key => $value) {
@@ -73,82 +71,83 @@ trait ResourceAssertionsTrait
         $response->assertJsonStructure($this->structure);
         $data = $response->json();
         $this->assertArraySubset($array, $data);
+
         return $response;
     }
 
     /**
      * Verify the creation of a model fails using invalid attributes.
      *
-     * @param string $modelClass
-     * @param array $attributes
-     * @param array $errors
-     *
+     * @param  string  $modelClass
+     * @param  array  $attributes
+     * @param  array  $errors
      * @return \Illuminate\Foundation\Testing\TestResponse
      */
     protected function assertModelCreationFails($modelClass, array $attributes = [], array $errors = [])
     {
-        $route = route('api.' . $this->resource . '.store');
+        $route = route('api.'.$this->resource.'.store');
         $base = factory($modelClass)->make($attributes);
         $array = array_diff($base->toArray(), [static::$DO_NOT_SEND]);
         $response = $this->apiCall('POST', $route, $array);
         $response->assertStatus(422);
         $response->assertJsonStructure($this->errorStructure);
         $response->assertJsonStructure(['errors' => $errors]);
+
         return $response;
     }
 
     /**
      * Verify model update.
      *
-     * @param string $id
-     * @param array $includes
-     *
+     * @param  string  $id
+     * @param  array  $includes
      * @return \Illuminate\Foundation\Testing\TestResponse
      */
     protected function assertModelShow($id, array $includes = [])
     {
-        $route = route('api.' . $this->resource . '.show', [$id]);
+        $route = route('api.'.$this->resource.'.show', [$id]);
         $structure = $this->structure;
         if ($includes) {
             $structure = array_merge($structure, $includes);
-            $route .= '?include=' . implode(',', $includes);
+            $route .= '?include='.implode(',', $includes);
         }
         $response = $this->apiCall('GET', $route);
         $this->assertStatus(200, $response);
         $response->assertJsonStructure($structure);
+
         return $response;
     }
 
     /**
      * Verify the deletion of a model.
      *
-     * @param type $id
-     *
+     * @param  type  $id
      * @return \Illuminate\Foundation\Testing\TestResponse
      */
     protected function assertCorrectModelDeletion($id)
     {
-        $route = route('api.' . $this->resource . '.destroy', [$id]);
+        $route = route('api.'.$this->resource.'.destroy', [$id]);
         $response = $this->apiCall('DELETE', $route);
         $response->assertStatus(204);
         $this->assertEmpty($response->getContent());
+
         return $response;
     }
 
     /**
      * Verify the deletion of a model.
      *
-     * @param type $id
-     *
+     * @param  type  $id
      * @return \Illuminate\Foundation\Testing\TestResponse
      */
     protected function assertModelDeletionFails($id, array $errors = [])
     {
-        $route = route('api.' . $this->resource . '.destroy', [$id]);
+        $route = route('api.'.$this->resource.'.destroy', [$id]);
         $response = $this->apiCall('DELETE', $route);
         $response->assertStatus(422);
         $response->assertJsonStructure($this->errorStructure);
         $response->assertJsonStructure(['errors' => $errors]);
+
         return $response;
     }
 
@@ -156,7 +155,7 @@ trait ResourceAssertionsTrait
      * Verify update of a model using valid attributes
      *
      * @param $modelClass
-     * @param array $attributes
+     * @param  array  $attributes
      */
     protected function assertModelUpdate($modelClass, array $attributes = [])
     {
@@ -166,7 +165,7 @@ trait ResourceAssertionsTrait
         ]);
         $original_attributes = $base->getAttributes();
 
-        $route = route('api.' . $this->resource . '.update', [$base->id]);
+        $route = route('api.'.$this->resource.'.update', [$base->id]);
         $fields = array_diff($attributes, [static::$DO_NOT_SEND]);
         $response = $this->apiCall('PUT', $route, $fields);
         //validate status
@@ -187,20 +186,21 @@ trait ResourceAssertionsTrait
      * Verify update of a model using invalid attributes
      *
      * @param $modelClass
-     * @param array $attributes
-     * @param array $errors
+     * @param  array  $attributes
+     * @param  array  $errors
      */
     protected function assertModelUpdateFails($modelClass, array $attributes = [], array $errors = [])
     {
         $base = factory($modelClass)->create();
 
-        $route = route('api.' . $this->resource . '.update', [$base->id]);
+        $route = route('api.'.$this->resource.'.update', [$base->id]);
         $fields = array_diff($attributes, [static::$DO_NOT_SEND]);
         $response = $this->apiCall('PUT', $route, $fields);
         //validate status
         $response->assertStatus(422);
         $response->assertJsonStructure($this->errorStructure);
         $response->assertJsonStructure(['errors' => $errors]);
+
         return $response;
     }
 
@@ -217,8 +217,7 @@ trait ResourceAssertionsTrait
     /**
      * Get the attributes of the response.
      *
-     * @param type $row
-     *
+     * @param  type  $row
      * @return array
      */
     private function getDataAttributes($row)
@@ -229,8 +228,8 @@ trait ResourceAssertionsTrait
     /**
      * Assert that the response has the given status code.
      *
-     * @param string $expected
-     * @param \Illuminate\Foundation\Testing\TestResponse $response
+     * @param  string  $expected
+     * @param  \Illuminate\Foundation\Testing\TestResponse  $response
      */
     protected function assertStatus($expected, TestResponse $response)
     {
@@ -239,7 +238,7 @@ trait ResourceAssertionsTrait
             $expected,
             $status,
             "Expected status code {$expected} but received {$status}.\n"
-            . $response->getContent()
+            .$response->getContent()
         );
     }
 }

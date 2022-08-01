@@ -3,7 +3,6 @@
 namespace ProcessMaker\Http\Controllers\Admin;
 
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 
 class QueuesController extends Controller
@@ -13,7 +12,7 @@ class QueuesController extends Controller
         if (auth()->user()->is_administrator) {
             return view('admin.queues.index');
         }
-        
+
         throw new AuthorizationException();
     }
 }

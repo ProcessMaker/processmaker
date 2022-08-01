@@ -31,7 +31,6 @@ use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 
 class WorkflowManager
 {
-
     /**
      * Attached validation callbacks
      *
@@ -42,25 +41,24 @@ class WorkflowManager
     /**
      * Data Validator
      *
-     * @var \Illuminate\Contracts\Validation\Validator $validator
+     * @var \Illuminate\Contracts\Validation\Validator
      */
     protected $validator;
 
     /**
      * Service Task implementations
      *
-     * @var array $serviceTaskImplementations
+     * @var array
      */
     protected $serviceTaskImplementations = [];
 
     /**
      * Complete a task.
      *
-     * @param Definitions $definitions
-     * @param ExecutionInstanceInterface $instance
-     * @param TokenInterface $token
-     * @param array $data
-     *
+     * @param  Definitions  $definitions
+     * @param  ExecutionInstanceInterface  $instance
+     * @param  TokenInterface  $token
+     * @param  array  $data
      * @return void
      */
     public function completeTask(Definitions $definitions, ExecutionInstanceInterface $instance, TokenInterface $token, array $data)
@@ -74,11 +72,10 @@ class WorkflowManager
     /**
      * Complete a catch event
      *
-     * @param Definitions $definitions
-     * @param ExecutionInstanceInterface $instance
-     * @param TokenInterface $token
-     * @param array $data
-     *
+     * @param  Definitions  $definitions
+     * @param  ExecutionInstanceInterface  $instance
+     * @param  TokenInterface  $token
+     * @param  array  $data
      * @return void
      */
     public function completeCatchEvent(Definitions $definitions, ExecutionInstanceInterface $instance, TokenInterface $token, array $data)
@@ -92,12 +89,11 @@ class WorkflowManager
     /**
      * Trigger a boundary event
      *
-     * @param Definitions $definitions
-     * @param ExecutionInstanceInterface $instance
-     * @param TokenInterface $token
-     * @param BoundaryEventInterface $boundaryEvent
-     * @param array $data
-     *
+     * @param  Definitions  $definitions
+     * @param  ExecutionInstanceInterface  $instance
+     * @param  TokenInterface  $token
+     * @param  BoundaryEventInterface  $boundaryEvent
+     * @param  array  $data
      * @return void
      */
     public function triggerBoundaryEvent(
@@ -115,9 +111,8 @@ class WorkflowManager
     /**
      * Trigger an start event and return the instance.
      *
-     * @param Definitions $definitions
-     * @param StartEventInterface $event
-     *
+     * @param  Definitions  $definitions
+     * @param  StartEventInterface  $event
      * @return \ProcessMaker\Models\ProcessRequest
      */
     public function triggerStartEvent(Definitions $definitions, StartEventInterface $event, array $data)
@@ -131,10 +126,9 @@ class WorkflowManager
     /**
      * Start a process instance.
      *
-     * @param Definitions $definitions
-     * @param ProcessInterface $process
-     * @param array $data
-     *
+     * @param  Definitions  $definitions
+     * @param  ProcessInterface  $process
+     * @param  array  $data
      * @return \ProcessMaker\Models\ProcessRequest
      */
     public function callProcess(Definitions $definitions, ProcessInterface $process, array $data)
@@ -151,12 +145,12 @@ class WorkflowManager
     /**
      * Run a script task.
      *
-     * @param ScriptTaskInterface $scriptTask
-     * @param Token $token
+     * @param  ScriptTaskInterface  $scriptTask
+     * @param  Token  $token
      */
     public function runScripTask(ScriptTaskInterface $scriptTask, Token $token)
     {
-        Log::info('Dispatch a script task: ' . $scriptTask->getId() . ' #' . $token->getId());
+        Log::info('Dispatch a script task: '.$scriptTask->getId().' #'.$token->getId());
         $instance = $token->processRequest;
         $process = $instance->process;
         RunScriptTask::dispatch($process, $instance, $token, [])->onQueue('bpmn');
@@ -165,12 +159,12 @@ class WorkflowManager
     /**
      * Run a service task.
      *
-     * @param ServiceTaskInterface $serviceTask
-     * @param Token $token
+     * @param  ServiceTaskInterface  $serviceTask
+     * @param  Token  $token
      */
     public function runServiceTask(ServiceTaskInterface $serviceTask, Token $token)
     {
-        Log::info('Dispatch a service task: ' . $serviceTask->getId());
+        Log::info('Dispatch a service task: '.$serviceTask->getId());
         $instance = $token->processRequest;
         $process = $instance->process;
         RunServiceTask::dispatch($process, $instance, $token, []);
@@ -179,8 +173,9 @@ class WorkflowManager
     /**
      * Catch a signal event.
      *
-     * @param ServiceTaskInterface $serviceTask
-     * @param Token $token
+     * @param  ServiceTaskInterface  $serviceTask
+     * @param  Token  $token
+     *
      * @deprecated 4.0.15 Use WorkflowManager::throwSignalEventDefinition()
      */
     public function catchSignalEvent(ThrowEventInterface $source = null, EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
@@ -191,8 +186,8 @@ class WorkflowManager
     /**
      * Throw a signal event.
      *
-     * @param EventDefinitionInterface $sourceEventDefinition
-     * @param Token $token
+     * @param  EventDefinitionInterface  $sourceEventDefinition
+     * @param  Token  $token
      */
     public function throwSignalEventDefinition(EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
     {
@@ -200,7 +195,7 @@ class WorkflowManager
             $sourceEventDefinition->getProperty('signal')->getId() :
             $sourceEventDefinition->getProperty('signalRef');
 
-        if (!$signalRef) {
+        if (! $signalRef) {
             return;
         }
 
@@ -212,13 +207,13 @@ class WorkflowManager
         $data = [];
 
         switch ($payloadId) {
-            case "REQUEST_VARIABLE":
+            case 'REQUEST_VARIABLE':
                 if ($payload->variable) {
                     $extractedData = Arr::get($requestData, $payload->variable);
                     Arr::set($data, $payload->variable, $extractedData);
                 }
                 break;
-            case "EXPRESSION":
+            case 'EXPRESSION':
                 $expression = $payload->expression;
                 $formalExp = new FormalExpression();
                 $formalExp->setLanguage('FEEL');
@@ -226,7 +221,7 @@ class WorkflowManager
                 $expressionResult = $formalExp($requestData);
                 Arr::set($data, $payload->variable, $expressionResult);
                 break;
-            case "NONE":
+            case 'NONE':
                 $data = [];
                 break;
             default:
@@ -246,9 +241,9 @@ class WorkflowManager
     /**
      * Throw a signal event by id (signalRef).
      *
-     * @param string $signalRef
-     * @param array $data
-     * @param array $exclude
+     * @param  string  $signalRef
+     * @param  array  $data
+     * @param  array  $exclude
      */
     public function throwSignalEvent($signalRef, array $data = [], array $exclude = [])
     {
@@ -258,8 +253,8 @@ class WorkflowManager
     /**
      * Catch a signal event.
      *
-     * @param EventDefinitionInterface $sourceEventDefinition
-     * @param Token $token
+     * @param  EventDefinitionInterface  $sourceEventDefinition
+     * @param  Token  $token
      */
     public function throwMessageEvent($instanceId, $elementId, $messageRef, array $payload = [])
     {
@@ -269,7 +264,7 @@ class WorkflowManager
     /**
      * Attach validation event
      *
-     * @param callable $callback
+     * @param  callable  $callback
      * @return void
      */
     public function onDataValidation($callback)
@@ -280,10 +275,9 @@ class WorkflowManager
     /**
      * Validate data
      *
-     * @param array $data
-     * @param Definitions $Definitions
-     * @param EntityInterface $element
-     *
+     * @param  array  $data
+     * @param  Definitions  $Definitions
+     * @param  EntityInterface  $element
      * @return void
      */
     public function validateData(array $data, Definitions $Definitions, EntityInterface $element)
@@ -298,34 +292,33 @@ class WorkflowManager
     /**
      * Run a process and returns its data
      *
-     * @param Definitions $definitions
-     * @param string $startId
-     * @param array $data
-     *
+     * @param  Definitions  $definitions
+     * @param  string  $startId
+     * @param  array  $data
      * @return array
      */
     public function runProcess(Definitions $definitions, $startId, array $data)
     {
         $startEvent = $definitions->getDefinitions()->getStartEvent($startId);
         $instance = $this->triggerStartEvent($definitions, $startEvent, $data);
+
         return $instance->getDataStore()->getData();
     }
 
     /**
      * Check if service task implementation exists
      *
-     * @param string $implementation
-     *
+     * @param  string  $implementation
      * @return bool
      */
     public function registerServiceImplementation($implementation, $class)
     {
-        if (!class_exists($class)) {
+        if (! class_exists($class)) {
             return false;
         }
 
         // check class instance of ServiceTaskImplementationInterface
-        if (!is_subclass_of($class, ServiceTaskImplementationInterface::class)) {
+        if (! is_subclass_of($class, ServiceTaskImplementationInterface::class)) {
             return false;
         }
 
@@ -337,8 +330,7 @@ class WorkflowManager
     /**
      * Check if service task implementation exists
      *
-     * @param string $implementation
-     *
+     * @param  string  $implementation
      * @return bool
      */
     public function existsServiceImplementation($implementation)
@@ -349,17 +341,18 @@ class WorkflowManager
 
     /**
      * Run the service task implementation
-     * @param string $implementation
-     * @param array $dat
-     * @param array $config
-     * @param string $tokenId
      *
+     * @param  string  $implementation
+     * @param  array  $dat
+     * @param  array  $config
+     * @param  string  $tokenId
      * @return mixed
      */
     public function runServiceImplementation($implementation, array $data, array $config, $tokenId = '')
     {
         $class = $this->serviceTaskImplementations[$implementation];
         $service = new $class();
+
         return $service->run($data, $config, $tokenId);
     }
 }

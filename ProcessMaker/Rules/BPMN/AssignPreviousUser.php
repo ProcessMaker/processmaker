@@ -36,6 +36,7 @@ class AssignPreviousUser implements Rule
                 return false;
             }
         }
+
         return true;
     }
 
@@ -52,9 +53,8 @@ class AssignPreviousUser implements Rule
     /**
      * This rule applies to task and userTask nodes
      *
-     * @param BpmnElement $node
-     *
-     * @return boolean
+     * @param  BpmnElement  $node
+     * @return bool
      */
     public static function applyTo(BpmnElement $node)
     {

@@ -6,7 +6,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Repositories\DefinitionsRepository;
@@ -20,8 +19,11 @@ class ThrowMessageEvent extends BpmnAction implements ShouldQueue
     private const maxJobs = 10;
 
     public $messageRef;
+
     public $payload;
+
     public $instanceId;
+
     public $elementId;
 
     /**

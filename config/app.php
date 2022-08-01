@@ -1,11 +1,5 @@
 <?php
 
-use Illuminate\Cache\CacheServiceProvider;
-use Illuminate\Filesystem\FilesystemServiceProvider;
-use Illuminate\View\ViewServiceProvider;
-use Illuminate\Database\DatabaseServiceProvider;
-use ProcessMaker\Providers\RouteServiceProvider;
-
 return [
     // The name of our application
     'name' => env('APP_NAME', 'ProcessMaker'),
@@ -55,7 +49,7 @@ return [
     'web_client_application_id' => env('PM_CLIENT_ID', 'x-pm-local-client'),
 
     // The processmaker BPM scripts configuration
-    'processmaker_scripts_home' => env('PROCESSMAKER_SCRIPTS_HOME', __DIR__ . '/../storage/app'),
+    'processmaker_scripts_home' => env('PROCESSMAKER_SCRIPTS_HOME', __DIR__.'/../storage/app'),
     'processmaker_scripts_docker' => env('PROCESSMAKER_SCRIPTS_DOCKER', '/usr/bin/docker'),
     'processmaker_scripts_docker_mode' => env('PROCESSMAKER_SCRIPTS_DOCKER_MODE', 'binding'),
     'processmaker_scripts_docker_host' => env('PROCESSMAKER_SCRIPTS_DOCKER_HOST', ''),
@@ -74,7 +68,7 @@ return [
                 env('APP_URL', 'http://localhost'))),
 
     // Allows our script executors to ignore invalid SSL. This should only be set to false for development.
-    'api_ssl_verify' => env('API_SSL_VERIFY', "true"),
+    'api_ssl_verify' => env('API_SSL_VERIFY', 'true'),
 
     // Unique name on multi-tenant installations. Just use the DB name for now
     'instance' => env('DB_DATABASE'),
@@ -103,7 +97,6 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
 
-
         /**
          * ProcessMaker Providers
          */
@@ -123,7 +116,6 @@ return [
         Laravel\Scout\ScoutServiceProvider::class,
 
     ],
-
 
     'aliases' => [
         'App' => Illuminate\Support\Facades\App::class,
@@ -174,13 +166,12 @@ return [
          * Other Facades
          */
         'Theme' => Igaster\LaravelTheme\Facades\Theme::class,
-        'Menu'      => Lavary\Menu\Facade::class,
+        'Menu' => Lavary\Menu\Facade::class,
 
         /**
          * Overwrite package classes
          */
         'ElasticScoutDriver\Factories\SearchRequestFactory' => ProcessMaker\Factories\SearchRequestFactory::class,
-
 
     ],
 
@@ -189,15 +180,14 @@ return [
             'DB_USERNAME',
             'DB_PASSWORD',
             'DATA_DB_PASSWORD',
-            'DATA_DB_USERNAME'
+            'DATA_DB_USERNAME',
         ],
         '_SERVER' => [
             'DB_USERNAME',
             'DB_PASSWORD',
             'DATA_DB_PASSWORD',
-            'DATA_DB_USERNAME'
-        ]
-    ]
-
+            'DATA_DB_USERNAME',
+        ],
+    ],
 
 ];

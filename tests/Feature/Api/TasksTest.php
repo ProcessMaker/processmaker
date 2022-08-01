@@ -4,23 +4,23 @@ namespace Tests\Feature\Api;
 
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithFaker;
-use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\User;
+use Illuminate\Support\Facades\Notification;
+use PermissionSeeder;
+use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
-use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ProcessNotificationSetting;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\User;
+use ProcessMaker\Notifications\ActivityActivatedNotification;
+use ProcessMaker\Providers\AuthServiceProvider;
+use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
-use Tests\Feature\Shared\RequestHelper;
-use ProcessMaker\Facades\WorkflowManager;
-use PermissionSeeder;
-use ProcessMaker\Providers\AuthServiceProvider;
-use ProcessMaker\Models\ProcessNotificationSetting;
-use Illuminate\Support\Facades\Notification;
-use ProcessMaker\Models\ProcessCategory;
-use ProcessMaker\Notifications\ActivityActivatedNotification;
 
 /**
  * Tests routes related to tokens list and show
@@ -31,12 +31,12 @@ use ProcessMaker\Notifications\ActivityActivatedNotification;
  */
 class TasksTest extends TestCase
 {
-
     use WithFaker;
     use ResourceAssertionsTrait;
     use RequestHelper;
 
     protected $resource = 'tasks';
+
     protected $structure = [
         'id',
         'process_request_id',
@@ -61,10 +61,10 @@ class TasksTest extends TestCase
         $request = factory(ProcessRequest::class)->create();
         // Create some tokens
         factory(ProcessRequestToken::class, 20)->create([
-            'process_request_id' => $request->id
+            'process_request_id' => $request->id,
         ]);
         //Get a page of tokens
-        $route = route('api.' . $this->resource . '.index', ['per_page' => 10, 'page' => 2]);
+        $route = route('api.'.$this->resource.'.index', ['per_page' => 10, 'page' => 2]);
         $response = $this->apiCall('GET', $route);
         //Verify the status
         $response->assertStatus(200);
@@ -86,16 +86,16 @@ class TasksTest extends TestCase
         factory(ProcessRequestToken::class, 2)->create([
             'process_request_id' => $request->id,
             'status' => 'ACTIVE',
-            'user_id' => $user_1->id
+            'user_id' => $user_1->id,
         ]);
         factory(ProcessRequestToken::class, 3)->create([
             'process_request_id' => $request->id,
             'status' => 'ACTIVE',
-            'user_id' => $user_2->id
+            'user_id' => $user_2->id,
         ]);
         //Get a page of tokens
         //Since PR #3470, user_id is required as parameter
-        $route = route('api.' . $this->resource . '.index', ['user_id' => $user_1->id]);
+        $route = route('api.'.$this->resource.'.index', ['user_id' => $user_1->id]);
         $response = $this->apiCall('GET', $route);
 
         // should only see the user's 2 tasks
@@ -130,15 +130,15 @@ class TasksTest extends TestCase
         factory(ProcessRequestToken::class, 3)->create([
             'process_request_id' => $request->id,
             'status' => 'CLOSED',
-            'user_id' => $user_2->id
+            'user_id' => $user_2->id,
         ]);
         factory(ProcessRequestToken::class, 1)->create([
             'process_request_id' => $request->id,
             'status' => 'ACTIVE',
-            'user_id' => $user_2->id
+            'user_id' => $user_2->id,
         ]);
         //Get a page of tokens
-        $route = route('api.' . $this->resource . '.index', ['status' => 'CLOSED']);
+        $route = route('api.'.$this->resource.'.index', ['status' => 'CLOSED']);
         $response = $this->apiCall('GET', $route);
 
         // should only see the 3 closed tasks, not the active one
@@ -160,22 +160,22 @@ class TasksTest extends TestCase
         factory(ProcessRequestToken::class, 2)->create([
             'process_id' => $process->id,
             'status' => 'ACTIVE',
-            'user_id' => $user_1->id
+            'user_id' => $user_1->id,
         ]);
         factory(ProcessRequestToken::class, 3)->create([
             'process_id' => $process->id,
             'status' => 'ACTIVE',
-            'user_id' => $user_2->id
+            'user_id' => $user_2->id,
         ]);
         factory(ProcessRequestToken::class, 1)->create([
             'process_id' => $systemProcess->id,
             'status' => 'ACTIVE',
-            'user_id' => $user_1->id
+            'user_id' => $user_1->id,
         ]);
 
         // Get a page of tokens
         // Since PR #4189, non_system = true is a default parameter
-        $route = route('api.' . $this->resource . '.index', ['user_id' => $user_1->id, 'non_system' => true]);
+        $route = route('api.'.$this->resource.'.index', ['user_id' => $user_1->id, 'non_system' => true]);
         $response = $this->apiCall('GET', $route);
 
         // should only see the user's 2 tasks
@@ -192,9 +192,9 @@ class TasksTest extends TestCase
         // Create some tokens
         $newEntity = factory(ProcessRequestToken::class)->create([
             'user_id' => $this->user->id,
-            'process_request_id' => $request->id
+            'process_request_id' => $request->id,
         ]);
-        $route = route('api.' . $this->resource . '.index', []);
+        $route = route('api.'.$this->resource.'.index', []);
         $response = $this->apiCall('GET', $route);
 
         $this->assertEquals(
@@ -222,15 +222,15 @@ class TasksTest extends TestCase
         // Create some tokens
         factory(ProcessRequestToken::class, 10)->create([
             'status' => 'ACTIVE',
-            'process_request_id' => $request->id
+            'process_request_id' => $request->id,
         ]);
         factory(ProcessRequestToken::class, 10)->create([
             'status' => 'CLOSED',
-            'process_request_id' => $request->id
+            'process_request_id' => $request->id,
         ]);
 
         //Get active tokens
-        $route = route('api.' . $this->resource . '.index', ['per_page' => 10, 'status' => 'ACTIVE']);
+        $route = route('api.'.$this->resource.'.index', ['per_page' => 10, 'status' => 'ACTIVE']);
         $response = $this->apiCall('GET', $route);
         //Verify the status
         $response->assertStatus(200);
@@ -264,7 +264,7 @@ class TasksTest extends TestCase
         ]);
 
         //Get tasks
-        $route = route('api.' . $this->resource . '.index', ['per_page' => 100]);
+        $route = route('api.'.$this->resource.'.index', ['per_page' => 100]);
         $response = $this->apiCall('GET', $route);
 
         //Verify the status
@@ -285,16 +285,16 @@ class TasksTest extends TestCase
         factory(ProcessRequestToken::class)->create([
             'user_id' => $this->user->id,
             'completed_at' => null,
-            'process_request_id' => $request->id
+            'process_request_id' => $request->id,
         ]);
         factory(ProcessRequestToken::class)->create([
             'user_id' => $this->user->id,
             'completed_at' => Carbon::now(),
-            'process_request_id' => $request->id
+            'process_request_id' => $request->id,
         ]);
 
         //List sorted by completed_at returns as first row {"completed_at": null}
-        $route = route('api.' . $this->resource . '.index', ['order_by' => 'completed_at', 'order_direction' => 'asc']);
+        $route = route('api.'.$this->resource.'.index', ['order_by' => 'completed_at', 'order_direction' => 'asc']);
         $response = $this->apiCall('GET', $route);
         //Verify the status
         $response->assertStatus(200);
@@ -311,15 +311,15 @@ class TasksTest extends TestCase
 
         factory(ProcessRequestToken::class, 5)->create([
             'user_id' => $this->user->id,
-            'completed_at' => Carbon::now()
+            'completed_at' => Carbon::now(),
         ]);
 
         $tasks = ProcessRequestToken::all()->pluck('process_request_id')->sort();
 
         // Order by process_request_id
-        $route = route('api.' . $this->resource . '.index',[
-                'order_by' => 'process_request_id',
-                'order_direction' =>'asc'
+        $route = route('api.'.$this->resource.'.index', [
+            'order_by' => 'process_request_id',
+            'order_direction' => 'asc',
         ]);
         $response = $this->apiCall('GET', $route);
         $response->assertStatus(200);
@@ -327,9 +327,9 @@ class TasksTest extends TestCase
         $this->assertEquals($tasks->first(), $firstRow['process_request_id']);
 
         // Order by the request name (id + name)
-        $route = route('api.' . $this->resource . '.index',[
+        $route = route('api.'.$this->resource.'.index', [
             'order_by' => 'process_requests.id,process_requests.name',
-            'order_direction' =>'desc'
+            'order_direction' => 'desc',
         ]);
         $response = $this->apiCall('GET', $route);
         $response->assertStatus(200);
@@ -339,7 +339,6 @@ class TasksTest extends TestCase
 
     /**
      * Test pagination of tokens list
-     *
      */
     public function testPagination()
     {
@@ -353,13 +352,13 @@ class TasksTest extends TestCase
         // Now we create the specified number of tokens
         factory(ProcessRequestToken::class, $rowsToAdd)->create([
             'user_id' => $this->user->id,
-            'process_request_id' => $request->id
+            'process_request_id' => $request->id,
         ]);
 
         // Get the second page, should have 5 items
         $perPage = 5;
         $page = 2;
-        $response = $this->apiCall('GET', route('api.' . $this->resource . '.index', ['per_page' => $perPage, 'page' => $page]));
+        $response = $this->apiCall('GET', route('api.'.$this->resource.'.index', ['per_page' => $perPage, 'page' => $page]));
         $response->assertJsonCount($perPage, 'data');
         // Verify the meta information
         $this->assertArraySubset(
@@ -376,18 +375,17 @@ class TasksTest extends TestCase
 
     /**
      * Test show a token
-     *
      */
     public function testShowTask()
     {
         $request = factory(ProcessRequest::class)->create();
         //Create a new process without category
         $token = factory(ProcessRequestToken::class)->create([
-            'process_request_id' => $request->id
+            'process_request_id' => $request->id,
         ]);
 
         //Test that is correctly displayed
-        $route = route('api.' . $this->resource . '.show', [$token->id]);
+        $route = route('api.'.$this->resource.'.show', [$token->id]);
         $response = $this->apiCall('GET', $route);
         //Check the status
         $response->assertStatus(200);
@@ -397,18 +395,17 @@ class TasksTest extends TestCase
 
     /**
      * Test get a token including user child.
-     *
      */
     public function testShowTaskWithUser()
     {
         $request = factory(ProcessRequest::class)->create();
         //Create a new process without category
         $token = factory(ProcessRequestToken::class)->create([
-            'process_request_id' => $request->id
+            'process_request_id' => $request->id,
         ]);
 
         //Test that is correctly displayed
-        $route = route('api.' . $this->resource . '.show', [$token->id, 'include' => 'user,definition']);
+        $route = route('api.'.$this->resource.'.show', [$token->id, 'include' => 'user,definition']);
         $response = $this->apiCall('GET', $route);
         //Check the status
         $this->assertStatus(200, $response);
@@ -429,7 +426,7 @@ class TasksTest extends TestCase
         WorkflowManager::shouldReceive('completeTask')
             ->once()
             ->with(\Mockery::any(), \Mockery::any(), \Mockery::any(), ['foo' => 'bar']);
-        $response = $this->apiCall('PUT', '/tasks/' . $token->id, $params);
+        $response = $this->apiCall('PUT', '/tasks/'.$token->id, $params);
         $this->assertStatus(200, $response);
     }
 
@@ -441,11 +438,11 @@ class TasksTest extends TestCase
                 file_get_contents(
                     base_path('tests/Fixtures/rich_text_screen.json')
                 )
-            )
+            ),
         ]);
 
         $bpmn = file_get_contents(base_path('tests/Fixtures/single_task_with_screen.bpmn'));
-        $bpmn = str_replace('pm:screenRef="1"', 'pm:screenRef="' . $screen->id .'"', $bpmn);
+        $bpmn = str_replace('pm:screenRef="1"', 'pm:screenRef="'.$screen->id.'"', $bpmn);
         $process = factory(Process::class)->create([
             'bpmn' => $bpmn,
             'user_id' => $this->user->id,
@@ -453,7 +450,7 @@ class TasksTest extends TestCase
 
         $route = route('api.process_events.trigger', $process);
 
-        $response = $this->apiCall('POST', $route . '?event=node_1');
+        $response = $this->apiCall('POST', $route.'?event=node_1');
         $this->assertStatus(201, $response);
         $request = ProcessRequest::find($response->json()['id']);
         $token = $request->tokens()->where('status', 'ACTIVE')->firstOrFail();
@@ -461,16 +458,16 @@ class TasksTest extends TestCase
         $params = ['status' => 'COMPLETED', 'data' => [
             'input1' => '<p>foo</p>',
             'richtext1' => '<p>bar</p>',
-            'richtext2' => '<p>another</p>'
+            'richtext2' => '<p>another</p>',
         ]];
         WorkflowManager::shouldReceive('completeTask')
             ->once()
             ->with(\Mockery::any(), \Mockery::any(), \Mockery::any(), [
                 'input1' => 'foo',
                 'richtext1' => '<p>bar</p>', // do not sanitize rich text
-                'richtext2' => '<p>another</p>'
+                'richtext2' => '<p>another</p>',
             ]);
-        $response = $this->apiCall('PUT', '/tasks/' . $token->id, $params);
+        $response = $this->apiCall('PUT', '/tasks/'.$token->id, $params);
         $this->assertStatus(200, $response);
     }
 
@@ -481,9 +478,9 @@ class TasksTest extends TestCase
 
         //Create a new process without category
         $token = factory(ProcessRequestToken::class)->create([
-            'process_request_id' => $request->id
+            'process_request_id' => $request->id,
         ]);
-        $url = route('api.' . $this->resource . '.show', [$token->id, 'include' => 'user,definition']);
+        $url = route('api.'.$this->resource.'.show', [$token->id, 'include' => 'user,definition']);
 
         //The call is done without an authenticated user so it should return 401
         $response = $this->actingAs(factory(User::class)->create())
@@ -500,13 +497,13 @@ class TasksTest extends TestCase
         factory(GroupMember::class)->create([
             'member_id' => $user->id,
             'member_type' => User::class,
-            'group_id' => $group1->id
+            'group_id' => $group1->id,
         ]);
         $group2 = factory(Group::class)->create();
         factory(GroupMember::class)->create([
             'member_id' => $user->id,
             'member_type' => User::class,
-            'group_id' => $group2->id
+            'group_id' => $group2->id,
         ]);
 
         $params = [
@@ -517,34 +514,34 @@ class TasksTest extends TestCase
 
         $selfServiceTaskOriginal = factory(ProcessRequestToken::class)->create(
             array_merge($params, [
-                'self_service_groups' => [(string) $group1->id]
+                'self_service_groups' => [(string) $group1->id],
             ])
         );
         $selfServiceTaskGroups = factory(ProcessRequestToken::class)->create(
             array_merge($params, [
                 'self_service_groups' => [
-                    'groups' => [(string) $group2->id]
-                ]
+                    'groups' => [(string) $group2->id],
+                ],
             ])
         );
         $selfServiceTaskUsers = factory(ProcessRequestToken::class)->create(
             array_merge($params, [
                 'self_service_groups' => [
-                    'users' => [(string) $user->id, (string) $otherUser->id]
-                ]
+                    'users' => [(string) $user->id, (string) $otherUser->id],
+                ],
             ])
         );
         $selfServiceTaskOtherUser = factory(ProcessRequestToken::class)->create(
             array_merge($params, [
                 'self_service_groups' => [
-                    'users' => [(string) $otherUser->id]
-                ]
+                    'users' => [(string) $otherUser->id],
+                ],
             ])
         );
         $selfServiceTaskAssigned = factory(ProcessRequestToken::class)->create(
             array_merge($params, [
                 'self_service_groups' => [
-                    'users' => [(string) $group1->id]
+                    'users' => [(string) $group1->id],
                 ],
                 'user_id' => $user->id,
             ])
@@ -555,13 +552,13 @@ class TasksTest extends TestCase
         ]);
 
         $userId = $user->id;
-        $url = route('api.tasks.index') . "?pmql=(status%20%3D%20%22Self%20Service%22)";
+        $url = route('api.tasks.index').'?pmql=(status%20%3D%20%22Self%20Service%22)';
         $response = $this->apiCall('GET', $url);
 
         $expectedTaskIds = collect([
             $selfServiceTaskOriginal,
             $selfServiceTaskGroups,
-            $selfServiceTaskUsers
+            $selfServiceTaskUsers,
         ])->pluck('id');
 
         $actualIds = collect($response->json()['data'])->pluck('id');
@@ -576,7 +573,7 @@ class TasksTest extends TestCase
         $bpmn = str_replace(
             '[self_serve_user_id]',
             $this->user->id,
-            file_get_contents(__DIR__ . '/../../Fixtures/self_serve_notifications_process.bpmn')
+            file_get_contents(__DIR__.'/../../Fixtures/self_serve_notifications_process.bpmn')
         );
         $process = factory(Process::class)->create([
             'bpmn' => $bpmn,

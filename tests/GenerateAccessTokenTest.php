@@ -1,8 +1,9 @@
 <?php
+
 namespace Tests;
+
 use ProcessMaker\GenerateAccessToken;
 use ProcessMaker\Models\User;
-use RuntimeException;
 
 class GenerateAccessTokenTest extends TestCase
 {

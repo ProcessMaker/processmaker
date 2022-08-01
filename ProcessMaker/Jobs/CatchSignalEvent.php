@@ -24,12 +24,19 @@ class CatchSignalEvent implements ShouldQueue
     private const maxJobs = 10;
 
     public $collaborationId;
+
     public $eventDefinition;
+
     public $payload;
+
     public $requestId;
+
     public $signalRef;
+
     public $throwEvent;
+
     public $tokenId;
+
     public $processId;
 
     /**
@@ -44,7 +51,7 @@ class CatchSignalEvent implements ShouldQueue
         $this->payload = $token->getInstance() ? $token->getInstance()->data : null;
         $this->requestId = $token->getInstance() ? $token->getInstance()->getId() : null;
         $event = $sourceEventDefinition->getPayload();
-        $this->signalRef = $event ? $event->getId() : $sourceEventDefinition->getProperty('signalRef') ;
+        $this->signalRef = $event ? $event->getId() : $sourceEventDefinition->getProperty('signalRef');
         $this->throwEvent = $throwEvent->getId();
         $token->saveToken();
         $this->tokenId = $token->getId();

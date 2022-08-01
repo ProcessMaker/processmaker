@@ -9,14 +9,14 @@ use ProcessMaker\Models\Script;
 class ScriptsInScreen
 {
     public $type = Script::class;
+
     public $owner = Screen::class;
 
     /**
      * Get the scripts (ex. watchers) used in a screen
      *
-     * @param Screen $screen
-     * @param array $scripts
-     *
+     * @param  Screen  $screen
+     * @param  array  $scripts
      * @return array
      */
     public function referencesToExport(Screen $screen, array $scripts = [])
@@ -24,29 +24,29 @@ class ScriptsInScreen
         $config = $screen->watchers;
         if (is_array($config)) {
             $this->findInArray($config, function ($item) use (&$scripts) {
-                if (is_array($item) && !empty($item['script_id'])) {
+                if (is_array($item) && ! empty($item['script_id'])) {
                     $scripts[] = [Script::class, $item['script_id']];
                 }
             });
         }
+
         return $scripts;
     }
 
     /**
      * Update references used in an imported screen
      *
-     * @param Screen $process
-     * @param array $references
-     *
+     * @param  Screen  $process
+     * @param  array  $references
      * @return void
      */
-    public function updateReferences(Screen $screen, array $references = [], ExportManager $exportManager)
+    public function updateReferences(Screen $screen, array $references, ExportManager $exportManager)
     {
         $watches = $screen->watchers;
         if (is_array($watches)) {
             foreach ($watches as &$watcher) {
                 $refParts = explode('-', $watcher['script_id']);
-                if ($refParts[0] === "data_source") {
+                if ($refParts[0] === 'data_source') {
                     continue;
                 }
                 $oldRef = $refParts[1];
@@ -78,9 +78,8 @@ class ScriptsInScreen
     /**
      * Find recursively in an array
      *
-     * @param array $array
-     * @param callable $callback
-     *
+     * @param  array  $array
+     * @param  callable  $callback
      * @return void
      */
     private function findInArray(array $array, callable $callback)

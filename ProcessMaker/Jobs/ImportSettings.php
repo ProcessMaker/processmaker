@@ -36,6 +36,7 @@ class ImportSettings
         $this->verifyFile();
         $this->parseFile();
         $this->parseSettings();
+
         return $this->returnResults();
     }
 

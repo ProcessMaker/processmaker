@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Models;
 
 use ProcessMaker\Nayra\Bpmn\DataStoreTrait;
@@ -8,12 +9,9 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
 
 /**
  * Application Data
- *
- * @package ProcessMaker\Models
  */
 class DataStore implements DataStoreInterface
 {
-
     use DataStoreTrait;
 
     private $data = [];
@@ -23,13 +21,11 @@ class DataStore implements DataStoreInterface
     private $removed = [];
 
     /**
-     *
      * @var \ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface
      */
     private $process;
 
     /**
-     *
      * @var \ProcessMaker\Nayra\Contracts\Bpmn\ItemDefinitionInterface
      */
     private $itemSubject;
@@ -47,21 +43,20 @@ class DataStore implements DataStoreInterface
     /**
      * Get Process of the application.
      *
-     * @param \ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface $process
-     *
+     * @param  \ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface  $process
      * @return ProcessInterface
      */
     public function setOwnerProcess(ProcessInterface $process)
     {
         $this->process = $process;
+
         return $this;
     }
 
     /**
      * Get data from store.
      *
-     * @param mixed $name
-     *
+     * @param  mixed  $name
      * @return mixed
      */
     public function getData($name = null, $default = null)
@@ -72,22 +67,21 @@ class DataStore implements DataStoreInterface
     /**
      * Set data of the store.
      *
-     * @param array $data
-     *
+     * @param  array  $data
      * @return $this
      */
     public function setData($data)
     {
         $this->data = $data;
+
         return $this;
     }
 
     /**
      * Put data to store.
      *
-     * @param string $name
-     * @param mixed $data
-     *
+     * @param  string  $name
+     * @param  mixed  $data
      * @return $this
      */
     public function putData($name, $data)
@@ -95,6 +89,7 @@ class DataStore implements DataStoreInterface
         $this->data[$name] = $data;
         $this->updated[$name] = $name;
         unset($this->removed[$name]);
+
         return $this;
     }
 
@@ -111,8 +106,7 @@ class DataStore implements DataStoreInterface
     /**
      * Remove data from store.
      *
-     * @param string $name
-     *
+     * @param  string  $name
      * @return $this
      */
     public function removeData($name)
@@ -120,12 +114,13 @@ class DataStore implements DataStoreInterface
         unset($this->data[$name]);
         $this->removed[$name] = $name;
         unset($this->updated[$name]);
+
         return $this;
     }
 
     /**
      * Get the value of updated
-     */ 
+     */
     public function getUpdated()
     {
         return $this->updated;
@@ -133,7 +128,7 @@ class DataStore implements DataStoreInterface
 
     /**
      * Get the value of removed
-     */ 
+     */
     public function getRemoved()
     {
         return $this->removed;
@@ -142,18 +137,18 @@ class DataStore implements DataStoreInterface
     /**
      * Update the data of an array based on the changes made in the data store
      *
-     * @param array $array
-     *
+     * @param  array  $array
      * @return array
      */
     public function updateArray(array $array)
     {
-        foreach($this->updated as $name) {
+        foreach ($this->updated as $name) {
             $array[$name] = $this->data[$name];
         }
-        foreach($this->removed as $name) {
+        foreach ($this->removed as $name) {
             unset($array[$name]);
         }
+
         return $array;
     }
 }

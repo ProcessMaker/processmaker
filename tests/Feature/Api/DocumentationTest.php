@@ -1,8 +1,8 @@
 <?php
+
 namespace Tests\Feature\Api;
 
 use Tests\TestCase;
-use Tests\Feature\Shared\RequestHelper;
 
 class DocumentationTest extends TestCase
 {

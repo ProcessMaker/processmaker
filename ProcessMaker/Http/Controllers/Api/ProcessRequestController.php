@@ -9,20 +9,18 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Notification;
 use ProcessMaker\Exception\PmqlMethodException;
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
 use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
 use ProcessMaker\Jobs\CancelRequest;
 use ProcessMaker\Jobs\TerminateRequest;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
@@ -47,10 +45,9 @@ class ProcessRequestController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
-     * @param bool $getTotal used by Saved Search package to only return a total count instead of actual results
-     * @param User $user used by Saved Search package to return accurate counts
-     *
+     * @param  Request  $request
+     * @param  bool  $getTotal used by Saved Search package to only return a total count instead of actual results
+     * @param  User  $user used by Saved Search package to return accurate counts
      * @return ApiCollection
      *
      * /**
@@ -97,7 +94,7 @@ class ProcessRequestController extends Controller
         if (! $user) {
             $user = Auth::user();
         }
-        
+
         // Update request permissions for the user
         $user->updatePermissionsToRequests();
 
@@ -126,14 +123,14 @@ class ProcessRequestController extends Controller
                 $query->get();
                 break;
         }
-        
+
         $filter = $request->input('filter', '');
-        if (!empty($filter)) {
+        if (! empty($filter)) {
             $query->filter($filter);
-        }        
+        }
 
         $pmql = $request->input('pmql', '');
-        if (!empty($pmql)) {
+        if (! empty($pmql)) {
             try {
                 $query->pmql($pmql);
             } catch (SyntaxError $e) {
@@ -144,7 +141,7 @@ class ProcessRequestController extends Controller
         }
 
         if (! $user->can('view-all_requests')) {
-            $query->pmql('requester = "' . $user->username . '" OR participant = "' . $user->username . '"');
+            $query->pmql('requester = "'.$user->username.'" OR participant = "'.$user->username.'"');
         }
 
         $query->nonSystem();
@@ -161,7 +158,7 @@ class ProcessRequestController extends Controller
                 )->paginate($request->input('per_page', 10));
                 $total = $response->total();
             }
-        } catch(QueryException $e) {
+        } catch (QueryException $e) {
             throw $e;
             $rawMessage = $e->getMessage();
             if (preg_match("/Column not found: 1054 (.*) in 'where clause'/", $rawMessage, $matches)) {
@@ -169,12 +166,13 @@ class ProcessRequestController extends Controller
             } else {
                 $message = $rawMessage;
             }
+
             return response(['message' => $message], 400);
         }
-        
+
         if (isset($response)) {
             //Map each item through its resource
-            $response = $response->map(function ($processRequest) use ($request) {
+            $response = $response->map(function ($processRequest) {
                 return new ProcessRequestResource($processRequest);
             });
         } else {
@@ -187,8 +185,7 @@ class ProcessRequestController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param ProcessRequest $request
-     *
+     * @param  ProcessRequest  $request
      * @return Response
      *
      * @OA\Get(
@@ -222,9 +219,8 @@ class ProcessRequestController extends Controller
     /**
      * Update a request
      *
-     * @param ProcessRequest $request
-     * @param Request|ProcessRequest $httpRequest
-     *
+     * @param  ProcessRequest  $request
+     * @param  Request|ProcessRequest  $httpRequest
      * @return ResponseFactory|Response
      *
      * @OA\Put(
@@ -255,27 +251,29 @@ class ProcessRequestController extends Controller
     public function update(ProcessRequest $request, Request $httpRequest)
     {
         if ($httpRequest->post('status') === 'CANCELED') {
-            if (!Auth::user()->can('cancel', $request->processVersion)) {
+            if (! Auth::user()->can('cancel', $request->processVersion)) {
                 throw new AuthorizationException(__('Not authorized to cancel this request.'));
             }
             $this->cancelRequestToken($request);
+
             return response([], 204);
         }
         if ($httpRequest->post('status') === 'COMPLETED') {
-            if (!Auth::user()->is_administrator) {
+            if (! Auth::user()->is_administrator) {
                 throw new AuthorizationException(__('Not authorized to complete this request.'));
             }
             if ($request->status != 'ERROR') {
                 throw \Illuminate\Validation\ValidationException::withMessages([
-                    'status' => __('Only requests with status: ERROR can be manually completed')
+                    'status' => __('Only requests with status: ERROR can be manually completed'),
                 ]);
             }
             $this->completeRequest($request);
+
             return response([], 204);
         }
         $fields = $httpRequest->json()->all();
         if (array_keys($fields) === ['data'] || array_keys($fields) === ['data', 'task_element_id']) {
-            if (!Auth::user()->can('editData', $request)) {
+            if (! Auth::user()->can('editData', $request)) {
                 throw new AuthorizationException(__('Not authorized to edit request data.'));
             }
 
@@ -290,7 +288,7 @@ class ProcessRequestController extends Controller
             $user_name = $user_id ? Auth::user()->fullname : 'The System';
 
             if ($task_name) {
-                $text = __('has edited the data for ') . $task_name;
+                $text = __('has edited the data for ').$task_name;
             } else {
                 $text = __('has edited the request data');
             }
@@ -301,21 +299,21 @@ class ProcessRequestController extends Controller
                 'commentable_type' => ProcessRequest::class,
                 'commentable_id' => $request->id,
                 'subject' => 'Data edited',
-                'body' => $user_name . ' ' . $text,
+                'body' => $user_name.' '.$text,
             ]);
         } else {
             $httpRequest->validate(ProcessRequest::rules($request));
             $request->fill($fields);
             $request->saveOrFail();
         }
+
         return response([], 204);
     }
 
     /**
      * Delete a request
      *
-     * @param ProcessRequest $request
-     *
+     * @param  ProcessRequest  $request
      * @return ResponseFactory|Response
      *
      * @OA\Delete(
@@ -344,6 +342,7 @@ class ProcessRequestController extends Controller
     {
         try {
             $request->delete();
+
             return response([], 204);
         } catch (\Exception $e) {
             abort($e->getCode(), $e->getMessage());
@@ -355,10 +354,10 @@ class ProcessRequestController extends Controller
     /**
      * Trigger a intermediate catch event
      *
-     * @param ProcessRequest $request
-     * @param string $event
+     * @param  ProcessRequest  $request
+     * @param  string  $event
      * @return void
-     * 
+     *
      * @OA\Post(
      *     path="/requests/{process_request_id}/events/{event_id}",
      *     summary="Update a process request event",
@@ -393,12 +392,12 @@ class ProcessRequestController extends Controller
         // Get the process definition
         $process = $request->process;
         $catchEvent = $request->getVersionDefinitions()->findElementById($event)->getBpmnElementInstance();
-        if (!($catchEvent instanceof CatchEventInterface)) {
-            return abort(423, __('Invalid element, not a catch event ' . get_class($catchEvent)));
+        if (! ($catchEvent instanceof CatchEventInterface)) {
+            return abort(423, __('Invalid element, not a catch event '.get_class($catchEvent)));
         }
         // Get token and data
         $token = $request->tokens()->where('element_id', $event)->where('status', 'ACTIVE')->first();
-        if (!$token) {
+        if (! $token) {
             return abort(404, __('Token not found in catch event :element_id', ['element_id' => $event]));
         }
 
@@ -407,11 +406,11 @@ class ProcessRequestController extends Controller
         $whitelist = $whitelist === 'undefined' ? '' : $whitelist;
         if ($whitelist) {
             $ip = request()->ip();
-            list($ipWhitelist, $domainWhitelist) = $this->parseWhitelist($whitelist);
+            [$ipWhitelist, $domainWhitelist] = $this->parseWhitelist($whitelist);
             $domain = Cache::remember("ip_domain_{$ip}", self::DOMAIN_CACHE_TIME, function () use ($ip) {
                 return gethostbyaddr($ip);
             });
-            if (!IpUtils::checkIp($ip, $ipWhitelist) && !$this->checkDomain($domain, $domainWhitelist)) {
+            if (! IpUtils::checkIp($ip, $ipWhitelist) && ! $this->checkDomain($domain, $domainWhitelist)) {
                 return abort(403, __('Not authorized to trigger this event.'));
             }
         }
@@ -431,23 +430,23 @@ class ProcessRequestController extends Controller
                 $groupId = trim($groupId);
                 $groupId ? $process->getConsolidatedUsers($groupId, $users) : null;
             }
-            if (!in_array(Auth::id(), $users)) {
+            if (! in_array(Auth::id(), $users)) {
                 return abort(403, __('Not authorized to trigger this event.'));
             }
         }
 
-        $data = (array)request()->json()->all();
+        $data = (array) request()->json()->all();
 
         // Trigger the catch event
         WorkflowManager::completeCatchEvent($process, $request, $token, $data);
+
         return response([]);
     }
 
     /**
      * Parse the whitelist parameter
      *
-     * @param string $whitelist
-     *
+     * @param  string  $whitelist
      * @return array
      */
     private function parseWhitelist($whitelist)
@@ -463,32 +462,34 @@ class ProcessRequestController extends Controller
                 }
             }
         }
+
         return [$ipWhitelist, $domainWhitelist];
     }
 
     /**
      * Check if the domain match in the whitelist
      *
-     * @param string $domain
-     * @param array $whitelist
-     *
-     * @return boolean
+     * @param  string  $domain
+     * @param  array  $whitelist
+     * @return bool
      */
     private function checkDomain($domain, $whitelist)
     {
         foreach ($whitelist as $filter) {
-            $filter = '/^' . str_replace('\*', '[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?', preg_quote($filter, '/')) . '$/';
+            $filter = '/^'.str_replace('\*', '[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?', preg_quote($filter, '/')).'$/';
             if (preg_match($filter, $domain)) {
                 return true;
             }
         }
+
         return false;
     }
 
     /**
      * Cancel all tokens of request.
      *
-     * @param ProcessRequest $request
+     * @param  ProcessRequest  $request
+     *
      * @throws \Throwable
      */
     private function cancelRequestToken(ProcessRequest $request)
@@ -502,7 +503,8 @@ class ProcessRequestController extends Controller
     /**
      * Manually complete a request
      *
-     * @param ProcessRequest $request
+     * @param  ProcessRequest  $request
+     *
      * @throws \Throwable
      */
     private function completeRequest(ProcessRequest $request)
@@ -520,27 +522,27 @@ class ProcessRequestController extends Controller
             'commentable_type' => ProcessRequest::class,
             'commentable_id' => $request->id,
             'subject' => __('Process Manually Completed'),
-            'body' => $user->fullname . ' ' . __('manually completed the request from an error state'),
+            'body' => $user->fullname.' '.__('manually completed the request from an error state'),
         ]);
     }
 
     /**
      * Get task name by token fields and request
      *
-     * @param array $fields
-     * @param ProcessRequest $request
-     *
+     * @param  array  $fields
+     * @param  ProcessRequest  $request
      * @return string
      */
     private function getTaskName($fields, $request)
     {
-        if (!array_key_exists('task_element_id', $fields)) {
+        if (! array_key_exists('task_element_id', $fields)) {
             return null;
         }
         $task_element_id = $fields['task_element_id'];
         $token = ProcessRequestToken::where(
             ['element_id' => $task_element_id, 'process_request_id' => $request->id]
         )->firstOrFail();
+
         return $token->element_name;
     }
 }

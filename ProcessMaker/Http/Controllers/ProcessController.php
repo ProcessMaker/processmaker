@@ -3,16 +3,15 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Cache;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\Request;
+use ProcessMaker\Http\Controllers\Api\ProcessController as ApiProcessController;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
-use Illuminate\Http\Request;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
-use Illuminate\Auth\Access\AuthorizationException;
 use ProcessMaker\Traits\HasControllerAddons;
-use ProcessMaker\Http\Controllers\Api\ProcessController as ApiProcessController;
 
 class ProcessController extends Controller
 {
@@ -40,11 +39,11 @@ class ProcessController extends Controller
             return redirect()->route($redirect);
         }
 
-        $catConfig = (object)[
-            'labels' => (object)[
+        $catConfig = (object) [
+            'labels' => (object) [
                 'countColumn' => __('# Processes'),
             ],
-            'routes' => (object)[
+            'routes' => (object) [
                 'itemsIndexWeb' => 'processes.index',
                 'editCategoryWeb' => 'process-categories.edit',
                 'categoryListApi' => 'api.process_categories.index',
@@ -52,25 +51,24 @@ class ProcessController extends Controller
             'countField' => 'processes_count',
             'apiListInclude' => 'processesCount',
             'permissions' => [
-                'view'   => $request->user()->can('view-process-categories'),
+                'view' => $request->user()->can('view-process-categories'),
                 'create' => $request->user()->can('create-process-categories'),
-                'edit'   => $request->user()->can('edit-process-categories'),
+                'edit' => $request->user()->can('edit-process-categories'),
                 'delete' => $request->user()->can('delete-process-categories'),
             ],
         ];
 
-        $listConfig = (object)[
+        $listConfig = (object) [
             'processes' => Process::all(),
             'countCategories' => ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count(),
-            'status' => $request->input('status')
+            'status' => $request->input('status'),
         ];
 
         return view('processes.index', compact('listConfig', 'catConfig'));
     }
 
     /**
-     * @param Process $process
-     *
+     * @param  Process  $process
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit(Process $process)
@@ -101,7 +99,6 @@ class ProcessController extends Controller
      *
      * @param $method
      * @param $process
-     *
      * @return array Users|Groups
      */
     private function listCan($method, Process $process)
@@ -136,11 +133,13 @@ class ProcessController extends Controller
 
         $users->map(function ($item) {
             $item->type = 'user';
+
             return $item;
         });
 
         $groups->map(function ($item) {
             $item->type = 'group';
+
             return $item;
         });
 
@@ -169,6 +168,7 @@ class ProcessController extends Controller
         $process->user_id = \Auth::user()->getKey();
         $process->bpmn = '';
         $process->saveOrFail();
+
         return redirect('/processes');
     }
 
@@ -191,17 +191,16 @@ class ProcessController extends Controller
     /**
      * Download the JSON definition of the process
      *
-     * @param Process $process
-     * @param string $key
-     *
+     * @param  Process  $process
+     * @param  string  $key
      * @return stream
      */
     public function download(Process $process, $key)
     {
-        $fileName = trim($process->name) . '.json';
+        $fileName = trim($process->name).'.json';
         $fileContents = Cache::get($key);
 
-        if (!$fileContents) {
+        if (! $fileContents) {
             return abort(404);
         } else {
             return response()->streamDownload(function () use ($fileContents) {
@@ -217,21 +216,24 @@ class ProcessController extends Controller
         $request->validate(Process::rules($request));
         $process->fill($request->input());
         $process->saveOrFail();
+
         return redirect('/processes');
     }
 
     public function destroy(Process $process) // destory existing process to DB / UI
     {
         $process->delete();
+
         return redirect('/processes');
     }
 
-    public function triggerStartEventApi(Process $process, Request $request) {
+    public function triggerStartEventApi(Process $process, Request $request)
+    {
         $api_request = new ApiProcessController();
         $response = $api_request->triggerStartEvent($process, $request);
         $instance_id = $response->data['_request']['id'];
 
-        return redirect('/requests/' . $instance_id);
+        return redirect('/requests/'.$instance_id);
     }
 
     private function checkAuth()

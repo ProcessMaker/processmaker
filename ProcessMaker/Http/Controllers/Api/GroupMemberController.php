@@ -2,15 +2,15 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
-use ProcessMaker\Models\User;
-use ProcessMaker\Models\Group;
 use Illuminate\Support\Facades\Auth;
-use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
-use Illuminate\Auth\Access\AuthorizationException;
 use ProcessMaker\Http\Resources\GroupMembers as GroupMemberResource;
+use ProcessMaker\Models\Group;
+use ProcessMaker\Models\GroupMember;
+use ProcessMaker\Models\User;
 
 class GroupMemberController extends Controller
 {
@@ -27,8 +27,7 @@ class GroupMemberController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ApiCollection
      *
      * @OA\Get(
@@ -62,7 +61,7 @@ class GroupMemberController extends Controller
      */
     public function index(Request $request)
     {
-        if (!(Auth::user()->can('view-groups') || Auth::user()->can('view-users'))) {
+        if (! (Auth::user()->can('view-groups') || Auth::user()->can('view-users'))) {
             throw new AuthorizationException(__('Not authorized to view groups.'));
         }
 
@@ -91,9 +90,9 @@ class GroupMemberController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     *
      * @throws \Throwable
      *
      * @OA\Post(
@@ -140,8 +139,7 @@ class GroupMemberController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param GroupMember $group_member
-     *
+     * @param  GroupMember  $group_member
      * @return GroupMemberResource
      *
      * @OA\Get(
@@ -173,8 +171,7 @@ class GroupMemberController extends Controller
     /**
      * Delete a group membership
      *
-     * @param GroupMember $group_member
-     *
+     * @param  GroupMember  $group_member
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      *
      * @throws \Exception
@@ -202,13 +199,14 @@ class GroupMemberController extends Controller
     public function destroy(GroupMember $group_member)
     {
         $group_member->delete();
+
         return response([], 204);
     }
 
     /**
      * Display a listing of groups available
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return ApiCollection
      *
      * @OA\Get(
@@ -264,13 +262,13 @@ class GroupMemberController extends Controller
         $member_id = $request->input('member_id', null);
         $member_type = $request->input('member_type', null);
         $assignedResult = collect([]);
-        
+
         if ($request->input('order_by') == 'assigned' && $member_id && $member_type) {
             $orderByAssigned = true;
         } else {
             $orderByAssigned = false;
         }
-        
+
         if ($orderByAssigned) {
             $orderBy = 'name';
         } else {
@@ -289,13 +287,13 @@ class GroupMemberController extends Controller
                 ->where('member_id', $member_id)
                 ->get()->pluck('group_id');
         }
-        
+
         $query = Group::where('status', 'ACTIVE');
 
         $filter = $request->input('filter', '');
-        if (!empty($filter)) {
+        if (! empty($filter)) {
             //filter by name group
-            $filter = '%' . $filter . '%';
+            $filter = '%'.$filter.'%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('name', 'like', $filter);
             });
@@ -305,22 +303,23 @@ class GroupMemberController extends Controller
             $orderBy,
             $request->input('order_direction', 'ASC')
         );
-        
+
         if ($orderByAssigned) {
             $assignedQuery = clone $query;
             $assignedQuery->whereIn('id', $members);
         }
-        
+
         $query->whereNotIn('id', $members);
 
         $response = $query->get();
-        
+
         if ($orderByAssigned) {
             $assignedResponse = $assignedQuery->get();
             $response = $assignedResponse->merge($response);
-            
-            $response = $response->map(function($group) use ($members) {
+
+            $response = $response->map(function ($group) use ($members) {
                 $group->assigned = $members->contains($group->id);
+
                 return $group;
             })->values();
         }
@@ -331,7 +330,7 @@ class GroupMemberController extends Controller
     /**
      * Display a listing of users available
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return ApiCollection
      *
      * @OA\Get(
@@ -397,9 +396,9 @@ class GroupMemberController extends Controller
             ->whereNotIn('id', $members);
 
         $filter = $request->input('filter', '');
-        if (!empty($filter)) {
+        if (! empty($filter)) {
             //filter by name group
-            $filter = '%' . $filter . '%';
+            $filter = '%'.$filter.'%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('firstname', 'like', $filter)
                     ->orWhere('lastname', 'like', $filter);

@@ -4,7 +4,12 @@ namespace ProcessMaker\Providers;
 
 use Blade;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Validator;
+use Laravel\Horizon\Horizon;
+use Laravel\Passport\Passport;
+use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Managers\DockerManager;
 use ProcessMaker\Managers\IndexManager;
 use ProcessMaker\Managers\LoginManager;
@@ -12,33 +17,26 @@ use ProcessMaker\Managers\ModelerManager;
 use ProcessMaker\Managers\PackageManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Managers\ScriptBuilderManager;
-use ProcessMaker\Events\ScreenBuilderStarting;
-use Laravel\Horizon\Horizon;
-use Laravel\Passport\Passport;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Event;
 use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Observers\ProcessCollaborationObserver;
 use ProcessMaker\Observers\ProcessObserver;
 use ProcessMaker\Observers\ProcessRequestObserver;
+use ProcessMaker\Observers\ProcessRequestTokenObserver;
 use ProcessMaker\Observers\SettingObserver;
 use ProcessMaker\Observers\UserObserver;
-use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Observers\ProcessRequestTokenObserver;
 use ProcessMaker\PolicyExtension;
 
 /**
  * Provide our ProcessMaker specific services
- * @package ProcessMaker\Providers
  */
 class ProcessMakerServiceProvider extends ServiceProvider
 {
-
     /**
      * Bootstrap ProcessMaker services.
      *
@@ -65,7 +63,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         //Custom validator for variable names. Eg: correct var names _myvar, myvar, myvar1, _myvar1. Eg: incorrect variable names 1_myvar, 1myvar, myvar a
         Validator::extend('valid_variable', function ($attr, $val) {
-            $key = explode(".", $attr)[1];
+            $key = explode('.', $attr)[1];
+
             return preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $key);
         });
 
@@ -78,7 +77,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
     public function register()
     {
         // Dusk, if env is appropriate
-        if(!$this->app->environment('production')) {
+        if (! $this->app->environment('production')) {
             $this->app->register(\Laravel\Dusk\DuskServiceProvider::class);
         }
 
@@ -104,7 +103,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
          * Maps our Modeler Manager as a singleton. The Modeler Manager is used
          * to manage customizations to the Process Modeler.
          */
-        $this->app->singleton(ModelerManager::class, function($app) {
+        $this->app->singleton(ModelerManager::class, function ($app) {
             return new ModelerManager();
         });
 
@@ -112,7 +111,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
          * Maps our Screen Builder Manager as a singleton. The Screen Builder Manager is used
          * to manage customizations to the Screen Builder.
          */
-        $this->app->singleton(ScreenBuilderManager::class, function($app) {
+        $this->app->singleton(ScreenBuilderManager::class, function ($app) {
             return new ScreenBuilderManager();
         });
 
@@ -120,7 +119,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
          * Maps our Script Builder Manager as a singleton. The Script builder Manager is used
          * to manage customizations to the Process Script Builder.
          */
-        $this->app->singleton(ScriptBuilderManager::class, function($app) {
+        $this->app->singleton(ScriptBuilderManager::class, function ($app) {
             return new ScriptBuilderManager();
         });
 
@@ -128,28 +127,28 @@ class ProcessMakerServiceProvider extends ServiceProvider
          * Maps our Docker Manager as a singleton. The Docker Manager is used
          * to manage docker execution over the application.
          */
-        $this->app->singleton(DockerManager::class, function($app) {
+        $this->app->singleton(DockerManager::class, function ($app) {
             return new DockerManager();
         });
 
-        $this->app->singleton(GlobalScriptsManager::class, function($app) {
+        $this->app->singleton(GlobalScriptsManager::class, function ($app) {
             return new GlobalScriptsManager();
         });
 
-        $this->app->singleton(AnonymousUser::class, function($app) {
+        $this->app->singleton(AnonymousUser::class, function ($app) {
             return AnonymousUser::where('username', AnonymousUser::ANONYMOUS_USERNAME)->firstOrFail();
         });
 
-        $this->app->singleton(PolicyExtension::class, function($app) {
+        $this->app->singleton(PolicyExtension::class, function ($app) {
             return new PolicyExtension();
         });
 
         // Listen to the events for our core screen types and add our javascript
-        Event::listen(ScreenBuilderStarting::class, function($event) {
+        Event::listen(ScreenBuilderStarting::class, function ($event) {
             // Add any extensions to form builder/renderer from packages
             $event->manager->addPackageScripts($event->type);
 
-            switch($event->type) {
+            switch ($event->type) {
                 case 'FORM':
                     $event->manager->addScript(mix('js/processes/screen-builder/typeForm.js'));
                     break;
@@ -160,24 +159,24 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         // Log Notifications
-        Event::listen(\Illuminate\Notifications\Events\NotificationSent::class, function($event) {
+        Event::listen(\Illuminate\Notifications\Events\NotificationSent::class, function ($event) {
             \Log::debug(
-                "Sent Notification to " .
-                get_class($event->notifiable) .
-                " #" . $event->notifiable->id .
-                ": " . get_class($event->notification)
+                'Sent Notification to '.
+                get_class($event->notifiable).
+                ' #'.$event->notifiable->id.
+                ': '.get_class($event->notification)
             );
         });
 
         // Log Broadcasts (messages sent to laravel-echo-server and redis)
-        Event::listen(\Illuminate\Notifications\Events\BroadcastNotificationCreated::class, function($event) {
-            $channels = implode(", ", $event->broadcastOn());
-            \Log::debug("Broadcasting Notification " . $event->broadcastType() . "on channel(s) " . $channels);
+        Event::listen(\Illuminate\Notifications\Events\BroadcastNotificationCreated::class, function ($event) {
+            $channels = implode(', ', $event->broadcastOn());
+            \Log::debug('Broadcasting Notification '.$event->broadcastType().'on channel(s) '.$channels);
         });
 
         //Enable
         Horizon::auth(function ($request) {
-            return !empty(Auth::user());
+            return ! empty(Auth::user());
         });
 
         // we are using custom passport migrations

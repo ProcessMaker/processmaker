@@ -9,9 +9,8 @@ use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Symfony\Component\Console\Helper\Table;
 use ProcessMaker\Traits\SupportsNonInteraction;
-
+use Symfony\Component\Console\Helper\Table;
 use UserSeeder;
 use Validator;
 
@@ -98,7 +97,7 @@ class Install extends Command
     public function handle()
     {
         // Setup our initial encryption key and set our running laravel app key to it
-        $this->key = 'base64:' . base64_encode(Encrypter::generateKey($this->laravel['config']['app.cipher']));
+        $this->key = 'base64:'.base64_encode(Encrypter::generateKey($this->laravel['config']['app.cipher']));
         config(['app.key' => $this->key]);
 
         // Our initial .env values
@@ -142,10 +141,10 @@ class Install extends Command
         // Configure the filesystem to be local
         config(['filesystems.disks.install' => [
             'driver' => 'local',
-            'root' => base_path()
+            'root' => base_path(),
         ]]);
 
-        $this->info("<fg=cyan;bold>" . __("ProcessMaker Installer") . "</>");
+        $this->info('<fg=cyan;bold>'.__('ProcessMaker Installer').'</>');
 
         // Determine if .env file exists or not
         // if exists, bail out with an error
@@ -153,18 +152,19 @@ class Install extends Command
         if (! $this->pretending() && Storage::disk('install')->exists('.env')) {
             $this->error(__('A .env file already exists. Stop the installation procedure, delete the existing .env file, and then restart the installation.'));
             $this->error(__('Remove the .env file to perform a new installation.'));
+
             return 255;
         }
 
-        $this->info(__("This application installs a new version of ProcessMaker."));
-        $this->info(__("You must have your database credentials available in order to continue."));
-        if ($this->interactive() && !$this->confirm(__("Are you ready to begin?"))) {
+        $this->info(__('This application installs a new version of ProcessMaker.'));
+        $this->info(__('You must have your database credentials available in order to continue.'));
+        if ($this->interactive() && ! $this->confirm(__('Are you ready to begin?'))) {
             return;
         }
         $this->checkDependencies();
         do {
             $this->fetchDatabaseCredentials();
-        } while (!$this->testLocalConnection());
+        } while (! $this->testLocalConnection());
         // Configure the DATA connection
         // $this->infoIfInteractive(__('ProcessMaker requires a DATA database.'));
 
@@ -179,13 +179,13 @@ class Install extends Command
         //     }
         // }
         // if ($dataConnection === 'same') {
-            $this->env['DATA_DB_DRIVER'] = 'mysql';
-            $this->env['DATA_DB_HOST'] = $this->env['DB_HOSTNAME'];
-            $this->env['DATA_DB_PORT'] = $this->env['DB_PORT'];
-            $this->env['DATA_DB_DATABASE'] = $this->env['DB_DATABASE'];
-            $this->env['DATA_DB_USERNAME'] = $this->env['DB_USERNAME'];
-            $this->env['DATA_DB_PASSWORD'] = $this->env['DB_PASSWORD'];
-            $this->env['DATA_DB_ENGINE'] = 'InnoDB';
+        $this->env['DATA_DB_DRIVER'] = 'mysql';
+        $this->env['DATA_DB_HOST'] = $this->env['DB_HOSTNAME'];
+        $this->env['DATA_DB_PORT'] = $this->env['DB_PORT'];
+        $this->env['DATA_DB_DATABASE'] = $this->env['DB_DATABASE'];
+        $this->env['DATA_DB_USERNAME'] = $this->env['DB_USERNAME'];
+        $this->env['DATA_DB_PASSWORD'] = $this->env['DB_PASSWORD'];
+        $this->env['DATA_DB_ENGINE'] = 'InnoDB';
         // }
         // do {
         //     $dataConnection !== 'different' ?: $this->fetchDataConnectionCredentials();
@@ -202,7 +202,7 @@ class Install extends Command
                 $this->errorOrExit(__('The URL you provided is invalid. Please provide the scheme, host and path without trailing slashes.'));
             }
             $this->env['APP_URL'] = $this->askOptional('url', __('What is the URL of this ProcessMaker installation? (Ex: https://processmaker.example.com, with no trailing slash)'));
-        } while ($invalid = (!filter_var(
+        } while ($invalid = (! filter_var(
             $this->env['APP_URL'],
             FILTER_VALIDATE_URL
         )
@@ -214,7 +214,7 @@ class Install extends Command
         $this->env['TELESCOPE_ENABLED'] = $this->confirmOptional('telescope', 'Would you like to enable Telescope debugging?') ? 'TRUE' : 'FALSE';
 
         // Set broadcaster url
-        $this->env['BROADCASTER_HOST'] = $this->option('broadcast-host') ? $this->option('broadcast-host') : $this->env['APP_URL'] . ':6001';
+        $this->env['BROADCASTER_HOST'] = $this->option('broadcast-host') ? $this->option('broadcast-host') : $this->env['APP_URL'].':6001';
 
         // Set laravel echo server settings
         $this->env['LARAVEL_ECHO_SERVER_AUTH_HOST'] = $this->option('echo-host') ? $this->option('echo-host') : $this->env['APP_URL'];
@@ -230,8 +230,8 @@ class Install extends Command
             $dockerBinPath = exec('which docker');
 
             // If which docker command not found or installation path not found set default
-            if ($dockerBinPath == "" || Str::contains($dockerBinPath, 'not found')) {
-                $this->error(__("Docker not found."));
+            if ($dockerBinPath == '' || Str::contains($dockerBinPath, 'not found')) {
+                $this->error(__('Docker not found.'));
                 $dockerBinPath = '/usr/bin/docker';
             }
 
@@ -249,7 +249,7 @@ class Install extends Command
             // Set it as our url in our config
             config(['app.url' => $this->env['APP_URL']]);
 
-            $this->info(__("Installing ProcessMaker database, OAuth SSL keys and configuration file."));
+            $this->info(__('Installing ProcessMaker database, OAuth SSL keys and configuration file.'));
 
             // The database should already exist and is tested by the fetchDatabaseCredentials call
             // Set the database default connection to install
@@ -259,7 +259,7 @@ class Install extends Command
             $contents = '';
             // Build out the file contents for our .env file
             foreach ($this->env as $key => $value) {
-                $contents .= $key . '=' . $value . "\n";
+                $contents .= $key.'='.$value."\n";
             }
 
             // Now store the env file
@@ -272,7 +272,7 @@ class Install extends Command
             // Set username, email, password
             $this->fetchUserInformation();
 
-            $this->info(__("Installing database..."));
+            $this->info(__('Installing database...'));
 
             // Install migrations
             $this->call('migrate:fresh', [
@@ -280,29 +280,29 @@ class Install extends Command
                 '--force' => true,
             ]);
 
-            $this->info(__("ProcessMaker database installed successfully."));
+            $this->info(__('ProcessMaker database installed successfully.'));
 
             // Generate passport secure keys and personal token oauth client
             $this->call('passport:install', [
-                '--force' => true
+                '--force' => true,
             ]);
 
             //Create a symbolic link from "public/storage" to "storage/app/public"
             $this->call('storage:link');
 
-            $this->call('vendor:publish', ['--tag'=>'telescope-assets', '--force' =>true]);
+            $this->call('vendor:publish', ['--tag' => 'telescope-assets', '--force' => true]);
 
-            if (!env('SKIP_EXECUTORS')) {
-                $this->info(__("Installing the :lang script executor", ['lang' => 'php']));
+            if (! env('SKIP_EXECUTORS')) {
+                $this->info(__('Installing the :lang script executor', ['lang' => 'php']));
                 \Artisan::call('docker-executor-php:install');
-                $this->info(__("Installing the :lang script executor", ['lang' => 'lua']));
+                $this->info(__('Installing the :lang script executor', ['lang' => 'lua']));
                 \Artisan::call('docker-executor-lua:install');
-                $this->info(__("Installing the :lang script executor", ['lang' => 'node']));
+                $this->info(__('Installing the :lang script executor', ['lang' => 'node']));
                 \Artisan::call('docker-executor-node:install');
             }
 
-            $this->info(__("ProcessMaker installation is complete. Please visit the URL in your browser to continue."));
-            $this->info(__("Installer completed. Consult ProcessMaker documentation on how to configure email, jobs and notifications."));
+            $this->info(__('ProcessMaker installation is complete. Please visit the URL in your browser to continue.'));
+            $this->info(__('Installer completed. Consult ProcessMaker documentation on how to configure email, jobs and notifications.'));
         }
 
         return true;
@@ -310,43 +310,42 @@ class Install extends Command
 
     /**
      * Configure the username, email, password of the admin user
-     *
      */
     private function fetchUserInformation()
     {
         do {
             $username = $this->anticipateOptional('username', 'Enter the desired admin username', ['admin'], 'admin');
             $validator = $this->validateField('username', $username, ['required', 'alpha_dash', 'min:4', 'max:255']);
-        } while($validator->fails());
+        } while ($validator->fails());
         do {
             $email = $this->askOptional('email', 'Enter the email address of the admin user');
             $validator = $this->validateField('email', $email, ['required', 'email']);
-        } while($validator->fails());
+        } while ($validator->fails());
         do {
             $password = $this->secretOptional('password', 'Enter the desired admin password');
             $validator = $this->validateField('password', $password, ['required', 'sometimes', 'min:6']);
-        } while($validator->fails());
+        } while ($validator->fails());
         do {
             $confirmPassword = $this->secretOptional('password', 'Confirm the admin password');
             $match = $password === $confirmPassword;
-            if (!$match) {
+            if (! $match) {
                 $this->errorOrExit('Your password/confirm password fields do not match');
             }
-        } while(!$match);
+        } while (! $match);
         do {
             $firstname = $this->anticipateOptional('first-name', 'Enter the first name of the admin user', ['Admin'], 'Admin');
-            if (!$firstname) {
+            if (! $firstname) {
                 $firstname = 'Admin';
             }
             $validator = $this->validateField('firstname', $firstname, ['max:50']);
-        } while($validator->fails());
+        } while ($validator->fails());
         do {
             $lastname = $this->anticipateOptional('last-name', 'Enter the last name of the admin user', ['User'], 'User');
-            if (!$lastname) {
+            if (! $lastname) {
                 $lastname = 'User';
             }
             $validator = $this->validateField('lastname', $lastname, ['max:50']);
-        } while($validator->fails());
+        } while ($validator->fails());
         // Set the default admin properties for UserSeeder
         UserSeeder::$INSTALLER_ADMIN_USERNAME = $username;
         UserSeeder::$INSTALLER_ADMIN_EMAIL = $email;
@@ -358,10 +357,9 @@ class Install extends Command
     /**
      * Validate a field value
      *
-     * @param string $name
-     * @param mixed $value
-     * @param array $rules
-     *
+     * @param  string  $name
+     * @param  mixed  $value
+     * @param  array  $rules
      * @return Validator
      */
     private function validateField($name, $value, $rules)
@@ -369,9 +367,10 @@ class Install extends Command
         $validator = Validator::make([$name => $value], [
             $name => $rules,
         ]);
-        foreach($validator->errors()->get($name) as $error) {
+        foreach ($validator->errors()->get($name) as $error) {
             $this->errorOrExit($error);
         }
+
         return $validator;
     }
 
@@ -396,6 +395,7 @@ class Install extends Command
             [__('ZIP Extension'), phpversion('zip')],
         ]);
         $table->render();
+
         return true;
     }
 
@@ -424,7 +424,7 @@ class Install extends Command
         $this->infoIfInteractive(__('Configure the DATA connection.'));
         $this->env['DATA_DB_DRIVER'] = $this->choiceOptional('data-driver', __('Enter the DB driver'), ['mysql', 'pgsql', 'sqlsrv']);
 
-        switch($this->env['DATA_DB_DRIVER']) {
+        switch ($this->env['DATA_DB_DRIVER']) {
             case 'pgsql':
                 $this->fetchPostgreCredentials();
                 break;
@@ -506,7 +506,7 @@ class Install extends Command
      */
     private function testLocalConnection()
     {
-        if (!isset($this->env['DB_DRIVER'])) {
+        if (! isset($this->env['DB_DRIVER'])) {
             $this->env['DB_DRIVER'] = 'mysql';
         }
         // Setup Laravel Database Configuration
@@ -516,7 +516,7 @@ class Install extends Command
             'port' => $this->env['DB_PORT'],
             'database' => $this->env['DB_DATABASE'],
             'username' => $this->env['DB_USERNAME'],
-            'password' => $this->env['DB_PASSWORD']
+            'password' => $this->env['DB_PASSWORD'],
         ]]);
         // Attempt to connect
         if (! $this->pretending()) {
@@ -524,10 +524,12 @@ class Install extends Command
                 DB::reconnect();
                 $pdo = DB::connection('processmaker')->getPdo();
             } catch (Exception $e) {
-                $this->errorOrExit(__('Failed to connect to MySQL database. Ensure the database exists. Check your credentials and try again.' . json_encode(config('database.connections.processmaker'))));
+                $this->errorOrExit(__('Failed to connect to MySQL database. Ensure the database exists. Check your credentials and try again.'.json_encode(config('database.connections.processmaker'))));
+
                 return false;
             }
         }
+
         return true;
     }
 
@@ -555,10 +557,12 @@ class Install extends Command
                 DB::connection('data')->reconnect();
                 $pdo = DB::connection('data')->getPdo();
             } catch (Exception $e) {
-                $this->errorOrExit(__('Failed to connect to DATA connection. Ensure the database exists. Check your credentials and try again. ' . json_encode(config('database.connections.data'))));
+                $this->errorOrExit(__('Failed to connect to DATA connection. Ensure the database exists. Check your credentials and try again. '.json_encode(config('database.connections.data'))));
+
                 return false;
             }
         }
+
         return true;
     }
 }

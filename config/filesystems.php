@@ -52,15 +52,15 @@ return [
         ],
         'keys' => [
             'driver' => 'local',
-            'root' => env('KEYS_PATH') ? base_path(env('KEYS_PATH')) : storage_path('keys')
+            'root' => env('KEYS_PATH') ? base_path(env('KEYS_PATH')) : storage_path('keys'),
         ],
         'mailtemplates' => [
             'driver' => 'local',
-            'root' => env('MAILTEMPLATES_PATH') ? base_path(env('MAILTEMPLATES_PATH')) : storage_path('mailTemplates')
+            'root' => env('MAILTEMPLATES_PATH') ? base_path(env('MAILTEMPLATES_PATH')) : storage_path('mailTemplates'),
         ],
         'process_templates' => [
             'driver' => 'local',
-            'root' => env('PROCESS_TEMPLATES_PATH') ? base_path(env('PROCESS_TEMPLATES_PATH')) : database_path('processes/templates')
+            'root' => env('PROCESS_TEMPLATES_PATH') ? base_path(env('PROCESS_TEMPLATES_PATH')) : database_path('processes/templates'),
         ],
         'public' => [
             'driver' => 'local',
@@ -99,7 +99,6 @@ return [
             'url' => env('APP_URL').'/storage/tmp',
             'visibility' => 'public',
         ],
-    ]
-
+    ],
 
 ];

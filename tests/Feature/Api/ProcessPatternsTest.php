@@ -25,11 +25,10 @@ class ProcessPatternsTest extends TestCase
     use RequestHelper;
     use ProcessTestingTrait;
 
-    private $basePath = __DIR__ . '/bpmnPatterns/';
+    private $basePath = __DIR__.'/bpmnPatterns/';
 
     /**
      * Make sure we have a personal access client set up
-     *
      */
     public function setUpWithPersonalAccessClient()
     {
@@ -39,7 +38,7 @@ class ProcessPatternsTest extends TestCase
     /**
      * Tests the bpmn process completing all active tasks
      *
-     * @param string $bpmnFile
+     * @param  string  $bpmnFile
      *
      * @dataProvider prepareTestCasesProvider
      */
@@ -61,22 +60,22 @@ class ProcessPatternsTest extends TestCase
         $tests = $this->prepareTestCases('MultiInstance_SequentialCallActivity.bpmn', $tests);
         $tests = $this->prepareTestCases('Loop_Task.bpmn', $tests);
         $tests = $this->prepareTestCases('SignalWithCustomPayload.bpmn', $tests);
+
         return $tests;
     }
 
     /**
      * Tests the bpmn process completing all active tasks
      *
-     * @param string $bpmnFile
-     * @param array $tests
-     *
+     * @param  string  $bpmnFile
+     * @param  array  $tests
      * @return array
      */
     private function prepareTestCases($bpmnFile, array $tests)
     {
         $file = "{$this->basePath}{$bpmnFile}";
         $name = basename($bpmnFile, '.bpmn');
-        $jsonFile = substr($file, 0, -4) . 'json';
+        $jsonFile = substr($file, 0, -4).'json';
         if (file_exists($jsonFile)) {
             $contexts = json_decode(file_get_contents($jsonFile), true);
             foreach ($contexts as $context) {
@@ -93,14 +92,14 @@ class ProcessPatternsTest extends TestCase
                 $bpmnFile,
             ];
         }
+
         return $tests;
     }
 
     /**
      * Run a process without json data
      *
-     * @param string $bpmnFile
-     *
+     * @param  string  $bpmnFile
      * @return void
      */
     private function runProcessWithoutContext($bpmnFile)
@@ -118,9 +117,8 @@ class ProcessPatternsTest extends TestCase
     /**
      * Run a process with json data
      *
-     * @param string $bpmnFile
-     * @param array $context
-     *
+     * @param  string  $bpmnFile
+     * @param  array  $context
      * @return void
      */
     private function runProcessWithContext($bpmnFile, $context = [])
@@ -128,7 +126,7 @@ class ProcessPatternsTest extends TestCase
         $events = isset($context['events']) ? $context['events'] : [];
         $output = isset($context['output']) ? $context['output'] : [];
         if (isset($context['requires'])) {
-            foreach($context['requires'] as $index => $process) {
+            foreach ($context['requires'] as $index => $process) {
                 $this->createProcess([
                     'id' => $index + 1,
                     'bpmn' => file_get_contents("{$this->basePath}{$process}"),
@@ -141,15 +139,14 @@ class ProcessPatternsTest extends TestCase
     /**
      * Run a process
      *
-     * @param string $bpmnFile
-     * @param array $data
-     * @param string $startEvent
-     * @param array $expectedResult
-     * @param array $events
-     *
+     * @param  string  $bpmnFile
+     * @param  array  $data
+     * @param  string  $startEvent
+     * @param  array  $expectedResult
+     * @param  array  $events
      * @return void
      */
-    private function runProcess($bpmnFile, $data = [], $startEvent, $expectedResult, $events, $output, $context)
+    private function runProcess($bpmnFile, $data, $startEvent, $expectedResult, $events, $output, $context)
     {
         Cache::store('global_variables')->flush();
         $process = $this->createProcess(file_get_contents("{$this->basePath}{$bpmnFile}"));
@@ -173,7 +170,7 @@ class ProcessPatternsTest extends TestCase
                 $this->completeTask($token, []);
             }
             // Trigger intermediate events
-            if (!$submited) {
+            if (! $submited) {
                 $tokens = ProcessRequestToken::where('status', 'ACTIVE')
                     ->where('element_type', 'event')
                     ->get();
@@ -194,7 +191,7 @@ class ProcessPatternsTest extends TestCase
             }
             $pending = ProcessRequest::where('status', 'ACTIVE')
                 ->count();
-            if (!$submited && $pending) {
+            if (! $submited && $pending) {
                 $elements = implode(
                     ', ',
                     ProcessRequestToken::whereIn('status', ['ACTIVE', 'FAILING'])
@@ -206,8 +203,7 @@ class ProcessPatternsTest extends TestCase
                 throw new Exception("The process got stuck in elements: {$elements}\n{$errors}");
             }
         }
-        $tasks = ProcessRequestToken::
-            whereIn('element_type', ['task', 'scriptTask', 'userTask', 'serviceTask'])
+        $tasks = ProcessRequestToken::whereIn('element_type', ['task', 'scriptTask', 'userTask', 'serviceTask'])
             ->get()
             ->pluck('element_id')
             ->toArray();
@@ -240,26 +236,26 @@ class ProcessPatternsTest extends TestCase
                 }
             }
         }
+
         return \implode("\n", $errors);
     }
 
     /**
      * Assert that $data contains the expected $subset
      *
-     * @param mixed $subset
-     * @param mixed $data
-     * @param string $message
-     * @param bool $skip
-     *
+     * @param  mixed  $subset
+     * @param  mixed  $data
+     * @param  string  $message
+     * @param  bool  $skip
      * @return mixed
      */
     private function assertData($subset, $data, $message = 'data', $skip = false)
     {
-        if (!is_array($subset) || !is_array($data)) {
+        if (! is_array($subset) || ! is_array($data)) {
             if ($skip) {
                 return $subset == $data;
             } else {
-                return $this->assertEquals($subset, $data, $message . ' = ' . \json_encode($data) . ' does not match ' . \json_encode($subset));
+                return $this->assertEquals($subset, $data, $message.' = '.\json_encode($data).' does not match '.\json_encode($subset));
             }
         }
         foreach ($subset as $key => $value) {

@@ -2,43 +2,43 @@
 
 namespace ProcessMaker\Assets;
 
-use DOMXPath;
 use Illuminate\Support\Arr;
 use ProcessMaker\Contracts\ScreenInterface;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Providers\WorkflowServiceProvider;
 use ProcessMaker\Exception\MaximumRecursionException;
 use ProcessMaker\Managers\ExportManager;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\Screen;
 
 class ScreensInScreen
 {
     public $type = Screen::class;
+
     public $owner = Screen::class;
+
     private $processRequest = null;
+
     private $recursion = 0;
 
     /**
      * Get the screens (nested) used in a screen
      *
-     * @param Screen $screen
-     * @param array $screens
-     *
+     * @param  Screen  $screen
+     * @param  array  $screens
      * @return array
      */
     public function referencesToExport(ScreenInterface $screen, array $screens = [], ExportManager $manager = null, bool $recursive = true)
     {
         if ($this->recursion > 10) {
             throw new MaximumRecursionException(
-                "Max screen recursion depth of 10 exceeded. Is a child screen referencing its parent?"
+                'Max screen recursion depth of 10 exceeded. Is a child screen referencing its parent?'
             );
         }
 
         $config = $screen->versionFor($this->processRequest)->config;
         if (is_array($config)) {
             $this->findInArray($config, function ($item) use (&$screens, $manager, $recursive) {
-                if (is_array($item) && isset($item['component']) && $item['component'] === 'FormNestedScreen' && !empty($item['config']['screen'])) {
+                if (is_array($item) && isset($item['component']) && $item['component'] === 'FormNestedScreen' && ! empty($item['config']['screen'])) {
                     $screens[] = [Screen::class, $item['config']['screen']];
                     if ($recursive) {
                         $screen = app(Screen::class)->findOrFail($item['config']['screen']);
@@ -49,15 +49,15 @@ class ScreensInScreen
                 }
             });
         }
+
         return $screens;
     }
 
     /**
      * Update references used in an imported screen
      *
-     * @param Screen $process
-     * @param array $references
-     *
+     * @param  Screen  $process
+     * @param  array  $references
      * @return void
      */
     public function updateReferences(Screen $screen, array $references = [])
@@ -65,7 +65,7 @@ class ScreensInScreen
         $config = $screen->config;
         if (is_array($config)) {
             $this->findInArray($config, function ($item, $key) use ($references, &$config) {
-                if (is_array($item) && isset($item['component']) && $item['component'] === 'FormNestedScreen' && !empty($item['config']['screen'])) {
+                if (is_array($item) && isset($item['component']) && $item['component'] === 'FormNestedScreen' && ! empty($item['config']['screen'])) {
                     $oldRef = $item['config']['screen'];
                     $newRef = $references[Screen::class][$oldRef]->getKey();
                     Arr::set($config, "$key.config.screen", $newRef);
@@ -79,9 +79,8 @@ class ScreensInScreen
     /**
      * Find recursively in an array
      *
-     * @param array $array
-     * @param callable $callback
-     *
+     * @param  array  $array
+     * @param  callable  $callback
      * @return void
      */
     private function findInArray(array $array, callable $callback, array $path = [])
@@ -99,7 +98,7 @@ class ScreensInScreen
     /**
      * Set the process requests for version context
      *
-     * @param ProcessRequest $processRequest
+     * @param  ProcessRequest  $processRequest
      * @return void
      */
     public function setProcessRequest(ProcessRequest $processRequest = null)

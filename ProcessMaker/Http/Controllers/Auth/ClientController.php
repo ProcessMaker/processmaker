@@ -8,7 +8,7 @@ use ProcessMaker\Http\Resources\AuthClient as AuthClientResource;
 
 class ClientController extends PassportClientController
 {
-     /**
+    /**
      * List auth clients
      *
      * @param  \Illuminate\Http\Request  $request
@@ -17,20 +17,22 @@ class ClientController extends PassportClientController
     public function index(Request $request)
     {
         $clients = \Laravel\Passport\Client::where('revoked', false)->get();
+
         return AuthClientResource::collection($clients);
     }
-     
+
     /**
-     * Get an individual auth client 
+     * Get an individual auth client
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  string $clientId
+     * @param  string  $clientId
      * @return array
      */
     public function show(Request $request, $clientId)
     {
         // $client = $this->clients->find($clientId);
         $client = parent::show($request, $clientId);
+
         return new AuthClientResource($client);
     }
 
@@ -64,13 +66,12 @@ class ClientController extends PassportClientController
      */
     public function update(Request $request, $clientId)
     {
-        
         $client = $this->clients->find($clientId);
 
-        if (!$client) {
+        if (! $client) {
             return new Response('', 404);
         }
-        
+
         $this->validate($request);
 
         $personalAccess = in_array('personal_access_client', $request->types);
@@ -98,20 +99,21 @@ class ClientController extends PassportClientController
     {
         $client = $this->clients->find($clientId);
 
-        if (!$client) {
+        if (! $client) {
             return new Response('', 404);
         }
-        
+
         $this->clients->delete($client);
+
         return response('', 204);
     }
-    
+
     private function validate($request)
     {
         $rules = [
-            'name'     => 'required|max:255',
-            'types'    => 'array|min:1|required',
-            'types.*'  => 'in:authorization_code_grant,password_client,personal_access_client'
+            'name' => 'required|max:255',
+            'types' => 'array|min:1|required',
+            'types.*' => 'in:authorization_code_grant,password_client,personal_access_client',
         ];
         if (is_array($request->types) && in_array('authorization_code_grant', $request->types)) {
             $rules['redirect'] = 'required|url|max:2000';

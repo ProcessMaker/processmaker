@@ -17,7 +17,7 @@ trait PerformanceReportTrait
 
     private function addMeasurement($name, $measure)
     {
-        if (!isset(static::$measurements[$name])) {
+        if (! isset(static::$measurements[$name])) {
             static::$measurements[$name] = [];
         }
         static::$measurements[$name][] = $measure;
@@ -28,7 +28,7 @@ trait PerformanceReportTrait
         $report = fopen($output, 'w');
         ob_start();
         $measurements = self::$measurements[$name];
-        include __DIR__ . '/' . $tpl;
+        include __DIR__.'/'.$tpl;
         fwrite($report, ob_get_clean());
         fclose($report);
     }

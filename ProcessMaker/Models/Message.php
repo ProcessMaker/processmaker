@@ -6,17 +6,17 @@ use ProcessMaker\Nayra\Bpmn\Models\Message as MessageBase;
 
 /**
  * Implementation of the message element.
- *
  */
 class Message extends MessageBase
 {
-
     const PAYLOAD_EXPRESSION = '/^\{([\w.,\s]+)\}$/';
+
     const MAP_EXPRESSION = '/^\s*(\w+)\s*:\s*([\w.]+)\s*$/';
+
     const ITEM_EXPRESSION = '/^\s*(\w+)\s*$/';
 
     /**
-     * @var mixed $payload
+     * @var mixed
      */
     private $payload;
 
@@ -33,19 +33,18 @@ class Message extends MessageBase
     /**
      * Get the payload of the message.
      *
-     * @param mixed $payload
-     *
+     * @param  mixed  $payload
      * @return $this
      */
     public function setPayload($payload)
     {
         $this->payload = $payload;
+
         return $this;
     }
 
     /**
      * Get the serializable content of message
-     *
      */
     public function getData(ProcessRequest $instance)
     {
@@ -64,6 +63,7 @@ class Message extends MessageBase
                 $data[$name] = array_get($source, $reference);
             }
         }
+
         return $data;
     }
 }

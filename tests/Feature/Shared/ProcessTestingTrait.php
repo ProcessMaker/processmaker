@@ -40,26 +40,27 @@ trait ProcessTestingTrait
         $process->bpmn = $definitions->saveXml();
         // When save the process creates the assignments
         $process->save();
+
         return $process;
     }
 
     /**
      * Assign or create an user for a task
      *
-     * @param DOMElement $task
-     * @param array $users
+     * @param  DOMElement  $task
+     * @param  array  $users
      */
     private function assignTaskUser(DOMElement $task, array &$users)
     {
         $assignment = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
         if ($assignment === 'user' || $assignment === 'user_group') {
             $userId = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedUsers');
-            if (!$userId) {
+            if (! $userId) {
                 return;
             }
             if (isset($users[$userId])) {
                 $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedUsers', $users[$userId]->id);
-            } elseif (!User::find($userId)) {
+            } elseif (! User::find($userId)) {
                 $users[$userId] = factory(User::class)->create([
                     'id' => $userId,
                     'status' => 'ACTIVE',
@@ -73,10 +74,9 @@ trait ProcessTestingTrait
     /**
      * Star a process request
      *
-     * @param Process $process
-     * @param string $startEvent
-     * @param array $data
-     *
+     * @param  Process  $process
+     * @param  string  $startEvent
+     * @param  array  $data
      * @return ProcessRequest
      */
     private function startProcess(Process $process, $startEvent, array $data = [])
@@ -85,15 +85,15 @@ trait ProcessTestingTrait
         $route = route('api.process_events.trigger', [$process->getKey(), 'event' => $startEvent]);
         $response = $this->apiCall('POST', $route, $data);
         $requestJson = $response->json();
+
         return ProcessRequest::find($requestJson['id']);
     }
 
     /**
      * Complete a task by $token
      *
-     * @param ProcessRequestToken $token
-     * @param array $data
-     *
+     * @param  ProcessRequestToken  $token
+     * @param  array  $data
      * @return ProcessRequestToken|\Illuminate\Foundation\Testing\TestResponse
      */
     private function completeTask(ProcessRequestToken $token, array $data = [], $return = 'token')
@@ -118,8 +118,8 @@ trait ProcessTestingTrait
     /**
      * Trigger a catch event
      *
-     * @param ProcessRequestToken $token
-     * @param array $data
+     * @param  ProcessRequestToken  $token
+     * @param  array  $data
      * @return void
      */
     private function triggerCatchEvent(ProcessRequestToken $token, array $data = [])
@@ -139,7 +139,6 @@ trait ProcessTestingTrait
 
     /**
      * Run scheduled tasks
-     *
      */
     private function runScheduledTasks()
     {
@@ -155,7 +154,6 @@ trait ProcessTestingTrait
 
     /**
      * Restore the fake date for TaskSchedulerManager
-     *
      */
     protected function teardownProcessTestingTrait()
     {

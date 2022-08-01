@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class AddIsSelfServiceToProcessRequestTokens extends Migration
 {
@@ -27,7 +27,7 @@ class AddIsSelfServiceToProcessRequestTokens extends Migration
     public function down()
     {
         Schema::table('process_request_tokens', function (Blueprint $table) {
-            $table->dropColumn(['is_self_service','self_service_groups']);
+            $table->dropColumn(['is_self_service', 'self_service_groups']);
         });
     }
 }

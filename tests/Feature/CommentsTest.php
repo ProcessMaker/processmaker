@@ -1,12 +1,14 @@
 <?php
+
 namespace Tests\Feature;
+
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\User;
-use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class CommentsTest extends TestCase
 {
@@ -14,7 +16,7 @@ class CommentsTest extends TestCase
 
     private function createTask(array $data = [])
     {
-        $data['bpmn'] = file_get_contents(__DIR__ . '/Api/processes/ManualTask.bpmn');
+        $data['bpmn'] = file_get_contents(__DIR__.'/Api/processes/ManualTask.bpmn');
         $process = factory(Process::class)->create($data);
         $taskId = 'TaskUID';
         factory(ProcessTaskAssignment::class)->create([
@@ -46,13 +48,13 @@ class CommentsTest extends TestCase
 
         // Create sample user
         $testUser = factory(User::class)->create([
-            'username' => 'testuser'
+            'username' => 'testuser',
         ]);
 
         // Create a comment where the user is tagged
         $comment = factory(Comment::class)->create([
             'user_id' => $this->user->id,
-            'body' => 'Should replace the username to user id in mustaches @' . $testUser->username,
+            'body' => 'Should replace the username to user id in mustaches @'.$testUser->username,
             'commentable_type' => ProcessRequestToken::class,
             'commentable_id' => $task['id'],
         ]);
@@ -61,7 +63,7 @@ class CommentsTest extends TestCase
         $this->assertEquals('Should replace the username to user id in mustaches {{'.$testUser->id.'}}', $comment->getOriginal('body'));
 
         // Assert that the comment body with the accessor is parsed to username to the ui
-        $this->assertEquals('Should replace the username to user id in mustaches @' . $testUser->username, $comment->body);
+        $this->assertEquals('Should replace the username to user id in mustaches @'.$testUser->username, $comment->body);
     }
 
     /**
@@ -74,13 +76,13 @@ class CommentsTest extends TestCase
 
         // Create sample user
         $testUser = factory(User::class)->create([
-            'username' => '测试用户'
+            'username' => '测试用户',
         ]);
 
         // Create a comment where the user is tagged
         $comment = factory(Comment::class)->create([
             'user_id' => $this->user->id,
-            'body' => 'Should replace the username to user id in mustaches @' . $testUser->username,
+            'body' => 'Should replace the username to user id in mustaches @'.$testUser->username,
             'commentable_type' => ProcessRequestToken::class,
             'commentable_id' => $task['id'],
         ]);
@@ -89,7 +91,7 @@ class CommentsTest extends TestCase
         $this->assertEquals('Should replace the username to user id in mustaches {{'.$testUser->id.'}}', $comment->getOriginal('body'));
 
         // Assert that the comment body with the accessor is parsed to username to the ui
-        $this->assertEquals('Should replace the username to user id in mustaches @' . $testUser->username, $comment->body);
+        $this->assertEquals('Should replace the username to user id in mustaches @'.$testUser->username, $comment->body);
     }
 
     /**
@@ -102,13 +104,13 @@ class CommentsTest extends TestCase
 
         // Create sample user
         $testUser = factory(User::class)->create([
-            'username' => 'النسر'
+            'username' => 'النسر',
         ]);
 
         // Create a comment where the user is tagged
         $comment = factory(Comment::class)->create([
             'user_id' => $this->user->id,
-            'body' => 'Should replace the username to user id in mustaches @' . $testUser->username,
+            'body' => 'Should replace the username to user id in mustaches @'.$testUser->username,
             'commentable_type' => ProcessRequestToken::class,
             'commentable_id' => $task['id'],
         ]);
@@ -117,7 +119,7 @@ class CommentsTest extends TestCase
         $this->assertEquals('Should replace the username to user id in mustaches {{'.$testUser->id.'}}', $comment->getOriginal('body'));
 
         // Assert that the comment body with the accessor is parsed to username to the ui
-        $this->assertEquals('Should replace the username to user id in mustaches @' . $testUser->username, $comment->body);
+        $this->assertEquals('Should replace the username to user id in mustaches @'.$testUser->username, $comment->body);
     }
 
     /**
@@ -130,13 +132,13 @@ class CommentsTest extends TestCase
 
         // Create sample user with german characters
         $testUser = factory(User::class)->create([
-            'username' => 'ÄÖÜäöü'
+            'username' => 'ÄÖÜäöü',
         ]);
 
         // Create a comment where the user is tagged
         $comment = factory(Comment::class)->create([
             'user_id' => $this->user->id,
-            'body' => 'Should replace the username to user id in mustaches @' . $testUser->username,
+            'body' => 'Should replace the username to user id in mustaches @'.$testUser->username,
             'commentable_type' => ProcessRequestToken::class,
             'commentable_id' => $task['id'],
         ]);
@@ -145,7 +147,7 @@ class CommentsTest extends TestCase
         $this->assertEquals('Should replace the username to user id in mustaches {{'.$testUser->id.'}}', $comment->getOriginal('body'));
 
         // Assert that the comment body with the accessor is parsed to username to the ui
-        $this->assertEquals('Should replace the username to user id in mustaches @' . $testUser->username, $comment->body);
+        $this->assertEquals('Should replace the username to user id in mustaches @'.$testUser->username, $comment->body);
     }
 
     /**
@@ -158,13 +160,13 @@ class CommentsTest extends TestCase
 
         // Create sample user with swiss characters
         $testUser = factory(User::class)->create([
-            'username' => 'օգտագործող'
+            'username' => 'օգտագործող',
         ]);
 
         // Create a comment where the user is tagged
         $comment = factory(Comment::class)->create([
             'user_id' => $this->user->id,
-            'body' => 'Should replace the username to user id in mustaches @' . $testUser->username,
+            'body' => 'Should replace the username to user id in mustaches @'.$testUser->username,
             'commentable_type' => ProcessRequestToken::class,
             'commentable_id' => $task['id'],
         ]);
@@ -173,7 +175,7 @@ class CommentsTest extends TestCase
         $this->assertEquals('Should replace the username to user id in mustaches {{'.$testUser->id.'}}', $comment->getOriginal('body'));
 
         // Assert that the comment body with the accessor is parsed to username to the ui
-        $this->assertEquals('Should replace the username to user id in mustaches @' . $testUser->username, $comment->body);
+        $this->assertEquals('Should replace the username to user id in mustaches @'.$testUser->username, $comment->body);
     }
 
     /**
@@ -186,13 +188,13 @@ class CommentsTest extends TestCase
 
         // Create sample user with bulgarian characters
         $testUser = factory(User::class)->create([
-            'username' => 'Тестов'
+            'username' => 'Тестов',
         ]);
 
         // Create a comment where the user is tagged
         $comment = factory(Comment::class)->create([
             'user_id' => $this->user->id,
-            'body' => 'Should replace the username to user id in mustaches @' . $testUser->username,
+            'body' => 'Should replace the username to user id in mustaches @'.$testUser->username,
             'commentable_type' => ProcessRequestToken::class,
             'commentable_id' => $task['id'],
         ]);
@@ -201,6 +203,6 @@ class CommentsTest extends TestCase
         $this->assertEquals('Should replace the username to user id in mustaches {{'.$testUser->id.'}}', $comment->getOriginal('body'));
 
         // Assert that the comment body with the accessor is parsed to username to the ui
-        $this->assertEquals('Should replace the username to user id in mustaches @' . $testUser->username, $comment->body);
+        $this->assertEquals('Should replace the username to user id in mustaches @'.$testUser->username, $comment->body);
     }
 }

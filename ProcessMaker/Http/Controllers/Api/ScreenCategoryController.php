@@ -4,9 +4,9 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
+use ProcessMaker\Models\ScreenCategory;
 
 class ScreenCategoryController extends Controller
 {
@@ -77,8 +77,8 @@ class ScreenCategoryController extends Controller
         }
 
         $filter = $request->input('filter', '');
-        if (!empty($filter)) {
-            $filter = '%' . $filter . '%';
+        if (! empty($filter)) {
+            $filter = '%'.$filter.'%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('name', 'like', $filter)
                     ->orWhere('status', 'like', $filter);
@@ -92,14 +92,14 @@ class ScreenCategoryController extends Controller
             $request->input('order_direction', 'asc')
         );
         $response = $query->paginate($request->input('per_page', 10));
+
         return new ApiCollection($response);
     }
 
     /**
      * Display the specified screen category.
      *
-     * @param ScreenCategory $screenCategory
-     *
+     * @param  ScreenCategory  $screenCategory
      * @return \Illuminate\Http\JsonResponse
      *     * @OA\Get(
      *     path="/screen_categories/{screen_category_id}",
@@ -130,8 +130,7 @@ class ScreenCategoryController extends Controller
     /**
      * Store a newly created Screen Category in storage
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return \Illuminate\Http\JsonResponse
      *
      *     * @OA\Post(
@@ -156,15 +155,15 @@ class ScreenCategoryController extends Controller
         $category = new ScreenCategory();
         $category->fill($request->json()->all());
         $category->saveOrFail();
+
         return new ApiResource($category);
     }
 
     /**
      * Updates the current element
      *
-     * @param Request $request
-     * @param ScreenCategory $screenCategory
-     *
+     * @param  Request  $request
+     * @param  ScreenCategory  $screenCategory
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      *      * @OA\Put(
      *     path="/screen_categories/{screen_category_id}",
@@ -196,14 +195,14 @@ class ScreenCategoryController extends Controller
         $request->validate(ScreenCategory::rules($screenCategory));
         $screenCategory->fill($request->json()->all());
         $screenCategory->saveOrFail();
+
         return new ApiResource($screenCategory);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param ScreenCategory $screenCategory
-     *
+     * @param  ScreenCategory  $screenCategory
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      *
      *      * @OA\Delete(
@@ -229,13 +228,14 @@ class ScreenCategoryController extends Controller
     public function destroy(ScreenCategory $screenCategory)
     {
         if ($screenCategory->screens->count() !== 0) {
-            return response (
-                ['message'=>'The item should not have associated screens',
-                    'errors'=> ['screens' => $screenCategory->screens->count()]],
+            return response(
+                ['message' => 'The item should not have associated screens',
+                    'errors' => ['screens' => $screenCategory->screens->count()], ],
                     422);
         }
 
         $screenCategory->delete();
+
         return response('', 204);
     }
 }

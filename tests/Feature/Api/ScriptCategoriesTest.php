@@ -1,14 +1,13 @@
 <?php
+
 namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
-use ProcessMaker\Models\ScriptExecutor;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
-
 
 /**
  * Tests routes related to script / CRUD related methods
@@ -17,18 +16,18 @@ use Tests\TestCase;
  */
 class ScriptCategoriesTest extends TestCase
 {
-
     use WithFaker;
     use ResourceAssertionsTrait;
     use RequestHelper;
 
     protected $resource = 'api.script_categories';
+
     protected $structure = [
         'id',
         'name',
         'status',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
@@ -37,7 +36,7 @@ class ScriptCategoriesTest extends TestCase
     public function testCreateScriptCategory()
     {
         //Create a script category
-        $route = route($this->resource . '.store');
+        $route = route($this->resource.'.store');
         $base = factory(ScriptCategory::class)->make();
         $response = $this->apiCall('POST', $route, $base->toArray());
         //validate status create
@@ -53,7 +52,7 @@ class ScriptCategoriesTest extends TestCase
      */
     public function testCreateNameRequired()
     {
-        $route = route($this->resource . '.store');
+        $route = route($this->resource.'.store');
         $base = factory(ScriptCategory::class)->make(['name' => null]);
         $response = $this->apiCall('POST', $route, $base->toArray());
         //validate status of error model
@@ -69,7 +68,7 @@ class ScriptCategoriesTest extends TestCase
      */
     public function testCreateDuplicateName()
     {
-        $route = route($this->resource . '.store');
+        $route = route($this->resource.'.store');
 
         //create script category
         $name = 'Some name';
@@ -95,8 +94,8 @@ class ScriptCategoriesTest extends TestCase
         $page = 2;
         $perPage = 10;
 
-        $route = route($this->resource . '.index');
-        $response = $this->apiCall('GET', $route . '?page=' . $page . '&per_page=' . $perPage);
+        $route = route($this->resource.'.index');
+        $response = $this->apiCall('GET', $route.'?page='.$page.'&per_page='.$perPage);
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -121,17 +120,17 @@ class ScriptCategoriesTest extends TestCase
     public function testFiltering()
     {
         $perPage = 10;
-        $initialInactiveCount = ScriptCategory::where('status','INACTIVE')->count();
+        $initialInactiveCount = ScriptCategory::where('status', 'INACTIVE')->count();
 
         factory(ScriptCategory::class, 3)->create(['is_system' => true, 'status' => 'ACTIVE']);
         // Create some script
         $scriptActive = [
             'num' => 10,
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
         ];
         $scriptInactive = [
             'num' => 15,
-            'status' => 'INACTIVE'
+            'status' => 'INACTIVE',
         ];
         factory(ScriptCategory::class, $scriptActive['num'])->create(['status' => $scriptActive['status']]);
         factory(ScriptCategory::class, $scriptInactive['num'])->create(['status' => $scriptInactive['status']]);
@@ -140,8 +139,8 @@ class ScriptCategoriesTest extends TestCase
         factory(ScriptCategory::class)->create(['status' => 'ACTIVE', 'name' => $name]);
 
         //Get active script
-        $route = route($this->resource . '.index');
-        $response = $this->apiCall('GET', $route . '?filter=' . $name . '&per_page=' . $perPage);
+        $route = route($this->resource.'.index');
+        $response = $this->apiCall('GET', $route.'?filter='.$name.'&per_page='.$perPage);
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -149,7 +148,7 @@ class ScriptCategoriesTest extends TestCase
         $data = $response->json('data');
         $meta = $response->json('meta');
         // Verify the meta values
-        $this->assertArraySubset( [
+        $this->assertArraySubset([
             'total' => 1,
             'count' => 1,
             'per_page' => $perPage,
@@ -158,7 +157,7 @@ class ScriptCategoriesTest extends TestCase
         $this->assertCount($meta['count'], $data);
 
         //Get inactive script
-        $response = $this->apiCall('GET', $route . '?filter=INACTIVE&per_page=' . $perPage);
+        $response = $this->apiCall('GET', $route.'?filter=INACTIVE&per_page='.$perPage);
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -166,7 +165,7 @@ class ScriptCategoriesTest extends TestCase
         $data = $response->json('data');
         $meta = $response->json('meta');
         // Verify the meta values
-        $this->assertArraySubset( [
+        $this->assertArraySubset([
             'total' => $initialInactiveCount + $scriptInactive['num'],
             'count' => $perPage,
             'per_page' => $perPage,
@@ -181,25 +180,25 @@ class ScriptCategoriesTest extends TestCase
     public function testFilteringStatus()
     {
         $perPage = 10;
-        $initialActiveCount = ScriptCategory::where('status','ACTIVE')->count();
-        $initialInactiveCount = ScriptCategory::where('status','INACTIVE')->count();
+        $initialActiveCount = ScriptCategory::where('status', 'ACTIVE')->count();
+        $initialInactiveCount = ScriptCategory::where('status', 'INACTIVE')->count();
 
         // Create some script
         $scriptActive = [
             'num' => 10,
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
         ];
         $scriptInactive = [
             'num' => 15,
-            'status' => 'INACTIVE'
+            'status' => 'INACTIVE',
         ];
 
         factory(ScriptCategory::class, $scriptActive['num'])->create(['status' => $scriptActive['status']]);
         factory(ScriptCategory::class, $scriptInactive['num'])->create(['status' => $scriptInactive['status']]);
 
         //Get active script
-        $route = route($this->resource . '.index');
-        $response = $this->apiCall('GET', $route . '?status=ACTIVE&per_page=' . $perPage);
+        $route = route($this->resource.'.index');
+        $response = $this->apiCall('GET', $route.'?status=ACTIVE&per_page='.$perPage);
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -207,7 +206,7 @@ class ScriptCategoriesTest extends TestCase
         $data = $response->json('data');
         $meta = $response->json('meta');
         // Verify the meta values
-        $this->assertArraySubset( [
+        $this->assertArraySubset([
             'total' => $initialActiveCount + $scriptActive['num'],
             'count' => $perPage,
             'per_page' => $perPage,
@@ -223,15 +222,15 @@ class ScriptCategoriesTest extends TestCase
     {
         // Create some script
         factory(ScriptCategory::class)->create([
-            'name' => 'aaaaaa'
+            'name' => 'aaaaaa',
         ]);
         factory(ScriptCategory::class)->create([
-            'name' => 'zzzzz'
+            'name' => 'zzzzz',
         ]);
 
         //Test the list sorted by name returns as first row {"name": "aaaaaa"}
-        $route = route($this->resource . '.index');
-        $response = $this->apiCall('GET', $route . '?order_by=name&order_direction=asc');
+        $route = route($this->resource.'.index');
+        $response = $this->apiCall('GET', $route.'?order_by=name&order_direction=asc');
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -240,17 +239,16 @@ class ScriptCategoriesTest extends TestCase
         $meta = $response->json('meta');
         // Verify the meta values
         $this->assertArraySubset([
-            'count' => count($data)
+            'count' => count($data),
         ], $meta);
 
         $firstRow = $this->getDataAttributes($data[0]);
         $this->assertArraySubset([
-            'name' => 'aaaaaa'
+            'name' => 'aaaaaa',
         ], $firstRow);
 
-
         //Test the list sorted desc returns as first row {"name": "zzzzz"}
-        $response = $this->apiCall('GET', $route . '?order_by=name&order_direction=DESC');
+        $response = $this->apiCall('GET', $route.'?order_by=name&order_direction=DESC');
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -262,13 +260,12 @@ class ScriptCategoriesTest extends TestCase
 
         $firstRow = $this->getDataAttributes($data[0]);
         $this->assertArraySubset([
-            'name' => 'zzzzz'
+            'name' => 'zzzzz',
         ], $firstRow);
     }
 
     /**
      * Test pagination of script list
-     *
      */
     public function testPagination()
     {
@@ -282,15 +279,13 @@ class ScriptCategoriesTest extends TestCase
         factory(ScriptCategory::class, $rowsToAdd)->create();
 
         // The first page should have 5 items;
-        $response = $this->apiCall('GET', route($this->resource . '.index', ['per_page' => 5, 'page' => 1]));
+        $response = $this->apiCall('GET', route($this->resource.'.index', ['per_page' => 5, 'page' => 1]));
         $response->assertJsonCount(5, 'data');
 
         // The second page should have the modulus of 2+$initialRows
-        $response = $this->apiCall('GET', route($this->resource . '.index', ['per_page' => 5, 'page' => 2]));
+        $response = $this->apiCall('GET', route($this->resource.'.index', ['per_page' => 5, 'page' => 2]));
         $response->assertJsonCount((2 + $initialRows) % 5, 'data');
     }
-
-
 
     /**
      * Test show script category
@@ -301,7 +296,7 @@ class ScriptCategoriesTest extends TestCase
         $category = factory(ScriptCategory::class)->create();
 
         //Test that is correctly displayed
-        $route = route($this->resource . '.show', [$category->id]);
+        $route = route($this->resource.'.show', [$category->id]);
         $response = $this->apiCall('GET', $route);
         $response->assertStatus(200);
         $response->assertJsonStructure($this->structure);
@@ -314,7 +309,7 @@ class ScriptCategoriesTest extends TestCase
     {
         $item = factory(ScriptCategory::class)->create();
 
-        $route = route($this->resource . '.update', [$item->id]);
+        $route = route($this->resource.'.update', [$item->id]);
         $fields = [
             'name' => $this->faker->name,
             'status' => 'ACTIVE',
@@ -335,7 +330,7 @@ class ScriptCategoriesTest extends TestCase
     {
         $item = factory(ScriptCategory::class)->create(['status' => 'ACTIVE']);
 
-        $route = route($this->resource . '.update', [$item->id]);
+        $route = route($this->resource.'.update', [$item->id]);
         $fields = [
             'name' => 'test',
             'status' => 'INACTIVE',
@@ -356,7 +351,7 @@ class ScriptCategoriesTest extends TestCase
     {
         $item = factory(ScriptCategory::class)->create();
 
-        $route = route($this->resource . '.update', [$item->id]);
+        $route = route($this->resource.'.update', [$item->id]);
         $fields = [
             'name' => null,
             'status' => 'ACTIVE',
@@ -366,7 +361,6 @@ class ScriptCategoriesTest extends TestCase
         $response->assertStatus(422);
         //validate structure
         $response->assertJsonStructure(['errors' => ['name']]);
-
     }
 
     /*
@@ -378,7 +372,7 @@ class ScriptCategoriesTest extends TestCase
         factory(ScriptCategory::class)->create(['name' => $name]);
         $item = factory(ScriptCategory::class)->create();
 
-        $route = route($this->resource . '.update', [$item->id]);
+        $route = route($this->resource.'.update', [$item->id]);
         $fields = [
             'name' => $name,
             'status' => 'ACTIVE',
@@ -397,7 +391,7 @@ class ScriptCategoriesTest extends TestCase
     {
         $item = factory(ScriptCategory::class)->create();
 
-        $route = route($this->resource . '.update', [$item->id]);
+        $route = route($this->resource.'.update', [$item->id]);
         $fields = [
             'status' => 'NOT_EXISTS',
         ];
@@ -414,7 +408,7 @@ class ScriptCategoriesTest extends TestCase
     public function testDeleteScriptCategory()
     {
         $scriptCategory = factory(ScriptCategory::class)->create();
-        $route = route($this->resource . '.destroy', [$scriptCategory->id]);
+        $route = route($this->resource.'.destroy', [$scriptCategory->id]);
         $response = $this->apiCall('DELETE', $route);
         //validate status
         $response->assertStatus(204);
@@ -426,12 +420,11 @@ class ScriptCategoriesTest extends TestCase
      */
     public function testDeleteFailScriptCategory()
     {
-        $script = factory(Script::class)->create(['language'=>'lua']);
-        $route = route($this->resource . '.destroy', [$script->script_category_id]);
+        $script = factory(Script::class)->create(['language' => 'lua']);
+        $route = route($this->resource.'.destroy', [$script->script_category_id]);
         $response = $this->apiCall('DELETE', $route);
         $response->assertStatus(422);
         $response->assertJsonStructure($this->errorStructure);
         $response->assertJsonStructure(['errors' => ['scripts']]);
     }
-
 }

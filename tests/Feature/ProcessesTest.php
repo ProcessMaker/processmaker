@@ -2,14 +2,13 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use Tests\Feature\Shared\RequestHelper;
+use Illuminate\Support\Facades\Artisan;
+use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
-use ProcessMaker\Models\ProcessCategory;
-use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Providers\AuthServiceProvider;
-use ProcessMaker\Models\Permission;
+use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class ProcessesTest extends TestCase
 {
@@ -62,7 +61,7 @@ class ProcessesTest extends TestCase
             'is_administrator' => false,
         ]);
         // Set the URL & permission to test.
-        $url = 'processes/' . $process->id . '/edit';
+        $url = 'processes/'.$process->id.'/edit';
         $permission = 'edit-processes';
 
         // Our user has no permissions, so this should return 403.
@@ -118,7 +117,7 @@ class ProcessesTest extends TestCase
         $data = [
             'name' => 'Stored new process',
             'description' => 'My description',
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
         ];
 
         // Our user has no permissions, so this should return 403.
@@ -143,7 +142,7 @@ class ProcessesTest extends TestCase
             'is_administrator' => false,
         ]);
         // Set the URL, permission, and data with which to test.
-        $url = 'processes/' . $process->id;
+        $url = 'processes/'.$process->id;
         $permission = 'edit-processes';
         $data = [
             'name' => 'Updated Name',
@@ -172,7 +171,7 @@ class ProcessesTest extends TestCase
             'is_administrator' => false,
         ]);
         // Set the URL & permission to test.
-        $url = 'processes/' . $process->id;
+        $url = 'processes/'.$process->id;
         $permission = 'archive-processes';
 
         // Our user has no permissions, so this should return 403.
@@ -195,7 +194,7 @@ class ProcessesTest extends TestCase
         $response = $this->webCall('GET', '/processes');
         $response->assertStatus(403);
 
-        foreach(explode('|',
+        foreach (explode('|',
             'view-processes|view-process-categories|view-scripts|view-screens|view-environment_variables'
         ) as $perm) {
             $this->user->permissions()->attach(Permission::byName($perm));
@@ -205,7 +204,7 @@ class ProcessesTest extends TestCase
         $response = $this->webCall('GET', '/processes');
         $response->assertViewIs('processes.index');
 
-        $checkNextAuth = function($perm, $nextRoute) {
+        $checkNextAuth = function ($perm, $nextRoute) {
             $this->user->permissions()->detach(Permission::byName($perm));
             $this->user->refresh();
             $this->flushSession();

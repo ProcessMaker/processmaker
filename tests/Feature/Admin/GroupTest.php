@@ -2,11 +2,9 @@
 
 namespace Tests\Feature\Admin;
 
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class GroupTest extends TestCase
 {
@@ -33,7 +31,7 @@ class GroupTest extends TestCase
     {
         $groupId = factory(Group::class)->create()->getKey();
         // get the URL
-        $response = $this->webCall('GET', '/admin/groups/' . $groupId . '/edit');
+        $response = $this->webCall('GET', '/admin/groups/'.$groupId.'/edit');
 
         $response->assertStatus(200);
         // check the correct view is called

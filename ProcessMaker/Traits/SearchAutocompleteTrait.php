@@ -1,15 +1,14 @@
 <?php
+
 namespace ProcessMaker\Traits;
 
-use DB;
 use Auth;
 use Illuminate\Http\Request;
-use ProcessMaker\Models\User;
-use ProcessMaker\Models\Group;
+use Illuminate\Support\Str;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
-use Illuminate\Support\Str;
+use ProcessMaker\Models\User;
 
 trait SearchAutocompleteTrait
 {
@@ -21,6 +20,7 @@ trait SearchAutocompleteTrait
         if (method_exists($this, Str::camel("search $type"))) {
             $method = Str::camel("search $type");
             $results = $this->$method($query);
+
             return response()->json($results);
         } else {
             return abort(404);
@@ -52,9 +52,9 @@ trait SearchAutocompleteTrait
         if (empty($query)) {
             $results = Process::nonSystem()->limit(50)->get();
         } else {
-            $results = Process::nonSystem()->pmql('name = "' . $query . '"', function($expression) {
-                return function($query) use($expression) {
-                    $query->where($expression->field->field(), 'LIKE',  '%' . $expression->value->value() . '%');
+            $results = Process::nonSystem()->pmql('name = "'.$query.'"', function ($expression) {
+                return function ($query) use ($expression) {
+                    $query->where($expression->field->field(), 'LIKE', '%'.$expression->value->value().'%');
                 };
             })->get();
         }
@@ -73,9 +73,9 @@ trait SearchAutocompleteTrait
             if (empty($query)) {
                 $results = $results->merge(User::limit(49)->where('id', '!=', Auth::user()->id)->get());
             } else {
-                $results = $results->merge(User::pmql('username = "' . $query . '" OR firstname = "' . $query . '"  OR lastname = "' . $query . '"', function($expression) {
-                    return function($query) use($expression) {
-                        $query->where($expression->field->field(), 'LIKE',  '%' . $expression->value->value() . '%');
+                $results = $results->merge(User::pmql('username = "'.$query.'" OR firstname = "'.$query.'"  OR lastname = "'.$query.'"', function ($expression) {
+                    return function ($query) use ($expression) {
+                        $query->where($expression->field->field(), 'LIKE', '%'.$expression->value->value().'%');
                     };
                 })->where('id', '!=', Auth::user()->id)->limit(49)->get());
             }
@@ -95,9 +95,9 @@ trait SearchAutocompleteTrait
             if (empty($query)) {
                 $results = $results->merge(User::limit(49)->where('id', '!=', Auth::user()->id)->get());
             } else {
-                $results = $results->merge(User::pmql('username = "' . $query . '" OR firstname = "' . $query . '"  OR lastname = "' . $query . '"', function($expression) {
-                    return function($query) use($expression) {
-                        $query->where($expression->field->field(), 'LIKE',  '%' . $expression->value->value() . '%');
+                $results = $results->merge(User::pmql('username = "'.$query.'" OR firstname = "'.$query.'"  OR lastname = "'.$query.'"', function ($expression) {
+                    return function ($query) use ($expression) {
+                        $query->where($expression->field->field(), 'LIKE', '%'.$expression->value->value().'%');
                     };
                 })->where('id', '!=', Auth::user()->id)->limit(49)->get());
             }
@@ -131,9 +131,9 @@ trait SearchAutocompleteTrait
         if (empty($query)) {
             $results = ProcessRequestToken::limit(50);
         } else {
-            $results = ProcessRequestToken::pmql('element_name = "' . $query . '"', function($expression) {
-                return function($query) use($expression) {
-                    $query->where($expression->field->field(), 'LIKE',  '%' . $expression->value->value() . '%');
+            $results = ProcessRequestToken::pmql('element_name = "'.$query.'"', function ($expression) {
+                return function ($query) use ($expression) {
+                    $query->where($expression->field->field(), 'LIKE', '%'.$expression->value->value().'%');
                 };
             });
         }
@@ -160,9 +160,9 @@ trait SearchAutocompleteTrait
         if (empty($query)) {
             $results = ProcessRequest::limit(50)->get();
         } else {
-            $results = ProcessRequest::pmql('name = "' . $query . '"', function($expression) {
-                return function($query) use($expression) {
-                    $query->where($expression->field->field(), 'LIKE',  '%' . $expression->value->value() . '%');
+            $results = ProcessRequest::pmql('name = "'.$query.'"', function ($expression) {
+                return function ($query) use ($expression) {
+                    $query->where($expression->field->field(), 'LIKE', '%'.$expression->value->value().'%');
                 };
             })->get();
         }

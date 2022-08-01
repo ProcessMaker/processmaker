@@ -8,7 +8,7 @@ class SettingServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        require_once(app_path('/Helpers/SettingsHelper.php'));
+        require_once app_path('/Helpers/SettingsHelper.php');
     }
 
     /**
@@ -18,7 +18,7 @@ class SettingServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if (!config('settings_loaded')) {
+        if (! config('settings_loaded')) {
             cache_settings();
         }
     }

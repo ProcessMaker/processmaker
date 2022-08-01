@@ -5,8 +5,8 @@ namespace ProcessMaker\Console\Commands;
 use Illuminate\Console\Command;
 use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Jobs\RunServiceTask;
-use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessRequestLock;
+use ProcessMaker\Models\ProcessRequestToken;
 
 class RetryScriptTasks extends Command
 {
@@ -15,11 +15,11 @@ class RetryScriptTasks extends Command
      *
      * @var string
      */
-    protected $signature = "
+    protected $signature = '
         processmaker:retry-script-tasks
             {--process= : The ID # of the Process to retry}
             {--request= : The ID # of the Request to retry}
-    ";
+    ';
 
     /**
      * The console command description.
@@ -47,7 +47,7 @@ class RetryScriptTasks extends Command
     {
         $tasks = $this->retrieveTaskList();
 
-        if (!$tasks->count()) {
+        if (! $tasks->count()) {
             exit($this->error('No failing script tasks found.'));
         }
 
@@ -76,15 +76,15 @@ class RetryScriptTasks extends Command
 
     private function retrieveTaskList()
     {
-        $tasks = ProcessRequestToken::whereIn('status', array('FAILING', 'ACTIVE'))->whereIn('element_type', ['scriptTask', 'serviceTask']);
+        $tasks = ProcessRequestToken::whereIn('status', ['FAILING', 'ACTIVE'])->whereIn('element_type', ['scriptTask', 'serviceTask']);
 
         if ($this->option('process') && $this->option('request')) {
             exit($this->error('Please specify either a Process ID or a Request ID, not both.'));
         }
 
-        if (!$this->option('process') && !$this->option('request')) {
+        if (! $this->option('process') && ! $this->option('request')) {
             $this->line("\nThis will retry *all* failing script tasks. It is recommended to specify a Process ID or Request ID.");
-            if (!$this->confirm('Are you sure you wish to continue?')) {
+            if (! $this->confirm('Are you sure you wish to continue?')) {
                 exit;
             }
         }

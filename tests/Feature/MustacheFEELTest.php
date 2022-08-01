@@ -1,9 +1,7 @@
 <?php
+
 namespace Tests\Feature;
 
-use ProcessMaker\Exception\ExpressionFailedException;
-use ProcessMaker\Exception\ScriptLanguageNotSupported;
-use ProcessMaker\Exception\SyntaxErrorException;
 use ProcessMaker\Models\FormalExpression;
 use Tests\TestCase;
 
@@ -20,8 +18,8 @@ class MustacheFEELTest extends TestCase
         $expresion = new FormalExpression();
         $expresion->setLanguage('FEEL');
 
-        $expresion->setBody("{{Value}}");
-        $response = $expresion(["Value" => 11]);
+        $expresion->setBody('{{Value}}');
+        $response = $expresion(['Value' => 11]);
         $this->assertSame(11, $response);
     }
 
@@ -34,12 +32,12 @@ class MustacheFEELTest extends TestCase
         $expresion->setLanguage('FEEL');
 
         $expresion->setBody("{{Value}}~'Test'");
-        $response = $expresion(["Value" => 11]);
-        $this->assertSame("11Test", $response);
+        $response = $expresion(['Value' => 11]);
+        $this->assertSame('11Test', $response);
 
         $expresion->setBody("'{{Value}}'~'{{Other}}'");
-        $response = $expresion(["Value" => 11, "Other" => 22]);
-        $this->assertSame("1122", $response);
+        $response = $expresion(['Value' => 11, 'Other' => 22]);
+        $this->assertSame('1122', $response);
     }
 
     /**
@@ -52,13 +50,12 @@ class MustacheFEELTest extends TestCase
 
         // When calculation is true
         $expresion->setBody("Height == '{{Units}}: ' ~ (2 * Weight)");
-        $response = $expresion( [ "Height" => "cm: 120", "Weight" => 60, "Units" => "cm"]);
+        $response = $expresion(['Height' => 'cm: 120', 'Weight' => 60, 'Units' => 'cm']);
         $this->assertSame(true, $response);
 
         // When calculation is false
         $expresion->setBody("Height == '{{Units}}: ' ~ (2 * Weight)");
-        $response = $expresion( [ "Height" => "cm: 120", "Weight" => 60, "Units" => "km"]);
+        $response = $expresion(['Height' => 'cm: 120', 'Weight' => 60, 'Units' => 'km']);
         $this->assertSame(false, $response);
     }
-
 }

@@ -4,23 +4,21 @@ namespace Tests\Feature\Processes;
 
 use Faker\Factory as Faker;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Arr;
-use phpDocumentor\Reflection\PseudoType;
+use Illuminate\Support\Facades\Artisan;
+use ProcessMaker\Jobs\ImportProcess;
+use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\Script;
-use ProcessMaker\Models\ScriptExecutor;
+use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
+use ProcessMaker\Providers\WorkflowServiceProvider;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
-use ProcessMaker\Providers\WorkflowServiceProvider;
-use ProcessMaker\Models\ProcessCategory;
-use ProcessMaker\Models\ScriptCategory;
-use ProcessMaker\Models\ScreenCategory;
-use ProcessMaker\Models\AnonymousUser;
-use ProcessMaker\Jobs\ImportProcess;
 
 class ExportImportTest extends TestCase
 {
@@ -28,7 +26,17 @@ class ExportImportTest extends TestCase
 
     public $withPermissions = true;
 
-    private $definitions, $process, $screen01, $screen02, $script01, $script02;
+    private $definitions;
+
+    private $process;
+
+    private $screen01;
+
+    private $screen02;
+
+    private $script01;
+
+    private $script02;
 
     /**
      * Test to ensure screens and scripts are referenced
@@ -52,7 +60,7 @@ class ExportImportTest extends TestCase
         $fileName = 'test_process_import_refs.json';
 
         // Load file to import
-        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
+        $file = new UploadedFile(base_path($filePath).$fileName, $fileName, null, null, null, true);
 
         // Import process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -134,19 +142,19 @@ class ExportImportTest extends TestCase
         $newWatcherScript = Script::where('title', 'Watcher Script 2')->firstOrFail();
         $scriptWatcherConfig = $this->screen02->watchers[1];
 
-        $this->assertEquals('script-' . $newWatcherScript->id, $scriptWatcherConfig['script']['id']);
+        $this->assertEquals('script-'.$newWatcherScript->id, $scriptWatcherConfig['script']['id']);
         $this->assertEquals($newWatcherScript->id, $scriptWatcherConfig['script_id']);
         $this->assertEquals(null, $scriptWatcherConfig['script_key']);
         $this->assertEquals($newWatcherScript->title, $scriptWatcherConfig['script']['title']);
 
-        $assignable = Arr::first($response->json()['assignable'], function($a) {
+        $assignable = Arr::first($response->json()['assignable'], function ($a) {
             return $a['type'] === 'watcherDataSource';
         });
-        $this->assertEquals($assignable['id'], strval($this->screen02->id) . "|0");
+        $this->assertEquals($assignable['id'], strval($this->screen02->id).'|0');
 
         $assignable['value'] = ['id' => 123, 'name' => 'data source name'];
         $response = $this->apiCall('POST', route('api.processes.import.assignments', [$this->process]), [
-            "assignable" => [$assignable],
+            'assignable' => [$assignable],
         ]);
 
         $updatedWatcher = $this->screen02->refresh()->watchers[0];
@@ -187,7 +195,6 @@ class ExportImportTest extends TestCase
 
         // Get the process we'll be testing on
         $process = Process::where('name', 'Leave Absence Request')->first();
-
 
         // Add additional categories
         $secondProcessCategory = factory(ProcessCategory::class)->create(['name' => 'Second Category']);
@@ -230,7 +237,7 @@ class ExportImportTest extends TestCase
 
         // Test to ensure our standard user cannot import a process
         $this->user = $standardUser;
-        $response = $this->apiCall('POST', "/processes/import", [
+        $response = $this->apiCall('POST', '/processes/import', [
             'file' => $file,
         ]);
         $response->assertStatus(403);
@@ -238,7 +245,7 @@ class ExportImportTest extends TestCase
 
         // Test to ensure our admin user can import a process
         $this->user = $adminUser;
-        $response = $this->apiCall('POST', "/processes/import", [
+        $response = $this->apiCall('POST', '/processes/import', [
             'file' => $file,
         ]);
         // dd($response->json());
@@ -262,11 +269,11 @@ class ExportImportTest extends TestCase
         $process = Process::where('name', 'Leave Absence Request 2')->first();
         $definitions = $process->getDefinitions();
         $ns = WorkflowServiceProvider::PROCESS_MAKER_NS;
-        $this->assertEquals("", $definitions->findElementById('node_5')->getAttributeNS($ns, 'assignment'));
-        $this->assertEquals("", $definitions->findElementById('node_5')->getAttributeNS($ns, 'assignedUsers'));
+        $this->assertEquals('', $definitions->findElementById('node_5')->getAttributeNS($ns, 'assignment'));
+        $this->assertEquals('', $definitions->findElementById('node_5')->getAttributeNS($ns, 'assignedUsers'));
 
-        $this->assertEquals("self_service", $definitions->findElementById('node_6')->getAttributeNS($ns, 'assignment'));
-        $this->assertEquals("", $definitions->findElementById('node_6')->getAttributeNS($ns, 'assignedGroups'));
+        $this->assertEquals('self_service', $definitions->findElementById('node_6')->getAttributeNS($ns, 'assignment'));
+        $this->assertEquals('', $definitions->findElementById('node_6')->getAttributeNS($ns, 'assignedGroups'));
     }
 
     /**
@@ -301,26 +308,26 @@ class ExportImportTest extends TestCase
         $file = new UploadedFile($fileName, 'leave_absence_request.json', null, null, null, true);
 
         $newAnonUser = factory(User::class)->create(['status' => 'active']);
-        $this->app->extend(AnonymousUser::class, function($app) use ($newAnonUser) {
+        $this->app->extend(AnonymousUser::class, function ($app) use ($newAnonUser) {
             return $newAnonUser;
         });
 
         $this->user = $adminUser;
-        $response = $this->apiCall('POST', "/processes/import", [
+        $response = $this->apiCall('POST', '/processes/import', [
             'file' => $file,
         ]);
 
         $process = Process::where('name', 'Leave Absence Request 2')->first();
         $definitions = $process->getDefinitions();
         $ns = WorkflowServiceProvider::PROCESS_MAKER_NS;
-        $this->assertEquals("user", $definitions->findElementById('node_5')->getAttributeNS($ns, 'assignment'));
+        $this->assertEquals('user', $definitions->findElementById('node_5')->getAttributeNS($ns, 'assignment'));
         $this->assertEquals(
             $newAnonUser->id,
             $definitions->findElementById('node_5')->getAttributeNS($ns, 'assignedUsers')
         );
 
         // Reset the anon user for other tests
-        $this->app->extend(AnonymousUser::class, function($app) use ($originalAnonUser) {
+        $this->app->extend(AnonymousUser::class, function ($app) use ($originalAnonUser) {
             return $originalAnonUser;
         });
     }
@@ -331,7 +338,7 @@ class ExportImportTest extends TestCase
     public function test_different_assignments_should_not_be_removed_except_by_user_group()
     {
         // Load file to import
-        $file = new UploadedFile(base_path('tests/storage/process/') . 'test_process_import_different_tasks_assignments.json', 'test_process_import_different_tasks_assignments.json', null, null, null, true);
+        $file = new UploadedFile(base_path('tests/storage/process/').'test_process_import_different_tasks_assignments.json', 'test_process_import_different_tasks_assignments.json', null, null, null, true);
 
         //Import sample working process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -364,7 +371,7 @@ class ExportImportTest extends TestCase
         $file = new UploadedFile($fileName, 'Different Task Assignments.json', null, null, null, true);
 
         // Test to ensure our admin user can import a process
-        $response = $this->apiCall('POST', "/processes/import", [
+        $response = $this->apiCall('POST', '/processes/import', [
             'file' => $file,
         ]);
         $response->assertJsonStructure(['status' => [], 'assignable' => []]);
@@ -384,7 +391,7 @@ class ExportImportTest extends TestCase
         }
 
         //Assignments after import process
-        $response = $this->apiCall('POST', '/processes/' . $processId . '/import/assignments', [
+        $response = $this->apiCall('POST', '/processes/'.$processId.'/import/assignments', [
             'assignable' => $assignable,
         ]);
 
@@ -442,7 +449,7 @@ class ExportImportTest extends TestCase
     public function test_assignmets_after_import()
     {
         // Load file to import
-        $file = new UploadedFile(base_path('tests/storage/process/') . 'test_process_import.json', 'test_process_import.json', null, null, null, true);
+        $file = new UploadedFile(base_path('tests/storage/process/').'test_process_import.json', 'test_process_import.json', null, null, null, true);
 
         //Import process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -462,8 +469,8 @@ class ExportImportTest extends TestCase
                     $new = factory(User::class)->create(['status' => 'ACTIVE'])->toArray();
                 } else {
                     $new = $faker->randomElement([factory(User::class)->create(['status' => 'ACTIVE'])->toArray(), factory(Group::class)->create(['status' => 'ACTIVE'])->toArray()]);
-                    if (!isset($new['firstname'])) {
-                        $new['id'] = 'group-' . $new['id'];
+                    if (! isset($new['firstname'])) {
+                        $new['id'] = 'group-'.$new['id'];
                     }
                 }
                 $item['value'] = $new;
@@ -479,22 +486,22 @@ class ExportImportTest extends TestCase
         $ediUser1 = factory(User::class)->create(['firstname' => 'userEditData', 'status' => 'ACTIVE']);
         $cancelRequest = [
             'users' => [$cancelUser1->id],
-            'groups' => [$cancelGroup1->id]
+            'groups' => [$cancelGroup1->id],
         ];
         $editData = [
             'users' => [$ediUser1->id],
-            'groups' => [$ediGroup1->id]
+            'groups' => [$ediGroup1->id],
         ];
         $status = $faker->randomElement(['ACTIVE', 'INACTIVE']);
 
         $processId = $response->json('process')['id'];
 
         //Assignments after import process
-        $response = $this->apiCall('POST', '/processes/' . $processId . '/import/assignments', [
+        $response = $this->apiCall('POST', '/processes/'.$processId.'/import/assignments', [
             'assignable' => $assignable,
             'cancel_request' => $cancelRequest,
             'edit_data' => $editData,
-            'status' => $status
+            'status' => $status,
         ]);
 
         //Validate the header status code
@@ -569,7 +576,7 @@ class ExportImportTest extends TestCase
         $fileName = 'test_process_import_invalid_text_file.json';
 
         // Load file to import
-        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
+        $file = new UploadedFile(base_path($filePath).$fileName, $fileName, null, null, null, true);
 
         // Import process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -592,7 +599,7 @@ class ExportImportTest extends TestCase
         $fileName = 'test_process_import_invalid_json_file.json';
 
         // Load file to import
-        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
+        $file = new UploadedFile(base_path($filePath).$fileName, $fileName, null, null, null, true);
 
         // Import process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -615,7 +622,7 @@ class ExportImportTest extends TestCase
         $fileName = 'test_process_import_invalid_base64_file.json';
 
         // Load file to import
-        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
+        $file = new UploadedFile(base_path($filePath).$fileName, $fileName, null, null, null, true);
 
         // Import process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -638,7 +645,7 @@ class ExportImportTest extends TestCase
         $fileName = 'test_process_import_invalid_bin_file.json';
 
         // Load file to import
-        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
+        $file = new UploadedFile(base_path($filePath).$fileName, $fileName, null, null, null, true);
 
         // Import process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -669,7 +676,7 @@ class ExportImportTest extends TestCase
         $fileName = 'test_process_multiple_assets.json';
 
         // Load file to import
-        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
+        $file = new UploadedFile(base_path($filePath).$fileName, $fileName, null, null, null, true);
 
         // Import process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -728,7 +735,7 @@ class ExportImportTest extends TestCase
         // Verify reference of watcher in nested screen
         $nested = Screen::find($screens['Nested Screen']);
         //$this->assertEquals($screens['Nested Screen'], $screen->config[0]['items'][0]['config']['screen']);
-        $this->assertEquals('script-' . $scripts['Script for Watcher'], $nested->watchers[0]['script']['id']);
+        $this->assertEquals('script-'.$scripts['Script for Watcher'], $nested->watchers[0]['script']['id']);
         $this->assertEquals($scripts['Script for Watcher'], $nested->watchers[0]['script_id']);
     }
 
@@ -739,7 +746,7 @@ class ExportImportTest extends TestCase
         });
 
         $content = file_get_contents(
-            __DIR__ . '/../../Fixtures/nested_screen_process.json'
+            __DIR__.'/../../Fixtures/nested_screen_process.json'
         );
         $result = ImportProcess::dispatchNow($content);
         $processId = $result->process->id;
@@ -767,7 +774,7 @@ class ExportImportTest extends TestCase
         $file = new UploadedFile($fileName, 'test.json', null, null, null, true);
 
         // Import the process
-        $response = $this->apiCall('POST', "/processes/import", ['file' => $file]);
+        $response = $this->apiCall('POST', '/processes/import', ['file' => $file]);
         $process = Process::find($response->json('process')['id']);
 
         $this->assertNull($process->manager);
@@ -775,19 +782,18 @@ class ExportImportTest extends TestCase
 
         $managerUser = factory(User::class)->create();
 
-        $response = $this->apiCall('POST', '/processes/' . $process->id . '/import/assignments', [
+        $response = $this->apiCall('POST', '/processes/'.$process->id.'/import/assignments', [
             'assignable' => [],
             'manager_id' => $managerUser->id,
             'cancel_request' => [
                 'users' => [],
                 'groups' => [],
-                'pseudousers' => [] // Remove the permission
+                'pseudousers' => [], // Remove the permission
             ],
         ]);
 
         $process->refresh();
         $this->assertFalse($process->getProperty('manager_can_cancel_request'));
         $this->assertEquals($managerUser->id, $process->manager->id);
-
     }
 }

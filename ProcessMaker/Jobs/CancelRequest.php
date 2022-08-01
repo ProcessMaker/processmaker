@@ -3,17 +3,20 @@
 namespace ProcessMaker\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Notification;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
-use Illuminate\Support\Facades\Notification;
 use ProcessMaker\Repositories\ExecutionInstanceRepository;
 use ProcessMaker\Repositories\TokenRepository;
 
 class CancelRequest extends BpmnAction implements ShouldQueue
 {
     public $definitionsId;
+
     public $instanceId;
+
     public $tokenId;
+
     public $data;
 
     /**

@@ -2,20 +2,21 @@
 
 namespace ProcessMaker\Console\Commands;
 
-use Illuminate\Support\Arr;
 use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\ProcessRequest;
 
 class MissingFilesUploadId extends Command
 {
     private $MAX_SCRIPT_TIMEOUT = 3600;
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = "processmaker:fix-missing-file-upload-id";
+    protected $signature = 'processmaker:fix-missing-file-upload-id';
 
     /**
      * The console command description.
@@ -60,12 +61,11 @@ class MissingFilesUploadId extends Command
         }
     }
 
-
     private function writeln($message, $type, $toLog = false)
     {
         $this->{$type}($message);
         if ($toLog) {
-            Log::Info("Garbage Collector: " . $message);
+            Log::Info('Garbage Collector: '.$message);
         }
     }
 }

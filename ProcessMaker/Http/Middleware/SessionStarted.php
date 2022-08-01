@@ -4,9 +4,8 @@ namespace ProcessMaker\Http\Middleware;
 
 use Auth;
 use Closure;
-use Session;
-use Carbon\Carbon;
 use ProcessMaker\Events\SessionStarted as SessionStartedEvent;
+use Session;
 
 class SessionStarted
 {
@@ -31,13 +30,12 @@ class SessionStarted
 
     /**
      *  Validates if the remember me token stored in the User table is tha same with the one stored in the cookie
-     * @param  \Illuminate\Http\Request  $request
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return bool
      */
     private function userHasValidRememberMe($request)
     {
-
         if (\Auth::user() === null) {
             return false;
         }
@@ -45,7 +43,7 @@ class SessionStarted
         $guard = \Auth::guard();
 
         // Remember me is validate only in user session guards
-        if (!is_a($guard, \Illuminate\Auth\SessionGuard::class)) {
+        if (! is_a($guard, \Illuminate\Auth\SessionGuard::class)) {
             return false;
         }
 

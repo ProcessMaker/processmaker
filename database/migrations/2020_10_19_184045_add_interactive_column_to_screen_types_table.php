@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use ProcessMaker\Models\ScreenType;
 
 class AddInteractiveColumnToScreenTypesTable extends Migration
 {
@@ -15,7 +14,7 @@ class AddInteractiveColumnToScreenTypesTable extends Migration
     public function up()
     {
         Schema::table('screen_types', function (Blueprint $table) {
-            $table->boolean('is_interactive')->default(false);            
+            $table->boolean('is_interactive')->default(false);
         });
 
         $rows = DB::table('screen_types')->get(['id', 'name']);
@@ -26,7 +25,7 @@ class AddInteractiveColumnToScreenTypesTable extends Migration
                 case 'CONVERSATIONAL':
                     DB::table('screen_types')->where('id', $row->id)->update(['is_interactive' => true]);
                     break;
-            }    
+            }
         }
     }
 

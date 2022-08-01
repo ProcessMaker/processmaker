@@ -2,9 +2,9 @@
 
 namespace ProcessMaker\Policies;
 
-use ProcessMaker\Models\User;
-use ProcessMaker\Models\ProcessRequest;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\User;
 
 class ProcessRequestPolicy
 {
@@ -95,7 +95,7 @@ class ProcessRequestPolicy
      *
      * @param  \ProcessMaker\Models\User  $user
      * @param  \ProcessMaker\Process  $process
-     * @return boolean
+     * @return bool
      */
     public function editData(User $user, ProcessRequest $request)
     {
@@ -115,7 +115,6 @@ class ProcessRequestPolicy
      *
      * @param  \ProcessMaker\Models\User  $user
      * @param  \ProcessMaker\Models\ProcessRequest  $processRequest
-     *
      * @return mixed
      */
     public function participate(User $user, ProcessRequest $processRequest)
@@ -123,6 +122,7 @@ class ProcessRequestPolicy
         if ($processRequest->user_id == $user->id) {
             return true;
         }
+
         return $processRequest->hasUserParticipated($user);
     }
 }
