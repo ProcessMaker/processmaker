@@ -84,8 +84,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     use HideSystemResources;
     use Searchable;
 
-    protected $connection = 'data';
-
     /**
      * The attributes that aren't mass assignable.
      *

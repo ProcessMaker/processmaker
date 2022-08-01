@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Observers;
 
+use ProcessMaker\Jobs\UpdateRequestUserPermissions;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ScheduledTask;
@@ -43,5 +44,7 @@ class ProcessRequestObserver
             // Remove scheduled tasks for this request
             $request->scheduledTasks()->delete();
         }
+
+        UpdateRequestUserPermissions::dispatch($request->id);
     }
 }
