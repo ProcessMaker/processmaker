@@ -15,12 +15,10 @@ use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Package\PackageComments\PackageServiceProvider;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
-use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Spatie\MediaLibrary\Models\Media;
 
 class RequestController extends Controller
 {
-    use HasMediaTrait;
     use SearchAutocompleteTrait;
     use HasControllerAddons;
 
