@@ -4,16 +4,19 @@ namespace ProcessMaker\Jobs;
 
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\DataStoreInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\MessageEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\MessageEventDefinitionInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\DataStoreInterface;
 
 class CatchEvent extends BpmnAction
 {
     public $definitionsId;
+
     public $processId;
+
     public $elementId;
+
     public $data;
 
     /**
@@ -32,8 +35,8 @@ class CatchEvent extends BpmnAction
     /**
      * Start a $process from catch event $element.
      *
-     * @param TokenInterface $token
-     * @param CatchEventInterface $element
+     * @param  TokenInterface  $token
+     * @param  CatchEventInterface  $element
      * @return \ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface
      */
     public function action(TokenInterface $token, CatchEventInterface $element)
@@ -55,7 +58,7 @@ class CatchEvent extends BpmnAction
      * If variableName is set, then the event payload will be set to that variable name.
      * If the data name exists, then the data is merged.
      *
-     * @param DataStoreInterface $dataStore
+     * @param  DataStoreInterface  $dataStore
      * @return void
      */
     private function messageEventUpdateData(MessageEventDefinitionInterface $eventDefinition, DataStoreInterface $dataStore)

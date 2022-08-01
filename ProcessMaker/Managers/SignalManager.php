@@ -45,7 +45,6 @@ use ProcessMaker\Repositories\BpmnDocument;
  *     ),
  *   },
  * )
- *
  */
 class SignalManager
 {
@@ -54,8 +53,8 @@ class SignalManager
     /**
      * Return the list of all signals in the system
      *
-     * @param false $includeSystemProcesses, true if the signals that will be included can pertain to system processes
-     * @param null $processList, collection of processes that will be used to extract the list of signals.
+     * @param  false  $includeSystemProcesses, true if the signals that will be included can pertain to system processes
+     * @param  null  $processList, collection of processes that will be used to extract the list of signals.
      * @return mixed
      */
     public static function getAllSignals($includeSystemProcesses = false, $processList = null)
@@ -74,23 +73,22 @@ class SignalManager
                     'id' => $node->getAttribute('id'),
                     'name' => $node->getAttribute('name'),
                     'detail' => $node->getAttribute('detail'),
-                    'process' => (!$process->category->is_system || $includeSystemProcesses)
+                    'process' => (! $process->category->is_system || $includeSystemProcesses)
                                     ? [
                                         'id' => $process->id,
                                         'name' => $process->name,
                                         'is_system' => $process->category->is_system,
-                                        'catches' => self::getSignalCatchEvents($node->getAttribute('id'), $process->getDomDocument())->toArray()
+                                        'catches' => self::getSignalCatchEvents($node->getAttribute('id'), $process->getDomDocument())->toArray(),
                                     ]
-                                    : null
+                                    : null,
                 ]);
             }
         }
 
-
         $result = $signals->reduce(function ($carry, $signal) {
             $foundSignal = $carry->firstWhere('id', $signal['id']);
             if ($foundSignal) {
-                if ($signal['process'] && !in_array($signal['process'], $foundSignal['processes'])) {
+                if ($signal['process'] && ! in_array($signal['process'], $foundSignal['processes'])) {
                     $foundSignal['processes'][] = $signal['process'];
                     $carry = $carry->merge([$foundSignal['id'] => $foundSignal]);
                 }
@@ -102,8 +100,8 @@ class SignalManager
                     'processes' => $signal['process'] ? [$signal['process']] : [],
                 ]);
             }
-            return $carry;
 
+            return $carry;
         }, collect());
 
         return $result->values();
@@ -113,7 +111,7 @@ class SignalManager
     {
         $signalProcess = SignalManager::getGlobalSignalProcess();
         $definitions = $signalProcess->getDefinitions();
-        $newNode = $definitions->createElementNS(BpmnDocument::BPMN_MODEL, "bpmn:signal");
+        $newNode = $definitions->createElementNS(BpmnDocument::BPMN_MODEL, 'bpmn:signal');
         $newNode->setAttribute('id', $signal->getId());
         $newNode->setAttribute('name', $signal->getName());
         $newNode->setAttribute('detail', $signal->getDetail());
@@ -121,7 +119,6 @@ class SignalManager
         $signalProcess->bpmn = $definitions->saveXML();
         $signalProcess->save();
     }
-
 
     public static function replaceSignal(SignalData $newSignal, SignalData $oldSignal)
     {
@@ -132,17 +129,16 @@ class SignalManager
                 return;
             }
             $definitions = $process->getDefinitions();
-            $newNode = $definitions->createElementNS(BpmnDocument::BPMN_MODEL, "bpmn:signal");
+            $newNode = $definitions->createElementNS(BpmnDocument::BPMN_MODEL, 'bpmn:signal');
             $newNode->setAttribute('id', $newSignal->getId());
             $newNode->setAttribute('name', $newSignal->getName());
             $newNode->setAttribute('detail', $newSignal->getDetail());
 
             $domDefinitions = new DOMXPath($definitions);
-            if ($domDefinitions->query("//*[@id='" . $oldSignal->getId() . "']")->count() > 0 ) {
-                $oldNode = $domDefinitions->query("//*[@id='" . $oldSignal->getId() . "']")->item(0);
+            if ($domDefinitions->query("//*[@id='".$oldSignal->getId()."']")->count() > 0) {
+                $oldNode = $domDefinitions->query("//*[@id='".$oldSignal->getId()."']")->item(0);
                 $definitions->firstChild->replaceChild($newNode, $oldNode);
             }
-
 
             $nodes = collect($definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'signalEventDefinition'));
             foreach ($nodes as $node) {
@@ -157,7 +153,7 @@ class SignalManager
     }
 
     /**
-     * @param SignalData $signal
+     * @param  SignalData  $signal
      */
     public static function removeSignal(SignalData $signal)
     {
@@ -169,8 +165,8 @@ class SignalManager
             }
             $definitions = $process->getDefinitions();
             $domDefinitions = new DOMXPath($definitions);
-            if ($domDefinitions->query("//*[@id='" . $signal->getId() . "']")->count() > 0 ) {
-                $node = $domDefinitions->query("//*[@id='" . $signal->getId() . "']")->item(0);
+            if ($domDefinitions->query("//*[@id='".$signal->getId()."']")->count() > 0) {
+                $node = $domDefinitions->query("//*[@id='".$signal->getId()."']")->item(0);
                 $definitions->firstChild->removeChild($node);
                 $process->bpmn = $definitions->saveXML();
                 $process->save();
@@ -183,9 +179,9 @@ class SignalManager
      */
     public static function getGlobalSignalProcess()
     {
-        $list = Process::where('name', '' . static::PROCESS_NAME)->get();
+        $list = Process::where('name', ''.static::PROCESS_NAME)->get();
         if ($list->count() === 0) {
-            throw new \Exception("Global store of signals not found");
+            throw new \Exception('Global store of signals not found');
         }
 
         return $list->first();
@@ -193,70 +189,68 @@ class SignalManager
 
     /**
      * @param $signalId
-     *
      * @return SignalData | null
      */
     public static function findSignal($signalId)
     {
-        $assocSignal =  SignalManager::getAllSignals()
+        $assocSignal = SignalManager::getAllSignals()
                             ->firstWhere('id', $signalId);
+
         return $assocSignal ? self::associativeToSignal($assocSignal) : null;
     }
 
     /**
      * @param $signalId
      * @param $includeSystemProcesses
-     *
      * @return array
      */
     public static function getSignalProcesses($signalId, $includeSystemProcesses = false)
     {
-        $assocSignal =  SignalManager::getAllSignals($includeSystemProcesses)
+        $assocSignal = SignalManager::getAllSignals($includeSystemProcesses)
                             ->firstWhere('id', $signalId);
 
         return $assocSignal && $assocSignal['processes'] ? $assocSignal['processes'] : [];
     }
 
     /**
-     * @param SignalData $newSignal
-     * @param SignalData | null $oldSignal In case of an insert, this variable is null
-     *
+     * @param  SignalData  $newSignal
+     * @param  SignalData | null  $oldSignal In case of an insert, this variable is null
      * @return array
      */
     public static function validateSignal(SignalData $newSignal, ?SignalData $oldSignal)
     {
         $result = [];
 
-        if ( !preg_match('/^[a-zA-Z_][\w.-]*$/', $newSignal->getId()) ) {
-            self::addError($result, 'id','The signal ID should be an alphanumeric string');
+        if (! preg_match('/^[a-zA-Z_][\w.-]*$/', $newSignal->getId())) {
+            self::addError($result, 'id', 'The signal ID should be an alphanumeric string');
         }
 
         $signalIdExists = self::getAllSignals()
-                        ->contains(function ($sig) use($newSignal, $oldSignal){
+                        ->contains(function ($sig) use ($newSignal, $oldSignal) {
                             return $sig['id'] === $newSignal->getId()
                                 && (empty($oldSignal) ? true : $sig['id'] !== $oldSignal->getId());
                         });
 
         if ($signalIdExists) {
-            self::addError($result, 'id','The signal ID already exists');
+            self::addError($result, 'id', 'The signal ID already exists');
         }
 
         if (strlen(trim($newSignal->getId())) === 0) {
-            self::addError($result, 'id','The signal ID is required');
+            self::addError($result, 'id', 'The signal ID is required');
         }
 
         if (strlen(trim($newSignal->getName())) === 0) {
-            self::addError($result, 'name','The signal name is required');
+            self::addError($result, 'name', 'The signal name is required');
         }
 
         $signalNameExists = self::getAllSignals()
-            ->contains(function ($sig) use($newSignal, $oldSignal){
+            ->contains(function ($sig) use ($newSignal, $oldSignal) {
                 return $sig['name'] === $newSignal->getId()
                     && (empty($oldSignal) ? true : $sig['name'] !== $oldSignal->getName());
             });
 
         if ($signalNameExists) {
-            self::addError($result, 'name','The signal name already exists');
+            self::addError($result, 'name', 'The signal name already exists');
         }
 
         return $result;
@@ -265,14 +259,16 @@ class SignalManager
     public static function getSignalCatchEvents($signalId, BpmnDocument $document)
     {
         $nodes = collect($document->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'signalEventDefinition'));
-        return $nodes->reduce(function ($carry, $node) use($signalId) {
+
+        return $nodes->reduce(function ($carry, $node) use ($signalId) {
             if ($node->getAttribute('signalRef') === $signalId) {
-                $carry->push ([
+                $carry->push([
                     'id' => $node->parentNode->getAttribute('id'),
                     'name' => $node->parentNode->getAttribute('name'),
                     'type' => $node->parentNode->localName,
                 ]);
             }
+
             return $carry;
         }, collect());
     }
@@ -280,8 +276,7 @@ class SignalManager
     /**
      * Converts an associative array to a signal object
      *
-     * @param array $signal
-     *
+     * @param  array  $signal
      * @return SignalData
      */
     public static function associativeToSignal(array $signal): SignalData
@@ -294,20 +289,21 @@ class SignalManager
     }
 
     /**
-     * @param array $errors
-     * @param string $field
-     * @param string $message
+     * @param  array  $errors
+     * @param  string  $field
+     * @param  string  $message
      */
     private static function addError(array &$errors, string $field, string $message)
     {
-        if (!array_key_exists($field, $errors)) {
+        if (! array_key_exists($field, $errors)) {
             $errors[$field] = [];
         }
 
         array_push($errors[$field], $message);
     }
 
-    public static function permissions($user) {
+    public static function permissions($user)
+    {
         return [
             'create-signals' => $user->can('create-signals'),
             'view-signals' => $user->can('view-signals'),

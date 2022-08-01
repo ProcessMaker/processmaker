@@ -14,8 +14,6 @@ use ProcessMaker\Nayra\RepositoryTrait;
 
 /**
  * Execution Instance Repository.
- *
- * @package ProcessMaker\Models
  */
 class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterface
 {
@@ -30,20 +28,20 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     {
         $instance = new Instance();
         $instance->setId(uniqid('request', true));
+
         return $instance;
     }
 
     /**
      * Load an execution instance from a persistent storage.
      *
-     * @param string $instanceId
-     *
+     * @param  string  $instanceId
      * @return \ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface
      */
     public function loadExecutionInstanceByUid($instanceId, StorageInterface $storage)
     {
         $instance = Instance::find($instanceId);
-        if (!$instance) {
+        if (! $instance) {
             abort(404, 'Instance not found');
         }
         $callableId = $instance->callable_id;
@@ -68,14 +66,14 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
             $element = $storage->getElementInstanceById($tokenInfo['element_ref']);
             $element->addToken($instance, $token);
         }
+
         return $instance;
     }
 
     /**
      * Create or update an execution instance to a persistent storage.
      *
-     * @param \ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface $instance
-     *
+     * @param  \ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface  $instance
      * @return $this
      */
     public function storeExecutionInstance(ExecutionInstanceInterface $instance)
@@ -86,8 +84,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     /**
      * Persists instance data related to the event Process Instance Created
      *
-     * @param ExecutionInstanceInterface $instance
-     *
+     * @param  ExecutionInstanceInterface  $instance
      * @return mixed
      */
     public function persistInstanceCreated(ExecutionInstanceInterface $instance)
@@ -121,7 +118,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     private function findParticipantFor(ExecutionInstanceInterface $instance)
     {
         $collaboration = $instance->getProcess()->getEngine()->getEventDefinitionBus()->getCollaboration();
-        if (!$collaboration) {
+        if (! $collaboration) {
             return;
         }
         foreach ($collaboration->getParticipants() as $participant) {
@@ -134,8 +131,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     /**
      * Persists instance when an error occurs
      *
-     * @param ExecutionInstanceInterface $instance
-     *
+     * @param  ExecutionInstanceInterface  $instance
      * @return mixed
      */
     public function persistInstanceError(ExecutionInstanceInterface $instance)
@@ -154,8 +150,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     /**
      * Persists instance data related to the event Process Instance Completed
      *
-     * @param ExecutionInstanceInterface $instance
-     *
+     * @param  ExecutionInstanceInterface  $instance
      * @return mixed
      */
     public function persistInstanceUpdated(ExecutionInstanceInterface $instance)
@@ -173,8 +168,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     /**
      * Persists instance data related to the event Process Instance Completed
      *
-     * @param ExecutionInstanceInterface $instance
-     *
+     * @param  ExecutionInstanceInterface  $instance
      * @return mixed
      */
     public function persistInstanceCompleted(ExecutionInstanceInterface $instance)
@@ -193,10 +187,10 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     /**
      * Persists collaboration between two instances.
      *
-     * @param ExecutionInstanceInterface $instance Target instance
-     * @param ParticipantInterface $participant Participant related to the target instance
-     * @param ExecutionInstanceInterface $source Source instance
-     * @param ParticipantInterface $sourceParticipant
+     * @param  ExecutionInstanceInterface  $instance Target instance
+     * @param  ParticipantInterface  $participant Participant related to the target instance
+     * @param  ExecutionInstanceInterface  $source Source instance
+     * @param  ParticipantInterface  $sourceParticipant
      */
     public function persistInstanceCollaboration(ExecutionInstanceInterface $instance, ParticipantInterface $participant = null, ExecutionInstanceInterface $source, ParticipantInterface $sourceParticipant = null)
     {
@@ -219,7 +213,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     /**
      * Persist current collaboration
      *
-     * @param ProcessRequest $instance
+     * @param  ProcessRequest  $instance
      * @return void
      */
     private function persistCollaboration(ProcessRequest $request)
@@ -235,7 +229,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
                 break;
             }
         }
-        if (!$collaboration) {
+        if (! $collaboration) {
             $collaboration = new ProcessCollaboration();
             $collaboration->process_id = $request->process->getKey();
             $collaboration->saveOrFail();

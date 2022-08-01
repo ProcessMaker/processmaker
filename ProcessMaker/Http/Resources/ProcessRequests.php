@@ -2,8 +2,6 @@
 
 namespace ProcessMaker\Http\Resources;
 
-use Illuminate\Http\Resources\Json\ResourceCollection;
-
 class ProcessRequests extends ApiResource
 {
     public function toArray($request)
@@ -23,9 +21,10 @@ class ProcessRequests extends ApiResource
         if (in_array('user', $include)) {
             $array['user'] = new Users($this->user);
         }
+
         return $array;
     }
-    
+
     private function filterMagicVariables($data)
     {
         foreach ($data as $key => $datum) {
@@ -33,7 +32,7 @@ class ProcessRequests extends ApiResource
                 unset($data[$key]);
             }
         }
-        
+
         return $data;
     }
 }

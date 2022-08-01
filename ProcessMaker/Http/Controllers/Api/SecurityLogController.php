@@ -5,17 +5,16 @@ namespace ProcessMaker\Http\Controllers\Api;
 use DB;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
+use ProcessMaker\Models\SecurityLog;
 
 class SecurityLogController extends Controller
 {
     /**
      * Get a list of Security Logs.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return \Illuminate\Http\Response
      *
      * @OA\Get(
@@ -52,9 +51,9 @@ class SecurityLogController extends Controller
         $query = SecurityLog::query();
 
         if ($filter = $request->input('filter')) {
-            $filter = '%' . mb_strtolower($filter) . '%';
+            $filter = '%'.mb_strtolower($filter).'%';
             $query->where('event', 'like', $filter)
-                  ->orWhere(DB::raw("LOWER(ip)"), 'like', $filter)
+                  ->orWhere(DB::raw('LOWER(ip)'), 'like', $filter)
                   ->orWhere(DB::raw("LOWER(meta->>'$.browser.name')"), 'like', $filter)
                   ->orWhere(DB::raw("LOWER(meta->>'$.os.name')"), 'like', $filter);
         }
@@ -80,7 +79,7 @@ class SecurityLogController extends Controller
         return new ApiCollection($response);
     }
 
-     /**
+    /**
      * Display the specified resource.
      *
      * @param  int  $id

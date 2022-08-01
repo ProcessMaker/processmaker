@@ -4,9 +4,6 @@ namespace ProcessMaker;
 
 use Illuminate\Http\File;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
-use Spatie\MediaLibrary\FileManipulator;
-use Spatie\MediaLibrary\Filesystem\Filesystem;
 use Spatie\MediaLibrary\Models\Media as BaseMedia;
 
 class Media extends BaseMedia
@@ -14,10 +11,10 @@ class Media extends BaseMedia
     /**
      * Updates the Media with a new file
      *
-     * @param UploadedFile $newFile
-     * @param Models\Media $file
+     * @param  UploadedFile  $newFile
+     * @param  Models\Media  $file
      */
-    public function updateFile(UploadedFile $newFile, \ProcessMaker\Models\Media $file)
+    public function updateFile(UploadedFile $newFile, Models\Media $file)
     {
         $newFileName = $this->sanitizeFileName($newFile->getClientOriginalName());
 
@@ -31,8 +28,7 @@ class Media extends BaseMedia
     /**
      * Removes from file name non accepted characters
      *
-     * @param string $fileName
-     *
+     * @param  string  $fileName
      * @return string
      */
     protected function sanitizeFileName(string $fileName)

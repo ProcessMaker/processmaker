@@ -2,11 +2,11 @@
 
 namespace Tests\Feature\Processes;
 
+use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Script;
-use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
-use ProcessMaker\Facades\WorkflowManager;
+use Tests\TestCase;
 
 class MessageTest extends TestCase
 {
@@ -29,8 +29,8 @@ class MessageTest extends TestCase
             'bpmn' => str_replace(
                 '[script_id]',
                 $script->id,
-                file_get_contents(__DIR__ . '/../../Fixtures/message_test.bpmn')
-            )
+                file_get_contents(__DIR__.'/../../Fixtures/message_test.bpmn')
+            ),
         ]);
 
         $definitions = $process->getDefinitions();

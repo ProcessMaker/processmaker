@@ -9,18 +9,17 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 /**
  * Thrown if an expression failed to be parsed
- *
- * @package ProcessMaker\Exceptions
  */
-
 class HttpResponseException extends Exception implements HttpExceptionInterface
 {
     public $status;
+
     public $body;
+
     private $headers;
 
     /**
-     * @param Response $response
+     * @param  Response  $response
      */
     public function __construct(Response $response)
     {
@@ -33,11 +32,13 @@ class HttpResponseException extends Exception implements HttpExceptionInterface
         ]), 0);
     }
 
-    public function getStatusCode() {
+    public function getStatusCode()
+    {
         return $this->status;
     }
 
-    public function getHeaders() {
+    public function getHeaders()
+    {
         return $this->headers;
     }
 }

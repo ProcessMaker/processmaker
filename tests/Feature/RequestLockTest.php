@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use ProcessMaker\Jobs\BpmnAction;
-use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestLock;
 use Tests\TestCase;
 

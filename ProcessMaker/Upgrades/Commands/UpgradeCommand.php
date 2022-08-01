@@ -50,11 +50,12 @@ class UpgradeCommand extends BaseCommand
      * Execute the console command.
      *
      * @return void
+     *
      * @throws \ProcessMaker\Exception\InvalidSemanticVersion
      */
     public function handle()
     {
-        if (!$this->confirmToProceed()) {
+        if (! $this->confirmToProceed()) {
             return;
         }
 
@@ -76,7 +77,7 @@ class UpgradeCommand extends BaseCommand
     {
         $this->migrator->setOutput($this->output);
 
-        if (!$this->migrator->repositoryExists()) {
+        if (! $this->migrator->repositoryExists()) {
             $this->call('upgrade:install');
         }
     }

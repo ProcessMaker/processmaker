@@ -2,11 +2,8 @@
 
 namespace Tests\Feature;
 
-use ProcessMaker\Models\User;
-use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class CssOverrideTest extends TestCase
 {

@@ -15,7 +15,6 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 /**
  * Class Settings
  *
- * @package ProcessMaker\Models
  *
  * @property string id
  * @property string key
@@ -47,7 +46,6 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  *     ),
  *   },
  * )
- *
  */
 class Setting extends Model implements HasMedia
 {
@@ -59,10 +57,14 @@ class Setting extends Model implements HasMedia
 
     //Disk
     public const DISK_CSS = 'settings';
+
     //collection media library
     public const COLLECTION_CSS_LOGIN = 'login';
+
     public const COLLECTION_CSS_LOGO = 'logo';
+
     public const COLLECTION_CSS_ICON = 'icon';
+
     public const COLLECTION_CSS_FAVICON = 'favicon';
 
     /**
@@ -102,7 +104,6 @@ class Setting extends Model implements HasMedia
      * Validation rules
      *
      * @param $existing
-     *
      * @return array
      */
     public static function rules($existing = null, $validateConfig = false)
@@ -111,7 +112,7 @@ class Setting extends Model implements HasMedia
 
         return [
             'key' => ['required', $unique],
-            'config.*' => ($validateConfig ? ['required', 'valid_variable'] : [])
+            'config.*' => ($validateConfig ? ['required', 'valid_variable'] : []),
         ];
     }
 
@@ -126,8 +127,8 @@ class Setting extends Model implements HasMedia
      * Get setting by key
      *
      * @param  string  $key
-     *
      * @return \ProcessMaker\Models\Setting|null
+     *
      * @throws \Exception
      */
     public static function byKey(string $key)
@@ -141,7 +142,7 @@ class Setting extends Model implements HasMedia
         $setting = (new self)->where('key', $key)
                              ->first();
 
-        if (!$setting instanceof self) {
+        if (! $setting instanceof self) {
             return null;
         }
 
@@ -158,11 +159,11 @@ class Setting extends Model implements HasMedia
 
     public function addToConfig()
     {
-        if (!$this->exists) {
+        if (! $this->exists) {
             return;
         }
 
-        if (!config()->has($this->key)) {
+        if (! config()->has($this->key)) {
             config([$this->key => $this->config]);
         }
     }
@@ -171,8 +172,8 @@ class Setting extends Model implements HasMedia
      * Get config by key
      *
      * @param $key
-     *
      * @return array|null
+     *
      * @throws \Exception
      */
     public static function configByKey($key)
@@ -211,7 +212,7 @@ class Setting extends Model implements HasMedia
             case 'range':
                 return $this->attributes['config'] = $this->attributes['config'];
             case 'boolean':
-                return $this->attributes['config'] = (boolean) $this->attributes['config'];
+                return $this->attributes['config'] = (bool) $this->attributes['config'];
             case 'object':
                 if (is_string($this->attributes['config'])) {
                     return $this->attributes['config'] = json_decode($this->attributes['config']);
@@ -233,12 +234,11 @@ class Setting extends Model implements HasMedia
      * Filter settings with a string
      *
      * @param $query
-     *
      * @param $filter string
      */
     public function scopeFilter($query, $filter)
     {
-        $filter = '%' . mb_strtolower($filter) . '%';
+        $filter = '%'.mb_strtolower($filter).'%';
         $query->where(function ($query) use ($filter) {
             $query->where(DB::raw('LOWER(`key`)'), 'like', $filter)
                 ->orWhere(DB::raw('LOWER(`name`)'), 'like', $filter)
@@ -253,12 +253,11 @@ class Setting extends Model implements HasMedia
      * Filter settings groups with a string
      *
      * @param $query
-     *
      * @param $filter string
      */
     public function scopeFilterGroups($query, $filter)
     {
-        $filter = '%' . mb_strtolower($filter) . '%';
+        $filter = '%'.mb_strtolower($filter).'%';
         $query->where(function ($query) use ($filter) {
             $query->where(DB::raw('LOWER(`group`)'), 'like', $filter);
         });
@@ -289,7 +288,7 @@ class Setting extends Model implements HasMedia
             }
         }
 
-        return $url . '?id=' . bin2hex(random_bytes(16));
+        return $url.'?id='.bin2hex(random_bytes(16));
     }
 
     public static function getLogo()
@@ -323,9 +322,9 @@ class Setting extends Model implements HasMedia
             }
         }
 
-        return $url . '?id=' . bin2hex(random_bytes(16));
+        return $url.'?id='.bin2hex(random_bytes(16));
     }
-    
+
     public static function getFavicon()
     {
         //default icon
@@ -334,11 +333,12 @@ class Setting extends Model implements HasMedia
         $setting = self::byKey('css-override');
         if ($setting) {
             $mediaFile = $setting->getMedia(self::COLLECTION_CSS_FAVICON);
-    
+
             foreach ($mediaFile as $media) {
                 $url = $media->getFullUrl();
             }
         }
-        return $url . '?id=' . bin2hex(random_bytes(16));
+
+        return $url.'?id='.bin2hex(random_bytes(16));
     }
 }

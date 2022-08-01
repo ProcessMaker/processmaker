@@ -3,9 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Mockery\Exception;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Script as ScriptResource;
@@ -31,8 +29,7 @@ class ScriptController extends Controller
     /**
      * Get a list of scripts in a process.
      *
-     * @param Process $process
-     *
+     * @param  Process  $process
      * @return ResponseFactory|Response
      *
      *
@@ -90,25 +87,25 @@ class ScriptController extends Controller
 
         $filter = $request->input('filter', '');
         $isSelectList = $request->input('selectList', '');
-        if (!empty($filter)) {
-            $filter = '%' . $filter . '%';
-            if (!$isSelectList) {
+        if (! empty($filter)) {
+            $filter = '%'.$filter.'%';
+            if (! $isSelectList) {
                 $query->where(function ($query) use ($filter) {
                     $query->Where('title', 'like', $filter)
                         ->orWhere('description', 'like', $filter)
                         ->orWhere('language', 'like', $filter)
-                        ->orWhereIn('scripts.id', function($qry) use ($filter) {
+                        ->orWhereIn('scripts.id', function ($qry) use ($filter) {
                             $qry->select('assignable_id')
                                 ->from('category_assignments')
-                                ->leftJoin('script_categories', function($join) {
-                                    $join->on('script_categories.id', '=',  'category_assignments.category_id');
+                                ->leftJoin('script_categories', function ($join) {
+                                    $join->on('script_categories.id', '=', 'category_assignments.category_id');
                                     $join->where('category_assignments.category_type', '=', ScriptCategory::class);
                                     $join->where('category_assignments.assignable_type', '=', Script::class);
                                 })
-                                ->where ('script_categories.name', 'like', $filter);
+                                ->where('script_categories.name', 'like', $filter);
                         });
                 });
-            } else  {
+            } else {
                 $query->where(function ($query) use ($filter) {
                     $query->Where('title', 'like', $filter);
                 });
@@ -177,6 +174,7 @@ class ScriptController extends Controller
         $nonce = $request->get('nonce');
 
         TestScript::dispatch($script, $request->user(), $code, $data, $config, $nonce)->onQueue('bpmn');
+
         return ['status' => 'success'];
     }
 
@@ -234,6 +232,7 @@ class ScriptController extends Controller
         } else {
             ExecuteScript::dispatch($script, $request->user(), $code, $data, $watcher, $config)->onQueue('bpmn');
         }
+
         return ['status' => 'success', 'key' => $watcher];
     }
 
@@ -268,8 +267,7 @@ class ScriptController extends Controller
     /**
      * Get a single script in a process.
      *
-     * @param Script $script
-     *
+     * @param  Script  $script
      * @return ResponseFactory|Response
      *
      *     @OA\Get(
@@ -301,8 +299,7 @@ class ScriptController extends Controller
     /**
      * Create a new script in a process.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ResponseFactory|Response
      *
      *     @OA\Post(
@@ -328,16 +325,16 @@ class ScriptController extends Controller
         $script->fill($request->input());
 
         $script->saveOrFail();
+
         return new ScriptResource($script);
     }
 
     /**
      * Update a script in a process.
      *
-     * @param Process $process
-     * @param Script $script
-     * @param Request $request
-     *
+     * @param  Process  $process
+     * @param  Script  $script
+     * @param  Request  $request
      * @return ResponseFactory|Response
      *
      *     @OA\Put(
@@ -378,9 +375,8 @@ class ScriptController extends Controller
     /**
      * duplicate a Script.
      *
-     * @param Script $script
-     * @param Request $request
-     *
+     * @param  Script  $script
+     * @param  Request  $request
      * @return ResponseFactory|Response
      *
      *     @OA\Put(
@@ -415,7 +411,7 @@ class ScriptController extends Controller
 
         $exclude = ['id', 'created_at', 'updated_at'];
         foreach ($script->getAttributes() as $attribute => $value) {
-            if (!in_array($attribute, $exclude)) {
+            if (! in_array($attribute, $exclude)) {
                 $newScript->{$attribute} = $script->{$attribute};
             }
         }
@@ -429,14 +425,14 @@ class ScriptController extends Controller
         }
 
         $newScript->saveOrFail();
+
         return new ScriptResource($newScript);
     }
 
     /**
      * Delete a script in a process.
      *
-     * @param Script $script
-     *
+     * @param  Script  $script
      * @return ResponseFactory|Response
      *
      *     @OA\Delete(
@@ -462,6 +458,7 @@ class ScriptController extends Controller
     public function destroy(Script $script)
     {
         $script->delete();
+
         return response([], 204);
     }
 }

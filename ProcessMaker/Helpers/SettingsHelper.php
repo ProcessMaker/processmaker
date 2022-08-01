@@ -1,15 +1,15 @@
 <?php
 
-use ProcessMaker\Models\Setting;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
+use ProcessMaker\Models\Setting;
 
-if (!function_exists('settings')) {
+if (! function_exists('settings')) {
     /**
      * @param  string|null  $key
-     *
      * @return array|null
+     *
      * @throws \Exception
      */
     function settings(string $key = null)
@@ -25,7 +25,7 @@ if (!function_exists('settings')) {
         $cache = cache()->tags('setting');
 
         // Cache all Setting models
-        if (!$cache->has('all')) {
+        if (! $cache->has('all')) {
             $cache->put('all', Setting::get(), 60 * 60 * 24 * 7);
         }
 
@@ -37,7 +37,7 @@ if (!function_exists('settings')) {
 
         // No key present means we should return all
         // cached settings
-        if (!$key) {
+        if (! $key) {
             return $nested;
         }
 
@@ -45,11 +45,12 @@ if (!function_exists('settings')) {
     }
 }
 
-if (!function_exists('flush_settings')) {
+if (! function_exists('flush_settings')) {
     /**
      * Flush the ProcessMaker settings from the cache and global configuration.
      *
      * @return void
+     *
      * @throws \Exception
      */
     function flush_settings()
@@ -70,12 +71,11 @@ if (!function_exists('flush_settings')) {
     }
 }
 
-if (!function_exists('cache_settings')) {
+if (! function_exists('cache_settings')) {
     /**
      * Cache all ProcessMaker settings
      *
      * @param  bool  $force
-     *
      * @return bool
      */
     function cache_settings(bool $force = false)
@@ -92,7 +92,7 @@ if (!function_exists('cache_settings')) {
                 // Calling the settings() helper function will
                 // automatically cache all Setting models that
                 // are available if they aren't cached yet
-                if (!$cache->has('all')) {
+                if (! $cache->has('all')) {
                     $settings = settings();
                     $cache = cache()->tags('setting');
                 }

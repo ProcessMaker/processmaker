@@ -9,16 +9,15 @@ use ProcessMaker\Providers\WorkflowServiceProvider;
 
 class ScreensInProcess
 {
-
     public $type = Screen::class;
+
     public $owner = Process::class;
 
     /**
      * Get screens references used in a process
      *
-     * @param Process $process
-     * @param array $screens
-     *
+     * @param  Process  $process
+     * @param  array  $screens
      * @return array
      */
     public function referencesToExport(Process $process, array $references = [])
@@ -47,15 +46,15 @@ class ScreensInProcess
         if ($process->request_detail_screen_id) {
             $references[] = [Screen::class, $process->request_detail_screen_id];
         }
+
         return $references;
     }
 
     /**
      * Update references used in an imported process
      *
-     * @param Process $process
-     * @param array $references
-     *
+     * @param  Process  $process
+     * @param  array  $references
      * @return void
      */
     public function updateReferences(Process $process, array $references = [])
@@ -80,7 +79,7 @@ class ScreensInProcess
         $nodes = $xpath->query("//*[@pm:interstitialScreenRef!='']");
         foreach ($nodes as $node) {
             $oldRef = $node->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'interstitialScreenRef');
-            if (!\is_numeric($oldRef)) {
+            if (! \is_numeric($oldRef)) {
                 // Skip screens referenced by package key
                 continue;
             }

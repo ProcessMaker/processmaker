@@ -15,7 +15,9 @@ class CatchSignalEventRequest implements ShouldQueue
         Queueable;
 
     public $chunck;
+
     public $signalRef;
+
     public $payload_uid;
 
     /**

@@ -6,12 +6,11 @@ use RuntimeException;
 
 /**
  * Script execution timeout exception.
- *
  */
 class ScriptTimeoutException extends RuntimeException
 {
     /**
-     * @param string $message
+     * @param  string  $message
      */
     public function __construct($message)
     {

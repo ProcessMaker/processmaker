@@ -14,7 +14,6 @@ use Tests\TestCase;
 
 /**
  * Tests routes related to processes / CRUD related methods
- *
  */
 class PerformanceApiTest extends TestCase
 {
@@ -26,8 +25,7 @@ class PerformanceApiTest extends TestCase
     /**
      * Time unit base for the performce tests
      *
-     * @param integer $times
-     *
+     * @param  int  $times
      * @return float
      */
     private function calculateUnitTime($times = 100)
@@ -37,6 +35,7 @@ class PerformanceApiTest extends TestCase
         factory($model, $times)->create();
         $baseTime = microtime(true) - $t;
         $model::getQuery()->delete();
+
         return $baseTime;
     }
 
@@ -67,15 +66,20 @@ class PerformanceApiTest extends TestCase
 
     // High values ​​improve measurement accuracy and reduce the effect of database caches
     private $repetitions = 25;
+
     // Inicial size of database
     private $dbSize = 50;
+
     const MIN_ROUTE_SPEED = 0.1;
+
     const ACCEPTABLE_ROUTE_SPEED = 1;
+
     const DESIRABLE_ROUTE_SPEED = 11;
 
     public function RoutesListProvider()
     {
         file_exists('coverage') ?: mkdir('coverage');
+
         return $this->endpoints;
     }
 
@@ -98,7 +102,7 @@ class PerformanceApiTest extends TestCase
         $fn = (substr($route, 0, 4) === 'api.') ? 'apiCall' : 'webCall';
         $times = $this->repetitions;
         $t = microtime(true);
-        for ($i = 0;$i < $times;$i++) {
+        for ($i = 0; $i < $times; $i++) {
             $this->$fn('GET', $path);
         }
         $time = microtime(true) - $t;
@@ -124,7 +128,7 @@ class PerformanceApiTest extends TestCase
         // Create a group (id=10) with 1000 non admin users
         $group = factory(Group::class)->create(['id' => 10]);
         $users = factory(User::class, 1000)->create(['is_administrator' => false]);
-        foreach($users as $user) {
+        foreach ($users as $user) {
             $group->groupMembers()->create([
                 'group_id' => $group->id,
                 'member_id' => $user->id,
@@ -132,7 +136,7 @@ class PerformanceApiTest extends TestCase
             ]);
         }
         // Create a process assigned to group (id=10)
-        $bpmn = file_get_contents(__DIR__ . '/processes/AssignedToGroup.bpmn');
+        $bpmn = file_get_contents(__DIR__.'/processes/AssignedToGroup.bpmn');
         factory(Process::class)->create(['bpmn' => $bpmn]);
         $tInit = microtime(true);
         // Call API with a non admin user

@@ -1,14 +1,12 @@
 <?php
 
-use ProcessMaker\SanitizeHelper;
-
 use function GuzzleHttp\json_encode;
+use ProcessMaker\SanitizeHelper;
 
 /**
  * Convert the Laravy menu into associative array
  *
- * @param \Lavary\Menu\Item $menu
- *
+ * @param  \Lavary\Menu\Item  $menu
  * @return array
  */
 function lavaryMenuArray($menu, $includeSubMenus = false)
@@ -33,8 +31,7 @@ function lavaryMenuArray($menu, $includeSubMenus = false)
 /**
  * Convert the Laravy menu into json string
  *
- * @param \Lavary\Menu\Item $menu
- *
+ * @param  \Lavary\Menu\Item  $menu
  * @return string
  */
 function lavaryMenuJson($menu)
@@ -45,8 +42,7 @@ function lavaryMenuJson($menu)
 /**
  * Check if a package exists based on its provider name
  *
- * @param string $name
- *
+ * @param  string  $name
  * @return bool
  */
 function hasPackage($name)
@@ -69,6 +65,7 @@ function pmUser()
     if (Auth::guard('api')->user()) {
         return Auth::guard('api')->user();
     }
+
     return null;
 }
 
@@ -81,23 +78,25 @@ function packTemporalData($data)
 {
     // Store data into store/app/private
     $uid = uniqid('data_', true);
-    $path = storage_path('app/private/' . $uid);
+    $path = storage_path('app/private/'.$uid);
     file_put_contents($path, \json_encode($data));
+
     return $uid;
 }
 
 function unpackTemporalData($uid)
 {
-    $path = storage_path('app/private/' . $uid);
+    $path = storage_path('app/private/'.$uid);
     if (file_exists($path)) {
         return \json_decode(file_get_contents($path), true);
     }
+
     return [];
 }
 
 function removeTemporalData($uid)
 {
-    $path = storage_path('app/private/' . $uid);
+    $path = storage_path('app/private/'.$uid);
     if (file_exists($path)) {
         unlink($path);
     }

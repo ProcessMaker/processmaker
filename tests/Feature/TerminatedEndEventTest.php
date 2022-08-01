@@ -3,10 +3,7 @@
 namespace Tests\Feature\Api;
 
 use ProcessMaker\Facades\WorkflowManager;
-use ProcessMaker\Jobs\CatchSignalEventProcess;
 use ProcessMaker\Jobs\ImportProcess;
-use ProcessMaker\Jobs\StartEvent;
-use ProcessMaker\Jobs\ThrowSignalEvent;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -21,7 +18,7 @@ class TerminatedEndEventTest extends TestCase
     {
         // Create the process to test
         ImportProcess::dispatchNow(
-            file_get_contents(__DIR__ . '/../Fixtures/terminate_end_event.json')
+            file_get_contents(__DIR__.'/../Fixtures/terminate_end_event.json')
         );
 
         $process = Process::orderBy('id', 'desc')->first();
@@ -49,7 +46,7 @@ class TerminatedEndEventTest extends TestCase
     {
         // Create the process to test
         ImportProcess::dispatchNow(
-            file_get_contents(__DIR__ . '/../Fixtures/terminate_end_event.json')
+            file_get_contents(__DIR__.'/../Fixtures/terminate_end_event.json')
         );
 
         $process = Process::orderBy('id', 'desc')->first();

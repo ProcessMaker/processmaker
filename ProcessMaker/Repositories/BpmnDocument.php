@@ -34,12 +34,12 @@ class BpmnDocument extends StorageBpmnDocument
      * Set process model
      *
      * @param  ProcessModelInterface  $model  Process model
-     *
      * @return  self
      */
     public function setModel(ProcessModelInterface $model)
     {
         $this->model = $model;
+
         return $this;
     }
 }

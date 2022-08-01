@@ -2,19 +2,16 @@
 
 namespace Tests\Feature\Api;
 
-use Tests\TestCase;
-use Faker\Factory as Faker;
-use ProcessMaker\Models\User;
-use ProcessMaker\Models\Group;
-use ProcessMaker\Models\Permission;
-use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Models\GroupMember;
 use Illuminate\Support\Facades\Artisan;
+use ProcessMaker\Models\Group;
+use ProcessMaker\Models\GroupMember;
+use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class GroupMembersTest extends TestCase
 {
-
     use RequestHelper;
 
     const API_TEST_URL = '/group_members';
@@ -25,13 +22,12 @@ class GroupMembersTest extends TestCase
         'member_id',
         'member_type',
         'updated_at',
-        'created_at'
+        'created_at',
     ];
 
     /**
      * List group memberships
      */
-
     public function testGetGroupMemberList()
     {
         // Seed our tables.
@@ -48,13 +44,13 @@ class GroupMembersTest extends TestCase
         factory(GroupMember::class)->create([
             'member_type' => User::class,
             'member_id' => $this->user->id,
-            'group_id' => $group1->id
+            'group_id' => $group1->id,
         ]);
 
         factory(GroupMember::class)->create([
             'member_type' => User::class,
             'member_id' => $other_user->id,
-            'group_id' => $group2->id
+            'group_id' => $group2->id,
         ]);
 
         $response = $this->apiCall('GET', self::API_TEST_URL);
@@ -139,7 +135,7 @@ class GroupMembersTest extends TestCase
         $group = factory(GroupMember::class)->create()->id;
 
         //load api
-        $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $group);
+        $response = $this->apiCall('GET', self::API_TEST_URL.'/'.$group);
 
         //Validate the status is correct
         $response->assertStatus(200);
@@ -154,7 +150,7 @@ class GroupMembersTest extends TestCase
     public function testDeleteGroupMember()
     {
         //Remove group
-        $url = self::API_TEST_URL . '/' . factory(GroupMember::class)->create()->id;
+        $url = self::API_TEST_URL.'/'.factory(GroupMember::class)->create()->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code
@@ -167,7 +163,7 @@ class GroupMembersTest extends TestCase
     public function testDeleteGroupMemberNotExist()
     {
         //GroupMember not exist
-        $url = self::API_TEST_URL . '/' . factory(GroupMember::class)->make()->id;
+        $url = self::API_TEST_URL.'/'.factory(GroupMember::class)->make()->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code
@@ -216,7 +212,7 @@ class GroupMembersTest extends TestCase
         $group = factory(Group::class)->create(['status' => 'ACTIVE']);
         $count = User::nonSystem()->where('status', 'ACTIVE')->count();
         $response = $this->apiCall('GET', '/user_members_available', [
-            'group_id' => $group->id
+            'group_id' => $group->id,
         ]);
         $this->assertEquals($count, $response->json('meta')['total']);
         $response->assertStatus(200);
@@ -232,17 +228,15 @@ class GroupMembersTest extends TestCase
         factory(GroupMember::class)->create([
             'group_id' => $group->id,
             'member_id' => factory(User::class)->create(['status' => 'ACTIVE'])->getKey(),
-            'member_type' => User::class
+            'member_type' => User::class,
         ]);
         factory(User::class, 15)->create(['status' => 'ACTIVE']);
 
-
         $count = User::nonSystem()->where('status', 'ACTIVE')->count() - 1;
         $response = $this->apiCall('GET', '/user_members_available', [
-            'group_id' => $group->id
+            'group_id' => $group->id,
         ]);
         $this->assertEquals($count, $response->json('meta')['total']);
         $response->assertStatus(200);
     }
-
 }

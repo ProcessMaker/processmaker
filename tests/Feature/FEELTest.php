@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature;
 
 use ProcessMaker\Exception\ExpressionFailedException;
@@ -12,7 +13,6 @@ use Tests\TestCase;
  */
 class FEELTest extends TestCase
 {
-
     /**
      * Test to use an unsupported language
      */
@@ -27,7 +27,7 @@ class FEELTest extends TestCase
 
     /**
      * Test the use of string in FEEL
-     * 
+     *
      * "hello world"
      * 'hello world'
      */
@@ -49,7 +49,7 @@ class FEELTest extends TestCase
 
     /**
      * Test the use of numbers in FEEL
-     * 
+     *
      * 123
      * 123.25
      * 12345678901234567890
@@ -77,7 +77,7 @@ class FEELTest extends TestCase
 
     /**
      * Test the use of arrays in FEEL
-     * 
+     *
      * [1,2,3]
      */
     public function testArrays()
@@ -93,7 +93,7 @@ class FEELTest extends TestCase
 
     /**
      * Test the use of hashmaps in FEEL
-     * 
+     *
      * {a:34, "b": "foo"}
      * {complex: {a:[1,2,3], b:"bar"}}
      */
@@ -110,12 +110,12 @@ class FEELTest extends TestCase
         //Evaluate a complex hashmap
         $expresion->setBody('{complex: {a:[1,2,3], b:"bar"}}');
         $response = $expresion([]);
-        $this->assertSame(['complex' => ['a'=>[1, 2, 3], 'b' => 'bar']], $response);
+        $this->assertSame(['complex' => ['a' => [1, 2, 3], 'b' => 'bar']], $response);
     }
 
     /**
      * Test the use of booleans in FEEL
-     * 
+     *
      * true
      * false
      */
@@ -137,7 +137,7 @@ class FEELTest extends TestCase
 
     /**
      * Test arithmetic operations in FEEL
-     * 
+     *
      * 1 + 2 + 3 + 4
      * 1 * 2 + 3 * 4
      * 1 - 3 + 4 / 2
@@ -165,7 +165,7 @@ class FEELTest extends TestCase
 
     /**
      * Test boolean expressions in FEEL
-     * 
+     *
      * true or false
      * true and false
      * true and not false
@@ -193,7 +193,7 @@ class FEELTest extends TestCase
 
     /**
      * Test comparison expressions in FEEL
-     * 
+     *
      * 5 > 4
      * 5 <= 6
      * 5 != 6
@@ -239,7 +239,7 @@ class FEELTest extends TestCase
 
     /**
      * Test string operations in FEEL
-     * 
+     *
      * "firstname" ~ " " ~ "lastname"
      * "firstname" matches "/first/"
      * "firstname" matches "/last/"
@@ -267,7 +267,7 @@ class FEELTest extends TestCase
 
     /**
      * Test array operations in FEEL
-     * 
+     *
      * 1 in [1,2,3]
      * 4 in [1,2,3]
      * 4 not in [1,2,3]
@@ -295,7 +295,7 @@ class FEELTest extends TestCase
 
     /**
      * Test ternary operator in FEEL
-     * 
+     *
      * true ? "true" : "false"
      * false ? "true" : "false"
      */
@@ -317,7 +317,7 @@ class FEELTest extends TestCase
 
     /**
      * Test access to data
-     * 
+     *
      * input
      * foo.property
      * {a: input, b: foo.name}
@@ -352,7 +352,7 @@ class FEELTest extends TestCase
 
     /**
      * Test syntax error exception
-     * 
+     *
      * input +
      */
     public function testSyntaxErrorException()
@@ -368,7 +368,7 @@ class FEELTest extends TestCase
 
     /**
      * Test that expression fails execution
-     * 
+     *
      * nonobject.bar
      */
     public function testExpressionFailedException()
@@ -376,7 +376,7 @@ class FEELTest extends TestCase
         $expresion = new FormalExpression();
         $expresion->setLanguage('FEEL');
         $data = [
-            'nonobject'  => 'bar',
+            'nonobject' => 'bar',
         ];
 
         //ExpressionFailedException expected

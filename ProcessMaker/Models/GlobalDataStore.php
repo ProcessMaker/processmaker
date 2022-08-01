@@ -8,8 +8,6 @@ use ProcessMaker\Nayra\Contracts\Bpmn\DataStoreInterface;
 
 /**
  * Application Data
- *
- * @package ProcessMaker\Models
  */
 class GlobalDataStore implements DataStoreInterface
 {
@@ -20,7 +18,6 @@ class GlobalDataStore implements DataStoreInterface
      *
      * @param $name
      * @param $default
-     *
      * @return mixed
      */
     public function getData($name = null, $default = null)
@@ -36,12 +33,12 @@ class GlobalDataStore implements DataStoreInterface
      * Set data of the store.
      *
      * @param $data
-     *
      * @return $this
      */
     public function setData($data)
     {
         Cache::store('global_variables')->forever('global', $data);
+
         return $this;
     }
 
@@ -50,7 +47,6 @@ class GlobalDataStore implements DataStoreInterface
      *
      * @param $name
      * @param $data
-     *
      * @return $this
      */
     public function putData($name, $data)

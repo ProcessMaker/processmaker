@@ -10,14 +10,14 @@ use ProcessMaker\Providers\WorkflowServiceProvider;
 class ScriptsInProcess
 {
     public $type = Script::class;
+
     public $owner = Process::class;
 
     /**
      * Get scripts used in a process
      *
-     * @param Process $process
-     * @param array $scripts
-     *
+     * @param  Process  $process
+     * @param  array  $scripts
      * @return array
      */
     public function referencesToExport(Process $process, array $scripts = [])
@@ -31,15 +31,15 @@ class ScriptsInProcess
         foreach ($nodes as $node) {
             $scripts[] = [Script::class, $node->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef')];
         }
+
         return $scripts;
     }
 
     /**
      * Update references used in an imported process
      *
-     * @param Process $process
-     * @param array $references
-     *
+     * @param  Process  $process
+     * @param  array  $references
      * @return void
      */
     public function updateReferences(Process $process, array $references = [])

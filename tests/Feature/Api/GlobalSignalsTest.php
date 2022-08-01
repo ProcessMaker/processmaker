@@ -22,7 +22,7 @@ class GlobalSignalsTest extends TestCase
         // Create the processes
         $parent = $this->createProcess([
             'id' => 1,
-            'bpmn' => file_get_contents(__DIR__ . '/processes/GlobalSignals.bpmn')
+            'bpmn' => file_get_contents(__DIR__.'/processes/GlobalSignals.bpmn'),
         ]);
 
         // Start a parent process instance
@@ -88,11 +88,11 @@ class GlobalSignalsTest extends TestCase
         // Create the processes
         $parent = $this->createProcess([
             'id' => 1,
-            'bpmn' => file_get_contents(__DIR__ . '/processes/GlobalSignalSource.bpmn')
+            'bpmn' => file_get_contents(__DIR__.'/processes/GlobalSignalSource.bpmn'),
         ]);
         $target = $this->createProcess([
             'id' => 2,
-            'bpmn' => file_get_contents(__DIR__ . '/processes/GlobalSignalTarget.bpmn')
+            'bpmn' => file_get_contents(__DIR__.'/processes/GlobalSignalTarget.bpmn'),
         ]);
 
         // Start a parent process instance
@@ -158,7 +158,7 @@ class GlobalSignalsTest extends TestCase
         // Create the processes
         $parent = $this->createProcess([
             'id' => 1,
-            'bpmn' => file_get_contents(__DIR__ . '/processes/GlobalSignalSourceMissing.bpmn')
+            'bpmn' => file_get_contents(__DIR__.'/processes/GlobalSignalSourceMissing.bpmn'),
         ]);
 
         // Start a parent process instance

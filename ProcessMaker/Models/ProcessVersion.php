@@ -7,7 +7,6 @@ use ProcessMaker\Contracts\ProcessModelInterface;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasSelfServiceTasks;
 use ProcessMaker\Traits\ProcessTrait;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
  * ProcessVersion is used to store the historical version of a process.
@@ -21,7 +20,6 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property string start_events
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
- *
  */
 class ProcessVersion extends Model implements ProcessModelInterface
 {
@@ -36,7 +34,7 @@ class ProcessVersion extends Model implements ProcessModelInterface
     /**
      * Attributes that are not mass assignable.
      *
-     * @var array $fillable
+     * @var array
      */
     protected $guarded = [
         'id',
@@ -60,7 +58,7 @@ class ProcessVersion extends Model implements ProcessModelInterface
      * @var array
      */
     protected $hidden = [
-        'bpmn'
+        'bpmn',
     ];
 
     protected static function boot()
@@ -83,18 +81,17 @@ class ProcessVersion extends Model implements ProcessModelInterface
             'usersCanCancel' => 'CANCEL',
             'usersCanEditData' => 'EDIT_DATA',
             'groupsCanCancel' => 'CANCEL',
-            'groupsCanEditData' => 'EDIT_DATA'
+            'groupsCanEditData' => 'EDIT_DATA',
         ];
 
         foreach ($processables as $relationshipName => $methodName) {
-
-            if (!$this->process->$relationshipName()->exists()) {
+            if (! $this->process->$relationshipName()->exists()) {
                 continue;
             }
 
             $includeWithPivot = [
                 'process_id' => $this->process->id,
-                'method' => $methodName
+                'method' => $methodName,
             ];
 
             $updateWith = $this->process->$relationshipName->keyBy('id')->map(
@@ -110,7 +107,7 @@ class ProcessVersion extends Model implements ProcessModelInterface
     /**
      * Set multiple|single categories to the process
      *
-     * @param string $value
+     * @param  string  $value
      */
     public function setProcessCategoryIdAttribute($value)
     {

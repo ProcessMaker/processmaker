@@ -12,8 +12,6 @@ use ProcessMaker\Nayra\Contracts\Bpmn\FormalExpressionInterface;
 
 /**
  * FormalExpression to handle time events
- *
- * @package ProcessMaker\Model
  */
 class TimerExpression implements FormalExpressionInterface
 {
@@ -48,13 +46,13 @@ class TimerExpression implements FormalExpressionInterface
     /**
      * Set the body of the Expression.
      *
-     * @param string $body
-     *
+     * @param  string  $body
      * @return TimerExpression
      */
     public function setBody($body)
     {
         $this->setProperty(FormalExpressionInterface::BPMN_PROPERTY_BODY, $body);
+
         return $this;
     }
 
@@ -81,14 +79,14 @@ class TimerExpression implements FormalExpressionInterface
     /**
      * Invoke the format expression.
      *
-     * @param mixed $data
-     *
+     * @param  mixed  $data
      * @return string
      */
     public function __invoke($data)
     {
         $expression = $this->getProperty(FormalExpressionInterface::BPMN_PROPERTY_BODY);
         $expression = $this->mustacheTimerExpression($expression, $data);
+
         return $this->getDateExpression($expression)
             ?: $this->getCycleExpression($expression)
             ?: $this->getDurationExpression($expression)
@@ -98,14 +96,14 @@ class TimerExpression implements FormalExpressionInterface
     /**
      * Parse mustache syntax in timer expressions
      *
-     * @param string $expression
-     * @param array $data
-     *
+     * @param  string  $expression
+     * @param  array  $data
      * @return mixed
      */
     private function mustacheTimerExpression($expression, $data)
     {
         $mustache = new Mustache_Engine();
+
         return $mustache->render($expression, $data);
     }
 
@@ -121,6 +119,7 @@ class TimerExpression implements FormalExpressionInterface
         } catch (Exception $e) {
             $date = false;
         }
+
         return $date;
     }
 
@@ -146,6 +145,7 @@ class TimerExpression implements FormalExpressionInterface
         } catch (Exception $e) {
             $cycle = false;
         }
+
         return $cycle;
     }
 
@@ -170,6 +170,7 @@ class TimerExpression implements FormalExpressionInterface
         } catch (Exception $e) {
             $cycles = false;
         }
+
         return $cycles;
     }
 
@@ -185,6 +186,7 @@ class TimerExpression implements FormalExpressionInterface
         } catch (Exception $e) {
             $duration = false;
         }
+
         return $duration;
     }
 }

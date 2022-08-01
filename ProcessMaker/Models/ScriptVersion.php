@@ -17,7 +17,7 @@ class ScriptVersion extends Model implements ScriptInterface
     /**
      * Attributes that are not mass assignable.
      *
-     * @var array $fillable
+     * @var array
      */
     protected $guarded = [
         'id',
@@ -27,7 +27,7 @@ class ScriptVersion extends Model implements ScriptInterface
     /**
      * Set multiple|single categories to the script
      *
-     * @param string $value
+     * @param  string  $value
      */
     public function setScriptCategoryIdAttribute($value)
     {
@@ -47,16 +47,17 @@ class ScriptVersion extends Model implements ScriptInterface
     /**
      * Executes a script given a configuration and data input.
      *
-     * @param array $data
-     * @param array $config
+     * @param  array  $data
+     * @param  array  $config
      */
     public function runScript(array $data, array $config, $tokenId = '')
-    { 
+    {
         $script = $this->parent->replicate();
         $except = $script->getGuarded();
         foreach (collect($script->getAttributes())->except($except)->keys() as $prop) {
             $script->$prop = $this->$prop;
         }
+
         return $script->runScript($data, $config, $tokenId);
     }
 }

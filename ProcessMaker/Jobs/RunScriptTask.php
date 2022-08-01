@@ -18,20 +18,24 @@ use Throwable;
 class RunScriptTask extends BpmnAction implements ShouldQueue
 {
     public $definitionsId;
+
     public $instanceId;
+
     public $tokenId;
+
     public $data;
 
     public $tries = 3;
+
     public $retryAfter = 60;
 
     /**
      * Create a new job instance.
      *
-     * @param \ProcessMaker\Models\Process $definitions
-     * @param \ProcessMaker\Models\ProcessRequest $instance
-     * @param \ProcessMaker\Models\ProcessRequestToken $token
-     * @param array $data
+     * @param  \ProcessMaker\Models\Process  $definitions
+     * @param  \ProcessMaker\Models\ProcessRequest  $instance
+     * @param  \ProcessMaker\Models\ProcessRequestToken  $token
+     * @param  array  $data
      */
     public function __construct(Definitions $definitions, ProcessRequest $instance, ProcessRequestToken $token, array $data)
     {
@@ -51,7 +55,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
     public function action(ProcessRequestToken $token = null, ScriptTaskInterface $element = null, ProcessRequest $instance)
     {
         // Exit if the task was completed or closed
-        if (!$token || !$element) {
+        if (! $token || ! $element) {
             return;
         }
         $scriptRef = $element->getProperty('scriptRef');
@@ -85,7 +89,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
 
             $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
                 // Exit if the task was completed or closed
-                if (!$token || !$element) {
+                if (! $token || ! $element) {
                     return;
                 }
                 // Update data
@@ -106,7 +110,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             $error = $element->getRepository()->createError();
             $error->setName($exception->getMessage());
             $token->setProperty('error', $error);
-            Log::error('Script failed: ' . $scriptRef . ' - ' . $exception->getMessage());
+            Log::error('Script failed: '.$scriptRef.' - '.$exception->getMessage());
             Log::error($exception->getTraceAsString());
         }
     }
@@ -116,11 +120,12 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
      */
     public function failed(Throwable $exception)
     {
-        if (!$this->tokenId) {
-            Log::error('Script failed: ' . $exception->getMessage());
+        if (! $this->tokenId) {
+            Log::error('Script failed: '.$exception->getMessage());
+
             return;
         }
-        Log::error('Script (#' . $this->tokenId . ') failed: ' . $exception->getMessage());
+        Log::error('Script (#'.$this->tokenId.') failed: '.$exception->getMessage());
         $token = ProcessRequestToken::find($this->tokenId);
         if ($token) {
             $element = $token->getBpmnDefinition();

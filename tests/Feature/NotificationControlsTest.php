@@ -2,15 +2,10 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Database\Seeder;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Request;
-use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Notification;
-use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\ProcessNotificationSetting;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
@@ -46,11 +41,11 @@ class NotificationControlsTest extends TestCase
 
         // Get the process we'll be testing on
         $process = Process::where('name', 'Leave Absence Request')->first();
-        
+
         // Assign a process manager
         $process->manager_id = $adminUser->getKey();
         $process->save();
-        
+
         // Allow the process manager to receive canceled notificaitons
         factory(ProcessNotificationSetting::class)->create([
             'process_id' => $process->getKey(),
@@ -77,7 +72,7 @@ class NotificationControlsTest extends TestCase
         $url = route('api.process_events.trigger', [$process->id, 'event' => 'node_2']);
         $response = $this->apiCall('POST', $url);
         $response->assertStatus(201);
-        
+
         // Obtain request ID
         $responseId = $response->getData()->id;
 
@@ -85,12 +80,12 @@ class NotificationControlsTest extends TestCase
         $this->assertDatabaseHas('notifications', [
             'type' => ProcessCreatedNotification::class,
         ]);
-        
+
         // Cancel the process
         $url = route('api.requests.update', [$responseId]);
         $response = $this->apiCall('PUT', $url, ['status' => 'CANCELED']);
         $response->assertStatus(204);
-        
+
         // Assert that our database now has a process canceled notification
         $this->assertDatabaseHas('notifications', [
             'type' => ProcessCanceledNotification::class,
@@ -164,7 +159,7 @@ class NotificationControlsTest extends TestCase
             'type' => 'TEST',
             'notifiable_type' => 'NOTIFIABLE/TEST',
             'data' => json_encode(['url' => $taskUrl]),
-            'notifiable_id' => 1
+            'notifiable_id' => 1,
         ]);
         $response->assertStatus(201);
 

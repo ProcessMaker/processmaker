@@ -1,14 +1,11 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\Script;
-use ProcessMaker\Models\ScriptCategory;
 
 class CreateCategoryAssignmentsTable extends Migration
 {

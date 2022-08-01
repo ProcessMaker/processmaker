@@ -9,9 +9,8 @@ interface ProcessAssetsInterface
     /**
      * Get references to export from a PM4 model
      *
-     * @param Model $model
-     * @param array $references
-     *
+     * @param  Model  $model
+     * @param  array  $references
      * @return array
      */
     public function referencesToExport($model, array $references = []);
@@ -19,8 +18,8 @@ interface ProcessAssetsInterface
     /**
      * Update references when import a PM4 model
      *
-     * @param Model $model
-     * @param array $references
+     * @param  Model  $model
+     * @param  array  $references
      * @return void
      */
     public function updatetReferences($model, array $references = []);

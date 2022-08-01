@@ -15,8 +15,6 @@ use Throwable;
 
 /**
  * FormalExpression
- *
- * @package ProcessMaker\Model
  */
 class FormalExpression implements FormalExpressionInterface
 {
@@ -37,7 +35,8 @@ class FormalExpression implements FormalExpressionInterface
 
     /**
      * FEEL expression object to be used to evaluate
-     * @var \Symfony\Component\ExpressionLanguage\ExpressionLanguage $expressionLanguage
+     *
+     * @var \Symfony\Component\ExpressionLanguage\ExpressionLanguage
      */
     private $feelExpression;
 
@@ -53,7 +52,7 @@ class FormalExpression implements FormalExpressionInterface
     /**
      * Register a custom PM function
      *
-     * @param callable $callable
+     * @param  callable  $callable
      */
     public function registerPMFunction($name, callable $callable)
     {
@@ -62,7 +61,6 @@ class FormalExpression implements FormalExpressionInterface
 
     /**
      * Register system functions
-     *
      */
     private function registerPMFunctions()
     {
@@ -75,6 +73,7 @@ class FormalExpression implements FormalExpressionInterface
                     ->where('process_request_id', $request_id)
                     ->where('status', 'ACTIVE')
                     ->first();
+
                 return $task;
             }
         );
@@ -113,6 +112,7 @@ class FormalExpression implements FormalExpressionInterface
                 foreach ($activeTasks as $task) {
                     $task->reassignTo($target_user_id)->save();
                 }
+
                 return $target_user_id;
             }
         );
@@ -121,7 +121,7 @@ class FormalExpression implements FormalExpressionInterface
             function () {
             },
             function ($arguments, $o, $a) {
-                return ((array)$o)[$a];
+                return ((array) $o)[$a];
             }
         );
         // date($format, $timestamp)
@@ -135,8 +135,7 @@ class FormalExpression implements FormalExpressionInterface
                 }
                 if ($b) {
                     return Carbon::createFromTimestamp($b, $timezone)->format($a);
-                }
-                else {
+                } else {
                     return Carbon::now($timezone)->format($a);
                 }
             }
@@ -160,6 +159,7 @@ class FormalExpression implements FormalExpressionInterface
                 if ($env) {
                     return $env->value;
                 }
+
                 return env($name);
             }
         );
@@ -223,11 +223,11 @@ class FormalExpression implements FormalExpressionInterface
             function () {
             },
             function ($__data, $user_id, $assigned_groups) {
-                if (!$user_id) {
+                if (! $user_id) {
                     return null;
                 }
                 $user = User::find($user_id);
-                if (!$user) {
+                if (! $user) {
                     return null;
                 }
                 $user_groups = $user->groups()->get();
@@ -236,12 +236,14 @@ class FormalExpression implements FormalExpressionInterface
                         return $group->manager_id;
                     }
                 }
-                if (!$user->manager_id) {
+                if (! $user->manager_id) {
                     // If no manager is found, then assign the task to the Process Manager.
                     $request = ProcessRequest::find($__data['_request']['id']);
                     $process = $request->processVersion;
+
                     return $process->manager_id;
                 }
+
                 return $user->manager_id;
             }
         );
@@ -271,8 +273,7 @@ class FormalExpression implements FormalExpressionInterface
     /**
      * Prepare the data for the FEEL evaluator
      *
-     * @param array $data
-     *
+     * @param  array  $data
      * @return array
      */
     private function feelEncode(array $data)
@@ -285,7 +286,7 @@ class FormalExpression implements FormalExpressionInterface
         if (self::templateEngine == 'Mustache') {
             return new MustacheExpressionEvaluator();
         } else {
-            throw new \Exception("Template engine not supported");
+            throw new \Exception('Template engine not supported');
         }
     }
 
@@ -302,13 +303,13 @@ class FormalExpression implements FormalExpressionInterface
     /**
      * Get the body of the Expression.
      *
-     * @param string $body
-     *
+     * @param  string  $body
      * @return $this
      */
     public function setBody($body)
     {
         $this->setProperty(FormalExpressionInterface::BPMN_PROPERTY_BODY, $body);
+
         return $this;
     }
 
@@ -335,21 +336,20 @@ class FormalExpression implements FormalExpressionInterface
     /**
      * Get the expression language.
      *
-     * @param string $language
-     *
+     * @param  string  $language
      * @return $this
      */
     public function setLanguage($language)
     {
         $this->setProperty(FormalExpressionInterface::BPMN_PROPERTY_LANGUAGE, $language);
+
         return $this;
     }
 
     /**
      * Invoke the format expression.
      *
-     * @param mixed $data
-     *
+     * @param  mixed  $data
      * @return string
      */
     public function __invoke($data)
@@ -360,10 +360,9 @@ class FormalExpression implements FormalExpressionInterface
     /**
      *  Evaluate an expression using an specific template engine
      *
-     * @param \ProcessMaker\Contracts\TemplateExpressionInterface $templateEngine
-     * @param string $expression
-     * @param array $data
-     *
+     * @param  \ProcessMaker\Contracts\TemplateExpressionInterface  $templateEngine
+     * @param  string  $expression
+     * @param  array  $data
      * @return bool
      *
      * @throws ExpressionFailedException
@@ -374,12 +373,12 @@ class FormalExpression implements FormalExpressionInterface
     {
         $body = $templateEngine->render($expression, $data);
 
-        if (!trim($body)) {
+        if (! trim($body)) {
             return true;
         }
 
         $language = $this->getLanguage() ?: self::defaultLanguage;
-        if (!isset(self::languages[$language])) {
+        if (! isset(self::languages[$language])) {
             throw new ScriptLanguageNotSupported($language);
         }
         $evaluator = self::languages[$language][0];

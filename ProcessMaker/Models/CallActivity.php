@@ -3,6 +3,8 @@
 namespace ProcessMaker\Models;
 
 use Exception;
+use ProcessMaker\Jobs\CopyRequestFiles;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Nayra\Bpmn\ActivitySubProcessTrait;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityClosedEvent;
@@ -12,13 +14,9 @@ use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ErrorInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
-use ProcessMaker\Jobs\CopyRequestFiles;
-use ProcessMaker\Managers\DataManager;
 
 /**
  * Call Activity model
- *
- * @package ProcessMaker\Model
  */
 class CallActivity implements CallActivityInterface
 {
@@ -32,7 +30,6 @@ class CallActivity implements CallActivityInterface
 
     /**
      * Initialize the Call Activity element.
-     *
      */
     protected function initActivity()
     {
@@ -65,7 +62,7 @@ class CallActivity implements CallActivityInterface
         $data = $dataManager->getData($token);
 
         // Add info about parent (Note MultiInstance also adds _parent info)
-        if (!isset($data['_parent'])) {
+        if (! isset($data['_parent'])) {
             $data['_parent'] = [];
         }
 
@@ -92,10 +89,9 @@ class CallActivity implements CallActivityInterface
     /**
      * Complete the subprocess
      *
-     * @param TokenInterface $token
-     * @param ExecutionInstanceInterface $closedInstance
-     * @param ExecutionInstanceInterface $instance
-     *
+     * @param  TokenInterface  $token
+     * @param  ExecutionInstanceInterface  $closedInstance
+     * @param  ExecutionInstanceInterface  $instance
      * @return CallActivity
      */
     protected function completeSubprocess(TokenInterface $token, ExecutionInstanceInterface $closedInstance, ExecutionInstanceInterface $instance)
@@ -111,17 +107,16 @@ class CallActivity implements CallActivityInterface
         $this->synchronizeInstances($instance, $token->getInstance());
 
         CopyRequestFiles::dispatch($instance, $token->getInstance());
-        
+
         return $this;
     }
 
     /**
      * Catch a subprocess error
      *
-     * @param TokenInterface $token
-     * @param ErrorInterface|null $error
-     * @param ExecutionInstanceInterface $instance
-     *
+     * @param  TokenInterface  $token
+     * @param  ErrorInterface|null  $error
+     * @param  ExecutionInstanceInterface  $instance
      * @return CallActivity
      */
     protected function catchSubprocessError(TokenInterface $token, ErrorInterface $error = null, ExecutionInstanceInterface $instance)
@@ -133,11 +128,11 @@ class CallActivity implements CallActivityInterface
             $message = [$error->getName()];
         }
         if ($instance->errors && is_array($instance->errors)) {
-            foreach($instance->errors as $err) {
+            foreach ($instance->errors as $err) {
                 $errorMessage = $err['message'];
                 if (array_key_exists('body', $err)) {
                     // add the body but not the stack trace:
-                    $errorMessage = "\n" . explode('Stack trace', $err['body'])[0];
+                    $errorMessage = "\n".explode('Stack trace', $err['body'])[0];
                 }
                 $message[] = $errorMessage;
             }
@@ -145,6 +140,7 @@ class CallActivity implements CallActivityInterface
         $token->getInstance()->logError(new Exception(implode("\n", $message)), $this);
 
         $this->synchronizeInstances($instance, $token->getInstance());
+
         return $this;
     }
 
@@ -183,6 +179,7 @@ class CallActivity implements CallActivityInterface
                 $definitions = $engine->getDefinition($process->getLatestVersion());
             }
             $response = $definitions->getElementInstanceById($refs[0]);
+
             return $response;
         }
     }
@@ -190,40 +187,40 @@ class CallActivity implements CallActivityInterface
     /**
      * Set the called element by the activity.
      *
-     * @param \ProcessMaker\Nayra\Contracts\Bpmn\CallableElementInterface|string $callableElement
-     *
+     * @param  \ProcessMaker\Nayra\Contracts\Bpmn\CallableElementInterface|string  $callableElement
      * @return $this
      */
     public function setCalledElement($callableElement)
     {
         $this->setProperty(CallActivityInterface::BPMN_PROPERTY_CALLED_ELEMENT, $callableElement);
+
         return $this;
     }
 
     /**
      * Load tokens from array. And Link to the subprocess if exists.
      *
-     * @param ExecutionInstanceInterface $instance
-     * @param TokenInterface $token
-     *
+     * @param  ExecutionInstanceInterface  $instance
+     * @param  TokenInterface  $token
      * @return $this
      */
     public function addToken(ExecutionInstanceInterface $instance, TokenInterface $token)
     {
-        if ($token->getStatus() === ActivityInterface::TOKEN_STATE_ACTIVE && !empty($token->subprocess_request_id)) {
+        if ($token->getStatus() === ActivityInterface::TOKEN_STATE_ACTIVE && ! empty($token->subprocess_request_id)) {
             // Set subprocess request (to get the right process version)
             $this->subProcessRequestVersion = $token->subProcessRequest->processVersion;
             $subprocess = $this->getProcess()->getEngine()->loadProcessRequest($token->subProcessRequest);
             $this->linkProcesses($token, $subprocess);
         }
+
         return $this->addTokenBase($instance, $token);
     }
 
     /**
      * Synchronize two process instances
      *
-     * @param ExecutionInstanceInterface $instance
-     * @param ExecutionInstanceInterface $currentInstance
+     * @param  ExecutionInstanceInterface  $instance
+     * @param  ExecutionInstanceInterface  $currentInstance
      */
     private function synchronizeInstances(ExecutionInstanceInterface $instance, ExecutionInstanceInterface $currentInstance)
     {
@@ -237,22 +234,24 @@ class CallActivity implements CallActivityInterface
     /**
      * Returns true if callable element is external to the owner definition
      *
-     * @return boolean
+     * @return bool
      */
     public function isFromExternalDefinition()
     {
         $ref = explode('-', $this->getProperty(CallActivityInterface::BPMN_PROPERTY_CALLED_ELEMENT));
+
         return count($ref) === 2 && is_numeric($ref[1]);
     }
 
     /**
      * Returns true if callable element is a service sub process (like data-connector)
      *
-     * @return boolean
+     * @return bool
      */
     public function isServiceSubProcess()
     {
         $ref = explode('-', $this->getProperty(CallActivityInterface::BPMN_PROPERTY_CALLED_ELEMENT));
-        return count($ref) === 2 && !is_numeric($ref[1]);
+
+        return count($ref) === 2 && ! is_numeric($ref[1]);
     }
 }

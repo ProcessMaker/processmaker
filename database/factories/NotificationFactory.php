@@ -2,7 +2,6 @@
 
 use Faker\Generator as Faker;
 use ProcessMaker\Models\Notification;
-use Ramsey\Uuid\Uuid;
 
 /**
  * Model factory for a Notification

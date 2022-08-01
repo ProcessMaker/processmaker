@@ -1,5 +1,4 @@
 <?php
-use ProcessMaker\Http\Resources\Process;
 
 return [
 
@@ -25,7 +24,6 @@ return [
      * The fully qualified class name of the media model.
      */
     'media_model' => ProcessMaker\Models\Media::class,
-
 
     's3' => [
         /*

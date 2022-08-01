@@ -2,12 +2,11 @@
 
 namespace Tests\Feature\Api;
 
+use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\ProcessRequest;
 use Tests\Feature\Shared\ProcessTestingTrait;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
-use Illuminate\Support\Facades\Artisan;
-use ProcessMaker\Models\ProcessRequestToken;
 
 class CallActivityMultilevelTest extends TestCase
 {
@@ -27,15 +26,15 @@ class CallActivityMultilevelTest extends TestCase
         // Create the processes
         $parent = $this->createProcess([
             'id' => 1,
-            'bpmn' => file_get_contents(__DIR__ . '/processes/multilevel_parent.bpmn')
+            'bpmn' => file_get_contents(__DIR__.'/processes/multilevel_parent.bpmn'),
         ]);
         $child = $this->createProcess([
             'id' => 2,
-            'bpmn' => file_get_contents(__DIR__ . '/processes/multilevel_child1.bpmn')
+            'bpmn' => file_get_contents(__DIR__.'/processes/multilevel_child1.bpmn'),
         ]);
         $grandchild = $this->createProcess([
             'id' => 3,
-            'bpmn' => file_get_contents(__DIR__ . '/processes/multilevel_child2.bpmn')
+            'bpmn' => file_get_contents(__DIR__.'/processes/multilevel_child2.bpmn'),
         ]);
 
         // Start a parent process instance
@@ -68,7 +67,7 @@ class CallActivityMultilevelTest extends TestCase
         $activeTokensParent = $instance->tokens()->where('status', 'ACTIVE')->get();
         $activeTokensChild = $childRequest->tokens()->where('status', 'ACTIVE')->get();
         $activeTokensGrandChild = $grandChildRequest->tokens()->where('status', 'ACTIVE')->get();
-        
+
         // Assertion: All the request were completed
         $this->assertCount(0, $activeTokensParent);
         $this->assertCount(0, $activeTokensChild);

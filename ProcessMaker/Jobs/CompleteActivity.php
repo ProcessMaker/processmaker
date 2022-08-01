@@ -1,8 +1,8 @@
 <?php
+
 namespace ProcessMaker\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Database\DatabaseManager;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -12,10 +12,12 @@ use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 
 class CompleteActivity extends BpmnAction implements ShouldQueue
 {
-
     public $definitionsId;
+
     public $instanceId;
+
     public $tokenId;
+
     public $data;
 
     /**

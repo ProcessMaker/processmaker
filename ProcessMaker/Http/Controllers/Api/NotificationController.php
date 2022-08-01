@@ -5,7 +5,6 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification as NotificationFacade;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
@@ -24,14 +23,13 @@ class NotificationController extends Controller
      * @var array
      */
     public $doNotSanitize = [
-        'data'
+        'data',
     ];
 
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ApiCollection
      *
      * @OA\Get(
@@ -91,9 +89,9 @@ class NotificationController extends Controller
             ->where('notifiable_id', Auth::user()->id);
 
         $filter = $request->input('filter', '');
-        if (!empty($filter)) {
+        if (! empty($filter)) {
             $filter = addslashes($filter);
-            $subsearch = '%' . $filter . '%';
+            $subsearch = '%'.$filter.'%';
             $query->where(function ($query) use ($subsearch, $filter) {
                 $query->Where('data->name', 'like', $subsearch)
                     ->orWhere('data->userName', 'like', $subsearch)
@@ -122,13 +120,12 @@ class NotificationController extends Controller
         return new ApiCollection($response);
     }
 
-
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return NotificationResource
+     *
      * @throws \Throwable
      *
      * @OA\Post(
@@ -153,15 +150,14 @@ class NotificationController extends Controller
         $notification = new Notification();
         $notification->fill($request->input());
         $notification->saveOrFail();
+
         return new NotificationResource($notification);
     }
-
 
     /**
      * Display the specified resource.
      *
-     * @param Notification $notification
-     *
+     * @param  Notification  $notification
      * @return \Illuminate\Http\Response
      *
      * @internal param id $id
@@ -192,14 +188,13 @@ class NotificationController extends Controller
         return new NotificationResource($notification);
     }
 
-
     /**
      * Update a user
      *
-     * @param Notification $notification
-     * @param Request $request
-     *
+     * @param  Notification  $notification
+     * @param  Request  $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     *
      * @throws \Throwable
      *
      * @OA\Put(
@@ -231,15 +226,14 @@ class NotificationController extends Controller
         $request->validate(Notification::rules($notification));
         $notification->fill($request->input());
         $notification->saveOrFail();
+
         return response([], 204);
     }
-
 
     /**
      * Delete a notification
      *
-     * @param Notification $notification
-     *
+     * @param  Notification  $notification
      * @return ResponseFactory|Response
      *
      * @OA\Delete(
@@ -265,15 +259,14 @@ class NotificationController extends Controller
     public function destroy(Notification $notification)
     {
         $notification->delete();
+
         return response([], 204);
     }
-
 
     /**
      * Update notification as read
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return Response
      *
      * @OA\Put(
@@ -312,14 +305,14 @@ class NotificationController extends Controller
             ->whereIn('id', $messageIds)
             ->orWhereIn('data->url', $routes)
             ->update(['read_at' => Carbon::now()]);
+
         return response([], 201);
     }
 
-     /**
+    /**
      * Update notifications as unread
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return Response
      *
      * @OA\Put(
@@ -349,7 +342,6 @@ class NotificationController extends Controller
      *     ),
      * )
      */
-
     public function updateAsUnread(Request $request)
     {
         $messageIds = $request->input('message_ids');
@@ -364,15 +356,14 @@ class NotificationController extends Controller
             ->whereIn('id', $messageIds)
             ->orWhereIn('data->url', $routes)
             ->update(['read_at' => null]);
+
         return response($updated, 201);
     }
-
 
     /**
      * Update all notification as read.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      *
      * @OA\Put(
@@ -411,6 +402,7 @@ class NotificationController extends Controller
             ->where('notifiable_id', $id)
             ->where('notifiable_type', $type)
             ->update(['read_at' => Carbon::now()]);
+
         return response([], 201);
     }
 
@@ -425,7 +417,7 @@ class NotificationController extends Controller
             ->where('due_at', '<', Carbon::now())
             ->where('due_notified', 0)
             ->get();
-        foreach($inOverdue as $token) {
+        foreach ($inOverdue as $token) {
             $notifiables = $token->getNotifiables('due');
             NotificationFacade::send($notifiables, new TaskOverdueNotification($token));
         }

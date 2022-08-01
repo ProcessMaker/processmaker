@@ -7,9 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
-use ProcessMaker\Models\Group;
 use ProcessMaker\Http\Resources\Groups as GroupResource;
-use ProcessMaker\Models\GroupMember;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Models\User;
 
 class GroupController extends Controller
@@ -27,8 +26,7 @@ class GroupController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ApiCollection
      *
      * @OA\Get(
@@ -64,7 +62,7 @@ class GroupController extends Controller
      */
     public function index(Request $request)
     {
-        if (!(Auth::user()->can('view-groups') ||
+        if (! (Auth::user()->can('view-groups') ||
             Auth::user()->can('create-processes') ||
             Auth::user()->can('edit-processes'))) {
             throw new AuthorizationException(__('Not authorized to view groups.'));
@@ -83,8 +81,8 @@ class GroupController extends Controller
             }
         }
         $filter = $request->input('filter', '');
-        if (!empty($filter)) {
-            $filter = '%' . $filter . '%';
+        if (! empty($filter)) {
+            $filter = '%'.$filter.'%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('name', 'like', $filter)
                     ->orWhere('description', 'like', $filter);
@@ -101,15 +99,16 @@ class GroupController extends Controller
                 $request->input('order_direction', 'ASC')
             )
                 ->paginate($request->input('per_page', 10));
+
         return new ApiCollection($response);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return GroupResource
+     *
      * @throws \Throwable
      *
      * @OA\Post(
@@ -135,13 +134,14 @@ class GroupController extends Controller
         $group = new Group();
         $group->fill($request->input());
         $group->saveOrFail();
+
         return new GroupResource($group);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param Group $group
+     * @param  Group  $group
      * @return GroupResource
      *
      * @OA\Get(
@@ -168,21 +168,22 @@ class GroupController extends Controller
      */
     public function show(Group $group)
     {
-       if (!(Auth::user()->can('view-groups') ||
+        if (! (Auth::user()->can('view-groups') ||
             Auth::user()->can('create-processes') ||
             Auth::user()->can('edit-processes'))) {
             throw new AuthorizationException(__('Not authorized to view groups.'));
         }
+
         return new GroupResource($group);
     }
 
     /**
      * Update a user
      *
-     * @param Group $group
-     * @param Request $request
-     *
+     * @param  Group  $group
+     * @param  Request  $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     *
      * @throws \Throwable
      *
      * @OA\Put(
@@ -215,15 +216,16 @@ class GroupController extends Controller
         $request->validate(Group::rules($group));
         $group->fill($request->input());
         $group->saveOrFail();
+
         return response([], 204);
     }
 
     /**
      * Delete a user
      *
-     * @param Group $group
-     *
+     * @param  Group  $group
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     *
      * @throws \Exception
      *
      * @OA\Delete(
@@ -250,14 +252,14 @@ class GroupController extends Controller
     public function destroy(Group $group)
     {
         $group->delete();
+
         return response([], 204);
     }
 
     /**
      * Display the list of users in a group
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ApiCollection
      *
      * @OA\Get(
@@ -303,12 +305,12 @@ class GroupController extends Controller
             ->leftJoin('group_members', 'users.id', '=', 'group_members.member_id');
 
         $query->where('group_members.group_id', $group->id);
-        
+
         $query->where('group_members.member_type', User::class);
 
         $filter = $request->input('filter', '');
-        if (!empty($filter)) {
-            $filter = '%' . $filter . '%';
+        if (! empty($filter)) {
+            $filter = '%'.$filter.'%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('username', 'like', $filter)
                     ->orWhere('firstname', 'like', $filter)
@@ -340,8 +342,7 @@ class GroupController extends Controller
     /**
      * Display the list of groups in a group
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ApiCollection
      *
      * @OA\Get(
@@ -387,12 +388,12 @@ class GroupController extends Controller
             ->leftJoin('group_members', 'groups.id', '=', 'group_members.member_id');
 
         $query->where('group_members.group_id', $group->id);
-        
+
         $query->where('group_members.member_type', Group::class);
 
         $filter = $request->input('filter', '');
-        if (!empty($filter)) {
-            $filter = '%' . $filter . '%';
+        if (! empty($filter)) {
+            $filter = '%'.$filter.'%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('name', 'like', $filter)
                     ->orWhere('description', 'like', $filter);

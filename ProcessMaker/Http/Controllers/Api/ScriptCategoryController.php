@@ -4,9 +4,9 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
+use ProcessMaker\Models\ScriptCategory;
 
 class ScriptCategoryController extends Controller
 {
@@ -77,8 +77,8 @@ class ScriptCategoryController extends Controller
         }
 
         $filter = $request->input('filter', '');
-        if (!empty($filter)) {
-            $filter = '%' . $filter . '%';
+        if (! empty($filter)) {
+            $filter = '%'.$filter.'%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('name', 'like', $filter)
                     ->orWhere('status', 'like', $filter);
@@ -92,14 +92,14 @@ class ScriptCategoryController extends Controller
             $request->input('order_direction', 'asc')
         );
         $response = $query->paginate($request->input('per_page', 10));
+
         return new ApiCollection($response);
     }
 
     /**
      * Display the specified script category.
      *
-     * @param ScriptCategory $scriptCategory
-     *
+     * @param  ScriptCategory  $scriptCategory
      * @return \Illuminate\Http\JsonResponse
      *
      * @OA\Get(
@@ -131,9 +131,9 @@ class ScriptCategoryController extends Controller
     /**
      * Store a newly created Script Category in storage
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return \Illuminate\Http\JsonResponse
+     *
      * @throws \Throwable
      *
      * @OA\Post(
@@ -158,16 +158,17 @@ class ScriptCategoryController extends Controller
         $category = new ScriptCategory();
         $category->fill($request->json()->all());
         $category->saveOrFail();
+
         return new ApiResource($category);
     }
 
     /**
      * Updates the current element
      *
-     * @param Request $request
-     * @param ScriptCategory $scriptCategory
-     *
+     * @param  Request  $request
+     * @param  ScriptCategory  $scriptCategory
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     *
      * @throws \Throwable
      *
      * @OA\Put(
@@ -200,15 +201,16 @@ class ScriptCategoryController extends Controller
         $request->validate(ScriptCategory::rules($scriptCategory));
         $scriptCategory->fill($request->json()->all());
         $scriptCategory->saveOrFail();
+
         return new ApiResource($scriptCategory);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param ScriptCategory $scriptCategory
-     *
+     * @param  ScriptCategory  $scriptCategory
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     *
      * @throws \Exception
      *
      * @OA\Delete(
@@ -234,13 +236,14 @@ class ScriptCategoryController extends Controller
     public function destroy(ScriptCategory $scriptCategory)
     {
         if ($scriptCategory->scripts->count() !== 0) {
-            return response (
-                ['message'=>'The item should not have associated scripts',
-                    'errors'=> ['scripts' => $scriptCategory->scripts->count()]],
+            return response(
+                ['message' => 'The item should not have associated scripts',
+                    'errors' => ['scripts' => $scriptCategory->scripts->count()], ],
                 422);
         }
 
         $scriptCategory->delete();
+
         return response('', 204);
     }
 }

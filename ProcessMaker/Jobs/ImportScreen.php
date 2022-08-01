@@ -1,10 +1,10 @@
 <?php
+
 namespace ProcessMaker\Jobs;
 
-use Exception;
+use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
-use ProcessMaker\Managers\ExportManager;
 
 class ImportScreen extends ImportProcess
 {
@@ -16,6 +16,7 @@ class ImportScreen extends ImportProcess
     private function parseFileV1()
     {
         $this->file->screens = [$this->file->screens];
+
         return $this->parseFileV2();
     }
 
@@ -71,7 +72,7 @@ class ImportScreen extends ImportProcess
     /**
      * Execute the job.
      *
-     * @return boolean
+     * @return bool
      */
     public function handle()
     {
@@ -85,7 +86,8 @@ class ImportScreen extends ImportProcess
                 $this->status['screens'] = [
                     'label' => __('Screens'),
                     'success' => false,
-                    'message' => __('Starting')];
+                    'message' => __('Starting'), ];
+
                 return $this->{$method}();
             }
         }

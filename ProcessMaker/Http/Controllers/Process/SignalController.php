@@ -2,12 +2,12 @@
 
 namespace ProcessMaker\Http\Controllers\Process;
 
-use Illuminate\View\View;
-use Illuminate\Http\Request;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Traits\HasControllerAddons;
-use ProcessMaker\Http\Controllers\Controller;
 
 class SignalController extends Controller
 {
@@ -16,8 +16,7 @@ class SignalController extends Controller
     /**
      * Get the list of signals
      *
-     * @param Request $request
-     * 
+     * @param  Request  $request
      * @return Factory|View
      */
     public function index(Request $request)

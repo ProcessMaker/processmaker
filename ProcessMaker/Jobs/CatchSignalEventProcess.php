@@ -8,8 +8,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Repositories\DefinitionsRepository;
 
@@ -20,7 +18,9 @@ class CatchSignalEventProcess implements ShouldQueue
         Queueable;
 
     public $payload_uid;
+
     public $processId;
+
     public $signalRef;
 
     /**
@@ -58,15 +58,14 @@ class CatchSignalEventProcess implements ShouldQueue
         if ($this->payload) {
             $catches = SignalManager::getSignalCatchEvents($this->signalRef, $definitions);
             $processVariable = '';
-            foreach($catches as $catch) {
+            foreach ($catches as $catch) {
                 $processVariable = $definitions->getStartEvent($catch['id'])->getBpmnElement()->getAttribute('pm:config');
             }
             if ($processVariable) {
                 foreach ($engine->getExecutionInstances() as $instance) {
                     $instance->getDataStore()->putData($processVariable, $this->payload);
                 }
-            }
-            else {
+            } else {
                 foreach ($this->payload as $key => $value) {
                     foreach ($engine->getExecutionInstances() as $instance) {
                         $instance->getDataStore()->putData($key, $value);
@@ -82,8 +81,7 @@ class CatchSignalEventProcess implements ShouldQueue
     /**
      * Get event definition for the signal event
      *
-     * @param BpmnDocument $definitions
-     *
+     * @param  BpmnDocument  $definitions
      * @return SignalEventDefinitionInterface
      */
     private function getEventDefinitionBySignalRef(BpmnDocument $definitions)

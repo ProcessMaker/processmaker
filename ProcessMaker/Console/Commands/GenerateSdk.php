@@ -4,7 +4,6 @@ namespace ProcessMaker\Console\Commands;
 
 use Illuminate\Console\Command;
 use ProcessMaker\BuildSdk;
-use \Exception;
 
 class GenerateSdk extends Command
 {
@@ -42,7 +41,7 @@ class GenerateSdk extends Command
     {
         $jsonPath = base_path('storage/api-docs/api-docs.json');
         $builder = new BuildSdk($jsonPath, $this->argument('output'));
-        
+
         $userId = $this->options()['user-id'];
         if ($userId) {
             $builder->setUserId($userId);
@@ -50,14 +49,16 @@ class GenerateSdk extends Command
 
         if ($this->argument('language') === 'none') {
             $this->info(
-                "No language specified. Choose one of these: \n" . 
-                join(", ", $builder->getAvailableLanguages())
+                "No language specified. Choose one of these: \n".
+                implode(', ', $builder->getAvailableLanguages())
             );
+
             return;
         }
         $builder->setLang($this->argument('language'));
         if ($this->options()['list-options']) {
             $this->info($builder->getOptions());
+
             return;
         }
 
@@ -65,9 +66,9 @@ class GenerateSdk extends Command
         if ($this->options()['clean']) {
             $folder = $this->argument('output');
             if (substr($folder, -1) !== '/') {
-                $folder .= "/";
+                $folder .= '/';
             }
-            exec('rm -rf ' . $folder . '*');
+            exec('rm -rf '.$folder.'*');
         }
 
         $this->info($builder->run());

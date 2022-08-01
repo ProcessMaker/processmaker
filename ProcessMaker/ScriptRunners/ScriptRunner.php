@@ -10,7 +10,7 @@ class ScriptRunner
     /**
      * Concrete script runner
      *
-     * @var \ProcessMaker\ScriptRunners\Base $runner
+     * @var \ProcessMaker\ScriptRunners\Base
      */
     private $runner;
 
@@ -22,16 +22,16 @@ class ScriptRunner
     /**
      * Run a script code.
      *
-     * @param string $code
-     * @param array $data
-     * @param array $config
-     * @param integer $timeout
-     * @param \ProcessMaker\Models\User $user
-     *
+     * @param  string  $code
+     * @param  array  $data
+     * @param  array  $config
+     * @param  int  $timeout
+     * @param  \ProcessMaker\Models\User  $user
      * @return array
+     *
      * @throws \RuntimeException
      */
-    public function run($code, array $data, array $config, $timeout = 60, $user)
+    public function run($code, array $data, array $config, $timeout, $user)
     {
         return $this->runner->run($code, $data, $config, $timeout, $user);
     }
@@ -39,28 +39,28 @@ class ScriptRunner
     /**
      * Get a runner instance from executor
      *
-     * @param ScriptExecutor $executor
-     *
+     * @param  ScriptExecutor  $executor
      * @return \ProcessMaker\ScriptRunners\Base
+     *
      * @throws \ProcessMaker\Exception\ScriptLanguageNotSupported
      */
     private function getScriptRunner(ScriptExecutor $executor)
     {
         $language = strtolower($executor->language);
         $runner = config("script-runners.{$language}.runner");
-        if (!$runner) {
+        if (! $runner) {
             throw new ScriptLanguageNotSupported($language);
         } else {
             $class = "ProcessMaker\\ScriptRunners\\{$runner}";
+
             return new $class($executor);
         }
     }
 
     /**
      * Set the tokenId of reference.
-     * 
-     * @param string $tokenId
      *
+     * @param  string  $tokenId
      * @return void
      */
     public function setTokenId($tokenId)

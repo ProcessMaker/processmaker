@@ -2,9 +2,6 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Contracts\Session\Session;
-use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\User;
 
 class AnonymousUser extends User
 {
@@ -14,8 +11,10 @@ class AnonymousUser extends User
 
     public $isAnonymous = true;
 
-    public function receivesBroadcastNotificationsOn($notification) {
+    public function receivesBroadcastNotificationsOn($notification)
+    {
         $class = str_replace('\\', '.', get_parent_class());
+
         return $class.'.'.$this->getKey();
     }
 }

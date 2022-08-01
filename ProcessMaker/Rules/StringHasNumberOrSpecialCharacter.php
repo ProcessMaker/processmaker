@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Rules;
 
-use Illuminate\Support\Str;
 use Illuminate\Contracts\Validation\Rule;
 
 class StringHasNumberOrSpecialCharacter implements Rule
@@ -16,7 +15,7 @@ class StringHasNumberOrSpecialCharacter implements Rule
      */
     public function passes($attribute, $value)
     {
-        return preg_match('/[^a-zA-Z\d]/', $value) || preg_match( '/\d/', $value);
+        return preg_match('/[^a-zA-Z\d]/', $value) || preg_match('/\d/', $value);
     }
 
     /**

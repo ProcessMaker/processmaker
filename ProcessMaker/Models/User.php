@@ -3,21 +3,20 @@
 namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Session\Store as Session;
 use Illuminate\Validation\Rule;
 use Laravel\Passport\HasApiTokens;
 use ProcessMaker\Query\Traits\PMQL;
-use Illuminate\Session\Store as Session;
-use Illuminate\Notifications\Notifiable;
-use ProcessMaker\Traits\HasAuthorization;
-use Spatie\MediaLibrary\HasMedia\HasMedia;
-use ProcessMaker\Traits\SerializeToIso8601;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use ProcessMaker\Models\RequestUserPermission;
-use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use ProcessMaker\Traits\HideSystemResources;
-use ProcessMaker\Rules\StringHasNumberOrSpecialCharacter;
 use ProcessMaker\Rules\StringHasAtLeastOneUpperCaseCharacter;
+use ProcessMaker\Rules\StringHasNumberOrSpecialCharacter;
+use ProcessMaker\Traits\HasAuthorization;
+use ProcessMaker\Traits\HideSystemResources;
+use ProcessMaker\Traits\SerializeToIso8601;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
 class User extends Authenticatable implements HasMedia
 {
@@ -34,8 +33,10 @@ class User extends Authenticatable implements HasMedia
 
     //Disk
     public const DISK_PROFILE = 'profile';
+
     //collection media library
     public const COLLECTION_PROFILE = 'profile';
+
     // Session key to save request ids that the user started
     public const REQUESTS_SESSION_KEY = 'web-entry-request-ids';
 
@@ -75,7 +76,7 @@ class User extends Authenticatable implements HasMedia
      *   @OA\Property(property="delegation_user_id", type="string", format="id"),
      *   @OA\Property(property="manager_id", type="string", format="id"),
      *   @OA\Property(property="meta", type="object", additionalProperties=true),
-	   *   @OA\Property(property="force_change_password", type="boolean"),
+     *   @OA\Property(property="force_change_password", type="boolean"),
      * ),
      * @OA\Schema(
      *   schema="users",
@@ -135,9 +136,10 @@ class User extends Authenticatable implements HasMedia
      *
      * @return void
      */
-    public static function boot() {
+    public static function boot()
+    {
         parent::boot();
-        static::deleted(function($user) {
+        static::deleted(function ($user) {
             $user->removeFromGroups();
         });
     }
@@ -146,7 +148,6 @@ class User extends Authenticatable implements HasMedia
      * Validation rules
      *
      * @param  \ProcessMaker\Models\User|null  $existing
-     *
      * @return array
      */
     public static function rules(User $existing = null)
@@ -155,7 +156,7 @@ class User extends Authenticatable implements HasMedia
 
         return [
             // The following characters where not included in the regexp: & %  ' " ? /
-            'username' /****/ => ['required', 'regex:/^[a-zA-Z0-9.!#$*+=^_`|~\-@]+$/', 'min:3', 'max:255' , $unique],
+            'username' /****/ => ['required', 'regex:/^[a-zA-Z0-9.!#$*+=^_`|~\-@]+$/', 'min:3', 'max:255', $unique],
             'firstname' /***/ => ['required', 'max:50'],
             'lastname' /****/ => ['required', 'max:50'],
             'email' /*******/ => ['required', 'email'],
@@ -164,7 +165,7 @@ class User extends Authenticatable implements HasMedia
             'fax' /*********/ => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
             'cell' /********/ => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
             'status' /******/ => ['required', 'in:ACTIVE,INACTIVE,OUT_OF_OFFICE,SCHEDULED'],
-            'password' /****/ => static::passwordRules($existing)
+            'password' /****/ => static::passwordRules($existing),
         ];
     }
 
@@ -172,7 +173,6 @@ class User extends Authenticatable implements HasMedia
      * Validation rules specifically for the password
      *
      * @param  \ProcessMaker\Models\User|null  $existing
-     *
      * @return array
      */
     public static function passwordRules(User $existing = null)
@@ -215,9 +215,9 @@ class User extends Authenticatable implements HasMedia
      */
     public function getFullName()
     {
-        return implode(" ", [
+        return implode(' ', [
             $this->firstname,
-            $this->lastname
+            $this->lastname,
         ]);
     }
 
@@ -308,6 +308,7 @@ class User extends Authenticatable implements HasMedia
         foreach ($mediaFile as $media) {
             $url = $media->getFullUrl();
         }
+
         return $url;
     }
 
@@ -350,11 +351,12 @@ class User extends Authenticatable implements HasMedia
      */
     public function canAny($permissions)
     {
-        foreach (explode("|", $permissions) as $permission) {
+        foreach (explode('|', $permissions) as $permission) {
             if ($this->can($permission)) {
                 return $permission;
             }
         }
+
         return false;
     }
 
@@ -373,22 +375,23 @@ class User extends Authenticatable implements HasMedia
     /**
      * Check if the user can self-serve themselves a task
      *
-     * @param ProcessRequestToken $task
-     * @return boolean
+     * @param  ProcessRequestToken  $task
+     * @return bool
      */
     public function canSelfServe(ProcessRequestToken $task)
     {
-        if (!$task->is_self_service) {
+        if (! $task->is_self_service) {
             return false;
         }
 
         if (array_key_exists('users', $task->self_service_groups) && in_array(\Auth::user()->id, $task->self_service_groups['users'])) {
             return true;
-        } else if (array_key_exists('groups', $task->self_service_groups)) {
-            $groups =  collect($task->self_service_groups['groups'])
+        } elseif (array_key_exists('groups', $task->self_service_groups)) {
+            $groups = collect($task->self_service_groups['groups'])
                 ->intersect(
                     $this->groups()->pluck('groups.id')
                 )->count() > 0;
+
             return $groups;
         } else {
             // For older processes
@@ -467,12 +470,12 @@ class User extends Authenticatable implements HasMedia
         ->where([
             'is_self_service' => true,
             'status' => 'ACTIVE',
-            'user_id' => null
+            'user_id' => null,
         ]);
 
-        $taskQuery->where(function($query) use($groupIds) {
+        $taskQuery->where(function ($query) use ($groupIds) {
             // Check if `self_service_groups` contains any of the user's groups
-            foreach($groupIds as $groupId) {
+            foreach ($groupIds as $groupId) {
                 $query->orWhereJsonContains('self_service_groups->groups', (int) $groupId);
                 // keep compatibility
                 $query->orWhereJsonContains('self_service_groups->groups', (string) $groupId);
@@ -482,6 +485,7 @@ class User extends Authenticatable implements HasMedia
             $query->orWhereJsonContains('self_service_groups->users', (int) $this->id);
             $query->orWhereJsonContains('self_service_groups->users', (string) $this->id);
         });
+
         return $taskQuery->pluck('id');
     }
 

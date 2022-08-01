@@ -3,9 +3,8 @@
 namespace ProcessMaker\Observers;
 
 use Exception;
-use ProcessMaker\Models\Setting;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Artisan;
+use ProcessMaker\Models\Setting;
 
 class SettingObserver
 {
@@ -19,8 +18,9 @@ class SettingObserver
     {
         $config = $setting->getAttributes()['config'];
 
-        if ($config === "null" || $config === null) {
+        if ($config === 'null' || $config === null) {
             $setting->config = null;
+
             return;
         }
 

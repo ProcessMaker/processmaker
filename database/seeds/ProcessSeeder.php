@@ -2,22 +2,20 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
-use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\ProcessNotificationSetting;
+use ProcessMaker\Models\ProcessTaskAssignment;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
-use ProcessMaker\Providers\WorkflowServiceProvider;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
+use ProcessMaker\Providers\WorkflowServiceProvider;
 
 class ProcessSeeder extends Seeder
 {
-
     /**
      * Array of [language => mime-type]
      */
@@ -40,7 +38,7 @@ class ProcessSeeder extends Seeder
         //load user admin
         $admin = User::where('username', 'admin')->firstOrFail();
 
-        foreach (glob(database_path('processes') . '/*.bpmn') as $filename) {
+        foreach (glob(database_path('processes').'/*.bpmn') as $filename) {
             $process = factory(Process::class)->make([
                 'bpmn' => file_get_contents($filename),
                 'user_id' => $admin->getKey(),
@@ -50,7 +48,7 @@ class ProcessSeeder extends Seeder
             $processes = $process->getDefinitions()->getElementsByTagName('process');
             if ($processes->item(0)) {
                 $processDefinition = $processes->item(0)->getBpmnElementInstance();
-                if (!empty($processDefinition->getName())) {
+                if (! empty($processDefinition->getName())) {
                     $process->name = $processDefinition->getName();
                 }
             }
@@ -58,7 +56,7 @@ class ProcessSeeder extends Seeder
             $collaborations = $process->getDefinitions()->getElementsByTagName('collaboration');
             if ($collaborations->item(0)) {
                 $collaborationDefinition = $collaborations->item(0)->getBpmnElementInstance();
-                if (!empty($collaborationDefinition->getName())) {
+                if (! empty($collaborationDefinition->getName())) {
                     $process->name = $collaborationDefinition->getName();
                 }
             }
@@ -72,7 +70,7 @@ class ProcessSeeder extends Seeder
                 $scriptTask = $scriptTaskNode->getBpmnElementInstance();
                 //Create a row in the Scripts table
                 $script = factory(Script::class)->create([
-                    'title' => $scriptTask->getName('name') . ' Script',
+                    'title' => $scriptTask->getName('name').' Script',
                     'code' => $scriptTaskNode->getElementsByTagName('script')->item(0)->nodeValue,
                     'language' => $this->languageOfMimeType($scriptTask->getScriptFormat()),
                 ]);
@@ -86,11 +84,11 @@ class ProcessSeeder extends Seeder
 
             //Create/Assign Users to tasks
             $lanes = $definitions->getElementsByTagName('lane');
-            foreach($lanes as $nodeLane) {
+            foreach ($lanes as $nodeLane) {
                 $lane = $nodeLane->getBpmnElementInstance();
                 $user = $this->getUserOrCreate($lane->getName());
-                foreach($lane->getFlowNodes() as $node) {
-                    if ($node instanceof ActivityInterface && !($node instanceof ScriptTaskInterface)) {
+                foreach ($lane->getFlowNodes() as $node) {
+                    if ($node instanceof ActivityInterface && ! ($node instanceof ScriptTaskInterface)) {
                         factory(ProcessTaskAssignment::class)->create([
                             'process_id' => $process->getKey(),
                             'process_task_id' => $node->getId(),
@@ -100,7 +98,7 @@ class ProcessSeeder extends Seeder
                     }
                 }
             }
-            
+
             //Add notifications to request events
             $notificationTypes = ['started', 'canceled', 'completed'];
             foreach ($notificationTypes as $notificationType) {
@@ -110,13 +108,13 @@ class ProcessSeeder extends Seeder
                     'notification_type' => $notificationType,
                 ]);
             }
-            
+
             //Add screens to the process
             $admin = User::where('username', 'admin')->firstOrFail();
             $humanTasks = ['task', 'userTask'];
-            foreach($humanTasks as $humanTask) {
+            foreach ($humanTasks as $humanTask) {
                 $tasks = $definitions->getElementsByTagName($humanTask);
-                foreach($tasks as $task) {
+                foreach ($tasks as $task) {
                     $screenRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef');
                     $id = $task->getAttribute('id');
                     if ($screenRef) {
@@ -127,7 +125,7 @@ class ProcessSeeder extends Seeder
                     $assignments = ProcessTaskAssignment::where('process_id', $process->getKey())
                         ->where('process_task_id', $id)
                         ->count();
-                    if (!$assignments) {
+                    if (! $assignments) {
                         factory(ProcessTaskAssignment::class)->create([
                             'process_id' => $process->getKey(),
                             'process_task_id' => $id,
@@ -160,25 +158,26 @@ class ProcessSeeder extends Seeder
     /**
      * Load the JSON of a screen.
      *
-     * @param string $id
-     * @param string $screenRef
-     * @param string $process
-     *
+     * @param  string  $id
+     * @param  string  $screenRef
+     * @param  string  $process
      * @return Screen
      */
-    private function createScreen($id, $screenRef, $process) {
+    private function createScreen($id, $screenRef, $process)
+    {
+        if (file_exists(database_path('processes/screens/'.$screenRef.'.json'))) {
+            $json = json_decode(file_get_contents(database_path('processes/screens/'.$screenRef.'.json')));
 
-        if (file_exists(database_path('processes/screens/' . $screenRef . '.json'))) {
-            $json = json_decode(file_get_contents(database_path('processes/screens/' . $screenRef . '.json')));
             return factory(Screen::class)->create([
-                        'title' => $json[0]->name,
-                        'config' => $json
+                'title' => $json[0]->name,
+                'config' => $json,
             ]);
-        } elseif (file_exists(database_path('processes/screens/' . $id . '.json'))) {
-            $json = json_decode(file_get_contents(database_path('processes/screens/' . $id . '.json')));
+        } elseif (file_exists(database_path('processes/screens/'.$id.'.json'))) {
+            $json = json_decode(file_get_contents(database_path('processes/screens/'.$id.'.json')));
+
             return factory(Screen::class)->create([
-                        'title' => $json[0]->name,
-                        'config' => $json,
+                'title' => $json[0]->name,
+                'config' => $json,
             ]);
         }
     }
@@ -186,8 +185,7 @@ class ProcessSeeder extends Seeder
     /**
      * Get the language that corresponds to an specific mime-type.
      *
-     * @param string $mime
-     *
+     * @param  string  $mime
      * @return string
      */
     private function languageOfMimeType($mime)
@@ -199,7 +197,6 @@ class ProcessSeeder extends Seeder
      * Format name without spaces and to lowercase
      *
      * @param $name
-     *
      * @return string
      */
     private function formatName($name)
@@ -210,8 +207,7 @@ class ProcessSeeder extends Seeder
     /**
      * Get or create a user by full name.
      *
-     * @param string $userFullName
-     *
+     * @param  string  $userFullName
      * @return User
      */
     private function getUserOrCreate($userFullName)
@@ -219,12 +215,12 @@ class ProcessSeeder extends Seeder
         $name = $this->formatName($userFullName);
         $user = User::where('username', $name)
             ->first();
-        if (!$user) {
+        if (! $user) {
             $user = factory(User::class)->create([
                 'username' => $name,
                 'password' => Hash::make('admin'),
                 'status' => 'ACTIVE',
-                'is_administrator' => true
+                'is_administrator' => true,
             ]);
         }
 
@@ -235,25 +231,25 @@ class ProcessSeeder extends Seeder
      * Get or create a group by name
      *
      * @param $name
-     *
      * @return mixed
      */
     private function getGroupOrCreate($name)
     {
         $group = Group::where('name', $name)->first();
-        if (!$group) {
+        if (! $group) {
             $group = factory(Group::class)->create([
                 'name' => $name,
-                'status' => 'ACTIVE'
+                'status' => 'ACTIVE',
             ]);
         }
-        factory(GroupMember::class)->create( [
+        factory(GroupMember::class)->create([
             'member_id' => function () use ($name) {
                 return $this->getUserOrCreate($name)->getKey();
             },
             'member_type' => User::class,
-            'group_id' => $group->getKey()
+            'group_id' => $group->getKey(),
         ]);
+
         return $group;
     }
 }

@@ -21,20 +21,20 @@ trait ProcessTrait
     /**
      * Get the process definitions from BPMN field.
      *
-     * @param bool $forceParse
-     *
+     * @param  bool  $forceParse
      * @return BpmnDocument
      */
     public function getDefinitions($forceParse = false, $engine = null)
     {
         if ($forceParse || empty($this->bpmnDefinitions)) {
             $options = ['process' => $this instanceof ProcessVersion ? $this->process : $this];
-            !$engine ?: $options['engine'] = $engine;
+            ! $engine ?: $options['engine'] = $engine;
             $this->bpmnDefinitions = app(BpmnDocumentInterface::class, $options);
             if ($this->bpmn) {
                 $this->bpmnDefinitions->loadXML($this->bpmn);
             }
         }
+
         return $this->bpmnDefinitions;
     }
 
@@ -47,14 +47,15 @@ trait ProcessTrait
     {
         $document = new BpmnDocument($this);
         $document->loadXML($this->bpmn);
+
         return $document;
     }
 
     /**
      * Set a value on the properties json column
      *
-     * @param string $name
-     * @param mixed $value
+     * @param  string  $name
+     * @param  mixed  $value
      * @return void
      */
     public function setProperty($name, $value)
@@ -67,18 +68,18 @@ trait ProcessTrait
     /**
      * Get a value from the properties json column
      *
-     * @param string $name
+     * @param  string  $name
      * @return mixed
      */
     public function getProperty($name)
     {
-       return isset($this->properties[$name]) ? $this->properties[$name] : null;
+        return isset($this->properties[$name]) ? $this->properties[$name] : null;
     }
 
     /**
      * Set the manager id
      *
-     * @param int $value
+     * @param  int  $value
      * @return void
      */
     public function setManagerIdAttribute($value)
@@ -110,7 +111,6 @@ trait ProcessTrait
 
     /**
      * Get the users who can start this process
-     *
      */
     public function usersCanCancel()
     {
@@ -124,7 +124,6 @@ trait ProcessTrait
 
     /**
      * Get the groups who can start this process
-     *
      */
     public function groupsCanCancel()
     {
@@ -138,7 +137,6 @@ trait ProcessTrait
 
     /**
      * Get the users who can start this process
-     *
      */
     public function usersCanEditData()
     {
@@ -152,7 +150,6 @@ trait ProcessTrait
 
     /**
      * Get the groups who can start this process
-     *
      */
     public function groupsCanEditData()
     {

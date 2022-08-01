@@ -8,13 +8,12 @@ use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\PermissionAssignment;
-use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
+use ProcessMaker\Providers\AuthServiceProvider;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 use Tests\Feature\Shared\RequestHelper;
-use ProcessMaker\Providers\AuthServiceProvider;
 use Tests\TestCase;
 
 /**
@@ -60,7 +59,6 @@ class EditDataTest extends TestCase
 
     /**
      * Assign the required permission to the user and group.
-     *
      */
     private function assignPermissions(Process $process)
     {
@@ -72,9 +70,9 @@ class EditDataTest extends TestCase
     /**
      * Add edit data process permission.
      *
-     * @param Process $process
-     * @param array $users
-     * @param array $groups
+     * @param  Process  $process
+     * @param  array  $users
+     * @param  array  $groups
      */
     private function addProcessPermission(Process $process, array $users, array $groups)
     {
@@ -102,8 +100,7 @@ class EditDataTest extends TestCase
     /**
      * Create new task assignment type user successfully
      *
-     * @param User $userAssigned
-     *
+     * @param  User  $userAssigned
      * @return \ProcessMaker\Models\Process
      */
     private function createSingleTaskProcessUserAssignment(User $userAssigned)
@@ -126,31 +123,31 @@ class EditDataTest extends TestCase
 
         // When save the process creates the assignments
         $process->save();
+
         return $process;
     }
 
     /**
      * Start a process
      *
-     * @param \ProcessMaker\Models\Process $process
-     * @param string $startEvent
-     * @param array $data
-     *
+     * @param  \ProcessMaker\Models\Process  $process
+     * @param  string  $startEvent
+     * @param  array  $data
      * @return \ProcessMaker\Models\ProcessRequest
      */
     private function startProcess($process, $startEvent, $data = [])
     {
         // Trigger the start event
         $event = $process->getDefinitions()->getEvent($startEvent);
+
         return WorkflowManager::triggerStartEvent($process, $event, $data);
     }
 
     /**
      * Complete task
      *
-     * @param \ProcessMaker\Models\ProcessRequestToken $task
-     * @param array $data
-     *
+     * @param  \ProcessMaker\Models\ProcessRequestToken  $task
+     * @param  array  $data
      * @return \ProcessMaker\Models\ProcessRequestToken
      */
     private function completeTask(ProcessRequestToken $task, $data = [])
@@ -159,6 +156,7 @@ class EditDataTest extends TestCase
         $process = $task->process;
         $instance = $task->processRequest;
         WorkflowManager::completeTask($process, $instance, $task, $data);
+
         return $task->refresh();
     }
 
@@ -175,7 +173,7 @@ class EditDataTest extends TestCase
         $task = $request->tokens()->where('element_id', 'UserTaskUID')->first();
         $this->completeTask($task);
 
-        $response = $this->call('GET', 'requests/' . $request->id);
+        $response = $this->call('GET', 'requests/'.$request->id);
         $response->assertStatus(200);
         $response->assertViewIs('requests.show');
         $response->assertSee('Summary');
@@ -194,7 +192,7 @@ class EditDataTest extends TestCase
         $task = $request->tokens()->where('element_id', 'UserTaskUID')->first();
         $this->completeTask($task);
 
-        $response = $this->call('GET', 'requests/' . $request->id);
+        $response = $this->call('GET', 'requests/'.$request->id);
         $response->assertStatus(200);
         $response->assertViewIs('requests.show');
         $response->assertSee('Summary');
@@ -212,7 +210,7 @@ class EditDataTest extends TestCase
         $request = $this->startProcess($process, 'StartEventUID');
         $task = $request->tokens()->where('element_id', 'UserTaskUID')->first();
 
-        $response = $this->call('GET', 'tasks/' . $task->id . '/edit');
+        $response = $this->call('GET', 'tasks/'.$task->id.'/edit');
         $response->assertStatus(200);
         $response->assertViewIs('tasks.edit');
         $response->assertDontSee('<!-- data edit -->');
@@ -230,7 +228,7 @@ class EditDataTest extends TestCase
         $request = $this->startProcess($process, 'StartEventUID');
         $task = $request->tokens()->where('element_id', 'UserTaskUID')->first();
 
-        $response = $this->call('GET', 'tasks/' . $task->id . '/edit');
+        $response = $this->call('GET', 'tasks/'.$task->id.'/edit');
         $response->assertStatus(200);
         $response->assertViewIs('tasks.edit');
         $response->assertSee('Form');
@@ -249,7 +247,7 @@ class EditDataTest extends TestCase
         $task = $request->tokens()->where('element_id', 'UserTaskUID')->first();
 
         //Perform web call and make assertions
-        $response = $this->webCall('GET', 'tasks/' . $task->id . '/edit');
+        $response = $this->webCall('GET', 'tasks/'.$task->id.'/edit');
         $response->assertStatus(200);
         $response->assertViewIs('tasks.edit');
         $response->assertDontSee('<!-- data edit -->');
@@ -272,7 +270,7 @@ class EditDataTest extends TestCase
         $this->flushSession();
 
         //Perform web call and make assertions
-        $response = $this->webCall('GET', 'tasks/' . $task->id . '/edit');
+        $response = $this->webCall('GET', 'tasks/'.$task->id.'/edit');
         $response->assertStatus(200);
         $response->assertViewIs('tasks.edit');
         $response->assertSee('<!-- data edit -->');
@@ -290,7 +288,7 @@ class EditDataTest extends TestCase
         $request = $this->startProcess($process, 'StartEventUID');
         $task = $request->tokens()->where('element_id', 'UserTaskUID')->first();
 
-        $response = $this->call('GET', 'requests/' . $request->id);
+        $response = $this->call('GET', 'requests/'.$request->id);
         $response->assertStatus(200);
         $response->assertViewIs('requests.show');
         $response->assertSee('Completed');
@@ -311,7 +309,7 @@ class EditDataTest extends TestCase
         $task = $request->tokens()->where('element_id', 'UserTaskUID')->first();
         $this->completeTask($task);
 
-        $response = $this->call('GET', 'requests/' . $request->id);
+        $response = $this->call('GET', 'requests/'.$request->id);
         $response->assertStatus(200);
         $response->assertViewIs('requests.show');
         $response->assertSee('Completed');

@@ -3,7 +3,6 @@
 namespace ProcessMaker\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Arr;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Providers\WorkflowServiceProvider;
@@ -13,18 +12,23 @@ use ProcessMaker\Repositories\DefinitionsRepository;
 class CatchSignalEventInRequest extends BpmnAction implements ShouldQueue
 {
     public $definitionsId;
+
     public $instanceId;
+
     public $tokenId;
+
     public $data;
+
     public $signalRef;
+
     public $disableGlobalEvents;
 
     /**
      * Create a new job instance.
      *
-     * @param \ProcessMaker\Models\ProcessRequest $instance
-     * @param array $data
-     * @param string $signalRef
+     * @param  \ProcessMaker\Models\ProcessRequest  $instance
+     * @param  array  $data
+     * @param  string  $signalRef
      */
     public function __construct(ProcessRequest $instance, array $data, $signalRef)
     {

@@ -2,9 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -31,8 +29,7 @@ class ScreenController extends Controller
     /**
      * Get a list of Screens.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ResponseFactory|Response
      *
      *     @OA\Get(
@@ -102,21 +99,21 @@ class ScreenController extends Controller
 
         $filter = $request->input('filter', '');
         $isSelectList = $request->input('selectList', '');
-        if (!empty($filter)) {
-            $filter = '%' . $filter . '%';
-            if (!$isSelectList) {
+        if (! empty($filter)) {
+            $filter = '%'.$filter.'%';
+            if (! $isSelectList) {
                 $query->where(function ($query) use ($filter) {
                     $query->where('title', 'like', $filter)
                         ->orWhere('description', 'like', $filter)
-                        ->orWhereIn('screens.id', function($qry) use ($filter) {
+                        ->orWhereIn('screens.id', function ($qry) use ($filter) {
                             $qry->select('assignable_id')
                                 ->from('category_assignments')
-                                ->leftJoin('screen_categories', function($join) {
-                                    $join->on('screen_categories.id', '=',  'category_assignments.category_id');
+                                ->leftJoin('screen_categories', function ($join) {
+                                    $join->on('screen_categories.id', '=', 'category_assignments.category_id');
                                     $join->where('category_assignments.category_type', '=', ScreenCategory::class);
                                     $join->where('category_assignments.assignable_type', '=', Screen::class);
                                 })
-                                ->where ('screen_categories.name', 'like', $filter);
+                                ->where('screen_categories.name', 'like', $filter);
                         });
                 });
             } else {
@@ -130,13 +127,13 @@ class ScreenController extends Controller
             $screens = ScreenType::where('is_interactive', $interactive)->get('name');
             $query->whereIn('type', $screens);
         }
-        if (!$interactive  && $request->input('type')) {
+        if (! $interactive && $request->input('type')) {
             $types = explode(',', $request->input('type'));
             $query->whereIn('type', $types);
         }
 
         $pmql = $request->input('pmql', '');
-        if (!empty($pmql)) {
+        if (! empty($pmql)) {
             try {
                 $query->pmql($pmql);
             } catch (SyntaxError $e) {
@@ -155,8 +152,7 @@ class ScreenController extends Controller
     /**
      * Get a single Screen.
      *
-     * @param Screen $screen
-     *
+     * @param  Screen  $screen
      * @return ResponseFactory|Response
      *
      * @OA\Get(
@@ -188,8 +184,7 @@ class ScreenController extends Controller
     /**
      * Create a new Screen.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ResponseFactory|Response
      *
      *  @OA\Post(
@@ -215,15 +210,15 @@ class ScreenController extends Controller
         $screen->fill($request->input());
 
         $screen->saveOrFail();
+
         return new ApiResource($screen);
     }
 
     /**
      * Update a Screen.
      *
-     * @param Screen $screen
-     * @param Request $request
-     *
+     * @param  Screen  $screen
+     * @param  Request  $request
      * @return ResponseFactory|Response
      *
      *     @OA\Put(
@@ -255,15 +250,15 @@ class ScreenController extends Controller
         $request->validate(Screen::rules($screen));
         $screen->fill($request->input());
         $screen->saveOrFail();
+
         return response([], 204);
     }
 
     /**
      * duplicate a Screen.
      *
-     * @param Screen $screen
-     * @param Request $request
-     *
+     * @param  Screen  $screen
+     * @param  Request  $request
      * @return ResponseFactory|Response
      *
      *     @OA\Put(
@@ -298,7 +293,7 @@ class ScreenController extends Controller
 
         $exclude = ['id', 'created_at', 'updated_at'];
         foreach ($screen->getAttributes() as $attribute => $value) {
-            if (!in_array($attribute, $exclude)) {
+            if (! in_array($attribute, $exclude)) {
                 $newScreen->{$attribute} = $screen->{$attribute};
             }
         }
@@ -311,19 +306,19 @@ class ScreenController extends Controller
             $newScreen->description = $request->input('description');
         }
 
-        if( $request->has('screen_category_id')) {
+        if ($request->has('screen_category_id')) {
             $newScreen->screen_category_id = $request->input('screen_category_id');
         }
 
         $newScreen->saveOrFail();
+
         return new ApiResource($newScreen);
     }
 
     /**
      * Delete a Screen.
      *
-     * @param Screen $screen
-     *
+     * @param  Screen  $screen
      * @return ResponseFactory|Response
      *     @OA\Delete(
      *     path="/screens/{screens_id}",
@@ -348,6 +343,7 @@ class ScreenController extends Controller
     public function destroy(Screen $screen)
     {
         $screen->delete();
+
         return response([], 204);
     }
 
@@ -355,7 +351,6 @@ class ScreenController extends Controller
      * Export the specified screen.
      *
      * @param $screen
-     *
      * @return Response
      *
      * @OA\Post(
@@ -393,8 +388,7 @@ class ScreenController extends Controller
     /**
      * Import the specified screen.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return array
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
@@ -430,7 +424,7 @@ class ScreenController extends Controller
     public function import(Request $request)
     {
         $content = $request->file('file')->get();
-        if (!$this->validateImportedFile($content)) {
+        if (! $this->validateImportedFile($content)) {
             return response(
                 ['message' => __('Invalid Format')],
                 422
@@ -438,14 +432,14 @@ class ScreenController extends Controller
         }
 
         $import = ImportScreen::dispatchNow($content);
+
         return ['status' => $import];
     }
 
     /**
      * Verify if the file is valid to be imported
      *
-     * @param string $content
-     *
+     * @param  string  $content
      * @return bool
      */
     private function validateImportedFile($content)
@@ -456,14 +450,14 @@ class ScreenController extends Controller
         $validType = $hasType && $decoded->type === 'screen_package';
         $hasVersion = $isDecoded && isset($decoded->version) && is_string($decoded->version);
         $validVersion = $hasVersion && method_exists(ImportScreen::class, "parseFileV{$decoded->version}");
+
         return $isDecoded && $validType && $validVersion;
     }
 
     /**
      * Get preview a screen
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ResponseFactory|Response
      *
      * @OA\Post(

@@ -2,17 +2,8 @@
 
 namespace ProcessMaker\Console\Commands;
 
-use Carbon\Carbon;
-use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
-use ProcessMaker\Jobs\TestStatusJob;
-use ProcessMaker\Mail\TestStatusEmail;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\Script;
-use ProcessMaker\Models\ScriptExecutor;
-use Throwable;
 
 class ProcessMakerValidateProcesses extends Command
 {
@@ -40,9 +31,9 @@ class ProcessMakerValidateProcesses extends Command
         $this->info('Starting ProcessMaker Validate Processes...');
         $processes = Process::nonSystem()->get();
         foreach ($processes as $process) {
-            $this->info('Process: ' . $process->name);
+            $this->info('Process: '.$process->name);
             $process->warnings = [];
-            if (!$process->validateBpmnDefinition()) {
+            if (! $process->validateBpmnDefinition()) {
                 // Save validation errors
                 $process->save();
             }

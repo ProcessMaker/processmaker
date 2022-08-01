@@ -9,7 +9,6 @@ trait HasVersioning
 {
     /**
      * Save a version every time the model is saved
-     *
      */
     public static function bootHasVersioning()
     {
@@ -19,7 +18,7 @@ trait HasVersioning
     /**
      * Save a new version of a model
      *
-     * @param Model $model
+     * @param  Model  $model
      */
     public static function saveNewVersion($model)
     {
@@ -28,12 +27,11 @@ trait HasVersioning
 
     /**
      * Save a version of the model
-     *
      */
     public function saveVersion()
     {
         $attributes = $this->attributesToArray();
-        foreach($this->hidden as $field) {
+        foreach ($this->hidden as $field) {
             $attributes[$field] = $this->$field;
         }
         unset($attributes['id'],
@@ -45,7 +43,6 @@ trait HasVersioning
 
     /**
      * Get the latest version of the executable artifact (screen, script)
-     *
      */
     public function getLatestVersion()
     {
@@ -55,7 +52,7 @@ trait HasVersioning
     /**
      * Return the version that was active when the task's request was started
      *
-     * @param ProcessRequestToken $task
+     * @param  ProcessRequestToken  $task
      * @return Model
      */
     public function versionFor(ProcessRequest $processRequest = null)

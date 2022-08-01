@@ -1,11 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use ProcessMaker\Models\Process;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\ProcessVersion;
 
 class RegisterVersionsByRequest extends Migration
 {
@@ -21,7 +19,7 @@ class RegisterVersionsByRequest extends Migration
             $table->integer('process_version_id')->nullable();
             $table->json('versions')->nullable();
         });
-        foreach(ProcessRequest::all() as $request) {
+        foreach (ProcessRequest::all() as $request) {
             $request->setCurrentVersions()->save();
         }
     }

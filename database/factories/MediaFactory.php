@@ -1,7 +1,8 @@
 <?php
+
 use Faker\Generator as Faker;
 use ProcessMaker\Models\Media;
-use ProcessMaker\Models\User;
+
 /**
  * Model factory for Media
  */
@@ -18,6 +19,6 @@ $factory->define(Media::class, function (Faker $faker) {
         'manipulations' => [],
         'custom_properties' => [],
         'responsive_images' => 'image',
-        'order_column' => 1
+        'order_column' => 1,
     ];
 });

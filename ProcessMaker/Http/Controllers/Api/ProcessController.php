@@ -6,25 +6,22 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
-use ProcessMaker\Http\Resources\ProcessCollection;
 use ProcessMaker\Http\Resources\Process as Resource;
+use ProcessMaker\Http\Resources\ProcessCollection;
 use ProcessMaker\Http\Resources\ProcessRequests;
+use ProcessMaker\Jobs\ExportProcess;
+use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessPermission;
-use ProcessMaker\Models\Script;
-use ProcessMaker\Jobs\ExportProcess;
-use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\Nayra\Bpmn\Models\TimerEventDefinition;
-use ProcessMaker\Nayra\Storage\BpmnDocument;
+use ProcessMaker\Models\Script;
 use ProcessMaker\Nayra\Exceptions\ElementNotFoundException;
-use ProcessMaker\Nayra\Storage\BpmnElement;
+use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Rules\BPMNValidation;
 use Throwable;
 
@@ -44,8 +41,7 @@ class ProcessController extends Controller
     /**
      * Get list Process
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ApiCollection
      *
      * @OA\Get(
@@ -98,21 +94,21 @@ class ProcessController extends Controller
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
             ->orderBy(...$orderBy)
-            ->where(function($query) use($filter) {
-                $query->where('processes.name', 'like', '%' . $filter . '%')
-                    ->orWhere('processes.description', 'like', '%' . $filter. '%')
+            ->where(function ($query) use ($filter) {
+                $query->where('processes.name', 'like', '%'.$filter.'%')
+                    ->orWhere('processes.description', 'like', '%'.$filter.'%')
                     ->orWhere('processes.status', '=', $filter)
-                    ->orWhere('user.firstname', 'like', '%' . $filter. '%')
-                    ->orWhere('user.lastname', 'like', '%' . $filter. '%')
-                    ->orWhereIn('processes.id', function($qry) use ($filter) {
+                    ->orWhere('user.firstname', 'like', '%'.$filter.'%')
+                    ->orWhere('user.lastname', 'like', '%'.$filter.'%')
+                    ->orWhereIn('processes.id', function ($qry) use ($filter) {
                         $qry->select('assignable_id')
                             ->from('category_assignments')
-                            ->leftJoin('process_categories', function($join) {
-                                $join->on('process_categories.id', '=',  'category_assignments.category_id');
+                            ->leftJoin('process_categories', function ($join) {
+                                $join->on('process_categories.id', '=', 'category_assignments.category_id');
                                 $join->where('category_assignments.category_type', '=', ProcessCategory::class);
                                 $join->where('category_assignments.assignable_type', '=', Process::class);
                             })
-                            ->where ('process_categories.name', 'like', '%' . $filter. '%');
+                            ->where('process_categories.name', 'like', '%'.$filter.'%');
                     });
             })->get();
 
@@ -123,7 +119,6 @@ class ProcessController extends Controller
      * Display the specified resource.
      *
      * @param $process
-     *
      * @return Response
      *
      * @OA\Get(
@@ -156,9 +151,9 @@ class ProcessController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return \Illuminate\Http\JsonResponse
+     *
      * @throws \Illuminate\Validation\ValidationException
      *
      * @OA\Post(
@@ -192,7 +187,7 @@ class ProcessController extends Controller
         if ($schemaErrors = $this->validateBpmn($request)) {
             return response(
                 ['message' => __('The bpm definition is not valid'),
-                    'errors' => ['bpmn' => $schemaErrors]],
+                    'errors' => ['bpmn' => $schemaErrors], ],
                 422
             );
         }
@@ -216,22 +211,24 @@ class ProcessController extends Controller
                     'errors' => [
                         'bpmn' => [
                             __('The bpm definition is not valid'),
-                            __('Element ":element_id" not found', ['element_id' => $error->elementId])
-                        ]
-                    ]
+                            __('Element ":element_id" not found', ['element_id' => $error->elementId]),
+                        ],
+                    ],
                 ],
                 422
             );
         }
+
         return new Resource($process->refresh());
     }
 
     /**
      * Updates the current element
      *
-     * @param Request $request
-     * @param Process $process
+     * @param  Request  $request
+     * @param  Process  $process
      * @return ResponseFactory|Response
+     *
      * @throws \Throwable
      *
      * @OA\Put(
@@ -310,7 +307,7 @@ class ProcessController extends Controller
         } catch (TaskDoesNotHaveUsersException $e) {
             return response(
                 ['message' => $e->getMessage(),
-                    'errors' => ['bpmn' => $e->getMessage()]],
+                    'errors' => ['bpmn' => $e->getMessage()], ],
                 422
             );
         }
@@ -406,7 +403,7 @@ class ProcessController extends Controller
      * Validates the Bpmn content that comes in the request.
      * Returns the list of errors found
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return array|null
      */
     private function validateBpmn(Request $request)
@@ -429,7 +426,7 @@ class ProcessController extends Controller
             }
             $schemaErrors = $this->validateOnlyOneDiagram($document, $schemaErrors);
             $rulesValidation = new BPMNValidation;
-            if(!$rulesValidation->passes('document', $document)) {
+            if (! $rulesValidation->passes('document', $document)) {
                 $errors = $rulesValidation->errors('document', $document)->getMessages();
                 $schemaErrors[] = [
                     'title' => 'BPMN Validation failed',
@@ -437,16 +434,16 @@ class ProcessController extends Controller
                     'errors' => $errors,
                 ];
             }
-    }
+        }
+
         return $schemaErrors;
     }
 
     /**
      * Validate the bpmn has only one BPMNDiagram
      *
-     * @param BpmnDocument $document
-     * @param array $schemaErrors
-     *
+     * @param  BpmnDocument  $document
+     * @param  array  $schemaErrors
      * @return array
      */
     private function validateOnlyOneDiagram(BpmnDocument $document, array $schemaErrors = null)
@@ -456,6 +453,7 @@ class ProcessController extends Controller
             $schemaErrors = $schemaErrors ?? [];
             $schemaErrors[] = __('Multiple diagrams are not supported');
         }
+
         return $schemaErrors;
     }
 
@@ -501,8 +499,7 @@ class ProcessController extends Controller
     /**
      * Returns the list of processes that the user can start.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ApiCollection
      *
      * * @OA\Get(
@@ -561,7 +558,7 @@ class ProcessController extends Controller
             ->where($where);
 
         // Add the order by columns
-        foreach($orderColumns as $key=>$orderColumn) {
+        foreach ($orderColumns as $key => $orderColumn) {
             $orderDirection = array_key_exists($key, $orderDirections) ? $orderDirections[$key] : 'asc';
             $query->orderBy($orderColumn, $orderDirection);
         }
@@ -587,7 +584,7 @@ class ProcessController extends Controller
                     }
                 }
 
-                return !$eventIsTimerStart && !$eventIsWebEntry;
+                return ! $eventIsTimerStart && ! $eventIsWebEntry;
             })->values();
 
             // Filter all processes that have event definitions (start events like message event, conditional event, signal event, timer event)
@@ -605,7 +602,7 @@ class ProcessController extends Controller
                 $processes->forget($key);
             }
             // filter only valid executable processes
-            if (!$process->isValidForExecution()) {
+            if (! $process->isValidForExecution()) {
                 $processes->forget($key);
             }
         }
@@ -616,9 +613,10 @@ class ProcessController extends Controller
     /**
      * Reverses the soft delete of the element
      *
-     * @param Request $request
-     * @param Process $process
+     * @param  Request  $request
+     * @param  Process  $process
      * @return ResponseFactory|Response
+     *
      * @throws \Throwable
      *
      * @OA\Put(
@@ -647,6 +645,7 @@ class ProcessController extends Controller
         $process = Process::find($processId);
         $process->status = 'ACTIVE';
         $process->save();
+
         return new Resource($process->refresh());
     }
 
@@ -663,9 +662,9 @@ class ProcessController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param Process $process
-     *
+     * @param  Process  $process
      * @return ResponseFactory|Response
+     *
      * @throws \Illuminate\Validation\ValidationException
      *
      * @OA\Delete(
@@ -700,7 +699,6 @@ class ProcessController extends Controller
      * Export the specified process.
      *
      * @param $process
-     *
      * @return Response
      *
      * @OA\Post(
@@ -736,6 +734,7 @@ class ProcessController extends Controller
 
         if ($fileKey) {
             $url = url("/processes/{$process->id}/download/{$fileKey}");
+
             return ['url' => $url];
         } else {
             return response(['message' => __('Unable to Export Process')], 500);
@@ -746,7 +745,6 @@ class ProcessController extends Controller
      * Import the specified process.
      *
      * @param $process
-     *
      * @return Response
      *
      * @OA\Post(
@@ -778,7 +776,7 @@ class ProcessController extends Controller
     public function import(Process $process, Request $request)
     {
         $content = $request->file('file')->get();
-        if (!$this->validateImportedFile($content)) {
+        if (! $this->validateImportedFile($content)) {
             return response(
                 ['message' => __('Invalid Format')],
                 422
@@ -789,22 +787,24 @@ class ProcessController extends Controller
             $path = $request->file('file')->store('imports');
             $code = uniqid('import', true);
             ImportProcess::dispatch(null, $code, $path, Auth::id());
+
             return [
                 'code' => $code,
             ];
         }
         $import = ImportProcess::dispatchNow($content);
+
         return response([
             'status' => $import->status,
             'assignable' => $import->assignable,
-            'process' => $import->process
+            'process' => $import->process,
         ]);
     }
 
     /**
      * Check if the import is ready
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @OA\Head(
      *     path="/processes/import/{code}/is_ready",
@@ -844,9 +844,11 @@ class ProcessController extends Controller
             if ($notification->data['code'] === $code) {
                 $data = $notification->data['data'];
                 $data['ready'] = true;
+
                 return $data;
             }
         }
+
         return [
             'ready' => false,
         ];
@@ -855,10 +857,10 @@ class ProcessController extends Controller
     /**
      * Import Assignments of process.
      *
-     * @param Process $process
-     * @param Request $request
+     * @param  Process  $process
+     * @param  Request  $request
+     * @return resource
      *
-     * @return Resource
      * @throws \Throwable
      *
      *
@@ -951,14 +953,14 @@ class ProcessController extends Controller
 
             // Update data source watchers
             foreach ($watcherDataSources as $watcherDataSource) {
-                $parts = explode("|", $watcherDataSource['id']);
+                $parts = explode('|', $watcherDataSource['id']);
                 $screenId = $parts[0];
                 $watcherIndex = intval($parts[1]);
                 $screen = Screen::findOrFail($screenId);
                 $watchers = $screen->watchers;
                 $watchers[$watcherIndex]['script_id'] = $watcherDataSource['value']['id'];
                 $watchers[$watcherIndex]['script'] = $watcherDataSource['value'];
-                $watchers[$watcherIndex]['script']['id'] = 'data_source-' . strval($watcherDataSource['value']['id']);
+                $watchers[$watcherIndex]['script']['id'] = 'data_source-'.strval($watcherDataSource['value']['id']);
                 $watchers[$watcherIndex]['script']['title'] = $watcherDataSource['value']['name'];
                 $screen->watchers = $watchers;
                 $screen->saveOrFail();
@@ -990,16 +992,15 @@ class ProcessController extends Controller
         $process->saveOrFail();
 
         return response([
-            'process' => $process->refresh()
+            'process' => $process->refresh(),
         ], 204);
     }
 
     /**
      * Trigger an start event within a process.
      *
-     * @param Process $process
-     * @param Request $request
-     *
+     * @param  Process  $process
+     * @param  Request  $request
      * @return \ProcessMaker\Http\Resources\ProcessRequests
      *
      * @OA\Post(
@@ -1044,21 +1045,21 @@ class ProcessController extends Controller
     {
         //Get the event BPMN element
         $id = $request->query('event');
-        if (!$id) {
+        if (! $id) {
             return abort(404);
         }
 
         $definitions = $process->getDefinitions();
-        if (!$definitions->findElementById($id)) {
+        if (! $definitions->findElementById($id)) {
             return abort(404);
         }
         $event = $definitions->getEvent($id);
         $data = request()->post();
         // Validate if process is bpmn executable
         $validation = [];
-        if (!$process->validateBpmnDefinition(false, $validation)) {
+        if (! $process->validateBpmnDefinition(false, $validation)) {
             return response()->json([
-                'message' => $validation['title'] . ': ' . $validation['text'],
+                'message' => $validation['title'].': '.$validation['text'],
             ], 422);
         }
         // Trigger the start event
@@ -1066,19 +1067,20 @@ class ProcessController extends Controller
             $processRequest = WorkflowManager::triggerStartEvent($process, $event, $data);
         } catch (Throwable $exception) {
             throw $exception;
+
             return response()->json([
                 'message' => __('Unable to start process'),
             ], 422);
         }
+
         return new ProcessRequests($processRequest);
     }
 
     /**
      * Get the where array to filter the resources.
      *
-     * @param Request $request
-     * @param array $searchableColumns
-     *
+     * @param  Request  $request
+     * @param  array  $searchableColumns
      * @return array
      */
     protected function getRequestFilterBy(Request $request, array $searchableColumns)
@@ -1093,36 +1095,37 @@ class ProcessController extends Controller
                     // filtering by status must match the entire string
                     $sub_search = '';
                 }
-                $where[] = [$column, 'like', $sub_search . $filter . $sub_search, 'or'];
+                $where[] = [$column, 'like', $sub_search.$filter.$sub_search, 'or'];
             }
         }
+
         return $where;
     }
 
     /**
      * Get included relationships.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return array
      */
     protected function getRequestSortBy(Request $request, $default)
     {
         $column = $request->input('order_by', $default);
         $direction = $request->input('order_direction', 'asc');
+
         return [$column, $direction];
     }
 
     /**
      * Get included relationships.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return array
      */
     protected function getRequestInclude(Request $request)
     {
         $include = $request->input('include');
+
         return $include ? explode(',', $include) : [];
     }
 
@@ -1130,7 +1133,7 @@ class ProcessController extends Controller
      * Get the size of the page.
      * per_page=# (integer, the page requested) (Default: 10)
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return type
      */
     protected function getPerPage(Request $request)
@@ -1141,8 +1144,7 @@ class ProcessController extends Controller
     /**
      * Verify if the file is valid to be imported
      *
-     * @param string $content
-     *
+     * @param  string  $content
      * @return bool
      */
     private function validateImportedFile($content)
@@ -1153,6 +1155,7 @@ class ProcessController extends Controller
         $validType = $hasType && $decoded->type === 'process_package';
         $hasVersion = $isDecoded && isset($decoded->version) && is_string($decoded->version);
         $validVersion = $hasVersion && method_exists(ImportProcess::class, "parseFileV{$decoded->version}");
+
         return $isDecoded && $validType && $validVersion;
     }
 }

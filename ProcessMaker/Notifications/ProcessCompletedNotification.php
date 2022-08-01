@@ -14,7 +14,9 @@ class ProcessCompletedNotification extends Notification
     use Queueable;
 
     private $processUid;
+
     private $processName;
+
     private $instanceUid;
 
     /**
@@ -68,6 +70,7 @@ class ProcessCompletedNotification extends Notification
     public function toArray($notifiable)
     {
         $instance = Instance::find($this->instanceUid);
+
         return [
             'type' => 'PROCESS_COMPLETED',
             'name' => sprintf('Request completed: %s', $this->processName),
@@ -77,7 +80,7 @@ class ProcessCompletedNotification extends Notification
             'url' => sprintf(
                 '/requests/%s',
                 $this->instanceUid
-            )
+            ),
         ];
     }
 
@@ -85,5 +88,4 @@ class ProcessCompletedNotification extends Notification
     {
         return new BroadcastMessage($this->toArray($notifiable));
     }
-
 }

@@ -24,7 +24,7 @@ class ProcessRequestTokenObserver
      * Once a token is saved, it also saves the version reference of the
      * screen or script executed
      *
-     * @param ProcessRequestToken $token
+     * @param  ProcessRequestToken  $token
      */
     public function saving(ProcessRequestToken $token)
     {
