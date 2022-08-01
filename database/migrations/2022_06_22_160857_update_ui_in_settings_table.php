@@ -3,10 +3,9 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use ProcessMaker\Packages\Connectors\Email\EmailConfig;
 use ProcessMaker\Models\Setting;
 
-class ChangeButtonsUiInSettingsTable extends Migration
+class UpdateUiInSettingsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -52,9 +51,18 @@ class ChangeButtonsUiInSettingsTable extends Migration
             'ui' => '{"props":{"variant":"outline-secondary", "position": "top", "order":"300"},"handler":"mailTest"}',
         ]);
 
-        // Add Mail Driver Options
-        Setting::where('key', 'LIKE', '%EMAIL_CONNECTOR_MAIL_DRIVER%')->update([
-            'ui' => '{"options": ["smtp", "sendmail", "mailgun", "postmark", "ses", "gmail"]}',
+        // Update order of fields
+        Setting::where('key', 'LIKE', 'EMAIL_CONNECTOR_MAIL_USERNAME%')->update([
+            'ui' => [
+                'order' => 1000,
+            ],
+        ]);
+
+        Setting::where('key', 'LIKE', 'EMAIL_CONNECTOR_MAIL_PASSWORD%')->update([
+            'ui' => [
+                'sensitive' => true,
+                'order' => 1000,
+            ],
         ]);
     }
 
@@ -72,10 +80,16 @@ class ChangeButtonsUiInSettingsTable extends Migration
         Setting::where('key', 'LIKE', '%EMAIL_CONNECTOR_SEND_TEST_EMAIL%')->update([
             'ui' => '{"props":{"variant":"primary"},"handler":"mailTest"}'
         ]);
+        
+        // Revert order of fields
+        Setting::where('key', 'LIKE', 'EMAIL_CONNECTOR_MAIL_USERNAME%')->update([
+            'ui' => [],
+        ]);
 
-        // Revert Mail Driver Options
-        Setting::where('key', 'LIKE', '%EMAIL_CONNECTOR_MAIL_DRIVER%')->update([
-            'ui' => '{"options": ["smtp", "sendmail", "mailgun", "postmark", "ses"]}',
+        Setting::where('key', 'LIKE', 'EMAIL_CONNECTOR_MAIL_PASSWORD%')->update([
+            'ui' => [
+                'sensitive' => true,
+            ],
         ]);
 
     }
