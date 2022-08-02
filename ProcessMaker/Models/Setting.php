@@ -85,6 +85,10 @@ class Setting extends Model implements HasMedia
         'key',
         'config',
         'format',
+        'name',
+        'helper',
+        'ui',
+        'group'
     ];
 
     /**
