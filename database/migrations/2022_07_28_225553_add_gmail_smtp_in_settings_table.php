@@ -39,7 +39,6 @@ class AddGmailSmtpInSettingsTable extends Migration
         $index = EmailConfig::getServerIndexByName($groupName);
         $n = $index ? "_{$index}" : $index;
         $hidden = $config && $config === 0 ? false : true;
-
         Setting::firstOrCreate(['key' => "EMAIL_CONNECTOR_MAIL_AUTH_METHOD{$n}"], [
             'format' => 'choice',
             'config' => '0',
@@ -100,5 +99,7 @@ class AddGmailSmtpInSettingsTable extends Migration
             'hidden' => $hidden,
             'ui' => '{"props":{"variant":"outline-secondary", "position": "top", "order":"200"},"handler":"authorizeAccount"}',
         ]);
+        
+        EmailConfig::filterAuthMethods($config, $groupName, $n);
     }
 }
