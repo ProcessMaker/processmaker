@@ -69,7 +69,7 @@ class ApiCollection extends ResourceCollection
         $payload = [
             'data' => $this->collection,
             'meta' => [
-                'filter' => $request->input('filter', ''),
+                'filter' => htmlentities($request->input('filter', '')),
                 'sort_by' => $request->input('order_by', ''),
                 'sort_order' => $request->input('order_direction', ''),
                 /**
