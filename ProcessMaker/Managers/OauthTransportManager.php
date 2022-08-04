@@ -112,30 +112,15 @@ class OauthTransportManager extends TransportManager
 
     public function checkForExpiredOffice365AccessToken($index) 
     {
-        // $index = $index ?  "_{$index}" : '';
+        $now = new \DateTime();
+        $now->format('Y-m-d H:i:s');
+        $expireDate = gmdate('Y-m-d H:i:s', strtotime($this->token['expires_in']));
+        if ($now->format('Y-m-d H:i:s') > $expireDate ) {
+            dd('ACCESS TOKEN IS EXPIRED');
+            // TODO: Handle expired access token
+        }
 
-        // $client = new GoogleClient();
-        // $authConfig = array(
-        //     "web" => array(
-        //         'client_id' => $this->token['client_id'], 
-        //         'client_secret' => $this->token['client_secret']
-        //     )
-        // );
-        // $client->setAuthConfig($authConfig);
-        // $client->setAccessToken($this->token);
         $accessToken = $this->token['access_token'];
-
-        // if ($client->isAccessTokenExpired()) {
-        //     $newToken = $client->fetchAccessTokenWithRefreshToken($this->token['refresh_token']);
-        //     $client->setAccessToken($newToken['access_token']);
-        //     $accessToken = $newToken['access_token'];
-
-        //     $this->updateEnvVar("EMAIL_CONNECTOR_GMAIL_API_ACCESS_TOKEN{$index}", $accessToken);
-        //     $this->updateEnvVar("EMAIL_CONNECTOR_GMAIL_API_REFRESH_TOKEN{$index}", $newToken['refresh_token']);
-        //     $this->updateEnvVar("EMAIL_CONNECTOR_GMAIL_API_EXPIRES_IN{$index}", $newToken['expires_in']);
-        //     $this->updateEnvVar("EMAIL_CONNECTOR_GMAIL_API_TOKEN_CREATED{$index}", $newToken['created']);
-        // }
-        
         return $accessToken;
     }
 
