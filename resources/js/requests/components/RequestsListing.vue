@@ -141,16 +141,11 @@ export default {
           field.field = column.field;
         }
 
-        let excludedFields = [
-          "initiated_at",
-          "completed_at",
-        ];
-
-        if (column.format === 'datetime' && !excludedFields.includes(column.field)) {
+        if (column.format === 'datetime') {
           field.callback = 'formatDateUser|datetime';
         }
 
-        if (column.format === 'date' && !excludedFields.includes(column.field)) {
+        if (column.format === 'date') {
           field.callback = 'formatDateUser|date';
         }
 
@@ -203,12 +198,14 @@ export default {
           {
             "label": "Started",
             "field": "initiated_at",
+            "format": "datetime",
             "sortable": true,
             "default": true
           },
           {
             "label": "Completed",
             "field": "completed_at",
+            "format": "datetime",
             "sortable": true,
             "default": true
           }
@@ -254,13 +251,6 @@ export default {
       data.meta.to = data.meta.from + data.meta.count;
       data.data = this.jsonRows(data.data);
       for (let record of data.data) {
-        //Format dates
-        record["initiated_at"] = this.formatDate(record["initiated_at"]);
-        if (record["completed_at"]) {
-          record["completed_at"] = this.formatDate(record["completed_at"]);
-        } else {
-          record["completed_at"] = "";
-        }
         //format Status
         record["status"] = this.formatStatus(record["status"]);
       }
