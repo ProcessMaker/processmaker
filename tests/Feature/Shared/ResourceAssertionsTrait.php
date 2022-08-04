@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Shared;
 
-use Illuminate\Foundation\Testing\TestResponse;
+use Illuminate\Testing\TestResponse;
 
 /**
  * This trait add assertions to test a Resource Controller
@@ -21,7 +21,7 @@ trait ResourceAssertionsTrait
      *
      * @param  type  $query
      * @param  type  $expectedMeta
-     * @return \Illuminate\Foundation\Testing\TestResponse
+     * @return \Illuminate\Testing\TestResponse
      */
     protected function assertCorrectModelListing($query, $expectedMeta = [])
     {
@@ -54,7 +54,7 @@ trait ResourceAssertionsTrait
      *
      * @param  string  $modelClass
      * @param  array  $attributes
-     * @return \Illuminate\Foundation\Testing\TestResponse
+     * @return \Illuminate\Testing\TestResponse
      */
     protected function assertCorrectModelCreation($modelClass, array $attributes = [])
     {
@@ -81,7 +81,7 @@ trait ResourceAssertionsTrait
      * @param  string  $modelClass
      * @param  array  $attributes
      * @param  array  $errors
-     * @return \Illuminate\Foundation\Testing\TestResponse
+     * @return \Illuminate\Testing\TestResponse
      */
     protected function assertModelCreationFails($modelClass, array $attributes = [], array $errors = [])
     {
@@ -101,7 +101,7 @@ trait ResourceAssertionsTrait
      *
      * @param  string  $id
      * @param  array  $includes
-     * @return \Illuminate\Foundation\Testing\TestResponse
+     * @return \Illuminate\Testing\TestResponse
      */
     protected function assertModelShow($id, array $includes = [])
     {
@@ -122,7 +122,7 @@ trait ResourceAssertionsTrait
      * Verify the deletion of a model.
      *
      * @param  type  $id
-     * @return \Illuminate\Foundation\Testing\TestResponse
+     * @return \Illuminate\Testing\TestResponse
      */
     protected function assertCorrectModelDeletion($id)
     {
@@ -138,7 +138,7 @@ trait ResourceAssertionsTrait
      * Verify the deletion of a model.
      *
      * @param  type  $id
-     * @return \Illuminate\Foundation\Testing\TestResponse
+     * @return \Illuminate\Testing\TestResponse
      */
     protected function assertModelDeletionFails($id, array $errors = [])
     {
@@ -229,7 +229,7 @@ trait ResourceAssertionsTrait
      * Assert that the response has the given status code.
      *
      * @param  string  $expected
-     * @param  \Illuminate\Foundation\Testing\TestResponse  $response
+     * @param  \Illuminate\Testing\TestResponse  $response
      */
     protected function assertStatus($expected, TestResponse $response)
     {
