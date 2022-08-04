@@ -141,12 +141,17 @@ export default {
           field.field = column.field;
         }
 
-        if (column.format === 'datetime') {
-        field.callback = 'formatDateUser|datetime';
+        let excludedFields = [
+          "initiated_at",
+          "completed_at",
+        ];
+
+        if (column.format === 'datetime' && !excludedFields.includes(column.field)) {
+          field.callback = 'formatDateUser|datetime';
         }
 
-        if (column.format === 'date') {
-        field.callback = 'formatDateUser|date';
+        if (column.format === 'date' && !excludedFields.includes(column.field)) {
+          field.callback = 'formatDateUser|date';
         }
 
         if (column.sortable === true && !field.sortField) {
