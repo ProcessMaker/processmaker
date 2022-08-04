@@ -13,6 +13,6 @@ $factory->define(Screen::class, function (Faker $faker) {
         'description' => $faker->sentence(5),
         'screen_category_id' => function () {
             return factory(ScreenCategory::class)->create()->getKey();
-        }
+        },
     ];
 });

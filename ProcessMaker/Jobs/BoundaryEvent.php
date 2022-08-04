@@ -3,20 +3,24 @@
 namespace ProcessMaker\Jobs;
 
 use ProcessMaker\Models\Process as Definitions;
+use ProcessMaker\Nayra\Contracts\Bpmn\BoundaryEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\DataStoreInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\MessageEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\BoundaryEventInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\DataStoreInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\MessageEventDefinitionInterface;
 
 class BoundaryEvent extends BpmnAction
 {
     public $definitionsId;
+
     public $processId;
+
     public $elementId;
+
     public $boundaryEventId;
+
     public $data;
 
     /**
@@ -42,7 +46,7 @@ class BoundaryEvent extends BpmnAction
      */
     public function action(BpmnDocumentInterface $definitions, TokenInterface $token = null)
     {
-        if (!$token) {
+        if (! $token) {
             return;
         }
         $element = $definitions->getBoundaryEvent($this->boundaryEventId);

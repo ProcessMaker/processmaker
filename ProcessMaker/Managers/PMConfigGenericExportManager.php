@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Managers;
 
 use DOMXPath;
@@ -13,9 +14,11 @@ use ProcessMaker\Providers\WorkflowServiceProvider;
 class PMConfigGenericExportManager
 {
     public $owner = Process::class;
+
     public $type;
 
     private $tag;
+
     private $keys;
 
     public function __construct(string $tag, string $type, array $keys)
@@ -44,11 +47,11 @@ class PMConfigGenericExportManager
         foreach ($nodes as $node) {
             $config = json_decode($node->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'config'));
             foreach ($this->keys as $key) {
-                if (!isset($config->$key)) {
+                if (! isset($config->$key)) {
                     continue;
                 }
 
-                if (!is_numeric($config->$key)) {
+                if (! is_numeric($config->$key)) {
                     continue;
                 }
                 $references[] = [$this->type, $config->$key];
@@ -78,11 +81,11 @@ class PMConfigGenericExportManager
         foreach ($nodes as $node) {
             $config = json_decode($node->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'config'));
             foreach ($this->keys as $key) {
-                if (!isset($config->$key)) {
+                if (! isset($config->$key)) {
                     continue;
                 }
 
-                if (!is_numeric($config->$key)) {
+                if (! is_numeric($config->$key)) {
                     continue;
                 }
 

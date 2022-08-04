@@ -13,7 +13,7 @@ class QueuesController extends Controller
         if (auth()->user()->is_administrator) {
             return view('admin.queues.index');
         }
-        
+
         throw new AuthorizationException();
     }
 }

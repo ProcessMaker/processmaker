@@ -31,7 +31,6 @@ use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 
 class WorkflowManager
 {
-
     /**
      * Attached validation callbacks
      *
@@ -42,14 +41,14 @@ class WorkflowManager
     /**
      * Data Validator
      *
-     * @var \Illuminate\Contracts\Validation\Validator $validator
+     * @var \Illuminate\Contracts\Validation\Validator
      */
     protected $validator;
 
     /**
      * Service Task implementations
      *
-     * @var array $serviceTaskImplementations
+     * @var array
      */
     protected $serviceTaskImplementations = [];
 
@@ -156,7 +155,7 @@ class WorkflowManager
      */
     public function runScripTask(ScriptTaskInterface $scriptTask, Token $token)
     {
-        Log::info('Dispatch a script task: ' . $scriptTask->getId() . ' #' . $token->getId());
+        Log::info('Dispatch a script task: '.$scriptTask->getId().' #'.$token->getId());
         $instance = $token->processRequest;
         $process = $instance->process;
         RunScriptTask::dispatch($process, $instance, $token, [])->onQueue('bpmn');
@@ -170,7 +169,7 @@ class WorkflowManager
      */
     public function runServiceTask(ServiceTaskInterface $serviceTask, Token $token)
     {
-        Log::info('Dispatch a service task: ' . $serviceTask->getId());
+        Log::info('Dispatch a service task: '.$serviceTask->getId());
         $instance = $token->processRequest;
         $process = $instance->process;
         RunServiceTask::dispatch($process, $instance, $token, []);
@@ -200,7 +199,7 @@ class WorkflowManager
             $sourceEventDefinition->getProperty('signal')->getId() :
             $sourceEventDefinition->getProperty('signalRef');
 
-        if (!$signalRef) {
+        if (! $signalRef) {
             return;
         }
 
@@ -212,13 +211,13 @@ class WorkflowManager
         $data = [];
 
         switch ($payloadId) {
-            case "REQUEST_VARIABLE":
+            case 'REQUEST_VARIABLE':
                 if ($payload->variable) {
                     $extractedData = Arr::get($requestData, $payload->variable);
                     Arr::set($data, $payload->variable, $extractedData);
                 }
                 break;
-            case "EXPRESSION":
+            case 'EXPRESSION':
                 $expression = $payload->expression;
                 $formalExp = new FormalExpression();
                 $formalExp->setLanguage('FEEL');
@@ -226,7 +225,7 @@ class WorkflowManager
                 $expressionResult = $formalExp($requestData);
                 Arr::set($data, $payload->variable, $expressionResult);
                 break;
-            case "NONE":
+            case 'NONE':
                 $data = [];
                 break;
             default:
@@ -308,6 +307,7 @@ class WorkflowManager
     {
         $startEvent = $definitions->getDefinitions()->getStartEvent($startId);
         $instance = $this->triggerStartEvent($definitions, $startEvent, $data);
+
         return $instance->getDataStore()->getData();
     }
 
@@ -320,12 +320,12 @@ class WorkflowManager
      */
     public function registerServiceImplementation($implementation, $class)
     {
-        if (!class_exists($class)) {
+        if (! class_exists($class)) {
             return false;
         }
 
         // check class instance of ServiceTaskImplementationInterface
-        if (!is_subclass_of($class, ServiceTaskImplementationInterface::class)) {
+        if (! is_subclass_of($class, ServiceTaskImplementationInterface::class)) {
             return false;
         }
 
@@ -360,6 +360,7 @@ class WorkflowManager
     {
         $class = $this->serviceTaskImplementations[$implementation];
         $service = new $class();
+
         return $service->run($data, $config, $tokenId);
     }
 }

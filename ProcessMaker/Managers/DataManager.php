@@ -70,11 +70,12 @@ class DataManager
         if ($token) {
             $data = $this->loadTokenData($data, $token, $whenTokenSaved);
         }
+
         return $data;
     }
 
     /**
-     * Load magic variable _user 
+     * Load magic variable _user
      *
      * @param array $data
      * @param ProcessRequestToken $token
@@ -90,6 +91,7 @@ class DataManager
             unset($userData['remember_token']);
             $data['_user'] = $userData;
         }
+
         return $data;
     }
 
@@ -98,7 +100,7 @@ class DataManager
      *
      * @param array $data
      * @param ProcessRequestToken|null $token
-     * @param boolean $whenTokenSaved
+     * @param bool $whenTokenSaved
      *
      * @return array
      */
@@ -130,12 +132,12 @@ class DataManager
 
         // Magic Variable: _request
         $request = $token->getInstance() ?: $token->processRequest;
-        if (!(isset($data['not_override_request']) && $data['not_override_request'] === true)) {
+        if (! (isset($data['not_override_request']) && $data['not_override_request'] === true)) {
             $data['_request'] = $request->attributesToArray();
         }
 
         // Magic Variable: _parent
-        if ($token->isMultiInstance() && !$token->getConfigParam('withoutMIParentVariables', false)) {
+        if ($token->isMultiInstance() && ! $token->getConfigParam('withoutMIParentVariables', false)) {
             if ($whenTokenSaved) {
                 $data['_parent'] = $token->data ?: [];
             } else {
@@ -146,6 +148,7 @@ class DataManager
         foreach ($this->hiddenVariables as $key) {
             unset($data[$key]);
         }
+
         return $data;
     }
 
@@ -161,6 +164,7 @@ class DataManager
         foreach ($hidden as $key) {
             unset($data[$key]);
         }
+
         return $data;
     }
 
@@ -169,6 +173,7 @@ class DataManager
         $data['numberOfInstances'] = $activity->getLoopCharacteristics()->getLoopInstanceProperty($token, 'numberOfInstances', 0);
         $data['numberOfActiveInstances'] = $activity->getLoopCharacteristics()->getLoopInstanceProperty($token, 'numberOfActiveInstances', 0);
         $data['numberOfCompletedInstances'] = $activity->getLoopCharacteristics()->getLoopInstanceProperty($token, 'numberOfCompletedInstances', 0);
+
         return $data;
     }
 }

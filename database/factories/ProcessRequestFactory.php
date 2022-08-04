@@ -12,6 +12,7 @@ use ProcessMaker\Nayra\Storage\BpmnDocument;
  */
 $factory->define(ProcessRequest::class, function (Faker $faker) {
     $process = factory(Process::class)->make();
+
     return [
         'name' => $faker->sentence(3),
         'data' => [],
@@ -19,6 +20,7 @@ $factory->define(ProcessRequest::class, function (Faker $faker) {
         'callable_id' => function () use ($process) {
             $process->save();
             $bpmnProcess = $process->getDefinitions()->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'process')->item(0);
+
             return $bpmnProcess->getAttribute('id');
         },
         'user_id' => function () {
@@ -26,13 +28,14 @@ $factory->define(ProcessRequest::class, function (Faker $faker) {
         },
         'process_id' => function () use ($process) {
             $process->save();
+
             return $process->getKey();
         },
         'process_collaboration_id' => function () {
             return factory(ProcessCollaboration::class)->create()->getKey();
         },
-        'process_version_id' => function(array $processRequest) {
+        'process_version_id' => function (array $processRequest) {
             return Process::find($processRequest['process_id'])->getLatestVersion()->id;
-        }
+        },
     ];
 });

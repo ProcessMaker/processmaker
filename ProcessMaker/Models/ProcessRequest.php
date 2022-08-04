@@ -5,8 +5,8 @@ namespace ProcessMaker\Models;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Arr;
+use Illuminate\Validation\Rule;
 use Laravel\Scout\Searchable;
 use Log;
 use ProcessMaker\Events\ProcessUpdated;
@@ -19,6 +19,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\SignalEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
+use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
@@ -26,7 +27,6 @@ use ProcessMaker\Traits\SqlsrvSupportTrait;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Throwable;
-use ProcessMaker\Repositories\BpmnDocument;
 
 /**
  * Represents an Eloquent model of a Request which is an instance of a Process.
@@ -109,7 +109,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      * @var array
      */
     protected $hidden = [
-        'data'
+        'data',
     ];
 
     /**
@@ -152,7 +152,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     /**
      * Determine whether the item should be indexed.
      *
-     * @return boolean
+     * @return bool
      */
     public function shouldBeSearchable()
     {
@@ -174,6 +174,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $dataToInclude = $this->data;
         unset($dataToInclude['_request']);
         unset($dataToInclude['_user']);
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -202,7 +203,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public static function rules($existing = null)
     {
         $self = new self();
-        $unique = Rule::unique($self->getConnectionName() . '.process_requests')->ignore($existing);
+        $unique = Rule::unique($self->getConnectionName().'.process_requests')->ignore($existing);
 
         return [
             'name' => ['required', 'string', 'max:100', $unique, 'alpha_spaces'],
@@ -266,7 +267,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      *
      * @param User $user User to check
      *
-     * @return boolean True if the user participated in this Case in some way
+     * @return bool True if the user participated in this Case in some way
      */
     public function hasUserParticipated(User $user)
     {
@@ -280,7 +281,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      *
      * @link https://processmaker.atlassian.net/browse/FOUR-4126
      * @param User $user
-     * @return boolean
+     * @return bool
      */
     public function canUserClaimASelfServiceTask(User $user)
     {
@@ -295,6 +296,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
                 return true;
             }
         }
+
         return false;
     }
 
@@ -319,6 +321,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         if ($screen) {
             return $screen->versionFor($this);
         }
+
         return null;
     }
 
@@ -350,13 +353,12 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
                 }
             }
         }
+
         return $screens;
     }
 
-
     /**
      * Get tokens of the request.
-     *
      */
     public function tokens()
     {
@@ -365,7 +367,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
 
     /**
      * Get the creator/author of this request.
-     *
      */
     public function user()
     {
@@ -374,7 +375,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
 
     /**
      * Get collaboration of this request.
-     *
      */
     public function collaboration()
     {
@@ -386,7 +386,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
 
     /**
      * Get the creator/author of this request.
-     *
      */
     public function process()
     {
@@ -395,7 +394,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
 
     /**
      * Get users of the request.
-     *
      */
     public function assigned()
     {
@@ -418,11 +416,11 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
             if (is_numeric($filter)) {
                 $query->whereIn('id', [$filter]);
             } else {
-                $matches = ProcessRequest::search($filter)->take(10000)->get()->pluck('id');
+                $matches = self::search($filter)->take(10000)->get()->pluck('id');
                 $query->whereIn('id', $matches);
             }
         } else {
-            $filter = '%' . mb_strtolower($filter) . '%';
+            $filter = '%'.mb_strtolower($filter).'%';
             $query->where(function ($query) use ($filter) {
                 $query->where(DB::raw('LOWER(name)'), 'like', $filter)
                     ->orWhere(DB::raw('LOWER(data)'), 'like', $filter)
@@ -510,7 +508,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
             foreach ($this->getRequestData() as $key => $value) {
                 $result[] = [
                     'key' => $key,
-                    'value' => $value
+                    'value' => $value,
                 ];
             }
         }
@@ -549,19 +547,19 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $this->errors = $errors;
         $this->status = 'ERROR';
         \Log::error($exception);
-        if (!$this->isNonPersistent()) {
+        if (! $this->isNonPersistent()) {
             $this->save();
         }
     }
 
     public function childRequests()
     {
-        return $this->hasMany(ProcessRequest::class, 'parent_request_id');
+        return $this->hasMany(self::class, 'parent_request_id');
     }
 
     public function parentRequest()
     {
-        return $this->belongsTo(ProcessRequest::class, 'parent_request_id');
+        return $this->belongsTo(self::class, 'parent_request_id');
     }
 
     /**
@@ -619,7 +617,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      *
      * @param string $value
      *
-     * @return callback
+     * @return callable
      */
     public function valueAliasRequest($value, $expression)
     {
@@ -634,7 +632,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      *
      * @param string $value
      *
-     * @return callback
+     * @return callable
      */
     public function valueAliasStatus($value, $expression)
     {
@@ -660,7 +658,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      *
      * @param string $value
      *
-     * @return callback
+     * @return callable
      */
     private function valueAliasRequester($value, $expression)
     {
@@ -680,7 +678,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      *
      * @param string $value
      *
-     * @return callback
+     * @return callable
      */
     private function valueAliasParticipant($value, $expression)
     {
@@ -756,7 +754,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
                     if ($eventDefinition instanceof SignalEventDefinitionInterface) {
                         $signal = $eventDefinition->getProperty('signal');
                         if ($signal) {
-                            $signalEvents[]= $signal->getId();
+                            $signalEvents[] = $signal->getId();
                         }
                     }
                 }
@@ -769,7 +767,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
                         if ($eventDefinition instanceof SignalEventDefinitionInterface) {
                             $signal = $eventDefinition->getProperty('signal');
                             if ($signal) {
-                                $signalEvents[]= $signal->getId();
+                                $signalEvents[] = $signal->getId();
                             }
                         }
                     }
@@ -787,15 +785,16 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public function mergeLatestStoredData()
     {
         $store = $this->getDataStore();
-        $latest = ProcessRequest::select('data')->find($this->getId());
+        $latest = self::select('data')->find($this->getId());
         $this->data = $store->updateArray($latest->data);
+
         return $this->data;
     }
 
     /**
      * Returns true if the request persists
      *
-     * @return boolean
+     * @return bool
      */
     public function isNonPersistent()
     {
@@ -810,6 +809,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public function getRequestData()
     {
         $dataManager = new DataManager();
+
         return $dataManager->getRequestData($this);
     }
 
@@ -827,13 +827,14 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $this->setId($this->getKey());
         $this->setProcess($process);
         $this->setDataStore($dataStore);
+
         return $this;
     }
 
     /**
      * Get the BPMN definitions version of the process that is running.
      *
-     * @param boolean $forceParse
+     * @param bool $forceParse
      * @param mixed $engine
      *
      * @return BpmnDocument
@@ -841,6 +842,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public function getVersionDefinitions($forceParse = false, $engine = null)
     {
         $processVersion = $this->processVersion ?: $this->process;
+
         return $processVersion->getDefinitions($forceParse, $engine);
     }
 
@@ -872,11 +874,11 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     /**
      * Media files formatted for screen builder file controls
      *
-     * @return Object
+     * @return object
      */
     public function requestFiles(bool $includeToken = false)
     {
-        return (object) $this->getMedia()->mapToGroups(function($file) use ($includeToken) {
+        return (object) $this->getMedia()->mapToGroups(function ($file) use ($includeToken) {
             $dataName = $file->getCustomProperty('data_name');
             $info = [
                 'id' => $file->id,
@@ -884,9 +886,10 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
                 'mime_type' => $file->mime_type,
             ];
             if ($includeToken) {
-                $info['token'] = md5($dataName . $file->id . $file->created_at);
+                $info['token'] = md5($dataName.$file->id.$file->created_at);
             }
-            return [ $dataName => $info ];
+
+            return [$dataName => $info];
         })->toArray();
     }
 }

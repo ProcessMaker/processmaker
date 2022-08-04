@@ -2,11 +2,11 @@
 
 namespace ProcessMaker\Events;
 
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 use ProcessMaker\Models\ProcessRequestToken;
 
 class ActivityCompleted implements ShouldBroadcastNow
@@ -14,7 +14,7 @@ class ActivityCompleted implements ShouldBroadcastNow
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $payloadUrl;
-    
+
     private $processRequestToken;
 
     /**
@@ -45,14 +45,14 @@ class ActivityCompleted implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('ProcessMaker.Models.ProcessRequestToken.' . $this->processRequestToken->getKey());
+        return new PrivateChannel('ProcessMaker.Models.ProcessRequestToken.'.$this->processRequestToken->getKey());
     }
-    
+
     /**
      * Return the process request.
      *
      * @return \ProcessMaker\Models\ProcessRequestToken
-     */    
+     */
     public function getProcessRequestToken()
     {
         return $this->processRequestToken;

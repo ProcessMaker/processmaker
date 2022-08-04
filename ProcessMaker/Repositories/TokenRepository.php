@@ -6,8 +6,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\ProcessCollaboration;
-use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Models\ProcessRequestToken as Token;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\Collection;
@@ -29,8 +29,6 @@ use ProcessMaker\Nayra\Contracts\Repositories\TokenRepositoryInterface;
 
 /**
  * Execution Instance Repository.
- *
- * @package ProcessMaker\Models
  */
 class TokenRepository implements TokenRepositoryInterface
 {
@@ -58,6 +56,7 @@ class TokenRepository implements TokenRepositoryInterface
     {
         $token = new Token();
         $token->setId(uniqid('request', true));
+
         return $token;
     }
 
@@ -420,6 +419,7 @@ class TokenRepository implements TokenRepositoryInterface
         }
 
         $token->saveOrFail();
+
         return $this;
     }
 
@@ -458,7 +458,7 @@ class TokenRepository implements TokenRepositoryInterface
      */
     private function addRequestToData(Instance $instance)
     {
-        if (!$instance->getDataStore()->getData('_request')) {
+        if (! $instance->getDataStore()->getData('_request')) {
             $instance->getDataStore()->putData('_request', $instance->attributesToArray());
         }
     }
@@ -482,7 +482,6 @@ class TokenRepository implements TokenRepositoryInterface
     {
         $instance->getDataStore()->removeData('_parent');
     }
-
 
     private function getActivityType($activity)
     {

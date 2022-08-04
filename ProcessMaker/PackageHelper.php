@@ -23,7 +23,6 @@ use Illuminate\Support\Str;
  * We don't use the ::class way to get the service provider's classname string, since
  * that would fail if the class is not installed.
  *
- * @package ProcessMaker
  *
  * @method static bool isPmDockerExecutorLuaInstalled()
  * @method static bool isPmDockerExecutorNodeInstalled()
@@ -34,9 +33,13 @@ use Illuminate\Support\Str;
 class PackageHelper
 {
     const PM_DOCKER_EXECUTOR_LUA = 'ProcessMaker\Package\DockerExecutorLua\DockerExecutorLuaServiceProvider';
+
     const PM_DOCKER_EXECUTOR_NODE = 'ProcessMaker\Package\DockerExecutorNode\DockerExecutorNodeServiceProvider';
+
     const PM_DOCKER_EXECUTOR_PHP = 'ProcessMaker\Package\DockerExecutorPhp\DockerExecutorPhpServiceProvider';
+
     const PM_PACKAGE_PROCESS_DOCUMENTER = 'ProcessMaker\Package\PackageProcessDocumenter\PackageServiceProvider';
+
     const PM_PACKAGE_WEBENTRY = 'ProcessMaker\Package\WebEntry\WebEntryServiceProvider';
 
     public static function isPackageInstalled(string $serviceProviderClass): bool
@@ -62,12 +65,13 @@ class PackageHelper
         $matchesMagicMethodSignature = preg_match('/^is(.+)Installed$/', $methodName, $matches);
         if ($matchesMagicMethodSignature) {
             $constantName = self::magicNameToConstantName($matches[1]);
-            if (! defined('self::' . $constantName)) {
+            if (! defined('self::'.$constantName)) {
                 throw new \Exception(
                     sprintf('%s: No constant named \'%s\' defined.', self::class, $constantName)
                 );
             }
-            return self::isPackageInstalled(constant('self::' . $constantName));
+
+            return self::isPackageInstalled(constant('self::'.$constantName));
         }
 
         throw new \Exception(sprintf('%s: No function named \'%s\' defined.', self::class, $methodName));

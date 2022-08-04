@@ -2,11 +2,11 @@
 
 namespace ProcessMaker\Upgrades;
 
-use Throwable;
-use Illuminate\Support\Arr;
-use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Database\Events\MigrationsEnded;
 use Illuminate\Database\Events\MigrationsStarted;
+use Illuminate\Database\Migrations\Migrator;
+use Illuminate\Support\Arr;
+use Throwable;
 
 class UpgradeMigrator extends Migrator
 {
@@ -52,7 +52,7 @@ class UpgradeMigrator extends Migrator
             $name = $this->getMigrationName($file)
         );
 
-        if (!$pretend) {
+        if (! $pretend) {
             $this->note("<comment>Preflight Check:</comment> {$name}");
         }
 
@@ -62,7 +62,7 @@ class UpgradeMigrator extends Migrator
         // (if the method is present) and watch for exceptions. If one is
         // thrown, catch it and if the migration is optional, skip it,
         // otherwise throw an UpgradeMigrationUnsuccessful exception
-        if (!$this->runPreflightChecks($migration, $name)) {
+        if (! $this->runPreflightChecks($migration, $name)) {
             return $this->note("|-- <comment>Skipping</comment>: {$name}");
         }
 
@@ -178,7 +178,7 @@ class UpgradeMigrator extends Migrator
      */
     protected function runPreflightChecks($migration, $name)
     {
-        if (!method_exists($migration, 'preflightChecks')) {
+        if (! method_exists($migration, 'preflightChecks')) {
             return true;
         }
 

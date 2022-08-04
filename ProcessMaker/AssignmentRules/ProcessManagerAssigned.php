@@ -11,11 +11,9 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 
 /**
  * The task is assigned to the Manager of the Process.
- *
  */
 class ProcessManagerAssigned implements AssignmentRuleInterface
 {
-
     /**
      * The task is assigned to the Manager of the Process.
      *
@@ -32,9 +30,10 @@ class ProcessManagerAssigned implements AssignmentRuleInterface
     public function getNextUser(ActivityInterface $task, TokenInterface $token, Process $process, ProcessRequest $request)
     {
         $user_id = $request->processVersion->manager_id;
-        if (!$user_id) {
+        if (! $user_id) {
             throw new ThereIsNoProcessManagerAssignedException($task);
         }
+
         return $user_id;
     }
 }

@@ -7,13 +7,9 @@ use Throwable;
 
 /**
  * Thrown if an expression failed to be parsed
- *
- * @package ProcessMaker\Exceptions
  */
-
 class SyntaxErrorException extends Exception
 {
-
     /**
      * @param Throwable $previous
      */
@@ -21,7 +17,7 @@ class SyntaxErrorException extends Exception
     {
         $message = $previous->getMessage();
         if (preg_match('/Variable "(\w+)"/', $message, $match)) {
-            if (!isset($data[$match[1]])) {
+            if (! isset($data[$match[1]])) {
                 $message = __('Undefined variable ":variable". :error', [
                     'variable' => $match[1],
                     'error' => $message,

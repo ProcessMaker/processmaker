@@ -9,7 +9,6 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 
 interface AssignmentRuleInterface
 {
-
     /**
      * Return the user id to which a task must be assigned.
      *

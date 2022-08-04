@@ -15,8 +15,6 @@ use ProcessMaker\Repositories\BpmnDocument;
 
 /**
  * Test implementation for EngineInterface.
- *
- * @package ProcessMaker
  */
 class BpmnEngine implements EngineInterface
 {
@@ -28,7 +26,7 @@ class BpmnEngine implements EngineInterface
     private $repository;
 
     /**
-     * @var EventBusInterface $dispatcher
+     * @var EventBusInterface
      */
     private $dispatcher;
 
@@ -36,6 +34,7 @@ class BpmnEngine implements EngineInterface
      * Loaded versioned definitions
      */
     private $definitions = [];
+
     public $uid;
 
     /**
@@ -68,6 +67,7 @@ class BpmnEngine implements EngineInterface
     public function setDispatcher(EventBusInterface $dispatcher)
     {
         $this->dispatcher = $dispatcher;
+
         return $this;
     }
 
@@ -92,6 +92,7 @@ class BpmnEngine implements EngineInterface
     public function setRepository(RepositoryInterface $repository)
     {
         $this->repository = $repository;
+
         return $this;
     }
 
@@ -112,16 +113,18 @@ class BpmnEngine implements EngineInterface
         }
         $definitions = $this->getDefinition($instance->processVersion ?? $instance->process);
         $instance = $this->loadExecutionInstance($instance->getKey(), $definitions);
+
         return $instance;
     }
 
     public function getDefinition($processVersion)
     {
         $key = $processVersion->getKey();
-        if (!isset($this->definitions[$key])) {
+        if (! isset($this->definitions[$key])) {
             $this->definitions[$key] = $processVersion->getDefinitions(false, $this);
             $this->loadProcessDefinitions($this->definitions[$key]);
         }
+
         return $this->definitions[$key];
     }
 
@@ -157,7 +160,6 @@ class BpmnEngine implements EngineInterface
                         $eventDefinition->scheduleTimerEvents($event->getOwnerProcess()->getEngine(), $event, null);
                     }
                 }
-
             }
         }
         $this->getJobManager()->disableRegisterStartEvents();

@@ -9,8 +9,8 @@ use ProcessMaker\Providers\WorkflowServiceProvider;
 
 class ScreensInProcess
 {
-
     public $type = Screen::class;
+
     public $owner = Process::class;
 
     /**
@@ -47,6 +47,7 @@ class ScreensInProcess
         if ($process->request_detail_screen_id) {
             $references[] = [Screen::class, $process->request_detail_screen_id];
         }
+
         return $references;
     }
 
@@ -80,7 +81,7 @@ class ScreensInProcess
         $nodes = $xpath->query("//*[@pm:interstitialScreenRef!='']");
         foreach ($nodes as $node) {
             $oldRef = $node->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'interstitialScreenRef');
-            if (!\is_numeric($oldRef)) {
+            if (! \is_numeric($oldRef)) {
                 // Skip screens referenced by package key
                 continue;
             }

@@ -5,9 +5,9 @@ namespace ProcessMaker\Console\Commands;
 use Illuminate\Console\Command;
 use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Jobs\RunServiceTask;
-use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\ProcessRequestLock;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestLock;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Nayra\Bpmn\Models\ScriptTask;
 use ProcessMaker\Nayra\Bpmn\Models\ServiceTask;
 
@@ -18,10 +18,10 @@ class UnblockRequest extends Command
      *
      * @var string
      */
-    protected $signature = "
+    protected $signature = '
         processmaker:unblock-request
             {--request= : The ID # of the Request to retry}
-    ";
+    ';
 
     /**
      * The console command description.
@@ -53,6 +53,7 @@ class UnblockRequest extends Command
         $request = ProcessRequest::find($requestId);
         if (empty($request)) {
             $this->error("Request $requestId  does not exist.");
+
             return;
         }
         $definitions = $request->process->getDefinitions();
@@ -78,7 +79,7 @@ class UnblockRequest extends Command
                     break;
             }
         }
-        if (!$processed) {
+        if (! $processed) {
             $this->info("Request $requestId: no pending scripts found.");
         }
     }
@@ -89,8 +90,9 @@ class UnblockRequest extends Command
      * @param $requestId
      * @return mixed
      */
-    private function getOpenTasks($requestId) {
-        return ProcessRequestToken::whereIn('status', array('FAILING', 'ACTIVE', 'ERROR'))
+    private function getOpenTasks($requestId)
+    {
+        return ProcessRequestToken::whereIn('status', ['FAILING', 'ACTIVE', 'ERROR'])
             ->whereIn('element_type', ['scriptTask', 'serviceTask', 'task'])
             ->where('process_request_id', $requestId)
             ->get()

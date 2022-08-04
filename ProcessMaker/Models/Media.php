@@ -2,15 +2,15 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Validation\ValidationException;
 use ProcessMaker\Models\ProcessRequest;
 use Spatie\MediaLibrary\Models\Media as Model;
-use Illuminate\Validation\ValidationException;
 
 /**
  * Represents media files stored in the database
  *
- * @property integer 'id',
- * @property integer 'model_id',
+ * @property int 'id',
+ * @property int 'model_id',
  * @property string 'model_type',
  * @property string 'collection_name',
  * @property string 'name',
@@ -99,10 +99,9 @@ class Media extends Model
             'manipulations' => 'required',
             'custom_properties' => 'required',
             'responsive_images' => 'required',
-            'order_column' => 'required'
+            'order_column' => 'required',
         ];
     }
-
 
     /**
      * The binary UUID attributes that should be converted to text.
@@ -114,21 +113,21 @@ class Media extends Model
     ];
 
     /**
-     * Override the default boot method to allow access to lifecycle hooks 
+     * Override the default boot method to allow access to lifecycle hooks
      *
      * @return null
      */
     public static function boot()
     {
         parent::boot();
-        self::creating(function($media) {
+        self::creating(function ($media) {
             $user = pmUser();
-            if (!$media->hasCustomProperty('createdBy')) {
+            if (! $media->hasCustomProperty('createdBy')) {
                 $media->setCustomProperty('createdBy', $user ? $user->id : null);
             }
             $media->setCustomProperty('updatedBy', $user ? $user->id : null);
         });
-        self::saving(function($media) {
+        self::saving(function ($media) {
             if ($media->model instanceof ProcessRequest) {
                 if (empty($media->getCustomProperty('data_name'))) {
                     throw ValidationException::withMessages(['data_name' => 'data_name is required']);
@@ -162,7 +161,8 @@ class Media extends Model
     {
         if ($this->isPublicFile()) {
             $route = route('file-manager.index');
-            return $route . '#/public/' . $this->custom_properties['data_name'];
+
+            return $route.'#/public/'.$this->custom_properties['data_name'];
         } else {
             return route('requests.show.files.viewer', [
                 'request' => $this->model,

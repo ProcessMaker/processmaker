@@ -31,25 +31,24 @@ class DataSchema extends Command
         $this->info(__('The ProcessMaker data tables will be installed.'));
 
         if ($this->confirm(__('Are you ready to begin?'))) {
-
             $migrations = [
                 'database/migrations/2019_01_14_201209_create_comments_table.php',
-                'database/migrations/2018_09_07_174154_create_process_requests_table.php'
+                'database/migrations/2018_09_07_174154_create_process_requests_table.php',
             ];
 
             foreach ($migrations as $path) {
                 $fileName = explode('/', $path);
                 $fileName = substr($fileName[2], 0, -4);
-                $this->warn(__('Migrating:') . ' ' . $fileName);
+                $this->warn(__('Migrating:').' '.$fileName);
 
                 // Run the migrations that create the tables
                 Artisan::call('migrate:refresh',
                     [
                         '--path' => $path,
-                        '--force' => true
+                        '--force' => true,
                     ]
                 );
-                $this->info(__('Migrated:') . '  '. $fileName);
+                $this->info(__('Migrated:').'  '.$fileName);
             }
 
             $this->info(__('ProcessMaker data tables installed successfully.'));

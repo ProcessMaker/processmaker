@@ -4,15 +4,14 @@ namespace Tests\Feature\Api;
 
 use Carbon\Carbon;
 use Faker\Factory as Faker;
-use ProcessMaker\Models\User;
-use ProcessMaker\Models\Group;
-use Tests\TestCase;
-use Tests\Feature\Shared\RequestHelper;
 use Illuminate\Support\Facades\Hash;
+use ProcessMaker\Models\Group;
+use ProcessMaker\Models\User;
+use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class GroupsTest extends TestCase
 {
-
     use RequestHelper;
 
     const API_TEST_URL = '/groups';
@@ -23,9 +22,8 @@ class GroupsTest extends TestCase
         'description',
         'status',
         'updated_at',
-        'created_at'
+        'created_at',
     ];
-
 
     /**
      * Test verify the parameter required for create form
@@ -49,7 +47,7 @@ class GroupsTest extends TestCase
         $url = self::API_TEST_URL;
         $response = $this->apiCall('POST', $url, [
             'name' => 'newgroup',
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
         ]);
 
         //Validate the header status code
@@ -68,7 +66,7 @@ class GroupsTest extends TestCase
         //Post name duplicated
         $faker = Faker::create();
         $response = $this->apiCall('POST', self::API_TEST_URL, [
-            'name' => 'mytestname'
+            'name' => 'mytestname',
         ]);
 
         //Validate the header status code
@@ -99,7 +97,6 @@ class GroupsTest extends TestCase
 
         // Verify count
         $this->assertEquals(10 + $existing, $response->json()['meta']['total']);
-
     }
 
     /**
@@ -109,7 +106,7 @@ class GroupsTest extends TestCase
     {
         $name = 'tetGroupTimezone';
         $newEntity = factory(Group::class)->create(['name' => $name]);
-        $route = self::API_TEST_URL . '?filter=' . $name;
+        $route = self::API_TEST_URL.'?filter='.$name;
         $response = $this->apiCall('GET', $route);
 
         $this->assertEquals(
@@ -136,8 +133,8 @@ class GroupsTest extends TestCase
 
         //List Group with filter option
         $perPage = Faker::create()->randomDigitNotNull;
-        $query = '?page=1&per_page=' . $perPage . '&order_by=name&order_direction=DESC&filter=' . $name;
-        $response = $this->apiCall('GET', self::API_TEST_URL . $query);
+        $query = '?page=1&per_page='.$perPage.'&order_by=name&order_direction=DESC&filter='.$name;
+        $response = $this->apiCall('GET', self::API_TEST_URL.$query);
 
         //Validate the header status code
         $response->assertStatus(200);
@@ -152,7 +149,6 @@ class GroupsTest extends TestCase
         $this->assertEquals(1, $response->json()['meta']['total']);
         $this->assertEquals('name', $response->json()['meta']['sort_by']);
         $this->assertEquals('DESC', $response->json()['meta']['sort_order']);
-
     }
 
     /**
@@ -164,7 +160,7 @@ class GroupsTest extends TestCase
         $group = factory(Group::class)->create()->id;
 
         //load api
-        $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $group);
+        $response = $this->apiCall('GET', self::API_TEST_URL.'/'.$group);
 
         //Validate the status is correct
         $response->assertStatus(200);
@@ -198,10 +194,10 @@ class GroupsTest extends TestCase
     {
         $id = factory(Group::class)->create(['name' => 'mytestname'])->id;
         //The post must have the required parameters
-        $url = self::API_TEST_URL . '/' . $id;
+        $url = self::API_TEST_URL.'/'.$id;
 
         $response = $this->apiCall('PUT', $url, [
-            'name' => ''
+            'name' => '',
         ]);
 
         //Validate the header status code
@@ -213,7 +209,7 @@ class GroupsTest extends TestCase
      */
     public function testUpdateGroup()
     {
-        $url = self::API_TEST_URL . '/' . factory(Group::class)->create()->id;
+        $url = self::API_TEST_URL.'/'.factory(Group::class)->create()->id;
 
         //Load the starting group data
         $verify = $this->apiCall('GET', $url);
@@ -231,7 +227,6 @@ class GroupsTest extends TestCase
 
         //Check that it has changed
         $this->assertNotEquals($verify, $verify_new);
-
     }
 
     /**
@@ -245,7 +240,7 @@ class GroupsTest extends TestCase
 
         $group2 = factory(Group::class)->create();
 
-        $url = self::API_TEST_URL . '/' . $group2->id;
+        $url = self::API_TEST_URL.'/'.$group2->id;
 
         $response = $this->apiCall('PUT', $url, [
             'name' => 'MyGroupName',
@@ -261,7 +256,7 @@ class GroupsTest extends TestCase
     public function testDeleteGroup()
     {
         //Remove group
-        $url = self::API_TEST_URL . '/' . factory(Group::class)->create()->id;
+        $url = self::API_TEST_URL.'/'.factory(Group::class)->create()->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code
@@ -274,11 +269,10 @@ class GroupsTest extends TestCase
     public function testDeleteGroupNotExist()
     {
         //Group not exist
-        $url = self::API_TEST_URL . '/' . factory(Group::class)->make()->id;
+        $url = self::API_TEST_URL.'/'.factory(Group::class)->make()->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code
         $response->assertStatus(405);
     }
-
 }

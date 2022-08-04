@@ -1,16 +1,17 @@
 <?php
+
 namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
+use ProcessMaker\Models\Group;
+use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\User;
-use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
-use ProcessMaker\Models\Group;
-use ProcessMaker\Models\GroupMember;
-use ProcessMaker\Models\ProcessRequest;
+use Tests\TestCase;
 
 /**
  * Test the process execution with requests
@@ -23,9 +24,10 @@ class ProcessExecutionTest extends TestCase
     use WithFaker;
 
     /**
-     * @var Process $process
+     * @var Process
      */
     protected $process;
+
     private $requestStructure = [
         'id',
         'process_id',
@@ -34,12 +36,11 @@ class ProcessExecutionTest extends TestCase
         'name',
         'initiated_at',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
      * Initialize the controller tests
-     *
      */
     protected function withUserSetUp()
     {
@@ -61,6 +62,7 @@ class ProcessExecutionTest extends TestCase
             'assignment_id' => $this->user->id,
             'assignment_type' => User::class,
         ]);
+
         return $process;
     }
 
@@ -86,7 +88,7 @@ class ProcessExecutionTest extends TestCase
         // Verify that the start event data was stored in the task
         $task = ProcessRequestToken::where([
             'process_request_id' => $request['id'],
-            'status' => 'TRIGGERED'
+            'status' => 'TRIGGERED',
         ])->first();
         $this->assertEquals(['foo'=>'bar'], $task->data);
 
@@ -108,10 +110,9 @@ class ProcessExecutionTest extends TestCase
         ]);
         $message = $response->json()['data'][0]['body'];
         $this->assertEquals(
-            $this->user->fullname . " has completed the task " . $task['element_name'],
+            $this->user->fullname.' has completed the task '.$task['element_name'],
             $message
         );
-
     }
 
     /**
@@ -231,14 +232,14 @@ class ProcessExecutionTest extends TestCase
         }
         $this->assertArraySubset(
             [
-            'Uncategorized' => [
-                [
-                    'name' => $uncProcess->name,
-                    'events' => [
-                        ['id' => $uncProcessEvents[0]['id']]
-                    ]
-                ]
-            ]
+                'Uncategorized' => [
+                    [
+                        'name' => $uncProcess->name,
+                        'events' => [
+                            ['id' => $uncProcessEvents[0]['id']],
+                        ],
+                    ],
+                ],
             ], $list);
     }
 
@@ -272,8 +273,8 @@ class ProcessExecutionTest extends TestCase
             'element_name',
             'definition' => [
                 'id',
-                'name'
-            ]
+                'name',
+            ],
         ]);
     }
 
@@ -291,12 +292,12 @@ class ProcessExecutionTest extends TestCase
         $group = factory(Group::class)->create(
             ['id' => 999, 'status' => 'ACTIVE']
         );
-        
-        foreach([$foo, $bar] as $user) {
+
+        foreach ([$foo, $bar] as $user) {
             factory(GroupMember::class)->create([
                 'member_id' => $user->id,
                 'member_type' => User::class,
-                'group_id' => $group->id
+                'group_id' => $group->id,
             ]);
         }
 
@@ -309,7 +310,7 @@ class ProcessExecutionTest extends TestCase
             'process_id' => $group_process->id,
             'process_task_id' => $taskId,
             'assignment_id' => $group->id,
-            'assignment_type' => Group::class
+            'assignment_type' => Group::class,
         ]);
 
         //Start a process request
@@ -324,12 +325,12 @@ class ProcessExecutionTest extends TestCase
         // Assert the first user "foo" got the task
         $this->assertEquals(count($tasks), 1);
         $task_id = $tasks[0]['id'];
-        
+
         //Get the active tasks of the request for the other user
         $route = route('api.tasks.index', ['user_id' => $bar->id]);
         $response = $this->actingAs($bar, 'api')->json('GET', $route);
         $tasks = $response->json('data');
-        
+
         // Assert that "bar" did NOT get the task
         $this->assertEquals(0, count($tasks));
 
@@ -348,11 +349,11 @@ class ProcessExecutionTest extends TestCase
 
         // Assert the next user "bar" got the task
         $this->assertEquals(1, count($tasks));
-        
+
         // Complete the task
         $route = route('api.tasks.update', [$tasks[0]['id'], 'status' => 'COMPLETED']);
         $response = $this->apiCall('PUT', $route, ['data' => $data]);
-        
+
         // Start another request
         $route = route('api.process_events.trigger', [$group_process->id, 'event' => 'node_2']);
         $response = $this->apiCall('POST', $route, []);

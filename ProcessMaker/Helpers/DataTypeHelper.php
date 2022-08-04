@@ -22,10 +22,10 @@ class DataTypeHelper
                 }
             }
         }
-        
+
         return false;
     }
-    
+
     private static function isInteger($value)
     {
         if (is_numeric($value)) {
@@ -33,9 +33,10 @@ class DataTypeHelper
                 return true;
             }
         }
+
         return false;
     }
-    
+
     private static function isFloat($value)
     {
         if (is_numeric($value)) {
@@ -43,6 +44,7 @@ class DataTypeHelper
                 return true;
             }
         }
+
         return false;
     }
 
@@ -54,17 +56,17 @@ class DataTypeHelper
 
         return false;
     }
-    
+
     private static function isArray($value)
     {
         if (is_array($value)) {
             return true;
         }
-        
+
         if (is_object($value)) {
             return true;
-        }        
-        
+        }
+
         try {
             $json = json_decode($value);
             if ($json !== null && is_numeric($json)) {
@@ -73,13 +75,14 @@ class DataTypeHelper
         } catch (\Exception $e) {
             return false;
         }
-        
+
         return false;
     }
-    
+
     private static function isPrimaryKey($key, $value)
     {
         $names = ['id', 'ID', '#'];
+
         return in_array($key, $names) && self::isTypeNumber($value);
     }
 
@@ -88,28 +91,39 @@ class DataTypeHelper
         if ($values !== null) {
             $types = [];
 
-            $value = array_filter($values, function($item) {
+            $value = array_filter($values, function ($item) {
                 return $item !== null;
             });
-            
+
             if (is_array($value) && count($value)) {
                 foreach ($value as $singleValue) {
                     $type = self::determineType($key, $singleValue);
                     isset($types[$type]) ? $types[$type]++ : $types[$type] = 1;
                 }
                 arsort($types);
+
                 return array_key_first($types);
             }
-            
+
             return 'string';
-        } elseif ($value !== null) {       
-            if (self::isInteger($value)) return 'int';
-            if (self::isFloat($value)) return 'float';
-            if (self::isBoolean($value)) return 'boolean';
-            if (self::isArray($value)) return 'array';
-            if ($date = self::isDate($value)) return $date;
+        } elseif ($value !== null) {
+            if (self::isInteger($value)) {
+                return 'int';
+            }
+            if (self::isFloat($value)) {
+                return 'float';
+            }
+            if (self::isBoolean($value)) {
+                return 'boolean';
+            }
+            if (self::isArray($value)) {
+                return 'array';
+            }
+            if ($date = self::isDate($value)) {
+                return $date;
+            }
         }
-        
+
         return 'string';
     }
 }

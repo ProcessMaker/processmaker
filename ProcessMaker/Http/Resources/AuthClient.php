@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Http\Resources;
 
 class AuthClient extends ApiResource
@@ -12,7 +13,7 @@ class AuthClient extends ApiResource
     public function toArray($request)
     {
         $types = [];
-        if (!empty($this->redirect)) {
+        if (! empty($this->redirect)) {
             $types[] = 'authorization_code_grant';
         }
         if ($this->personal_access_client) {
@@ -21,6 +22,7 @@ class AuthClient extends ApiResource
         if ($this->password_client) {
             $types[] = 'password_client';
         }
+
         return [
             'id' => $this->id,
             'name' => $this->name,

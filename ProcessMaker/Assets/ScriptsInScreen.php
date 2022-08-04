@@ -9,6 +9,7 @@ use ProcessMaker\Models\Script;
 class ScriptsInScreen
 {
     public $type = Script::class;
+
     public $owner = Screen::class;
 
     /**
@@ -24,11 +25,12 @@ class ScriptsInScreen
         $config = $screen->watchers;
         if (is_array($config)) {
             $this->findInArray($config, function ($item) use (&$scripts) {
-                if (is_array($item) && !empty($item['script_id'])) {
+                if (is_array($item) && ! empty($item['script_id'])) {
                     $scripts[] = [Script::class, $item['script_id']];
                 }
             });
         }
+
         return $scripts;
     }
 
@@ -40,13 +42,13 @@ class ScriptsInScreen
      *
      * @return void
      */
-    public function updateReferences(Screen $screen, array $references = [], ExportManager $exportManager)
+    public function updateReferences(Screen $screen, array $references, ExportManager $exportManager)
     {
         $watches = $screen->watchers;
         if (is_array($watches)) {
             foreach ($watches as &$watcher) {
                 $refParts = explode('-', $watcher['script_id']);
-                if ($refParts[0] === "data_source") {
+                if ($refParts[0] === 'data_source') {
                     continue;
                 }
                 $oldRef = $refParts[1];

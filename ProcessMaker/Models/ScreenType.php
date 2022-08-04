@@ -27,7 +27,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ScreenType extends Model
 {
-
     protected $connection = 'processmaker';
 
     public $timestamps = false;
@@ -42,5 +41,4 @@ class ScreenType extends Model
             'name' => 'required|string|max:100|unique:screen_types,name,alpha_spaces',
         ];
     }
-
 }

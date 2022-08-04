@@ -3,9 +3,9 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Illuminate\Http\Request;
-use ProcessMaker\Models\User;
-use ProcessMaker\Models\JsonData;
 use ProcessMaker\i18nHelper;
+use ProcessMaker\Models\JsonData;
+use ProcessMaker\Models\User;
 use ProcessMaker\Traits\HasControllerAddons;
 
 class ProfileController extends Controller
@@ -32,21 +32,23 @@ class ProfileController extends Controller
             $langs = i18nHelper::availableLangs();
         }
         // Our form controls need attribute:value pairs sot we convert the langs array to and associative one
-        $availableLangs = array_combine($langs,$langs);
+        $availableLangs = array_combine($langs, $langs);
 
         $timezones = array_reduce(JsonData::timezones(),
             function ($result, $item) {
                 $result[$item] = $item;
+
                 return $result;
             }
         );
 
         $datetimeFormats = array_reduce(JsonData::datetimeFormats(),
-                                function ($result, $item) {
-                                    $result[$item['format']] = $item['title'];
-                                    return $result;
-                                }
-                            );
+            function ($result, $item) {
+                $result[$item['format']] = $item['title'];
+
+                return $result;
+            }
+        );
 
         $addons = $this->getPluginAddons('edit', []);
 
@@ -64,12 +66,13 @@ class ProfileController extends Controller
     {
         if (
             $request->user()->id !== intval($id) &&
-            !$request->user()->can('view-other-users-profiles')
-        ){
+            ! $request->user()->can('view-other-users-profiles')
+        ) {
             abort(404);
         }
 
         $user = User::findOrFail($id);
+
         return view('profile.show', compact('user'));
     }
 }

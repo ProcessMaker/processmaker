@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Represents a group Members definition.
  *
- * @property integer $id
- * @property integer $group_id
+ * @property int $id
+ * @property int $group_id
  * @property string $member_type
- * @property integer $member_id
+ * @property int $member_id
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  *
@@ -76,7 +76,6 @@ use Illuminate\Database\Eloquent\Model;
  *          )
  *      },
  * ),
- *
  */
 class GroupMember extends Model
 {
@@ -91,9 +90,8 @@ class GroupMember extends Model
         return [
             'group_id' => 'required',
             'member_id' => 'required',
-            'member_type' => 'required|in:' . User::class . ',' . Group::class,
+            'member_type' => 'required|in:'.User::class.','.Group::class,
         ];
-
     }
 
     public function member()
@@ -105,5 +103,4 @@ class GroupMember extends Model
     {
         return $this->belongsTo(Group::class);
     }
-
 }

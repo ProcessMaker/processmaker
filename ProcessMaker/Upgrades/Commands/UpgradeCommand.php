@@ -54,7 +54,7 @@ class UpgradeCommand extends BaseCommand
      */
     public function handle()
     {
-        if (!$this->confirmToProceed()) {
+        if (! $this->confirmToProceed()) {
             return;
         }
 
@@ -76,7 +76,7 @@ class UpgradeCommand extends BaseCommand
     {
         $this->migrator->setOutput($this->output);
 
-        if (!$this->migrator->repositoryExists()) {
+        if (! $this->migrator->repositoryExists()) {
             $this->call('upgrade:install');
         }
     }

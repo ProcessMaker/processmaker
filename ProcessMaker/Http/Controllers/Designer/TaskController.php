@@ -7,7 +7,6 @@ use ProcessMaker\Model\Process;
 
 class TaskController extends Controller
 {
-
     /**
      * Get the list task
      *
