@@ -133,8 +133,8 @@ class ProcessCategoriesTest extends TestCase
             'num' => 15,
             'status' => 'INACTIVE',
         ];
-        factory(ProcessCategory::class, $processActive['num'])->create(['status' => $processActive['status']]);
-        factory(ProcessCategory::class, $processInactive['num'])->create(['status' => $processInactive['status']]);
+        factory(ProcessCategory::class)->state($processActive['num'])->create(['status' => $processActive['status']]);
+        factory(ProcessCategory::class)->state($processInactive['num'])->create(['status' => $processInactive['status']]);
 
         //Get active processes
         $route = route($this->resource.'.index');
@@ -190,8 +190,8 @@ class ProcessCategoriesTest extends TestCase
             'num' => 15,
             'status' => 'INACTIVE',
         ];
-        factory(ProcessCategory::class, $processActive['num'])->create(['status' => $processActive['status']]);
-        factory(ProcessCategory::class, $processInactive['num'])->create(['status' => $processInactive['status']]);
+        factory(ProcessCategory::class)->state($processActive['num'])->create(['status' => $processActive['status']]);
+        factory(ProcessCategory::class)->state($processInactive['num'])->create(['status' => $processInactive['status']]);
 
         //Get active processes
         $route = route($this->resource.'.index');
