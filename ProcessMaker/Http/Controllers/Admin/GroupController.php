@@ -2,11 +2,9 @@
 
 namespace ProcessMaker\Http\Controllers\Admin;
 
-use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\User;
 use ProcessMaker\Traits\HasControllerAddons;
 
 class GroupController extends Controller

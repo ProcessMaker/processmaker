@@ -2,9 +2,7 @@
 
 namespace ProcessMaker\Listeners;
 
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Bus;
-use ProcessMaker\Bpmn\Process;
 use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Jobs\RunServiceTask;
 use ProcessMaker\Models\ProcessRequestToken;

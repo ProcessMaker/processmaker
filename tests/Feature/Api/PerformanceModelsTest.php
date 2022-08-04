@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factory as EloquentFactory;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\Models\Group;
-use ProcessMaker\Models\ScriptExecutor;
 use ReflectionObject;
 use Tests\Feature\Shared\PerformanceReportTrait;
 use Tests\Feature\Shared\RequestHelper;
@@ -62,8 +61,7 @@ class PerformanceModelsTest extends TestCase
     /**
      * Time unit base for the performce tests
      *
-     * @param int $times
-     *
+     * @param  int  $times
      * @return float
      */
     private function calculateUnitTime($times = 100)

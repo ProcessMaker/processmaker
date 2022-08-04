@@ -9,7 +9,6 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Session\Store as Session;
 use Illuminate\Validation\Rule;
 use Laravel\Passport\HasApiTokens;
-use ProcessMaker\Models\RequestUserPermission;
 use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Rules\StringHasAtLeastOneUpperCaseCharacter;
 use ProcessMaker\Rules\StringHasNumberOrSpecialCharacter;
@@ -149,7 +148,6 @@ class User extends Authenticatable implements HasMedia
      * Validation rules
      *
      * @param  \ProcessMaker\Models\User|null  $existing
-     *
      * @return array
      */
     public static function rules(self $existing = null)
@@ -175,7 +173,6 @@ class User extends Authenticatable implements HasMedia
      * Validation rules specifically for the password
      *
      * @param  \ProcessMaker\Models\User|null  $existing
-     *
      * @return array
      */
     public static function passwordRules(self $existing = null)
@@ -378,7 +375,7 @@ class User extends Authenticatable implements HasMedia
     /**
      * Check if the user can self-serve themselves a task
      *
-     * @param ProcessRequestToken $task
+     * @param  ProcessRequestToken  $task
      * @return bool
      */
     public function canSelfServe(ProcessRequestToken $task)

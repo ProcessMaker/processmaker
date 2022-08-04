@@ -149,8 +149,7 @@ abstract class BpmnAction implements ShouldQueue
     /**
      * Lock the instance and its collaborators
      *
-     * @param int $instanceId
-     *
+     * @param  int  $instanceId
      * @return ProcessRequest
      */
     private function lockInstance($instanceId)
@@ -196,7 +195,8 @@ abstract class BpmnAction implements ShouldQueue
 
     /**
      * Request a lock for the instance
-     * @param array $ids
+     *
+     * @param  array  $ids
      * @return ProcessRequestLock
      */
     protected function requestLock($ids)
@@ -210,7 +210,8 @@ abstract class BpmnAction implements ShouldQueue
 
     /**
      * Get the current lock
-     * @param array $ids
+     *
+     * @param  array  $ids
      * @return ProcessRequestLock|null
      */
     protected function currentLock($ids)
@@ -229,7 +230,8 @@ abstract class BpmnAction implements ShouldQueue
 
     /**
      * Activate the lock
-     * @param ProcessRequestLock $lock
+     *
+     * @param  ProcessRequestLock  $lock
      * @return void
      */
     protected function activateLock(ProcessRequestLock $lock)
@@ -277,7 +279,7 @@ abstract class BpmnAction implements ShouldQueue
     /**
      * Sleep in milliseconds
      *
-     * @param int $milliseconds
+     * @param  int  $milliseconds
      */
     private function mSleep($milliseconds)
     {

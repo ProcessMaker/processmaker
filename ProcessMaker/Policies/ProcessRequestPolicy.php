@@ -115,7 +115,6 @@ class ProcessRequestPolicy
      *
      * @param  \ProcessMaker\Models\User  $user
      * @param  \ProcessMaker\Models\ProcessRequest  $processRequest
-     *
      * @return mixed
      */
     public function participate(User $user, ProcessRequest $processRequest)

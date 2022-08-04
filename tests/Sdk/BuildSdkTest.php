@@ -7,7 +7,7 @@ use Tests\TestCase;
 
 class BuildSdkTest extends TestCase
 {
-    public function setUpSuppressOutput() : void
+    public function setUpSuppressOutput(): void
     {
         $this->setOutputCallback(function () {
         });

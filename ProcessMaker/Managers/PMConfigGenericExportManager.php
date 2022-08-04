@@ -31,9 +31,8 @@ class PMConfigGenericExportManager
     /**
      * Get screens references used in a process
      *
-     * @param Process $process
-     * @param array $screens
-     *
+     * @param  Process  $process
+     * @param  array  $screens
      * @return array
      */
     public function referencesToExport(Process $process, array $references = [])
@@ -64,9 +63,8 @@ class PMConfigGenericExportManager
     /**
      * Update references used in an imported process
      *
-     * @param Process $process
-     * @param array $references
-     *
+     * @param  Process  $process
+     * @param  array  $references
      * @return void
      */
     public function updateReferences(Process $process, array $references = [])

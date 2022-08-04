@@ -9,7 +9,7 @@ class PmqlMethodException extends Exception
     private $field;
 
     /**
-     * @param string $message
+     * @param  string  $message
      */
     public function __construct($field, $message)
     {

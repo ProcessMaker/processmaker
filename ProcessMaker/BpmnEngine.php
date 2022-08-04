@@ -40,8 +40,8 @@ class BpmnEngine implements EngineInterface
     /**
      * Test engine constructor.
      *
-     * @param RepositoryInterface $repository
-     * @param EventBusInterface $dispatcher
+     * @param  RepositoryInterface  $repository
+     * @param  EventBusInterface  $dispatcher
      */
     public function __construct(RepositoryInterface $repository, $dispatcher)
     {
@@ -60,8 +60,7 @@ class BpmnEngine implements EngineInterface
     }
 
     /**
-     * @param EventBusInterface $dispatcher
-     *
+     * @param  EventBusInterface  $dispatcher
      * @return $this
      */
     public function setDispatcher(EventBusInterface $dispatcher)
@@ -85,8 +84,7 @@ class BpmnEngine implements EngineInterface
     }
 
     /**
-     * @param RepositoryInterface $repository
-     *
+     * @param  RepositoryInterface  $repository
      * @return $this
      */
     public function setRepository(RepositoryInterface $repository)
@@ -99,8 +97,7 @@ class BpmnEngine implements EngineInterface
     /**
      * Load an execution instance from an external storage.
      *
-     * @param ProcessRequest $instance
-     *
+     * @param  ProcessRequest  $instance
      * @return ExecutionInstanceInterface|null
      */
     public function loadProcessRequest(ProcessRequest $instance)
@@ -131,7 +128,7 @@ class BpmnEngine implements EngineInterface
     /**
      * Load a process definitin to the engine
      *
-     * @param BpmnDocument $definitions
+     * @param  BpmnDocument  $definitions
      * @return void
      */
     public function loadProcessDefinitions(BpmnDocument $definitions)

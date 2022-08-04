@@ -45,9 +45,8 @@ trait MakeHttpRequests
      * Send a HTTP request based on the datasource, configuration
      * and the process request data.
      *
-     * @param array $data
-     * @param array $config
-     *
+     * @param  array  $data
+     * @param  array  $config
      * @return array
      *
      * @throws GuzzleException
@@ -67,9 +66,8 @@ trait MakeHttpRequests
     /**
      * Prepares data for the http request replacing mustache with pm instance
      *
-     * @param array $data, request data
-     * @param array $config, datasource configuration
-     *
+     * @param  array  $data, request data
+     * @param  array  $config, datasource configuration
      * @return array
      */
     private function prepareRequest(array &$data, array &$config)
@@ -99,11 +97,10 @@ trait MakeHttpRequests
     /**
      * Prepare data to be used in body (mustache)
      *
-     * @param array $requestData
-     * @param array $outboundConfig
-     * @param string $type PARAM HEADER BODY
-     * @param array $data initial data
-     *
+     * @param  array  $requestData
+     * @param  array  $outboundConfig
+     * @param  string  $type PARAM HEADER BODY
+     * @param  array  $data initial data
      * @return array
      */
     private function prepareData(array $requestData, array $outboundConfig, $type, $data = [])
@@ -154,6 +151,7 @@ trait MakeHttpRequests
      *      {{ user.id }}  => "101"
      *      {{ form.age }}  => "21"
      *      {{ form.lastname }} {{ form.firstname }} => "John Doe"
+     *
      * @return string
      */
     private function evalMustache($expression, array $data)
@@ -168,9 +166,8 @@ trait MakeHttpRequests
     /**
      * Prepares data for the http request replacing mustache with pm instance and OutboundConfig
      *
-     * @param array $data, request data
-     * @param array $config, datasource configuration
-     *
+     * @param  array  $data, request data
+     * @param  array  $config, datasource configuration
      * @return array
      */
     private function prepareRequestWithOutboundConfig(array $requestData, array &$config)
@@ -206,8 +203,7 @@ trait MakeHttpRequests
     /**
      * Add authorization parameters
      *
-     * @param array ...$config
-     *
+     * @param  array  ...$config
      * @return array
      */
     private function addAuthorizationHeaders(...$config)
@@ -224,12 +220,11 @@ trait MakeHttpRequests
     /**
      * Add basic authorization to header
      *
-     * @param string $method
-     * @param string $url
-     * @param array $headers
-     * @param string $body
+     * @param  string  $method
+     * @param  string  $url
+     * @param  array  $headers
+     * @param  string  $body
      * @param $bodyType
-     *
      * @return array
      */
     private function basicAuthorization($method, $url, $headers, $body, $bodyType)
@@ -244,12 +239,11 @@ trait MakeHttpRequests
     /**
      * Add bearer authorization to header
      *
-     * @param string $method
-     * @param string $url
-     * @param array $headers
-     * @param string $body
+     * @param  string  $method
+     * @param  string  $url
+     * @param  array  $headers
+     * @param  string  $body
      * @param $bodyType
-     *
      * @return array
      */
     private function bearerAuthorization($method, $url, $headers, $body, $bodyType)
@@ -264,12 +258,11 @@ trait MakeHttpRequests
     /**
      * Get token with credentials
      *
-     * @param string $method
-     * @param string $url
-     * @param array $headers
-     * @param string $body
+     * @param  string  $method
+     * @param  string  $url
+     * @param  array  $headers
+     * @param  string  $body
      * @param $bodyType
-     *
      * @return array
      */
     private function passwordAuthorization($method, $url, $headers, $body, $bodyType)
@@ -294,12 +287,12 @@ trait MakeHttpRequests
     /**
      * Prepare the response, using the mapping configuration
      *
-     * @param Response $response
-     * @param array $data
-     * @param array $config
-     * @param Mustache_Engine $mustache
-     *
+     * @param  Response  $response
+     * @param  array  $data
+     * @param  array  $config
+     * @param  Mustache_Engine  $mustache
      * @return array
+     *
      * @throws HttpResponseException
      */
     private function response($response, array $data = [], array $config = [])
@@ -413,12 +406,11 @@ trait MakeHttpRequests
     /**
      * Call an HTTP request
      *
-     * @param string $method
-     * @param string $url
-     * @param array $headers
+     * @param  string  $method
+     * @param  string  $url
+     * @param  array  $headers
      * @param $body
-     * @param string $bodyType
-     *
+     * @param  string  $bodyType
      * @return mixed|ResponseInterface
      *
      * @throws GuzzleException
@@ -436,12 +428,11 @@ trait MakeHttpRequests
     }
 
     /**
-     * @param string $url
+     * @param  string  $url
      * @param $endpoint
-     * @param array $config
-     * @param array $data
-     * @param array $params
-     *
+     * @param  array  $config
+     * @param  array  $data
+     * @param  array  $params
      * @return string
      */
     private function addQueryStringsParamsToUrl($endpoint, array $config, array $data, array $params = [])
@@ -576,7 +567,7 @@ trait MakeHttpRequests
     /**
      * Multibyte parse_url
      *
-     * @param string $url
+     * @param  string  $url
      * @return array
      */
     public function parseUrl($url)
@@ -602,7 +593,7 @@ trait MakeHttpRequests
     /**
      * Unparse url array
      *
-     * @param array $parsed_url
+     * @param  array  $parsed_url
      * @return string
      */
     private function unparseUrl(array $parsed_url)

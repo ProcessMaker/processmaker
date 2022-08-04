@@ -34,7 +34,9 @@ class Handler extends ExceptionHandler
 
     /**
      * Report our exception. If in testing with verbosity, it will also dump exception information to the console
-     * @param Exception $exception
+     *
+     * @param  Exception  $exception
+     *
      * @throws Exception
      */
     public function report(Exception $exception)
@@ -116,6 +118,7 @@ class Handler extends ExceptionHandler
 
     /**
      * Convert the given exception to an array.
+     *
      * @note This is overridding Laravel's default exception handler in order to handle binary data in message
      *
      * @param  \Exception  $e

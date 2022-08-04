@@ -9,9 +9,8 @@ trait HasControllerAddons
     /**
      * Get configured addons for this controller
      *
-     * @param string $method filter to identify the type of addon we are interested on
-     * @param array $data data that the controller will pass to the addon views
-     *
+     * @param  string  $method filter to identify the type of addon we are interested on
+     * @param  array  $data data that the controller will pass to the addon views
      * @return array
      */
     protected function getPluginAddons($method, array $data)
@@ -41,8 +40,7 @@ trait HasControllerAddons
     /**
      * Register a controller addon
      *
-     * @param array $config
-     *
+     * @param  array  $config
      * @return void
      */
     public static function registerAddon(array $config)

@@ -7,10 +7,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\Script;
-use ProcessMaker\Models\ScriptCategory;
-use ProcessMaker\Models\ScriptExecutor;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 

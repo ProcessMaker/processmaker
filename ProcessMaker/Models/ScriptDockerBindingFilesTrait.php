@@ -19,9 +19,9 @@ trait ScriptDockerBindingFilesTrait
     /**
      * Run a command in a docker container.
      *
-     * @param array $options
-     *
+     * @param  array  $options
      * @return array
+     *
      * @throws \RuntimeException
      */
     protected function executeBinding(array $options)
@@ -47,13 +47,13 @@ trait ScriptDockerBindingFilesTrait
     /**
      * Execute a docker container.
      *
-     * @param string $image
-     * @param string $command
-     * @param string $parameters
-     * @param string $bindings
-     * @param int $timeout
-     *
+     * @param  string  $image
+     * @param  string  $command
+     * @param  string  $parameters
+     * @param  string  $bindings
+     * @param  int  $timeout
      * @return array
+     *
      * @throws ScriptTimeoutException
      */
     private function runContainer($image, $command, $parameters, $bindings, $timeout)
@@ -97,9 +97,8 @@ trait ScriptDockerBindingFilesTrait
     /**
      * Get the parameter to bind two files.
      *
-     * @param string $hostFile
-     * @param string $guestFile
-     *
+     * @param  string  $hostFile
+     * @param  string  $guestFile
      * @return string
      */
     private function bindFile($hostFile, $guestFile)
@@ -110,9 +109,8 @@ trait ScriptDockerBindingFilesTrait
     /**
      * Put a content into a gust file.
      *
-     * @param string $guestFile
-     * @param string $content
-     *
+     * @param  string  $guestFile
+     * @param  string  $content
      * @return string
      */
     private function bindInput($guestFile, $content)
@@ -127,8 +125,7 @@ trait ScriptDockerBindingFilesTrait
     /**
      * Put a content into a gust file.
      *
-     * @param string $guestFile
-     *
+     * @param  string  $guestFile
      * @return string
      */
     private function bindOutput($guestFile, $name)

@@ -3,7 +3,6 @@
 namespace ProcessMaker\Http\Controllers\Admin;
 
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 
 class QueuesController extends Controller

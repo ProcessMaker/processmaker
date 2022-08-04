@@ -50,6 +50,7 @@ class UpgradeCommand extends BaseCommand
      * Execute the console command.
      *
      * @return void
+     *
      * @throws \ProcessMaker\Exception\InvalidSemanticVersion
      */
     public function handle()

@@ -2,13 +2,9 @@
 
 namespace ProcessMaker\Http\Resources;
 
-use ProcessMaker\Http\Resources\ApiCollection;
-use ProcessMaker\Http\Resources\Screen as ScreenResource;
 use ProcessMaker\Http\Resources\ScreenVersion as ScreenVersionResource;
-use ProcessMaker\Http\Resources\Users;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\GroupMember;
-use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use StdClass;
 
@@ -129,7 +125,7 @@ class Task extends ApiResource
 
     private function getAssignedGroupMembers($groups)
     {
-        \Log::debug('groups', ['groups' =>$groups]);
+        \Log::debug('groups', ['groups' => $groups]);
         foreach ($groups as $group) {
             $groupMembers = GroupMember::where('group_id', $group)->get();
             foreach ($groupMembers as $member) {

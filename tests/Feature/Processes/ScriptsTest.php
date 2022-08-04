@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Processes;
 
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 

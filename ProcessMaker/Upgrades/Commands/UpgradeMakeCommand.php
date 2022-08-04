@@ -56,6 +56,7 @@ class UpgradeMakeCommand extends BaseCommand
      * Execute the console command.
      *
      * @return void
+     *
      * @throws \Exception
      */
     public function handle()

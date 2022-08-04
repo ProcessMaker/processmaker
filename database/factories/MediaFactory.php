@@ -2,7 +2,6 @@
 
 use Faker\Generator as Faker;
 use ProcessMaker\Models\Media;
-use ProcessMaker\Models\User;
 
 /**
  * Model factory for Media

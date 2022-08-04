@@ -76,7 +76,6 @@ class PackageLanguage
      * Show error with file json.
      *
      * @param $language
-     *
      * @return bool
      */
     private function errors($language)

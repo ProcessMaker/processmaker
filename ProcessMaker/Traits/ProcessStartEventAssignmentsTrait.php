@@ -3,10 +3,7 @@
 namespace ProcessMaker\Traits;
 
 use DOMElement;
-use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
-use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\User;
 use ProcessMaker\Providers\WorkflowServiceProvider as PM;
 
 /**
@@ -38,8 +35,7 @@ trait ProcessStartEventAssignmentsTrait
     /**
      * Populates the assignments array.
      *
-     * @param DOMElement $node
-     *
+     * @param  DOMElement  $node
      * @return array
      */
     private static function setStartEventPermission(Process $process, DOMElement $node)

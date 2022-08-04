@@ -89,8 +89,7 @@ class ProcessCategoryController extends Controller
     /**
      * Display the specified Process category.
      *
-     * @param ProcessCategory $processCategory
-     *
+     * @param  ProcessCategory  $processCategory
      * @return \Illuminate\Http\JsonResponse
      *     * @OA\Get(
      *     path="/process_categories/{process_category_id}",
@@ -121,8 +120,7 @@ class ProcessCategoryController extends Controller
     /**
      * Store a newly created Process Category in storage
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return \Illuminate\Http\JsonResponse
      *
      *     * @OA\Post(
@@ -154,9 +152,8 @@ class ProcessCategoryController extends Controller
     /**
      * Updates the current element
      *
-     * @param Request $request
-     * @param ProcessCategory $processCategory
-     *
+     * @param  Request  $request
+     * @param  ProcessCategory  $processCategory
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      *      * @OA\Put(
      *     path="/process_categories/{process_category_id}",
@@ -195,8 +192,7 @@ class ProcessCategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param ProcessCategory $processCategory
-     *
+     * @param  ProcessCategory  $processCategory
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      *
      *      * @OA\Delete(
@@ -224,8 +220,8 @@ class ProcessCategoryController extends Controller
     {
         if ($processCategory->processes->count() !== 0) {
             return response(
-                ['message'=>'The item should not have associated processes',
-                    'errors'=> ['processes' => $processCategory->processes->count()], ],
+                ['message' => 'The item should not have associated processes',
+                    'errors' => ['processes' => $processCategory->processes->count()], ],
                 422);
         }
 

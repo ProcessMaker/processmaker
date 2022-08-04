@@ -8,8 +8,7 @@ trait LoggingHelper
      * Assert that a log entry exists. Data should be passed as an array and
      * can include message, context, level, level_name, and other items.
      *
-     * @param array $data
-     *
+     * @param  array  $data
      * @return mixed
      */
     public function assertLogEntryExists($data)
@@ -41,9 +40,8 @@ trait LoggingHelper
      * Assert that an event broadcast to the log has a payload smaller than the
      * specified size in bytes.
      *
-     * @param string $name
-     * @param int $size
-     *
+     * @param  string  $name
+     * @param  int  $size
      * @return mixed
      */
     public function assertBroadcastEventSizeLessThan($name, $size)
@@ -69,8 +67,7 @@ trait LoggingHelper
     /**
      * Assert that a log entry exists that contains specific text
      *
-     * @param array $data
-     *
+     * @param  array  $data
      * @return mixed
      */
     public function assertLogContainsText($data)
@@ -101,8 +98,7 @@ trait LoggingHelper
      * Assert that a log message exists. This exclusively tests only the actual
      * log message string and not the context, level, or other items.
      *
-     * @param string $message
-     *
+     * @param  string  $message
      * @return mixed
      */
     public function assertLogMessageExists($message)

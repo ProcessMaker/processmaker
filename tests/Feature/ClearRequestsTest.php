@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Console\Commands\ProcessmakerClearRequests;
 use ProcessMaker\Facades\WorkflowManager;
@@ -132,9 +131,8 @@ class ClearRequestsTest extends TestCase
     /**
      * Get the index of a task by name.
      *
-     * @param array $tasks
-     * @param string $name
-     *
+     * @param  array  $tasks
+     * @param  string  $name
      * @return int
      */
     private function findTaskByName(array $tasks, $name)

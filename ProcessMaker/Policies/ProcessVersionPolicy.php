@@ -29,7 +29,6 @@ class ProcessVersionPolicy
      *
      * @param  \ProcessMaker\Models\User  $user
      * @param  \ProcessMaker\Models\ProcessVersion  $processVersion
-     *
      * @return bool
      */
     public function cancel(User $user, ProcessVersion $processVersion)
@@ -59,7 +58,6 @@ class ProcessVersionPolicy
      *
      * @param  \ProcessMaker\Models\User  $user
      * @param  \ProcessMaker\Models\ProcessVersion  $processVersion
-     *
      * @return bool
      */
     public function editData(User $user, ProcessVersion $processVersion)

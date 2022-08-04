@@ -57,6 +57,7 @@ class PackageHelper
      * @param $methodName
      * @param $parameters
      * @return bool
+     *
      * @throws \Exception
      */
     public static function __callStatic(string $methodName, array $parameters): bool

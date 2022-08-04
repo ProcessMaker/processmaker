@@ -104,7 +104,6 @@ class Setting extends Model implements HasMedia
      * Validation rules
      *
      * @param $existing
-     *
      * @return array
      */
     public static function rules($existing = null, $validateConfig = false)
@@ -128,8 +127,8 @@ class Setting extends Model implements HasMedia
      * Get setting by key
      *
      * @param  string  $key
-     *
      * @return \ProcessMaker\Models\Setting|null
+     *
      * @throws \Exception
      */
     public static function byKey(string $key)
@@ -173,8 +172,8 @@ class Setting extends Model implements HasMedia
      * Get config by key
      *
      * @param $key
-     *
      * @return array|null
+     *
      * @throws \Exception
      */
     public static function configByKey($key)
@@ -235,7 +234,6 @@ class Setting extends Model implements HasMedia
      * Filter settings with a string
      *
      * @param $query
-     *
      * @param $filter string
      */
     public function scopeFilter($query, $filter)
@@ -255,7 +253,6 @@ class Setting extends Model implements HasMedia
      * Filter settings groups with a string
      *
      * @param $query
-     *
      * @param $filter string
      */
     public function scopeFilterGroups($query, $filter)

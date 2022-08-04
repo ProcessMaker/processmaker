@@ -4,11 +4,7 @@ namespace ProcessMaker\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\BroadcastMessage;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessRequestToken as Token;
-use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 
 class FileReadyNotification extends Notification
 {

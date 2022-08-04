@@ -12,8 +12,8 @@ class GenerateMenus
     /**
      * Generate the core menus that are used in web requests for our application
      *
-     * @param Request $request
-     * @param Closure $next
+     * @param  Request  $request
+     * @param  Closure  $next
      * @return mixed
      */
     public function handle(Request $request, Closure $next)
@@ -241,7 +241,7 @@ class GenerateMenus
             $tasks = $menu;
             foreach ($task_items as $item) {
                 if ($item['header'] === false) {
-                    $tasks->add($item['label'], ['route'  => $item['route'], 'id' => $item['id'], 'icon' => $item['icon']]);
+                    $tasks->add($item['label'], ['route' => $item['route'], 'id' => $item['id'], 'icon' => $item['icon']]);
                 } else {
                     $tasks->add($item['label'], ['class' => 'dropdown-item drop-header']);
                 }

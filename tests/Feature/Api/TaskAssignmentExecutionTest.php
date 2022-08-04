@@ -142,9 +142,9 @@ class TaskAssignmentExecutionTest extends TestCase
 
     public function testSelfServeAssignment()
     {
-        $users = factory(User::class, 20)->create(['status'=>'ACTIVE']);
-        $userWithNoGroup = factory(User::class)->create(['status'=>'ACTIVE']);
-        $unassignedUser = factory(User::class)->create(['status'=>'ACTIVE']);
+        $users = factory(User::class, 20)->create(['status' => 'ACTIVE']);
+        $userWithNoGroup = factory(User::class)->create(['status' => 'ACTIVE']);
+        $unassignedUser = factory(User::class)->create(['status' => 'ACTIVE']);
 
         $group = factory(Group::class)->create();
         foreach ($users as $user) {
@@ -220,9 +220,9 @@ class TaskAssignmentExecutionTest extends TestCase
 
     public function testSelfServeUserPersistence()
     {
-        $users = factory(User::class, 20)->create(['status'=>'ACTIVE']);
-        $userWithNoGroup = factory(User::class)->create(['status'=>'ACTIVE']);
-        $unassignedUser = factory(User::class)->create(['status'=>'ACTIVE']);
+        $users = factory(User::class, 20)->create(['status' => 'ACTIVE']);
+        $userWithNoGroup = factory(User::class)->create(['status' => 'ACTIVE']);
+        $unassignedUser = factory(User::class)->create(['status' => 'ACTIVE']);
 
         $group = factory(Group::class)->create();
         foreach ($users as $user) {
@@ -289,7 +289,7 @@ class TaskAssignmentExecutionTest extends TestCase
      */
     public function testProcessManagerAssignment()
     {
-        $manager = factory(User::class)->create(['status'=>'ACTIVE']);
+        $manager = factory(User::class)->create(['status' => 'ACTIVE']);
 
         // Create a new process
         $this->process = factory(Process::class)->create();

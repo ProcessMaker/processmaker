@@ -11,9 +11,9 @@ use Throwable;
 class SyntaxErrorException extends Exception
 {
     /**
-     * @param Throwable $previous
+     * @param  Throwable  $previous
      */
-    public function __construct(Throwable $previous, String $body, $data)
+    public function __construct(Throwable $previous, string $body, $data)
     {
         $message = $previous->getMessage();
         if (preg_match('/Variable "(\w+)"/', $message, $match)) {

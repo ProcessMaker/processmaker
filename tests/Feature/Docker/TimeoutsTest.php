@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Event;
 use ProcessMaker\Events\ScriptResponseEvent;
 use ProcessMaker\Exception\ScriptTimeoutException;
 use ProcessMaker\Models\Script;
-use ProcessMaker\Models\ScriptExecutor;
 use Tests\Feature\Shared\BenchmarkHelper;
 use Tests\Feature\Shared\LoggingHelper;
 use Tests\Feature\Shared\RequestHelper;
@@ -116,8 +115,8 @@ class TimeoutsTest extends TestCase
     /**
      * A helper method to generate a script object from the factory
      *
-     * @param string $language
-     * @param int $timeout
+     * @param  string  $language
+     * @param  int  $timeout
      * @return Script
      */
     private function getScript($language, $timeout)

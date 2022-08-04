@@ -8,8 +8,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Repositories\DefinitionsRepository;
 
@@ -83,8 +81,7 @@ class CatchSignalEventProcess implements ShouldQueue
     /**
      * Get event definition for the signal event
      *
-     * @param BpmnDocument $definitions
-     *
+     * @param  BpmnDocument  $definitions
      * @return SignalEventDefinitionInterface
      */
     private function getEventDefinitionBySignalRef(BpmnDocument $definitions)

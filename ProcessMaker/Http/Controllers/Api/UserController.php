@@ -204,9 +204,8 @@ class UserController extends Controller
     /**
      * Update a user
      *
-     * @param User $user
-     * @param Request $request
-     *
+     * @param  User  $user
+     * @param  Request  $request
      * @return ResponseFactory|Response
      *
      *     @OA\Put(
@@ -262,9 +261,8 @@ class UserController extends Controller
     /**
      * Update a user's groups
      *
-     * @param User $user
-     * @param Request $request
-     *
+     * @param  User  $user
+     * @param  Request  $request
      * @return ResponseFactory|Response
      *
      *     @OA\Put(
@@ -322,8 +320,7 @@ class UserController extends Controller
     /**
      * Delete a user
      *
-     * @param User $user
-     *
+     * @param  User  $user
      * @return ResponseFactory|Response
      *
      *     @OA\Delete(
@@ -363,8 +360,8 @@ class UserController extends Controller
     /**
      * Upload file avatar
      *
-     * @param User $user
-     * @param Request $request
+     * @param  User  $user
+     * @param  Request  $request
      *
      * @throws \Exception
      */
@@ -415,7 +412,7 @@ class UserController extends Controller
     /**
      * Reverses the soft delete of a user
      *
-     * @param User $user
+     * @param  User  $user
      *
      * @OA\Put(
      *     path="/users/restore",

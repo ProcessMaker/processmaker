@@ -16,8 +16,7 @@ class SignalController extends Controller
     /**
      * Get the list of signals
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return Factory|View
      */
     public function index(Request $request)

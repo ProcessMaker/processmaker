@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Event;
 use ProcessMaker\Events\ScriptResponseEvent;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Script;
-use ProcessMaker\Models\ScriptExecutor;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
@@ -54,7 +53,7 @@ class WatchersTest extends TestCase
         Event::assertDispatched(ScriptResponseEvent::class, function ($event) use ($data, $config) {
             $response = $event->response;
 
-            return $response['output'] == ['language'=>'PHP', 'data'=>$data, 'config'=>$config];
+            return $response['output'] == ['language' => 'PHP', 'data' => $data, 'config' => $config];
         });
     }
 }

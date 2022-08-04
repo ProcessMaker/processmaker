@@ -19,7 +19,7 @@ class HttpResponseException extends Exception implements HttpExceptionInterface
     private $headers;
 
     /**
-     * @param Response $response
+     * @param  Response  $response
      */
     public function __construct(Response $response)
     {

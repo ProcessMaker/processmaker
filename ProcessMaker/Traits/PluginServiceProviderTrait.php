@@ -59,8 +59,8 @@ trait PluginServiceProviderTrait
     /**
      * Register a custom javascript for the modeler
      *
-     * @param string $path
-     * @param string $public
+     * @param  string  $path
+     * @param  string  $public
      */
     protected function registerModelerScript($path, $public)
     {
@@ -88,7 +88,7 @@ trait PluginServiceProviderTrait
     /**
      * Register a seeder that should be executed when php artisan db:seed is called.
      *
-     * @param string $seederClass
+     * @param  string  $seederClass
      */
     protected function registerSeeder($seederClass)
     {
@@ -177,7 +177,6 @@ trait PluginServiceProviderTrait
      * Load upgrade migrations from a provided directory/ies
      *
      * @param $paths
-     *
      * @return void
      */
     public function loadUpgradeMigrationsFrom($paths)
@@ -192,8 +191,8 @@ trait PluginServiceProviderTrait
     /**
      * Register a custom javascript for the script builder
      *
-     * @param string $path
-     * @param string $public
+     * @param  string  $path
+     * @param  string  $public
      */
     protected function registerJsToScriptBuilder($path, $public)
     {

@@ -8,15 +8,13 @@ use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\Script;
 
 class ScreenBuilderController extends Controller
 {
     /**
      * Get the screen in the constructor to edit it.
      *
-     * @param Screen $screen
-     *
+     * @param  Screen  $screen
      * @return Factory|View
      */
     public function edit(ScreenBuilderManager $manager, Screen $screen)

@@ -37,9 +37,9 @@ class ScriptController extends Controller
             'countField' => 'scripts_count',
             'apiListInclude' => 'scriptsCount',
             'permissions' => [
-                'view'   => $request->user()->can('view-script-categories'),
+                'view' => $request->user()->can('view-script-categories'),
                 'create' => $request->user()->can('create-script-categories'),
-                'edit'   => $request->user()->can('edit-script-categories'),
+                'edit' => $request->user()->can('edit-script-categories'),
                 'delete' => $request->user()->can('delete-script-categories'),
             ],
         ];

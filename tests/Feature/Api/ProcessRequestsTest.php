@@ -5,7 +5,6 @@ namespace Tests\Feature\Api;
 use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Permission;
@@ -249,7 +248,7 @@ class ProcessRequestsTest extends TestCase
      */
     public function testListRequestViewAllPermission()
     {
-        $this->user = factory(User::class)->create(['status'=>'ACTIVE']);
+        $this->user = factory(User::class)->create(['status' => 'ACTIVE']);
         $processRequest = factory(ProcessRequest::class)->create([]);
 
         $response = $this->apiCall('GET', self::API_TEST_URL);

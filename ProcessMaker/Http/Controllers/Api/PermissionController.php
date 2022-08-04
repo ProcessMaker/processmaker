@@ -4,7 +4,6 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\User;
@@ -24,8 +23,7 @@ class PermissionController extends Controller
     /**
      * List permissions
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return Response
      */
     public function index(Request $request)
@@ -38,8 +36,7 @@ class PermissionController extends Controller
     /**
      * Update permissions
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return Response
      *
      *     @OA\Put(

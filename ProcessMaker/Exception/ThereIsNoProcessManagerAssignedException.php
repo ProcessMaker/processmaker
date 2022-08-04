@@ -11,7 +11,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 class ThereIsNoProcessManagerAssignedException extends Exception
 {
     /**
-     * @param string $task
+     * @param  string  $task
      */
     public function __construct(ActivityInterface $task)
     {

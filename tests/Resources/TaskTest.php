@@ -8,7 +8,6 @@ use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
@@ -55,7 +54,7 @@ class TaskTest extends TestCase
         $task = $processRequest->tokens()->where('status', 'ACTIVE')->firstOrFail();
 
         $url = route('api.tasks.show', [$task]);
-        $result = $this->apiCall('GET', $url, ['include'=>'screen,nested']);
+        $result = $this->apiCall('GET', $url, ['include' => 'screen,nested']);
         $json = $result->json();
 
         $this->assertEquals('parent', $json['screen']['title']);
@@ -90,7 +89,7 @@ class TaskTest extends TestCase
         $this->assertEquals($r->single[0]['token'], md5('single'.$media1->id.$media1->created_at));
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         Carbon::setTestNow(); // reset
     }

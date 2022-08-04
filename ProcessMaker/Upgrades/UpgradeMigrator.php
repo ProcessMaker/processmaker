@@ -38,7 +38,6 @@ class UpgradeMigrator extends Migrator
      * @param  string  $file
      * @param  int  $batch
      * @param  bool  $pretend
-     *
      * @return void
      *
      * @throws \ProcessMaker\Exception\UpgradeMigrationUnsuccessful
@@ -92,7 +91,6 @@ class UpgradeMigrator extends Migrator
      * @param  string  $file
      * @param  object  $migration
      * @param  bool  $pretend
-     *
      * @return void
      *
      * @throws \Throwable
@@ -132,7 +130,6 @@ class UpgradeMigrator extends Migrator
      * @param  array  $migrations
      * @param  array|string  $paths
      * @param  array  $options
-     *
      * @return array
      *
      * @throws \Throwable
@@ -173,7 +170,6 @@ class UpgradeMigrator extends Migrator
     /**
      * @param $migration
      * @param $name
-     *
      * @return bool
      */
     protected function runPreflightChecks($migration, $name)

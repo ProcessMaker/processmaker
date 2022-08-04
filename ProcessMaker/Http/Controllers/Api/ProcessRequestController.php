@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Notification;
 use ProcessMaker\Exception\PmqlMethodException;
 use ProcessMaker\Exception\ReferentialIntegrityException;
@@ -22,7 +21,6 @@ use ProcessMaker\Jobs\TerminateRequest;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
@@ -47,10 +45,9 @@ class ProcessRequestController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
-     * @param bool $getTotal used by Saved Search package to only return a total count instead of actual results
-     * @param User $user used by Saved Search package to return accurate counts
-     *
+     * @param  Request  $request
+     * @param  bool  $getTotal used by Saved Search package to only return a total count instead of actual results
+     * @param  User  $user used by Saved Search package to return accurate counts
      * @return ApiCollection
      *
      * /**
@@ -175,7 +172,7 @@ class ProcessRequestController extends Controller
 
         if (isset($response)) {
             //Map each item through its resource
-            $response = $response->map(function ($processRequest) use ($request) {
+            $response = $response->map(function ($processRequest) {
                 return new ProcessRequestResource($processRequest);
             });
         } else {
@@ -188,8 +185,7 @@ class ProcessRequestController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param ProcessRequest $request
-     *
+     * @param  ProcessRequest  $request
      * @return Response
      *
      * @OA\Get(
@@ -223,9 +219,8 @@ class ProcessRequestController extends Controller
     /**
      * Update a request
      *
-     * @param ProcessRequest $request
-     * @param Request|ProcessRequest $httpRequest
-     *
+     * @param  ProcessRequest  $request
+     * @param  Request|ProcessRequest  $httpRequest
      * @return ResponseFactory|Response
      *
      * @OA\Put(
@@ -318,8 +313,7 @@ class ProcessRequestController extends Controller
     /**
      * Delete a request
      *
-     * @param ProcessRequest $request
-     *
+     * @param  ProcessRequest  $request
      * @return ResponseFactory|Response
      *
      * @OA\Delete(
@@ -360,8 +354,8 @@ class ProcessRequestController extends Controller
     /**
      * Trigger a intermediate catch event
      *
-     * @param ProcessRequest $request
-     * @param string $event
+     * @param  ProcessRequest  $request
+     * @param  string  $event
      * @return void
      *
      * @OA\Post(
@@ -412,7 +406,7 @@ class ProcessRequestController extends Controller
         $whitelist = $whitelist === 'undefined' ? '' : $whitelist;
         if ($whitelist) {
             $ip = request()->ip();
-            list($ipWhitelist, $domainWhitelist) = $this->parseWhitelist($whitelist);
+            [$ipWhitelist, $domainWhitelist] = $this->parseWhitelist($whitelist);
             $domain = Cache::remember("ip_domain_{$ip}", self::DOMAIN_CACHE_TIME, function () use ($ip) {
                 return gethostbyaddr($ip);
             });
@@ -452,8 +446,7 @@ class ProcessRequestController extends Controller
     /**
      * Parse the whitelist parameter
      *
-     * @param string $whitelist
-     *
+     * @param  string  $whitelist
      * @return array
      */
     private function parseWhitelist($whitelist)
@@ -476,9 +469,8 @@ class ProcessRequestController extends Controller
     /**
      * Check if the domain match in the whitelist
      *
-     * @param string $domain
-     * @param array $whitelist
-     *
+     * @param  string  $domain
+     * @param  array  $whitelist
      * @return bool
      */
     private function checkDomain($domain, $whitelist)
@@ -496,7 +488,8 @@ class ProcessRequestController extends Controller
     /**
      * Cancel all tokens of request.
      *
-     * @param ProcessRequest $request
+     * @param  ProcessRequest  $request
+     *
      * @throws \Throwable
      */
     private function cancelRequestToken(ProcessRequest $request)
@@ -510,7 +503,8 @@ class ProcessRequestController extends Controller
     /**
      * Manually complete a request
      *
-     * @param ProcessRequest $request
+     * @param  ProcessRequest  $request
+     *
      * @throws \Throwable
      */
     private function completeRequest(ProcessRequest $request)
@@ -535,9 +529,8 @@ class ProcessRequestController extends Controller
     /**
      * Get task name by token fields and request
      *
-     * @param array $fields
-     * @param ProcessRequest $request
-     *
+     * @param  array  $fields
+     * @param  ProcessRequest  $request
      * @return string
      */
     private function getTaskName($fields, $request)

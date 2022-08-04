@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Traits;
 
-use Illuminate\Support\Str;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;

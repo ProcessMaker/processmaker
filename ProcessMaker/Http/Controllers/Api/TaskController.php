@@ -20,7 +20,6 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\TaskReassignmentNotification;
 use ProcessMaker\Query\SyntaxError;
@@ -47,10 +46,9 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
-     * @param bool $getTotal used by Saved Search package to only return a total count instead of actual results
-     * @param User $user used by Saved Search package to return accurate counts
-     *
+     * @param  Request  $request
+     * @param  bool  $getTotal used by Saved Search package to only return a total count instead of actual results
+     * @param  User  $user used by Saved Search package to return accurate counts
      * @return Response
      *
      * @OA\Get(
@@ -222,7 +220,7 @@ class TaskController extends Controller
         }
 
         //Map each item through its resource
-        $response = $response->map(function ($processRequestToken) use ($request) {
+        $response = $response->map(function ($processRequestToken) {
             return new Resource($processRequestToken);
         });
 
@@ -233,9 +231,10 @@ class TaskController extends Controller
 
     /**
      * Display the specified resource.
-     * @TODO remove this method,view and route this is not a used file
-     * @param ProcessRequestToken $task
      *
+     * @TODO remove this method,view and route this is not a used file
+     *
+     * @param  ProcessRequestToken  $task
      * @return resource
      *
      * @OA\Get(
@@ -268,10 +267,10 @@ class TaskController extends Controller
     /**
      * Updates the current element
      *
-     * @param Request $request
-     * @param ProcessRequestToken $task
-     *
+     * @param  Request  $request
+     * @param  ProcessRequestToken  $task
      * @return resource
+     *
      * @throws \Throwable
      *
      * @OA\Put(

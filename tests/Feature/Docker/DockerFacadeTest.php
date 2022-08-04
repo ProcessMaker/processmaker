@@ -17,7 +17,7 @@ class DockerFacadeTest extends TestCase
      */
     const DEFAULT_DOCKER_COMMAND = '/usr/bin/docker';
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         // Set empty env variables
         config(['app.processmaker_scripts_docker_host' => '']);

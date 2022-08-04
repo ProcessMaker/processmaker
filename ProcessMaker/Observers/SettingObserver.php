@@ -3,7 +3,6 @@
 namespace ProcessMaker\Observers;
 
 use Exception;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\Setting;
 

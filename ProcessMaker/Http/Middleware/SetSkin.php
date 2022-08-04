@@ -13,8 +13,9 @@ class SetSkin
 {
     /**
      * Handle request. If the request has a route parameter called skin, set the skin property in our view config
-     * @param Request $request
-     * @param Closure $next
+     *
+     * @param  Request  $request
+     * @param  Closure  $next
      * @return mixed
      */
     public function handle(Request $request, Closure $next)

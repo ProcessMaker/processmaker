@@ -1,10 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use ProcessMaker\Models\Group;
-use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\User;
 
 class PermissionSeeder extends Seeder
 {

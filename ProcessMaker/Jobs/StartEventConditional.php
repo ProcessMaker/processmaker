@@ -11,8 +11,7 @@ class StartEventConditional extends BpmnAction
     /**
      * Create a new job instance.
      *
-     * @param Definitions $definitions
-     *
+     * @param  Definitions  $definitions
      * @return void
      */
     public function __construct(Definitions $definitions)

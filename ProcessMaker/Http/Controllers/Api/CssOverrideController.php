@@ -27,8 +27,7 @@ class CssOverrideController extends Controller
     /**
      * Create a new Settings css-override
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ApiResource
      *
      * @OA\Post(
@@ -49,6 +48,7 @@ class CssOverrideController extends Controller
      *         @OA\JsonContent(ref="#/components/schemas/settings")
      *     ),
      * )
+     *
      * @throws \Throwable
      */
     public function store(Request $request)
@@ -228,8 +228,7 @@ class CssOverrideController extends Controller
     /**
      * Format field config
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return array
      */
     private function formatConfig(Request $request)
@@ -261,11 +260,12 @@ class CssOverrideController extends Controller
     /**
      * Upload file
      *
-     * @param Setting $setting
-     * @param Request $request
+     * @param  Setting  $setting
+     * @param  Request  $request
      * @param $filename
      * @param $collectionName
      * @param $diskName
+     *
      * @throws \Exception
      */
     private function uploadFile(Setting $setting, Request $request, $filename, $collectionName, $diskName)

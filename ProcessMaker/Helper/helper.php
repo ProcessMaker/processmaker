@@ -6,8 +6,7 @@ use ProcessMaker\SanitizeHelper;
 /**
  * Convert the Laravy menu into associative array
  *
- * @param \Lavary\Menu\Item $menu
- *
+ * @param  \Lavary\Menu\Item  $menu
  * @return array
  */
 function lavaryMenuArray($menu, $includeSubMenus = false)
@@ -32,8 +31,7 @@ function lavaryMenuArray($menu, $includeSubMenus = false)
 /**
  * Convert the Laravy menu into json string
  *
- * @param \Lavary\Menu\Item $menu
- *
+ * @param  \Lavary\Menu\Item  $menu
  * @return string
  */
 function lavaryMenuJson($menu)
@@ -44,8 +42,7 @@ function lavaryMenuJson($menu)
 /**
  * Check if a package exists based on its provider name
  *
- * @param string $name
- *
+ * @param  string  $name
  * @return bool
  */
 function hasPackage($name)

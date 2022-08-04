@@ -75,6 +75,7 @@ class Screen extends Model implements ScreenInterface
 
     /**
      * The table name attribute
+     *
      * @var string
      */
     protected $table = 'screens';
@@ -121,7 +122,6 @@ class Screen extends Model implements ScreenInterface
      * Validation rules
      *
      * @param $existing
-     *
      * @return array
      */
     public static function rules($existing = null)
@@ -165,7 +165,7 @@ class Screen extends Model implements ScreenInterface
     /**
      * Set multiple|single categories to the screen
      *
-     * @param string $value
+     * @param  string  $value
      */
     public function setScreenCategoryIdAttribute($value)
     {
@@ -175,7 +175,7 @@ class Screen extends Model implements ScreenInterface
     /**
      * Get multiple|single categories of the screen
      *
-     * @param string $value
+     * @param  string  $value
      */
     public function getScreenCategoryIdAttribute($value)
     {

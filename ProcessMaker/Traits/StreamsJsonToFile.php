@@ -3,7 +3,6 @@
 namespace ProcessMaker\Traits;
 
 use Illuminate\Support\Facades\Storage;
-use Log;
 
 trait StreamsJsonToFile
 {
@@ -31,9 +30,8 @@ trait StreamsJsonToFile
     /**
      * Open the file resource.
      *
-     * @param string $name
-     * @param string|null $directory
-     *
+     * @param  string  $name
+     * @param  string|null  $directory
      * @return void
      */
     private function openFile($name, $directory = null)
@@ -48,8 +46,7 @@ trait StreamsJsonToFile
     /**
      * Write to the file resource.
      *
-     * @param string $data
-     *
+     * @param  string  $data
      * @return void
      */
     private function write($data)
@@ -60,9 +57,8 @@ trait StreamsJsonToFile
     /**
      * Seek within the file resource.
      *
-     * @param int $offset
-     * @param int $whence one of SEEK_SET, SEEK_CUR, SEEK_END
-     *
+     * @param  int  $offset
+     * @param  int  $whence one of SEEK_SET, SEEK_CUR, SEEK_END
      * @return void
      */
     private function seek($offset, $whence)
@@ -73,10 +69,9 @@ trait StreamsJsonToFile
     /**
      * Push a key/value pair.
      *
-     * @param string|array|object $data
-     * @param string|array|object|null $value
-     * @param bool $isLast
-     *
+     * @param  string|array|object  $data
+     * @param  string|array|object|null  $value
+     * @param  bool  $isLast
      * @return void
      */
     private function push($data, $value = null, $isLast = false)
@@ -97,8 +92,7 @@ trait StreamsJsonToFile
     /**
      * Push a JSON key.
      *
-     * @param string $data
-     *
+     * @param  string  $data
      * @return void
      */
     private function pushKey($data)
@@ -112,8 +106,7 @@ trait StreamsJsonToFile
     /**
      * Push a JSON value.
      *
-     * @param string|array|object $data
-     *
+     * @param  string|array|object  $data
      * @return void
      */
     private function pushValue($data)

@@ -3,7 +3,6 @@
 namespace ProcessMaker\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Http\Request;
 use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
@@ -75,7 +74,6 @@ class ProcessPolicy
      *
      * @param  \ProcessMaker\Models\User  $user
      * @param  \ProcessMaker\Models\Process  $process
-     *
      * @return bool
      */
     public function cancel(User $user, Process $process)
@@ -105,7 +103,6 @@ class ProcessPolicy
      *
      * @param  \ProcessMaker\Models\User  $user
      * @param  \ProcessMaker\Models\Process  $process
-     *
      * @return bool
      */
     public function editData(User $user, Process $process)

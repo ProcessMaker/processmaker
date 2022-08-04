@@ -4,13 +4,10 @@ namespace ProcessMaker\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
 use ProcessMaker\Events\ScreenBuilderStarting;
-use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Comment;
-use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
@@ -18,7 +15,6 @@ use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Package\PackageComments\PackageServiceProvider;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
-use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Spatie\MediaLibrary\Models\Media;
 
@@ -41,7 +37,7 @@ class RequestController extends Controller
 
         $title = 'My Requests';
 
-        $types = ['all'=>'All Requests', 'in_progress'=>'Requests In Progress', 'completed'=>'Completed Requests'];
+        $types = ['all' => 'All Requests', 'in_progress' => 'Requests In Progress', 'completed' => 'Completed Requests'];
 
         if (array_key_exists($type, $types)) {
             $title = $types[$type];
@@ -57,8 +53,7 @@ class RequestController extends Controller
     /**
      * Request Show
      *
-     * @param ProcessRequest $request
-     *
+     * @param  ProcessRequest  $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show(ProcessRequest $request, Media $mediaItems)
@@ -148,7 +143,7 @@ class RequestController extends Controller
     /**
      * the user may or may not print forms
      *
-     * @param ProcessRequest $request
+     * @param  ProcessRequest  $request
      * @return bool
      */
     private function canUserPrintScreen(ProcessRequest $request)

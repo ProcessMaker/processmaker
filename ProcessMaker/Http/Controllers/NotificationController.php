@@ -3,8 +3,6 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Illuminate\Http\Request;
-use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Models\ProcessRequestToken;
 
 class NotificationController extends Controller
 {

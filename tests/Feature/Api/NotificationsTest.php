@@ -2,12 +2,8 @@
 
 namespace Tests\Feature\Api;
 
-use Carbon\Carbon;
-use Faker\Factory as Faker;
-use Illuminate\Support\Facades\DB;
 use ProcessMaker\Models\Notification;
 use ProcessMaker\Models\User;
-use Ramsey\Uuid\Uuid;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 

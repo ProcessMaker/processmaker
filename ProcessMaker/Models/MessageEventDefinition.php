@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Models;
 
-use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Nayra\Bpmn\Models\MessageEventDefinition as Base;
 use ProcessMaker\Nayra\Contracts\Bpmn\EventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowNodeInterface;
@@ -17,11 +16,10 @@ class MessageEventDefinition extends Base
     /**
      * Implement the event definition behavior when an event is triggered.
      *
-     * @param EventDefinitionInterface $event
-     * @param FlowNodeInterface $target
-     * @param ExecutionInstanceInterface|null $targetRequest
-     * @param TokenInterface|null $token
-     *
+     * @param  EventDefinitionInterface  $event
+     * @param  FlowNodeInterface  $target
+     * @param  ExecutionInstanceInterface|null  $targetRequest
+     * @param  TokenInterface|null  $token
      * @return $this
      */
     public function execute(EventDefinitionInterface $event, FlowNodeInterface $target, ExecutionInstanceInterface $targetRequest = null, TokenInterface $token = null)

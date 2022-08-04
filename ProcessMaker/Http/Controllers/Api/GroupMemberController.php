@@ -27,8 +27,7 @@ class GroupMemberController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ApiCollection
      *
      * @OA\Get(
@@ -91,9 +90,9 @@ class GroupMemberController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     *
      * @throws \Throwable
      *
      * @OA\Post(
@@ -140,8 +139,7 @@ class GroupMemberController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param GroupMember $group_member
-     *
+     * @param  GroupMember  $group_member
      * @return GroupMemberResource
      *
      * @OA\Get(
@@ -173,8 +171,7 @@ class GroupMemberController extends Controller
     /**
      * Delete a group membership
      *
-     * @param GroupMember $group_member
-     *
+     * @param  GroupMember  $group_member
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      *
      * @throws \Exception
@@ -209,7 +206,7 @@ class GroupMemberController extends Controller
     /**
      * Display a listing of groups available
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return ApiCollection
      *
      * @OA\Get(
@@ -333,7 +330,7 @@ class GroupMemberController extends Controller
     /**
      * Display a listing of users available
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return ApiCollection
      *
      * @OA\Get(

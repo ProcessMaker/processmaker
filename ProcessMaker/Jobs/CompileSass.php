@@ -64,6 +64,7 @@ class CompileSass implements ShouldQueue
     /**
      * @param $cmd
      * @return string
+     *
      * @throws \Exception
      */
     private function runCmd($cmd)

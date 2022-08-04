@@ -1,7 +1,5 @@
 <?php
 
-use ProcessMaker\Http\Controllers\Api\Requests\RequestsController;
-
 Route::group(['middleware' => ['auth', 'sanitize', 'external.connection', 'force_change_password']], function () {
 
     // Routes related to Authentication (password reset, etc)

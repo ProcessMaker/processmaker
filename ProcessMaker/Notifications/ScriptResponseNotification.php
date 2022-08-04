@@ -7,7 +7,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Models\Script;
 
 /**
@@ -74,8 +73,7 @@ class ScriptResponseNotification extends Notification
     /**
      * To broadcast.
      *
-     * @param mixed $notifiable
-     *
+     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\BroadcastMessage
      */
     public function toBroadcast($notifiable)

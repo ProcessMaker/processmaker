@@ -34,11 +34,11 @@ class TestScript implements ShouldQueue
     /**
      * Create a new job instance to execute a script.
      *
-     * @param ProcessMaker\Models\Script $script
-     * @param ProcessMaker\Models\User $current_user
-     * @param string $code
-     * @param array $data
-     * @param array $configuration
+     * @param  ProcessMaker\Models\Script  $script
+     * @param  ProcessMaker\Models\User  $current_user
+     * @param  string  $code
+     * @param  array  $data
+     * @param  array  $configuration
      */
     public function __construct(Script $script, User $current_user, $code, array $data, array $configuration, $nonce = null)
     {
@@ -73,8 +73,8 @@ class TestScript implements ShouldQueue
     /**
      * Send a response to the user interface
      *
-     * @param int $status
-     * @param array $response
+     * @param  int  $status
+     * @param  array  $response
      */
     private function sendResponse($status, array $response)
     {

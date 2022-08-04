@@ -5,7 +5,6 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification as NotificationFacade;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
@@ -30,8 +29,7 @@ class NotificationController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ApiCollection
      *
      * @OA\Get(
@@ -125,9 +123,9 @@ class NotificationController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return NotificationResource
+     *
      * @throws \Throwable
      *
      * @OA\Post(
@@ -159,8 +157,7 @@ class NotificationController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param Notification $notification
-     *
+     * @param  Notification  $notification
      * @return \Illuminate\Http\Response
      *
      * @internal param id $id
@@ -194,10 +191,10 @@ class NotificationController extends Controller
     /**
      * Update a user
      *
-     * @param Notification $notification
-     * @param Request $request
-     *
+     * @param  Notification  $notification
+     * @param  Request  $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     *
      * @throws \Throwable
      *
      * @OA\Put(
@@ -236,8 +233,7 @@ class NotificationController extends Controller
     /**
      * Delete a notification
      *
-     * @param Notification $notification
-     *
+     * @param  Notification  $notification
      * @return ResponseFactory|Response
      *
      * @OA\Delete(
@@ -270,8 +266,7 @@ class NotificationController extends Controller
     /**
      * Update notification as read
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return Response
      *
      * @OA\Put(
@@ -317,8 +312,7 @@ class NotificationController extends Controller
     /**
      * Update notifications as unread
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return Response
      *
      * @OA\Put(
@@ -369,8 +363,7 @@ class NotificationController extends Controller
     /**
      * Update all notification as read.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      *
      * @OA\Put(

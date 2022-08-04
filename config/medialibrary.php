@@ -1,7 +1,5 @@
 <?php
 
-use ProcessMaker\Http\Resources\Process;
-
 return [
 
     /*

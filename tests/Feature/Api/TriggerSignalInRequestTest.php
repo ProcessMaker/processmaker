@@ -2,22 +2,13 @@
 
 namespace Tests\Feature\Api;
 
-use Faker\Provider\DateTime;
-use Illuminate\Foundation\Testing\WithFaker;
 use Laravel\Passport\Passport;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Jobs\ImportProcess;
-use ProcessMaker\Jobs\ThrowSignalEvent;
-use ProcessMaker\Managers\TaskSchedulerManager;
-use ProcessMaker\Managers\WorkflowEventManager;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\ScheduledTask;
-use ProcessMaker\Models\User;
 use Tests\Feature\Shared\ProcessTestingTrait;
 use Tests\Feature\Shared\RequestHelper;
-use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
 
 /**

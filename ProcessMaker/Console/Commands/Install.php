@@ -290,7 +290,7 @@ class Install extends Command
             //Create a symbolic link from "public/storage" to "storage/app/public"
             $this->call('storage:link');
 
-            $this->call('vendor:publish', ['--tag'=>'telescope-assets', '--force' =>true]);
+            $this->call('vendor:publish', ['--tag' => 'telescope-assets', '--force' => true]);
 
             if (! env('SKIP_EXECUTORS')) {
                 $this->info(__('Installing the :lang script executor', ['lang' => 'php']));
@@ -357,10 +357,9 @@ class Install extends Command
     /**
      * Validate a field value
      *
-     * @param string $name
-     * @param mixed $value
-     * @param array $rules
-     *
+     * @param  string  $name
+     * @param  mixed  $value
+     * @param  array  $rules
      * @return Validator
      */
     private function validateField($name, $value, $rules)

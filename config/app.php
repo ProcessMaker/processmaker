@@ -1,11 +1,5 @@
 <?php
 
-use Illuminate\Cache\CacheServiceProvider;
-use Illuminate\Database\DatabaseServiceProvider;
-use Illuminate\Filesystem\FilesystemServiceProvider;
-use Illuminate\View\ViewServiceProvider;
-use ProcessMaker\Providers\RouteServiceProvider;
-
 return [
     // The name of our application
     'name' => env('APP_NAME', 'ProcessMaker'),
@@ -172,7 +166,7 @@ return [
          * Other Facades
          */
         'Theme' => Igaster\LaravelTheme\Facades\Theme::class,
-        'Menu'      => Lavary\Menu\Facade::class,
+        'Menu' => Lavary\Menu\Facade::class,
 
         /**
          * Overwrite package classes

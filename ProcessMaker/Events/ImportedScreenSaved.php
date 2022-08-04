@@ -18,8 +18,8 @@ class ImportedScreenSaved
     public $screen;
 
     /**
-     * @param int $newScreenId
-     * @param Screen $screen
+     * @param  int  $newScreenId
+     * @param  Screen  $screen
      */
     public function __construct($newScreenId, $screen)
     {

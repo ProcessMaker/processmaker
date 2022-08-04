@@ -2,10 +2,8 @@
 
 namespace Tests\Feature\Processes;
 
-use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Jobs\CompleteActivity;
-use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;

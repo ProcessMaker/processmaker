@@ -20,8 +20,7 @@ class EnvironmentVariablesController extends Controller
     /**
      * Get a specific Environment Variable
      *
-     * @param EnvironmentVariable $environmentVariable
-     *
+     * @param  EnvironmentVariable  $environmentVariable
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit(EnvironmentVariable $environmentVariable)

@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Jobs;
 
-use Exception;
 use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;

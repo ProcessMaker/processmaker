@@ -12,7 +12,7 @@ trait LoadPluginSeeders
     /**
      * Register a seeder that should be executed when callPluginSeeders()
      *
-     * @param string $seederClass
+     * @param  string  $seederClass
      */
     public static function registerSeeder($seederClass)
     {

@@ -14,6 +14,7 @@ use ProcessMaker\Traits\SqlsrvSupportTrait;
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  * @property ProcessRequest $processRequest
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|\ProcessMaker\Models\ProcessRequestLock whereNotDue()
  */
 class ProcessRequestLock extends Model

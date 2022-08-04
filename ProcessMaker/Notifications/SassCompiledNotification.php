@@ -8,7 +8,6 @@ use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use ProcessMaker\Models\ProcessRequest as Instance;
-use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 
 class SassCompiledNotification extends Notification
 {

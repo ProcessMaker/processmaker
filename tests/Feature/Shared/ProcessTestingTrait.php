@@ -47,8 +47,8 @@ trait ProcessTestingTrait
     /**
      * Assign or create an user for a task
      *
-     * @param DOMElement $task
-     * @param array $users
+     * @param  DOMElement  $task
+     * @param  array  $users
      */
     private function assignTaskUser(DOMElement $task, array &$users)
     {
@@ -74,10 +74,9 @@ trait ProcessTestingTrait
     /**
      * Star a process request
      *
-     * @param Process $process
-     * @param string $startEvent
-     * @param array $data
-     *
+     * @param  Process  $process
+     * @param  string  $startEvent
+     * @param  array  $data
      * @return ProcessRequest
      */
     private function startProcess(Process $process, $startEvent, array $data = [])
@@ -93,9 +92,8 @@ trait ProcessTestingTrait
     /**
      * Complete a task by $token
      *
-     * @param ProcessRequestToken $token
-     * @param array $data
-     *
+     * @param  ProcessRequestToken  $token
+     * @param  array  $data
      * @return ProcessRequestToken|\Illuminate\Foundation\Testing\TestResponse
      */
     private function completeTask(ProcessRequestToken $token, array $data = [], $return = 'token')
@@ -120,8 +118,8 @@ trait ProcessTestingTrait
     /**
      * Trigger a catch event
      *
-     * @param ProcessRequestToken $token
-     * @param array $data
+     * @param  ProcessRequestToken  $token
+     * @param  array  $data
      * @return void
      */
     private function triggerCatchEvent(ProcessRequestToken $token, array $data = [])

@@ -90,7 +90,7 @@ class ProcessExecutionTest extends TestCase
             'process_request_id' => $request['id'],
             'status' => 'TRIGGERED',
         ])->first();
-        $this->assertEquals(['foo'=>'bar'], $task->data);
+        $this->assertEquals(['foo' => 'bar'], $task->data);
 
         //Complete the task
         $route = route('api.tasks.update', [$tasks[0]['id'], 'status' => 'COMPLETED']);

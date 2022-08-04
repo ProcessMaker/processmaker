@@ -2,24 +2,19 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
-use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Pion\Laravel\ChunkUpload\Exceptions\UploadMissingFileException;
 use Pion\Laravel\ChunkUpload\Handler\AbstractHandler;
-use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
 use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
-use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\ProcessRequest;
-use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
 class ProcessRequestFileController extends Controller
@@ -41,8 +36,7 @@ class ProcessRequestFileController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ApiCollection
      *
      * @OA\Get(
@@ -118,7 +112,7 @@ class ProcessRequestFileController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param Media $file
+     * @param  Media  $file
      * @return \Illuminate\Http\Response
      *
      * @OA\Get(
@@ -169,7 +163,8 @@ class ProcessRequestFileController extends Controller
 
     /**
      * Chunk uploading behavior
-     * @param FileReceiver $receiver The Chunk FileReceiver
+     *
+     * @param  FileReceiver  $receiver The Chunk FileReceiver
      * @return JsonResponse
      */
     private function chunk(FileReceiver $receiver, ProcessRequest $request, Request $laravel_request)
@@ -261,9 +256,9 @@ class ProcessRequestFileController extends Controller
     /**
      * Used by both store() and chunk() to associate the uploaded file to a request
      *
-     * @param UploadedFile $file
-     * @param ProcessRequest $processRequest
-     * @param Request $laravelRequest
+     * @param  UploadedFile  $file
+     * @param  ProcessRequest  $processRequest
+     * @param  Request  $laravelRequest
      * @return JsonResponse
      */
     private function saveUploadedFile(UploadedFile $file, ProcessRequest $processRequest, Request $laravelRequest)
@@ -305,7 +300,7 @@ class ProcessRequestFileController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param Media $file
+     * @param  Media  $file
      * @return \Illuminate\Http\Response
      *
      * @internal param int $id

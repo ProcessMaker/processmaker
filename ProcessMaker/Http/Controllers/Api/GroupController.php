@@ -9,7 +9,6 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Groups as GroupResource;
 use ProcessMaker\Models\Group;
-use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\User;
 
 class GroupController extends Controller
@@ -27,8 +26,7 @@ class GroupController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ApiCollection
      *
      * @OA\Get(
@@ -108,9 +106,9 @@ class GroupController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return GroupResource
+     *
      * @throws \Throwable
      *
      * @OA\Post(
@@ -143,7 +141,7 @@ class GroupController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param Group $group
+     * @param  Group  $group
      * @return GroupResource
      *
      * @OA\Get(
@@ -182,10 +180,10 @@ class GroupController extends Controller
     /**
      * Update a user
      *
-     * @param Group $group
-     * @param Request $request
-     *
+     * @param  Group  $group
+     * @param  Request  $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     *
      * @throws \Throwable
      *
      * @OA\Put(
@@ -225,9 +223,9 @@ class GroupController extends Controller
     /**
      * Delete a user
      *
-     * @param Group $group
-     *
+     * @param  Group  $group
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     *
      * @throws \Exception
      *
      * @OA\Delete(
@@ -261,8 +259,7 @@ class GroupController extends Controller
     /**
      * Display the list of users in a group
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ApiCollection
      *
      * @OA\Get(
@@ -345,8 +342,7 @@ class GroupController extends Controller
     /**
      * Display the list of groups in a group
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ApiCollection
      *
      * @OA\Get(

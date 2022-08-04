@@ -99,8 +99,7 @@ class ScriptCategoryController extends Controller
     /**
      * Display the specified script category.
      *
-     * @param ScriptCategory $scriptCategory
-     *
+     * @param  ScriptCategory  $scriptCategory
      * @return \Illuminate\Http\JsonResponse
      *
      * @OA\Get(
@@ -132,9 +131,9 @@ class ScriptCategoryController extends Controller
     /**
      * Store a newly created Script Category in storage
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return \Illuminate\Http\JsonResponse
+     *
      * @throws \Throwable
      *
      * @OA\Post(
@@ -166,10 +165,10 @@ class ScriptCategoryController extends Controller
     /**
      * Updates the current element
      *
-     * @param Request $request
-     * @param ScriptCategory $scriptCategory
-     *
+     * @param  Request  $request
+     * @param  ScriptCategory  $scriptCategory
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     *
      * @throws \Throwable
      *
      * @OA\Put(
@@ -209,9 +208,9 @@ class ScriptCategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param ScriptCategory $scriptCategory
-     *
+     * @param  ScriptCategory  $scriptCategory
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     *
      * @throws \Exception
      *
      * @OA\Delete(
@@ -238,8 +237,8 @@ class ScriptCategoryController extends Controller
     {
         if ($scriptCategory->scripts->count() !== 0) {
             return response(
-                ['message'=>'The item should not have associated scripts',
-                    'errors'=> ['scripts' => $scriptCategory->scripts->count()], ],
+                ['message' => 'The item should not have associated scripts',
+                    'errors' => ['scripts' => $scriptCategory->scripts->count()], ],
                 422);
         }
 

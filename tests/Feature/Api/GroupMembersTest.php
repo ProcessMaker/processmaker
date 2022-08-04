@@ -2,9 +2,7 @@
 
 namespace Tests\Feature\Api;
 
-use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;

@@ -6,9 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Contracts\ScriptInterface;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
-use ProcessMaker\GenerateAccessToken;
-use ProcessMaker\Models\ScriptCategory;
-use ProcessMaker\Models\User;
 use ProcessMaker\ScriptRunners\ScriptRunner;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasVersioning;
@@ -97,7 +94,6 @@ class Script extends Model implements ScriptInterface
      * Validation rules
      *
      * @param $existing
-     *
      * @return array
      */
     public static function rules($existing = null)
@@ -122,8 +118,8 @@ class Script extends Model implements ScriptInterface
     /**
      * Executes a script given a configuration and data input.
      *
-     * @param array $data
-     * @param array $config
+     * @param  array  $data
+     * @param  array  $config
      */
     public function runScript(array $data, array $config, $tokenId = '')
     {
@@ -153,8 +149,7 @@ class Script extends Model implements ScriptInterface
     /**
      * Get the configuration for a specific script format.
      *
-     * @param string $format
-     *
+     * @param  string  $format
      * @return array
      */
     public static function scriptFormat($format)
@@ -205,8 +200,7 @@ class Script extends Model implements ScriptInterface
     /**
      * Get the language from a script format (MIME type) string.
      *
-     * @param string $mimeType
-     *
+     * @param  string  $mimeType
      * @return string
      */
     public static function scriptFormat2Language($mimeType)
@@ -274,7 +268,7 @@ class Script extends Model implements ScriptInterface
     /**
      * Set multiple|single categories to the script
      *
-     * @param string $value
+     * @param  string  $value
      */
     public function setScriptCategoryIdAttribute($value)
     {
@@ -284,7 +278,7 @@ class Script extends Model implements ScriptInterface
     /**
      * Get multiple|single categories of the script
      *
-     * @param string $value
+     * @param  string  $value
      */
     public function getScriptCategoryIdAttribute($value)
     {

@@ -5,7 +5,6 @@ namespace ProcessMaker\Http\Controllers;
 use Cache;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Api\ProcessController as ApiProcessController;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
@@ -52,9 +51,9 @@ class ProcessController extends Controller
             'countField' => 'processes_count',
             'apiListInclude' => 'processesCount',
             'permissions' => [
-                'view'   => $request->user()->can('view-process-categories'),
+                'view' => $request->user()->can('view-process-categories'),
                 'create' => $request->user()->can('create-process-categories'),
-                'edit'   => $request->user()->can('edit-process-categories'),
+                'edit' => $request->user()->can('edit-process-categories'),
                 'delete' => $request->user()->can('delete-process-categories'),
             ],
         ];
@@ -69,8 +68,7 @@ class ProcessController extends Controller
     }
 
     /**
-     * @param Process $process
-     *
+     * @param  Process  $process
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit(Process $process)
@@ -101,7 +99,6 @@ class ProcessController extends Controller
      *
      * @param $method
      * @param $process
-     *
      * @return array Users|Groups
      */
     private function listCan($method, Process $process)
@@ -194,9 +191,8 @@ class ProcessController extends Controller
     /**
      * Download the JSON definition of the process
      *
-     * @param Process $process
-     * @param string $key
-     *
+     * @param  Process  $process
+     * @param  string  $key
      * @return stream
      */
     public function download(Process $process, $key)

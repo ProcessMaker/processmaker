@@ -3,7 +3,6 @@
 namespace ProcessMaker\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
-use Illuminate\Support\Str;
 
 class StringHasNumberOrSpecialCharacter implements Rule
 {

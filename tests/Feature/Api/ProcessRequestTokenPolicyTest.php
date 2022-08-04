@@ -2,14 +2,10 @@
 
 namespace Tests\Feature\Api;
 
-use Carbon\Carbon;
-use Faker\Factory as Faker;
-use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;

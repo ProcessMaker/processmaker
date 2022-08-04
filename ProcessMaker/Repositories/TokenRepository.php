@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\ProcessCollaboration;
-use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Models\ProcessRequestToken as Token;
 use ProcessMaker\Models\User;
@@ -17,7 +16,6 @@ use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CollectionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\EventBasedGatewayInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\FlowInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\GatewayInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
@@ -40,7 +38,7 @@ class TokenRepository implements TokenRepositoryInterface
     /**
      * Initialize the Token Repository.
      *
-     * @param ExecutionInstanceRepository $instanceRepository
+     * @param  ExecutionInstanceRepository  $instanceRepository
      */
     public function __construct(ExecutionInstanceRepository $instanceRepository)
     {
@@ -67,9 +65,8 @@ class TokenRepository implements TokenRepositoryInterface
     /**
      * Persists instance and token data when a token arrives to an activity
      *
-     * @param ActivityInterface $activity
-     * @param TokenInterface $token
-     *
+     * @param  ActivityInterface  $activity
+     * @param  TokenInterface  $token
      * @return mixed
      */
     public function persistActivityActivated(ActivityInterface $activity, TokenInterface $token)
@@ -124,9 +121,8 @@ class TokenRepository implements TokenRepositoryInterface
     /**
      * Persists tokens that triggered a Start Event
      *
-     * @param StartEventInterface $startEvent
-     * @param CollectionInterface $tokens
-     *
+     * @param  StartEventInterface  $startEvent
+     * @param  CollectionInterface  $tokens
      * @return mixed
      */
     public function persistStartEventTriggered(StartEventInterface $startEvent, CollectionInterface $tokens)
@@ -165,9 +161,8 @@ class TokenRepository implements TokenRepositoryInterface
     /**
      * Persists instance and token data when a token within an activity change to error state
      *
-     * @param ActivityInterface $activity
-     * @param TokenInterface $token
-     *
+     * @param  ActivityInterface  $activity
+     * @param  TokenInterface  $token
      * @return mixed
      */
     public function persistActivityException(ActivityInterface $activity, TokenInterface $token)
@@ -193,9 +188,8 @@ class TokenRepository implements TokenRepositoryInterface
     /**
      * Persists instance and token data when a token is completed within an activity
      *
-     * @param ActivityInterface $activity
-     * @param TokenInterface $token
-     *
+     * @param  ActivityInterface  $activity
+     * @param  TokenInterface  $token
      * @return mixed
      */
     public function persistActivityCompleted(ActivityInterface $activity, TokenInterface $token)
@@ -224,9 +218,8 @@ class TokenRepository implements TokenRepositoryInterface
     /**
      * Persists instance and token data when a token is closed by an activity
      *
-     * @param ActivityInterface $activity
-     * @param TokenInterface $token
-     *
+     * @param  ActivityInterface  $activity
+     * @param  TokenInterface  $token
      * @return mixed
      */
     public function persistActivityClosed(ActivityInterface $activity, TokenInterface $token)
@@ -426,8 +419,8 @@ class TokenRepository implements TokenRepositoryInterface
     /**
      * Add user to the request data.
      *
-     * @param Instance $instance
-     * @param User $user
+     * @param  Instance  $instance
+     * @param  User  $user
      */
     private function addUserToData(Instance $instance, User $user = null)
     {
@@ -443,8 +436,8 @@ class TokenRepository implements TokenRepositoryInterface
     /**
      * Remove user from the request data.
      *
-     * @param Instance $instance
-     * @param User $user
+     * @param  Instance  $instance
+     * @param  User  $user
      */
     private function removeUserFromData(Instance $instance)
     {
@@ -454,7 +447,7 @@ class TokenRepository implements TokenRepositoryInterface
     /**
      * Add request to the request data.
      *
-     * @param Instance $instance
+     * @param  Instance  $instance
      */
     private function addRequestToData(Instance $instance)
     {
@@ -466,7 +459,7 @@ class TokenRepository implements TokenRepositoryInterface
     /**
      * Remove request from the request data.
      *
-     * @param Instance $instance
+     * @param  Instance  $instance
      */
     private function removeRequestFromData(Instance $instance)
     {
@@ -476,7 +469,7 @@ class TokenRepository implements TokenRepositoryInterface
     /**
      * Remove _parent magic variable from the request data.
      *
-     * @param Instance $instance
+     * @param  Instance  $instance
      */
     private function removeParentFromData(Instance $instance)
     {
@@ -507,8 +500,8 @@ class TokenRepository implements TokenRepositoryInterface
     /**
      * Persists a Call Activity Activated
      *
-     * @param TokenInterface $token
-     * @param ExecutionInstanceInterface $subprocess
+     * @param  TokenInterface  $token
+     * @param  ExecutionInstanceInterface  $subprocess
      * @return void
      */
     public function persistCallActivityActivated(TokenInterface $token, ExecutionInstanceInterface $subprocess, $startId)
@@ -538,10 +531,9 @@ class TokenRepository implements TokenRepositoryInterface
     /**
      * Persists instance and token data when a token is consumed in a event based gateway
      *
-     * @param \ProcessMaker\Nayra\Contracts\Bpmn\EventBasedGatewayInterface $eventBasedGateway
-     * @param \ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface $passedToken
-     * @param \ProcessMaker\Nayra\Contracts\Bpmn\CollectionInterface $consumedTokens
-     *
+     * @param  \ProcessMaker\Nayra\Contracts\Bpmn\EventBasedGatewayInterface  $eventBasedGateway
+     * @param  \ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface  $passedToken
+     * @param  \ProcessMaker\Nayra\Contracts\Bpmn\CollectionInterface  $consumedTokens
      * @return mixed
      */
     public function persistEventBasedGatewayActivated(EventBasedGatewayInterface $eventBasedGateway, TokenInterface $passedToken, CollectionInterface $consumedTokens)

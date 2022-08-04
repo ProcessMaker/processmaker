@@ -3,7 +3,6 @@
 namespace ProcessMaker\Upgrades;
 
 use Illuminate\Database\Migrations\MigrationCreator;
-use ProcessMaker\Exception\InvalidSemanticVersion;
 
 class UpgradeCreator extends MigrationCreator
 {
@@ -14,7 +13,6 @@ class UpgradeCreator extends MigrationCreator
      * @param $path
      * @param  null  $to
      * @param  null  $optional
-     *
      * @return string
      *
      * @throws \ProcessMaker\Exception\InvalidSemanticVersion
@@ -50,7 +48,6 @@ class UpgradeCreator extends MigrationCreator
      * @param $from
      * @param $to
      * @param  bool  $optional
-     *
      * @return array|string|string[]
      */
     protected function populateUpgradeStub($name, $stub, $to = null, bool $optional = false)

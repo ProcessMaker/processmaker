@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Api;
 
-use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
 class DocumentationTest extends TestCase

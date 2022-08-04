@@ -160,8 +160,7 @@ class ImportProcess implements ShouldQueue
      * Pass a date in string format to be parsed and returned as either a
      * Carbon object, or set to null if null.
      *
-     * @param string|null $date
-     *
+     * @param  string|null  $date
      * @return resource|null
      */
     protected function formatDate($date)
@@ -178,10 +177,9 @@ class ImportProcess implements ShouldQueue
      * database for duplicate names. If there are duplicates, append
      * an incremental number to the name.
      *
-     * @param string $name
-     * @param string $field
-     * @param object $class
-     *
+     * @param  string  $name
+     * @param  string  $field
+     * @param  object  $class
      * @return string
      */
     protected function formatName($name, $field, $class)
@@ -423,9 +421,8 @@ class ImportProcess implements ShouldQueue
      * Create a new Screen model for each screen object in the imported file,
      * then save it to the database.
      *
-     * @param object[] $screens
-     * @param Process $process
-     *
+     * @param  object[]  $screens
+     * @param  Process  $process
      * @return void
      */
     private function saveScreens($screens, $process)
@@ -447,8 +444,7 @@ class ImportProcess implements ShouldQueue
     /**
      * Create a new Screen model for an individual screen, then save it.
      *
-     * @param Screen $screen
-     *
+     * @param  Screen  $screen
      * @return void
      */
     protected function saveScreen($screen)
@@ -484,9 +480,8 @@ class ImportProcess implements ShouldQueue
      * Pass an old script ID and a new script ID, then replace any references
      * within the BPMN to the old ID with the new ID.
      *
-     * @param string|int $oldId
-     * @param string|int $newId
-     *
+     * @param  string|int  $oldId
+     * @param  string|int  $newId
      * @return void
      */
     private function updateScriptRefs($oldId, $newId)
@@ -519,8 +514,7 @@ class ImportProcess implements ShouldQueue
      * Create a new Script model for each script object in the imported file,
      * then save it to the database.
      *
-     * @param object[] $scripts
-     *
+     * @param  object[]  $scripts
      * @return void
      */
     private function saveScripts($scripts)
@@ -541,8 +535,7 @@ class ImportProcess implements ShouldQueue
     /**
      * Create a new Script model for an individual screen, then save it.
      *
-     * @param object[] $scripts
-     *
+     * @param  object[]  $scripts
      * @return Script
      */
     public function saveScript($script)
@@ -575,8 +568,7 @@ class ImportProcess implements ShouldQueue
      * a new ProcessCategory model based on the object from the imported file,
      * then save it to the database.
      *
-     * @param object $processCategory
-     *
+     * @param  object  $processCategory
      * @return void
      */
     protected function saveCategory($type, $category)
@@ -617,8 +609,7 @@ class ImportProcess implements ShouldQueue
      * Create a new Process model based on the object from the imported file,
      * then save it to the database.
      *
-     * @param object $process
-     *
+     * @param  object  $process
      * @return void
      */
     private function saveProcess($process)
@@ -683,8 +674,7 @@ class ImportProcess implements ShouldQueue
      * Handle the edge case of packages that have been renamed but are still
      * referenced in old files.
      *
-     * @param string $package
-     *
+     * @param  string  $package
      * @return bool
      */
     private function isBackwardCompatiblePackage($package)
@@ -923,6 +913,7 @@ class ImportProcess implements ShouldQueue
 
     /**
      * Returns the list of watchers to be imported
+     *
      * @param $screen
      * @return array
      */

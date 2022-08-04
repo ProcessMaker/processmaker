@@ -19,7 +19,6 @@ use ProcessMaker\Exception\InvalidUserAssignmentException;
 use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Exception\ThereIsNoProcessManagerAssignedException;
-use ProcessMaker\Exception\UserOrGroupAssignmentEmptyException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Facades\WorkflowUserManager;
 use ProcessMaker\Managers\DataManager;
@@ -325,8 +324,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     /**
      * Validation rules.
      *
-     * @param null $existing
-     *
+     * @param  null  $existing
      * @return array
      */
     public static function rules($existing = null)
@@ -353,7 +351,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     /**
      * Get the users who can start this process
      *
-     * @param string|null $node If null get START from any node
+     * @param  string|null  $node If null get START from any node
      */
     public function usersCanStart($node = null)
     {
@@ -367,7 +365,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     /**
      * Get the groups who can start this process
      *
-     * @param string|null $node If null get START from any node
+     * @param  string|null  $node If null get START from any node
      */
     public function groupsCanStart($node = null)
     {
@@ -433,8 +431,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     /**
      * Get a process template by name.
      *
-     * @param string $name
-     *
+     * @param  string  $name
      * @return string
      */
     public static function getProcessTemplate($name)
@@ -465,9 +462,8 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     /**
      * Get the user to whom to assign a task.
      *
-     * @param ActivityInterface $activity
-     * @param TokenInterface $token
-     *
+     * @param  ActivityInterface  $activity
+     * @param  TokenInterface  $token
      * @return User
      */
     public function getNextUser(ActivityInterface $activity, ProcessRequestToken $token)
@@ -536,12 +532,11 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     /**
      * If user assignment is not valid reassign to Process Manager
      *
-     * @param ProcessRequest $request
-     * @param ActivityInterface $activity
-     * @param string $assignmentType
-     * @param bool $escalateToManager
-     * @param User|null $user
-     *
+     * @param  ProcessRequest  $request
+     * @param  ActivityInterface  $activity
+     * @param  string  $assignmentType
+     * @param  bool  $escalateToManager
+     * @param  User|null  $user
      * @return User|null
      */
     private function checkAssignment(ProcessRequest $request, ActivityInterface $activity, $assignmentType, $escalateToManager, User $user = null)
@@ -591,8 +586,9 @@ class Process extends Model implements HasMedia, ProcessModelInterface
      * mustache syntax with the current data to get the user
      * that should be assigned
      *
-     * @param ProcessRequestToken $token
+     * @param  ProcessRequestToken  $token
      * @return User $user
+     *
      * @throws InvalidUserAssignmentException
      */
     private function getNextUserFromVariable($activity, $token)
@@ -620,9 +616,9 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     /**
      * Get the next user in a cyclical assignment.
      *
-     * @param string $processTaskUuid
-     *
+     * @param  string  $processTaskUuid
      * @return binary
+     *
      * @throws TaskDoesNotHaveUsersException
      */
     private function getNextUserFromGroupAssignment($processTaskUuid, $users = null)
@@ -654,9 +650,9 @@ class Process extends Model implements HasMedia, ProcessModelInterface
      * Given a request, returns the last user assigned to a task. If it is the
      * first time that the task is assigned, null is returned.
      *
-     * @param string $processTaskUuid
-     *
+     * @param  string  $processTaskUuid
      * @return binary
+     *
      * @throws TaskDoesNotHaveUsersException
      */
     private function getLastUserAssignedToTask($processTaskUuid, $processRequestId)
@@ -673,9 +669,9 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     /**
      * Get the next user in a user assignment.
      *
-     * @param string $processTaskUuid
-     *
+     * @param  string  $processTaskUuid
      * @return binary
+     *
      * @throws TaskDoesNotHaveUsersException
      */
     private function getNextUserAssignment($processTaskUuid, $users = null)
@@ -705,9 +701,9 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     /**
      * Get the next user if some special assignment is true
      *
-     * @param string $processTaskUuid
-     *
+     * @param  string  $processTaskUuid
      * @return binary
+     *
      * @throws TaskDoesNotHaveUsersException
      */
     private function getNextUserByRule($activity, $token)
@@ -777,8 +773,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     /**
      * Get an array of all assignable users to a task.
      *
-     * @param string $processTaskUuid
-     *
+     * @param  string  $processTaskUuid
      * @return array
      */
     public function getAssignableUsers($processTaskUuid)
@@ -802,9 +797,8 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     /**
      * Get a consolidated list of users within groups.
      *
-     * @param binary $group_id
-     * @param array $users
-     *
+     * @param  binary  $group_id
+     * @param  array  $users
      * @return array
      */
     public function getConsolidatedUsers($group_id, array &$users)
@@ -929,8 +923,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     /**
      * Get node element attributes
      *
-     * @param DOMElement $node
-     *
+     * @param  DOMElement  $node
      * @return array
      */
     private function nodeAttributes(DOMElement $node)
@@ -958,7 +951,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     /**
      * Update BPMN content and reset bpmnDefinitions
      *
-     * @param string $value
+     * @param  string  $value
      */
     public function setBpmnAttribute($value)
     {
@@ -1041,8 +1034,8 @@ class Process extends Model implements HasMedia, ProcessModelInterface
      *
      * @param $token
      * @param $activity
-     *
      * @return int|null $user_id
+     *
      * @throws TaskDoesNotHaveRequesterException
      */
     private function getRequester($activity, $token)
@@ -1104,7 +1097,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     /**
      * Convert a subProcess into a callActivity
      *
-     * @param BPMNElement $subProcess
+     * @param  BPMNElement  $subProcess
      * @return void
      */
     private function createCallActivityFrom($subProcess)
@@ -1145,12 +1138,11 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     /**
      * Create a clone of a BPMNElement with a different nodeName
      *
-     * @param BPMNElement $node
-     * @param string $newNodeName
-     * @param array $include
-     * @param array $exclude
-     * @param array $excludeAttributes
-     *
+     * @param  BPMNElement  $node
+     * @param  string  $newNodeName
+     * @param  array  $include
+     * @param  array  $exclude
+     * @param  array  $excludeAttributes
      * @return BPMNElement
      */
     public function cloneNodeAs($node, $newNodeName, $include = [], $exclude = [], $excludeAttributes = [])
@@ -1182,7 +1174,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     /**
      * Set multiple|single categories to the process
      *
-     * @param string $value
+     * @param  string  $value
      */
     public function setProcessCategoryIdAttribute($value)
     {
@@ -1192,7 +1184,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     /**
      * Get multiple|single categories of the process
      *
-     * @param string $value
+     * @param  string  $value
      */
     public function getProcessCategoryIdAttribute($value)
     {
@@ -1289,7 +1281,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     /**
      * Validates a call activity configuration.
      *
-     * @param CallActivity $callActivity
+     * @param  CallActivity  $callActivity
      * @throw \Exception if the call activity is not properly configured.
      */
     private function validateCallActivity(CallActivity $callActivity)
@@ -1320,7 +1312,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     /**
      * Validates the Bpmn content of the process.
      *
-     * @param BpmnDocument $request
+     * @param  BpmnDocument  $request
      * @return array
      */
     private function validateSchema(BpmnDocument $document)

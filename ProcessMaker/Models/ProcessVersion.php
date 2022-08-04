@@ -3,7 +3,6 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use ProcessMaker\Contracts\ProcessModelInterface;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasSelfServiceTasks;
@@ -108,7 +107,7 @@ class ProcessVersion extends Model implements ProcessModelInterface
     /**
      * Set multiple|single categories to the process
      *
-     * @param string $value
+     * @param  string  $value
      */
     public function setProcessCategoryIdAttribute($value)
     {

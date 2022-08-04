@@ -3,7 +3,6 @@
 namespace ProcessMaker\Traits;
 
 use Carbon\Carbon;
-use Carbon\CarbonTimeZone;
 use Illuminate\Database\Eloquent\Builder;
 use ProcessMaker\Models\User;
 use ProcessMaker\Query\Expression;
@@ -21,10 +20,9 @@ trait ExtendedPMQL
      * PMQL scope that extends the standard PMQL scope by supporting any custom
      * aliases specified in the model.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $builder
-     * @param string $query
-     * @param callable $callback
-     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param  string  $query
+     * @param  callable  $callback
      * @return mixed
      */
     public function scopePMQL(Builder $builder, string $query, callable $callback = null, User $user = null)
@@ -44,9 +42,8 @@ trait ExtendedPMQL
      * Callback function to check for and handle any field aliases, value
      * aliases, or field wildcards specified in the given model.
      *
-     * @param \ProcessMaker\Query\Expression $expression
-     * @param \Illuminate\Database\Eloquent\Builder $builder
-     *
+     * @param  \ProcessMaker\Query\Expression  $expression
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
      * @return mixed
      */
     private function handle(Expression $expression, Builder $builder, User $user = null)
@@ -119,8 +116,7 @@ trait ExtendedPMQL
      * Set the value as a string if possible. Also convert to the logged-in
      * user's timezone if the value is parsable by Carbon as a date.
      *
-     * @param \ProcessMaker\Query\Expression $expression
-     *
+     * @param  \ProcessMaker\Query\Expression  $expression
      * @return mixed
      */
     private function parseValue($expression)

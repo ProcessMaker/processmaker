@@ -28,9 +28,8 @@ class DataManager
     /**
      * Update data through a $token
      *
-     * @param ProcessRequestToken $token
-     * @param array $data
-     *
+     * @param  ProcessRequestToken  $token
+     * @param  array  $data
      * @return void
      */
     public function updateData(ProcessRequestToken $token, array $data)
@@ -58,9 +57,8 @@ class DataManager
     /**
      * Get data for the $token
      *
-     * @param ProcessRequestToken|null $token
-     * @param bool $whenTokenSaved If true returns the Request Data as when the Token was saved
-     *
+     * @param  ProcessRequestToken|null  $token
+     * @param  bool  $whenTokenSaved If true returns the Request Data as when the Token was saved
      * @return array
      */
     public function getData(ProcessRequestToken $token = null, bool $whenTokenSaved = false)
@@ -77,9 +75,8 @@ class DataManager
     /**
      * Load magic variable _user
      *
-     * @param array $data
-     * @param ProcessRequestToken $token
-     *
+     * @param  array  $data
+     * @param  ProcessRequestToken  $token
      * @return array
      */
     private function loadUserData(array $data = [], ProcessRequestToken $token = null)
@@ -98,10 +95,9 @@ class DataManager
     /**
      * Load data that $token can see in the $request
      *
-     * @param array $data
-     * @param ProcessRequestToken|null $token
-     * @param bool $whenTokenSaved
-     *
+     * @param  array  $data
+     * @param  ProcessRequestToken|null  $token
+     * @param  bool  $whenTokenSaved
      * @return array
      */
     private function loadTokenData(array $data = [], ProcessRequestToken $token = null, bool $whenTokenSaved = false)

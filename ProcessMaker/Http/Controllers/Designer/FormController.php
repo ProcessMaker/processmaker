@@ -11,9 +11,8 @@ class FormController extends Controller
     /**
      * Get the Definition form
      *
-     * @param Process $process
-     * @param Form $form
-     *
+     * @param  Process  $process
+     * @param  Form  $form
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show(Process $process = null, Form $form = null)

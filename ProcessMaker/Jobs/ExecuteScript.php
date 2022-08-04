@@ -37,12 +37,12 @@ class ExecuteScript implements ShouldQueue
     /**
      * Create a new job instance to execute a script.
      *
-     * @param Script $script
-     * @param User $current_user
-     * @param string $code
-     * @param array $data
+     * @param  Script  $script
+     * @param  User  $current_user
+     * @param  string  $code
+     * @param  array  $data
      * @param $watcher
-     * @param array $configuration
+     * @param  array  $configuration
      */
     public function __construct(ScriptInterface $script, User $current_user, $code, array $data, $watcher, array $configuration = [], $sync = false)
     {
@@ -85,8 +85,8 @@ class ExecuteScript implements ShouldQueue
     /**
      * Send a response to the user interface
      *
-     * @param int $status
-     * @param array $response
+     * @param  int  $status
+     * @param  array  $response
      */
     private function sendResponse($status, array $response)
     {

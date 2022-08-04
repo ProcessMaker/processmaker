@@ -2,10 +2,6 @@
 
 namespace ProcessMaker\Traits;
 
-use App\Events\Relations\Attached;
-use App\Events\Relations\Detached;
-use App\Events\Relations\Syncing;
-use Illuminate\Database\Eloquent\Relations\Pivot;
 use ProcessMaker\Models\CategoryAssignment;
 
 trait HasCategories
@@ -26,7 +22,7 @@ trait HasCategories
     /**
      * Set multiple|single categories to the assignable
      *
-     * @param string $value
+     * @param  string  $value
      */
     private function setMultipleCategories($value, $singleColumn)
     {

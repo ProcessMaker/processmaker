@@ -4,7 +4,6 @@ namespace ProcessMaker\Http\Controllers\Process;
 
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Controller;
@@ -20,7 +19,7 @@ class ScreenController extends Controller
     /**
      * Get the list of screens
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return Factory|View
      */
     public function index(Request $request)
@@ -42,9 +41,9 @@ class ScreenController extends Controller
             'countField' => 'screens_count',
             'apiListInclude' => 'screensCount',
             'permissions' => [
-                'view'   => $request->user()->can('view-screen-categories'),
+                'view' => $request->user()->can('view-screen-categories'),
                 'create' => $request->user()->can('create-screen-categories'),
-                'edit'   => $request->user()->can('edit-screen-categories'),
+                'edit' => $request->user()->can('edit-screen-categories'),
                 'delete' => $request->user()->can('delete-screen-categories'),
             ],
         ];
@@ -60,8 +59,7 @@ class ScreenController extends Controller
     /**
      * Get page edit
      *
-     * @param Screen $screen
-     *
+     * @param  Screen  $screen
      * @return Factory|View
      */
     public function edit(Screen $screen)
@@ -74,8 +72,7 @@ class ScreenController extends Controller
     /**
      * Get page export
      *
-     * @param Screen $screen
-     *
+     * @param  Screen  $screen
      * @return Factory|View
      */
     public function export(Screen $screen)
@@ -86,8 +83,7 @@ class ScreenController extends Controller
     /**
      * Get page import
      *
-     * @param Screen $screen
-     *
+     * @param  Screen  $screen
      * @return Factory|View
      */
     public function import(Screen $screen)
@@ -98,9 +94,8 @@ class ScreenController extends Controller
     /**
      * Download the JSON definition of the screen
      *
-     * @param Screen $screen
-     * @param string $key
-     *
+     * @param  Screen  $screen
+     * @param  string  $key
      * @return stream
      */
     public function download(Screen $screen, $key)

@@ -10,7 +10,7 @@ use Exception;
 class TaskDoesNotHaveUsersException extends Exception
 {
     /**
-     * @param string $task
+     * @param  string  $task
      */
     public function __construct($task)
     {

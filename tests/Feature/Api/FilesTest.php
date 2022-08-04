@@ -3,7 +3,6 @@
 namespace Tests\Feature\Api;
 
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\User;

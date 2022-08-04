@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Providers;
 
-use Illuminate\Auth\RequestGuard;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -16,7 +15,6 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessVersion;
-use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use ProcessMaker\Policies\MediaPolicy;
@@ -25,12 +23,12 @@ use ProcessMaker\Policies\ProcessPolicy;
 use ProcessMaker\Policies\ProcessRequestPolicy;
 use ProcessMaker\Policies\ProcessRequestTokenPolicy;
 use ProcessMaker\Policies\ProcessVersionPolicy;
-use ProcessMaker\Policies\ScreenPolicy;
 use ProcessMaker\Policies\ScriptPolicy;
 use ProcessMaker\Policies\UserPolicy;
 
 /**
  * Our AuthService Provider binds our base processmaker provider and registers any policies, if defined.
+ *
  * @todo Add gates to provide authorization functionality. See branch release/3.3 for sample implementations
  */
 class AuthServiceProvider extends ServiceProvider

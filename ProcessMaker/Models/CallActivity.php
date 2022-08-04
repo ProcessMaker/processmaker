@@ -89,10 +89,9 @@ class CallActivity implements CallActivityInterface
     /**
      * Complete the subprocess
      *
-     * @param TokenInterface $token
-     * @param ExecutionInstanceInterface $closedInstance
-     * @param ExecutionInstanceInterface $instance
-     *
+     * @param  TokenInterface  $token
+     * @param  ExecutionInstanceInterface  $closedInstance
+     * @param  ExecutionInstanceInterface  $instance
      * @return CallActivity
      */
     protected function completeSubprocess(TokenInterface $token, ExecutionInstanceInterface $closedInstance, ExecutionInstanceInterface $instance)
@@ -115,10 +114,9 @@ class CallActivity implements CallActivityInterface
     /**
      * Catch a subprocess error
      *
-     * @param TokenInterface $token
-     * @param ErrorInterface|null $error
-     * @param ExecutionInstanceInterface $instance
-     *
+     * @param  TokenInterface  $token
+     * @param  ErrorInterface|null  $error
+     * @param  ExecutionInstanceInterface  $instance
      * @return CallActivity
      */
     protected function catchSubprocessError(TokenInterface $token, ErrorInterface $error = null, ExecutionInstanceInterface $instance)
@@ -189,8 +187,7 @@ class CallActivity implements CallActivityInterface
     /**
      * Set the called element by the activity.
      *
-     * @param \ProcessMaker\Nayra\Contracts\Bpmn\CallableElementInterface|string $callableElement
-     *
+     * @param  \ProcessMaker\Nayra\Contracts\Bpmn\CallableElementInterface|string  $callableElement
      * @return $this
      */
     public function setCalledElement($callableElement)
@@ -203,9 +200,8 @@ class CallActivity implements CallActivityInterface
     /**
      * Load tokens from array. And Link to the subprocess if exists.
      *
-     * @param ExecutionInstanceInterface $instance
-     * @param TokenInterface $token
-     *
+     * @param  ExecutionInstanceInterface  $instance
+     * @param  TokenInterface  $token
      * @return $this
      */
     public function addToken(ExecutionInstanceInterface $instance, TokenInterface $token)
@@ -223,8 +219,8 @@ class CallActivity implements CallActivityInterface
     /**
      * Synchronize two process instances
      *
-     * @param ExecutionInstanceInterface $instance
-     * @param ExecutionInstanceInterface $currentInstance
+     * @param  ExecutionInstanceInterface  $instance
+     * @param  ExecutionInstanceInterface  $currentInstance
      */
     private function synchronizeInstances(ExecutionInstanceInterface $instance, ExecutionInstanceInterface $currentInstance)
     {

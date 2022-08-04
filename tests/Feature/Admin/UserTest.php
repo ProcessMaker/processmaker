@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Admin;
 
-use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
@@ -48,6 +47,7 @@ class UserTest extends TestCase
 
     /**
      * Test to make sure the additional information shows in edit user
+     *
      * @return void
      */
     public function testCanSeeAditionalInformationInEditRoute()
@@ -69,6 +69,7 @@ class UserTest extends TestCase
 
     /**
      * Test to make sure the additional information not shows in profile
+     *
      * @return void
      */
     public function testCannotSeeAditionalInformationInProfileRoute()

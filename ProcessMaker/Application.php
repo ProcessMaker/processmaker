@@ -16,6 +16,7 @@ class Application extends IlluminateApplication
 
     /**
      * Sets the timezone for the application and for php with the specified timezone
+     *
      * @param $tz string The timezone to set to
      */
     public function setTimezone($tz)
@@ -26,6 +27,7 @@ class Application extends IlluminateApplication
 
     /**
      * Retrieves the currently set timezone
+     *
      * @return string The timezone for the system
      */
     public function getTimezone()
@@ -39,6 +41,7 @@ class Application extends IlluminateApplication
      *   Sessions : USER_* , URS_*
      *
      * @note: This is ported from Gulliver System. This will most likely need to be refactored/removed
+     *
      * @return array Contents of system contents.
      */
     public function getSystemConstants()
@@ -65,6 +68,7 @@ class Application extends IlluminateApplication
      * Get the path to the application "app" directory.
      *
      * @note This extends the base Application to specify ProcessMaker instead of app as the main directory
+     *
      * @param  string  $path Optionally, a path to append to the app path
      * @return string
      */

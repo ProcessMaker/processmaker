@@ -5,21 +5,17 @@ namespace Tests\Feature\Api;
 use Faker\Factory as Faker;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Notification;
-use Mockery;
 use PermissionSeeder;
 use ProcessMaker\Events\ScriptResponseEvent;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\ScriptExecutor;
-use ProcessMaker\Models\ScriptVersion;
 use ProcessMaker\Models\User;
 use ProcessMaker\PolicyExtension;
 use ProcessMaker\Providers\AuthServiceProvider;
@@ -481,7 +477,7 @@ class ScriptsTest extends TestCase
     /**
      * A helper method to generate a script object from the factory
      *
-     * @param string $language
+     * @param  string  $language
      * @return Script
      */
     private function getScript($language)

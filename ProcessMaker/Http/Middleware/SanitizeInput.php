@@ -66,7 +66,7 @@ class SanitizeInput extends TransformsRequest
     /**
      * Rules to validate a Screen model
      *
-     * @param \Illuminate\Routing\Route $route
+     * @param  \Illuminate\Routing\Route  $route
      */
     private function ScreenControllerRules($route, Screen $screen)
     {

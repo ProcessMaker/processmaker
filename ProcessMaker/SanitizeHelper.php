@@ -2,9 +2,7 @@
 
 namespace ProcessMaker;
 
-use function GuzzleHttp\json_decode;
 use Illuminate\Support\Facades\Validator;
-use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
 
 class SanitizeHelper
@@ -33,7 +31,7 @@ class SanitizeHelper
      *
      * @param  string  $key
      * @param  mixed  $value
-     * @param  bool $strip_tags
+     * @param  bool  $strip_tags
      * @return mixed
      */
     public static function sanitize($value, $strip_tags = true)
@@ -62,8 +60,7 @@ class SanitizeHelper
     /**
      * Convert a <tag> into a regexp.
      *
-     * @param string $tag
-     *
+     * @param  string  $tag
      * @return string
      */
     private static function convertTagToRegExp($tag)
@@ -74,8 +71,7 @@ class SanitizeHelper
     /**
      * Sanitize each element of an array. Do not sanitize rich text elements
      *
-     * @param string $tag
-     *
+     * @param  string  $tag
      * @return string
      */
     public static function sanitizeData($data, $task)
@@ -186,7 +182,7 @@ class SanitizeHelper
     public static function sanitizeEmail($email)
     {
         $validator = Validator::make(['email' => $email], [
-            'email'=>'required|email',
+            'email' => 'required|email',
         ]);
         if ($validator->fails()) {
             return '';

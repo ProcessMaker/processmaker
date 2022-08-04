@@ -2,8 +2,6 @@
 
 namespace Tests\Feature\Api;
 
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;

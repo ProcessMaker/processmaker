@@ -3,7 +3,6 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use ProcessMaker\Facades\Docker;
@@ -18,8 +17,7 @@ class ScriptExecutorController extends Controller
     /**
      * Get a list of script executors.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ResponseFactory|Response
      *
      *
@@ -62,9 +60,8 @@ class ScriptExecutorController extends Controller
     /**
      * Create a script executor
      *
-     * @param Request $request
-     * @param ScriptExecutor $scriptExecutor
-     *
+     * @param  Request  $request
+     * @param  ScriptExecutor  $scriptExecutor
      * @return ResponseFactory|Response
      *
      *
@@ -109,15 +106,14 @@ class ScriptExecutorController extends Controller
 
         BuildScriptExecutor::dispatch($scriptExecutor->id, $request->user()->id);
 
-        return ['status'=>'started', 'id' => $scriptExecutor->id];
+        return ['status' => 'started', 'id' => $scriptExecutor->id];
     }
 
     /**
      * Update and rebuild the script executor
      *
-     * @param Request $request
-     * @param ScriptExecutor $scriptExecutor
-     *
+     * @param  Request  $request
+     * @param  ScriptExecutor  $scriptExecutor
      * @return ResponseFactory|Response
      *
      *
@@ -170,15 +166,14 @@ class ScriptExecutorController extends Controller
 
         BuildScriptExecutor::dispatch($scriptExecutor->id, $request->user()->id);
 
-        return ['status'=>'started'];
+        return ['status' => 'started'];
     }
 
     /**
      * Delete a script executor
      *
-     * @param Request $request
-     * @param ScriptExecutor $scriptExecutor
-     *
+     * @param  Request  $request
+     * @param  ScriptExecutor  $scriptExecutor
      * @return ResponseFactory|Response
      *
      *
@@ -249,8 +244,7 @@ class ScriptExecutorController extends Controller
     /**
      * Cancel a script executor
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ResponseFactory|Response
      *
      *

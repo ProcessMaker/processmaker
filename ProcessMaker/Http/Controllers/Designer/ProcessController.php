@@ -20,8 +20,7 @@ class ProcessController extends Controller
     /**
      * Redirects to the view of the designer
      *
-     * @param string $process
-     *
+     * @param  string  $process
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show($process = null)

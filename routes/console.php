@@ -18,8 +18,7 @@ Artisan::command('inspire', function () {
 
 Artisan::command('notifications:resend {username}', function ($username) {
     $user = ProcessMaker\Models\User::where('username', $username)->firstOrFail();
-    $tokens = ProcessMaker\Models\ProcessRequestToken
-        ::where('status', 'ACTIVE')
+    $tokens = ProcessMaker\Models\ProcessRequestToken::where('status', 'ACTIVE')
         ->where('user_id', $user->getKey())
         ->get();
     foreach ($tokens as $token) {

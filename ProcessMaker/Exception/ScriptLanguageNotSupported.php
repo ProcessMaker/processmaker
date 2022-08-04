@@ -10,7 +10,7 @@ use Exception;
 class ScriptLanguageNotSupported extends Exception
 {
     /**
-     * @param string $language
+     * @param  string  $language
      */
     public function __construct($language)
     {

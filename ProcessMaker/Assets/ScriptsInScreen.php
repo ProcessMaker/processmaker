@@ -15,9 +15,8 @@ class ScriptsInScreen
     /**
      * Get the scripts (ex. watchers) used in a screen
      *
-     * @param Screen $screen
-     * @param array $scripts
-     *
+     * @param  Screen  $screen
+     * @param  array  $scripts
      * @return array
      */
     public function referencesToExport(Screen $screen, array $scripts = [])
@@ -37,9 +36,8 @@ class ScriptsInScreen
     /**
      * Update references used in an imported screen
      *
-     * @param Screen $process
-     * @param array $references
-     *
+     * @param  Screen  $process
+     * @param  array  $references
      * @return void
      */
     public function updateReferences(Screen $screen, array $references, ExportManager $exportManager)
@@ -80,9 +78,8 @@ class ScriptsInScreen
     /**
      * Find recursively in an array
      *
-     * @param array $array
-     * @param callable $callback
-     *
+     * @param  array  $array
+     * @param  callable  $callback
      * @return void
      */
     private function findInArray(array $array, callable $callback)

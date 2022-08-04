@@ -3,7 +3,6 @@
 namespace ProcessMaker\Managers;
 
 use Illuminate\Database\Eloquent\Model;
-use ProcessMaker\Models\Screen;
 
 class ExportManager
 {
@@ -39,10 +38,9 @@ class ExportManager
     /**
      * Get dependencies of a $modelClass type
      *
-     * @param string $modelClass
-     * @param Model $owner
-     * @param array $references
-     *
+     * @param  string  $modelClass
+     * @param  Model  $owner
+     * @param  array  $references
      * @return array
      */
     public function getDependenciesOfType($modelClass, $owner, array $references = [])
@@ -50,7 +48,7 @@ class ExportManager
         $references = $this->reviewDependenciesOf($owner, $references);
         $ids = [];
         foreach ($references as $ref) {
-            list($class, $id) = $ref;
+            [$class, $id] = $ref;
             $class === $modelClass ? $ids[] = $id : null;
         }
 
@@ -60,10 +58,9 @@ class ExportManager
     /**
      * Review all the dependencies of the $owner
      *
-     * @param Model $owner
-     * @param array $references
-     * @param array $reviewed
-     *
+     * @param  Model  $owner
+     * @param  array  $references
+     * @param  array  $reviewed
      * @return array
      */
     private function reviewDependenciesOf(Model $owner, array $references = [], array $reviewed = [])
@@ -84,7 +81,7 @@ class ExportManager
         $references = array_merge($references, $newReferences);
         // Find recurcively dependencies
         foreach ($newReferences as $ref) {
-            list($class, $id) = $ref;
+            [$class, $id] = $ref;
             $nextOwner = $class::find($id);
             if ($nextOwner) {
                 $references = $this->reviewDependenciesOf($nextOwner, $references, $reviewed);
@@ -97,14 +94,13 @@ class ExportManager
     /**
      * Update references for a given model
      *
-     * @param Model $model
-     * @param array $newReferences
-     *
+     * @param  Model  $model
+     * @param  array  $newReferences
      * @return Model
      */
     public function updateReferences(array $newReferences)
     {
-        foreach ($newReferences as $class =>  $model) {
+        foreach ($newReferences as $class => $model) {
             if (is_array($model)) {
                 foreach ($model as $item) {
                     $this->updateModelReferences($item, $newReferences);
@@ -145,8 +141,7 @@ class ExportManager
     /**
      * Remove duplicated items
      *
-     * @param array $array
-     *
+     * @param  array  $array
      * @return array
      */
     private function uniqueDiff(array $array, array $references)
@@ -164,10 +159,10 @@ class ExportManager
     /**
      * Add a log message about the import process
      *
-     * @param string $key
-     * @param string $label
-     * @param bool $success
-     * @param string $message
+     * @param  string  $key
+     * @param  string  $label
+     * @param  bool  $success
+     * @param  string  $message
      * @return void
      */
     public function addLogMessage($key, $label, $success, $message)

@@ -7,8 +7,6 @@ use ProcessMaker\Application;
 use ProcessMaker\Console\Kernel as ConsoleKernel;
 use ProcessMaker\Exception\Handler;
 use ProcessMaker\Http\Kernel as HttpKernel;
-use Monolog\Formatter\LineFormatter;
-use Monolog\Handler\RotatingFileHandler;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,7 +20,7 @@ use Monolog\Handler\RotatingFileHandler;
 */
 
 $app = new Application(
-    realpath(__DIR__ . '/../')
+    realpath(__DIR__.'/../')
 );
 
 /*

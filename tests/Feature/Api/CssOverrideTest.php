@@ -2,11 +2,6 @@
 
 namespace Tests\Feature\Api;
 
-use Carbon\Carbon;
-use Faker\Factory as Faker;
-use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Models\Group;
-use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 

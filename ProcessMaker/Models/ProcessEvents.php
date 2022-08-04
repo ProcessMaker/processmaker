@@ -49,7 +49,7 @@ class ProcessEvents extends Relation
     /**
      * Initialize the relation on a set of models.
      *
-     * @param  array   $models
+     * @param  array  $models
      * @param  string  $relation
      * @return array
      */
@@ -61,7 +61,7 @@ class ProcessEvents extends Relation
     /**
      * Match the eagerly loaded results to their parents.
      *
-     * @param  Process[]   $models
+     * @param  Process[]  $models
      * @param  \Illuminate\Database\Eloquent\Collection  $results
      * @param  string  $relation
      * @return array

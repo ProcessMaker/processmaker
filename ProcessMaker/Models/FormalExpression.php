@@ -35,6 +35,7 @@ class FormalExpression implements FormalExpressionInterface
 
     /**
      * FEEL expression object to be used to evaluate
+     *
      * @var \Symfony\Component\ExpressionLanguage\ExpressionLanguage
      */
     private $feelExpression;
@@ -51,7 +52,7 @@ class FormalExpression implements FormalExpressionInterface
     /**
      * Register a custom PM function
      *
-     * @param callable $callable
+     * @param  callable  $callable
      */
     public function registerPMFunction($name, callable $callable)
     {
@@ -272,8 +273,7 @@ class FormalExpression implements FormalExpressionInterface
     /**
      * Prepare the data for the FEEL evaluator
      *
-     * @param array $data
-     *
+     * @param  array  $data
      * @return array
      */
     private function feelEncode(array $data)
@@ -303,8 +303,7 @@ class FormalExpression implements FormalExpressionInterface
     /**
      * Get the body of the Expression.
      *
-     * @param string $body
-     *
+     * @param  string  $body
      * @return $this
      */
     public function setBody($body)
@@ -337,8 +336,7 @@ class FormalExpression implements FormalExpressionInterface
     /**
      * Get the expression language.
      *
-     * @param string $language
-     *
+     * @param  string  $language
      * @return $this
      */
     public function setLanguage($language)
@@ -351,8 +349,7 @@ class FormalExpression implements FormalExpressionInterface
     /**
      * Invoke the format expression.
      *
-     * @param mixed $data
-     *
+     * @param  mixed  $data
      * @return string
      */
     public function __invoke($data)
@@ -363,10 +360,9 @@ class FormalExpression implements FormalExpressionInterface
     /**
      *  Evaluate an expression using an specific template engine
      *
-     * @param \ProcessMaker\Contracts\TemplateExpressionInterface $templateEngine
-     * @param string $expression
-     * @param array $data
-     *
+     * @param  \ProcessMaker\Contracts\TemplateExpressionInterface  $templateEngine
+     * @param  string  $expression
+     * @param  array  $data
      * @return bool
      *
      * @throws ExpressionFailedException

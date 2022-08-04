@@ -8,7 +8,6 @@ use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\PermissionAssignment;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
@@ -71,9 +70,9 @@ class EditDataTest extends TestCase
     /**
      * Add edit data process permission.
      *
-     * @param Process $process
-     * @param array $users
-     * @param array $groups
+     * @param  Process  $process
+     * @param  array  $users
+     * @param  array  $groups
      */
     private function addProcessPermission(Process $process, array $users, array $groups)
     {
@@ -101,8 +100,7 @@ class EditDataTest extends TestCase
     /**
      * Create new task assignment type user successfully
      *
-     * @param User $userAssigned
-     *
+     * @param  User  $userAssigned
      * @return \ProcessMaker\Models\Process
      */
     private function createSingleTaskProcessUserAssignment(User $userAssigned)
@@ -132,10 +130,9 @@ class EditDataTest extends TestCase
     /**
      * Start a process
      *
-     * @param \ProcessMaker\Models\Process $process
-     * @param string $startEvent
-     * @param array $data
-     *
+     * @param  \ProcessMaker\Models\Process  $process
+     * @param  string  $startEvent
+     * @param  array  $data
      * @return \ProcessMaker\Models\ProcessRequest
      */
     private function startProcess($process, $startEvent, $data = [])
@@ -149,9 +146,8 @@ class EditDataTest extends TestCase
     /**
      * Complete task
      *
-     * @param \ProcessMaker\Models\ProcessRequestToken $task
-     * @param array $data
-     *
+     * @param  \ProcessMaker\Models\ProcessRequestToken  $task
+     * @param  array  $data
      * @return \ProcessMaker\Models\ProcessRequestToken
      */
     private function completeTask(ProcessRequestToken $task, $data = [])

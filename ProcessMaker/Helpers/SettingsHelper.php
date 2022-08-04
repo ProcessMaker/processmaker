@@ -8,8 +8,8 @@ use ProcessMaker\Models\Setting;
 if (! function_exists('settings')) {
     /**
      * @param  string|null  $key
-     *
      * @return array|null
+     *
      * @throws \Exception
      */
     function settings(string $key = null)
@@ -50,6 +50,7 @@ if (! function_exists('flush_settings')) {
      * Flush the ProcessMaker settings from the cache and global configuration.
      *
      * @return void
+     *
      * @throws \Exception
      */
     function flush_settings()
@@ -75,7 +76,6 @@ if (! function_exists('cache_settings')) {
      * Cache all ProcessMaker settings
      *
      * @param  bool  $force
-     *
      * @return bool
      */
     function cache_settings(bool $force = false)

@@ -3,7 +3,6 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Validation\ValidationException;
-use ProcessMaker\Models\ProcessRequest;
 use Spatie\MediaLibrary\Models\Media as Model;
 
 /**
@@ -82,7 +81,6 @@ class Media extends Model
      * Validation rules
      *
      * @param $existing
-     *
      * @return array
      */
     public static function rules($existing = null)

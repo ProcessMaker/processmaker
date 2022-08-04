@@ -2,13 +2,9 @@
 
 namespace Tests\Feature;
 
-use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use PermissionSeeder;
-use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Models\User;
-use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
 class SecurityLoggerTest extends TestCase
@@ -23,7 +19,7 @@ class SecurityLoggerTest extends TestCase
 
         // Build a user with a specified password
         $user = factory(User::class)->create([
-            'username' =>'newuser',
+            'username' => 'newuser',
             'password' => Hash::make('password'),
         ]);
         $this->assertDatabaseMissing('security_logs', ['user_id' => $user->id]);

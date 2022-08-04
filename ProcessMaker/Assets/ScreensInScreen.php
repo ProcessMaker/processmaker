@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Assets;
 
-use DOMXPath;
 use Illuminate\Support\Arr;
 use ProcessMaker\Contracts\ScreenInterface;
 use ProcessMaker\Exception\MaximumRecursionException;
@@ -10,7 +9,6 @@ use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\Providers\WorkflowServiceProvider;
 
 class ScreensInScreen
 {
@@ -25,9 +23,8 @@ class ScreensInScreen
     /**
      * Get the screens (nested) used in a screen
      *
-     * @param Screen $screen
-     * @param array $screens
-     *
+     * @param  Screen  $screen
+     * @param  array  $screens
      * @return array
      */
     public function referencesToExport(ScreenInterface $screen, array $screens = [], ExportManager $manager = null, bool $recursive = true)
@@ -59,9 +56,8 @@ class ScreensInScreen
     /**
      * Update references used in an imported screen
      *
-     * @param Screen $process
-     * @param array $references
-     *
+     * @param  Screen  $process
+     * @param  array  $references
      * @return void
      */
     public function updateReferences(Screen $screen, array $references = [])
@@ -83,9 +79,8 @@ class ScreensInScreen
     /**
      * Find recursively in an array
      *
-     * @param array $array
-     * @param callable $callback
-     *
+     * @param  array  $array
+     * @param  callable  $callback
      * @return void
      */
     private function findInArray(array $array, callable $callback, array $path = [])
@@ -103,7 +98,7 @@ class ScreensInScreen
     /**
      * Set the process requests for version context
      *
-     * @param ProcessRequest $processRequest
+     * @param  ProcessRequest  $processRequest
      * @return void
      */
     public function setProcessRequest(ProcessRequest $processRequest = null)

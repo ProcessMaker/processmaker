@@ -3,7 +3,6 @@
 namespace ProcessMaker\Http\Controllers\Admin;
 
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Setting;

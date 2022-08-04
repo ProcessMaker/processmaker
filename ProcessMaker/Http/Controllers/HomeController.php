@@ -4,7 +4,6 @@ namespace ProcessMaker\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use ProcessMaker\Http\Controllers\Controller;
 
 class HomeController extends Controller
 {

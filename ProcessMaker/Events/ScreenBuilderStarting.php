@@ -17,9 +17,9 @@ class ScreenBuilderStarting
 
     /**
      * Create a new event instance.
-     * @param ScreenBuilderManager $manager
-     * @param string $type The type of screen that is launching
      *
+     * @param  ScreenBuilderManager  $manager
+     * @param  string  $type The type of screen that is launching
      * @return void
      */
     public function __construct(ScreenBuilderManager $manager, $type)

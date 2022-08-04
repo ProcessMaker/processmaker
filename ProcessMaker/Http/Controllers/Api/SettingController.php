@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
-use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Jobs\ImportSettings;
 use ProcessMaker\Models\Setting;
 use Throwable;
@@ -172,9 +171,8 @@ class SettingController extends Controller
     /**
      * Update a setting
      *
-     * @param Setting $setting
-     * @param Request $request
-     *
+     * @param  Setting  $setting
+     * @param  Request  $request
      * @return ResponseFactory|Response
      *
      *     @OA\Put(

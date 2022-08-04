@@ -2,10 +2,7 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\User;
 use Route;
 use Tests\TestCase;
@@ -29,7 +26,7 @@ class FlashMessageTest extends TestCase
         // Create a fake route that flashes a message with a successful alert
         Route::get('/_tests/alert_success_test', function () {
             // Flash a message
-            request()->session()->flash('_alert', ['type'=>'success', 'message'=>'Test Successful Message']);
+            request()->session()->flash('_alert', ['type' => 'success', 'message' => 'Test Successful Message']);
 
             return view('layouts.layout');
         })->middleware('web');
@@ -60,7 +57,7 @@ class FlashMessageTest extends TestCase
         // Create a fake route that flashes a message with a error alert
         Route::get('/_tests/alert_failure_test', function () {
             // Flash a message
-            request()->session()->flash('_alert', ['type'=>'danger', 'message'=>'Test Error Message']);
+            request()->session()->flash('_alert', ['type' => 'danger', 'message' => 'Test Error Message']);
 
             return view('layouts.layout');
         })->middleware('web');

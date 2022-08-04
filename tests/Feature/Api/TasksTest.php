@@ -319,7 +319,7 @@ class TasksTest extends TestCase
         // Order by process_request_id
         $route = route('api.'.$this->resource.'.index', [
             'order_by' => 'process_request_id',
-            'order_direction' =>'asc',
+            'order_direction' => 'asc',
         ]);
         $response = $this->apiCall('GET', $route);
         $response->assertStatus(200);
@@ -329,7 +329,7 @@ class TasksTest extends TestCase
         // Order by the request name (id + name)
         $route = route('api.'.$this->resource.'.index', [
             'order_by' => 'process_requests.id,process_requests.name',
-            'order_direction' =>'desc',
+            'order_direction' => 'desc',
         ]);
         $response = $this->apiCall('GET', $route);
         $response->assertStatus(200);

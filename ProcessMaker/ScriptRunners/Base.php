@@ -21,9 +21,8 @@ abstract class Base
     /**
      * Prepare the docker configuration.
      *
-     * @param string $code
-     * @param array $dockerConfig
-     *
+     * @param  string  $code
+     * @param  array  $dockerConfig
      * @return array
      */
     abstract public function config($code, array $dockerConfig);
@@ -50,13 +49,13 @@ abstract class Base
     /**
      * Run a script code.
      *
-     * @param string $code
-     * @param array $data
-     * @param array $config
-     * @param int $timeout
-     * @param \ProcessMaker\Models\User $user
-     *
+     * @param  string  $code
+     * @param  array  $data
+     * @param  array  $config
+     * @param  int  $timeout
+     * @param  \ProcessMaker\Models\User  $user
      * @return array
+     *
      * @throws \RuntimeException
      */
     public function run($code, array $data, array $config, $timeout, ?User $user)
@@ -157,8 +156,7 @@ abstract class Base
     /**
      * Set the tokenId of reference.
      *
-     * @param string $tokenId
-     *
+     * @param  string  $tokenId
      * @return void
      */
     public function setTokenId($tokenId)

@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
-use Comment as GlobalComment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
@@ -27,10 +26,8 @@ class CommentController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return \ProcessMaker\Http\Resources\ApiCollection
-     *
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
@@ -81,8 +78,7 @@ class CommentController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      *
      * @throws \Throwable
@@ -103,8 +99,7 @@ class CommentController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param Comment $comment
-     *
+     * @param  Comment  $comment
      * @return CommentResource
      */
     public function show(Comment $comment)
@@ -115,10 +110,10 @@ class CommentController extends Controller
     /**
      * Update a comment
      *
-     * @param Comment $comment
-     * @param Request $request
-     *
+     * @param  Comment  $comment
+     * @param  Request  $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     *
      * @throws \Throwable
      */
     public function update(Comment $comment, Request $request)
@@ -139,8 +134,7 @@ class CommentController extends Controller
     /**
      * Delete comment
      *
-     * @param Comment $comment
-     *
+     * @param  Comment  $comment
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      *
      * @throws \Exception

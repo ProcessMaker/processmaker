@@ -110,7 +110,7 @@ class FEELTest extends TestCase
         //Evaluate a complex hashmap
         $expresion->setBody('{complex: {a:[1,2,3], b:"bar"}}');
         $response = $expresion([]);
-        $this->assertSame(['complex' => ['a'=>[1, 2, 3], 'b' => 'bar']], $response);
+        $this->assertSame(['complex' => ['a' => [1, 2, 3], 'b' => 'bar']], $response);
     }
 
     /**
@@ -376,7 +376,7 @@ class FEELTest extends TestCase
         $expresion = new FormalExpression();
         $expresion->setLanguage('FEEL');
         $data = [
-            'nonobject'  => 'bar',
+            'nonobject' => 'bar',
         ];
 
         //ExpressionFailedException expected

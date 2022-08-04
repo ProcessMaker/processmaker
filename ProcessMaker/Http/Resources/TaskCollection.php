@@ -2,9 +2,6 @@
 
 namespace ProcessMaker\Http\Resources;
 
-use Illuminate\Http\Resources\Json\ResourceCollection;
-use Illuminate\Pagination\AbstractPaginator;
-
 /**
  *  @OA\Schema(
  *    schema="taskMetadata",

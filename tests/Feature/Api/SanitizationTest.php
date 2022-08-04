@@ -4,7 +4,6 @@ namespace Tests\Feature\Api;
 
 use Faker\Factory as Faker;
 use ProcessMaker\Models\Script;
-use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;

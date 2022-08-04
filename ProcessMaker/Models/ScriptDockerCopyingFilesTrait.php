@@ -16,9 +16,9 @@ trait ScriptDockerCopyingFilesTrait
     /**
      * Run a command in a docker container.
      *
-     * @param array $options
-     *
+     * @param  array  $options
      * @return array
+     *
      * @throws \RuntimeException
      */
     protected function executeCopying(array $options)
@@ -42,11 +42,11 @@ trait ScriptDockerCopyingFilesTrait
     /**
      * Create a docker container.
      *
-     * @param string $image
-     * @param string $command
-     * @param string $parameters
-     *
+     * @param  string  $image
+     * @param  string  $command
+     * @param  string  $parameters
      * @return string
+     *
      * @throws \RuntimeException
      */
     private function createContainer($image, $command, $parameters = '')
@@ -70,9 +70,9 @@ trait ScriptDockerCopyingFilesTrait
     /**
      * Put a string content into a file in the container.
      *
-     * @param string $container
-     * @param string $path
-     * @param string $content
+     * @param  string  $container
+     * @param  string  $path
+     * @param  string  $content
      *
      * @throws \RuntimeException
      */
@@ -80,7 +80,7 @@ trait ScriptDockerCopyingFilesTrait
     {
         $source = tempnam(config('app.processmaker_scripts_home'), 'put');
         file_put_contents($source, $content);
-        list($returnCode, $output) = $this->execCopy($source, $container, $path);
+        [$returnCode, $output] = $this->execCopy($source, $container, $path);
         unlink($source);
         if ($returnCode) {
             throw new RuntimeException('Unable to send data to container: '.implode("\n", $output));
@@ -90,9 +90,9 @@ trait ScriptDockerCopyingFilesTrait
     /**
      * Runs the docker copy command
      *
-     * @param string $source
-     * @param string $container
-     * @param string $dest
+     * @param  string  $source
+     * @param  string  $container
+     * @param  string  $dest
      *
      * @throws \RuntimeException
      */
@@ -107,10 +107,10 @@ trait ScriptDockerCopyingFilesTrait
     /**
      * Get the content from a file in the container.
      *
-     * @param string $container
-     * @param string $path
-     *
+     * @param  string  $container
+     * @param  string  $path
      * @return string
+     *
      * @throws \RuntimeException
      */
     private function getFromContainer($container, $path)
@@ -127,9 +127,8 @@ trait ScriptDockerCopyingFilesTrait
     /**
      * Start the container.
      *
-     * @param string $container
-     * @param int $timeout
-     *
+     * @param  string  $container
+     * @param  int  $timeout
      * @return array
      */
     private function startContainer($container, $timeout)

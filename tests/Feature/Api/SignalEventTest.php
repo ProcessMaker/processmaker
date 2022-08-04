@@ -2,14 +2,11 @@
 
 namespace Tests\Feature\Api;
 
-use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Jobs\CatchSignalEventProcess;
 use ProcessMaker\Jobs\ImportProcess;
-use ProcessMaker\Jobs\StartEvent;
 use ProcessMaker\Jobs\ThrowSignalEvent;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\ProcessRequestToken;
 use Tests\TestCase;
 
 class SignalEventTest extends TestCase

@@ -99,8 +99,7 @@ class ScreenCategoryController extends Controller
     /**
      * Display the specified screen category.
      *
-     * @param ScreenCategory $screenCategory
-     *
+     * @param  ScreenCategory  $screenCategory
      * @return \Illuminate\Http\JsonResponse
      *     * @OA\Get(
      *     path="/screen_categories/{screen_category_id}",
@@ -131,8 +130,7 @@ class ScreenCategoryController extends Controller
     /**
      * Store a newly created Screen Category in storage
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return \Illuminate\Http\JsonResponse
      *
      *     * @OA\Post(
@@ -164,9 +162,8 @@ class ScreenCategoryController extends Controller
     /**
      * Updates the current element
      *
-     * @param Request $request
-     * @param ScreenCategory $screenCategory
-     *
+     * @param  Request  $request
+     * @param  ScreenCategory  $screenCategory
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      *      * @OA\Put(
      *     path="/screen_categories/{screen_category_id}",
@@ -205,8 +202,7 @@ class ScreenCategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param ScreenCategory $screenCategory
-     *
+     * @param  ScreenCategory  $screenCategory
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      *
      *      * @OA\Delete(
@@ -233,8 +229,8 @@ class ScreenCategoryController extends Controller
     {
         if ($screenCategory->screens->count() !== 0) {
             return response(
-                ['message'=>'The item should not have associated screens',
-                    'errors'=> ['screens' => $screenCategory->screens->count()], ],
+                ['message' => 'The item should not have associated screens',
+                    'errors' => ['screens' => $screenCategory->screens->count()], ],
                 422);
         }
 

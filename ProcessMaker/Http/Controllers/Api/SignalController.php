@@ -2,12 +2,8 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
-use DOMXPath;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Arr;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
@@ -19,8 +15,7 @@ class SignalController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return \Illuminate\Http\Response
      *
      * @OA\Get(
@@ -160,6 +155,7 @@ class SignalController extends Controller
 
     /**
      * Display the specified resource.
+     *
      * @return resource
      *
      * @OA\Get(
@@ -190,9 +186,10 @@ class SignalController extends Controller
 
     /**
      * Creates a new global signal
-     * @param Request $request
      *
+     * @param  Request  $request
      * @return \Illuminate\Http\JsonResponse
+     *
      * @throws \Throwable
      *
      * @OA\Post(

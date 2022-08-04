@@ -24,8 +24,7 @@ class TaskAssignmentController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return \Illuminate\Http\Response
      *
      * @OA\Get(
@@ -81,8 +80,9 @@ class TaskAssignmentController extends Controller
     /**
      * Store a newly created task assignment in storage.
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return ApiResource
+     *
      * @throws \Throwable
      *
      * @OA\Post(
@@ -115,10 +115,10 @@ class TaskAssignmentController extends Controller
     /**
      * Update a task assignment
      *
-     * @param ProcessTaskAssignment $task_assignment
-     * @param Request $request
-     *
+     * @param  ProcessTaskAssignment  $task_assignment
+     * @param  Request  $request
      * @return ApiResource
+     *
      * @throws \Throwable
      *
      * @OA\Put(
@@ -159,7 +159,7 @@ class TaskAssignmentController extends Controller
     /**
      * Remove an assignment
      *
-     * @param ProcessTaskAssignment $task_assignment
+     * @param  ProcessTaskAssignment  $task_assignment
      * @return ResponseFactory|Response
      *
      * @OA\Delete(

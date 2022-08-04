@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use Auth;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityCompleted;
@@ -12,14 +11,12 @@ use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Events\ProcessCompleted;
 use ProcessMaker\Events\ProcessUpdated;
 use ProcessMaker\Events\ScreenBuilderStarting;
-use ProcessMaker\Events\ScriptBuilderStarting;
 use ProcessMaker\Events\ScriptResponseEvent;
 use ProcessMaker\Events\SessionStarted as SessionStartedEvent;
 use ProcessMaker\Events\TestStatusEvent;
 use ProcessMaker\Managers\ModelerManager as Modeler;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Managers\ScreenBuilderManager as ScreenBuilder;
-use ProcessMaker\Managers\ScriptBuilderManager as ScriptBuilder;
 use ProcessMaker\Models\ProcessRequest as Request;
 use ProcessMaker\Models\ProcessRequestToken as Task;
 use ProcessMaker\Models\Screen;

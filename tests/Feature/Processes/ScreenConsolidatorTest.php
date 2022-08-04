@@ -4,7 +4,6 @@ namespace Tests\Feature\Processes;
 
 use Illuminate\Http\UploadedFile;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\User;
 use ProcessMaker\ScreenConsolidator;
 use Tests\Feature\Shared\RequestHelper;

@@ -3,9 +3,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 
@@ -33,7 +31,7 @@ class AuthTest extends TestCase
     {
         // Build a user with a specified password
         $user = factory(User::class)->create([
-            'username' =>'newuser',
+            'username' => 'newuser',
             'password' => Hash::make('password'),
         ]);
         // Make sure we have a failed attempt with a bad password

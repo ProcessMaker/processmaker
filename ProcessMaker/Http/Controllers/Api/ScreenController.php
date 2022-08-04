@@ -2,9 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -31,8 +29,7 @@ class ScreenController extends Controller
     /**
      * Get a list of Screens.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ResponseFactory|Response
      *
      *     @OA\Get(
@@ -155,8 +152,7 @@ class ScreenController extends Controller
     /**
      * Get a single Screen.
      *
-     * @param Screen $screen
-     *
+     * @param  Screen  $screen
      * @return ResponseFactory|Response
      *
      * @OA\Get(
@@ -188,8 +184,7 @@ class ScreenController extends Controller
     /**
      * Create a new Screen.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ResponseFactory|Response
      *
      *  @OA\Post(
@@ -222,9 +217,8 @@ class ScreenController extends Controller
     /**
      * Update a Screen.
      *
-     * @param Screen $screen
-     * @param Request $request
-     *
+     * @param  Screen  $screen
+     * @param  Request  $request
      * @return ResponseFactory|Response
      *
      *     @OA\Put(
@@ -263,9 +257,8 @@ class ScreenController extends Controller
     /**
      * duplicate a Screen.
      *
-     * @param Screen $screen
-     * @param Request $request
-     *
+     * @param  Screen  $screen
+     * @param  Request  $request
      * @return ResponseFactory|Response
      *
      *     @OA\Put(
@@ -325,8 +318,7 @@ class ScreenController extends Controller
     /**
      * Delete a Screen.
      *
-     * @param Screen $screen
-     *
+     * @param  Screen  $screen
      * @return ResponseFactory|Response
      *     @OA\Delete(
      *     path="/screens/{screens_id}",
@@ -359,7 +351,6 @@ class ScreenController extends Controller
      * Export the specified screen.
      *
      * @param $screen
-     *
      * @return Response
      *
      * @OA\Post(
@@ -397,8 +388,7 @@ class ScreenController extends Controller
     /**
      * Import the specified screen.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return array
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
@@ -449,8 +439,7 @@ class ScreenController extends Controller
     /**
      * Verify if the file is valid to be imported
      *
-     * @param string $content
-     *
+     * @param  string  $content
      * @return bool
      */
     private function validateImportedFile($content)
@@ -468,8 +457,7 @@ class ScreenController extends Controller
     /**
      * Get preview a screen
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ResponseFactory|Response
      *
      * @OA\Post(

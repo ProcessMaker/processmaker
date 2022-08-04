@@ -78,7 +78,6 @@ class Comment extends Model
      *
      * @param $query
      * @param $parameter hidden, visible, all
-     *
      * @return mixed
      */
     public function scopeHidden($query, $parameter)

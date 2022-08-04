@@ -33,8 +33,7 @@ class Message extends MessageBase
     /**
      * Get the payload of the message.
      *
-     * @param mixed $payload
-     *
+     * @param  mixed  $payload
      * @return $this
      */
     public function setPayload($payload)

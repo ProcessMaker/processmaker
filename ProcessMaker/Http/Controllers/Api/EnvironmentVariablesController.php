@@ -23,8 +23,7 @@ class EnvironmentVariablesController extends Controller
     /**
      * Fetch a collection of variables based on paged request and filter if provided
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ResponseFactory|Response A list of matched users and paging data
      *
      * @OA\Get(

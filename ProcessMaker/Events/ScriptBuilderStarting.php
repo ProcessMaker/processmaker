@@ -15,8 +15,8 @@ class ScriptBuilderStarting
 
     /**
      * Create a new event instance.
-     * @param ScriptBuilderManager $manager
      *
+     * @param  ScriptBuilderManager  $manager
      * @return void
      */
     public function __construct(ScriptBuilderManager $manager)

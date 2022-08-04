@@ -53,8 +53,8 @@ class SignalManager
     /**
      * Return the list of all signals in the system
      *
-     * @param false $includeSystemProcesses, true if the signals that will be included can pertain to system processes
-     * @param null $processList, collection of processes that will be used to extract the list of signals.
+     * @param  false  $includeSystemProcesses, true if the signals that will be included can pertain to system processes
+     * @param  null  $processList, collection of processes that will be used to extract the list of signals.
      * @return mixed
      */
     public static function getAllSignals($includeSystemProcesses = false, $processList = null)
@@ -153,7 +153,7 @@ class SignalManager
     }
 
     /**
-     * @param SignalData $signal
+     * @param  SignalData  $signal
      */
     public static function removeSignal(SignalData $signal)
     {
@@ -189,7 +189,6 @@ class SignalManager
 
     /**
      * @param $signalId
-     *
      * @return SignalData | null
      */
     public static function findSignal($signalId)
@@ -203,7 +202,6 @@ class SignalManager
     /**
      * @param $signalId
      * @param $includeSystemProcesses
-     *
      * @return array
      */
     public static function getSignalProcesses($signalId, $includeSystemProcesses = false)
@@ -215,9 +213,8 @@ class SignalManager
     }
 
     /**
-     * @param SignalData $newSignal
-     * @param SignalData | null $oldSignal In case of an insert, this variable is null
-     *
+     * @param  SignalData  $newSignal
+     * @param  SignalData | null  $oldSignal In case of an insert, this variable is null
      * @return array
      */
     public static function validateSignal(SignalData $newSignal, ?SignalData $oldSignal)
@@ -279,8 +276,7 @@ class SignalManager
     /**
      * Converts an associative array to a signal object
      *
-     * @param array $signal
-     *
+     * @param  array  $signal
      * @return SignalData
      */
     public static function associativeToSignal(array $signal): SignalData
@@ -293,9 +289,9 @@ class SignalManager
     }
 
     /**
-     * @param array $errors
-     * @param string $field
-     * @param string $message
+     * @param  array  $errors
+     * @param  string  $field
+     * @param  string  $message
      */
     private static function addError(array &$errors, string $field, string $message)
     {

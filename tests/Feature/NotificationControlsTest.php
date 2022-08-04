@@ -2,17 +2,12 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Database\Seeder;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Request;
-use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Notification;
-use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessNotificationSetting;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
 use ProcessMaker\Notifications\ProcessCreatedNotification;

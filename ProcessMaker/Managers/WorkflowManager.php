@@ -55,11 +55,10 @@ class WorkflowManager
     /**
      * Complete a task.
      *
-     * @param Definitions $definitions
-     * @param ExecutionInstanceInterface $instance
-     * @param TokenInterface $token
-     * @param array $data
-     *
+     * @param  Definitions  $definitions
+     * @param  ExecutionInstanceInterface  $instance
+     * @param  TokenInterface  $token
+     * @param  array  $data
      * @return void
      */
     public function completeTask(Definitions $definitions, ExecutionInstanceInterface $instance, TokenInterface $token, array $data)
@@ -73,11 +72,10 @@ class WorkflowManager
     /**
      * Complete a catch event
      *
-     * @param Definitions $definitions
-     * @param ExecutionInstanceInterface $instance
-     * @param TokenInterface $token
-     * @param array $data
-     *
+     * @param  Definitions  $definitions
+     * @param  ExecutionInstanceInterface  $instance
+     * @param  TokenInterface  $token
+     * @param  array  $data
      * @return void
      */
     public function completeCatchEvent(Definitions $definitions, ExecutionInstanceInterface $instance, TokenInterface $token, array $data)
@@ -91,12 +89,11 @@ class WorkflowManager
     /**
      * Trigger a boundary event
      *
-     * @param Definitions $definitions
-     * @param ExecutionInstanceInterface $instance
-     * @param TokenInterface $token
-     * @param BoundaryEventInterface $boundaryEvent
-     * @param array $data
-     *
+     * @param  Definitions  $definitions
+     * @param  ExecutionInstanceInterface  $instance
+     * @param  TokenInterface  $token
+     * @param  BoundaryEventInterface  $boundaryEvent
+     * @param  array  $data
      * @return void
      */
     public function triggerBoundaryEvent(
@@ -114,9 +111,8 @@ class WorkflowManager
     /**
      * Trigger an start event and return the instance.
      *
-     * @param Definitions $definitions
-     * @param StartEventInterface $event
-     *
+     * @param  Definitions  $definitions
+     * @param  StartEventInterface  $event
      * @return \ProcessMaker\Models\ProcessRequest
      */
     public function triggerStartEvent(Definitions $definitions, StartEventInterface $event, array $data)
@@ -130,10 +126,9 @@ class WorkflowManager
     /**
      * Start a process instance.
      *
-     * @param Definitions $definitions
-     * @param ProcessInterface $process
-     * @param array $data
-     *
+     * @param  Definitions  $definitions
+     * @param  ProcessInterface  $process
+     * @param  array  $data
      * @return \ProcessMaker\Models\ProcessRequest
      */
     public function callProcess(Definitions $definitions, ProcessInterface $process, array $data)
@@ -150,8 +145,8 @@ class WorkflowManager
     /**
      * Run a script task.
      *
-     * @param ScriptTaskInterface $scriptTask
-     * @param Token $token
+     * @param  ScriptTaskInterface  $scriptTask
+     * @param  Token  $token
      */
     public function runScripTask(ScriptTaskInterface $scriptTask, Token $token)
     {
@@ -164,8 +159,8 @@ class WorkflowManager
     /**
      * Run a service task.
      *
-     * @param ServiceTaskInterface $serviceTask
-     * @param Token $token
+     * @param  ServiceTaskInterface  $serviceTask
+     * @param  Token  $token
      */
     public function runServiceTask(ServiceTaskInterface $serviceTask, Token $token)
     {
@@ -178,8 +173,9 @@ class WorkflowManager
     /**
      * Catch a signal event.
      *
-     * @param ServiceTaskInterface $serviceTask
-     * @param Token $token
+     * @param  ServiceTaskInterface  $serviceTask
+     * @param  Token  $token
+     *
      * @deprecated 4.0.15 Use WorkflowManager::throwSignalEventDefinition()
      */
     public function catchSignalEvent(ThrowEventInterface $source = null, EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
@@ -190,8 +186,8 @@ class WorkflowManager
     /**
      * Throw a signal event.
      *
-     * @param EventDefinitionInterface $sourceEventDefinition
-     * @param Token $token
+     * @param  EventDefinitionInterface  $sourceEventDefinition
+     * @param  Token  $token
      */
     public function throwSignalEventDefinition(EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
     {
@@ -245,9 +241,9 @@ class WorkflowManager
     /**
      * Throw a signal event by id (signalRef).
      *
-     * @param string $signalRef
-     * @param array $data
-     * @param array $exclude
+     * @param  string  $signalRef
+     * @param  array  $data
+     * @param  array  $exclude
      */
     public function throwSignalEvent($signalRef, array $data = [], array $exclude = [])
     {
@@ -257,8 +253,8 @@ class WorkflowManager
     /**
      * Catch a signal event.
      *
-     * @param EventDefinitionInterface $sourceEventDefinition
-     * @param Token $token
+     * @param  EventDefinitionInterface  $sourceEventDefinition
+     * @param  Token  $token
      */
     public function throwMessageEvent($instanceId, $elementId, $messageRef, array $payload = [])
     {
@@ -268,7 +264,7 @@ class WorkflowManager
     /**
      * Attach validation event
      *
-     * @param callable $callback
+     * @param  callable  $callback
      * @return void
      */
     public function onDataValidation($callback)
@@ -279,10 +275,9 @@ class WorkflowManager
     /**
      * Validate data
      *
-     * @param array $data
-     * @param Definitions $Definitions
-     * @param EntityInterface $element
-     *
+     * @param  array  $data
+     * @param  Definitions  $Definitions
+     * @param  EntityInterface  $element
      * @return void
      */
     public function validateData(array $data, Definitions $Definitions, EntityInterface $element)
@@ -297,10 +292,9 @@ class WorkflowManager
     /**
      * Run a process and returns its data
      *
-     * @param Definitions $definitions
-     * @param string $startId
-     * @param array $data
-     *
+     * @param  Definitions  $definitions
+     * @param  string  $startId
+     * @param  array  $data
      * @return array
      */
     public function runProcess(Definitions $definitions, $startId, array $data)
@@ -314,8 +308,7 @@ class WorkflowManager
     /**
      * Check if service task implementation exists
      *
-     * @param string $implementation
-     *
+     * @param  string  $implementation
      * @return bool
      */
     public function registerServiceImplementation($implementation, $class)
@@ -337,8 +330,7 @@ class WorkflowManager
     /**
      * Check if service task implementation exists
      *
-     * @param string $implementation
-     *
+     * @param  string  $implementation
      * @return bool
      */
     public function existsServiceImplementation($implementation)
@@ -349,11 +341,11 @@ class WorkflowManager
 
     /**
      * Run the service task implementation
-     * @param string $implementation
-     * @param array $dat
-     * @param array $config
-     * @param string $tokenId
      *
+     * @param  string  $implementation
+     * @param  array  $dat
+     * @param  array  $config
+     * @param  string  $tokenId
      * @return mixed
      */
     public function runServiceImplementation($implementation, array $data, array $config, $tokenId = '')

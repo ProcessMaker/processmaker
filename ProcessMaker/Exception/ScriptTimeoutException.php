@@ -10,7 +10,7 @@ use RuntimeException;
 class ScriptTimeoutException extends RuntimeException
 {
     /**
-     * @param string $message
+     * @param  string  $message
      */
     public function __construct($message)
     {

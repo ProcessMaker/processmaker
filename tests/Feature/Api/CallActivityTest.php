@@ -5,8 +5,6 @@ namespace Tests\Feature\Api;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\ScriptExecutor;
 use Tests\Feature\Shared\ProcessTestingTrait;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;

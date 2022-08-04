@@ -15,8 +15,7 @@ class SignalEventDefinition extends ModelsSignalEventDefinition
     /**
      * Get data contained in the event payload
      *
-     * @param TokenInterface|null $token
-     *
+     * @param  TokenInterface|null  $token
      * @return mixed
      */
     public function getPayloadData(TokenInterface $token = null, CatchEventInterface $startEvent = null)

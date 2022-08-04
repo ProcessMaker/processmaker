@@ -28,7 +28,9 @@ class TaskLockAssignmentTest extends TestCase
 
     /**
      * Create new task assignment type user successfully
-     * @param string $processFileName
+     *
+     * @param  string  $processFileName
+     *
      * @throws \Throwable
      */
     private function loadProcess($processFileName)
@@ -46,7 +48,7 @@ class TaskLockAssignmentTest extends TestCase
         $this->user2 = factory(User::class)->create(['status' => 'ACTIVE']);
 
         // Group with id 100 is created and the 2 users are attached to it
-        $group = factory(Group::class)->create(['id'=>100, 'status' => 'ACTIVE']);
+        $group = factory(Group::class)->create(['id' => 100, 'status' => 'ACTIVE']);
 
         $group_member = new GroupMember();
         $group_member->group()->associate($group);
@@ -160,9 +162,8 @@ class TaskLockAssignmentTest extends TestCase
     /**
      * Complete task
      *
-     * @param \ProcessMaker\Models\ProcessRequestToken $task
-     * @param array $data
-     *
+     * @param  \ProcessMaker\Models\ProcessRequestToken  $task
+     * @param  array  $data
      * @return \ProcessMaker\Models\ProcessRequestToken
      */
     private function completeTask(ProcessRequestToken $task, $data = [])

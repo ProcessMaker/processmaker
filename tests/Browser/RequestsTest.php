@@ -2,11 +2,9 @@
 
 namespace Tests\Browser;
 
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Dusk\Browser;
 use ProcessMaker\Models\User;
-use Tests\Browser\Pages\LoginPage;
 use Tests\Browser\Pages\RequestsPage;
 use Tests\DuskTestCase;
 

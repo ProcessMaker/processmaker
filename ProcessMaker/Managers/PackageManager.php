@@ -34,6 +34,7 @@ class PackageManager
 
     /**
      * Verify if package is registered
+     *
      * @param $name
      * @return bool
      */

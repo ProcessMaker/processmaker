@@ -33,7 +33,7 @@ class ScreenVersion extends Model implements ScreenInterface
     /**
      * Set multiple|single categories to the screen
      *
-     * @param string $value
+     * @param  string  $value
      */
     public function setScreenCategoryIdAttribute($value)
     {

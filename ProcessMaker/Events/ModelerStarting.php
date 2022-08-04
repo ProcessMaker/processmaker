@@ -15,8 +15,8 @@ class ModelerStarting
 
     /**
      * Create a new event instance.
-     * @param ModelerManager $manager
      *
+     * @param  ModelerManager  $manager
      * @return void
      */
     public function __construct(ModelerManager $manager)

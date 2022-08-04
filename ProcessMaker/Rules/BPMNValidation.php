@@ -71,9 +71,8 @@ class BPMNValidation implements Rule
     /**
      * Add rule for BPMN element $node
      *
-     * @param BpmnElement $node
-     * @param array $rules
-     *
+     * @param  BpmnElement  $node
+     * @param  array  $rules
      * @return array
      */
     private function addRulesFor(BpmnElement $node, array $rules)

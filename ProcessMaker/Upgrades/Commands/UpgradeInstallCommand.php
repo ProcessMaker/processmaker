@@ -3,7 +3,6 @@
 namespace ProcessMaker\Upgrades\Commands;
 
 use Illuminate\Database\Migrations\MigrationRepositoryInterface;
-use Symfony\Component\Console\Input\InputOption;
 
 class UpgradeInstallCommand extends BaseCommand
 {

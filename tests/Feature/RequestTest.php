@@ -3,14 +3,10 @@
 namespace Tests\Feature;
 
 use Illuminate\Http\Testing\File;
-use PermissionSeeder;
-use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\PermissionAssignment;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
-use Symfony\Component\DomCrawler\Crawler;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
@@ -178,6 +174,7 @@ class RequestTest extends TestCase
 
     /**
      * Test show default summary tab
+     *
      * @return void
      */
     public function testShowDefaultSummaryTab()
@@ -200,6 +197,7 @@ class RequestTest extends TestCase
 
     /**
      * Test show custom request detail screen summary tab
+     *
      * @return void
      */
     public function testShowCustomRequestDetailScreenSummaryTab()

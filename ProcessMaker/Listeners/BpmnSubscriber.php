@@ -31,7 +31,6 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TerminateEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TimerEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TransitionInterface;
-use ProcessMaker\Notifications\ActivityActivatedNotification;
 use ProcessMaker\Notifications\ActivityCompletedNotification;
 use ProcessMaker\Notifications\ProcessCompletedNotification;
 use ProcessMaker\Notifications\ProcessCreatedNotification;
@@ -45,7 +44,7 @@ class BpmnSubscriber
 
     /**
      * @param $element
-     * @param TokenInterface|null $token
+     * @param  TokenInterface|null  $token
      * @return $this
      */
     public function registerErrorHandler($element, TokenInterface $token = null)
@@ -59,7 +58,7 @@ class BpmnSubscriber
             return;
         }
 
-        register_shutdown_function(function () use ($path, $element, $token) {
+        register_shutdown_function(function () use ($path, $token) {
             $this->errorHandler($path, $token);
         });
     }
@@ -78,7 +77,7 @@ class BpmnSubscriber
     /**
      * When a process instance is completed.
      *
-     * @param ProcessInstanceCreatedEvent $event
+     * @param  ProcessInstanceCreatedEvent  $event
      */
     public function onProcessCompleted(ProcessInstanceCompletedEvent $event)
     {
@@ -94,7 +93,7 @@ class BpmnSubscriber
     /**
      * When a process instance is created.
      *
-     * @param ProcessInstanceCreatedEvent $event
+     * @param  ProcessInstanceCreatedEvent  $event
      */
     public function onProcessCreated(ProcessInstanceCreatedEvent $event)
     {
@@ -110,7 +109,7 @@ class BpmnSubscriber
     /**
      * When an activity is activated.
      *
-     * @param ActivityActivatedEvent $event
+     * @param  ActivityActivatedEvent  $event
      */
     public function onActivityActivated(ActivityActivatedEvent $event)
     {
@@ -177,8 +176,8 @@ class BpmnSubscriber
     /**
      * When a script task is activated.
      *
-     * @param ScriptTaskInterface $scriptTask
-     * @param TokenInterface $token
+     * @param  ScriptTaskInterface  $scriptTask
+     * @param  TokenInterface  $token
      */
     public function onScriptTaskActivated(ScriptTaskInterface $scriptTask, TokenInterface $token)
     {
@@ -193,8 +192,8 @@ class BpmnSubscriber
     /**
      * When a service task is activated.
      *
-     * @param ServiceTaskInterface $serviceTask
-     * @param TokenInterface $token
+     * @param  ServiceTaskInterface  $serviceTask
+     * @param  TokenInterface  $token
      */
     public function onServiceTaskActivated(ServiceTaskInterface $serviceTask, TokenInterface $token)
     {
@@ -287,7 +286,7 @@ class BpmnSubscriber
     /**
      * Subscription.
      *
-     * @param type $events
+     * @param  type  $events
      */
     public function subscribe($events)
     {

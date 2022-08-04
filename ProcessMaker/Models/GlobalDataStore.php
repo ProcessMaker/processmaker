@@ -18,7 +18,6 @@ class GlobalDataStore implements DataStoreInterface
      *
      * @param $name
      * @param $default
-     *
      * @return mixed
      */
     public function getData($name = null, $default = null)
@@ -34,7 +33,6 @@ class GlobalDataStore implements DataStoreInterface
      * Set data of the store.
      *
      * @param $data
-     *
      * @return $this
      */
     public function setData($data)
@@ -49,7 +47,6 @@ class GlobalDataStore implements DataStoreInterface
      *
      * @param $name
      * @param $data
-     *
      * @return $this
      */
     public function putData($name, $data)

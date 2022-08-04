@@ -10,7 +10,7 @@ class GlobalScriptsManager
      * Add a new script to the script builder load.  These scripts can then interact with the script builder
      * during it's startup lifecycle to do this such as register new node types.
      *
-     * @param string $script Path to the javascript to load
+     * @param  string  $script Path to the javascript to load
      * @return void
      */
     public function addScript($script)

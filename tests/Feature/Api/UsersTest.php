@@ -4,8 +4,6 @@ namespace Tests\Feature\Api;
 
 use Faker\Factory as Faker;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
@@ -500,6 +498,7 @@ class UsersTest extends TestCase
 
     /**
      * Tests the archiving and restoration of a process
+     *
      * @group agustin
      */
     public function testRestoreSoftDeletedUser()

@@ -20,11 +20,12 @@ class ProcessManagerAssigned implements AssignmentRuleInterface
      * It takes in count the process version of the request.
      * If the process does not have assigned a Manager, it throws an exception.
      *
-     * @param ActivityInterface $task
-     * @param TokenInterface $token
-     * @param Process $process
-     * @param ProcessRequest $request
+     * @param  ActivityInterface  $task
+     * @param  TokenInterface  $token
+     * @param  Process  $process
+     * @param  ProcessRequest  $request
      * @return int
+     *
      * @throws ThereIsNoProcessManagerAssignedException
      */
     public function getNextUser(ActivityInterface $task, TokenInterface $token, Process $process, ProcessRequest $request)

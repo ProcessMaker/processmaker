@@ -53,8 +53,7 @@ class AssignPreviousUser implements Rule
     /**
      * This rule applies to task and userTask nodes
      *
-     * @param BpmnElement $node
-     *
+     * @param  BpmnElement  $node
      * @return bool
      */
     public static function applyTo(BpmnElement $node)

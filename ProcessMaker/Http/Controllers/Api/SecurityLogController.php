@@ -14,8 +14,7 @@ class SecurityLogController extends Controller
     /**
      * Get a list of Security Logs.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return \Illuminate\Http\Response
      *
      * @OA\Get(

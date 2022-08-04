@@ -2,17 +2,8 @@
 
 namespace ProcessMaker\Console\Commands;
 
-use Carbon\Carbon;
-use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
-use ProcessMaker\Jobs\TestStatusJob;
-use ProcessMaker\Mail\TestStatusEmail;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\Script;
-use ProcessMaker\Models\ScriptExecutor;
-use Throwable;
 
 class ProcessMakerValidateProcesses extends Command
 {

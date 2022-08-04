@@ -2,8 +2,6 @@
 
 namespace Tests\Browser;
 
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Support\Facades\Artisan;
 use Laravel\Dusk\Browser;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;

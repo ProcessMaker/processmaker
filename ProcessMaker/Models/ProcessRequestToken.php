@@ -12,8 +12,6 @@ use Laravel\Scout\Searchable;
 use Log;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Facades\WorkflowUserManager;
-use ProcessMaker\Models\Setting;
-use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
@@ -193,7 +191,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     /**
      * Boot application as a process instance.
      *
-     * @param array $argument
+     * @param  array  $argument
      */
     public function __construct(array $argument = [])
     {
@@ -204,9 +202,8 @@ class ProcessRequestToken extends Model implements TokenInterface
     /**
      * Notification settings of the process.
      *
-     * @param string $entity
-     * @param string $notificationType
-     *
+     * @param  string  $entity
+     * @param  string  $notificationType
      * @return array
      */
     public function getNotifiables($notificationType)
@@ -447,7 +444,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     /**
      * Check if the user has access to reassign this task
      *
-     * @param \ProcessMaker\Models\User $user
+     * @param  \ProcessMaker\Models\User  $user
      */
     public function authorizeReassignment(User $user)
     {
@@ -467,6 +464,7 @@ class ProcessRequestToken extends Model implements TokenInterface
      * Check if this task can be escalated to the manager by the assignee
      *
      * @return true if the task can be escalated
+     *
      * @throws AuthorizationException if it can not
      */
     public function authorizeAssigneeEscalateToManager()
@@ -504,7 +502,6 @@ class ProcessRequestToken extends Model implements TokenInterface
      * Filter tokens with a string
      *
      * @param $query
-     *
      * @param $filter string
      */
     public function scopeFilter($query, $filter)
@@ -586,9 +583,8 @@ class ProcessRequestToken extends Model implements TokenInterface
     /**
      * PMQL value alias for status field
      *
-     * @param string $value
-     * @param ProcessMaker\Query\Expression $expression
-     *
+     * @param  string  $value
+     * @param  ProcessMaker\Query\Expression  $expression
      * @return callable
      */
     public function valueAliasStatus($value, $expression, $callback = null, User $user = null)
@@ -629,9 +625,8 @@ class ProcessRequestToken extends Model implements TokenInterface
     /**
      * PMQL value alias for request field
      *
-     * @param string $value
-     * @param ProcessMaker\Query\Expression $expression
-     *
+     * @param  string  $value
+     * @param  ProcessMaker\Query\Expression  $expression
      * @return callable
      */
     public function valueAliasRequest($value, $expression)
@@ -645,9 +640,8 @@ class ProcessRequestToken extends Model implements TokenInterface
     /**
      * PMQL value alias for task field
      *
-     * @param string $value
-     * @param ProcessMaker\Query\Expression $expression
-     *
+     * @param  string  $value
+     * @param  ProcessMaker\Query\Expression  $expression
      * @return callable
      */
     public function valueAliasTask($value, $expression)
@@ -660,9 +654,8 @@ class ProcessRequestToken extends Model implements TokenInterface
     /**
      * PMQL wildcard for process request & data fields
      *
-     * @param string $value
-     * @param ProcessMaker\Query\Expression $expression
-     *
+     * @param  string  $value
+     * @param  ProcessMaker\Query\Expression  $expression
      * @return mixed
      */
     public function fieldWildcard($value, $expression)
@@ -791,8 +784,8 @@ class ProcessRequestToken extends Model implements TokenInterface
     /**
      * Log an error when executing the token
      *
-     * @param \Throwable $error
-     * @param \ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface $bpmnElement
+     * @param  \Throwable  $error
+     * @param  \ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface  $bpmnElement
      */
     public function logError(Throwable $error, FlowElementInterface $bpmnElement)
     {
@@ -865,8 +858,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     /**
      * Reassign task to $userId
      *
-     * @param string $userId
-     *
+     * @param  string  $userId
      * @return self
      */
     public function reassignTo($userId)
@@ -910,9 +902,8 @@ class ProcessRequestToken extends Model implements TokenInterface
     /**
      * Get a config parameter from the bpmn element definition.
      *
-     * @param string $key
-     * @param mixed $default
-     *
+     * @param  string  $key
+     * @param  mixed  $default
      * @return mixed
      */
     public function getConfigParam($key, $default = null)

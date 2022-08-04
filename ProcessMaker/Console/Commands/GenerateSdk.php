@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Console\Commands;
 
-use Exception;
 use Illuminate\Console\Command;
 use ProcessMaker\BuildSdk;
 

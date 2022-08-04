@@ -21,8 +21,7 @@ trait ProcessTrait
     /**
      * Get the process definitions from BPMN field.
      *
-     * @param bool $forceParse
-     *
+     * @param  bool  $forceParse
      * @return BpmnDocument
      */
     public function getDefinitions($forceParse = false, $engine = null)
@@ -55,8 +54,8 @@ trait ProcessTrait
     /**
      * Set a value on the properties json column
      *
-     * @param string $name
-     * @param mixed $value
+     * @param  string  $name
+     * @param  mixed  $value
      * @return void
      */
     public function setProperty($name, $value)
@@ -69,7 +68,7 @@ trait ProcessTrait
     /**
      * Get a value from the properties json column
      *
-     * @param string $name
+     * @param  string  $name
      * @return mixed
      */
     public function getProperty($name)
@@ -80,7 +79,7 @@ trait ProcessTrait
     /**
      * Set the manager id
      *
-     * @param int $value
+     * @param  int  $value
      * @return void
      */
     public function setManagerIdAttribute($value)

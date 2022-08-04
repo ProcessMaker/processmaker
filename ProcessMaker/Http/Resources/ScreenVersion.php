@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Http\Resources;
 
-use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
 
 class ScreenVersion extends ApiResource

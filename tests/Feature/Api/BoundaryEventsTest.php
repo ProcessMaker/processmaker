@@ -46,6 +46,7 @@ class BoundaryEventsTest extends TestCase
 
     /**
      * Tests a process with a timer boundary event
+     *
      * @group timer_events
      */
     public function testCycleTimerBoundaryEvent()

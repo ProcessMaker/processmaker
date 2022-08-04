@@ -11,7 +11,8 @@ class ProcessObserver
     /**
      * Handle the Process "deleting" event.
      *
-     * @param Process $process
+     * @param  Process  $process
+     *
      * @throws ReferentialIntegrityException
      */
     public function deleting(Process $process)
@@ -27,7 +28,7 @@ class ProcessObserver
     /**
      * Handle the Process "saving" event.
      *
-     * @param Process $process
+     * @param  Process  $process
      */
     public function saving(Process $process)
     {

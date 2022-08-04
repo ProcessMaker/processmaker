@@ -4,13 +4,8 @@ namespace Tests\Feature\Api;
 
 use Illuminate\Support\Facades\Hash;
 use PermissionSeeder;
-use ProcessMaker\Models\Group;
-use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\PermissionAssignment;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessPermission;
-use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;

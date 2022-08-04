@@ -2,9 +2,6 @@
 
 namespace ProcessMaker\Listeners;
 
-use Carbon\Carbon;
-use DateTime;
-use ProcessMaker\Listeners\BpmnSubscriber;
 use ProcessMaker\Models\ProcessRequestToken;
 use Tests\TestCase;
 
@@ -45,7 +42,7 @@ class BpmnSubscriberTest extends TestCase
     }
 
     /**
-     * @param string $errorFile
+     * @param  string  $errorFile
      */
     public function removeFileIfExists(string $errorFile): void
     {

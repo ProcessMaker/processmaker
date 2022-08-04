@@ -38,7 +38,7 @@ class ProcessPatternsTest extends TestCase
     /**
      * Tests the bpmn process completing all active tasks
      *
-     * @param string $bpmnFile
+     * @param  string  $bpmnFile
      *
      * @dataProvider prepareTestCasesProvider
      */
@@ -67,9 +67,8 @@ class ProcessPatternsTest extends TestCase
     /**
      * Tests the bpmn process completing all active tasks
      *
-     * @param string $bpmnFile
-     * @param array $tests
-     *
+     * @param  string  $bpmnFile
+     * @param  array  $tests
      * @return array
      */
     private function prepareTestCases($bpmnFile, array $tests)
@@ -100,8 +99,7 @@ class ProcessPatternsTest extends TestCase
     /**
      * Run a process without json data
      *
-     * @param string $bpmnFile
-     *
+     * @param  string  $bpmnFile
      * @return void
      */
     private function runProcessWithoutContext($bpmnFile)
@@ -119,9 +117,8 @@ class ProcessPatternsTest extends TestCase
     /**
      * Run a process with json data
      *
-     * @param string $bpmnFile
-     * @param array $context
-     *
+     * @param  string  $bpmnFile
+     * @param  array  $context
      * @return void
      */
     private function runProcessWithContext($bpmnFile, $context = [])
@@ -142,12 +139,11 @@ class ProcessPatternsTest extends TestCase
     /**
      * Run a process
      *
-     * @param string $bpmnFile
-     * @param array $data
-     * @param string $startEvent
-     * @param array $expectedResult
-     * @param array $events
-     *
+     * @param  string  $bpmnFile
+     * @param  array  $data
+     * @param  string  $startEvent
+     * @param  array  $expectedResult
+     * @param  array  $events
      * @return void
      */
     private function runProcess($bpmnFile, $data, $startEvent, $expectedResult, $events, $output, $context)
@@ -207,8 +203,7 @@ class ProcessPatternsTest extends TestCase
                 throw new Exception("The process got stuck in elements: {$elements}\n{$errors}");
             }
         }
-        $tasks = ProcessRequestToken::
-            whereIn('element_type', ['task', 'scriptTask', 'userTask', 'serviceTask'])
+        $tasks = ProcessRequestToken::whereIn('element_type', ['task', 'scriptTask', 'userTask', 'serviceTask'])
             ->get()
             ->pluck('element_id')
             ->toArray();
@@ -248,11 +243,10 @@ class ProcessPatternsTest extends TestCase
     /**
      * Assert that $data contains the expected $subset
      *
-     * @param mixed $subset
-     * @param mixed $data
-     * @param string $message
-     * @param bool $skip
-     *
+     * @param  mixed  $subset
+     * @param  mixed  $data
+     * @param  string  $message
+     * @param  bool  $skip
      * @return mixed
      */
     private function assertData($subset, $data, $message = 'data', $skip = false)

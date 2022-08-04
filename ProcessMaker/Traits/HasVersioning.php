@@ -18,7 +18,7 @@ trait HasVersioning
     /**
      * Save a new version of a model
      *
-     * @param Model $model
+     * @param  Model  $model
      */
     public static function saveNewVersion($model)
     {
@@ -52,7 +52,7 @@ trait HasVersioning
     /**
      * Return the version that was active when the task's request was started
      *
-     * @param ProcessRequestToken $task
+     * @param  ProcessRequestToken  $task
      * @return Model
      */
     public function versionFor(ProcessRequest $processRequest = null)

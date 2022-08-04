@@ -3,8 +3,6 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\User;
 
 class RequestUserPermission extends Model
 {

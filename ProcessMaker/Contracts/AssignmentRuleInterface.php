@@ -12,11 +12,10 @@ interface AssignmentRuleInterface
     /**
      * Return the user id to which a task must be assigned.
      *
-     * @param ActivityInterface $activity
-     * @param TokenInterface $token
-     * @param Process $process
-     * @param ProcessRequest $request
-     *
+     * @param  ActivityInterface  $activity
+     * @param  TokenInterface  $token
+     * @param  Process  $process
+     * @param  ProcessRequest  $request
      * @return string User id
      */
     public function getNextUser(ActivityInterface $activity, TokenInterface $token, Process $process, ProcessRequest $request);

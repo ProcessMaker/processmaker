@@ -3,8 +3,6 @@
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Passport\ClientRepository;
-use ProcessMaker\Models\Group;
-use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\User;
 
 class UserSeeder extends Seeder

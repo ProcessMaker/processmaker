@@ -2,9 +2,7 @@
 
 namespace Tests\Feature;
 
-use ProcessMaker\Exception\ExpressionFailedException;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
-use ProcessMaker\Exception\SyntaxErrorException;
 use ProcessMaker\Models\FormalExpression;
 use Tests\TestCase;
 

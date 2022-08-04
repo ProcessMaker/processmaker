@@ -46,8 +46,7 @@ class TimerExpression implements FormalExpressionInterface
     /**
      * Set the body of the Expression.
      *
-     * @param string $body
-     *
+     * @param  string  $body
      * @return TimerExpression
      */
     public function setBody($body)
@@ -80,8 +79,7 @@ class TimerExpression implements FormalExpressionInterface
     /**
      * Invoke the format expression.
      *
-     * @param mixed $data
-     *
+     * @param  mixed  $data
      * @return string
      */
     public function __invoke($data)
@@ -98,9 +96,8 @@ class TimerExpression implements FormalExpressionInterface
     /**
      * Parse mustache syntax in timer expressions
      *
-     * @param string $expression
-     * @param array $data
-     *
+     * @param  string  $expression
+     * @param  array  $data
      * @return mixed
      */
     private function mustacheTimerExpression($expression, $data)

@@ -3,10 +3,8 @@
 namespace ProcessMaker\Traits;
 
 use Auth;
-use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;

@@ -35,8 +35,8 @@ class CatchEvent extends BpmnAction
     /**
      * Start a $process from catch event $element.
      *
-     * @param TokenInterface $token
-     * @param CatchEventInterface $element
+     * @param  TokenInterface  $token
+     * @param  CatchEventInterface  $element
      * @return \ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface
      */
     public function action(TokenInterface $token, CatchEventInterface $element)
@@ -58,7 +58,7 @@ class CatchEvent extends BpmnAction
      * If variableName is set, then the event payload will be set to that variable name.
      * If the data name exists, then the data is merged.
      *
-     * @param DataStoreInterface $dataStore
+     * @param  DataStoreInterface  $dataStore
      * @return void
      */
     private function messageEventUpdateData(MessageEventDefinitionInterface $eventDefinition, DataStoreInterface $dataStore)

@@ -7,8 +7,8 @@ use Exception;
 class InvalidUserAssignmentException extends Exception
 {
     /**
-     * @param string $variable
-     * @param string $value
+     * @param  string  $variable
+     * @param  string  $value
      */
     public function __construct($variable, $value)
     {

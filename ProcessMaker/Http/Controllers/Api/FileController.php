@@ -25,8 +25,7 @@ class FileController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ApiCollection
      *
      * @OA\Get(
@@ -199,8 +198,7 @@ class FileController extends Controller
     /**
      * Get a single media file.
      *
-     * @param Media $file
-     *
+     * @param  Media  $file
      * @return ResponseFactory|Response
      *
      * @OA\Get(
@@ -233,7 +231,7 @@ class FileController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param Media $file
+     * @param  Media  $file
      * @return \Illuminate\Http\Response
      *
      * @OA\Get(
@@ -276,9 +274,8 @@ class FileController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param Media $file
-     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  Media  $file
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Media $file)
@@ -293,7 +290,7 @@ class FileController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param Media $file
+     * @param  Media  $file
      * @return \Illuminate\Http\Response
      *
      * @internal param int $id

@@ -3,7 +3,6 @@
 namespace ProcessMaker\AssignmentRules;
 
 use ProcessMaker\Contracts\AssignmentRuleInterface;
-use ProcessMaker\Exception\ThereIsNoPreviousUserAssignedException;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
@@ -19,10 +18,10 @@ class PreviousTaskAssignee implements AssignmentRuleInterface
      * Before a task is assigned, search the tokens table for a previously
      * assigned task and use that users id for the new assignment.
      *
-     * @param ActivityInterface $task
-     * @param TokenInterface $token
-     * @param Process $process
-     * @param ProcessRequest $request
+     * @param  ActivityInterface  $task
+     * @param  TokenInterface  $token
+     * @param  Process  $process
+     * @param  ProcessRequest  $request
      * @return type
      */
     public function getNextUser(ActivityInterface $task, TokenInterface $token, Process $process, ProcessRequest $request)

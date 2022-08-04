@@ -6,7 +6,6 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
@@ -21,10 +20,8 @@ use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
-use ProcessMaker\Nayra\Bpmn\Models\TimerEventDefinition;
 use ProcessMaker\Nayra\Exceptions\ElementNotFoundException;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
-use ProcessMaker\Nayra\Storage\BpmnElement;
 use ProcessMaker\Rules\BPMNValidation;
 use Throwable;
 
@@ -44,8 +41,7 @@ class ProcessController extends Controller
     /**
      * Get list Process
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ApiCollection
      *
      * @OA\Get(
@@ -123,7 +119,6 @@ class ProcessController extends Controller
      * Display the specified resource.
      *
      * @param $process
-     *
      * @return Response
      *
      * @OA\Get(
@@ -156,9 +151,9 @@ class ProcessController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return \Illuminate\Http\JsonResponse
+     *
      * @throws \Illuminate\Validation\ValidationException
      *
      * @OA\Post(
@@ -230,9 +225,10 @@ class ProcessController extends Controller
     /**
      * Updates the current element
      *
-     * @param Request $request
-     * @param Process $process
+     * @param  Request  $request
+     * @param  Process  $process
      * @return ResponseFactory|Response
+     *
      * @throws \Throwable
      *
      * @OA\Put(
@@ -407,7 +403,7 @@ class ProcessController extends Controller
      * Validates the Bpmn content that comes in the request.
      * Returns the list of errors found
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return array|null
      */
     private function validateBpmn(Request $request)
@@ -446,9 +442,8 @@ class ProcessController extends Controller
     /**
      * Validate the bpmn has only one BPMNDiagram
      *
-     * @param BpmnDocument $document
-     * @param array $schemaErrors
-     *
+     * @param  BpmnDocument  $document
+     * @param  array  $schemaErrors
      * @return array
      */
     private function validateOnlyOneDiagram(BpmnDocument $document, array $schemaErrors = null)
@@ -504,8 +499,7 @@ class ProcessController extends Controller
     /**
      * Returns the list of processes that the user can start.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ApiCollection
      *
      * * @OA\Get(
@@ -564,7 +558,7 @@ class ProcessController extends Controller
             ->where($where);
 
         // Add the order by columns
-        foreach ($orderColumns as $key=>$orderColumn) {
+        foreach ($orderColumns as $key => $orderColumn) {
             $orderDirection = array_key_exists($key, $orderDirections) ? $orderDirections[$key] : 'asc';
             $query->orderBy($orderColumn, $orderDirection);
         }
@@ -619,9 +613,10 @@ class ProcessController extends Controller
     /**
      * Reverses the soft delete of the element
      *
-     * @param Request $request
-     * @param Process $process
+     * @param  Request  $request
+     * @param  Process  $process
      * @return ResponseFactory|Response
+     *
      * @throws \Throwable
      *
      * @OA\Put(
@@ -667,9 +662,9 @@ class ProcessController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param Process $process
-     *
+     * @param  Process  $process
      * @return ResponseFactory|Response
+     *
      * @throws \Illuminate\Validation\ValidationException
      *
      * @OA\Delete(
@@ -704,7 +699,6 @@ class ProcessController extends Controller
      * Export the specified process.
      *
      * @param $process
-     *
      * @return Response
      *
      * @OA\Post(
@@ -751,7 +745,6 @@ class ProcessController extends Controller
      * Import the specified process.
      *
      * @param $process
-     *
      * @return Response
      *
      * @OA\Post(
@@ -811,7 +804,7 @@ class ProcessController extends Controller
     /**
      * Check if the import is ready
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @OA\Head(
      *     path="/processes/import/{code}/is_ready",
@@ -864,10 +857,10 @@ class ProcessController extends Controller
     /**
      * Import Assignments of process.
      *
-     * @param Process $process
-     * @param Request $request
-     *
+     * @param  Process  $process
+     * @param  Request  $request
      * @return resource
+     *
      * @throws \Throwable
      *
      *
@@ -1006,9 +999,8 @@ class ProcessController extends Controller
     /**
      * Trigger an start event within a process.
      *
-     * @param Process $process
-     * @param Request $request
-     *
+     * @param  Process  $process
+     * @param  Request  $request
      * @return \ProcessMaker\Http\Resources\ProcessRequests
      *
      * @OA\Post(
@@ -1087,9 +1079,8 @@ class ProcessController extends Controller
     /**
      * Get the where array to filter the resources.
      *
-     * @param Request $request
-     * @param array $searchableColumns
-     *
+     * @param  Request  $request
+     * @param  array  $searchableColumns
      * @return array
      */
     protected function getRequestFilterBy(Request $request, array $searchableColumns)
@@ -1114,8 +1105,7 @@ class ProcessController extends Controller
     /**
      * Get included relationships.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return array
      */
     protected function getRequestSortBy(Request $request, $default)
@@ -1129,8 +1119,7 @@ class ProcessController extends Controller
     /**
      * Get included relationships.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return array
      */
     protected function getRequestInclude(Request $request)
@@ -1144,7 +1133,7 @@ class ProcessController extends Controller
      * Get the size of the page.
      * per_page=# (integer, the page requested) (Default: 10)
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return type
      */
     protected function getPerPage(Request $request)
@@ -1155,8 +1144,7 @@ class ProcessController extends Controller
     /**
      * Verify if the file is valid to be imported
      *
-     * @param string $content
-     *
+     * @param  string  $content
      * @return bool
      */
     private function validateImportedFile($content)

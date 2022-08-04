@@ -109,9 +109,8 @@ class TaskAssignmentPreviousOwnerTest extends TestCase
     /**
      * Complete task
      *
-     * @param \ProcessMaker\Models\ProcessRequestToken $task
-     * @param array $data
-     *
+     * @param  \ProcessMaker\Models\ProcessRequestToken  $task
+     * @param  array  $data
      * @return \ProcessMaker\Models\ProcessRequestToken
      */
     private function completeTask(ProcessRequestToken $task, $data = [])

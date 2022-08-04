@@ -19,9 +19,8 @@ trait ResourceAssertionsTrait
     /**
      * Verify the list returned by the index API.
      *
-     * @param type $query
-     * @param type $expectedMeta
-     *
+     * @param  type  $query
+     * @param  type  $expectedMeta
      * @return \Illuminate\Foundation\Testing\TestResponse
      */
     protected function assertCorrectModelListing($query, $expectedMeta = [])
@@ -53,9 +52,8 @@ trait ResourceAssertionsTrait
     /**
      * Verify the creation of a model using valid attributes.
      *
-     * @param string $modelClass
-     * @param array $attributes
-     *
+     * @param  string  $modelClass
+     * @param  array  $attributes
      * @return \Illuminate\Foundation\Testing\TestResponse
      */
     protected function assertCorrectModelCreation($modelClass, array $attributes = [])
@@ -80,10 +78,9 @@ trait ResourceAssertionsTrait
     /**
      * Verify the creation of a model fails using invalid attributes.
      *
-     * @param string $modelClass
-     * @param array $attributes
-     * @param array $errors
-     *
+     * @param  string  $modelClass
+     * @param  array  $attributes
+     * @param  array  $errors
      * @return \Illuminate\Foundation\Testing\TestResponse
      */
     protected function assertModelCreationFails($modelClass, array $attributes = [], array $errors = [])
@@ -102,9 +99,8 @@ trait ResourceAssertionsTrait
     /**
      * Verify model update.
      *
-     * @param string $id
-     * @param array $includes
-     *
+     * @param  string  $id
+     * @param  array  $includes
      * @return \Illuminate\Foundation\Testing\TestResponse
      */
     protected function assertModelShow($id, array $includes = [])
@@ -125,8 +121,7 @@ trait ResourceAssertionsTrait
     /**
      * Verify the deletion of a model.
      *
-     * @param type $id
-     *
+     * @param  type  $id
      * @return \Illuminate\Foundation\Testing\TestResponse
      */
     protected function assertCorrectModelDeletion($id)
@@ -142,8 +137,7 @@ trait ResourceAssertionsTrait
     /**
      * Verify the deletion of a model.
      *
-     * @param type $id
-     *
+     * @param  type  $id
      * @return \Illuminate\Foundation\Testing\TestResponse
      */
     protected function assertModelDeletionFails($id, array $errors = [])
@@ -161,7 +155,7 @@ trait ResourceAssertionsTrait
      * Verify update of a model using valid attributes
      *
      * @param $modelClass
-     * @param array $attributes
+     * @param  array  $attributes
      */
     protected function assertModelUpdate($modelClass, array $attributes = [])
     {
@@ -192,8 +186,8 @@ trait ResourceAssertionsTrait
      * Verify update of a model using invalid attributes
      *
      * @param $modelClass
-     * @param array $attributes
-     * @param array $errors
+     * @param  array  $attributes
+     * @param  array  $errors
      */
     protected function assertModelUpdateFails($modelClass, array $attributes = [], array $errors = [])
     {
@@ -223,8 +217,7 @@ trait ResourceAssertionsTrait
     /**
      * Get the attributes of the response.
      *
-     * @param type $row
-     *
+     * @param  type  $row
      * @return array
      */
     private function getDataAttributes($row)
@@ -235,8 +228,8 @@ trait ResourceAssertionsTrait
     /**
      * Assert that the response has the given status code.
      *
-     * @param string $expected
-     * @param \Illuminate\Foundation\Testing\TestResponse $response
+     * @param  string  $expected
+     * @param  \Illuminate\Foundation\Testing\TestResponse  $response
      */
     protected function assertStatus($expected, TestResponse $response)
     {

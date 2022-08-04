@@ -10,9 +10,8 @@ class Process extends ModelsProcess
     /**
      * Get a property.
      *
-     * @param string $name
-     * @param mixed $default
-     *
+     * @param  string  $name
+     * @param  mixed  $default
      * @return mixed
      */
     public function getProperty($name, $default = null)
@@ -30,9 +29,8 @@ class Process extends ModelsProcess
     /**
      * Set a property.
      *
-     * @param string $name
-     * @param mixed $value
-     *
+     * @param  string  $name
+     * @param  mixed  $value
      * @return $this
      */
     public function setProperty($name, $value)

@@ -11,7 +11,7 @@ use Exception;
 class TaskDoesNotHaveRequesterException extends Exception
 {
     /**
-     * @param string $task
+     * @param  string  $task
      */
     public function __construct()
     {

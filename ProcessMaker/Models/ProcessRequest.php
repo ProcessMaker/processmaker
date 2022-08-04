@@ -5,7 +5,6 @@ namespace ProcessMaker\Models;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
 use Laravel\Scout\Searchable;
 use Log;
@@ -46,6 +45,7 @@ use Throwable;
  * @property Process $process
  * @property ProcessRequestLock[] $locks
  * @property ProcessRequestToken $ownerTask
+ *
  * @method static ProcessRequest find($id)
  * @method static ProcessRequest findOrFail($id)
  *
@@ -185,7 +185,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     /**
      * Boot the model as a process instance.
      *
-     * @param array $argument
+     * @param  array  $argument
      */
     public function __construct(array $argument = [])
     {
@@ -196,8 +196,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     /**
      * Validation rules.
      *
-     * @param null $existing
-     *
+     * @param  null  $existing
      * @return array
      */
     public static function rules($existing = null)
@@ -218,9 +217,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     /**
      * Notification settings of the process.
      *
-     * @param string $entity
-     * @param string $notificationType
-     *
+     * @param  string  $entity
+     * @param  string  $notificationType
      * @return array
      */
     public function getNotifiables($notificationType)
@@ -265,8 +263,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      * Determines if a user has participated in this application.  This is done by checking if any delegations
      * match this application and passed in user.
      *
-     * @param User $user User to check
-     *
+     * @param  User  $user User to check
      * @return bool True if the user participated in this Case in some way
      */
     public function hasUserParticipated(User $user)
@@ -280,7 +277,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      * Check is user can claim an active self service task.
      *
      * @link https://processmaker.atlassian.net/browse/FOUR-4126
-     * @param User $user
+     *
+     * @param  User  $user
      * @return bool
      */
     public function canUserClaimASelfServiceTask(User $user)
@@ -406,7 +404,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      * Filter processes with a string
      *
      * @param $query
-     *
      * @param $filter string
      */
     public function scopeFilter($query, $filter)
@@ -439,7 +436,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      * Filter process started with user
      *
      * @param $query
-     *
      * @param $id User id
      */
     public function scopeStartedMe($query, $id)
@@ -519,8 +515,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     /**
      * Records an error occurred during the execution of the process.
      *
-     * @param Throwable $exception
-     * @param FlowElementInterface $element
+     * @param  Throwable  $exception
+     * @param  FlowElementInterface  $element
      */
     public function logError(Throwable $exception, FlowElementInterface $element = null)
     {
@@ -615,8 +611,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     /**
      * PMQL value alias for request field
      *
-     * @param string $value
-     *
+     * @param  string  $value
      * @return callable
      */
     public function valueAliasRequest($value, $expression)
@@ -630,8 +625,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     /**
      * PMQL value alias for status field
      *
-     * @param string $value
-     *
+     * @param  string  $value
      * @return callable
      */
     public function valueAliasStatus($value, $expression)
@@ -656,8 +650,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     /**
      * PMQL value alias for requester field
      *
-     * @param string $value
-     *
+     * @param  string  $value
      * @return callable
      */
     private function valueAliasRequester($value, $expression)
@@ -676,8 +669,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     /**
      * PMQL value alias for participant field
      *
-     * @param string $value
-     *
+     * @param  string  $value
      * @return callable
      */
     private function valueAliasParticipant($value, $expression)
@@ -723,7 +715,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      * Filter process started with user
      *
      * @param $query
-     *
      * @param $id User id
      */
     public function scopeRequestsThatUserCan($query, $permission, User $user)
@@ -740,8 +731,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     /**
      * Update the current catch events for the requests
      *
-     * @param TokenInterface $token
-     *
+     * @param  TokenInterface  $token
      * @return void
      */
     public function updateCatchEvents()
@@ -834,9 +824,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     /**
      * Get the BPMN definitions version of the process that is running.
      *
-     * @param bool $forceParse
-     * @param mixed $engine
-     *
+     * @param  bool  $forceParse
+     * @param  mixed  $engine
      * @return BpmnDocument
      */
     public function getVersionDefinitions($forceParse = false, $engine = null)
@@ -849,7 +838,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     /**
      * Notify a process update
      *
-     * @param string $eventName
+     * @param  string  $eventName
      */
     public function notifyProcessUpdated($eventName)
     {

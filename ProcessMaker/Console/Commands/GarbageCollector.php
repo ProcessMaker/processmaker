@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Jobs\RunServiceTask;
-use ProcessMaker\Models\ProcessRequestLock;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ScheduledTask;
 use ProcessMaker\Models\Script;
@@ -147,8 +146,7 @@ class GarbageCollector extends Command
     private function processDuplicatedTimerEvents()
     {
         // Intermediate Timer Events should have just one scheduled task
-        $scheduled = ScheduledTask::
-            select(
+        $scheduled = ScheduledTask::select(
                 'process_request_id',
                 'configuration->element_id as element_id',
                 DB::raw('count(*)')

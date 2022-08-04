@@ -14,7 +14,8 @@ class UserProvider extends EloquentUserProvider
 {
     /**
      * Create our user provider, with the hashing implementation needed
-     * @param HasherContract $hasher
+     *
+     * @param  HasherContract  $hasher
      */
     public function __construct(HasherContract $hasher)
     {
@@ -23,8 +24,9 @@ class UserProvider extends EloquentUserProvider
 
     /**
      * Retrieve a user by a remember me token, which we currently do not support
-     * @param mixed $identifier
-     * @param string $token
+     *
+     * @param  mixed  $identifier
+     * @param  string  $token
      * @return UserContract|null
      */
     public function retrieveByToken($identifier, $token)
@@ -35,8 +37,9 @@ class UserProvider extends EloquentUserProvider
 
     /**
      * Update a remember token, which we currently do not support
-     * @param UserContract $user
-     * @param string $token
+     *
+     * @param  UserContract  $user
+     * @param  string  $token
      * @return null|void
      */
     public function updateRememberToken(UserContract $user, $token)
@@ -48,7 +51,8 @@ class UserProvider extends EloquentUserProvider
     /**
      * Retrieve a user by passed in credentials
      * If it's by email address, let's try to first get by email
-     * @param array $credentials
+     *
+     * @param  array  $credentials
      * @return UserContract|\Illuminate\Database\Eloquent\Model|null|static
      */
     public function retrieveByCredentials(array $credentials)

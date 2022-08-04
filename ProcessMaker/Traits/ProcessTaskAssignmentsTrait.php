@@ -49,9 +49,8 @@ trait ProcessTaskAssignmentsTrait
     /**
      * Populates the assignments array.
      *
-     * @param DOMElement $node
-     * @param array $assignments
-     *
+     * @param  DOMElement  $node
+     * @param  array  $assignments
      * @return array
      */
     private static function setAssignments(DOMElement $node, array $assignments)

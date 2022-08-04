@@ -25,8 +25,7 @@ class PerformanceApiTest extends TestCase
     /**
      * Time unit base for the performce tests
      *
-     * @param int $times
-     *
+     * @param  int  $times
      * @return float
      */
     private function calculateUnitTime($times = 100)

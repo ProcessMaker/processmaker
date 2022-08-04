@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Process;
@@ -159,10 +158,9 @@ class ProcessSeeder extends Seeder
     /**
      * Load the JSON of a screen.
      *
-     * @param string $id
-     * @param string $screenRef
-     * @param string $process
-     *
+     * @param  string  $id
+     * @param  string  $screenRef
+     * @param  string  $process
      * @return Screen
      */
     private function createScreen($id, $screenRef, $process)
@@ -187,8 +185,7 @@ class ProcessSeeder extends Seeder
     /**
      * Get the language that corresponds to an specific mime-type.
      *
-     * @param string $mime
-     *
+     * @param  string  $mime
      * @return string
      */
     private function languageOfMimeType($mime)
@@ -200,7 +197,6 @@ class ProcessSeeder extends Seeder
      * Format name without spaces and to lowercase
      *
      * @param $name
-     *
      * @return string
      */
     private function formatName($name)
@@ -211,8 +207,7 @@ class ProcessSeeder extends Seeder
     /**
      * Get or create a user by full name.
      *
-     * @param string $userFullName
-     *
+     * @param  string  $userFullName
      * @return User
      */
     private function getUserOrCreate($userFullName)
@@ -236,7 +231,6 @@ class ProcessSeeder extends Seeder
      * Get or create a group by name
      *
      * @param $name
-     *
      * @return mixed
      */
     private function getGroupOrCreate($name)

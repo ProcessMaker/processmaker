@@ -43,8 +43,7 @@ class DataStore implements DataStoreInterface
     /**
      * Get Process of the application.
      *
-     * @param \ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface $process
-     *
+     * @param  \ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface  $process
      * @return ProcessInterface
      */
     public function setOwnerProcess(ProcessInterface $process)
@@ -57,8 +56,7 @@ class DataStore implements DataStoreInterface
     /**
      * Get data from store.
      *
-     * @param mixed $name
-     *
+     * @param  mixed  $name
      * @return mixed
      */
     public function getData($name = null, $default = null)
@@ -69,8 +67,7 @@ class DataStore implements DataStoreInterface
     /**
      * Set data of the store.
      *
-     * @param array $data
-     *
+     * @param  array  $data
      * @return $this
      */
     public function setData($data)
@@ -83,9 +80,8 @@ class DataStore implements DataStoreInterface
     /**
      * Put data to store.
      *
-     * @param string $name
-     * @param mixed $data
-     *
+     * @param  string  $name
+     * @param  mixed  $data
      * @return $this
      */
     public function putData($name, $data)
@@ -110,8 +106,7 @@ class DataStore implements DataStoreInterface
     /**
      * Remove data from store.
      *
-     * @param string $name
-     *
+     * @param  string  $name
      * @return $this
      */
     public function removeData($name)
@@ -142,8 +137,7 @@ class DataStore implements DataStoreInterface
     /**
      * Update the data of an array based on the changes made in the data store
      *
-     * @param array $array
-     *
+     * @param  array  $array
      * @return array
      */
     public function updateArray(array $array)

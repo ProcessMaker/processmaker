@@ -118,9 +118,8 @@ class ProcessCollaborationTest extends TestCase
     /**
      * Get the index of a task by name.
      *
-     * @param array $tasks
-     * @param string $name
-     *
+     * @param  array  $tasks
+     * @param  string  $name
      * @return int
      */
     private function findTaskByName(array $tasks, $name)

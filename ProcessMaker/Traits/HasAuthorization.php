@@ -2,11 +2,7 @@
 
 namespace ProcessMaker\Traits;
 
-use Illuminate\Support\Facades\Auth;
-use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\User;
 
 trait HasAuthorization
@@ -59,7 +55,7 @@ trait HasAuthorization
      * If a user can create or edit a resource,
      * they should be able to view its categories.
      *
-     * @param array $permissions
+     * @param  array  $permissions
      * @return array $permissions
      */
     private function addCategoryViewPermissions($permissions)

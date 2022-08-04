@@ -15,8 +15,8 @@ class ProcessMakerAuthenticate extends Authenticate
     }
 
     /**
-     * @param array $guards
-     * @param \Illuminate\Http\Request $request
+     * @param  array  $guards
+     * @param  \Illuminate\Http\Request  $request
      */
     private function addAcceptJsonHeaderIfApiCall(\Illuminate\Http\Request $request, array $guards): void
     {
@@ -26,7 +26,7 @@ class ProcessMakerAuthenticate extends Authenticate
     }
 
     /**
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return bool
      */
     private function requestHasAcceptJsonHeader(\Illuminate\Http\Request $request): bool

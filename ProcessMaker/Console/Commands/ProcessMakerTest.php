@@ -146,7 +146,7 @@ class ProcessMakerTest extends Command
         $executor = ScriptExecutor::where('language', $language)->firstOrFail();
         $script->script_executor_id = $executor->id;
         $script->code = $code;
-        $res = $script->runScript(['foo' => 'bar'], ['conf'=>'val']);
+        $res = $script->runScript(['foo' => 'bar'], ['conf' => 'val']);
         if (! is_array($res) || empty($res['output'])) {
             throw new Exception("Failed execution of `{$language}` script.");
         }

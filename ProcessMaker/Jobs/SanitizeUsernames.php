@@ -8,10 +8,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Models\User;
 
 class SanitizeUsernames implements ShouldQueue
@@ -75,7 +73,6 @@ class SanitizeUsernames implements ShouldQueue
      *
      * @param  string  $previous_username
      * @param  string  $new_username
-     *
      * @return void
      */
     public static function findAndReplaceUsernameInComments(string $previous_username, string $new_username)
@@ -102,8 +99,8 @@ class SanitizeUsernames implements ShouldQueue
      *
      * @param  string  $username
      * @param  int  $id
-     *
      * @return string
+     *
      * @throws \Exception
      */
     public static function filterAndValidateUsername(string $username, int $id): string

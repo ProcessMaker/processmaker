@@ -2,9 +2,7 @@
 
 namespace ProcessMaker\Listeners;
 
-use Carbon\Carbon;
 use ProcessMaker\Models\SecurityLog;
-use ProcessMaker\Models\User;
 use WhichBrowser\Parser;
 
 class SecurityLogger

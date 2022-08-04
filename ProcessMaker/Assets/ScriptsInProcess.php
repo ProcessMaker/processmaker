@@ -16,9 +16,8 @@ class ScriptsInProcess
     /**
      * Get scripts used in a process
      *
-     * @param Process $process
-     * @param array $scripts
-     *
+     * @param  Process  $process
+     * @param  array  $scripts
      * @return array
      */
     public function referencesToExport(Process $process, array $scripts = [])
@@ -39,9 +38,8 @@ class ScriptsInProcess
     /**
      * Update references used in an imported process
      *
-     * @param Process $process
-     * @param array $references
-     *
+     * @param  Process  $process
+     * @param  array  $references
      * @return void
      */
     public function updateReferences(Process $process, array $references = [])

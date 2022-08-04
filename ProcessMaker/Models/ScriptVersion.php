@@ -27,7 +27,7 @@ class ScriptVersion extends Model implements ScriptInterface
     /**
      * Set multiple|single categories to the script
      *
-     * @param string $value
+     * @param  string  $value
      */
     public function setScriptCategoryIdAttribute($value)
     {
@@ -47,8 +47,8 @@ class ScriptVersion extends Model implements ScriptInterface
     /**
      * Executes a script given a configuration and data input.
      *
-     * @param array $data
-     * @param array $config
+     * @param  array  $data
+     * @param  array  $config
      */
     public function runScript(array $data, array $config, $tokenId = '')
     {

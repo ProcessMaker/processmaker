@@ -3,9 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Mockery\Exception;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Script as ScriptResource;
@@ -31,8 +29,7 @@ class ScriptController extends Controller
     /**
      * Get a list of scripts in a process.
      *
-     * @param Process $process
-     *
+     * @param  Process  $process
      * @return ResponseFactory|Response
      *
      *
@@ -270,8 +267,7 @@ class ScriptController extends Controller
     /**
      * Get a single script in a process.
      *
-     * @param Script $script
-     *
+     * @param  Script  $script
      * @return ResponseFactory|Response
      *
      *     @OA\Get(
@@ -303,8 +299,7 @@ class ScriptController extends Controller
     /**
      * Create a new script in a process.
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return ResponseFactory|Response
      *
      *     @OA\Post(
@@ -337,10 +332,9 @@ class ScriptController extends Controller
     /**
      * Update a script in a process.
      *
-     * @param Process $process
-     * @param Script $script
-     * @param Request $request
-     *
+     * @param  Process  $process
+     * @param  Script  $script
+     * @param  Request  $request
      * @return ResponseFactory|Response
      *
      *     @OA\Put(
@@ -381,9 +375,8 @@ class ScriptController extends Controller
     /**
      * duplicate a Script.
      *
-     * @param Script $script
-     * @param Request $request
-     *
+     * @param  Script  $script
+     * @param  Request  $request
      * @return ResponseFactory|Response
      *
      *     @OA\Put(
@@ -439,8 +432,7 @@ class ScriptController extends Controller
     /**
      * Delete a script in a process.
      *
-     * @param Script $script
-     *
+     * @param  Script  $script
      * @return ResponseFactory|Response
      *
      *     @OA\Delete(

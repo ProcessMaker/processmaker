@@ -3,8 +3,6 @@
 namespace Tests\Feature\Api;
 
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Auth;
-use PermissionSeeder;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Models\User;
