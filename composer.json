@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.2.31-RC4+patch-1-cartegraph",
+    "version": "4.2.31-RC5+patch-2-cartegraph",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -88,7 +88,7 @@
             ]
         },
         "processmaker": {
-            "build": "7f9cfd8a",
+            "build": "a83a4789",
             "enterprise": {
                 "connector-docusign": "0.1.10",
                 "connector-pdf-print": "1.7.7",
