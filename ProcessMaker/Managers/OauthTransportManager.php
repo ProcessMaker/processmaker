@@ -2,12 +2,15 @@
 
 namespace ProcessMaker\Managers;
 
+use DateTime;
+use DateInterval;
+use GuzzleHttp\Client;
+use Microsoft\Graph\Graph;
 use Swift_Mime_SimpleMessage;
+use Google\Client as GoogleClient;
 use Illuminate\Mail\TransportManager;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Packages\Connectors\Email\EmailConfig;
-use Google\Client as GoogleClient;
-use Microsoft\Graph\Graph;
 
 class OauthTransportManager extends TransportManager
 {
@@ -110,7 +113,7 @@ class OauthTransportManager extends TransportManager
 
             $this->updateEnvVar("EMAIL_CONNECTOR_GMAIL_API_ACCESS_TOKEN{$index}", $accessToken);
             $this->updateEnvVar("EMAIL_CONNECTOR_GMAIL_API_REFRESH_TOKEN{$index}", $newToken['refresh_token']);
-            $this->updateEnvVar("EMAIL_CONNECTOR_GMAIL_API_EXPIRES_IN{$index}", $newToken['expires_in']);
+            $this->updateEnvVar("EMAIL_CONNECTOR_GMAIL_API_ACCESS_TOKEN_EXPIRE_DATE{$index}", $newToken['expires_in']);
             $this->updateEnvVar("EMAIL_CONNECTOR_GMAIL_API_TOKEN_CREATED{$index}", $newToken['created']);
         }
         
@@ -119,16 +122,42 @@ class OauthTransportManager extends TransportManager
 
     public function checkForExpiredOffice365AccessToken($index) 
     {
-        $now = new \DateTime();
+        $now = new DateTime();
         $now->format('Y-m-d H:i:s');
         $expireDate = gmdate('Y-m-d H:i:s', strtotime($this->token->expires_in));
         if ($now->format('Y-m-d H:i:s') > $expireDate ) {
-            dd('ACCESS TOKEN IS EXPIRED');
-            // TODO: Handle expired access token
+            $accessToken = $this->refreshAccessToken();
         }
 
-        $accessToken = $this->token['access_token'];
+        $accessToken = $this->token->access_token;
         return $accessToken;
+    }
+
+    private function refreshAccessToken() 
+    {
+        try {
+            $guzzle = new Client();
+            $url = 'https://login.microsoftonline.com/' . $this->token->tenant_id . '/oauth2/v2.0/token';
+            $newToken = json_decode($guzzle->post($url, [
+                'form_params' => [
+                    'client_id' =>  $this->token->client_id,
+                    'client_secret' => $this->token->client_secret,
+                    'scope' => 'https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/POP.AccessAsUser.All https://outlook.office.com/SMTP.Send offline_access',
+                    'refresh_token' => $this->token->refresh_token,
+                    'grant_type' => 'refresh_token',
+                ],
+            ])->getBody()->getContents());
+
+            $now = new DateTime();
+            $expirationTime = $now->add(new DateInterval('PT' . $newToken->expires_in . 'S'));
+
+            $this->updateEnvVar("EMAIL_CONNECTOR_OFFICE_365_ACCESS_TOKEN{$this->emailServerIndex}", $newToken->access_token);
+            $this->updateEnvVar("EMAIL_CONNECTOR_OFFICE_365_REFRESH_TOKEN{$this->emailServerIndex}", $newToken->refresh_token);
+            $this->updateEnvVar("EMAIL_CONNECTOR_OFFICE_365_ACCESS_TOKEN_EXPIRE_DATE{$this->emailServerIndex}", $expirationTime);
+
+        } catch (Throwable $error) {
+            throw $error;
+        }   
     }
 
     private function updateEnvVar($name, $value)
