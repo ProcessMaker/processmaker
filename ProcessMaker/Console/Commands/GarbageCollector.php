@@ -8,22 +8,23 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Jobs\RunServiceTask;
-use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessRequestLock;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ScheduledTask;
 use ProcessMaker\Models\Script;
 
 class GarbageCollector extends Command
 {
     private $MAX_SCRIPT_TIMEOUT = 3600;
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = "
+    protected $signature = '
         processmaker:garbage-collect
-    ";
+    ';
 
     /**
      * The console command description.
@@ -62,8 +63,9 @@ class GarbageCollector extends Command
     {
         $tasks = $this->getTaskList();
 
-        if (!$tasks->count()) {
+        if (! $tasks->count()) {
             $this->writeln("No failing script or service tasks found.\n", 'line');
+
             return;
         }
 
@@ -74,7 +76,7 @@ class GarbageCollector extends Command
 
         foreach ($tasks as $token) {
             $bar->advance();
-            if (!$this->canRunScriptOfToken($token)) {
+            if (! $this->canRunScriptOfToken($token)) {
                 $this->writeln("Script of the token { $token->id } is still running...\n", 'line', true);
                 continue;
             }
@@ -99,14 +101,13 @@ class GarbageCollector extends Command
 
     private function processUnhandledErrors()
     {
-        $fileName = storage_path('app/private') . '/unhandled_error.txt';
+        $fileName = storage_path('app/private').'/unhandled_error.txt';
         if (file_exists($fileName)) {
-
-            $this->writeln("Unhandled errors file found...", 'info', true);
+            $this->writeln('Unhandled errors file found...', 'info', true);
 
             $tokens = [];
-            if ($file = fopen($fileName, "r")) {
-                while(!feof($file)) {
+            if ($file = fopen($fileName, 'r')) {
+                while (! feof($file)) {
                     $token = fgets($file);
                     $tokens[] = trim($token);
                 }
@@ -116,7 +117,7 @@ class GarbageCollector extends Command
             foreach ($tokens as $tokenId) {
                 $token = ProcessRequestToken::find($tokenId);
 
-                if (!$this->canRunScriptOfToken($token)) {
+                if (! $this->canRunScriptOfToken($token)) {
                     $this->writeln("Script of the token { $token->id } is still running...\n", 'line', true);
                     continue;
                 }
@@ -157,10 +158,10 @@ class GarbageCollector extends Command
             ->get();
 
         if ($scheduled->count() > 0) {
-            $this->writeln("Duplicated timer events found...", 'info', true);
+            $this->writeln('Duplicated timer events found...', 'info', true);
         }
 
-        foreach($scheduled as $schedule) {
+        foreach ($scheduled as $schedule) {
             $this->writeln("Cleaning scheduled task { $$schedule->id } 
                 of token={ $schedule->process_request_token_id },
                 request={ $schedule->process_request_id },  
@@ -195,7 +196,8 @@ class GarbageCollector extends Command
 
     private function getTaskList()
     {
-        $tasks = ProcessRequestToken::whereIn('status', array('FAILING', 'ACTIVE'))->whereIn('element_type', ['scriptTask', 'serviceTask']);
+        $tasks = ProcessRequestToken::whereIn('status', ['FAILING', 'ACTIVE'])->whereIn('element_type', ['scriptTask', 'serviceTask']);
+
         return $tasks->get();
     }
 
@@ -209,7 +211,7 @@ class GarbageCollector extends Command
         $delta = time() - strtotime($token->created_at);
 
         if (empty($script->timeout) || $script->timeout === 0) {
-           return $delta >  $this->MAX_SCRIPT_TIMEOUT;
+            return $delta > $this->MAX_SCRIPT_TIMEOUT;
         }
 
         return $delta > $script->timeout;
@@ -219,7 +221,7 @@ class GarbageCollector extends Command
     {
         $this->{$type}($message);
         if ($toLog) {
-            Log::Info("Garbage Collector: " . $message);
+            Log::Info('Garbage Collector: '.$message);
         }
     }
 }

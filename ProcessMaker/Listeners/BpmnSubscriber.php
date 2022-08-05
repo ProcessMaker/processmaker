@@ -3,42 +3,41 @@
 namespace ProcessMaker\Listeners;
 
 use Exception;
-use ProcessMaker\Jobs\TerminateRequestEndEvent;
-use ProcessMaker\Models\FormalExpression;
-use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
-use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
-use ProcessMaker\Nayra\Bpmn\Events\ActivityCompletedEvent;
-use ProcessMaker\Nayra\Bpmn\Events\ActivityClosedEvent;
-use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
-use ProcessMaker\Nayra\Bpmn\Events\ProcessInstanceCreatedEvent;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use ProcessMaker\Events\ActivityAssigned;
-use ProcessMaker\Events\ProcessCompleted;
 use ProcessMaker\Events\ActivityCompleted;
-use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
-use ProcessMaker\Nayra\Bpmn\Events\ProcessInstanceCompletedEvent;
-use ProcessMaker\Nayra\Contracts\Bpmn\TerminateEventDefinitionInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
+use ProcessMaker\Events\ProcessCompleted;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Jobs\TerminateRequestEndEvent;
 use ProcessMaker\Models\Comment;
+use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
+use ProcessMaker\Nayra\Bpmn\Events\ActivityClosedEvent;
+use ProcessMaker\Nayra\Bpmn\Events\ActivityCompletedEvent;
+use ProcessMaker\Nayra\Bpmn\Events\ProcessInstanceCompletedEvent;
+use ProcessMaker\Nayra\Bpmn\Events\ProcessInstanceCreatedEvent;
+use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ConditionalEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ErrorInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\TransitionInterface;
-use ProcessMaker\Notifications\ProcessCreatedNotification;
-use ProcessMaker\Notifications\ProcessCompletedNotification;
-use ProcessMaker\Notifications\ActivityActivatedNotification;
-use ProcessMaker\Notifications\ActivityCompletedNotification;
 use ProcessMaker\Nayra\Contracts\Bpmn\IntermediateCatchEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\MessageEventDefinitionInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\TerminateEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TimerEventDefinitionInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\TransitionInterface;
+use ProcessMaker\Notifications\ActivityActivatedNotification;
+use ProcessMaker\Notifications\ActivityCompletedNotification;
+use ProcessMaker\Notifications\ProcessCompletedNotification;
+use ProcessMaker\Notifications\ProcessCreatedNotification;
 
 /**
  * Description of BpmnSubscriber
- *
  */
 class BpmnSubscriber
 {
@@ -60,7 +59,7 @@ class BpmnSubscriber
             return;
         }
 
-        register_shutdown_function(function() use ($path, $element, $token) {
+        register_shutdown_function(function () use ($path, $element, $token) {
             $this->errorHandler($path, $token);
         });
     }
@@ -70,9 +69,9 @@ class BpmnSubscriber
         // free the reserved memory
         $this->memory = null;
 
-        file_put_contents($path . '/unhandled_error.txt', $token->id . "\n", FILE_APPEND);
-        if (!is_null($err = error_get_last()) && in_array($err['type'], [E_ERROR])) {
-            Log::error('Script/Service task failed with unhandled system error: ' . print_r($err, true));
+        file_put_contents($path.'/unhandled_error.txt', $token->id."\n", FILE_APPEND);
+        if (! is_null($err = error_get_last()) && in_array($err['type'], [E_ERROR])) {
+            Log::error('Script/Service task failed with unhandled system error: '.print_r($err, true));
         }
     }
 
@@ -102,7 +101,7 @@ class BpmnSubscriber
         if ($event->instance->isNonPersistent()) {
             return;
         }
-        Log::info('Process created: ' . json_encode($event->instance->getProperties()));
+        Log::info('Process created: '.json_encode($event->instance->getProperties()));
 
         $notifiables = $event->instance->getNotifiables('started');
         Notification::send($notifiables, new ProcessCreatedNotification($event->instance));
@@ -119,7 +118,7 @@ class BpmnSubscriber
         if ($token->getInstance()->isNonPersistent()) {
             return;
         }
-        Log::info('Activity activated: ' . json_encode($token->getProperties()));
+        Log::info('Activity activated: '.json_encode($token->getProperties()));
 
         // Do not send activated notification for self service tasks since
         // they do not have a user assigned yet.
@@ -141,7 +140,7 @@ class BpmnSubscriber
         if ($token->getInstance()->isNonPersistent()) {
             return;
         }
-        Log::info('Activity completed: ' . json_encode($token->getProperties()));
+        Log::info('Activity completed: '.json_encode($token->getProperties()));
 
         if ($token->element_type == 'task') {
             $notifiables = $token->getNotifiables('completed');
@@ -157,13 +156,11 @@ class BpmnSubscriber
      */
     public function onActivityClosed(ActivityClosedEvent $event)
     {
-        Log::info('ActivityClosed: ' . json_encode($event->token->getProperties()));
+        Log::info('ActivityClosed: '.json_encode($event->token->getProperties()));
     }
-
 
     /**
      * When an activity fails
-     *
      */
     public function onActivityException(ActivityInterface $activity, ProcessRequestToken $token)
     {
@@ -177,8 +174,6 @@ class BpmnSubscriber
         }
     }
 
-
-
     /**
      * When a script task is activated.
      *
@@ -190,9 +185,8 @@ class BpmnSubscriber
         $this->registerErrorHandler($scriptTask, $token);
         try {
             WorkflowManager::runScripTask($scriptTask, $token);
-        }
-        catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::Error('Unhandled error when running a script task:' . $e->getMessage());
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::Error('Unhandled error when running a script task:'.$e->getMessage());
         }
     }
 
@@ -207,9 +201,8 @@ class BpmnSubscriber
         $this->registerErrorHandler($serviceTask, $token);
         try {
             WorkflowManager::runServiceTask($serviceTask, $token);
-        }
-        catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::Error('Unhandled error when running a service task:' . $e->getMessage());
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::Error('Unhandled error when running a service task:'.$e->getMessage());
         }
     }
 
@@ -229,7 +222,7 @@ class BpmnSubscriber
                         'commentable_id' => $token->getInstance()->id,
                         'subject' => __($message, ['event' => $event->getName()]),
                         'body' => __($message, ['event' => $event->getName()]),
-                        'type' => 'LOG'
+                        'type' => 'LOG',
                     ]);
                     $comment->save();
                     break;
@@ -248,12 +241,13 @@ class BpmnSubscriber
         // Exit if config is not a valid json
         if (empty(json_decode($flow->getProperties()['config']))) {
             Log::error('Flow config attribut is not a valid json');
+
             return;
         }
 
         // Exit if no variable or expression is set
         $config = json_decode($flow->getProperties()['config'], true);
-        if ( empty($config['update_data'])
+        if (empty($config['update_data'])
             || empty($config['update_data']['variable'])
             || empty($config['update_data']['expression'])
         ) {
@@ -272,7 +266,7 @@ class BpmnSubscriber
             $data = array_merge($data, [$variable => $expressionResult]);
             $data = $data;
             $instance->getDataStore()->setData($data);
-            if (!$instance->isNonPersistent()) {
+            if (! $instance->isNonPersistent()) {
                 $instance->data = $data;
                 $instance->saveOrFail();
             }
@@ -297,25 +291,22 @@ class BpmnSubscriber
      */
     public function subscribe($events)
     {
-        $events->listen(TransitionInterface::EVENT_CONDITIONED_TRANSITION, static::class . '@updateDataWithFlowTransition');
+        $events->listen(TransitionInterface::EVENT_CONDITIONED_TRANSITION, static::class.'@updateDataWithFlowTransition');
 
+        $events->listen(ProcessInterface::EVENT_PROCESS_INSTANCE_CREATED, static::class.'@onProcessCreated');
+        $events->listen(ProcessInterface::EVENT_PROCESS_INSTANCE_COMPLETED, static::class.'@onProcessCompleted');
 
-        $events->listen(ProcessInterface::EVENT_PROCESS_INSTANCE_CREATED, static::class . '@onProcessCreated');
-        $events->listen(ProcessInterface::EVENT_PROCESS_INSTANCE_COMPLETED, static::class . '@onProcessCompleted');
+        $events->listen(ActivityInterface::EVENT_ACTIVITY_COMPLETED, static::class.'@onActivityCompleted');
+        $events->listen(ActivityInterface::EVENT_ACTIVITY_CLOSED, static::class.'@onActivityClosed');
 
-        $events->listen(ActivityInterface::EVENT_ACTIVITY_COMPLETED, static::class . '@onActivityCompleted');
-        $events->listen(ActivityInterface::EVENT_ACTIVITY_CLOSED, static::class . '@onActivityClosed');
+        $events->listen(ActivityInterface::EVENT_ACTIVITY_ACTIVATED, static::class.'@onActivityActivated');
+        $events->listen(ScriptTaskInterface::EVENT_SCRIPT_TASK_ACTIVATED, static::class.'@onScriptTaskActivated');
+        $events->listen(ServiceTaskInterface::EVENT_SERVICE_TASK_ACTIVATED, static::class.'@onServiceTaskActivated');
 
-        $events->listen(ActivityInterface::EVENT_ACTIVITY_ACTIVATED, static::class . '@onActivityActivated');
-        $events->listen(ScriptTaskInterface::EVENT_SCRIPT_TASK_ACTIVATED, static::class . '@onScriptTaskActivated');
-        $events->listen(ServiceTaskInterface::EVENT_SERVICE_TASK_ACTIVATED, static::class . '@onServiceTaskActivated');
+        $events->listen(ActivityInterface::EVENT_ACTIVITY_EXCEPTION, static::class.'@onActivityException');
 
-        $events->listen(ActivityInterface::EVENT_ACTIVITY_EXCEPTION, static::class . '@onActivityException');
+        $events->listen(IntermediateCatchEventInterface::EVENT_CATCH_TOKEN_ARRIVES, static::class.'@onIntermediateCatchEventActivated');
 
-        $events->listen(IntermediateCatchEventInterface::EVENT_CATCH_TOKEN_ARRIVES, static::class . '@onIntermediateCatchEventActivated');
-
-        $events->listen(TerminateEventDefinitionInterface::EVENT_THROW_EVENT_DEFINITION, static::class . '@onTerminateEndEvent');
-
+        $events->listen(TerminateEventDefinitionInterface::EVENT_THROW_EVENT_DEFINITION, static::class.'@onTerminateEndEvent');
     }
-
 }

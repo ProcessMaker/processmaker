@@ -60,7 +60,7 @@ class SanitizeInput extends TransformsRequest
         }
         // If this is a string and is not in the exceptions
         // array, return it after sanitization.
-        return SanitizeHelper::sanitize($value, !in_array($key, $this->except, true));
+        return SanitizeHelper::sanitize($value, ! in_array($key, $this->except, true));
     }
 
     /**

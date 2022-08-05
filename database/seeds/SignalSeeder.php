@@ -8,8 +8,7 @@ use ProcessMaker\Models\User;
 
 class SignalSeeder extends Seeder
 {
-
-    static $TEMPLATE_PROCESS_FILE = 'GlobalSignals.bpmn';
+    public static $TEMPLATE_PROCESS_FILE = 'GlobalSignals.bpmn';
 
     /**
      * Run the database seeds.
@@ -18,10 +17,12 @@ class SignalSeeder extends Seeder
      */
     public function run()
     {
-        if ($this->signalProcessExists()) { return; }
+        if ($this->signalProcessExists()) {
+            return;
+        }
 
         $processCategory = ProcessCategory::where('is_system', true)->firstOrFail();
-        $bpmn = file_get_contents(__DIR__ . '/../processes/' . static::$TEMPLATE_PROCESS_FILE);
+        $bpmn = file_get_contents(__DIR__.'/../processes/'.static::$TEMPLATE_PROCESS_FILE);
 
         Process::unguard();
         Process::updateOrCreate([

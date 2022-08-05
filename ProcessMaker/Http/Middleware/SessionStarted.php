@@ -3,10 +3,10 @@
 namespace ProcessMaker\Http\Middleware;
 
 use Auth;
-use Closure;
-use Session;
 use Carbon\Carbon;
+use Closure;
 use ProcessMaker\Events\SessionStarted as SessionStartedEvent;
+use Session;
 
 class SessionStarted
 {
@@ -37,7 +37,6 @@ class SessionStarted
      */
     private function userHasValidRememberMe($request)
     {
-
         if (\Auth::user() === null) {
             return false;
         }
@@ -45,7 +44,7 @@ class SessionStarted
         $guard = \Auth::guard();
 
         // Remember me is validate only in user session guards
-        if (!is_a($guard, \Illuminate\Auth\SessionGuard::class)) {
+        if (! is_a($guard, \Illuminate\Auth\SessionGuard::class)) {
             return false;
         }
 

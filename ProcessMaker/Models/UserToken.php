@@ -6,7 +6,6 @@ use Laravel\Passport\Token;
 
 class UserToken extends Token
 {
-
     /**
      * @OA\Schema(
      *   schema="UserToken",

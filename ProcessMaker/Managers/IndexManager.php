@@ -41,11 +41,9 @@ class IndexManager
 
     /**
      * List indexes
-     *
      */
     public function list()
     {
         return $this->indexes;
     }
-
 }

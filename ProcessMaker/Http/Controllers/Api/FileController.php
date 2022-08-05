@@ -9,6 +9,7 @@ use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Models\Media;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
 class FileController extends Controller
 {
     /**
@@ -62,8 +63,8 @@ class FileController extends Controller
         $query = Media::query();
         $filter = $request->input('filter', '');
 
-        if (!empty($filter)) {
-            $filter = '%' . $filter . '%';
+        if (! empty($filter)) {
+            $filter = '%'.$filter.'%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('file_name', 'like', $filter)
                     ->orWhere('mime_type', 'like', $filter);
@@ -76,6 +77,7 @@ class FileController extends Controller
         );
 
         $response = $query->paginate($request->input('per_page', 10));
+
         return new ApiCollection($response);
     }
 
@@ -111,7 +113,7 @@ class FileController extends Controller
      *         description="Name of the variable used in a request",
      *         required=false,
      *         @OA\Schema(type="string"),
-     *     ),     
+     *     ),
      *     @OA\RequestBody(
      *       required=true,
      *       @OA\MediaType(
@@ -132,7 +134,7 @@ class FileController extends Controller
      *         description="Media collection name. For requests, use 'default'",
      *         required=false,
      *         @OA\Schema(type="string"),
-     *     ),     
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="success",
@@ -157,9 +159,9 @@ class FileController extends Controller
         // The model class can be a name or a full path
         $classOptions = [
             $request->query('model', null),
-            'ProcessMaker\\Models\\' . ucwords($request->query('model', null)),
-        ];        
-        
+            'ProcessMaker\\Models\\'.ucwords($request->query('model', null)),
+        ];
+
         // Check for the model class until we find a match
         foreach ($classOptions as $class) {
             if (class_exists($class)) {
@@ -179,18 +181,18 @@ class FileController extends Controller
         if ($model === null) {
             throw new NotFoundHttpException();
         }
-        
+
         $mediaCollection = $request->input('collection', 'local');
 
         $addedMedia = $model->addMediaFromRequest('file')
-            ->withCustomProperties(['data_name' => $request->input('data_name','')])
+            ->withCustomProperties(['data_name' => $request->input('data_name', '')])
             ->toMediaCollection($mediaCollection);
 
         return response([
             'id' => $addedMedia->id,
             'model_id' => $addedMedia->model_id,
             'file_name' => $addedMedia->file_name,
-            'mime_type' => $addedMedia->mime_type
+            'mime_type' => $addedMedia->mime_type,
         ], 200);
     }
 
@@ -264,9 +266,10 @@ class FileController extends Controller
      */
     public function download(Media $file)
     {
-        $path = Storage::disk('public')->getAdapter()->getPathPrefix() .
-                $file->id . '/' .
+        $path = Storage::disk('public')->getAdapter()->getPathPrefix().
+                $file->id.'/'.
                 $file->file_name;
+
         return response()->download($path);
     }
 
@@ -277,13 +280,13 @@ class FileController extends Controller
      * @param Media $file
      *
      * @return \Illuminate\Http\Response
-     *
      */
     public function update(Request $request, Media $file)
     {
         $newFile = $request->file('file');
         $newMedia = new \ProcessMaker\Media();
         $newMedia->updateFile($newFile, $file);
+
         return response([], 201);
     }
 

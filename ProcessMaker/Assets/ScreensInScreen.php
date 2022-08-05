@@ -5,18 +5,21 @@ namespace ProcessMaker\Assets;
 use DOMXPath;
 use Illuminate\Support\Arr;
 use ProcessMaker\Contracts\ScreenInterface;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Providers\WorkflowServiceProvider;
 use ProcessMaker\Exception\MaximumRecursionException;
 use ProcessMaker\Managers\ExportManager;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Providers\WorkflowServiceProvider;
 
 class ScreensInScreen
 {
     public $type = Screen::class;
+
     public $owner = Screen::class;
+
     private $processRequest = null;
+
     private $recursion = 0;
 
     /**
@@ -31,14 +34,14 @@ class ScreensInScreen
     {
         if ($this->recursion > 10) {
             throw new MaximumRecursionException(
-                "Max screen recursion depth of 10 exceeded. Is a child screen referencing its parent?"
+                'Max screen recursion depth of 10 exceeded. Is a child screen referencing its parent?'
             );
         }
 
         $config = $screen->versionFor($this->processRequest)->config;
         if (is_array($config)) {
             $this->findInArray($config, function ($item) use (&$screens, $manager, $recursive) {
-                if (is_array($item) && isset($item['component']) && $item['component'] === 'FormNestedScreen' && !empty($item['config']['screen'])) {
+                if (is_array($item) && isset($item['component']) && $item['component'] === 'FormNestedScreen' && ! empty($item['config']['screen'])) {
                     $screens[] = [Screen::class, $item['config']['screen']];
                     if ($recursive) {
                         $screen = app(Screen::class)->findOrFail($item['config']['screen']);
@@ -49,6 +52,7 @@ class ScreensInScreen
                 }
             });
         }
+
         return $screens;
     }
 
@@ -65,7 +69,7 @@ class ScreensInScreen
         $config = $screen->config;
         if (is_array($config)) {
             $this->findInArray($config, function ($item, $key) use ($references, &$config) {
-                if (is_array($item) && isset($item['component']) && $item['component'] === 'FormNestedScreen' && !empty($item['config']['screen'])) {
+                if (is_array($item) && isset($item['component']) && $item['component'] === 'FormNestedScreen' && ! empty($item['config']['screen'])) {
                     $oldRef = $item['config']['screen'];
                     $newRef = $references[Screen::class][$oldRef]->getKey();
                     Arr::set($config, "$key.config.screen", $newRef);

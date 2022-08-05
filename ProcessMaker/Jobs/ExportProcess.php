@@ -4,16 +4,16 @@ namespace ProcessMaker\Jobs;
 
 use Cache;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use ProcessMaker\Managers\ExportManager;
+use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use ProcessMaker\Managers\ExportManager;
-use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 
 class ExportProcess implements ShouldQueue
@@ -60,7 +60,6 @@ class ExportProcess implements ShouldQueue
      */
     public $manager;
 
-
     /**
      * Create a new job instance, set the process, get BPMN definitions, and
      * set the file path.
@@ -99,7 +98,7 @@ class ExportProcess implements ShouldQueue
                 if (in_array($assignment, ['user', 'group', 'user_group'])) {
                     $task->removeAttributeNS($ns, 'assignment');
                 }
-                if (!in_array($assignment, ['user_by_id'])) {
+                if (! in_array($assignment, ['user_by_id'])) {
                     $task->removeAttributeNS($ns, 'assignedUsers');
                 }
                 $task->removeAttributeNS($ns, 'assignedGroups');
@@ -112,14 +111,14 @@ class ExportProcess implements ShouldQueue
             $callActivity = $task->getBPMNElementInstance();
             $external = $callActivity->isFromExternalDefinition();
             $service = $callActivity->isServiceSubProcess();
-            if ($external && !$service) {
+            if ($external && ! $service) {
                 $task->removeAttribute('calledElement');
             }
         }
 
         $this->process->bpmn = $this->definitions->saveXML();
 
-        if (!is_array($this->process->properties)) {
+        if (! is_array($this->process->properties)) {
             $this->process->properties = [];
         }
 
@@ -202,7 +201,7 @@ class ExportProcess implements ShouldQueue
         $this->package['scripts'] = [];
 
         if (! isset($this->screen)) {
-             $scriptIds = $this->manager->getDependenciesOfType(Script::class, $this->process, []);
+            $scriptIds = $this->manager->getDependenciesOfType(Script::class, $this->process, []);
         } else {
             $scriptIds = $this->manager->getDependenciesOfType(Script::class, $this->screen, []);
         }
@@ -271,7 +270,7 @@ class ExportProcess implements ShouldQueue
      * Save the file to the specified path, then return true on success or
      * false upon failure.
      *
-     * @return boolean
+     * @return bool
      */
     protected function saveFile()
     {
@@ -299,7 +298,7 @@ class ExportProcess implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @return boolean|string
+     * @return bool|string
      */
     public function handle()
     {

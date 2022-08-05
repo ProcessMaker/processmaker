@@ -8,7 +8,6 @@ use Throwable;
 
 /**
  * Class MustacheExpressionEvaluator
- * @package ProcessMaker\Models
  */
 class MustacheExpressionEvaluator implements TemplateExpressionInterface
 {
@@ -31,8 +30,7 @@ class MustacheExpressionEvaluator implements TemplateExpressionInterface
     {
         try {
             $result = $this->engine->render($template, $data);
-        }
-        catch (\Exception $ex) {
+        } catch (\Exception $ex) {
             $result = '';
         }
 

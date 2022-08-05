@@ -7,14 +7,13 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 /**
  * Thrown if an URL expression failed to be parsed
- *
- * @package ProcessMaker\Exceptions
  */
-
 class HttpInvalidArgumentException extends Exception implements HttpExceptionInterface
 {
     public $status;
+
     public $body;
+
     private $headers;
 
     /**

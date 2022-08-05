@@ -40,9 +40,9 @@ class ProcessMakerValidateProcesses extends Command
         $this->info('Starting ProcessMaker Validate Processes...');
         $processes = Process::nonSystem()->get();
         foreach ($processes as $process) {
-            $this->info('Process: ' . $process->name);
+            $this->info('Process: '.$process->name);
             $process->warnings = [];
-            if (!$process->validateBpmnDefinition()) {
+            if (! $process->validateBpmnDefinition()) {
                 // Save validation errors
                 $process->save();
             }

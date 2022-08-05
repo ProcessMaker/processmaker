@@ -2,28 +2,25 @@
 
 namespace Tests\Browser;
 
-use Tests\DuskTestCase;
-use Laravel\Dusk\Browser;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Tests\Browser\Pages\LoginPage;
-use ProcessMaker\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Dusk\Browser;
+use ProcessMaker\Models\User;
+use Tests\Browser\Pages\LoginPage;
 use Tests\Browser\Pages\RequestsPage;
+use Tests\DuskTestCase;
 
 class RequestsTest extends DuskTestCase
 {
-
     private function setuser()
     {
-
         $user = User::where('username', 'testuser')->first();
 
-        if (!$user) {
-
+        if (! $user) {
             $user = factory(User::class)->create([
                 'username' => 'testuser',
                 'password' => Hash::make('secret'),
-                'status' => 'ACTIVE'
+                'status' => 'ACTIVE',
             ]);
         }
 
@@ -52,13 +49,12 @@ class RequestsTest extends DuskTestCase
 
     public function test_pmql_initial_load()
     {
-
         $user = $this->setuser();
 
         $this->browse(function ($first) use ($user) {
             $first->loginAs($user)
                 ->visit(new RequestsPage)
-                ->assertVue('pmql', '(status = "In Progress") AND (requester = "' . $user->username . '")', '#requests-listing');
+                ->assertVue('pmql', '(status = "In Progress") AND (requester = "'.$user->username.'")', '#requests-listing');
         });
     }
 
@@ -83,10 +79,10 @@ class RequestsTest extends DuskTestCase
             $first->loginAs($user)
                 ->visit(new RequestsPage)
                 ->waitFor('#navbar')
-                ->click("#navbar-request-button")
+                ->click('#navbar-request-button')
                 ->whenAvailable('#requests-modal', function ($modal) {
-                    $modal->assertSee("New Request")
-                        ->waitFor(".no-requests")
+                    $modal->assertSee('New Request')
+                        ->waitFor('.no-requests')
                         ->assertSee("You don't have any Processes.");
                 });
         });

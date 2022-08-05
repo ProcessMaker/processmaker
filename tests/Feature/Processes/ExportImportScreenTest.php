@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Processes;
 
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScriptExecutor;
@@ -136,7 +136,7 @@ class ExportImportScreenTest extends TestCase
     public function testImportScreenWithWatchers()
     {
         // Load the file to test
-        $fileName = __DIR__ . '/../../Fixtures/screen_with_watchers.json';
+        $fileName = __DIR__.'/../../Fixtures/screen_with_watchers.json';
 
         $file = new UploadedFile($fileName, 'screen_with_watchers.json', null, null, null, true);
 
@@ -154,7 +154,7 @@ class ExportImportScreenTest extends TestCase
     public function testImportNestedScreen()
     {
         // Load the file to test
-        $fileName = __DIR__ . '/../../Fixtures/nested_screens.json';
+        $fileName = __DIR__.'/../../Fixtures/nested_screens.json';
         $file = new UploadedFile($fileName, 'nested_screens.json', null, null, null, true);
 
         // Import the file
@@ -170,17 +170,17 @@ class ExportImportScreenTest extends TestCase
         $screens = Screen::latest()->take(2)->get();
         $parent = $screens->where('title', 'Parent Screen')->first();
         $child = $screens->where('title', 'Child Screen')->first();
-        
+
         // Assert that we found our parent & child screens
         $this->assertNotNull($parent);
         $this->assertNotNull($child);
-        
+
         // Assert that the child screen has been properly referenced in the parent
         $this->assertArraySubset([
             'label' => 'Nested Screen',
             'config' => [
                 'screen' => $child->id,
-            ]
-        ], $parent->config[0]['items'][1]);        
+            ],
+        ], $parent->config[0]['items'][1]);
     }
 }

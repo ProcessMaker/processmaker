@@ -90,25 +90,25 @@ class ScriptController extends Controller
 
         $filter = $request->input('filter', '');
         $isSelectList = $request->input('selectList', '');
-        if (!empty($filter)) {
-            $filter = '%' . $filter . '%';
-            if (!$isSelectList) {
+        if (! empty($filter)) {
+            $filter = '%'.$filter.'%';
+            if (! $isSelectList) {
                 $query->where(function ($query) use ($filter) {
                     $query->Where('title', 'like', $filter)
                         ->orWhere('description', 'like', $filter)
                         ->orWhere('language', 'like', $filter)
-                        ->orWhereIn('scripts.id', function($qry) use ($filter) {
+                        ->orWhereIn('scripts.id', function ($qry) use ($filter) {
                             $qry->select('assignable_id')
                                 ->from('category_assignments')
-                                ->leftJoin('script_categories', function($join) {
-                                    $join->on('script_categories.id', '=',  'category_assignments.category_id');
+                                ->leftJoin('script_categories', function ($join) {
+                                    $join->on('script_categories.id', '=', 'category_assignments.category_id');
                                     $join->where('category_assignments.category_type', '=', ScriptCategory::class);
                                     $join->where('category_assignments.assignable_type', '=', Script::class);
                                 })
-                                ->where ('script_categories.name', 'like', $filter);
+                                ->where('script_categories.name', 'like', $filter);
                         });
                 });
-            } else  {
+            } else {
                 $query->where(function ($query) use ($filter) {
                     $query->Where('title', 'like', $filter);
                 });
@@ -177,6 +177,7 @@ class ScriptController extends Controller
         $nonce = $request->get('nonce');
 
         TestScript::dispatch($script, $request->user(), $code, $data, $config, $nonce)->onQueue('bpmn');
+
         return ['status' => 'success'];
     }
 
@@ -234,6 +235,7 @@ class ScriptController extends Controller
         } else {
             ExecuteScript::dispatch($script, $request->user(), $code, $data, $watcher, $config)->onQueue('bpmn');
         }
+
         return ['status' => 'success', 'key' => $watcher];
     }
 
@@ -328,6 +330,7 @@ class ScriptController extends Controller
         $script->fill($request->input());
 
         $script->saveOrFail();
+
         return new ScriptResource($script);
     }
 
@@ -415,7 +418,7 @@ class ScriptController extends Controller
 
         $exclude = ['id', 'created_at', 'updated_at'];
         foreach ($script->getAttributes() as $attribute => $value) {
-            if (!in_array($attribute, $exclude)) {
+            if (! in_array($attribute, $exclude)) {
                 $newScript->{$attribute} = $script->{$attribute};
             }
         }
@@ -429,6 +432,7 @@ class ScriptController extends Controller
         }
 
         $newScript->saveOrFail();
+
         return new ScriptResource($newScript);
     }
 
@@ -462,6 +466,7 @@ class ScriptController extends Controller
     public function destroy(Script $script)
     {
         $script->delete();
+
         return response([], 204);
     }
 }

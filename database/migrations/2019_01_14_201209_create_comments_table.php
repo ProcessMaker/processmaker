@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\Comment;
 
 class CreateCommentsTable extends Migration
@@ -26,7 +26,7 @@ class CreateCommentsTable extends Migration
             $table->timestamps();
 
             $table->index('user_id');
-            $table->index(['commentable_id','commentable_type']);
+            $table->index(['commentable_id', 'commentable_type']);
         });
     }
 

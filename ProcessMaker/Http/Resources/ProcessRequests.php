@@ -23,9 +23,10 @@ class ProcessRequests extends ApiResource
         if (in_array('user', $include)) {
             $array['user'] = new Users($this->user);
         }
+
         return $array;
     }
-    
+
     private function filterMagicVariables($data)
     {
         foreach ($data as $key => $datum) {
@@ -33,7 +34,7 @@ class ProcessRequests extends ApiResource
                 unset($data[$key]);
             }
         }
-        
+
         return $data;
     }
 }

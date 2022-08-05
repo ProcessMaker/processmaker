@@ -1,11 +1,11 @@
 <?php
 
-use ProcessMaker\Models\User;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\AnonymousUser;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
+use ProcessMaker\Models\User;
 
 class AddAnonymousUser extends Migration
 {

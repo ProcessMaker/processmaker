@@ -3,17 +3,16 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use ProcessMaker\Traits\HasVersioning;
-use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
+use ProcessMaker\Traits\HasVersioning;
 
 /**
  * Represents an Eloquent model of a Script Executor
  *
- * @package ProcessMaker\Model
  *
- * @property integer id
+ * @property int id
  * @property string title
  * @property text description
  * @property string language
@@ -46,15 +45,13 @@ use ProcessMaker\Exception\ScriptLanguageNotSupported;
  *   @OA\Property(property="value", type="string"),
  *   @OA\Property(property="initDockerFile", type="string"),
  * ),
- *
  */
-
 class ScriptExecutor extends Model
 {
     use HasVersioning;
 
     protected $fillable = [
-        'title', 'description', 'language', 'config'
+        'title', 'description', 'language', 'config',
     ];
 
     public static function install($params)
@@ -62,7 +59,7 @@ class ScriptExecutor extends Model
         $language = $params['language'];
         try {
             $initialExecutor = self::initialExecutor($language);
-        } catch(ScriptLanguageNotSupported $e) {
+        } catch (ScriptLanguageNotSupported $e) {
             $initialExecutor = null;
         }
 
@@ -73,7 +70,7 @@ class ScriptExecutor extends Model
             Script::where('language', $language)->update(['script_executor_id' => $initialExecutor->id]);
             ScriptVersion::where('language', $language)->update(['script_executor_id' => $initialExecutor->id]);
         }
-        
+
         return $initialExecutor;
     }
 
@@ -82,9 +79,10 @@ class ScriptExecutor extends Model
         $initialExecutor = self::where('language', $language)
             ->orderBy('created_at', 'asc')
             ->first();
-        if (!$initialExecutor) {
+        if (! $initialExecutor) {
             throw new ScriptLanguageNotSupported($language);
         }
+
         return $initialExecutor;
     }
 
@@ -97,17 +95,17 @@ class ScriptExecutor extends Model
     {
         // remove try/catch block after lang packages updated
         try {
-            $dockerfile = file_get_contents(self::packagePath($language) . '/Dockerfile');
+            $dockerfile = file_get_contents(self::packagePath($language).'/Dockerfile');
         } catch (\ErrorException $e) {
             $dockerfile = '';
         }
         $initDockerfile = self::config($language)['init_dockerfile'];
-        
+
         // remove check after lang packages updated
-        if (!is_array($initDockerfile)) {
+        if (! is_array($initDockerfile)) {
             $initDockerfile = explode("\n", $initDockerfile);
         }
-        $dockerfile .= "\n" . implode("\n", $initDockerfile);
+        $dockerfile .= "\n".implode("\n", $initDockerfile);
 
         return $dockerfile;
     }
@@ -117,22 +115,24 @@ class ScriptExecutor extends Model
         return self::config($language)['package_path'];
     }
 
-    public static function config($language) {
+    public static function config($language)
+    {
         $config = config('script-runners');
         $language = strtolower($language);
-        if (!isset($config[$language])) {
-            throw new \ErrorException("Language not in config: " . $language);
+        if (! isset($config[$language])) {
+            throw new \ErrorException('Language not in config: '.$language);
         }
+
         return $config[$language];
     }
-    
+
     public static function rules($existing = null)
     {
         return [
             'title' => 'required',
             'language' => [
                 'required',
-                Rule::in(Script::scriptFormatValues())
+                Rule::in(Script::scriptFormatValues()),
             ],
         ];
     }
@@ -149,8 +149,9 @@ class ScriptExecutor extends Model
         }
 
         foreach ($executors->get() as $executor) {
-            $list[$executor->id] = $executor->language . " - " . $executor->title;
+            $list[$executor->id] = $executor->language.' - '.$executor->title;
         }
+
         return $list;
     }
 
@@ -160,6 +161,7 @@ class ScriptExecutor extends Model
         $id = $this->id;
         $tag = $this->imageTag();
         $instance = config('app.instance');
+
         return "processmaker4/executor-${instance}-${lang}-${id}:${tag}";
     }
 
@@ -170,6 +172,7 @@ class ScriptExecutor extends Model
         if (isset($config['package_version'])) {
             $tag .= $config['package_version'];
         }
+
         return $tag;
     }
 
@@ -186,6 +189,7 @@ class ScriptExecutor extends Model
     public function dockerImageExists()
     {
         $images = self::listOfExecutorImages();
+
         return in_array($this->dockerImageName(), $images);
     }
 
@@ -194,11 +198,13 @@ class ScriptExecutor extends Model
         exec('docker images | awk \'{r=$1":"$2; print r}\'', $result);
 
         $instance = config('app.instance');
-        return array_values(array_filter($result, function($image) use ($filterByLanguage, $instance) {
+
+        return array_values(array_filter($result, function ($image) use ($filterByLanguage, $instance) {
             $filter = "processmaker4/executor-${instance}-";
             if ($filterByLanguage) {
-                $filter .= $filterByLanguage . '-';
+                $filter .= $filterByLanguage.'-';
             }
+
             return strpos($image, $filter) !== false;
         }));
     }

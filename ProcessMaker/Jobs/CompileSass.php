@@ -3,15 +3,15 @@
 namespace ProcessMaker\Jobs;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\SassCompiledNotification;
-use Illuminate\Support\Str;
 
 class CompileSass implements ShouldQueue
 {
@@ -47,8 +47,8 @@ class CompileSass implements ShouldQueue
     public function handle()
     {
         chdir(app()->basePath());
-        $this->runCmd("node_modules/sass/sass.js --no-source-map "
-            . $this->properties['origin'] . ' ' . $this->properties['target']);
+        $this->runCmd('node_modules/sass/sass.js --no-source-map '
+            .$this->properties['origin'].' '.$this->properties['target']);
 
         if (Str::contains($this->properties['tag'], 'app')) {
             $this->fixPathsInGeneratedAppCss();
@@ -68,29 +68,30 @@ class CompileSass implements ShouldQueue
      */
     private function runCmd($cmd)
     {
-        Log::info('Start css rebuild: ' . $cmd);
-        exec($cmd . " 2>&1", $output, $returnVal);
+        Log::info('Start css rebuild: '.$cmd);
+        exec($cmd.' 2>&1', $output, $returnVal);
         $output = implode("\n", $output);
         if ($returnVal) {
-            Log::info("Cmd returned: $returnVal " . $output);
-            throw new \Exception("Cmd returned: $returnVal " . $output);
+            Log::info("Cmd returned: $returnVal ".$output);
+            throw new \Exception("Cmd returned: $returnVal ".$output);
         }
-        Log::info('Returned' . $output);
+        Log::info('Returned'.$output);
+
         return $output;
     }
 
-    private function fixPathsInGeneratedAppCss ()
+    private function fixPathsInGeneratedAppCss()
     {
         chdir(app()->basePath());
-        $file = file_get_contents("public/css/app.css");
+        $file = file_get_contents('public/css/app.css');
         $file = preg_replace('/\.\/fonts(\/[A-Za-z]+\/)OpenSans\-/m', '/fonts/OpenSans-', $file);
-        $file = str_replace('public/css/precompiled/vue-multiselect.min.css','css/precompiled/vue-multiselect.min.css', $file );
-        $file = str_replace('url("../webfonts/','url("/fonts/', $file );
-        $file = str_replace('url("../fonts/','url("/fonts/', $file );
-        $file = str_replace('url("fonts/','url("/fonts/', $file );
-        $file = str_replace('content: /; }','content: "/"; }', $file );
+        $file = str_replace('public/css/precompiled/vue-multiselect.min.css', 'css/precompiled/vue-multiselect.min.css', $file);
+        $file = str_replace('url("../webfonts/', 'url("/fonts/', $file);
+        $file = str_replace('url("../fonts/', 'url("/fonts/', $file);
+        $file = str_replace('url("fonts/', 'url("/fonts/', $file);
+        $file = str_replace('content: /; }', 'content: "/"; }', $file);
         $re = '/(content:\s)\\\\\"(\\\\[0-9abcdef]+)\\\\\"/m';
-        $file = preg_replace($re,'$1"$2"', $file );
+        $file = preg_replace($re, '$1"$2"', $file);
         file_put_contents('public/css/app.css', $file);
     }
 
@@ -98,16 +99,16 @@ class CompileSass implements ShouldQueue
     {
         chdir(app()->basePath());
 
-        $file = file_get_contents("public/mix-manifest.json");
+        $file = file_get_contents('public/mix-manifest.json');
         $guid = bin2hex(random_bytes(16));
         $re = '/\"\:\s"\/css\/sidebar\.css.+id=(.*)\"/m';
-        $file = preg_replace($re, '": "/css/sidebar.css?id=' . $guid . '"', $file );
+        $file = preg_replace($re, '": "/css/sidebar.css?id='.$guid.'"', $file);
         $guid = bin2hex(random_bytes(16));
         $re = '/\"\:\s"\/css\/app\.css.+id=(.*)\"/m';
-        $file = preg_replace($re, '": "/css/app.css?id=' . $guid . '"', $file );
+        $file = preg_replace($re, '": "/css/app.css?id='.$guid.'"', $file);
         $guid = bin2hex(random_bytes(16));
         $re = '/\"\:\s"\/css\/admin\/queues\.css.+id=(.*)\"/m';
-        $file = preg_replace($re, '": "/css/admin/queues.css?id=' . $guid . '"', $file );
+        $file = preg_replace($re, '": "/css/admin/queues.css?id='.$guid.'"', $file);
 
         file_put_contents('public/mix-manifest.json', $file);
     }

@@ -3,19 +3,19 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Passport\Passport;
+use Laravel\Passport\TokenRepository;
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\UserTokenResource as UserTokenResource;
 use ProcessMaker\Models\User;
-use Laravel\Passport\TokenRepository;
-use Laravel\Passport\Passport;
-use Illuminate\Contracts\Validation\Factory as ValidationFactory;
-use Illuminate\Pagination\Paginator;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class UserTokenController extends Controller
 {
@@ -45,7 +45,6 @@ class UserTokenController extends Controller
         $this->validation = $validation;
         $this->tokenRepository = $tokenRepository;
     }
-
 
     /**
      * Display listing of access tokens for the specified user.
@@ -87,14 +86,14 @@ class UserTokenController extends Controller
      */
     public function index(Request $request, User $user)
     {
-        if (!Auth::user()->can('view', $user)) {
+        if (! Auth::user()->can('view', $user)) {
             throw new AuthorizationException(__('Not authorized to update this user.'));
         }
 
         $tokens = $this->tokenRepository->forUser($user->id);
 
-        $results =  $tokens->load('client')->filter(function ($token) {
-            return $token->client->personal_access_client && !$token->revoked;
+        $results = $tokens->load('client')->filter(function ($token) {
+            return $token->client->personal_access_client && ! $token->revoked;
         })->values();
 
         // Paginate
@@ -140,16 +139,16 @@ class UserTokenController extends Controller
      */
     public function store(Request $request, User $user)
     {
-        if (!Auth::user()->can('edit', $user)) {
+        if (! Auth::user()->can('edit', $user)) {
             throw new AuthorizationException(__('Not authorized to update this user.'));
         }
 
         $this->validation->make($request->all(), [
             'name' => 'required|max:255',
-            'scopes' => 'array|in:' . implode(',', Passport::scopeIds()),
+            'scopes' => 'array|in:'.implode(',', Passport::scopeIds()),
         ])->validate();
 
-        $token =  $user->createToken(
+        $token = $user->createToken(
             $request->name,
             $request->scopes ?: []
         );
@@ -192,7 +191,7 @@ class UserTokenController extends Controller
      */
     public function show(Request $request, User $user, $tokenId)
     {
-        if (!Auth::user()->can('view', $user)) {
+        if (! Auth::user()->can('view', $user)) {
             throw new AuthorizationException(__('Not authorized to update this user.'));
         }
 
@@ -246,7 +245,7 @@ class UserTokenController extends Controller
      */
     public function destroy(Request $request, User $user, $tokenId)
     {
-        if (!Auth::user()->can('edit', $user)) {
+        if (! Auth::user()->can('edit', $user)) {
             throw new AuthorizationException(__('Not authorized to update this user.'));
         }
 

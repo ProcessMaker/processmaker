@@ -46,11 +46,11 @@ class ProcessMakerTest extends Command
      */
     public function handle()
     {
-        $this->test("DBConnection", [$this, 'testDBConnection']);
-        $this->test("Horizon", [$this, 'testHorizonService']);
-        $this->test("Broadcast", [$this, 'testBroadcastService']);
-        $this->test("Docker", [$this, 'testDockerService']);
-        $this->test("Email", [$this, 'testEmailService']);
+        $this->test('DBConnection', [$this, 'testDBConnection']);
+        $this->test('Horizon', [$this, 'testHorizonService']);
+        $this->test('Broadcast', [$this, 'testBroadcastService']);
+        $this->test('Docker', [$this, 'testDockerService']);
+        $this->test('Email', [$this, 'testEmailService']);
     }
 
     private function test($name, callable $callback)
@@ -58,7 +58,8 @@ class ProcessMakerTest extends Command
         try {
             $callback();
         } catch (Throwable $error) {
-            $this->error("[{$name}] " . $error->getMessage());
+            $this->error("[{$name}] ".$error->getMessage());
+
             return false;
         }
         $this->info("[{$name}] OK");
@@ -86,7 +87,7 @@ class ProcessMakerTest extends Command
         }
         $missingMigrations = 0;
         foreach ($out as $line) {
-            if (strpos($line, '| No')!==false) {
+            if (strpos($line, '| No') !== false) {
                 $missingMigrations++;
             }
         }
@@ -120,14 +121,14 @@ class ProcessMakerTest extends Command
 
     private function waitTestPassed($name, $timeout = 120)
     {
-        for ($i = 0; $i<$timeout; $i++) {
+        for ($i = 0; $i < $timeout; $i++) {
             $count = DB::table('test_status')->where('name', $name)->count();
             if ($count > 0) {
                 return true;
             }
             sleep(1);
         }
-        throw new Exception('FAILED: ' . $name);
+        throw new Exception('FAILED: '.$name);
     }
 
     private function testDockerService()
@@ -145,14 +146,14 @@ class ProcessMakerTest extends Command
         $executor = ScriptExecutor::where('language', $language)->firstOrFail();
         $script->script_executor_id = $executor->id;
         $script->code = $code;
-        $res = $script->runScript(["foo" => "bar"], ["conf"=>"val"]);
-        if (!is_array($res) || empty($res['output'])) {
+        $res = $script->runScript(['foo' => 'bar'], ['conf'=>'val']);
+        if (! is_array($res) || empty($res['output'])) {
             throw new Exception("Failed execution of `{$language}` script.");
         }
         if (json_encode($res['output']['data1']) !== '{"foo":"bar"}' ||
             json_encode($res['output']['config1']) !== '{"conf":"val"}'
         ) {
-            throw new Exception("Unexpected response of the {$language} script execution.\n" . json_encode($res['output']));
+            throw new Exception("Unexpected response of the {$language} script execution.\n".json_encode($res['output']));
         }
     }
 
@@ -175,7 +176,7 @@ class ProcessMakerTest extends Command
     {
         $email = $this->ask('Send email to');
         Mail::to($email)->send(new TestStatusEmail());
-        $this->info('An email was sent to ' . $email . '. Please open it to complete the email test.');
+        $this->info('An email was sent to '.$email.'. Please open it to complete the email test.');
         $this->waitTestPassed('Email received');
     }
 }

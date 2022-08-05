@@ -2,16 +2,16 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use ProcessMaker\Http\Resources\ApiCollection;
-use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Jobs\BuildScriptExecutor;
-use ProcessMaker\Models\ScriptExecutor;
-use ProcessMaker\Models\Script;
 use ProcessMaker\Facades\Docker;
+use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Jobs\BuildScriptExecutor;
+use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ScriptExecutor;
 
 class ScriptExecutorController extends Controller
 {
@@ -52,18 +52,19 @@ class ScriptExecutorController extends Controller
      *     ),
      * )
      */
-    public function index(Request $request) 
+    public function index(Request $request)
     {
         $this->checkAuth($request);
+
         return new ApiCollection(ScriptExecutor::all());
     }
 
-     /**
+    /**
      * Create a script executor
      *
      * @param Request $request
      * @param ScriptExecutor $scriptExecutor
-     * 
+     *
      * @return ResponseFactory|Response
      *
      *
@@ -105,18 +106,18 @@ class ScriptExecutorController extends Controller
         $scriptExecutor = ScriptExecutor::create(
             $request->only((new ScriptExecutor)->getFillable())
         );
-        
+
         BuildScriptExecutor::dispatch($scriptExecutor->id, $request->user()->id);
-        
+
         return ['status'=>'started', 'id' => $scriptExecutor->id];
     }
 
-     /**
+    /**
      * Update and rebuild the script executor
      *
      * @param Request $request
      * @param ScriptExecutor $scriptExecutor
-     * 
+     *
      * @return ResponseFactory|Response
      *
      *
@@ -134,7 +135,7 @@ class ScriptExecutorController extends Controller
      *           type="string",
      *         )
      *     ),
-     * 
+     *
      *
      *     @OA\RequestBody(
      *       required=true,
@@ -166,18 +167,18 @@ class ScriptExecutorController extends Controller
         $scriptExecutor->update(
             $request->only($scriptExecutor->getFillable())
         );
-        
+
         BuildScriptExecutor::dispatch($scriptExecutor->id, $request->user()->id);
 
         return ['status'=>'started'];
     }
 
-     /**
+    /**
      * Delete a script executor
      *
      * @param Request $request
      * @param ScriptExecutor $scriptExecutor
-     * 
+     *
      * @return ResponseFactory|Response
      *
      *
@@ -212,7 +213,6 @@ class ScriptExecutorController extends Controller
      *     ),
      * )
      */
-
     public function delete(Request $request, ScriptExecutor $scriptExecutor)
     {
         if ($scriptExecutor->scripts()->count() > 0) {
@@ -223,33 +223,34 @@ class ScriptExecutorController extends Controller
             throw ValidationException::withMessages(['delete' => __('Can not delete the only executor for this language.')]);
         }
 
-        $cmd = Docker::command().' images -q ' . $scriptExecutor->dockerImageName(); 
+        $cmd = Docker::command().' images -q '.$scriptExecutor->dockerImageName();
         exec($cmd, $out, $return);
         if (count($out) > 0) {
-            $cmd = Docker::command().' rmi ' . $scriptExecutor->dockerImageName(); 
+            $cmd = Docker::command().' rmi '.$scriptExecutor->dockerImageName();
             exec($cmd, $out, $return);
 
             if ($return !== 0) {
-                throw ValidationException::withMessages(['delete' => _("Error removing image.") . " ${cmd} " . implode("\n", $out)]);
+                throw ValidationException::withMessages(['delete' => _('Error removing image.')." ${cmd} ".implode("\n", $out)]);
             }
         }
 
         ScriptExecutor::destroy($scriptExecutor->id);
+
         return ['status' => 'done'];
     }
 
     private function checkAuth($request)
     {
-        if (!$request->user()->is_administrator) {
+        if (! $request->user()->is_administrator) {
             throw new AuthorizationException;
         }
     }
 
-     /**
+    /**
      * Cancel a script executor
      *
      * @param Request $request
-     * 
+     *
      * @return ResponseFactory|Response
      *
      *
@@ -290,10 +291,11 @@ class ScriptExecutorController extends Controller
         $pidFile = $request->input('pidFile');
         $pid = file_get_contents($pidFile);
         exec("kill -9 $pid");
+
         return ['status' => 'canceled', 'pid' => $pid];
     }
 
-     /**
+    /**
      * Get a list of available languages.
      *
      * @return ResponseFactory|Response
@@ -328,7 +330,6 @@ class ScriptExecutorController extends Controller
      *     ),
      * )
      */
-
     public function availableLanguages()
     {
         $languages = [];
@@ -336,9 +337,10 @@ class ScriptExecutorController extends Controller
             $languages[] = [
                 'value' => $key,
                 'text' => $config['name'],
-                'initDockerfile' => ScriptExecutor::initDockerfile($key)
+                'initDockerfile' => ScriptExecutor::initDockerfile($key),
             ];
         }
+
         return ['languages' => $languages];
     }
 }

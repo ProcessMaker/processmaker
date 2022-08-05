@@ -27,7 +27,6 @@ class TimeoutsTest extends TestCase
 
     /**
      * Make sure we have a personal access client set up
-     *
      */
     public function setUpWithPersonalAccessClient()
     {
@@ -59,6 +58,7 @@ class TimeoutsTest extends TestCase
         // Assertion: An exception is notified to usr through broadcast channel
         Event::assertDispatched(ScriptResponseEvent::class, function ($event) {
             $response = $event->response;
+
             return $response['exception'] === ScriptTimeoutException::class;
         });
     }
@@ -85,7 +85,8 @@ class TimeoutsTest extends TestCase
         // Assertion: The script output is sent to usr through broadcast channel
         Event::assertDispatched(ScriptResponseEvent::class, function ($event) {
             $response = $event->response;
-            return !array_key_exists('exception', $response);
+
+            return ! array_key_exists('exception', $response);
         });
     }
 
@@ -97,7 +98,7 @@ class TimeoutsTest extends TestCase
         config(['simulate_timeout' => true]);
         $this->assertTimeoutExceeded([
             'language' => 'php',
-            'timeout' => self::TIMEOUT_LENGTH
+            'timeout' => self::TIMEOUT_LENGTH,
         ]);
     }
 
@@ -108,7 +109,7 @@ class TimeoutsTest extends TestCase
     {
         $this->assertTimeoutNotExceeded([
             'language' => 'php',
-            'timeout' => self::TIMEOUT_LENGTH
+            'timeout' => self::TIMEOUT_LENGTH,
         ]);
     }
 
@@ -116,7 +117,7 @@ class TimeoutsTest extends TestCase
      * A helper method to generate a script object from the factory
      *
      * @param string $language
-     * @param integer $timeout
+     * @param int $timeout
      * @return Script
      */
     private function getScript($language, $timeout)

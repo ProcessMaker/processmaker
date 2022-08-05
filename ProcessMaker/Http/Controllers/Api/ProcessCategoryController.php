@@ -4,9 +4,9 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ProcessCategory as Resource;
+use ProcessMaker\Models\ProcessCategory;
 
 class ProcessCategoryController extends Controller
 {
@@ -67,8 +67,8 @@ class ProcessCategoryController extends Controller
         }
 
         $filter = $request->input('filter', '');
-        if (!empty($filter)) {
-            $filter = '%' . $filter . '%';
+        if (! empty($filter)) {
+            $filter = '%'.$filter.'%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('name', 'like', $filter)
                     ->orWhere('status', 'like', $filter);
@@ -82,6 +82,7 @@ class ProcessCategoryController extends Controller
             $request->input('order_direction', 'asc')
         );
         $response = $query->paginate($request->input('per_page', 10));
+
         return new ApiCollection($response);
     }
 
@@ -146,6 +147,7 @@ class ProcessCategoryController extends Controller
         $category = new ProcessCategory();
         $category->fill($request->json()->all());
         $category->saveOrFail();
+
         return new Resource($category);
     }
 
@@ -186,6 +188,7 @@ class ProcessCategoryController extends Controller
         $request->validate(ProcessCategory::rules($processCategory));
         $processCategory->fill($request->json()->all());
         $processCategory->saveOrFail();
+
         return new Resource($processCategory);
     }
 
@@ -220,13 +223,14 @@ class ProcessCategoryController extends Controller
     public function destroy(ProcessCategory $processCategory)
     {
         if ($processCategory->processes->count() !== 0) {
-            return response (
+            return response(
                 ['message'=>'The item should not have associated processes',
-                    'errors'=> ['processes' => $processCategory->processes->count()]],
-                    422);
+                    'errors'=> ['processes' => $processCategory->processes->count()], ],
+                422);
         }
 
         $processCategory->delete();
+
         return response('', 204);
     }
 }

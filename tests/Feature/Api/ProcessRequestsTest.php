@@ -7,14 +7,14 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Models\Comment;
+use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
-use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\User;
-use ProcessMaker\Models\Comment;
 
 /**
  * Tests routes related to processes / CRUD related methods
@@ -41,7 +41,7 @@ class ProcessRequestsTest extends TestCase
         'completed_at',
         'initiated_at',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
@@ -75,7 +75,7 @@ class ProcessRequestsTest extends TestCase
     {
         $name = 'testRequestTimezone';
         $newEntity = factory(ProcessRequest::class)->create(['name' => $name]);
-        $route = self::API_TEST_URL . '?filter=' . $name;
+        $route = self::API_TEST_URL.'?filter='.$name;
         $response = $this->apiCall('GET', $route);
 
         $this->assertEquals(
@@ -104,7 +104,7 @@ class ProcessRequestsTest extends TestCase
 
         //Set direction to ascending
         $query = "?page=1&include=data&order_by=data.test&order_direction=ASC&filter=$requestname";
-        $response = $this->apiCall('GET', self::API_TEST_URL . $query);
+        $response = $this->apiCall('GET', self::API_TEST_URL.$query);
 
         $response->assertStatus(200);
         $response->assertJsonFragment(['data' => ['test' => 'value1']]);
@@ -130,7 +130,7 @@ class ProcessRequestsTest extends TestCase
 
         //Set direction to ascending
         $query = "?page=1&include=data&order_by=data.test&order_direction=ASC&filter=$requestname";
-        $response = $this->apiCall('GET', self::API_TEST_URL . $query);
+        $response = $this->apiCall('GET', self::API_TEST_URL.$query);
 
         //Verify that the request with test data of "value1" is first
         $response->assertStatus(200);
@@ -138,7 +138,7 @@ class ProcessRequestsTest extends TestCase
 
         //Set direction to descending
         $query = "?page=1&include=data&order_by=data.test&order_direction=DESC&filter=$requestname";
-        $response = $this->apiCall('GET', self::API_TEST_URL . $query);
+        $response = $this->apiCall('GET', self::API_TEST_URL.$query);
 
         //Verify that the request with test data of "value2" is first
         $response->assertStatus(200);
@@ -158,8 +158,8 @@ class ProcessRequestsTest extends TestCase
 
         //List Request with filter option
         $perPage = Faker::create()->randomDigitNotNull;
-        $query = '?page=1&per_page=' . $perPage . '&order_by=name&order_direction=DESC&filter=' . $requestname;
-        $response = $this->apiCall('GET', self::API_TEST_URL . $query);
+        $query = '?page=1&per_page='.$perPage.'&order_by=name&order_direction=DESC&filter='.$requestname;
+        $response = $this->apiCall('GET', self::API_TEST_URL.$query);
 
         //Validate the header status code
         $response->assertStatus(200);
@@ -188,7 +188,7 @@ class ProcessRequestsTest extends TestCase
         ]);
         $query = '?page=2&per_page=3&order_by=name';
 
-        $response = $this->apiCall('GET', self::API_TEST_URL . $query);
+        $response = $this->apiCall('GET', self::API_TEST_URL.$query);
 
         //Validate the header status code
         $response->assertStatus(200);
@@ -209,20 +209,20 @@ class ProcessRequestsTest extends TestCase
     {
         $in_progress = factory(ProcessRequest::class)->create([
             'status' => 'ACTIVE',
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ]);
 
         $completed = factory(ProcessRequest::class)->create([
             'status' => 'COMPLETED',
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ]);
 
-        $response = $this->apiCall('GET', self::API_TEST_URL . '/?type=completed');
+        $response = $this->apiCall('GET', self::API_TEST_URL.'/?type=completed');
         $json = $response->json();
         $this->assertCount(1, $json['data']);
         $this->assertEquals($completed->id, $json['data'][0]['id']);
 
-        $response = $this->apiCall('GET', self::API_TEST_URL . '/?type=in_progress');
+        $response = $this->apiCall('GET', self::API_TEST_URL.'/?type=in_progress');
         $json = $response->json();
         $this->assertCount(1, $json['data']);
         $this->assertEquals($in_progress->id, $json['data'][0]['id']);
@@ -239,7 +239,7 @@ class ProcessRequestsTest extends TestCase
             'process_id' => $process->id,
         ]);
 
-        $response = $this->apiCall('GET', self::API_TEST_URL . '/?include=process');
+        $response = $this->apiCall('GET', self::API_TEST_URL.'/?include=process');
         $json = $response->json();
         $this->assertEquals($process->id, $json['data'][0]['process']['id']);
     }
@@ -273,7 +273,7 @@ class ProcessRequestsTest extends TestCase
         $request = factory(ProcessRequest::class)->create()->id;
 
         //load api
-        $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $request);
+        $response = $this->apiCall('GET', self::API_TEST_URL.'/'.$request);
 
         //Validate the status is correct
         $response->assertStatus(200);
@@ -289,10 +289,10 @@ class ProcessRequestsTest extends TestCase
     {
         $id = factory(ProcessRequest::class)->create(['name' => 'mytestrequestname'])->id;
         //The post must have the required parameters
-        $url = self::API_TEST_URL . '/' . $id;
+        $url = self::API_TEST_URL.'/'.$id;
 
         $response = $this->apiCall('PUT', $url, [
-            'name' => null
+            'name' => null,
         ]);
 
         //Validate the header status code
@@ -306,7 +306,7 @@ class ProcessRequestsTest extends TestCase
     {
         $faker = Faker::create();
 
-        $url = self::API_TEST_URL . '/' . factory(ProcessRequest::class)->create()->id;
+        $url = self::API_TEST_URL.'/'.factory(ProcessRequest::class)->create()->id;
 
         //Load the starting request data
         $verify = $this->apiCall('GET', $url);
@@ -315,7 +315,7 @@ class ProcessRequestsTest extends TestCase
         $response = $this->apiCall('PUT', $url, [
             'name' => $faker->unique()->name,
             'data' => '{"test":1}',
-            'process_id' => json_decode($verify->getContent())->process_id
+            'process_id' => json_decode($verify->getContent())->process_id,
         ]);
 
         //Validate the header status code
@@ -339,7 +339,7 @@ class ProcessRequestsTest extends TestCase
 
         $request2 = factory(ProcessRequest::class)->create();
 
-        $url = self::API_TEST_URL . '/' . $request2->id;
+        $url = self::API_TEST_URL.'/'.$request2->id;
 
         $response = $this->apiCall('PUT', $url, [
             'name' => 'MyRequestName',
@@ -358,25 +358,25 @@ class ProcessRequestsTest extends TestCase
         $admin = $this->user;
 
         $nonAdmin = factory(User::class)->create([
-            'is_administrator' => false
+            'is_administrator' => false,
         ]);
 
         // Create a single process in order to create
         // two process requests with the same process
         $process = factory(Process::class)->create([
-            'user_id' => $admin->id
+            'user_id' => $admin->id,
         ]);
 
         // Create the initial process request
         $initialProcessVersionRequest = factory(ProcessRequest::class)->create([
             'user_id' => $nonAdmin->id,
-            'process_id' => $process->id
+            'process_id' => $process->id,
         ]);
 
         // Attempt to cancel a request
         $this->user = $nonAdmin;
         $route = route('api.requests.update', [$initialProcessVersionRequest->id]);
-        $response = $this->apiCall('PUT', $route, ['status' => 'CANCELED',]);
+        $response = $this->apiCall('PUT', $route, ['status' => 'CANCELED']);
 
         // Confirm the user does not have access
         $response->assertStatus(403);
@@ -387,7 +387,7 @@ class ProcessRequestsTest extends TestCase
         $response = $this->apiCall('PUT', $route, [
             'name' => 'Update Process',
             'description' => 'Update Test',
-            'cancel_request' => ['users' => [$nonAdmin->id], 'groups' => []]
+            'cancel_request' => ['users' => [$nonAdmin->id], 'groups' => []],
         ]);
 
         // Create a second process request with the
@@ -395,13 +395,13 @@ class ProcessRequestsTest extends TestCase
         // will honor the new process configuration
         $secondProcessVersionRequest = factory(ProcessRequest::class)->create([
             'user_id' => $nonAdmin->id,
-            'process_id' => $process->id
+            'process_id' => $process->id,
         ]);
 
         // Attempt to cancel a request
         $this->user = $nonAdmin;
         $route = route('api.requests.update', [$secondProcessVersionRequest->id]);
-        $response = $this->apiCall('PUT', $route, ['status' => 'CANCELED',]);
+        $response = $this->apiCall('PUT', $route, ['status' => 'CANCELED']);
 
         // Assert that the API updated
         $response->assertStatus(204);
@@ -420,8 +420,8 @@ class ProcessRequestsTest extends TestCase
         $request->processVersion->usersCanEditData()->sync([
             $this->user->id => [
                 'method' => 'EDIT_DATA',
-                'process_id' => $request->process->id
-            ]
+                'process_id' => $request->process->id,
+            ],
         ]);
 
         $route = route('api.requests.update', [$request->id]);
@@ -453,7 +453,7 @@ class ProcessRequestsTest extends TestCase
 
         // Verify comment added
         $this->assertEquals(
-            $this->user->fullname . ' manually completed the request from an error state',
+            $this->user->fullname.' manually completed the request from an error state',
             Comment::first()->body
         );
 
@@ -472,24 +472,24 @@ class ProcessRequestsTest extends TestCase
 
         $childProcessRequest1 = factory(ProcessRequest::class)->create([
             'status' => 'ACTIVE',
-            'parent_request_id' => $parentProcessRequest->id
+            'parent_request_id' => $parentProcessRequest->id,
         ]);
 
         $childProcessRequest2 = factory(ProcessRequest::class)->create([
             'status' => 'ACTIVE',
-            'parent_request_id' => $childProcessRequest1->id
+            'parent_request_id' => $childProcessRequest1->id,
         ]);
 
         $parentTokens = factory(ProcessRequestToken::class, 3)->create([
-            'process_request_id' => $parentProcessRequest->id
+            'process_request_id' => $parentProcessRequest->id,
         ]);
 
         $childTokens1 = factory(ProcessRequestToken::class, 4)->create([
-            'process_request_id' => $childProcessRequest1->id
+            'process_request_id' => $childProcessRequest1->id,
         ]);
 
         $childTokens2 = factory(ProcessRequestToken::class, 5)->create([
-            'process_request_id' => $childProcessRequest2->id
+            'process_request_id' => $childProcessRequest2->id,
         ]);
 
         // Assert database has parent and child requests
@@ -503,7 +503,7 @@ class ProcessRequestsTest extends TestCase
         $this->assertEquals(5, ProcessRequestToken::where('process_request_id', $childProcessRequest2->id)->count());
 
         //Remove request
-        $url = self::API_TEST_URL . '/' . $parentProcessRequest->id;
+        $url = self::API_TEST_URL.'/'.$parentProcessRequest->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code
@@ -531,24 +531,24 @@ class ProcessRequestsTest extends TestCase
 
         $childProcessRequest1 = factory(ProcessRequest::class)->create([
             'status' => 'ACTIVE',
-            'parent_request_id' => $parentProcessRequest->id
+            'parent_request_id' => $parentProcessRequest->id,
         ]);
 
         $childProcessRequest2 = factory(ProcessRequest::class)->create([
             'status' => 'ACTIVE',
-            'parent_request_id' => $childProcessRequest1->id
+            'parent_request_id' => $childProcessRequest1->id,
         ]);
 
         $parentTokens = factory(ProcessRequestToken::class, 3)->create([
-            'process_request_id' => $parentProcessRequest->id
+            'process_request_id' => $parentProcessRequest->id,
         ]);
 
         $childTokens1 = factory(ProcessRequestToken::class, 4)->create([
-            'process_request_id' => $childProcessRequest1->id
+            'process_request_id' => $childProcessRequest1->id,
         ]);
 
         $childTokens2 = factory(ProcessRequestToken::class, 5)->create([
-            'process_request_id' => $childProcessRequest2->id
+            'process_request_id' => $childProcessRequest2->id,
         ]);
 
         // Assert database has parent and child requests
@@ -562,7 +562,7 @@ class ProcessRequestsTest extends TestCase
         $this->assertEquals(5, ProcessRequestToken::where('process_request_id', $childProcessRequest2->id)->count());
 
         //Remove request
-        $url = self::API_TEST_URL . '/' . $childProcessRequest1->id;
+        $url = self::API_TEST_URL.'/'.$childProcessRequest1->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code
@@ -585,7 +585,7 @@ class ProcessRequestsTest extends TestCase
     public function testDeleteProcessRequestNotExist()
     {
         //ProcessRequest not exist
-        $url = self::API_TEST_URL . '/' . factory(ProcessRequest::class)->make()->id;
+        $url = self::API_TEST_URL.'/'.factory(ProcessRequest::class)->make()->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code
@@ -601,15 +601,15 @@ class ProcessRequestsTest extends TestCase
         factory(ProcessRequest::class, 1)->create(['status' => 'CANCELED']);
 
         // The list of requests should show just ACTIVE requests
-        $response = $this->apiCall('GET', self::API_TEST_URL . '?type=in_progress');
+        $response = $this->apiCall('GET', self::API_TEST_URL.'?type=in_progress');
         $this->assertEquals(5, $response->json()['meta']['total']);
 
         // The list of completed does NOT include CANCELED requests
-        $response = $this->apiCall('GET', self::API_TEST_URL . '?type=completed');
+        $response = $this->apiCall('GET', self::API_TEST_URL.'?type=completed');
         $this->assertEquals(3, $response->json()['meta']['total']);
 
         // The list of all requests includes everything
-        $response = $this->apiCall('GET', self::API_TEST_URL . '?type=all');
+        $response = $this->apiCall('GET', self::API_TEST_URL.'?type=all');
         $this->assertEquals(9, $response->json()['meta']['total']);
     }
 
@@ -638,7 +638,7 @@ class ProcessRequestsTest extends TestCase
             ->withCustomProperties(['data_name' => 'test'])
             ->toMediaCollection('local');
 
-        $route = self::API_TEST_URL . '/'. $request->id . '/files/' . $addedMedia->id;
+        $route = self::API_TEST_URL.'/'.$request->id.'/files/'.$addedMedia->id;
         $response = $this->apiCall('GET', $route);
 
         // Validate the header status code
@@ -656,7 +656,7 @@ class ProcessRequestsTest extends TestCase
         $request = factory(ProcessRequest::class)->create(['status' => 'ACTIVE']);
         $token = factory(ProcessRequestToken::class)->create([
             'process_request_id' => $request->id,
-            'user_id' => $participant->id
+            'user_id' => $participant->id,
         ]);
 
         $url = route('api.requests.show', $request);
@@ -771,7 +771,7 @@ class ProcessRequestsTest extends TestCase
             'user_id' => $this->user->getKey(),
         ]);
 
-        $response = $this->apiCall('GET', self::API_TEST_URL . '?per_page=15');
+        $response = $this->apiCall('GET', self::API_TEST_URL.'?per_page=15');
 
         //Validate the header status code
         $response->assertStatus(200);
@@ -790,7 +790,7 @@ class ProcessRequestsTest extends TestCase
         // Create 10 more for different users
         factory(ProcessRequest::class, 10)->create();
 
-        $response = $this->apiCall('GET', self::API_TEST_URL . '?per_page=15');
+        $response = $this->apiCall('GET', self::API_TEST_URL.'?per_page=15');
 
         //Validate the header status code
         $response->assertStatus(200);

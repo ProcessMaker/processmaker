@@ -4,19 +4,16 @@ namespace ProcessMaker\Traits;
 
 use DOMElement;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
-use ProcessMaker\Models\Group;
 use ProcessMaker\Providers\WorkflowServiceProvider as PM;
 
 /**
  * Update the start event assignments/permissions
- *
- * @package ProcessMaker\Traits
  */
 trait ProcessStartEventAssignmentsTrait
 {
-
     /**
      * Boot start event assignments/permissions event handling.
      */
@@ -27,7 +24,7 @@ trait ProcessStartEventAssignmentsTrait
 
     public static function updateStartEventAssignments(Process $process)
     {
-        if (!$process->exists) {
+        if (! $process->exists) {
             return;
         }
         $definitions = $process->getDefinitions(true);
@@ -56,7 +53,7 @@ trait ProcessStartEventAssignmentsTrait
         foreach ($users as $item) {
             $startUsers[$item] = ['method' => 'START', 'node' => $nodeId];
         }
-        
+
         $startGroups = [];
         foreach ($groups as $item) {
             $startGroups[$item] = ['method' => 'START', 'node' => $nodeId];
@@ -64,7 +61,6 @@ trait ProcessStartEventAssignmentsTrait
 
         //Syncing users and groups that can start this process
         $process->usersCanStart($nodeId)->sync($startUsers);
-        $process->groupsCanStart($nodeId)->sync($startGroups); 
-
+        $process->groupsCanStart($nodeId)->sync($startGroups);
     }
 }

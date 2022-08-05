@@ -2,39 +2,39 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use Tests\Feature\Shared\RequestHelper;
-use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\User;
-use ProcessMaker\Models\PermissionAssignment;
-use ProcessMaker\Models\Permission;
-use \PermissionSeeder;
 use Illuminate\Http\Testing\File;
+use PermissionSeeder;
+use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\PermissionAssignment;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\User;
 use Symfony\Component\DomCrawler\Crawler;
+use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class RequestTest extends TestCase
 {
     use RequestHelper;
 
     protected $screen = [
-        "name" => "TICKET-1234 Display",
-        "items" => [
+        'name' => 'TICKET-1234 Display',
+        'items' => [
             [
-                "label" => "Rich Text",
-                "config" => [
-                    "icon" => "fas fa-pencil-ruler",
-                    "label" => null,
-                    "content" => "<h1>TEST WITH CUSTOM REQUEST DETAIL SCREEN</h1>",
-                    "interactive" => true,
-                    "renderVarHtml" => false
+                'label' => 'Rich Text',
+                'config' => [
+                    'icon' => 'fas fa-pencil-ruler',
+                    'label' => null,
+                    'content' => '<h1>TEST WITH CUSTOM REQUEST DETAIL SCREEN</h1>',
+                    'interactive' => true,
+                    'renderVarHtml' => false,
                 ],
-                "component" => "FormHtmlViewer",
-                "editor-control" => "FormHtmlEditor",
-                "editor-component" => "FormHtmlEditor"
-            ]
-        ]
+                'component' => 'FormHtmlViewer',
+                'editor-control' => 'FormHtmlEditor',
+                'editor-component' => 'FormHtmlEditor',
+            ],
+        ],
     ];
 
     /**
@@ -61,12 +61,12 @@ class RequestTest extends TestCase
         $this->user = factory(User::class)->create();
         $request = factory(ProcessRequest::class)->create();
 
-        $response = $this->webCall('GET', '/requests/' . $request->id);
+        $response = $this->webCall('GET', '/requests/'.$request->id);
         $response->assertStatus(403);
 
         $this->user->is_administrator = true;
         $this->user->save();
-        $response = $this->webCall('GET', '/requests/' . $request->id);
+        $response = $this->webCall('GET', '/requests/'.$request->id);
 
         $response->assertStatus(200);
 
@@ -84,13 +84,13 @@ class RequestTest extends TestCase
         $this->user = factory(User::class)->create();
         $request = factory(ProcessRequest::class)->create();
 
-        $response = $this->webCall('GET', '/requests/' . $request->id);
+        $response = $this->webCall('GET', '/requests/'.$request->id);
         $response->assertStatus(403);
 
         $request->update(['user_id' => $this->user->id]);
         // $request->refresh();
 
-        $response = $this->webCall('GET', '/requests/' . $request->id);
+        $response = $this->webCall('GET', '/requests/'.$request->id);
         $response->assertStatus(200);
 
         // check the correct view is called
@@ -106,7 +106,7 @@ class RequestTest extends TestCase
     {
         $Request_id = factory(ProcessRequest::class)->create()->id;
         // get the URL
-        $response = $this->webCall('GET', '/requests/' . $Request_id);
+        $response = $this->webCall('GET', '/requests/'.$Request_id);
         $response->assertStatus(200);
         // check the correct view is called
         $response->assertViewIs('requests.show');
@@ -118,10 +118,10 @@ class RequestTest extends TestCase
         $this->user = factory(User::class)->create();
 
         $request_id = factory(ProcessRequest::class)->create([
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ])->id;
 
-        $response = $this->webCall('GET', '/requests/' . $request_id);
+        $response = $this->webCall('GET', '/requests/'.$request_id);
         $response->assertStatus(200);
     }
 
@@ -133,7 +133,7 @@ class RequestTest extends TestCase
 
         $request_id = factory(ProcessRequest::class)->create()->id;
 
-        $response = $this->webCall('GET', '/requests/' . $request_id);
+        $response = $this->webCall('GET', '/requests/'.$request_id);
         $response->assertStatus(200);
     }
 
@@ -153,7 +153,7 @@ class RequestTest extends TestCase
             ->withCustomProperties(['data_name' => 'test'])
             ->toMediaCollection();
 
-        $response = $this->webCall('GET', '/requests/' . $process_request->id);
+        $response = $this->webCall('GET', '/requests/'.$process_request->id);
         // Full request->getMedia payload is sent for Vue, so assert some HTML also
         $response->assertSee('photo2.jpg</a>');
         $response->assertSee('photo3.jpg</a>');
@@ -186,10 +186,10 @@ class RequestTest extends TestCase
         $process_request = factory(ProcessRequest::class)->create([
             'name' => $process->name,
             'process_id' => $process->id,
-            'data' => ['form_input_1' => 'TEST DATA']
+            'data' => ['form_input_1' => 'TEST DATA'],
         ]);
         // get the URL
-        $response = $this->webCall('GET', '/requests/' . $process_request->id);
+        $response = $this->webCall('GET', '/requests/'.$process_request->id);
 
         $response->assertStatus(200);
         // check the correct view is called
@@ -206,18 +206,18 @@ class RequestTest extends TestCase
     {
         $screen = factory(Screen::class)->create([
             'type' => 'DISPLAY',
-            'config' => $this->screen
+            'config' => $this->screen,
         ]);
         $process = factory(Process::class)->create([
-            'request_detail_screen_id' => $screen->id
+            'request_detail_screen_id' => $screen->id,
         ]);
         $process_request = factory(ProcessRequest::class)->create([
             'name' => $process->name,
             'process_id' => $process->id,
-            'data' => ['form_input_1' => 'TEST DATA']
+            'data' => ['form_input_1' => 'TEST DATA'],
         ]);
         // get the URL
-        $response = $this->webCall('GET', '/requests/' . $process_request->id);
+        $response = $this->webCall('GET', '/requests/'.$process_request->id);
 
         $response->assertStatus(200);
         // check the correct view is called

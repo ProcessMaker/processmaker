@@ -13,10 +13,15 @@ use ProcessMaker\Repositories\DefinitionsRepository;
 class CatchSignalEventInRequest extends BpmnAction implements ShouldQueue
 {
     public $definitionsId;
+
     public $instanceId;
+
     public $tokenId;
+
     public $data;
+
     public $signalRef;
+
     public $disableGlobalEvents;
 
     /**

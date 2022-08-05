@@ -6,9 +6,7 @@ use Laravel\Passport\Client;
 
 class TokenClient extends Client
 {
-
     /**
-     *
      * @OA\Schema(
      *   schema="TokenClient",
      *   @OA\Property(property="id", type="integer"),

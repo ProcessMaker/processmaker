@@ -9,11 +9,11 @@ use ProcessMaker\Facades\Docker;
 
 /**
  * Execute a docker container binding files to interchange information.
- *
  */
 trait ScriptDockerBindingFilesTrait
 {
     private $temporalFiles = [];
+
     private $outputFiles = [];
 
     /**
@@ -40,6 +40,7 @@ trait ScriptDockerBindingFilesTrait
             $bindings,
             $options['timeout']
         );
+
         return $response;
     }
 
@@ -50,14 +51,14 @@ trait ScriptDockerBindingFilesTrait
      * @param string $command
      * @param string $parameters
      * @param string $bindings
-     * @param integer $timeout
+     * @param int $timeout
      *
      * @return array
      * @throws ScriptTimeoutException
      */
     private function runContainer($image, $command, $parameters, $bindings, $timeout)
     {
-        $cmd = Docker::command($timeout) . sprintf(
+        $cmd = Docker::command($timeout).sprintf(
             ' run --rm %s %s %s %s 2>&1',
             $parameters,
             $bindings,
@@ -75,13 +76,13 @@ trait ScriptDockerBindingFilesTrait
             if ($returnCode == 137) {
                 Log::error('Script timed out');
                 throw new ScriptTimeoutException(
-                    __("Script took too long to complete. Consider increasing the timeout.")
-                  . " "
-                  . implode("\n", $output)
+                    __('Script took too long to complete. Consider increasing the timeout.')
+                  .' '
+                  .implode("\n", $output)
                 );
             }
-            Log::error('Script threw return code ' . $returnCode . 'Message: ' . implode("\n", $output));
-            
+            Log::error('Script threw return code '.$returnCode.'Message: '.implode("\n", $output));
+
             $message = implode("\n", $output);
             $message .= "\n\nProcessMaker Stack:\n";
             $message .= (new \Exception)->getTraceAsString();
@@ -89,6 +90,7 @@ trait ScriptDockerBindingFilesTrait
         }
         $outputs = $this->getOutputFilesContent();
         $this->removeTemporalFiles();
+
         return compact('line', 'output', 'returnCode', 'outputs');
     }
 
@@ -118,6 +120,7 @@ trait ScriptDockerBindingFilesTrait
         $hostFile = tempnam(config('app.processmaker_scripts_home'), 'put');
         $this->temporalFiles[] = $hostFile;
         file_put_contents($hostFile, $content);
+
         return $this->bindFile($hostFile, $guestFile);
     }
 
@@ -133,6 +136,7 @@ trait ScriptDockerBindingFilesTrait
         $hostFile = tempnam(config('app.processmaker_scripts_home'), 'get');
         $this->temporalFiles[] = $hostFile;
         $this->outputFiles[$name] = $hostFile;
+
         return $this->bindFile($hostFile, $guestFile);
     }
 
@@ -147,12 +151,12 @@ trait ScriptDockerBindingFilesTrait
         foreach ($this->outputFiles as $name => $filename) {
             $outputs[$name] = file_get_contents($filename);
         }
+
         return $outputs;
     }
 
     /**
      * Remove the temporal files.
-     *
      */
     private function removeTemporalFiles()
     {

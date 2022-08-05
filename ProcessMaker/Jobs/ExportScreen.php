@@ -2,12 +2,11 @@
 
 namespace ProcessMaker\Jobs;
 
-use ProcessMaker\Models\Screen;
 use ProcessMaker\Managers\ExportManager;
+use ProcessMaker\Models\Screen;
 
 class ExportScreen extends ExportProcess
 {
-
     /**
      * The screen we will export.
      *
@@ -44,7 +43,7 @@ class ExportScreen extends ExportProcess
     /**
      * Execute the job.
      *
-     * @return boolean|string
+     * @return bool|string
      */
     public function handle()
     {
