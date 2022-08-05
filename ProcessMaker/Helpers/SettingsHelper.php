@@ -31,7 +31,7 @@ if (!function_exists('settings')) {
 
         $nested = [];
 
-        foreach ($cache->get('all') as $setting) {
+        foreach ($cache->get('all') ?? [] as $setting) {
             Arr::set($nested, $setting->key, $setting->config);
         }
 
@@ -49,22 +49,75 @@ if (!function_exists('flush_settings')) {
     /**
      * Flush the ProcessMaker settings from the cache and global configuration.
      *
-     * @return void
+     * @return bool
      * @throws \Exception
      */
-    function flush_settings()
+    function flush_settings(): bool
     {
-        cache()->tags('setting')->flush();
+        return cache()->tags('setting')->flush();
+    }
+}
 
-        if (app()->configurationIsCached()) {
+if (!function_exists('clear_artisan_caches')) {
+    /**
+     * Clears any available/cacheable artisan commands and
+     * returns with which were cached to before clearing
+     *
+     * @return array
+     */
+    function clear_artisan_caches(): array
+    {
+        if ($configuration = app()->configurationIsCached()) {
+            Artisan::call('config:clear');
+        }
+
+        if ($routes = app()->routesAreCached()) {
+            Artisan::call('route:clear');
+        }
+
+        if ($events = app()->eventsAreCached()) {
+            Artisan::call('event:clear');
+        }
+
+        return [
+            'configuration' => $configuration ?? false,
+            'routes' => $routes ?? false,
+            'events' => $events ?? false,
+        ];
+    }
+}
+
+if (!function_exists('refresh_artisan_caches')) {
+    /**
+     * Refreshes identified caches (configuration, routes, and/or events)
+     *
+     * @param  array  $caches
+     *
+     * @return void
+     */
+    function refresh_artisan_caches(array $caches = []): void
+    {
+        if (!array_key_exists('configuration', $caches)) {
+            $caches['configuration'] = app()->configurationIsCached();
+        }
+
+        if (!array_key_exists('routes', $caches)) {
+            $caches['routes'] = app()->routesAreCached();
+        }
+
+        if (!array_key_exists('events', $caches)) {
+            $caches['events'] = app()->eventsAreCached();
+        }
+
+        if ($caches['configuration']) {
             Artisan::call('config:cache');
         }
 
-        if (app()->routesAreCached()) {
+        if ($caches['routes']) {
             Artisan::call('route:cache');
         }
 
-        if (app()->eventsAreCached()) {
+        if ($caches['events']) {
             Artisan::call('event:cache');
         }
     }
@@ -78,15 +131,23 @@ if (!function_exists('cache_settings')) {
      *
      * @return bool
      */
-    function cache_settings(bool $force = false)
+    function cache_settings(bool $force = false): bool
     {
         try {
             if (Setting::exists()) {
                 $cache = cache()->tags('setting');
 
-                // If $force is true, flush the settings cache
+                if (config()->has('settings_loaded')) {
+                    config()->set('settings_loaded', false);
+                }
+
                 if ($force) {
+                    // Flush the settings cache
                     flush_settings();
+
+                    // Clear any cached events, routes,
+                    // and/or the configuration itself
+                    $cleared_caches = clear_artisan_caches();
                 }
 
                 // Calling the settings() helper function will
@@ -97,14 +158,21 @@ if (!function_exists('cache_settings')) {
                     $cache = cache()->tags('setting');
                 }
 
+                if ($force) {
+                    // Refresh any cached routes, config, or events
+                    refresh_artisan_caches($cleared_caches ?? []);
+                }
+
                 // Iterating through each and calling the byKey()
                 // static method will also cache the config value
                 // automatically, making them available through
                 // the global config() helper function.
-                $cache->get('all')->each(function (Setting $setting) {
+                ($cache->get('all') ?? collect())->each(function (Setting $setting) {
                     $setting->addToConfig();
                 });
 
+                // Set the config option to indicate the settings
+                // are now available via the configuration
                 config(['settings_loaded' => true]);
             }
         } catch (Exception $e) {
