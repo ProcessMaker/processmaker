@@ -15,32 +15,44 @@ class OauthTransportManager extends TransportManager
     
     private $token = null;
 
+    private $authMethodIndex = null;
+
+    private $authMethod = null;
+
+    private $emailServerIndex = null;
+
+    private $fromAddress = null;
+
     public function __construct($config)
     {   
         $this->config = (object) $config;
-        $authMethod = EmailConfig::authentication_methods[$config->get('mail.auth_method')];
-        switch ($authMethod) {
+        $this->authMethodIndex = $config->get('mail.auth_method');
+        $this->authMethod = EmailConfig::authentication_methods[$this->authMethodIndex];
+        $this->emailServerIndex = $this->config->get('mail.server_index');
+        $this->fromAddress = $this->config->get('mail.from.address');
+
+        $this->setTokenVariable();
+    }
+
+    private function setTokenVariable() 
+    {
+        $this->token = (object)[];
+        switch ($this->authMethod) {
             case 'google':
-                $this->token = [
-                    "client_id" => $config->get('services.gmail.key'),
-                    "client_secret" => $config->get('services.gmail.secret'),
-                    "access_token" => $config->get('services.gmail.access_token'),
-                    "refresh_token" => $config->get('services.gmail.refresh_token'),
-                    "expires_in" => $config->get('services.gmail.expires_in'),
-                    "created" => $config->get('services.gmail.created'),
-                ];
+                $this->token->client_id = $this->config->get('services.gmail.key');
+                $this->token->client_secret = $this->config->get('services.gmail.secret');
+                $this->token->access_token = $this->config->get('services.gmail.access_token');
+                $this->token->refresh_token = $this->config->get('services.gmail.refresh_token');
+                $this->token->expires_in = $this->config->get('services.gmail.expires_in');
                 break;
             case 'office365':
-                $this->token = [
-                    "tenant_id" => $config->get('services.office365.tenant_id'),
-                    "client_id" => $config->get('services.office365.key'),
-                    "client_secret" => $config->get('services.office365.secret'),
-                    "access_token" => $config->get('services.office365.access_token'),
-                    "refresh_token" => $config->get('services.office365.refresh_token'),
-                    "expires_in" => $config->get('services.office365.expires_in'),
-                ];
+                $this->token->tenant_id = $this->config->get('services.office365.tenant_id');
+                $this->token->client_id = $this->config->get('services.office365.key');
+                $this->token->client_secret = $this->config->get('services.office365.secret');
+                $this->token->access_token = $this->config->get('services.office365.access_token');
+                $this->token->refresh_token = $this->config->get('services.office365.refresh_token');
+                $this->token->expires_in = $this->config->get('services.office365.expires_in');
                 break;
-            
             default:
                 break;
         }
@@ -50,26 +62,21 @@ class OauthTransportManager extends TransportManager
     {
         $transport = parent::createSmtpDriver();
 
-        $authIndex = $this->config->get('mail.auth_method');
-        if (isset($authIndex)) {
-            $authMethod = EmailConfig::authentication_methods[$authIndex];
-            switch ($authMethod) {
+        if (isset($this->authMethodIndex)) {
+            switch ($this->authMethod) {
                 case 'google':
-                    $serverIndex = $this->config->get('mail.server_index');
-                    $accessToken = $this->checkForExpiredGoogleAccessToken($serverIndex);
+                    $accessToken = $this->checkForExpiredGoogleAccessToken($this->emailServerIndex);
                     $fromAddress = $this->config->get('mail.from.address');
                     // Update Authencation Mode
                     $transport->setAuthMode('XOAUTH2')
-                    ->setUsername($fromAddress)
+                    ->setUsername($this->fromAddress)
                     ->setPassword($accessToken);
                     break;
                 case 'office365':
-                    $serverIndex = $this->config->get('mail.server_index');
-                    $accessToken = $this->checkForExpiredOffice365AccessToken($serverIndex);
-                    $fromAddress = $this->config->get('mail.from.address');
+                    $accessToken = $this->checkForExpiredOffice365AccessToken($this->emailServerIndex);
                     // Update Authencation Mode
                     $transport->setAuthMode('XOAUTH2')
-                    ->setUsername($fromAddress)
+                    ->setUsername($this->fromAddress)
                     ->setPassword($accessToken);
                     break;
                 
@@ -114,7 +121,7 @@ class OauthTransportManager extends TransportManager
     {
         $now = new \DateTime();
         $now->format('Y-m-d H:i:s');
-        $expireDate = gmdate('Y-m-d H:i:s', strtotime($this->token['expires_in']));
+        $expireDate = gmdate('Y-m-d H:i:s', strtotime($this->token->expires_in));
         if ($now->format('Y-m-d H:i:s') > $expireDate ) {
             dd('ACCESS TOKEN IS EXPIRED');
             // TODO: Handle expired access token
