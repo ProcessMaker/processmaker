@@ -3,8 +3,7 @@
 namespace ProcessMaker\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\App;
-use ProcessMaker\Managers\PackageManager;
+use Symfony\Component\Finder\Exception\DirectoryNotFoundException;
 use Symfony\Component\Finder\Finder;
 
 class InstallPreCommitHooks extends Command
@@ -48,10 +47,15 @@ class InstallPreCommitHooks extends Command
         $this->addHook($coreHooksPath);
 
         $finder = new Finder();
-        $finder
-            ->in(base_path('vendor/processmaker/*/.git'))
-            ->followLinks()
-            ->name('hooks');
+        try {
+            $finder
+                ->in(base_path('vendor/processmaker/*/.git'))
+                ->followLinks()
+                ->name('hooks');
+        } catch (DirectoryNotFoundException $e) {
+            // No local development packages
+            return;
+        }
 
         foreach ($finder as $dir) {
             $path = $dir->getPathname();
