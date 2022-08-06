@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 
 if (!function_exists('settings')) {
     /**
@@ -27,6 +28,9 @@ if (!function_exists('settings')) {
 
         // Cache all Setting models
         if (!$cache->has('all')) {
+            if (!Schema::hasTable('settings')) {
+                return [];
+            }
             $cache->put('all', Setting::get(), 60 * 60 * 24 * 7);
         }
 
