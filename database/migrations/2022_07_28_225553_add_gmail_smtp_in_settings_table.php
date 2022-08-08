@@ -100,6 +100,10 @@ class AddGmailSmtpInSettingsTable extends Migration
             'ui' => '{"props":{"variant":"outline-secondary", "position": "top", "order":"200"},"handler":"authorizeAccount"}',
         ]);
         
-        EmailConfig::filterAuthMethods($config, $groupName, $n);
+        $driver = Setting::select('config')->where('group', $groupName)->where('key', 'LIKE', 'EMAIL_CONNECTOR_MAIL_DRIVER%')->firstorFail();
+        $selectedDriver = $driver ? EmailConfig::drivers[$driver->config] : null;
+        if ($selectedDriver === 'smtp') {
+            EmailConfig::filterAuthMethods('0', $groupName, $n);
+        }
     }
 }
