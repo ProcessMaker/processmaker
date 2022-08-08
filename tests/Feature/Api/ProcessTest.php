@@ -494,9 +494,9 @@ class ProcessTest extends TestCase
             'num' => 20,
             'status' => 'ARCHIVED',
         ];
-        factory(Process::class, $processActive['num'])->create(['status' => $processActive['status']]);
-        factory(Process::class, $processInactive['num'])->create(['status' => $processInactive['status']]);
-        factory(Process::class, $processArchived['num'])->create(['status' => $processArchived['status']]);
+        factory(Process::class)->state($processActive['num'])->create(['status' => $processActive['status']]);
+        factory(Process::class)->state($processInactive['num'])->create(['status' => $processInactive['status']]);
+        factory(Process::class)->state($processArchived['num'])->create(['status' => $processArchived['status']]);
 
         //Get active processes
         $response = $this->assertCorrectModelListing(
