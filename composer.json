@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.2.33",
+    "version": "4.2.34-RC1",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -88,7 +88,7 @@
             ]
         },
         "processmaker": {
-            "build": "4a1a2061",
+            "build": "6f008378",
             "enterprise": {
                 "connector-docusign": "1.0.0",
                 "connector-pdf-print": "1.8.0",
