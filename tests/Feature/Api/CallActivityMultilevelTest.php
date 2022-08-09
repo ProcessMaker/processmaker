@@ -27,15 +27,15 @@ class CallActivityMultilevelTest extends TestCase
         // Create the processes
         $parent = $this->createProcess([
             'id' => 1,
-            'bpmn' => file_get_contents(__DIR__.'/processes/multilevel_parent.bpmn'),
+            'bpmn' => file_get_contents(__DIR__ . '/processes/multilevel_parent.bpmn'),
         ]);
         $child = $this->createProcess([
             'id' => 2,
-            'bpmn' => file_get_contents(__DIR__.'/processes/multilevel_child1.bpmn'),
+            'bpmn' => file_get_contents(__DIR__ . '/processes/multilevel_child1.bpmn'),
         ]);
         $grandchild = $this->createProcess([
             'id' => 3,
-            'bpmn' => file_get_contents(__DIR__.'/processes/multilevel_child2.bpmn'),
+            'bpmn' => file_get_contents(__DIR__ . '/processes/multilevel_child2.bpmn'),
         ]);
 
         // Start a parent process instance

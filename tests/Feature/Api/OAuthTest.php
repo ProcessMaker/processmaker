@@ -66,7 +66,7 @@ class OAuthTest extends TestCase
         $response = $this->actingAs($this->user)
                     ->json(
                         'PUT',
-                        '/oauth/clients/'.$this->json['id'],
+                        '/oauth/clients/' . $this->json['id'],
                         [
                             'name' => 'test123',
                             'redirect' => 'http://test.com/foo',
@@ -109,7 +109,7 @@ class OAuthTest extends TestCase
         $response = $this->actingAs($this->user)
                     ->json(
                         'DELETE',
-                        '/oauth/clients/'.$this->json['id']
+                        '/oauth/clients/' . $this->json['id']
                     );
         $response->assertStatus(Response::HTTP_NO_CONTENT);
 

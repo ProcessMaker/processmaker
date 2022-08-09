@@ -93,7 +93,7 @@ class NotificationController extends Controller
         $filter = $request->input('filter', '');
         if (! empty($filter)) {
             $filter = addslashes($filter);
-            $subsearch = '%'.$filter.'%';
+            $subsearch = '%' . $filter . '%';
             $query->where(function ($query) use ($subsearch, $filter) {
                 $query->Where('data->name', 'like', $subsearch)
                     ->orWhere('data->userName', 'like', $subsearch)

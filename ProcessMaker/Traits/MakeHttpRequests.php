@@ -142,7 +142,7 @@ trait MakeHttpRequests
 
             return $formal($data);
         } catch (Exception $exception) {
-            return "{$expression}: ".$exception->getMessage();
+            return "{$expression}: " . $exception->getMessage();
         }
     }
 
@@ -161,7 +161,7 @@ trait MakeHttpRequests
         try {
             return $this->getMustache()->render($expression, $data);
         } catch (Exception $exception) {
-            return "{$expression}: ".$exception->getMessage();
+            return "{$expression}: " . $exception->getMessage();
         }
     }
 
@@ -235,7 +235,7 @@ trait MakeHttpRequests
     private function basicAuthorization($method, $url, $headers, $body, $bodyType)
     {
         if (isset($this->credentials) && is_array($this->credentials)) {
-            $headers['Authorization'] = 'Basic '.base64_encode($this->credentials['username'].':'.$this->credentials['password']);
+            $headers['Authorization'] = 'Basic ' . base64_encode($this->credentials['username'] . ':' . $this->credentials['password']);
         }
 
         return [$method, $url, $headers, $body, $bodyType];
@@ -255,7 +255,7 @@ trait MakeHttpRequests
     private function bearerAuthorization($method, $url, $headers, $body, $bodyType)
     {
         if (isset($this->credentials) && is_array($this->credentials)) {
-            $headers['Authorization'] = 'Bearer '.$this->credentials['token'];
+            $headers['Authorization'] = 'Bearer ' . $this->credentials['token'];
         }
 
         return [$method, $url, $headers, $body, $bodyType];
@@ -285,7 +285,7 @@ trait MakeHttpRequests
             ];
 
             $token = $this->response($this->call('POST', $this->credentials['url'], ['Accept' => 'application/json'], json_encode($config), 'form-data'), [], ['dataMapping' => []], new Mustache_Engine());
-            $headers['Authorization'] = 'Bearer '.$token['response']['access_token'];
+            $headers['Authorization'] = 'Bearer ' . $token['response']['access_token'];
         }
 
         return [$method, $url, $headers, $body, $bodyType];
@@ -552,7 +552,7 @@ trait MakeHttpRequests
             foreach ($matches as $match) {
                 $val = $match[1];
                 if (strpos($val, 'data.data') === false && strpos($val, 'data') === false) {
-                    $match[] = 'data.data.'.trim($val);
+                    $match[] = 'data.data.' . trim($val);
                 } else {
                     $match[] = trim($val);
                 }
@@ -560,11 +560,11 @@ trait MakeHttpRequests
             }
 
             foreach ($matchesWithNewVal as $match) {
-                $value = str_replace($match[0], '{{'.$match[2].'}}', $value);
+                $value = str_replace($match[0], '{{' . $match[2] . '}}', $value);
             }
         } else {
             if (strpos($value, 'data.data') === false && strpos($value, 'data') === false) {
-                $value = 'data.data.'.trim($value);
+                $value = 'data.data.' . trim($value);
             } else {
                 $value = trim($value);
             }
@@ -590,7 +590,7 @@ trait MakeHttpRequests
         );
         $parts = parse_url($enc_url);
         if ($parts === false) {
-            throw new HttpInvalidArgumentException('Malformed URL: '.$url);
+            throw new HttpInvalidArgumentException('Malformed URL: ' . $url);
         }
         foreach ($parts as $name => $value) {
             $parts[$name] = urldecode($value);
@@ -607,15 +607,15 @@ trait MakeHttpRequests
      */
     private function unparseUrl(array $parsed_url)
     {
-        $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'].'://' : '';
+        $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
         $host = isset($parsed_url['host']) ? $parsed_url['host'] : '';
-        $port = isset($parsed_url['port']) ? ':'.$parsed_url['port'] : '';
+        $port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
         $user = isset($parsed_url['user']) ? $parsed_url['user'] : '';
-        $pass = isset($parsed_url['pass']) ? ':'.$parsed_url['pass'] : '';
+        $pass = isset($parsed_url['pass']) ? ':' . $parsed_url['pass'] : '';
         $pass = ($user || $pass) ? "$pass@" : '';
         $path = isset($parsed_url['path']) ? $parsed_url['path'] : '';
-        $query = ! empty($parsed_url['query']) ? '?'.$parsed_url['query'] : '';
-        $fragment = isset($parsed_url['fragment']) ? '#'.$parsed_url['fragment'] : '';
+        $query = ! empty($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+        $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
 
         return "$scheme$user$pass$host$port$path$query$fragment";
     }

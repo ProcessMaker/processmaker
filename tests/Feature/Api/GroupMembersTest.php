@@ -137,7 +137,7 @@ class GroupMembersTest extends TestCase
         $group = factory(GroupMember::class)->create()->id;
 
         //load api
-        $response = $this->apiCall('GET', self::API_TEST_URL.'/'.$group);
+        $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $group);
 
         //Validate the status is correct
         $response->assertStatus(200);
@@ -152,7 +152,7 @@ class GroupMembersTest extends TestCase
     public function testDeleteGroupMember()
     {
         //Remove group
-        $url = self::API_TEST_URL.'/'.factory(GroupMember::class)->create()->id;
+        $url = self::API_TEST_URL . '/' . factory(GroupMember::class)->create()->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code
@@ -165,7 +165,7 @@ class GroupMembersTest extends TestCase
     public function testDeleteGroupMemberNotExist()
     {
         //GroupMember not exist
-        $url = self::API_TEST_URL.'/'.factory(GroupMember::class)->make()->id;
+        $url = self::API_TEST_URL . '/' . factory(GroupMember::class)->make()->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code

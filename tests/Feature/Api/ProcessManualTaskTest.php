@@ -51,7 +51,7 @@ class ProcessManualTaskTest extends TestCase
      */
     private function createTestProcess(array $data = [])
     {
-        $data['bpmn'] = file_get_contents(__DIR__.'/processes/ManualTask.bpmn');
+        $data['bpmn'] = file_get_contents(__DIR__ . '/processes/ManualTask.bpmn');
         $process = factory(Process::class)->create($data);
         //Assign the task to $this->user
         $taskId = 'TaskUID';
@@ -101,7 +101,7 @@ class ProcessManualTaskTest extends TestCase
         ]);
         $message = $response->json()['data'][0]['body'];
         $this->assertEquals(
-            $this->user->fullname.' has completed the task '.$task['element_name'],
+            $this->user->fullname . ' has completed the task ' . $task['element_name'],
             $message
         );
     }

@@ -53,7 +53,7 @@ abstract class DuskTestCase extends BaseTestCase
              */
         } elseif (env('SAUCELABS_BROWSER_TESTING')) {
             return RemoteWebDriver::create(
-                'https://'.env('SAUCELABS_USERNAME').':'.env('SAUCELABS_ACCESS_KEY').'@ondemand.saucelabs.com:443/wd/hub',
+                'https://' . env('SAUCELABS_USERNAME') . ':' . env('SAUCELABS_ACCESS_KEY') . '@ondemand.saucelabs.com:443/wd/hub',
                 [
                     'platform' => env('SAUCELABS_PLATFORM', 'Windows 10'),
                     'browserName' => env('SAUCELABS_BROWSER', 'chrome'),
@@ -86,7 +86,7 @@ abstract class DuskTestCase extends BaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $sqlFile = sys_get_temp_dir().'/testDB.sql';
+        $sqlFile = sys_get_temp_dir() . '/testDB.sql';
         $arg = [
             env('DB_HOSTNAME'),
             env('DB_PORT'),
@@ -101,10 +101,10 @@ abstract class DuskTestCase extends BaseTestCase
                 '--seed' => true,
                 '--force' => true,
             ]);
-            $cmd = base_path('tests/Browser/mysql_backup.sh').' '.implode(' ', $arg);
+            $cmd = base_path('tests/Browser/mysql_backup.sh') . ' ' . implode(' ', $arg);
             exec($cmd, $out, $ret);
         } else {
-            $cmd = base_path('tests/Browser/mysql_restore.sh').' '.implode(' ', $arg).' 2>&1';
+            $cmd = base_path('tests/Browser/mysql_restore.sh') . ' ' . implode(' ', $arg) . ' 2>&1';
             exec($cmd, $out, $ret);
         }
     }

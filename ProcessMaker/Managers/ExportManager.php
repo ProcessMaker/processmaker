@@ -68,7 +68,7 @@ class ExportManager
      */
     private function reviewDependenciesOf(Model $owner, array $references = [], array $reviewed = [])
     {
-        $key = get_class($owner).':'.$owner->getKey();
+        $key = get_class($owner) . ':' . $owner->getKey();
         if (in_array($key, $reviewed)) {
             return $references;
         }

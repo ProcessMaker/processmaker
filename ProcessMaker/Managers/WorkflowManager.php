@@ -155,7 +155,7 @@ class WorkflowManager
      */
     public function runScripTask(ScriptTaskInterface $scriptTask, Token $token)
     {
-        Log::info('Dispatch a script task: '.$scriptTask->getId().' #'.$token->getId());
+        Log::info('Dispatch a script task: ' . $scriptTask->getId() . ' #' . $token->getId());
         $instance = $token->processRequest;
         $process = $instance->process;
         RunScriptTask::dispatch($process, $instance, $token, [])->onQueue('bpmn');
@@ -169,7 +169,7 @@ class WorkflowManager
      */
     public function runServiceTask(ServiceTaskInterface $serviceTask, Token $token)
     {
-        Log::info('Dispatch a service task: '.$serviceTask->getId());
+        Log::info('Dispatch a service task: ' . $serviceTask->getId());
         $instance = $token->processRequest;
         $process = $instance->process;
         RunServiceTask::dispatch($process, $instance, $token, []);

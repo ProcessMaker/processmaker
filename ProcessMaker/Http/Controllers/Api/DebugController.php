@@ -11,7 +11,7 @@ class DebugController extends Controller
     public function store(Request $request)
     {
         \Log::debug(
-            $request->input('name').': '.
+            $request->input('name') . ': ' .
             Str::limit($request->input('message'), 100000)
         );
 

@@ -177,7 +177,7 @@ class EditDataTest extends TestCase
         $task = $request->tokens()->where('element_id', 'UserTaskUID')->first();
         $this->completeTask($task);
 
-        $response = $this->call('GET', 'requests/'.$request->id);
+        $response = $this->call('GET', 'requests/' . $request->id);
         $response->assertStatus(200);
         $response->assertViewIs('requests.show');
         $response->assertSee('Summary');
@@ -196,7 +196,7 @@ class EditDataTest extends TestCase
         $task = $request->tokens()->where('element_id', 'UserTaskUID')->first();
         $this->completeTask($task);
 
-        $response = $this->call('GET', 'requests/'.$request->id);
+        $response = $this->call('GET', 'requests/' . $request->id);
         $response->assertStatus(200);
         $response->assertViewIs('requests.show');
         $response->assertSee('Summary');
@@ -214,7 +214,7 @@ class EditDataTest extends TestCase
         $request = $this->startProcess($process, 'StartEventUID');
         $task = $request->tokens()->where('element_id', 'UserTaskUID')->first();
 
-        $response = $this->call('GET', 'tasks/'.$task->id.'/edit');
+        $response = $this->call('GET', 'tasks/' . $task->id . '/edit');
         $response->assertStatus(200);
         $response->assertViewIs('tasks.edit');
         $response->assertDontSee('<!-- data edit -->');
@@ -232,7 +232,7 @@ class EditDataTest extends TestCase
         $request = $this->startProcess($process, 'StartEventUID');
         $task = $request->tokens()->where('element_id', 'UserTaskUID')->first();
 
-        $response = $this->call('GET', 'tasks/'.$task->id.'/edit');
+        $response = $this->call('GET', 'tasks/' . $task->id . '/edit');
         $response->assertStatus(200);
         $response->assertViewIs('tasks.edit');
         $response->assertSee('Form');
@@ -251,7 +251,7 @@ class EditDataTest extends TestCase
         $task = $request->tokens()->where('element_id', 'UserTaskUID')->first();
 
         //Perform web call and make assertions
-        $response = $this->webCall('GET', 'tasks/'.$task->id.'/edit');
+        $response = $this->webCall('GET', 'tasks/' . $task->id . '/edit');
         $response->assertStatus(200);
         $response->assertViewIs('tasks.edit');
         $response->assertDontSee('<!-- data edit -->');
@@ -274,7 +274,7 @@ class EditDataTest extends TestCase
         $this->flushSession();
 
         //Perform web call and make assertions
-        $response = $this->webCall('GET', 'tasks/'.$task->id.'/edit');
+        $response = $this->webCall('GET', 'tasks/' . $task->id . '/edit');
         $response->assertStatus(200);
         $response->assertViewIs('tasks.edit');
         $response->assertSee('<!-- data edit -->');
@@ -292,7 +292,7 @@ class EditDataTest extends TestCase
         $request = $this->startProcess($process, 'StartEventUID');
         $task = $request->tokens()->where('element_id', 'UserTaskUID')->first();
 
-        $response = $this->call('GET', 'requests/'.$request->id);
+        $response = $this->call('GET', 'requests/' . $request->id);
         $response->assertStatus(200);
         $response->assertViewIs('requests.show');
         $response->assertSee('Completed');
@@ -313,7 +313,7 @@ class EditDataTest extends TestCase
         $task = $request->tokens()->where('element_id', 'UserTaskUID')->first();
         $this->completeTask($task);
 
-        $response = $this->call('GET', 'requests/'.$request->id);
+        $response = $this->call('GET', 'requests/' . $request->id);
         $response->assertStatus(200);
         $response->assertViewIs('requests.show');
         $response->assertSee('Completed');

@@ -63,7 +63,7 @@ class UserSeeder extends Seeder
         $clients->create(
             null,
             'Swagger UI Auth',
-            env('APP_URL', 'http://localhost').'/api/oauth2-callback'
+            env('APP_URL', 'http://localhost') . '/api/oauth2-callback'
         );
 
         // Allow users get at token using the password grant flow

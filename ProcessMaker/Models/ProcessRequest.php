@@ -203,7 +203,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public static function rules($existing = null)
     {
         $self = new self();
-        $unique = Rule::unique($self->getConnectionName().'.process_requests')->ignore($existing);
+        $unique = Rule::unique($self->getConnectionName() . '.process_requests')->ignore($existing);
 
         return [
             'name' => ['required', 'string', 'max:100', $unique, 'alpha_spaces'],
@@ -420,7 +420,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
                 $query->whereIn('id', $matches);
             }
         } else {
-            $filter = '%'.mb_strtolower($filter).'%';
+            $filter = '%' . mb_strtolower($filter) . '%';
             $query->where(function ($query) use ($filter) {
                 $query->where(DB::raw('LOWER(name)'), 'like', $filter)
                     ->orWhere(DB::raw('LOWER(data)'), 'like', $filter)
@@ -886,7 +886,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
                 'mime_type' => $file->mime_type,
             ];
             if ($includeToken) {
-                $info['token'] = md5($dataName.$file->id.$file->created_at);
+                $info['token'] = md5($dataName . $file->id . $file->created_at);
             }
 
             return [$dataName => $info];

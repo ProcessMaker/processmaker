@@ -263,7 +263,7 @@ class SettingController extends Controller
                 if ($copyTo) {
                     $this->createStoragePathIfNotExists(storage_path($copyTo));
                     copy(
-                        storage_path('app/private/settings/').$collectionName,
+                        storage_path('app/private/settings/') . $collectionName,
                         // Saving upload file into storage folder
                         // Note: $copyTo MUST always be a relative path
                         storage_path($copyTo)

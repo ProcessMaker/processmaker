@@ -54,14 +54,14 @@ class SearchByCategoryTest extends TestCase
 
         $route = route('api.processes.index');
         // check that the returned list and metadata shows all the processes
-        $response = $this->apiCall('GET', $route.'?filter=ACTIVE&per_page=10');
+        $response = $this->apiCall('GET', $route . '?filter=ACTIVE&per_page=10');
         $data = $response->json('data');
         $meta = $response->json('meta');
         $this->assertCount(4, $data);
         $this->assertEquals(4, $meta['count']);
 
         // check that the returned list and metadata shows all the processes with category_a
-        $response = $this->apiCall('GET', $route.'?filter=category_a&per_page=10');
+        $response = $this->apiCall('GET', $route . '?filter=category_a&per_page=10');
         $data = $response->json('data');
         $dataIds = array_map(function ($item) {
             return $item['id'];
@@ -72,7 +72,7 @@ class SearchByCategoryTest extends TestCase
         $this->assertEqualsCanonicalizing([$entity1->id, $entity2->id, $entity4->id], $dataIds);
 
         // check that the returned list and metadata shows all the processes with category_c
-        $response = $this->apiCall('GET', $route.'?filter=category_c&per_page=10');
+        $response = $this->apiCall('GET', $route . '?filter=category_c&per_page=10');
         $data = $response->json('data');
         $dataIds = array_map(function ($item) {
             return $item['id'];
@@ -83,7 +83,7 @@ class SearchByCategoryTest extends TestCase
         $this->assertEqualsCanonicalizing([$entity3->id, $entity4->id], $dataIds);
 
         // check that the returned list and metadata is empty with filter by zyx
-        $response = $this->apiCall('GET', $route.'?filter=zyx&per_page=10');
+        $response = $this->apiCall('GET', $route . '?filter=zyx&per_page=10');
         $data = $response->json('data');
         $dataIds = array_map(function ($item) {
             return $item['id'];
@@ -121,14 +121,14 @@ class SearchByCategoryTest extends TestCase
 
         $route = route('api.screens.index');
         // check that the returned list and metadata shows all the processes
-        $response = $this->apiCall('GET', $route.'?per_page=10');
+        $response = $this->apiCall('GET', $route . '?per_page=10');
         $data = $response->json('data');
         $meta = $response->json('meta');
         $this->assertCount(4, $data);
         $this->assertEquals(4, $meta['count']);
 
         // check that the returned list and metadata shows all the processes with category_a
-        $response = $this->apiCall('GET', $route.'?filter=category_a&per_page=10');
+        $response = $this->apiCall('GET', $route . '?filter=category_a&per_page=10');
         $data = $response->json('data');
         $dataIds = array_map(function ($item) {
             return $item['id'];
@@ -139,7 +139,7 @@ class SearchByCategoryTest extends TestCase
         $this->assertEqualsCanonicalizing([$entity1->id, $entity2->id, $entity4->id], $dataIds);
 
         // check that the returned list and metadata shows all the processes with category_c
-        $response = $this->apiCall('GET', $route.'?filter=category_c&per_page=10');
+        $response = $this->apiCall('GET', $route . '?filter=category_c&per_page=10');
         $data = $response->json('data');
         $dataIds = array_map(function ($item) {
             return $item['id'];
@@ -150,7 +150,7 @@ class SearchByCategoryTest extends TestCase
         $this->assertEqualsCanonicalizing([$entity3->id, $entity4->id], $dataIds);
 
         // check that the returned list and metadata is empty with filter by zyx
-        $response = $this->apiCall('GET', $route.'?filter=zyx&per_page=10');
+        $response = $this->apiCall('GET', $route . '?filter=zyx&per_page=10');
         $data = $response->json('data');
         $dataIds = array_map(function ($item) {
             return $item['id'];
@@ -188,14 +188,14 @@ class SearchByCategoryTest extends TestCase
 
         $route = route('api.scripts.index');
         // check that the returned list and metadata shows all the processes
-        $response = $this->apiCall('GET', $route.'?per_page=10');
+        $response = $this->apiCall('GET', $route . '?per_page=10');
         $data = $response->json('data');
         $meta = $response->json('meta');
         $this->assertCount(4, $data);
         $this->assertEquals(4, $meta['count']);
 
         // check that the returned list and metadata shows all the processes with category_a
-        $response = $this->apiCall('GET', $route.'?filter=category_a&per_page=10');
+        $response = $this->apiCall('GET', $route . '?filter=category_a&per_page=10');
         $data = $response->json('data');
         $dataIds = array_map(function ($item) {
             return $item['id'];
@@ -206,7 +206,7 @@ class SearchByCategoryTest extends TestCase
         $this->assertEqualsCanonicalizing([$entity1->id, $entity2->id, $entity4->id], $dataIds);
 
         // check that the returned list and metadata shows all the processes with category_c
-        $response = $this->apiCall('GET', $route.'?filter=category_c&per_page=10');
+        $response = $this->apiCall('GET', $route . '?filter=category_c&per_page=10');
         $data = $response->json('data');
         $dataIds = array_map(function ($item) {
             return $item['id'];
@@ -217,7 +217,7 @@ class SearchByCategoryTest extends TestCase
         $this->assertEqualsCanonicalizing([$entity3->id, $entity4->id], $dataIds);
 
         // check that the returned list and metadata is empty with filter by zyx
-        $response = $this->apiCall('GET', $route.'?filter=zyx&per_page=10');
+        $response = $this->apiCall('GET', $route . '?filter=zyx&per_page=10');
         $data = $response->json('data');
         $dataIds = array_map(function ($item) {
             return $item['id'];

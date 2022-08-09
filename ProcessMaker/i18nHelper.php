@@ -21,7 +21,7 @@ class i18nHelper
     {
         $mdates = [];
         foreach (self::files() as $key => $file) {
-            $mdates[$key] = filemtime(resource_path('lang').'/'.$file);
+            $mdates[$key] = filemtime(resource_path('lang') . '/' . $file);
         }
 
         return $mdates;

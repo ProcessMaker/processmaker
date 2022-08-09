@@ -58,7 +58,7 @@ trait ScriptDockerBindingFilesTrait
      */
     private function runContainer($image, $command, $parameters, $bindings, $timeout)
     {
-        $cmd = Docker::command($timeout).sprintf(
+        $cmd = Docker::command($timeout) . sprintf(
             ' run --rm %s %s %s %s 2>&1',
             $parameters,
             $bindings,
@@ -77,11 +77,11 @@ trait ScriptDockerBindingFilesTrait
                 Log::error('Script timed out');
                 throw new ScriptTimeoutException(
                     __('Script took too long to complete. Consider increasing the timeout.')
-                  .' '
-                  .implode("\n", $output)
+                  . ' '
+                  . implode("\n", $output)
                 );
             }
-            Log::error('Script threw return code '.$returnCode.'Message: '.implode("\n", $output));
+            Log::error('Script threw return code ' . $returnCode . 'Message: ' . implode("\n", $output));
 
             $message = implode("\n", $output);
             $message .= "\n\nProcessMaker Stack:\n";

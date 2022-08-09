@@ -207,7 +207,7 @@ class TaskController extends Controller
             $regex = '~Column not found: 1054 Unknown column \'(.*?)\' in \'where clause\'~';
             preg_match($regex, $e->getMessage(), $m);
 
-            return response(['message' => __('PMQL Is Invalid.').' '.__('Column not found: ').'"'.$m[1].'"'], 422);
+            return response(['message' => __('PMQL Is Invalid.') . ' ' . __('Column not found: ') . '"' . $m[1] . '"'], 422);
         }
 
         // Only filter results if the user id was specified

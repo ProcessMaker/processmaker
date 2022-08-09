@@ -121,7 +121,7 @@ class ScreenConsolidator
                 foreach ($this->replace($page['items'], $index0) as $screenItem) {
                     if (isset($item['config']['conditionalHide'])) {
                         if (isset($screenItem['config']['conditionalHide'])) {
-                            $screenItem['config']['conditionalHide'] = $screenItem['config']['conditionalHide'].' and '.$item['config']['conditionalHide'];
+                            $screenItem['config']['conditionalHide'] = $screenItem['config']['conditionalHide'] . ' and ' . $item['config']['conditionalHide'];
                         } else {
                             $screenItem['config']['conditionalHide'] = $item['config']['conditionalHide'];
                         }
@@ -232,7 +232,7 @@ class ScreenConsolidator
     private function appendCustomCss($screen)
     {
         if ($screen->custom_css) {
-            $this->custom_css .= "\n".$screen->custom_css;
+            $this->custom_css .= "\n" . $screen->custom_css;
         }
     }
 

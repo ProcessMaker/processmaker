@@ -67,7 +67,7 @@ class EnvironmentVariablesController extends Controller
         $orderDirection = $request->input('order_direction', 'asc');
         // Note, the current page is automatically handled by Laravel's pagination feature
         if ($filter) {
-            $filter = '%'.$filter.'%';
+            $filter = '%' . $filter . '%';
             $environment_variables = EnvironmentVariable::where('name', 'like', $filter)
               ->orWhere('description', 'like', $filter)
               ->orderBy($orderBy, $orderDirection);

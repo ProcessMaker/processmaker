@@ -296,7 +296,7 @@ class GroupMemberController extends Controller
         $filter = $request->input('filter', '');
         if (! empty($filter)) {
             //filter by name group
-            $filter = '%'.$filter.'%';
+            $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('name', 'like', $filter);
             });
@@ -401,7 +401,7 @@ class GroupMemberController extends Controller
         $filter = $request->input('filter', '');
         if (! empty($filter)) {
             //filter by name group
-            $filter = '%'.$filter.'%';
+            $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('firstname', 'like', $filter)
                     ->orWhere('lastname', 'like', $filter);

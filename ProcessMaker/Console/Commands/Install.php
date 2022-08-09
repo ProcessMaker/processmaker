@@ -97,7 +97,7 @@ class Install extends Command
     public function handle()
     {
         // Setup our initial encryption key and set our running laravel app key to it
-        $this->key = 'base64:'.base64_encode(Encrypter::generateKey($this->laravel['config']['app.cipher']));
+        $this->key = 'base64:' . base64_encode(Encrypter::generateKey($this->laravel['config']['app.cipher']));
         config(['app.key' => $this->key]);
 
         // Our initial .env values
@@ -144,7 +144,7 @@ class Install extends Command
             'root' => base_path(),
         ]]);
 
-        $this->info('<fg=cyan;bold>'.__('ProcessMaker Installer').'</>');
+        $this->info('<fg=cyan;bold>' . __('ProcessMaker Installer') . '</>');
 
         // Determine if .env file exists or not
         // if exists, bail out with an error
@@ -214,7 +214,7 @@ class Install extends Command
         $this->env['TELESCOPE_ENABLED'] = $this->confirmOptional('telescope', 'Would you like to enable Telescope debugging?') ? 'TRUE' : 'FALSE';
 
         // Set broadcaster url
-        $this->env['BROADCASTER_HOST'] = $this->option('broadcast-host') ? $this->option('broadcast-host') : $this->env['APP_URL'].':6001';
+        $this->env['BROADCASTER_HOST'] = $this->option('broadcast-host') ? $this->option('broadcast-host') : $this->env['APP_URL'] . ':6001';
 
         // Set laravel echo server settings
         $this->env['LARAVEL_ECHO_SERVER_AUTH_HOST'] = $this->option('echo-host') ? $this->option('echo-host') : $this->env['APP_URL'];
@@ -259,7 +259,7 @@ class Install extends Command
             $contents = '';
             // Build out the file contents for our .env file
             foreach ($this->env as $key => $value) {
-                $contents .= $key.'='.$value."\n";
+                $contents .= $key . '=' . $value . "\n";
             }
 
             // Now store the env file
@@ -525,7 +525,7 @@ class Install extends Command
                 DB::reconnect();
                 $pdo = DB::connection('processmaker')->getPdo();
             } catch (Exception $e) {
-                $this->errorOrExit(__('Failed to connect to MySQL database. Ensure the database exists. Check your credentials and try again.'.json_encode(config('database.connections.processmaker'))));
+                $this->errorOrExit(__('Failed to connect to MySQL database. Ensure the database exists. Check your credentials and try again.' . json_encode(config('database.connections.processmaker'))));
 
                 return false;
             }
@@ -558,7 +558,7 @@ class Install extends Command
                 DB::connection('data')->reconnect();
                 $pdo = DB::connection('data')->getPdo();
             } catch (Exception $e) {
-                $this->errorOrExit(__('Failed to connect to DATA connection. Ensure the database exists. Check your credentials and try again. '.json_encode(config('database.connections.data'))));
+                $this->errorOrExit(__('Failed to connect to DATA connection. Ensure the database exists. Check your credentials and try again. ' . json_encode(config('database.connections.data'))));
 
                 return false;
             }

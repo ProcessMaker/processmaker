@@ -107,7 +107,7 @@ class TaskAssignmentTest extends TestCase
         $task_uid = Faker::create()->uuid;
         $group = factory(Group::class)->create();
 
-        $response = $this->apiCall('PUT', self::API_TEST_URL.'/'.$processTaskAssignment->id, [
+        $response = $this->apiCall('PUT', self::API_TEST_URL . '/' . $processTaskAssignment->id, [
             'process_id' => $process->id,
             'process_task_id' => $task_uid,
             'assignment_id' => $group->id,
@@ -137,7 +137,7 @@ class TaskAssignmentTest extends TestCase
     {
         $process = factory(Process::class)->create([
             'status' => 'ACTIVE',
-            'bpmn' => file_get_contents(__DIR__.'/processes/InvalidUserAssignment.bpmn'),
+            'bpmn' => file_get_contents(__DIR__ . '/processes/InvalidUserAssignment.bpmn'),
         ]);
         $process->manager_id = factory(User::class)->create()->id;
         $process->save();
@@ -152,7 +152,7 @@ class TaskAssignmentTest extends TestCase
     {
         $process = factory(Process::class)->create([
             'status' => 'ACTIVE',
-            'bpmn' => file_get_contents(__DIR__.'/processes/InvalidGroupAssignment.bpmn'),
+            'bpmn' => file_get_contents(__DIR__ . '/processes/InvalidGroupAssignment.bpmn'),
         ]);
         $process->manager_id = factory(User::class)->create()->id;
         $process->save();
@@ -171,7 +171,7 @@ class TaskAssignmentTest extends TestCase
     {
         $process = factory(Process::class)->create([
             'status' => 'ACTIVE',
-            'bpmn' => file_get_contents(__DIR__.'/processes/InvalidGroupAssignment.bpmn'),
+            'bpmn' => file_get_contents(__DIR__ . '/processes/InvalidGroupAssignment.bpmn'),
         ]);
         $process->manager_id = factory(User::class)->create()->id;
         $process->save();
@@ -186,7 +186,7 @@ class TaskAssignmentTest extends TestCase
     {
         $process = factory(Process::class)->create([
             'status' => 'ACTIVE',
-            'bpmn' => file_get_contents(__DIR__.'/processes/InvalidPreviousUserAssignment.bpmn'),
+            'bpmn' => file_get_contents(__DIR__ . '/processes/InvalidPreviousUserAssignment.bpmn'),
         ]);
         $process->manager_id = factory(User::class)->create()->id;
         $process->save();
@@ -201,7 +201,7 @@ class TaskAssignmentTest extends TestCase
     {
         $process = factory(Process::class)->create([
             'status' => 'ACTIVE',
-            'bpmn' => file_get_contents(__DIR__.'/processes/InvalidUserByIDAssignment.bpmn'),
+            'bpmn' => file_get_contents(__DIR__ . '/processes/InvalidUserByIDAssignment.bpmn'),
         ]);
         $process->manager_id = factory(User::class)->create()->id;
         $process->save();

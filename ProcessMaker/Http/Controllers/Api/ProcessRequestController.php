@@ -144,7 +144,7 @@ class ProcessRequestController extends Controller
         }
 
         if (! $user->can('view-all_requests')) {
-            $query->pmql('requester = "'.$user->username.'" OR participant = "'.$user->username.'"');
+            $query->pmql('requester = "' . $user->username . '" OR participant = "' . $user->username . '"');
         }
 
         $query->nonSystem();
@@ -293,7 +293,7 @@ class ProcessRequestController extends Controller
             $user_name = $user_id ? Auth::user()->fullname : 'The System';
 
             if ($task_name) {
-                $text = __('has edited the data for ').$task_name;
+                $text = __('has edited the data for ') . $task_name;
             } else {
                 $text = __('has edited the request data');
             }
@@ -304,7 +304,7 @@ class ProcessRequestController extends Controller
                 'commentable_type' => ProcessRequest::class,
                 'commentable_id' => $request->id,
                 'subject' => 'Data edited',
-                'body' => $user_name.' '.$text,
+                'body' => $user_name . ' ' . $text,
             ]);
         } else {
             $httpRequest->validate(ProcessRequest::rules($request));
@@ -399,7 +399,7 @@ class ProcessRequestController extends Controller
         $process = $request->process;
         $catchEvent = $request->getVersionDefinitions()->findElementById($event)->getBpmnElementInstance();
         if (! ($catchEvent instanceof CatchEventInterface)) {
-            return abort(423, __('Invalid element, not a catch event '.get_class($catchEvent)));
+            return abort(423, __('Invalid element, not a catch event ' . get_class($catchEvent)));
         }
         // Get token and data
         $token = $request->tokens()->where('element_id', $event)->where('status', 'ACTIVE')->first();
@@ -484,7 +484,7 @@ class ProcessRequestController extends Controller
     private function checkDomain($domain, $whitelist)
     {
         foreach ($whitelist as $filter) {
-            $filter = '/^'.str_replace('\*', '[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?', preg_quote($filter, '/')).'$/';
+            $filter = '/^' . str_replace('\*', '[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?', preg_quote($filter, '/')) . '$/';
             if (preg_match($filter, $domain)) {
                 return true;
             }
@@ -528,7 +528,7 @@ class ProcessRequestController extends Controller
             'commentable_type' => ProcessRequest::class,
             'commentable_id' => $request->id,
             'subject' => __('Process Manually Completed'),
-            'body' => $user->fullname.' '.__('manually completed the request from an error state'),
+            'body' => $user->fullname . ' ' . __('manually completed the request from an error state'),
         ]);
     }
 

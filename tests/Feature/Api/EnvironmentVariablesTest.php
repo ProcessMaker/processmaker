@@ -96,7 +96,7 @@ class EnvironmentVariablesTest extends TestCase
         ]);
         $variable->fresh();
         // Is now fetch the variable and see if success
-        $response = $this->apiCall('get', self::API_TEST_VARIABLES.'/'.$variable->id);
+        $response = $this->apiCall('get', self::API_TEST_VARIABLES . '/' . $variable->id);
 
         $response->assertStatus(200);
 
@@ -128,7 +128,7 @@ class EnvironmentVariablesTest extends TestCase
             'description' => 'testdescription',
             'value' => 'differentvalue',
         ];
-        $response = $this->apiCall('PUT', self::API_TEST_VARIABLES.'/'.$variable->id, $data);
+        $response = $this->apiCall('PUT', self::API_TEST_VARIABLES . '/' . $variable->id, $data);
 
         // Check for validation error status code
         $response->assertStatus(422);
@@ -148,7 +148,7 @@ class EnvironmentVariablesTest extends TestCase
             'description' => 'newdescription',
             'value' => 'newvalue',
         ];
-        $response = $this->apiCall('PUT', self::API_TEST_VARIABLES.'/'.$variable->id, $data);
+        $response = $this->apiCall('PUT', self::API_TEST_VARIABLES . '/' . $variable->id, $data);
 
         $response->assertStatus(200);
 
@@ -188,7 +188,7 @@ class EnvironmentVariablesTest extends TestCase
             'name' => 'matchingfield',
         ]);
         // Fetch from index
-        $response = $this->apiCall('GET', self::API_TEST_VARIABLES.'?filter='.urlencode('matchingfield'));
+        $response = $this->apiCall('GET', self::API_TEST_VARIABLES . '?filter=' . urlencode('matchingfield'));
         $response->assertStatus(200);
         $data = json_decode($response->getContent(), true);
         // Ensure we have empty results
@@ -206,7 +206,7 @@ class EnvironmentVariablesTest extends TestCase
             'value' => 'testvalue',
         ]);
         $variable->fresh();
-        $response = $this->apiCall('DELETE', self::API_TEST_VARIABLES.'/'.$variable->id);
+        $response = $this->apiCall('DELETE', self::API_TEST_VARIABLES . '/' . $variable->id);
 
         $response->assertStatus(200);
 
@@ -230,7 +230,7 @@ class EnvironmentVariablesTest extends TestCase
             'description' => 'newdescription',
             'value' => '',
         ];
-        $response = $this->apiCall('PUT', self::API_TEST_VARIABLES.'/'.$variable->id, $data);
+        $response = $this->apiCall('PUT', self::API_TEST_VARIABLES . '/' . $variable->id, $data);
 
         $response->assertStatus(200);
 

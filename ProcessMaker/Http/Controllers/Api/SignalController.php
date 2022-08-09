@@ -75,13 +75,13 @@ class SignalController extends Controller
             foreach ($collection as $item) {
                 $collectionsEnabled[] = $item->id;
                 if (! $item->signal_create) {
-                    $collections[] = 'collection_'.$item->id.'_create';
+                    $collections[] = 'collection_' . $item->id . '_create';
                 }
                 if (! $item->signal_update) {
-                    $collections[] = 'collection_'.$item->id.'_update';
+                    $collections[] = 'collection_' . $item->id . '_update';
                 }
                 if (! $item->signal_delete) {
-                    $collections[] = 'collection_'.$item->id.'_delete';
+                    $collections[] = 'collection_' . $item->id . '_delete';
                 }
             }
         }

@@ -26,8 +26,8 @@ trait ResourceAssertionsTrait
      */
     protected function assertCorrectModelListing($query, $expectedMeta = [])
     {
-        $route = route('api.'.$this->resource.'.index');
-        $response = $this->apiCall('GET', $route.$query);
+        $route = route('api.' . $this->resource . '.index');
+        $response = $this->apiCall('GET', $route . $query);
         //Verify the status
         $this->assertStatus(200, $response);
         //Verify the structure
@@ -60,7 +60,7 @@ trait ResourceAssertionsTrait
      */
     protected function assertCorrectModelCreation($modelClass, array $attributes = [])
     {
-        $route = route('api.'.$this->resource.'.store');
+        $route = route('api.' . $this->resource . '.store');
         $base = factory($modelClass)->make($attributes);
         $array = $base->toArray();
         foreach ($attributes as $key => $value) {
@@ -88,7 +88,7 @@ trait ResourceAssertionsTrait
      */
     protected function assertModelCreationFails($modelClass, array $attributes = [], array $errors = [])
     {
-        $route = route('api.'.$this->resource.'.store');
+        $route = route('api.' . $this->resource . '.store');
         $base = factory($modelClass)->make($attributes);
         $array = array_diff($base->toArray(), [static::$DO_NOT_SEND]);
         $response = $this->apiCall('POST', $route, $array);
@@ -109,11 +109,11 @@ trait ResourceAssertionsTrait
      */
     protected function assertModelShow($id, array $includes = [])
     {
-        $route = route('api.'.$this->resource.'.show', [$id]);
+        $route = route('api.' . $this->resource . '.show', [$id]);
         $structure = $this->structure;
         if ($includes) {
             $structure = array_merge($structure, $includes);
-            $route .= '?include='.implode(',', $includes);
+            $route .= '?include=' . implode(',', $includes);
         }
         $response = $this->apiCall('GET', $route);
         $this->assertStatus(200, $response);
@@ -131,7 +131,7 @@ trait ResourceAssertionsTrait
      */
     protected function assertCorrectModelDeletion($id)
     {
-        $route = route('api.'.$this->resource.'.destroy', [$id]);
+        $route = route('api.' . $this->resource . '.destroy', [$id]);
         $response = $this->apiCall('DELETE', $route);
         $response->assertStatus(204);
         $this->assertEmpty($response->getContent());
@@ -148,7 +148,7 @@ trait ResourceAssertionsTrait
      */
     protected function assertModelDeletionFails($id, array $errors = [])
     {
-        $route = route('api.'.$this->resource.'.destroy', [$id]);
+        $route = route('api.' . $this->resource . '.destroy', [$id]);
         $response = $this->apiCall('DELETE', $route);
         $response->assertStatus(422);
         $response->assertJsonStructure($this->errorStructure);
@@ -171,7 +171,7 @@ trait ResourceAssertionsTrait
         ]);
         $original_attributes = $base->getAttributes();
 
-        $route = route('api.'.$this->resource.'.update', [$base->id]);
+        $route = route('api.' . $this->resource . '.update', [$base->id]);
         $fields = array_diff($attributes, [static::$DO_NOT_SEND]);
         $response = $this->apiCall('PUT', $route, $fields);
         //validate status
@@ -199,7 +199,7 @@ trait ResourceAssertionsTrait
     {
         $base = factory($modelClass)->create();
 
-        $route = route('api.'.$this->resource.'.update', [$base->id]);
+        $route = route('api.' . $this->resource . '.update', [$base->id]);
         $fields = array_diff($attributes, [static::$DO_NOT_SEND]);
         $response = $this->apiCall('PUT', $route, $fields);
         //validate status
@@ -245,7 +245,7 @@ trait ResourceAssertionsTrait
             $expected,
             $status,
             "Expected status code {$expected} but received {$status}.\n"
-            .$response->getContent()
+            . $response->getContent()
         );
     }
 }

@@ -25,7 +25,7 @@ class ProcessPatternsTest extends TestCase
     use RequestHelper;
     use ProcessTestingTrait;
 
-    private $basePath = __DIR__.'/bpmnPatterns/';
+    private $basePath = __DIR__ . '/bpmnPatterns/';
 
     /**
      * Make sure we have a personal access client set up
@@ -76,7 +76,7 @@ class ProcessPatternsTest extends TestCase
     {
         $file = "{$this->basePath}{$bpmnFile}";
         $name = basename($bpmnFile, '.bpmn');
-        $jsonFile = substr($file, 0, -4).'json';
+        $jsonFile = substr($file, 0, -4) . 'json';
         if (file_exists($jsonFile)) {
             $contexts = json_decode(file_get_contents($jsonFile), true);
             foreach ($contexts as $context) {
@@ -261,7 +261,7 @@ class ProcessPatternsTest extends TestCase
             if ($skip) {
                 return $subset == $data;
             } else {
-                return $this->assertEquals($subset, $data, $message.' = '.\json_encode($data).' does not match '.\json_encode($subset));
+                return $this->assertEquals($subset, $data, $message . ' = ' . \json_encode($data) . ' does not match ' . \json_encode($subset));
             }
         }
         foreach ($subset as $key => $value) {

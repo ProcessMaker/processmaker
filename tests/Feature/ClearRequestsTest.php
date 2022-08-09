@@ -230,11 +230,11 @@ class ClearRequestsTest extends TestCase
         $response->assertStatus(200);
 
         // Filtered listing assertions
-        $response = $this->apiCall('GET', self::API_TEST_URL.'?filter=123');
+        $response = $this->apiCall('GET', self::API_TEST_URL . '?filter=123');
         $response->assertStatus(200);
 
         // Filtered listing assertions when filter string is not found
-        $response = $this->apiCall('GET', self::API_TEST_URL.'?filter=xyz9393');
+        $response = $this->apiCall('GET', self::API_TEST_URL . '?filter=xyz9393');
         $response->assertStatus(200);
     }
 
@@ -257,11 +257,11 @@ class ClearRequestsTest extends TestCase
         $response->assertStatus(200);
 
         // Filtered listing assertions
-        $response = $this->apiCall('GET', self::API_TEST_URL.'?filter=456');
+        $response = $this->apiCall('GET', self::API_TEST_URL . '?filter=456');
         $response->assertStatus(200);
 
         // Filtered listing assertions when filter string is not found
-        $response = $this->apiCall('GET', self::API_TEST_URL.'?filter=xyz9393');
+        $response = $this->apiCall('GET', self::API_TEST_URL . '?filter=xyz9393');
         $response->assertStatus(200);
     }
 

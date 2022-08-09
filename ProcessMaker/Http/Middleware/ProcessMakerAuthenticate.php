@@ -21,7 +21,7 @@ class ProcessMakerAuthenticate extends Authenticate
     private function addAcceptJsonHeaderIfApiCall(\Illuminate\Http\Request $request, array $guards): void
     {
         if (in_array('api', $guards) && ! $this->requestHasAcceptJsonHeader($request)) {
-            $request->headers->set('accept', 'application/json,'.$request->header('accept'));
+            $request->headers->set('accept', 'application/json,' . $request->header('accept'));
         }
     }
 

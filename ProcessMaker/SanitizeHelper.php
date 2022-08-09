@@ -68,7 +68,7 @@ class SanitizeHelper
      */
     private static function convertTagToRegExp($tag)
     {
-        return '/'.str_replace(['\<', '\>'], ['<[\s\/]*', '[^>]*>'], preg_quote($tag)).'/i';
+        return '/' . str_replace(['\<', '\>'], ['<[\s\/]*', '[^>]*>'], preg_quote($tag)) . '/i';
     }
 
     /**
@@ -114,7 +114,7 @@ class SanitizeHelper
     {
         foreach ($data as $key => $value) {
             if (! is_int($key)) {
-                $searchKey = ($parent ? $parent.'.'.$key : $key);
+                $searchKey = ($parent ? $parent . '.' . $key : $key);
             } else {
                 $searchKey = $parent;
             }
@@ -154,9 +154,9 @@ class SanitizeHelper
             if (isset($item['items']) && is_array($item['items'])) {
                 // Inside loop ..
                 if ($item['component'] == 'FormLoop') {
-                    $elements = array_merge($elements, self::getRichTextElements($item['items'], ($parent ? $parent.'.'.$item['config']['name'] : $item['config']['name'])));
+                    $elements = array_merge($elements, self::getRichTextElements($item['items'], ($parent ? $parent . '.' . $item['config']['name'] : $item['config']['name'])));
                 } elseif (isset($item['component']) && $item['component'] === 'FormTextArea' && isset($item['config']['richtext']) && $item['config']['richtext'] === true) {
-                    $elements[] = ($parent ? $parent.'.'.$item['config']['name'] : $item['config']['name']);
+                    $elements[] = ($parent ? $parent . '.' . $item['config']['name'] : $item['config']['name']);
                 // Inside a table ..
                 } elseif ($item['component'] == 'FormMultiColumn') {
                     foreach ($item['items'] as $cell) {
@@ -175,7 +175,7 @@ class SanitizeHelper
                 }
             } else {
                 if (isset($item['component']) && $item['component'] === 'FormTextArea' && isset($item['config']['richtext']) && $item['config']['richtext'] === true) {
-                    $elements[] = ($parent ? $parent.'.'.$item['config']['name'] : $item['config']['name']);
+                    $elements[] = ($parent ? $parent . '.' . $item['config']['name'] : $item['config']['name']);
                 }
             }
         }

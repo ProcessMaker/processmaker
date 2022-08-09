@@ -178,7 +178,7 @@ class TimerStartEventTest extends TestCase
                 'interval' => $nayraInterval,
                 'element_id' => 'test',
             ], $lastExecution);
-            $this->assertEquals($expectedNextDate, $nextDate, 'Assertion failed in "'.$case['title'].'""');
+            $this->assertEquals($expectedNextDate, $nextDate, 'Assertion failed in "' . $case['title'] . '""');
         }
     }
 

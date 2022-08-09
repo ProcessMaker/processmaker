@@ -177,7 +177,7 @@ abstract class BpmnAction implements ShouldQueue
                     if (ProcessRequest::find($instanceId)) {
                         $lock = $this->requestLock($ids);
                     } else {
-                        throw new Exception('Unable to lock instance #'.$this->instanceId.': Request does not exists');
+                        throw new Exception('Unable to lock instance #' . $this->instanceId . ': Request does not exists');
                     }
                 } elseif ($lock->id == $currentLock->id) {
                     $instance = ProcessRequest::findOrFail($instanceId);
@@ -189,9 +189,9 @@ abstract class BpmnAction implements ShouldQueue
                 $this->mSleep($interval);
             }
         } catch (Throwable $exception) {
-            throw new Exception('Unable to lock instance #'.$this->instanceId.': '.$exception->getMessage());
+            throw new Exception('Unable to lock instance #' . $this->instanceId . ': ' . $exception->getMessage());
         }
-        throw new Exception('Unable to lock instance #'.$this->instanceId.": Timeout {$timeout}[ms]");
+        throw new Exception('Unable to lock instance #' . $this->instanceId . ": Timeout {$timeout}[ms]");
     }
 
     /**
@@ -259,16 +259,16 @@ abstract class BpmnAction implements ShouldQueue
     {
         $tags = ['bpmn'];
         if (isset($this->definitionsId)) {
-            $tags[] = 'processId:'.$this->definitionsId;
+            $tags[] = 'processId:' . $this->definitionsId;
         }
         if (isset($this->instanceId)) {
-            $tags[] = 'instanceId:'.$this->instanceId;
+            $tags[] = 'instanceId:' . $this->instanceId;
         }
         if (isset($this->tokenId)) {
-            $tags[] = 'tokenId:'.$this->tokenId;
+            $tags[] = 'tokenId:' . $this->tokenId;
         }
         if (isset($this->elementId)) {
-            $tags[] = 'elementId:'.$this->elementId;
+            $tags[] = 'elementId:' . $this->elementId;
         }
 
         return $tags;

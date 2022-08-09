@@ -113,7 +113,7 @@ class IntermediateTimerEventTest extends TestCase
         $now = TaskSchedulerManager::fakeToday('2018-10-01T00:00:00Z');
 
         // Create a process
-        $process = $this->createProcess(file_get_contents(__DIR__.'/processes/TimerEvents_Intermediate_Start.bpmn'));
+        $process = $this->createProcess(file_get_contents(__DIR__ . '/processes/TimerEvents_Intermediate_Start.bpmn'));
 
         $now->modify('+1 day');
         //$now->modify('+1 minute');

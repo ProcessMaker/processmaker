@@ -54,7 +54,7 @@ class RequestsTest extends DuskTestCase
         $this->browse(function ($first) use ($user) {
             $first->loginAs($user)
                 ->visit(new RequestsPage)
-                ->assertVue('pmql', '(status = "In Progress") AND (requester = "'.$user->username.'")', '#requests-listing');
+                ->assertVue('pmql', '(status = "In Progress") AND (requester = "' . $user->username . '")', '#requests-listing');
         });
     }
 

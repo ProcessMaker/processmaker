@@ -60,7 +60,7 @@ class InstallPreCommitHooks extends Command
         foreach ($finder as $dir) {
             $path = $dir->getPathname();
             $this->addHook($path);
-            $this->addConfig($path.'/../../');
+            $this->addConfig($path . '/../../');
         }
 
         $this->info('Pre-commit hook installed');
@@ -68,7 +68,7 @@ class InstallPreCommitHooks extends Command
 
     private function addHook($hookDir)
     {
-        $hookPath = $hookDir.'/pre-commit';
+        $hookPath = $hookDir . '/pre-commit';
         if (file_exists($hookPath)) {
             unlink($hookPath);
         }
@@ -81,7 +81,7 @@ class InstallPreCommitHooks extends Command
 
     private function addConfig($configDir)
     {
-        $configPath = $configDir.'/.php-cs-fixer.php';
+        $configPath = $configDir . '/.php-cs-fixer.php';
         if (file_exists($configPath)) {
             unlink($configPath);
         }

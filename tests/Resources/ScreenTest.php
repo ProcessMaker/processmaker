@@ -16,7 +16,7 @@ class ScreenTest extends TestCase
         $this->be($this->user);
 
         $content = file_get_contents(
-            __DIR__.'/../Fixtures/nested_screen_process.json'
+            __DIR__ . '/../Fixtures/nested_screen_process.json'
         );
         $import = ImportProcess::dispatchNow($content);
 

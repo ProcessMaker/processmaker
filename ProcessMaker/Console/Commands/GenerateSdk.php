@@ -50,7 +50,7 @@ class GenerateSdk extends Command
 
         if ($this->argument('language') === 'none') {
             $this->info(
-                "No language specified. Choose one of these: \n".
+                "No language specified. Choose one of these: \n" .
                 implode(', ', $builder->getAvailableLanguages())
             );
 
@@ -69,7 +69,7 @@ class GenerateSdk extends Command
             if (substr($folder, -1) !== '/') {
                 $folder .= '/';
             }
-            exec('rm -rf '.$folder.'*');
+            exec('rm -rf ' . $folder . '*');
         }
 
         $this->info($builder->run());

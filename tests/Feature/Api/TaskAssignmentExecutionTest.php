@@ -56,7 +56,7 @@ class TaskAssignmentExecutionTest extends TestCase
         $this->process = factory(Process::class)->create();
 
         // Load a single task process
-        $this->process->bpmn = file_get_contents(__DIR__.'/processes/SingleTask.bpmn');
+        $this->process->bpmn = file_get_contents(__DIR__ . '/processes/SingleTask.bpmn');
 
         // Create user to be assigned to the task
         $task_uid = 'UserTaskUID';
@@ -106,7 +106,7 @@ class TaskAssignmentExecutionTest extends TestCase
         $user = factory(User::class)->create();
 
         $process = factory(Process::class)->create([
-            'bpmn' => file_get_contents(__DIR__.'/processes/ByUserIdAssignment.bpmn'),
+            'bpmn' => file_get_contents(__DIR__ . '/processes/ByUserIdAssignment.bpmn'),
         ]);
 
         $run = function ($data) use ($process) {
@@ -157,7 +157,7 @@ class TaskAssignmentExecutionTest extends TestCase
 
         $screen = factory(Screen::class)->create();
 
-        $bpmn = file_get_contents(__DIR__.'/processes/SelfServeAssignment.bpmn');
+        $bpmn = file_get_contents(__DIR__ . '/processes/SelfServeAssignment.bpmn');
         $bpmn = str_replace(
             ['[SCREEN_ID]', '[GROUP_ID]', '[USER_ID]'],
             [$screen->id, $group->id, $userWithNoGroup->id],
@@ -235,7 +235,7 @@ class TaskAssignmentExecutionTest extends TestCase
 
         $screen = factory(Screen::class)->create();
 
-        $bpmn = file_get_contents(__DIR__.'/processes/SelfServeAssignment.bpmn');
+        $bpmn = file_get_contents(__DIR__ . '/processes/SelfServeAssignment.bpmn');
         $bpmn = str_replace(
             ['[SCREEN_ID]', '[GROUP_ID]', '[USER_ID]'],
             [$screen->id, $group->id, $userWithNoGroup->id],
@@ -295,7 +295,7 @@ class TaskAssignmentExecutionTest extends TestCase
         $this->process = factory(Process::class)->create();
 
         // Load process with single task assigned to Process Manager
-        $this->process->bpmn = file_get_contents(__DIR__.'/processes/AssignedToProcessManager.bpmn');
+        $this->process->bpmn = file_get_contents(__DIR__ . '/processes/AssignedToProcessManager.bpmn');
         $this->process->manager_id = $manager->id;
         $this->process->save();
 
@@ -332,7 +332,7 @@ class TaskAssignmentExecutionTest extends TestCase
         $this->process = factory(Process::class)->create();
 
         // Load process with single task assigned to Process Manager
-        $this->process->bpmn = file_get_contents(__DIR__.'/processes/AssignedToProcessManager.bpmn');
+        $this->process->bpmn = file_get_contents(__DIR__ . '/processes/AssignedToProcessManager.bpmn');
         $this->process->save();
 
         //Start a process request

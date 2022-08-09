@@ -24,14 +24,14 @@ class ProcessRequestTokenPolicyTest extends TestCase
         $otherUser = factory(User::class)->create();
 
         $grandChildScreen = factory(Screen::class)->create([
-            'config' => json_decode(file_get_contents(__DIR__.'/screens/child.json')),
+            'config' => json_decode(file_get_contents(__DIR__ . '/screens/child.json')),
         ]);
         $childScreen = factory(Screen::class)->create([
             'config' => json_decode(
                 str_replace(
                     '"screen-id"',
                     $grandChildScreen->id,
-                    file_get_contents(__DIR__.'/screens/parent.json')
+                    file_get_contents(__DIR__ . '/screens/parent.json')
                 )
             ),
         ]);
@@ -40,7 +40,7 @@ class ProcessRequestTokenPolicyTest extends TestCase
                 str_replace(
                     '"screen-id"',
                     $childScreen->id,
-                    file_get_contents(__DIR__.'/screens/parent.json')
+                    file_get_contents(__DIR__ . '/screens/parent.json')
                 )
             ),
         ]);
@@ -48,7 +48,7 @@ class ProcessRequestTokenPolicyTest extends TestCase
             'bpmn' => str_replace(
                 ['[screen]', '[user]'],
                 [$parentScreen->id, $taskUser->id],
-                file_get_contents(__DIR__.'/processes/ScreenPolicy.bpmn')
+                file_get_contents(__DIR__ . '/processes/ScreenPolicy.bpmn')
             ),
         ]);
         factory(ProcessTaskAssignment::class)->create([
@@ -83,14 +83,14 @@ class ProcessRequestTokenPolicyTest extends TestCase
         $formScreen = factory(Screen::class)->create();
 
         $nestedScreen = factory(Screen::class)->create([
-            'config' => json_decode(file_get_contents(__DIR__.'/screens/nested.json')),
+            'config' => json_decode(file_get_contents(__DIR__ . '/screens/nested.json')),
         ]);
         $interstitialScreen = factory(Screen::class)->create([
             'config' => json_decode(
                 str_replace(
                     '"screen-id"',
                     $nestedScreen->id,
-                    file_get_contents(__DIR__.'/screens/interstitial.json')
+                    file_get_contents(__DIR__ . '/screens/interstitial.json')
                 )
             ),
         ]);
@@ -98,7 +98,7 @@ class ProcessRequestTokenPolicyTest extends TestCase
             'bpmn' => str_replace(
                 ['[formScreen]', '[interstitialScreen]', '[user]'],
                 [$formScreen->id, $interstitialScreen->id, $taskUser->id],
-                file_get_contents(__DIR__.'/processes/InterstitialWithNestedScreen.bpmn')
+                file_get_contents(__DIR__ . '/processes/InterstitialWithNestedScreen.bpmn')
             ),
         ]);
         factory(ProcessTaskAssignment::class)->create([

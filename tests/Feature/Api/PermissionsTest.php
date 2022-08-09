@@ -61,7 +61,7 @@ class PermissionsTest extends TestCase
         $response = $this->apiCall('GET', '/processes');
         $response->assertStatus(200);
 
-        $response = $this->apiCall('GET', '/processes/'.$process->id);
+        $response = $this->apiCall('GET', '/processes/' . $process->id);
         $response->assertStatus(200);
 
         $permission = Permission::byName('archive-processes');
@@ -70,14 +70,14 @@ class PermissionsTest extends TestCase
         $this->user->refresh();
         $this->flushSession();
 
-        $response = $this->apiCall('DELETE', '/processes/'.$process->id);
+        $response = $this->apiCall('DELETE', '/processes/' . $process->id);
         $response->assertStatus(403);
 
         $this->user->permissions()->attach($permission->id);
         $this->user->refresh();
         $this->flushSession();
 
-        $response = $this->apiCall('DELETE', '/processes/'.$process->id);
+        $response = $this->apiCall('DELETE', '/processes/' . $process->id);
         $response->assertStatus(204);
     }
 

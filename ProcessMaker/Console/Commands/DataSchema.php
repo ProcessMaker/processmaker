@@ -39,7 +39,7 @@ class DataSchema extends Command
             foreach ($migrations as $path) {
                 $fileName = explode('/', $path);
                 $fileName = substr($fileName[2], 0, -4);
-                $this->warn(__('Migrating:').' '.$fileName);
+                $this->warn(__('Migrating:') . ' ' . $fileName);
 
                 // Run the migrations that create the tables
                 Artisan::call('migrate:refresh',
@@ -48,7 +48,7 @@ class DataSchema extends Command
                         '--force' => true,
                     ]
                 );
-                $this->info(__('Migrated:').'  '.$fileName);
+                $this->info(__('Migrated:') . '  ' . $fileName);
             }
 
             $this->info(__('ProcessMaker data tables installed successfully.'));
