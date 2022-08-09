@@ -8,7 +8,7 @@
 
 namespace ProcessMaker\Models;
 
-use Spatie\MediaLibrary\Models\Media;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\MediaLibrary\PathGenerator\PathGenerator;
 
 class MediaPathGenerator implements PathGenerator
