@@ -35,6 +35,7 @@ export default {
     // Handler to properly format date/time columns according to configuration of user
     formatDateUser(value, format) {
       let config = "";
+
       if (typeof ProcessMaker !== "undefined" && ProcessMaker.user && ProcessMaker.user.datetime_format) {
         if (format === "datetime") {
           config = ProcessMaker.user.datetime_format;
@@ -43,10 +44,16 @@ export default {
           config = ProcessMaker.user.datetime_format.replace(/[\sHh:msaAzZ]/g, "");
         }
       }
+
       if (value) {
-        return window.moment(value)
-          .format(config);
+        if (moment(value).isValid()) {
+          return window.moment(value)
+            .format(config);
+        }
+
+        return value;
       }
+
       return "n/a";
     },
     // Data manager takes new sorting and calls our fetch method
