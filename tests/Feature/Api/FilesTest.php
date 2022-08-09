@@ -60,7 +60,7 @@ class FilesTest extends TestCase
         ]);
 
         // Filtered listing assertions
-        $response = $this->apiCall('GET', self::API_TEST_URL.'?filter=123');
+        $response = $this->apiCall('GET', self::API_TEST_URL . '?filter=123');
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'data' => ['*' => self::STRUCTURE],
@@ -68,7 +68,7 @@ class FilesTest extends TestCase
         ]);
 
         // Filtered listing assertions when filter string is not found
-        $response = $this->apiCall('GET', self::API_TEST_URL.'?filter=xyz9393');
+        $response = $this->apiCall('GET', self::API_TEST_URL . '?filter=xyz9393');
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'data' => [],
@@ -90,7 +90,7 @@ class FilesTest extends TestCase
         $model = factory(User::class)->create();
         $addedMedia = $model->addMedia($fileUpload)->toMediaCollection('local');
 
-        $response = $this->apiCall('GET', self::API_TEST_URL.'/'.$addedMedia->id.'/contents');
+        $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $addedMedia->id . '/contents');
 
         // Validate the header status code
         $response->assertStatus(200);
@@ -121,17 +121,17 @@ class FilesTest extends TestCase
         $response->assertStatus(404);
 
         // Verify that if no model data is sent an error is returned
-        $response = $this->apiCall('POST', self::API_TEST_URL.'?model=user&model_id=NonExistentId', $data);
+        $response = $this->apiCall('POST', self::API_TEST_URL . '?model=user&model_id=NonExistentId', $data);
         $response->assertStatus(404);
 
-        $response = $this->apiCall('POST', self::API_TEST_URL.'?model=user&model_id='.$model->id, $data);
+        $response = $this->apiCall('POST', self::API_TEST_URL . '?model=user&model_id=' . $model->id, $data);
 
         // Validate the header status code
         $response->assertStatus(200);
 
         // Validate that a file was created in the media directory
         $mediaObj = json_decode($response->getContent());
-        Storage::disk('public')->assertExists($mediaObj->id.'/test.txt');
+        Storage::disk('public')->assertExists($mediaObj->id . '/test.txt');
     }
 
     /**
@@ -153,13 +153,13 @@ class FilesTest extends TestCase
             'file' => $fileUploadUpdate,
         ];
 
-        $response = $this->apiCall('PUT', self::API_TEST_URL.'/'.$addedMedia->id, $data);
+        $response = $this->apiCall('PUT', self::API_TEST_URL . '/' . $addedMedia->id, $data);
 
         // Validate the header status code
         $response->assertStatus(201);
 
         // Validate that the file was updated in the directory of the inserted media
-        Storage::disk('public')->assertExists($addedMedia->id.'/updatedFile.txt');
+        Storage::disk('public')->assertExists($addedMedia->id . '/updatedFile.txt');
 
         // Validate that the media table has been updated
         $updatedMediaModel = Media::find($addedMedia->id);
@@ -180,7 +180,7 @@ class FilesTest extends TestCase
         $model = factory(User::class)->create();
         $addedMedia = $model->addMedia($fileUpload)->toMediaCollection('local');
 
-        $response = $this->apiCall('DELETE', self::API_TEST_URL.'/'.$addedMedia->id);
+        $response = $this->apiCall('DELETE', self::API_TEST_URL . '/' . $addedMedia->id);
 
         // Validate the header status code
         $response->assertStatus(204);
@@ -201,7 +201,7 @@ class FilesTest extends TestCase
 
         //The call is done without an authenticated user so it should return 401
         $response = $this->actingAs(factory(User::class)->create())
-                    ->json('GET', '/api/1.0'.self::API_TEST_URL, ['']);
+                    ->json('GET', '/api/1.0' . self::API_TEST_URL, ['']);
         $response->assertStatus(401);
     }
 }

@@ -50,7 +50,7 @@ trait PluginServiceProviderTrait
     public function modelerStarting(ModelerStarting $event)
     {
         foreach ($this->modelerScripts as $path => $public) {
-            if (File::exists(public_path().'/'.$public)) {
+            if (File::exists(public_path() . '/' . $public)) {
                 $event->manager->addScript(mix($path, $public));
             }
         }
@@ -167,7 +167,7 @@ trait PluginServiceProviderTrait
     public function scriptBuilderStarting(ScriptBuilderStarting $event)
     {
         foreach ($this->scriptBuilderScripts as $path => $public) {
-            if (File::exists(public_path().'/'.$public)) {
+            if (File::exists(public_path() . '/' . $public)) {
                 $event->manager->addScript(mix($path, $public));
             }
         }

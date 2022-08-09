@@ -145,7 +145,7 @@ class UserTokenController extends Controller
 
         $this->validation->make($request->all(), [
             'name' => 'required|max:255',
-            'scopes' => 'array|in:'.implode(',', Passport::scopeIds()),
+            'scopes' => 'array|in:' . implode(',', Passport::scopeIds()),
         ])->validate();
 
         $token = $user->createToken(

@@ -23,7 +23,7 @@ class MustacheOptions
 
     public function html64($text, Mustache_LambdaHelper $helper)
     {
-        return base64_encode('<html><body>'.$helper->render($text).'</body></html>');
+        return base64_encode('<html><body>' . $helper->render($text) . '</body></html>');
     }
 
     public function base64($text, Mustache_LambdaHelper $helper)

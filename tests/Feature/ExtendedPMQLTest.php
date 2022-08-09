@@ -29,7 +29,7 @@ class ExtendedPMQLTest extends TestCase
         ]);
 
         // Construct & run a PMQL query using the "created" field alias
-        $query = 'created = "'.$date->format('Y-m-d H:i:s').'"';
+        $query = 'created = "' . $date->format('Y-m-d H:i:s') . '"';
         $pmqlResult = ProcessRequest::pmql($query)->first();
 
         // Assert that the models match

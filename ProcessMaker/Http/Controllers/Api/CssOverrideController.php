@@ -179,9 +179,9 @@ class CssOverrideController extends Controller
         // Now generate the _colors.scss file
         $contents = "// Changed theme colors\n";
         foreach ($data as $key => $value) {
-            $contents .= $value['id'].': '.$value['value'].";\n";
+            $contents .= $value['id'] . ': ' . $value['value'] . ";\n";
         }
-        File::put(app()->resourcePath('sass').'/_colors.scss', $contents);
+        File::put(app()->resourcePath('sass') . '/_colors.scss', $contents);
     }
 
     /**
@@ -195,8 +195,8 @@ class CssOverrideController extends Controller
         $sansSerif = $sansSerif ? $sansSerif : $this->sansSerifFontDefault();
         // Generate the _fonts.scss file
         $contents = "// Changed theme fonts\n";
-        $contents .= '$font-family-sans-serif: '.$sansSerif->id." !default;\n";
-        File::put(app()->resourcePath('sass').'/_fonts.scss', $contents);
+        $contents .= '$font-family-sans-serif: ' . $sansSerif->id . " !default;\n";
+        File::put(app()->resourcePath('sass') . '/_fonts.scss', $contents);
     }
 
     /**

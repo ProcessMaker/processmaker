@@ -81,7 +81,7 @@ function packTemporalData($data)
 {
     // Store data into store/app/private
     $uid = uniqid('data_', true);
-    $path = storage_path('app/private/'.$uid);
+    $path = storage_path('app/private/' . $uid);
     file_put_contents($path, \json_encode($data));
 
     return $uid;
@@ -89,7 +89,7 @@ function packTemporalData($data)
 
 function unpackTemporalData($uid)
 {
-    $path = storage_path('app/private/'.$uid);
+    $path = storage_path('app/private/' . $uid);
     if (file_exists($path)) {
         return \json_decode(file_get_contents($path), true);
     }
@@ -99,7 +99,7 @@ function unpackTemporalData($uid)
 
 function removeTemporalData($uid)
 {
-    $path = storage_path('app/private/'.$uid);
+    $path = storage_path('app/private/' . $uid);
     if (file_exists($path)) {
         unlink($path);
     }

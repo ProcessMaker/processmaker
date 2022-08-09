@@ -43,8 +43,8 @@ class Handler extends ExceptionHandler
     {
         if (App::environment() == 'testing' && env('TESTING_VERBOSE')) {
             // If we're verbose, we should print ALL Exceptions to the screen
-            echo $exception->getMessage()."\n";
-            echo $exception->getFile().': Line: '.$exception->getLine()."\n";
+            echo $exception->getMessage() . "\n";
+            echo $exception->getFile() . ': Line: ' . $exception->getLine() . "\n";
             echo $exception;
         }
         parent::report($exception);

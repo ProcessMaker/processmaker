@@ -60,7 +60,7 @@ class ProcessTaskAssignment extends Model
         return [
             'process_id' => 'required|exists:processes,id',
             'assignment_id' => 'required',
-            'assignment_type' => 'required|in:'.User::class.','.Group::class,
+            'assignment_type' => 'required|in:' . User::class . ',' . Group::class,
         ];
     }
 

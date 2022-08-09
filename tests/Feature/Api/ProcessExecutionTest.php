@@ -110,7 +110,7 @@ class ProcessExecutionTest extends TestCase
         ]);
         $message = $response->json()['data'][0]['body'];
         $this->assertEquals(
-            $this->user->fullname.' has completed the task '.$task['element_name'],
+            $this->user->fullname . ' has completed the task ' . $task['element_name'],
             $message
         );
     }

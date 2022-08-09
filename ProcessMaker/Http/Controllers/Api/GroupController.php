@@ -84,7 +84,7 @@ class GroupController extends Controller
         }
         $filter = $request->input('filter', '');
         if (! empty($filter)) {
-            $filter = '%'.$filter.'%';
+            $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('name', 'like', $filter)
                     ->orWhere('description', 'like', $filter);
@@ -313,7 +313,7 @@ class GroupController extends Controller
 
         $filter = $request->input('filter', '');
         if (! empty($filter)) {
-            $filter = '%'.$filter.'%';
+            $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('username', 'like', $filter)
                     ->orWhere('firstname', 'like', $filter)
@@ -397,7 +397,7 @@ class GroupController extends Controller
 
         $filter = $request->input('filter', '');
         if (! empty($filter)) {
-            $filter = '%'.$filter.'%';
+            $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('name', 'like', $filter)
                     ->orWhere('description', 'like', $filter);

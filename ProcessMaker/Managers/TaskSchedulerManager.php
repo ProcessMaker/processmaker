@@ -166,7 +166,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
                     // Since the task scheduler has a presition of 1 minute (crontab)
                     // the times must be rounded or trucated to the nearest HH:MM:00 before compare
-                    $method = config('app.timer_events_seconds').'DateTime';
+                    $method = config('app.timer_events_seconds') . 'DateTime';
                     $todayWithoutSeconds = $this->$method($today);
                     $nextDateWithoutSeconds = $this->$method($nextDate);
                     if ($nextDateWithoutSeconds <= $todayWithoutSeconds) {
@@ -191,7 +191,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                                 }
                                 break;
                             default:
-                                throw new Exception('Unknown timer event: '.$task->type);
+                                throw new Exception('Unknown timer event: ' . $task->type);
                         }
                     }
                 } catch (\Throwable $ex) {
@@ -419,7 +419,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         $nextDateTime = null;
         $dateTime = clone ($cycle->start ?: $ownerDateTime);
         $recurrences = $cycle->recurrences;
-        $method = config('app.timer_events_seconds').'DateTime';
+        $method = config('app.timer_events_seconds') . 'DateTime';
         while (true) {
             if (($cycle->end && $dateTime > $cycle->end)
                 || (! $cycle->end && $cycle->recurrences && $recurrences <= 0)) {
@@ -465,7 +465,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
     {
         $interval = $this->loadTimerFromJson($jsonInterval);
         $dateTime = (clone ($ownerDateTime ?: $lastExecution ?: $currentDate))->add($interval);
-        $method = config('app.timer_events_seconds').'DateTime';
+        $method = config('app.timer_events_seconds') . 'DateTime';
 
         return (! $lastExecution || $this->$method($lastExecution) < $this->$method($dateTime)) ? $dateTime : null;
     }

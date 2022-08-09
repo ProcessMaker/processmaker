@@ -14,7 +14,7 @@ class ScreenConsolidatorTest extends TestCase
         $this->be(factory(User::class)->create());
 
         $content = file_get_contents(
-            __DIR__.'/Fixtures/nested_screen_process.json'
+            __DIR__ . '/Fixtures/nested_screen_process.json'
         );
         ImportProcess::dispatchNow($content);
 

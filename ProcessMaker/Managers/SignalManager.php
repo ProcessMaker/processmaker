@@ -135,8 +135,8 @@ class SignalManager
             $newNode->setAttribute('detail', $newSignal->getDetail());
 
             $domDefinitions = new DOMXPath($definitions);
-            if ($domDefinitions->query("//*[@id='".$oldSignal->getId()."']")->count() > 0) {
-                $oldNode = $domDefinitions->query("//*[@id='".$oldSignal->getId()."']")->item(0);
+            if ($domDefinitions->query("//*[@id='" . $oldSignal->getId() . "']")->count() > 0) {
+                $oldNode = $domDefinitions->query("//*[@id='" . $oldSignal->getId() . "']")->item(0);
                 $definitions->firstChild->replaceChild($newNode, $oldNode);
             }
 
@@ -165,8 +165,8 @@ class SignalManager
             }
             $definitions = $process->getDefinitions();
             $domDefinitions = new DOMXPath($definitions);
-            if ($domDefinitions->query("//*[@id='".$signal->getId()."']")->count() > 0) {
-                $node = $domDefinitions->query("//*[@id='".$signal->getId()."']")->item(0);
+            if ($domDefinitions->query("//*[@id='" . $signal->getId() . "']")->count() > 0) {
+                $node = $domDefinitions->query("//*[@id='" . $signal->getId() . "']")->item(0);
                 $definitions->firstChild->removeChild($node);
                 $process->bpmn = $definitions->saveXML();
                 $process->save();
@@ -179,7 +179,7 @@ class SignalManager
      */
     public static function getGlobalSignalProcess()
     {
-        $list = Process::where('name', ''.static::PROCESS_NAME)->get();
+        $list = Process::where('name', '' . static::PROCESS_NAME)->get();
         if ($list->count() === 0) {
             throw new \Exception('Global store of signals not found');
         }

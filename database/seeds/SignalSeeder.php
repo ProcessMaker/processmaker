@@ -22,7 +22,7 @@ class SignalSeeder extends Seeder
         }
 
         $processCategory = ProcessCategory::where('is_system', true)->firstOrFail();
-        $bpmn = file_get_contents(__DIR__.'/../processes/'.static::$TEMPLATE_PROCESS_FILE);
+        $bpmn = file_get_contents(__DIR__ . '/../processes/' . static::$TEMPLATE_PROCESS_FILE);
 
         Process::unguard();
         Process::updateOrCreate([

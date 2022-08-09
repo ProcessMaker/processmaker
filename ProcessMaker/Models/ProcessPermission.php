@@ -60,7 +60,7 @@ class ProcessPermission extends Model
             'process_id' => 'nullable|exists:processes,id',
             'permission_id' => 'nullable|exists:permissions,id',
             'assignable_id' => 'required',
-            'assignable_type' => 'required|in:'.User::class.','.Group::class,
+            'assignable_type' => 'required|in:' . User::class . ',' . Group::class,
         ];
     }
 }

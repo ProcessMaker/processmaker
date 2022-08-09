@@ -147,7 +147,7 @@ class CommentTest extends TestCase
 
         $this->user->permissions()->attach(Permission::byName($permission)->id);
 
-        $response = $this->apiCall('GET', self::API_TEST_URL.'?commentable_type='.get_class($model2));
+        $response = $this->apiCall('GET', self::API_TEST_URL . '?commentable_type=' . get_class($model2));
         $json = $response->json('data');
         $this->assertCount(10, $json);
     }
@@ -189,7 +189,7 @@ class CommentTest extends TestCase
         $comment = factory(Comment::class)->create()->id;
 
         //load api
-        $response = $this->apiCall('GET', self::API_TEST_URL.'/'.$comment);
+        $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $comment);
 
         //Validate the status is correct
         $response->assertStatus(200);
@@ -204,7 +204,7 @@ class CommentTest extends TestCase
     public function testDeleteComment()
     {
         //Remove comment
-        $url = self::API_TEST_URL.'/'.factory(Comment::class)->create(['user_id' => $this->user->getKey()])->id;
+        $url = self::API_TEST_URL . '/' . factory(Comment::class)->create(['user_id' => $this->user->getKey()])->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code
@@ -217,7 +217,7 @@ class CommentTest extends TestCase
     public function testDeleteCommentNotExist()
     {
         //Comment not exist
-        $url = self::API_TEST_URL.'/'.factory(Comment::class)->make()->id;
+        $url = self::API_TEST_URL . '/' . factory(Comment::class)->make()->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code

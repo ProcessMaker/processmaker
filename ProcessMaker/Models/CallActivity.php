@@ -134,7 +134,7 @@ class CallActivity implements CallActivityInterface
                 $errorMessage = $err['message'];
                 if (array_key_exists('body', $err)) {
                     // add the body but not the stack trace:
-                    $errorMessage = "\n".explode('Stack trace', $err['body'])[0];
+                    $errorMessage = "\n" . explode('Stack trace', $err['body'])[0];
                 }
                 $message[] = $errorMessage;
             }

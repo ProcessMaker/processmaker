@@ -51,7 +51,7 @@ class GarbageCollectorTest extends TestCase
             'element_type' => 'serviceTask', ]);
 
         $path = storage_path('app/private');
-        $errorFile = $path.'/unhandled_error.txt';
+        $errorFile = $path . '/unhandled_error.txt';
         $this->removeFileIfExists($errorFile);
 
         $subscriber = new BpmnSubscriber();
@@ -116,7 +116,7 @@ class GarbageCollectorTest extends TestCase
             'element_type' => 'serviceTask', ]);
 
         $path = storage_path('app/private');
-        $errorFile = $path.'/unhandled_error.txt';
+        $errorFile = $path . '/unhandled_error.txt';
         $this->removeFileIfExists($errorFile);
 
         $subscriber = new BpmnSubscriber();

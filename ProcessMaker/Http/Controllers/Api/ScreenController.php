@@ -103,7 +103,7 @@ class ScreenController extends Controller
         $filter = $request->input('filter', '');
         $isSelectList = $request->input('selectList', '');
         if (! empty($filter)) {
-            $filter = '%'.$filter.'%';
+            $filter = '%' . $filter . '%';
             if (! $isSelectList) {
                 $query->where(function ($query) use ($filter) {
                     $query->where('title', 'like', $filter)

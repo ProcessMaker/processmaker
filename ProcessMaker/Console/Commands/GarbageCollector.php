@@ -101,7 +101,7 @@ class GarbageCollector extends Command
 
     private function processUnhandledErrors()
     {
-        $fileName = storage_path('app/private').'/unhandled_error.txt';
+        $fileName = storage_path('app/private') . '/unhandled_error.txt';
         if (file_exists($fileName)) {
             $this->writeln('Unhandled errors file found...', 'info', true);
 
@@ -221,7 +221,7 @@ class GarbageCollector extends Command
     {
         $this->{$type}($message);
         if ($toLog) {
-            Log::Info('Garbage Collector: '.$message);
+            Log::Info('Garbage Collector: ' . $message);
         }
     }
 }

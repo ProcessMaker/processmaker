@@ -62,7 +62,7 @@ class ProcessesTest extends TestCase
             'is_administrator' => false,
         ]);
         // Set the URL & permission to test.
-        $url = 'processes/'.$process->id.'/edit';
+        $url = 'processes/' . $process->id . '/edit';
         $permission = 'edit-processes';
 
         // Our user has no permissions, so this should return 403.
@@ -143,7 +143,7 @@ class ProcessesTest extends TestCase
             'is_administrator' => false,
         ]);
         // Set the URL, permission, and data with which to test.
-        $url = 'processes/'.$process->id;
+        $url = 'processes/' . $process->id;
         $permission = 'edit-processes';
         $data = [
             'name' => 'Updated Name',
@@ -172,7 +172,7 @@ class ProcessesTest extends TestCase
             'is_administrator' => false,
         ]);
         // Set the URL & permission to test.
-        $url = 'processes/'.$process->id;
+        $url = 'processes/' . $process->id;
         $permission = 'archive-processes';
 
         // Our user has no permissions, so this should return 403.

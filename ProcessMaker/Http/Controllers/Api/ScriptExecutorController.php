@@ -223,14 +223,14 @@ class ScriptExecutorController extends Controller
             throw ValidationException::withMessages(['delete' => __('Can not delete the only executor for this language.')]);
         }
 
-        $cmd = Docker::command().' images -q '.$scriptExecutor->dockerImageName();
+        $cmd = Docker::command() . ' images -q ' . $scriptExecutor->dockerImageName();
         exec($cmd, $out, $return);
         if (count($out) > 0) {
-            $cmd = Docker::command().' rmi '.$scriptExecutor->dockerImageName();
+            $cmd = Docker::command() . ' rmi ' . $scriptExecutor->dockerImageName();
             exec($cmd, $out, $return);
 
             if ($return !== 0) {
-                throw ValidationException::withMessages(['delete' => _('Error removing image.')." ${cmd} ".implode("\n", $out)]);
+                throw ValidationException::withMessages(['delete' => _('Error removing image.') . " ${cmd} " . implode("\n", $out)]);
             }
         }
 

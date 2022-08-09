@@ -78,7 +78,7 @@ class ScriptCategoryController extends Controller
 
         $filter = $request->input('filter', '');
         if (! empty($filter)) {
-            $filter = '%'.$filter.'%';
+            $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('name', 'like', $filter)
                     ->orWhere('status', 'like', $filter);

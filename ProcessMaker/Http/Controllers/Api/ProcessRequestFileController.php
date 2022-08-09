@@ -156,8 +156,8 @@ class ProcessRequestFileController extends Controller
      */
     public function show(Request $laravel_request, ProcessRequest $request, Media $file)
     {
-        $path = Storage::disk('public')->getAdapter()->getPathPrefix().
-            $file->id.'/'.
+        $path = Storage::disk('public')->getAdapter()->getPathPrefix() .
+            $file->id . '/' .
             $file->file_name;
 
         return response()->download($path);

@@ -30,7 +30,7 @@ class ConvertBPMNTest extends TestCase
     {
         $process = factory(Process::class)->create([
             'status' => 'ACTIVE',
-            'bpmn' => file_get_contents(__DIR__.'/processes/CP.01.00 Create new customer.bpmn'),
+            'bpmn' => file_get_contents(__DIR__ . '/processes/CP.01.00 Create new customer.bpmn'),
         ]);
         $this->assertStringNotContainsString('subProcess', $process->bpmn);
         $this->assertEquals(2, Process::count());
@@ -43,7 +43,7 @@ class ConvertBPMNTest extends TestCase
     {
         $process = factory(Process::class)->create([
             'status' => 'ACTIVE',
-            'bpmn' => file_get_contents(__DIR__.'/processes/adonis.bpmn'),
+            'bpmn' => file_get_contents(__DIR__ . '/processes/adonis.bpmn'),
         ]);
         $this->assertStringNotContainsString('sendTask', $process->bpmn);
 

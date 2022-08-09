@@ -27,6 +27,6 @@ class BuildScriptExecutor implements ShouldBroadcastNow
 
     public function broadcastOn()
     {
-        return new PrivateChannel('ProcessMaker.Models.User.'.$this->userId);
+        return new PrivateChannel('ProcessMaker.Models.User.' . $this->userId);
     }
 }

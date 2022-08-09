@@ -3,8 +3,8 @@
  * Test harness bootstrap that sets up initial defines and builds up the initial database schema
  */
 // Bring in our standard bootstrap
-include_once __DIR__.'/../bootstrap/autoload.php';
-require_once __DIR__.'/../bootstrap/app.php';
+include_once __DIR__ . '/../bootstrap/autoload.php';
+require_once __DIR__ . '/../bootstrap/app.php';
 
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\Artisan;
@@ -69,7 +69,7 @@ if (env('RUN_MSSQL_TESTS')) {
     $mssqlDBName = env('MSSQL_DATABASE', 'testexternal');
 
     // First create the test external mysql database as well as our test database
-    DB::connection('mssql')->unprepared("if db_id('".$mssqlDBName."') is null\nCREATE DATABASE ".$mssqlDBName);
+    DB::connection('mssql')->unprepared("if db_id('" . $mssqlDBName . "') is null\nCREATE DATABASE " . $mssqlDBName);
 
     // Now set the database name properly
     config(['database.connections.mssql.database' => $mssqlDBName]);
@@ -88,7 +88,7 @@ if (env('RUN_MSSQL_TESTS')) {
 
 // setup parallel test databases
 if (env('TEST_TOKEN')) {
-    $database = 'test_'.env('TEST_TOKEN');
+    $database = 'test_' . env('TEST_TOKEN');
     $_ENV['DB_DATABASE'] = $database;
     $_ENV['DATA_DB_DATABASE'] = $database;
 } elseif (env('POPULATE_DATABASE')) {

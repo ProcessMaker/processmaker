@@ -39,7 +39,7 @@ class RequestFileUploadTest extends TestCase
     public function testUploadRequestFile()
     {
         $this->loadTestProcess(
-            file_get_contents(__DIR__.'/processes/FileUpload.bpmn'),
+            file_get_contents(__DIR__ . '/processes/FileUpload.bpmn'),
             [
                 '2' => factory(User::class)->create([
                     'status' => 'ACTIVE',
@@ -77,7 +77,7 @@ class RequestFileUploadTest extends TestCase
     {
         // Load the FileUpload.bpmn process
         $this->loadTestProcess(
-            file_get_contents(__DIR__.'/processes/FileUpload.bpmn'),
+            file_get_contents(__DIR__ . '/processes/FileUpload.bpmn'),
             [
                 '2' => factory(User::class)->create([
                     'status' => 'ACTIVE',
@@ -117,7 +117,7 @@ class RequestFileUploadTest extends TestCase
     public function testViewUploadedRequestFile()
     {
         $this->loadTestProcess(
-            file_get_contents(__DIR__.'/processes/ViewFileUpload.bpmn'),
+            file_get_contents(__DIR__ . '/processes/ViewFileUpload.bpmn'),
             [
                 '2' => factory(User::class)->create([
                     'status' => 'ACTIVE',

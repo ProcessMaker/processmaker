@@ -30,7 +30,7 @@ class ScreenConsolidatorTest extends TestCase
         ]);
 
         // Save the file contents and convert them to an UploadedFile
-        $fileName = realpath(__DIR__.'/../../Fixtures/test_nested_record_list.json');
+        $fileName = realpath(__DIR__ . '/../../Fixtures/test_nested_record_list.json');
         $file = new UploadedFile($fileName, 'test_nested_record_list.json', null, null, null, true);
 
         // Test to ensure our standard user cannot import a screen
@@ -267,7 +267,7 @@ class ScreenConsolidatorTest extends TestCase
         ]);
 
         // Save the file contents and convert them to an UploadedFile
-        $fileName = realpath(__DIR__.'/../../Fixtures/nested_with_navbar.json');
+        $fileName = realpath(__DIR__ . '/../../Fixtures/nested_with_navbar.json');
         $file = new UploadedFile($fileName, 'nested_with_navbar.json', null, null, null, true);
 
         // Test to ensure our standard user cannot import a screen
@@ -334,7 +334,7 @@ class ScreenConsolidatorTest extends TestCase
         ]);
 
         // Save the file contents and convert them to an UploadedFile
-        $fileName = realpath(__DIR__.'/../../Fixtures/record_without_record_form.json');
+        $fileName = realpath(__DIR__ . '/../../Fixtures/record_without_record_form.json');
         $file = new UploadedFile($fileName, 'record_without_record_form.json', null, null, null, true);
 
         // Test to ensure our standard user cannot import a screen

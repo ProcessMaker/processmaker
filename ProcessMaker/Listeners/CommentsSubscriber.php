@@ -114,7 +114,7 @@ class CommentsSubscriber
                 'commentable_type' => ProcessRequest::class,
                 'commentable_id' => $token->getInstance()->getId(),
                 'subject' => 'Gateway',
-                'body' => $sourceLabel.': '.$flowLabel,
+                'body' => $sourceLabel . ': ' . $flowLabel,
             ]);
         }
     }
@@ -126,8 +126,8 @@ class CommentsSubscriber
      */
     public function subscribe($events)
     {
-        $events->listen(ActivityInterface::EVENT_ACTIVITY_COMPLETED, static::class.'@onActivityCompleted');
-        $events->listen(ActivityInterface::EVENT_ACTIVITY_SKIPPED, static::class.'@onActivitySkipped');
-        $events->listen(GatewayInterface::EVENT_GATEWAY_TOKEN_PASSED, static::class.'@onGatewayPassed');
+        $events->listen(ActivityInterface::EVENT_ACTIVITY_COMPLETED, static::class . '@onActivityCompleted');
+        $events->listen(ActivityInterface::EVENT_ACTIVITY_SKIPPED, static::class . '@onActivitySkipped');
+        $events->listen(GatewayInterface::EVENT_GATEWAY_TOKEN_PASSED, static::class . '@onGatewayPassed');
     }
 }

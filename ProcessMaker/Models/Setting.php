@@ -240,7 +240,7 @@ class Setting extends Model implements HasMedia
      */
     public function scopeFilter($query, $filter)
     {
-        $filter = '%'.mb_strtolower($filter).'%';
+        $filter = '%' . mb_strtolower($filter) . '%';
         $query->where(function ($query) use ($filter) {
             $query->where(DB::raw('LOWER(`key`)'), 'like', $filter)
                 ->orWhere(DB::raw('LOWER(`name`)'), 'like', $filter)
@@ -260,7 +260,7 @@ class Setting extends Model implements HasMedia
      */
     public function scopeFilterGroups($query, $filter)
     {
-        $filter = '%'.mb_strtolower($filter).'%';
+        $filter = '%' . mb_strtolower($filter) . '%';
         $query->where(function ($query) use ($filter) {
             $query->where(DB::raw('LOWER(`group`)'), 'like', $filter);
         });
@@ -291,7 +291,7 @@ class Setting extends Model implements HasMedia
             }
         }
 
-        return $url.'?id='.bin2hex(random_bytes(16));
+        return $url . '?id=' . bin2hex(random_bytes(16));
     }
 
     public static function getLogo()
@@ -325,7 +325,7 @@ class Setting extends Model implements HasMedia
             }
         }
 
-        return $url.'?id='.bin2hex(random_bytes(16));
+        return $url . '?id=' . bin2hex(random_bytes(16));
     }
 
     public static function getFavicon()
@@ -342,6 +342,6 @@ class Setting extends Model implements HasMedia
             }
         }
 
-        return $url.'?id='.bin2hex(random_bytes(16));
+        return $url . '?id=' . bin2hex(random_bytes(16));
     }
 }

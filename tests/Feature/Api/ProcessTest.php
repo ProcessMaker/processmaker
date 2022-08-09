@@ -55,7 +55,7 @@ class ProcessTest extends TestCase
         $page = 2;
         $perPage = 10;
         $this->assertCorrectModelListing(
-            '?page='.$page.'&per_page='.$perPage,
+            '?page=' . $page . '&per_page=' . $perPage,
             [
                 'total' => $initialCount + $countProcesses,
                 'count' => $perPage,
@@ -92,7 +92,7 @@ class ProcessTest extends TestCase
         $page = 1;
         $perPage = 10;
         $this->assertCorrectModelListing(
-            '?page='.$page.'&per_page='.$perPage,
+            '?page=' . $page . '&per_page=' . $perPage,
             [
                 'total' => 1,
                 'count' => 1,
@@ -146,7 +146,7 @@ class ProcessTest extends TestCase
         $page = 1;
         $perPage = 10;
         $this->assertCorrectModelListing(
-            '?page='.$page.'&per_page='.$perPage,
+            '?page=' . $page . '&per_page=' . $perPage,
             [
                 'total' => 1,
                 'count' => 1,
@@ -165,7 +165,7 @@ class ProcessTest extends TestCase
         ProcessRequest::query()->delete();
 
         //get process with start event
-        $file = Process::getProcessTemplatesPath().'/SingleTask.bpmn';
+        $file = Process::getProcessTemplatesPath() . '/SingleTask.bpmn';
         $bpmn = file_get_contents($file);
 
         // Create 3 categories
@@ -202,11 +202,11 @@ class ProcessTest extends TestCase
         ProcessRequest::query()->delete();
 
         //get process with start event
-        $startSingleEventFile = Process::getProcessTemplatesPath().'/StartSingleEvent.bpmn';
-        $startTimerEventFile = Process::getProcessTemplatesPath().'/StartTimerEvent.bpmn';
-        $startConditionalEventFile = Process::getProcessTemplatesPath().'/StartConditionalEvent.bpmn';
-        $startSignalEventFile = Process::getProcessTemplatesPath().'/StartSignalEvent.bpmn';
-        $startMessageEventFile = Process::getProcessTemplatesPath().'/StartMessageEvent.bpmn';
+        $startSingleEventFile = Process::getProcessTemplatesPath() . '/StartSingleEvent.bpmn';
+        $startTimerEventFile = Process::getProcessTemplatesPath() . '/StartTimerEvent.bpmn';
+        $startConditionalEventFile = Process::getProcessTemplatesPath() . '/StartConditionalEvent.bpmn';
+        $startSignalEventFile = Process::getProcessTemplatesPath() . '/StartSignalEvent.bpmn';
+        $startMessageEventFile = Process::getProcessTemplatesPath() . '/StartMessageEvent.bpmn';
         $startSingleEventBpmn = file_get_contents($startSingleEventFile);
         $startTimerEventBpmn = file_get_contents($startTimerEventFile);
         $startConditionalEventBpmn = file_get_contents($startConditionalEventFile);
@@ -254,11 +254,11 @@ class ProcessTest extends TestCase
         ProcessRequest::query()->delete();
 
         //get process with start event
-        $startSingleEventFile = Process::getProcessTemplatesPath().'/StartSingleEvent.bpmn';
-        $startTimerEventFile = Process::getProcessTemplatesPath().'/StartTimerEvent.bpmn';
-        $startConditionalEventFile = Process::getProcessTemplatesPath().'/StartConditionalEvent.bpmn';
-        $startSignalEventFile = Process::getProcessTemplatesPath().'/StartSignalEvent.bpmn';
-        $startMessageEventFile = Process::getProcessTemplatesPath().'/StartMessageEvent.bpmn';
+        $startSingleEventFile = Process::getProcessTemplatesPath() . '/StartSingleEvent.bpmn';
+        $startTimerEventFile = Process::getProcessTemplatesPath() . '/StartTimerEvent.bpmn';
+        $startConditionalEventFile = Process::getProcessTemplatesPath() . '/StartConditionalEvent.bpmn';
+        $startSignalEventFile = Process::getProcessTemplatesPath() . '/StartSignalEvent.bpmn';
+        $startMessageEventFile = Process::getProcessTemplatesPath() . '/StartMessageEvent.bpmn';
         $startSingleEventBpmn = file_get_contents($startSingleEventFile);
         $startTimerEventBpmn = file_get_contents($startTimerEventFile);
         $startConditionalEventBpmn = file_get_contents($startConditionalEventFile);
@@ -305,7 +305,7 @@ class ProcessTest extends TestCase
 
         $noAssignedBpmn = Process::getProcessTemplate('SingleTask.bpmn');
         $processManagerBpmn = str_replace('id="StartEventUID"', 'id="StartEventUID" pm:assignment="process_manager"', $noAssignedBpmn);
-        $assignedBpmn = str_replace('id="StartEventUID"', 'id="StartEventUID" pm:assignment="user" pm:assignedUsers="'.$this->user->id.'"', $noAssignedBpmn);
+        $assignedBpmn = str_replace('id="StartEventUID"', 'id="StartEventUID" pm:assignment="user" pm:assignedUsers="' . $this->user->id . '"', $noAssignedBpmn);
 
         $processWithManager = factory(Process::class)->create([
             'bpmn' => $processManagerBpmn,
@@ -346,7 +346,7 @@ class ProcessTest extends TestCase
             'is_administrator' => false,
         ]);
 
-        $processBpmn = \file_get_contents(__DIR__.'/processes/SingleTaskProcessManager.bpmn');
+        $processBpmn = \file_get_contents(__DIR__ . '/processes/SingleTaskProcessManager.bpmn');
         $processBpmn = str_replace('{$otherUser_id}', $otherUser->id, $processBpmn);
 
         $process = factory(Process::class)->create([
@@ -369,10 +369,10 @@ class ProcessTest extends TestCase
      */
     public function testWebEntryFilteredFromStartEvents()
     {
-        $file = __DIR__.'/processes/SingleTask.bpmn';
+        $file = __DIR__ . '/processes/SingleTask.bpmn';
         $regularBpmn = file_get_contents($file);
 
-        $file = __DIR__.'/processes/RegularStartAndWebEntry.bpmn';
+        $file = __DIR__ . '/processes/RegularStartAndWebEntry.bpmn';
         $webEntryBpmn = file_get_contents($file);
 
         factory(Process::class)->create(['status' => 'ACTIVE', 'bpmn' => $regularBpmn]);
@@ -404,14 +404,14 @@ class ProcessTest extends TestCase
 
         $route = route('api.process_events.trigger', $process);
 
-        $response = $this->apiCall('POST', $route.'?event=StartEventUID');
+        $response = $this->apiCall('POST', $route . '?event=StartEventUID');
         $this->assertStatus(403, $response);
 
         $process->usersCanStart('StartEventUID')->attach([
             $this->user->id => ['method' => 'START', 'node' => 'StartEventUID'],
         ]);
 
-        $response = $this->apiCall('POST', $route.'?event=StartEventUID');
+        $response = $this->apiCall('POST', $route . '?event=StartEventUID');
         $this->assertStatus(201, $response);
     }
 
@@ -433,11 +433,11 @@ class ProcessTest extends TestCase
             'Field2' => 'htt://www.files.com',
         ];
 
-        $response = $this->apiCall('POST', $route.'?event=StartEventUID', $initialData);
+        $response = $this->apiCall('POST', $route . '?event=StartEventUID', $initialData);
         $this->assertStatus(201, $response);
 
         // Verify that the initial data was stored
-        $requestRoute = route('api.requests.show', ['request' => $response->getData()->id]).'?include=data';
+        $requestRoute = route('api.requests.show', ['request' => $response->getData()->id]) . '?include=data';
         $requestResponse = $this->apiCall('GET', $requestRoute);
 
         // Assert structure
@@ -457,7 +457,7 @@ class ProcessTest extends TestCase
     {
         $processName = 'processTestTimezone';
         $newEntity = factory(Process::class)->create(['name' => $processName]);
-        $route = route('api.'.$this->resource.'.index', ['filter' => $processName]);
+        $route = route('api.' . $this->resource . '.index', ['filter' => $processName]);
         $response = $this->apiCall('GET', $route);
 
         $this->assertEquals(
@@ -500,7 +500,7 @@ class ProcessTest extends TestCase
 
         //Get active processes
         $response = $this->assertCorrectModelListing(
-            '?status=active&include=category&per_page='.$perPage,
+            '?status=active&include=category&per_page=' . $perPage,
             [
                 'total' => $initialNotArchivedCount + $processActive['num'] + $processInactive['num'],
                 'count' => $perPage,
@@ -512,7 +512,7 @@ class ProcessTest extends TestCase
 
         //Get active processes
         $response = $this->assertCorrectModelListing(
-            '?status=archived&include=category,user&per_page='.$perPage,
+            '?status=archived&include=category,user&per_page=' . $perPage,
             [
                 'total' => $initialArchivedCount + $processArchived['num'],
                 'count' => $perPage,
@@ -618,7 +618,7 @@ class ProcessTest extends TestCase
      */
     public function testCreateProcessWithBPMN()
     {
-        $route = route('api.'.$this->resource.'.store');
+        $route = route('api.' . $this->resource . '.store');
         $base = factory(Process::class)->make([
             'user_id' => static::$DO_NOT_SEND,
             'process_category_id' => static::$DO_NOT_SEND,
@@ -688,7 +688,7 @@ class ProcessTest extends TestCase
      */
     public function testValidateBpmnWhenCreatingAProcess()
     {
-        $route = route('api.'.$this->resource.'.store');
+        $route = route('api.' . $this->resource . '.store');
         $base = factory(Process::class)->make([
             'user_id' => static::$DO_NOT_SEND,
             'process_category_id' => static::$DO_NOT_SEND,
@@ -706,7 +706,7 @@ class ProcessTest extends TestCase
      */
     public function testValidateInvalidXmlWhenCreatingAProcess()
     {
-        $route = route('api.'.$this->resource.'.store');
+        $route = route('api.' . $this->resource . '.store');
         $base = factory(Process::class)->make([
             'user_id' => static::$DO_NOT_SEND,
             'process_category_id' => static::$DO_NOT_SEND,
@@ -865,7 +865,7 @@ class ProcessTest extends TestCase
         ]);
         $id = $process->id;
         $newBpmn = trim(Process::getProcessTemplate('SingleTask.bpmn'));
-        $route = route('api.'.$this->resource.'.update', [$id]);
+        $route = route('api.' . $this->resource . '.update', [$id]);
         $response = $this->apiCall('PUT', $route, [
             'name' => 'test name',
             'description' => 'test description',
@@ -886,7 +886,7 @@ class ProcessTest extends TestCase
         $process = factory(Process::class)->create();
         $id = $process->id;
         $newBpmn = 'Invalid BPMN content';
-        $route = route('api.'.$this->resource.'.update', [$id]);
+        $route = route('api.' . $this->resource . '.update', [$id]);
         $response = $this->apiCall('PUT', $route, [
             'bpmn' => $newBpmn,
         ]);
@@ -992,7 +992,7 @@ class ProcessTest extends TestCase
         // Assign start event to $user
         $bpmn = \str_replace(
             '<startEvent id="StartEventUID"',
-            '<startEvent id="StartEventUID" pm:assignment="user" pm:assignedUsers="'.$this->user->id.'"',
+            '<startEvent id="StartEventUID" pm:assignment="user" pm:assignedUsers="' . $this->user->id . '"',
             $bpmn
         );
 
@@ -1005,7 +1005,7 @@ class ProcessTest extends TestCase
             'status' => 'ACTIVE',
         ]);
 
-        $route = route('api.'.$this->resource.'.index', ['include' => 'events']);
+        $route = route('api.' . $this->resource . '.index', ['include' => 'events']);
         $response = $this->actingAs($this->user)->apiCall('GET', $route);
         $response->assertStatus(200);
 
@@ -1028,7 +1028,7 @@ class ProcessTest extends TestCase
         // Loads a process with an start timer event
         $process = factory(Process::class)->create([
             'status' => 'ACTIVE',
-            'bpmn' => file_get_contents(__DIR__.'/processes/ProcessStartTimerEvent.bpmn'),
+            'bpmn' => file_get_contents(__DIR__ . '/processes/ProcessStartTimerEvent.bpmn'),
         ]);
         // Assertion: Process::has_timer_start_events should return true
         $this->assertTrue($process->has_timer_start_events);
@@ -1036,7 +1036,7 @@ class ProcessTest extends TestCase
         // Loads a process without an start timer event
         $process = factory(Process::class)->create([
             'status' => 'ACTIVE',
-            'bpmn' => file_get_contents(__DIR__.'/processes/SingleTask.bpmn'),
+            'bpmn' => file_get_contents(__DIR__ . '/processes/SingleTask.bpmn'),
         ]);
         // Assertion: Process::has_timer_start_events should return false
         $this->assertFalse($process->has_timer_start_events);
@@ -1047,14 +1047,14 @@ class ProcessTest extends TestCase
      */
     public function testCreateProcessWithMultipleBPMNDiagrams()
     {
-        $route = route('api.'.$this->resource.'.store');
+        $route = route('api.' . $this->resource . '.store');
         $base = factory(Process::class)->make([
             'user_id' => static::$DO_NOT_SEND,
             'process_category_id' => static::$DO_NOT_SEND,
         ]);
         $array = array_diff($base->toArray(), [static::$DO_NOT_SEND]);
         //Add a bpmn content
-        $array['bpmn'] = file_get_contents(__DIR__.'/processes/C.4.0-export.bpmn');
+        $array['bpmn'] = file_get_contents(__DIR__ . '/processes/C.4.0-export.bpmn');
         $response = $this->apiCall('POST', $route, $array);
         $response->assertStatus(422);
         $error = $response->json();
@@ -1069,7 +1069,7 @@ class ProcessTest extends TestCase
         $params = [
             'name' => 'name process',
             'description' => 'Description.',
-            'process_category_id' => factory(ProcessCategory::class)->create()->getKey().','.factory(ProcessCategory::class)->create()->getKey(),
+            'process_category_id' => factory(ProcessCategory::class)->create()->getKey() . ',' . factory(ProcessCategory::class)->create()->getKey(),
         ];
         $response = $this->apiCall('PUT', $url, $params);
         $response->assertStatus(200);
@@ -1095,7 +1095,7 @@ class ProcessTest extends TestCase
         $this->assertEquals($manager->id, $process->manager->id);
 
         $url = route('api.processes.index', $process);
-        $response = $this->apiCall('GET', $url.'?filter=Process+with+manager');
+        $response = $this->apiCall('GET', $url . '?filter=Process+with+manager');
         $processJson = $response->json()['data'][0];
         $this->assertEquals($processJson['manager_id'], $process->manager->id);
     }

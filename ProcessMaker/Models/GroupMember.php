@@ -90,7 +90,7 @@ class GroupMember extends Model
         return [
             'group_id' => 'required',
             'member_id' => 'required',
-            'member_type' => 'required|in:'.User::class.','.Group::class,
+            'member_type' => 'required|in:' . User::class . ',' . Group::class,
         ];
     }
 

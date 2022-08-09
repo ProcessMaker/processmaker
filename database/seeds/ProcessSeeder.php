@@ -39,7 +39,7 @@ class ProcessSeeder extends Seeder
         //load user admin
         $admin = User::where('username', 'admin')->firstOrFail();
 
-        foreach (glob(database_path('processes').'/*.bpmn') as $filename) {
+        foreach (glob(database_path('processes') . '/*.bpmn') as $filename) {
             $process = factory(Process::class)->make([
                 'bpmn' => file_get_contents($filename),
                 'user_id' => $admin->getKey(),
@@ -71,7 +71,7 @@ class ProcessSeeder extends Seeder
                 $scriptTask = $scriptTaskNode->getBpmnElementInstance();
                 //Create a row in the Scripts table
                 $script = factory(Script::class)->create([
-                    'title' => $scriptTask->getName('name').' Script',
+                    'title' => $scriptTask->getName('name') . ' Script',
                     'code' => $scriptTaskNode->getElementsByTagName('script')->item(0)->nodeValue,
                     'language' => $this->languageOfMimeType($scriptTask->getScriptFormat()),
                 ]);
@@ -167,15 +167,15 @@ class ProcessSeeder extends Seeder
      */
     private function createScreen($id, $screenRef, $process)
     {
-        if (file_exists(database_path('processes/screens/'.$screenRef.'.json'))) {
-            $json = json_decode(file_get_contents(database_path('processes/screens/'.$screenRef.'.json')));
+        if (file_exists(database_path('processes/screens/' . $screenRef . '.json'))) {
+            $json = json_decode(file_get_contents(database_path('processes/screens/' . $screenRef . '.json')));
 
             return factory(Screen::class)->create([
                 'title' => $json[0]->name,
                 'config' => $json,
             ]);
-        } elseif (file_exists(database_path('processes/screens/'.$id.'.json'))) {
-            $json = json_decode(file_get_contents(database_path('processes/screens/'.$id.'.json')));
+        } elseif (file_exists(database_path('processes/screens/' . $id . '.json'))) {
+            $json = json_decode(file_get_contents(database_path('processes/screens/' . $id . '.json')));
 
             return factory(Screen::class)->create([
                 'title' => $json[0]->name,

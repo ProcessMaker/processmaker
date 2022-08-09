@@ -91,7 +91,7 @@ class ScriptController extends Controller
         $filter = $request->input('filter', '');
         $isSelectList = $request->input('selectList', '');
         if (! empty($filter)) {
-            $filter = '%'.$filter.'%';
+            $filter = '%' . $filter . '%';
             if (! $isSelectList) {
                 $query->where(function ($query) use ($filter) {
                     $query->Where('title', 'like', $filter)

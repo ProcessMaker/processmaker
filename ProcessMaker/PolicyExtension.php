@@ -16,7 +16,7 @@ class PolicyExtension
 
     private function key(string $action, string $class)
     {
-        return $action.'-'.$class;
+        return $action . '-' . $class;
     }
 
     public function has(string $action, string $class)

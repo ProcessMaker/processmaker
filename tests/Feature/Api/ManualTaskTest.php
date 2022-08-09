@@ -23,7 +23,7 @@ class ManualTaskTest extends TestCase
     public function testUploadRequestFile()
     {
         $this->loadTestProcess(
-            file_get_contents(__DIR__.'/processes/FileUpload.bpmn'),
+            file_get_contents(__DIR__ . '/processes/FileUpload.bpmn'),
             [
                 '2' => factory(User::class)->create([
                     'status' => 'ACTIVE',

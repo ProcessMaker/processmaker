@@ -23,7 +23,7 @@ class PMConfigGenericExportManagerTest extends TestCase
         //
 
         $process = factory(Process::class)->create([
-            'bpmn' => file_get_contents(__DIR__.'/../Fixtures/pm_config_generic_export.bpmn'),
+            'bpmn' => file_get_contents(__DIR__ . '/../Fixtures/pm_config_generic_export.bpmn'),
         ]);
 
         $manager = new PMConfigGenericExportManager(

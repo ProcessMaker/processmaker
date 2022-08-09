@@ -207,7 +207,7 @@ class UsersTest extends TestCase
     {
         $username = 'userTestTimezone';
         $newEntity = factory(User::class)->create(['username' => $username]);
-        $route = self::API_TEST_URL.'?filter='.$username;
+        $route = self::API_TEST_URL . '?filter=' . $username;
 
         $response = $this->apiCall('GET', $route);
 
@@ -235,8 +235,8 @@ class UsersTest extends TestCase
 
         //List User with filter option
         $perPage = Faker::create()->randomDigitNotNull;
-        $query = '?page=1&per_page='.$perPage.'&order_by=firstname&order_direction=DESC&filter='.$username;
-        $response = $this->apiCall('GET', self::API_TEST_URL.$query);
+        $query = '?page=1&per_page=' . $perPage . '&order_by=firstname&order_direction=DESC&filter=' . $username;
+        $response = $this->apiCall('GET', self::API_TEST_URL . $query);
 
         //Validate the header status code
         $response->assertStatus(200);
@@ -262,8 +262,8 @@ class UsersTest extends TestCase
             'email' => 'test@example.com',
         ]);
 
-        $query = '?filter='.urlencode('test@example.com');
-        $response = $this->apiCall('GET', self::API_TEST_URL.$query);
+        $query = '?filter=' . urlencode('test@example.com');
+        $response = $this->apiCall('GET', self::API_TEST_URL . $query);
 
         //Validate the header status code
         $response->assertStatus(200);
@@ -288,7 +288,7 @@ class UsersTest extends TestCase
         $user = factory(User::class)->create()->id;
 
         //load api
-        $response = $this->apiCall('GET', self::API_TEST_URL.'/'.$user);
+        $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $user);
 
         //Validate the status is correct
         $response->assertStatus(200);
@@ -321,7 +321,7 @@ class UsersTest extends TestCase
     public function testUpdateUserParametersRequired()
     {
         //The post must have the required parameters
-        $url = self::API_TEST_URL.'/'.factory(User::class)->create()->id;
+        $url = self::API_TEST_URL . '/' . factory(User::class)->create()->id;
 
         $response = $this->apiCall('PUT', $url, [
             'username' => '',
@@ -338,7 +338,7 @@ class UsersTest extends TestCase
     {
         $faker = Faker::create();
 
-        $url = self::API_TEST_URL.'/'.factory(User::class)->create()->id;
+        $url = self::API_TEST_URL . '/' . factory(User::class)->create()->id;
 
         //Load the starting user data
         $verify = $this->apiCall('GET', $url);
@@ -360,7 +360,7 @@ class UsersTest extends TestCase
             'timezone' => $faker->timezone,
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
             'birthdate' => $faker->dateTimeThisCentury->format('Y-m-d'),
-            'password' => $faker->password(8).'A'.'1',
+            'password' => $faker->password(8) . 'A' . '1',
             'force_change_password' => $faker->boolean,
         ]);
 
@@ -381,7 +381,7 @@ class UsersTest extends TestCase
     {
         $faker = Faker::create();
 
-        $url = self::API_TEST_URL.'/'.factory(User::class)->create()->id;
+        $url = self::API_TEST_URL . '/' . factory(User::class)->create()->id;
 
         //Post saved success
         $response = $this->apiCall('PUT', $url, [
@@ -390,7 +390,7 @@ class UsersTest extends TestCase
             'firstname' => $faker->firstName,
             'lastname' => $faker->lastName,
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->password(8).'A'.'1',
+            'password' => $faker->password(8) . 'A' . '1',
             'force_change_password' => 0,
         ]);
 
@@ -414,7 +414,7 @@ class UsersTest extends TestCase
 
         $user2 = factory(User::class)->create();
 
-        $url = self::API_TEST_URL.'/'.$user2->id;
+        $url = self::API_TEST_URL . '/' . $user2->id;
 
         $response = $this->apiCall('PUT', $url, [
             'username' => 'MyUserName',
@@ -430,7 +430,7 @@ class UsersTest extends TestCase
     public function testDeleteUser()
     {
         //Remove user
-        $url = self::API_TEST_URL.'/'.factory(User::class)->create()->id;
+        $url = self::API_TEST_URL . '/' . factory(User::class)->create()->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code
@@ -443,7 +443,7 @@ class UsersTest extends TestCase
     public function testDeleteUserNotExist()
     {
         //User not exist
-        $url = self::API_TEST_URL.'/'.factory(User::class)->make()->id;
+        $url = self::API_TEST_URL . '/' . factory(User::class)->make()->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code
@@ -462,14 +462,14 @@ class UsersTest extends TestCase
         ]);
 
         //Set our API url for this users
-        $url = self::API_TEST_URL.'/'.$user->id;
+        $url = self::API_TEST_URL . '/' . $user->id;
 
         //Create a fake image and encode it to base64
         $fakeImage = UploadedFile::fake()
                                  ->image('avatar.jpg', 1200, 1200)
                                  ->size(1500)
                                  ->get();
-        $avatar = 'data:image/png;base64,'.base64_encode($fakeImage);
+        $avatar = 'data:image/png;base64,' . base64_encode($fakeImage);
 
         //Update the user with the fake image as an avatar
         $putResponse = $this->apiCall('PUT', $url, [
@@ -516,7 +516,7 @@ class UsersTest extends TestCase
         $response->assertJsonFragment(['id' => $id]);
 
         // Soft delete the user
-        $response = $this->apiCall('DELETE', self::API_TEST_URL.'/'.$id);
+        $response = $this->apiCall('DELETE', self::API_TEST_URL . '/' . $id);
         $response->assertStatus(204);
 
         // Assert that the user is not listed on the main index
@@ -524,7 +524,7 @@ class UsersTest extends TestCase
         $response->assertJsonMissing(['id' => $id]);
 
         // Restore the user by email
-        $response = $this->apiCall('PUT', self::API_TEST_URL.'/restore', [
+        $response = $this->apiCall('PUT', self::API_TEST_URL . '/restore', [
             'email' => $user->email,
         ]);
         $response->assertStatus(200);
@@ -534,7 +534,7 @@ class UsersTest extends TestCase
         $response->assertJsonFragment(['id' => $id]);
 
         // Soft delete the user
-        $response = $this->apiCall('DELETE', self::API_TEST_URL.'/'.$id);
+        $response = $this->apiCall('DELETE', self::API_TEST_URL . '/' . $id);
         $response->assertStatus(204);
 
         // Assert that the user is not listed on the main index
@@ -542,7 +542,7 @@ class UsersTest extends TestCase
         $response->assertJsonMissing(['id' => $id]);
 
         // Restore the user by username
-        $response = $this->apiCall('PUT', self::API_TEST_URL.'/restore', [
+        $response = $this->apiCall('PUT', self::API_TEST_URL . '/restore', [
             'username' => $user->username,
         ]);
         $response->assertStatus(200);
@@ -552,7 +552,7 @@ class UsersTest extends TestCase
         $response->assertJsonFragment(['id' => $id]);
 
         // Soft delete the user
-        $response = $this->apiCall('DELETE', self::API_TEST_URL.'/'.$id);
+        $response = $this->apiCall('DELETE', self::API_TEST_URL . '/' . $id);
         $response->assertStatus(204);
 
         // Assert that the user is not listed on the main index
@@ -560,8 +560,8 @@ class UsersTest extends TestCase
         $response->assertJsonMissing(['id' => $id]);
 
         // Restore the user by username and different email
-        $response = $this->apiCall('PUT', self::API_TEST_URL.'/restore', [
-            'email' => 'changed'.$user->email,
+        $response = $this->apiCall('PUT', self::API_TEST_URL . '/restore', [
+            'email' => 'changed' . $user->email,
             'username' => $user->username,
         ]);
         $response->assertStatus(200);

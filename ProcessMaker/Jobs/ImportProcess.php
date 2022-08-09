@@ -190,7 +190,7 @@ class ImportProcess implements ShouldQueue
         $model = new $class;
 
         //Find duplicates of this item's name
-        $dupe = $model->where($field, 'like', $name.'%')
+        $dupe = $model->where($field, 'like', $name . '%')
             ->orderBy(DB::raw("LENGTH($field), $field"))
             ->get();
 
@@ -212,7 +212,7 @@ class ImportProcess implements ShouldQueue
             }
 
             //the name appended with the number
-            $name = $name.' '.$number;
+            $name = $name . ' ' . $number;
 
             //verify existence of the new name
             if ($model->where($field, $name)->exists()) {
@@ -370,7 +370,7 @@ class ImportProcess implements ShouldQueue
                 }
                 $this->assignable[] = (object) [
                     'type' => 'watcherDataSource',
-                    'id' => strval($screen->id).'|'.strval($index),
+                    'id' => strval($screen->id) . '|' . strval($index),
                     'name' => $watcher['name'],
                     'prefix' => __('Assign data source watcher in :screen', ['screen' => $screen->title]),
                     'suffix' => __('to'),
@@ -439,7 +439,7 @@ class ImportProcess implements ShouldQueue
             }
             $this->finishStatus('screens');
         } catch (\Exception $e) {
-            Log::info('*** Error: '.$e->getMessage());
+            Log::info('*** Error: ' . $e->getMessage());
             $this->finishStatus('screens', true);
         }
     }
@@ -581,18 +581,18 @@ class ImportProcess implements ShouldQueue
      */
     protected function saveCategory($type, $category)
     {
-        if (! array_key_exists($type.'_categories', $this->new)) {
-            $this->new[$type.'_categories'] = [];
+        if (! array_key_exists($type . '_categories', $this->new)) {
+            $this->new[$type . '_categories'] = [];
         }
 
         // use ProcessMaker\Models\ProcessCategory;
-        $class = '\\ProcessMaker\\Models\\'.ucfirst($type).'Category';
+        $class = '\\ProcessMaker\\Models\\' . ucfirst($type) . 'Category';
 
         try {
             $existing = $class::where('name', $category->name)->first();
-            $this->prepareStatus($type.'_categories', true);
+            $this->prepareStatus($type . '_categories', true);
             if ($existing) {
-                $this->new[$type.'_categories'][] = $existing;
+                $this->new[$type . '_categories'][] = $existing;
                 $new = $existing;
             } else {
                 $new = new $class;
@@ -601,13 +601,13 @@ class ImportProcess implements ShouldQueue
                 $new->created_at = $this->formatDate($category->created_at);
                 $new->save();
 
-                $this->new[$type.'_categories'][] = $new;
+                $this->new[$type . '_categories'][] = $new;
             }
-            $this->finishStatus($type.'_categories');
+            $this->finishStatus($type . '_categories');
 
             return $new;
         } catch (\Exception $e) {
-            $this->finishStatus($type.'_categories', true);
+            $this->finishStatus($type . '_categories', true);
 
             return null;
         }

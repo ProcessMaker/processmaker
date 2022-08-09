@@ -48,7 +48,7 @@ class CompileSass implements ShouldQueue
     {
         chdir(app()->basePath());
         $this->runCmd('node_modules/sass/sass.js --no-source-map '
-            .$this->properties['origin'].' '.$this->properties['target']);
+            . $this->properties['origin'] . ' ' . $this->properties['target']);
 
         if (Str::contains($this->properties['tag'], 'app')) {
             $this->fixPathsInGeneratedAppCss();
@@ -68,14 +68,14 @@ class CompileSass implements ShouldQueue
      */
     private function runCmd($cmd)
     {
-        Log::info('Start css rebuild: '.$cmd);
-        exec($cmd.' 2>&1', $output, $returnVal);
+        Log::info('Start css rebuild: ' . $cmd);
+        exec($cmd . ' 2>&1', $output, $returnVal);
         $output = implode("\n", $output);
         if ($returnVal) {
-            Log::info("Cmd returned: $returnVal ".$output);
-            throw new \Exception("Cmd returned: $returnVal ".$output);
+            Log::info("Cmd returned: $returnVal " . $output);
+            throw new \Exception("Cmd returned: $returnVal " . $output);
         }
-        Log::info('Returned'.$output);
+        Log::info('Returned' . $output);
 
         return $output;
     }
@@ -102,13 +102,13 @@ class CompileSass implements ShouldQueue
         $file = file_get_contents('public/mix-manifest.json');
         $guid = bin2hex(random_bytes(16));
         $re = '/\"\:\s"\/css\/sidebar\.css.+id=(.*)\"/m';
-        $file = preg_replace($re, '": "/css/sidebar.css?id='.$guid.'"', $file);
+        $file = preg_replace($re, '": "/css/sidebar.css?id=' . $guid . '"', $file);
         $guid = bin2hex(random_bytes(16));
         $re = '/\"\:\s"\/css\/app\.css.+id=(.*)\"/m';
-        $file = preg_replace($re, '": "/css/app.css?id='.$guid.'"', $file);
+        $file = preg_replace($re, '": "/css/app.css?id=' . $guid . '"', $file);
         $guid = bin2hex(random_bytes(16));
         $re = '/\"\:\s"\/css\/admin\/queues\.css.+id=(.*)\"/m';
-        $file = preg_replace($re, '": "/css/admin/queues.css?id='.$guid.'"', $file);
+        $file = preg_replace($re, '": "/css/admin/queues.css?id=' . $guid . '"', $file);
 
         file_put_contents('public/mix-manifest.json', $file);
     }

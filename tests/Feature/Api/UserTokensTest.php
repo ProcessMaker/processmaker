@@ -24,7 +24,7 @@ class UserTokensTest extends TestCase
     public function testListTokensWithEmptyTokens()
     {
         $user = $this->user;
-        $response = $this->apiCall('GET', '/users/'.$user->id.'/tokens');
+        $response = $this->apiCall('GET', '/users/' . $user->id . '/tokens');
 
         //Validate the header status code
         $response->assertStatus(200);
@@ -39,7 +39,7 @@ class UserTokensTest extends TestCase
     public function testListTokensWithEmptyTokensForOtherUser()
     {
         $user = factory(User::class)->create();
-        $response = $this->apiCall('GET', '/users/'.$user->id.'/tokens');
+        $response = $this->apiCall('GET', '/users/' . $user->id . '/tokens');
 
         //Validate the header status code
         $response->assertStatus(200);
@@ -56,7 +56,7 @@ class UserTokensTest extends TestCase
 
         $targetUser = factory(User::class)->create();
 
-        $response = $this->apiCall('GET', '/users/'.$targetUser->id.'/tokens');
+        $response = $this->apiCall('GET', '/users/' . $targetUser->id . '/tokens');
         $response->assertStatus(403);
     }
 
@@ -66,7 +66,7 @@ class UserTokensTest extends TestCase
     public function testTokenCreateValidationError()
     {
         $user = $this->user;
-        $response = $this->apiCall('POST', '/users/'.$user->id.'/tokens');
+        $response = $this->apiCall('POST', '/users/' . $user->id . '/tokens');
 
         //Validate the header status code
         $response->assertStatus(422);
@@ -80,7 +80,7 @@ class UserTokensTest extends TestCase
 
         $targetUser = factory(User::class)->create();
 
-        $response = $this->apiCall('POST', '/users/'.$targetUser->id.'/tokens');
+        $response = $this->apiCall('POST', '/users/' . $targetUser->id . '/tokens');
         $response->assertStatus(403);
     }
 
@@ -91,7 +91,7 @@ class UserTokensTest extends TestCase
     {
         $now = new Carbon();
         $user = $this->user;
-        $response = $this->apiCall('POST', '/users/'.$user->id.'/tokens', [
+        $response = $this->apiCall('POST', '/users/' . $user->id . '/tokens', [
             'name' => 'Test Token',
         ]);
 
@@ -111,14 +111,14 @@ class UserTokensTest extends TestCase
     public function testListingWithExistingToken()
     {
         $user = $this->user;
-        $response = $this->apiCall('POST', '/users/'.$user->id.'/tokens', [
+        $response = $this->apiCall('POST', '/users/' . $user->id . '/tokens', [
             'name' => 'Test Token',
         ]);
 
         //Validate the header status code
         $response->assertStatus(200);
 
-        $response = $this->apiCall('GET', '/users/'.$user->id.'/tokens');
+        $response = $this->apiCall('GET', '/users/' . $user->id . '/tokens');
 
         //Validate the header status code
         $response->assertStatus(200);
@@ -130,7 +130,7 @@ class UserTokensTest extends TestCase
     public function testShowToken()
     {
         $user = $this->user;
-        $response = $this->apiCall('POST', '/users/'.$user->id.'/tokens', [
+        $response = $this->apiCall('POST', '/users/' . $user->id . '/tokens', [
             'name' => 'Test Token',
         ]);
 
@@ -138,7 +138,7 @@ class UserTokensTest extends TestCase
         $response->assertStatus(200);
 
         $responseObj = $response->decodeResponseJson();
-        $response = $this->apiCall('GET', '/users/'.$user->id.'/tokens/'.$responseObj['token']['id']);
+        $response = $this->apiCall('GET', '/users/' . $user->id . '/tokens/' . $responseObj['token']['id']);
 
         //Validate the header status code
         $response->assertStatus(200);
@@ -151,7 +151,7 @@ class UserTokensTest extends TestCase
         $targetUser = factory(User::class)->create();
 
         $user = $this->user;
-        $response = $this->apiCall('POST', '/users/'.$user->id.'/tokens', [
+        $response = $this->apiCall('POST', '/users/' . $user->id . '/tokens', [
             'name' => 'Test Token',
         ]);
 
@@ -164,7 +164,7 @@ class UserTokensTest extends TestCase
         $user = factory(User::class)->create();
         $this->user = $user;
 
-        $response = $this->apiCall('GET', '/users/'.$targetUser->id.'/tokens/'.$responseObj['token']['id']);
+        $response = $this->apiCall('GET', '/users/' . $targetUser->id . '/tokens/' . $responseObj['token']['id']);
 
         //Validate the header status code
         $response->assertStatus(403);
@@ -173,7 +173,7 @@ class UserTokensTest extends TestCase
     public function testRevokeTokenForUser()
     {
         $user = $this->user;
-        $response = $this->apiCall('POST', '/users/'.$user->id.'/tokens', [
+        $response = $this->apiCall('POST', '/users/' . $user->id . '/tokens', [
             'name' => 'Test Token',
         ]);
 
@@ -182,13 +182,13 @@ class UserTokensTest extends TestCase
 
         $responseObj = $response->decodeResponseJson();
 
-        $response = $this->apiCall('DELETE', '/users/'.$user->id.'/tokens/'.$responseObj['token']['id']);
+        $response = $this->apiCall('DELETE', '/users/' . $user->id . '/tokens/' . $responseObj['token']['id']);
 
         //Validate the header status code
         $response->assertStatus(204);
 
         // Verify that listing is 0
-        $response = $this->apiCall('GET', '/users/'.$user->id.'/tokens');
+        $response = $this->apiCall('GET', '/users/' . $user->id . '/tokens');
 
         //Validate the header status code
         $response->assertStatus(200);
@@ -204,7 +204,7 @@ class UserTokensTest extends TestCase
         $targetUser = factory(User::class)->create();
 
         $user = $this->user;
-        $response = $this->apiCall('POST', '/users/'.$user->id.'/tokens', [
+        $response = $this->apiCall('POST', '/users/' . $user->id . '/tokens', [
             'name' => 'Test Token',
         ]);
 
@@ -217,7 +217,7 @@ class UserTokensTest extends TestCase
         $user = factory(User::class)->create();
         $this->user = $user;
 
-        $response = $this->apiCall('DELETE', '/users/'.$targetUser->id.'/tokens/'.$responseObj['token']['id']);
+        $response = $this->apiCall('DELETE', '/users/' . $targetUser->id . '/tokens/' . $responseObj['token']['id']);
 
         //Validate the header status code
         $response->assertStatus(403);
@@ -226,7 +226,7 @@ class UserTokensTest extends TestCase
     public function test404WithRevokeOfUnknownToken()
     {
         $user = $this->user;
-        $response = $this->apiCall('DELETE', '/users/'.$user->id.'/tokens/12345');
+        $response = $this->apiCall('DELETE', '/users/' . $user->id . '/tokens/12345');
         //Validate the header status code
         $response->assertStatus(404);
     }

@@ -18,6 +18,6 @@ class AnonymousUser extends User
     {
         $class = str_replace('\\', '.', get_parent_class());
 
-        return $class.'.'.$this->getKey();
+        return $class . '.' . $this->getKey();
     }
 }

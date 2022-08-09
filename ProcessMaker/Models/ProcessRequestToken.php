@@ -518,7 +518,7 @@ class ProcessRequestToken extends Model implements TokenInterface
                 $query->whereIn('id', $matches);
             }
         } else {
-            $filter = '%'.mb_strtolower($filter).'%';
+            $filter = '%' . mb_strtolower($filter) . '%';
             $query->where(function ($query) use ($filter) {
                 $query->where(DB::raw('LOWER(element_name)'), 'like', $filter)
                     ->orWhere(DB::raw('LOWER(data)'), 'like', $filter)
@@ -680,7 +680,7 @@ class ProcessRequestToken extends Model implements TokenInterface
                 $field = $expression->field->field();
                 $operator = $expression->operator;
                 if (is_string($value)) {
-                    $value = '"'.$value.'"';
+                    $value = '"' . $value . '"';
                 }
 
                 $pmql = "$field $operator $value";

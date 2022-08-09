@@ -1120,13 +1120,13 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         $subProcessBpmn = $subProcessClone->ownerDocument->saveXml($definitions);
 
         $name = $subProcessClone->getAttribute('name');
-        $duplicated = self::where('name', 'like', $name.'%')
+        $duplicated = self::where('name', 'like', $name . '%')
             ->orderBy(DB::raw('LENGTH(name), name'))
             ->get();
         if ($duplicated->count()) {
             $duplicated = $duplicated->last();
             $number = intval(substr($duplicated->name, strlen($name))) + 1;
-            $name = $name.' ('.$number.')';
+            $name = $name . ' (' . $number . ')';
         }
         $process = new self([
             'name' => $name,
@@ -1137,7 +1137,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         $process->process_category_id = $this->process_category_id;
         $process->save();
         $bpmnProcess = $process->getDefinitions()->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'process')->item(0);
-        $element->setAttribute('calledElement', $bpmnProcess->getAttribute('id').'-'.$process->id);
+        $element->setAttribute('calledElement', $bpmnProcess->getAttribute('id') . '-' . $process->id);
 
         return $element;
     }

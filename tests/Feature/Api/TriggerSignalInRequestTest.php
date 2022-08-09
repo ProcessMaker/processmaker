@@ -38,7 +38,7 @@ class TriggerSignalInRequestTest extends TestCase
     {
         $process = $this->createProcess([
             'id' => 1,
-            'bpmn' => file_get_contents(__DIR__.'/processes/TriggerSignalInRequestTest.bpmn'),
+            'bpmn' => file_get_contents(__DIR__ . '/processes/TriggerSignalInRequestTest.bpmn'),
         ]);
 
         // Start process from normal start event node_9

@@ -112,10 +112,10 @@ class SanitizeUsernames implements ShouldQueue
 
         $generator = static function () use ($username, &$i): string {
             if (blank($username = mb_ereg_replace('[^\p{L}\p{N}\-_\.\@\+\s]', '', $username))) {
-                $username = 'user_'.random_bytes(4);
+                $username = 'user_' . random_bytes(4);
             }
 
-            return $i++ !== 0 ? $username.$i : $username;
+            return $i++ !== 0 ? $username . $i : $username;
         };
 
         do {

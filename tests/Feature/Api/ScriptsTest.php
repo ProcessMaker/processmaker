@@ -105,11 +105,11 @@ class ScriptsTest extends TestCase
         $category1 = factory(ScriptCategory::class)->create(['status' => 'ACTIVE']);
         $category2 = factory(ScriptCategory::class)->create(['status' => 'ACTIVE']);
 
-        $params['script_category_id'] = $category1->id.',foo';
+        $params['script_category_id'] = $category1->id . ',foo';
         $response = $this->apiCall('POST', $url, $params);
         $this->assertEquals('Invalid category', $err($response));
 
-        $params['script_category_id'] = $category1->id.','.$category2->id;
+        $params['script_category_id'] = $category1->id . ',' . $category2->id;
         $response = $this->apiCall('POST', $url, $params);
         $response->assertStatus(201);
 
@@ -203,7 +203,7 @@ class ScriptsTest extends TestCase
         $name = 'tetScriptTimezone';
         $newEntity = factory(Script::class)->create(['title' => $name]);
 
-        $route = self::API_TEST_SCRIPT.'?filter='.$name;
+        $route = self::API_TEST_SCRIPT . '?filter=' . $name;
         $response = $this->apiCall('GET', $route);
 
         $this->assertEquals(
@@ -229,8 +229,8 @@ class ScriptsTest extends TestCase
 
         //List Document with filter option
         $perPage = Faker::create()->randomDigitNotNull;
-        $query = '?page=1&per_page='.$perPage.'&order_by=description&order_direction=DESC&filter='.urlencode($title);
-        $url = self::API_TEST_SCRIPT.$query;
+        $query = '?page=1&per_page=' . $perPage . '&order_by=description&order_direction=DESC&filter=' . urlencode($title);
+        $url = self::API_TEST_SCRIPT . $query;
         $response = $this->apiCall('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -260,7 +260,7 @@ class ScriptsTest extends TestCase
         $script = factory(Script::class)->create();
 
         //load script
-        $url = self::API_TEST_SCRIPT.'/'.$script->id;
+        $url = self::API_TEST_SCRIPT . '/' . $script->id;
         $response = $this->apiCall('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -279,7 +279,7 @@ class ScriptsTest extends TestCase
         $script = factory(Script::class)->create(['code' => $faker->sentence(50)])->id;
 
         //The post must have the required parameters
-        $url = self::API_TEST_SCRIPT.'/'.$script;
+        $url = self::API_TEST_SCRIPT . '/' . $script;
 
         $response = $this->apiCall('PUT', $url, [
             'title' => '',
@@ -307,7 +307,7 @@ class ScriptsTest extends TestCase
         ]);
         $original_attributes = $script->getAttributes();
 
-        $url = self::API_TEST_SCRIPT.'/'.$script->id;
+        $url = self::API_TEST_SCRIPT . '/' . $script->id;
         $response = $this->apiCall('PUT', $url, [
             'title' => $script->title,
             'language' => 'lua',
@@ -341,7 +341,7 @@ class ScriptsTest extends TestCase
 
         $script2 = factory(Script::class)->create();
 
-        $url = self::API_TEST_SCRIPT.'/'.$script2->id;
+        $url = self::API_TEST_SCRIPT . '/' . $script2->id;
         $response = $this->apiCall('PUT', $url, [
             'title' => 'Some title',
         ]);
@@ -362,8 +362,8 @@ class ScriptsTest extends TestCase
         $script = factory(Script::class)->create([
             'code' => $code,
         ]);
-        $url = self::API_TEST_SCRIPT.'/'.$script->id;
-        $response = $this->apiCall('PUT', $url.'/duplicate', [
+        $url = self::API_TEST_SCRIPT . '/' . $script->id;
+        $response = $this->apiCall('PUT', $url . '/duplicate', [
             'title' => 'TITLE',
             'language' => 'php',
             'description' => $faker->sentence(5),
@@ -442,7 +442,7 @@ class ScriptsTest extends TestCase
     public function testDeleteScript()
     {
         //Remove script
-        $url = self::API_TEST_SCRIPT.'/'.factory(Script::class)->create()->id;
+        $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->create()->id;
         $response = $this->apiCall('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(204);
@@ -454,7 +454,7 @@ class ScriptsTest extends TestCase
     public function testDeleteScriptNotExist()
     {
         //Script not exist
-        $url = self::API_TEST_SCRIPT.'/'.factory(Script::class)->make()->id;
+        $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->make()->id;
         $response = $this->apiCall('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(405);
@@ -467,10 +467,10 @@ class ScriptsTest extends TestCase
     {
         $faker = Faker::create();
         $code = '{"foo":"bar"}';
-        $url = self::API_TEST_SCRIPT.'/'.factory(Script::class)->create([
+        $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->create([
             'code' => $code,
         ])->id;
-        $response = $this->apiCall('PUT', $url.'/duplicate', [
+        $response = $this->apiCall('PUT', $url . '/duplicate', [
             'title' => 'TITLE',
             'language' => 'php',
             'description' => $faker->sentence(5),
@@ -509,8 +509,8 @@ class ScriptsTest extends TestCase
         ]);
 
         //List Screen with filter option
-        $query = '?filter='.urlencode($name);
-        $url = self::API_TEST_SCRIPT.$query;
+        $query = '?filter=' . urlencode($name);
+        $url = self::API_TEST_SCRIPT . $query;
         $response = $this->apiCall('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -531,8 +531,8 @@ class ScriptsTest extends TestCase
 
         //List Screen without peers
         $name = 'Search category that does not exist';
-        $query = '?filter='.urlencode($name);
-        $url = self::API_TEST_SCRIPT.$query;
+        $query = '?filter=' . urlencode($name);
+        $url = self::API_TEST_SCRIPT . $query;
         $response = $this->apiCall('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -561,7 +561,7 @@ class ScriptsTest extends TestCase
             'language' => 'php',
             'description' => 'Description.',
             'run_as_user_id' => factory(User::class)->create(['status' => 'ACTIVE', 'is_administrator' => true])->getKey(),
-            'script_category_id' => factory(ScriptCategory::class)->create()->getKey().','.factory(ScriptCategory::class)->create()->getKey(),
+            'script_category_id' => factory(ScriptCategory::class)->create()->getKey() . ',' . factory(ScriptCategory::class)->create()->getKey(),
         ];
         $response = $this->apiCall('PUT', $url, $params);
         $response->assertStatus(204);
@@ -577,7 +577,7 @@ class ScriptsTest extends TestCase
         app()->instance(PolicyExtension::class, null); // clear in case packages are installed in test context
 
         ImportProcess::dispatchNow(
-            file_get_contents(__DIR__.'/../../Fixtures/process_with_script_watcher.json')
+            file_get_contents(__DIR__ . '/../../Fixtures/process_with_script_watcher.json')
         );
         $process = Process::orderBy('id', 'desc')->first();
         $script = Script::orderBy('id', 'desc')->first();

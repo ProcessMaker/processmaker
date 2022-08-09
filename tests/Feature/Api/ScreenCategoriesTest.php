@@ -37,7 +37,7 @@ class ScreenCategoriesTest extends TestCase
     public function testCreateScreenCategory()
     {
         //Create a screen category
-        $route = route($this->resource.'.store');
+        $route = route($this->resource . '.store');
         $base = factory(ScreenCategory::class)->make();
         $response = $this->apiCall('POST', $route, $base->toArray());
         //validate status create
@@ -53,7 +53,7 @@ class ScreenCategoriesTest extends TestCase
      */
     public function testCreateNameRequired()
     {
-        $route = route($this->resource.'.store');
+        $route = route($this->resource . '.store');
         $base = factory(ScreenCategory::class)->make(['name' => null]);
         $response = $this->apiCall('POST', $route, $base->toArray());
         //validate status of error model
@@ -69,7 +69,7 @@ class ScreenCategoriesTest extends TestCase
      */
     public function testCreateDuplicateName()
     {
-        $route = route($this->resource.'.store');
+        $route = route($this->resource . '.store');
 
         //create screen category
         $name = 'Some name';
@@ -95,8 +95,8 @@ class ScreenCategoriesTest extends TestCase
         $page = 2;
         $perPage = 10;
 
-        $route = route($this->resource.'.index');
-        $response = $this->apiCall('GET', $route.'?page='.$page.'&per_page='.$perPage);
+        $route = route($this->resource . '.index');
+        $response = $this->apiCall('GET', $route . '?page=' . $page . '&per_page=' . $perPage);
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -140,8 +140,8 @@ class ScreenCategoriesTest extends TestCase
         factory(ScreenCategory::class)->create(['status' => 'ACTIVE', 'name' => $name]);
 
         //Get active screens
-        $route = route($this->resource.'.index');
-        $response = $this->apiCall('GET', $route.'?filter='.$name.'&per_page='.$perPage);
+        $route = route($this->resource . '.index');
+        $response = $this->apiCall('GET', $route . '?filter=' . $name . '&per_page=' . $perPage);
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -158,7 +158,7 @@ class ScreenCategoriesTest extends TestCase
         $this->assertCount($meta['count'], $data);
 
         //Get inactive screens
-        $response = $this->apiCall('GET', $route.'?filter=INACTIVE&per_page='.$perPage);
+        $response = $this->apiCall('GET', $route . '?filter=INACTIVE&per_page=' . $perPage);
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -198,8 +198,8 @@ class ScreenCategoriesTest extends TestCase
         factory(ScreenCategory::class)->state($screenInactive['num'])->create(['status' => $screenInactive['status']]);
 
         //Get active screens
-        $route = route($this->resource.'.index');
-        $response = $this->apiCall('GET', $route.'?status=ACTIVE&per_page='.$perPage);
+        $route = route($this->resource . '.index');
+        $response = $this->apiCall('GET', $route . '?status=ACTIVE&per_page=' . $perPage);
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -230,8 +230,8 @@ class ScreenCategoriesTest extends TestCase
         ]);
 
         //Test the list sorted by name returns as first row {"name": "aaaaaa"}
-        $route = route($this->resource.'.index');
-        $response = $this->apiCall('GET', $route.'?order_by=name&order_direction=asc');
+        $route = route($this->resource . '.index');
+        $response = $this->apiCall('GET', $route . '?order_by=name&order_direction=asc');
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -249,7 +249,7 @@ class ScreenCategoriesTest extends TestCase
         ], $firstRow);
 
         //Test the list sorted desc returns as first row {"name": "zzzzz"}
-        $response = $this->apiCall('GET', $route.'?order_by=name&order_direction=DESC');
+        $response = $this->apiCall('GET', $route . '?order_by=name&order_direction=DESC');
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -280,11 +280,11 @@ class ScreenCategoriesTest extends TestCase
         factory(ScreenCategory::class, $rowsToAdd)->create();
 
         // The first page should have 5 items;
-        $response = $this->apiCall('GET', route($this->resource.'.index', ['per_page' => 5, 'page' => 1]));
+        $response = $this->apiCall('GET', route($this->resource . '.index', ['per_page' => 5, 'page' => 1]));
         $response->assertJsonCount(5, 'data');
 
         // The second page should have the modulus of 2+$initialRows
-        $response = $this->apiCall('GET', route($this->resource.'.index', ['per_page' => 5, 'page' => 2]));
+        $response = $this->apiCall('GET', route($this->resource . '.index', ['per_page' => 5, 'page' => 2]));
         $response->assertJsonCount((2 + $initialRows) % 5, 'data');
     }
 
@@ -297,7 +297,7 @@ class ScreenCategoriesTest extends TestCase
         $category = factory(ScreenCategory::class)->create();
 
         //Test that is correctly displayed
-        $route = route($this->resource.'.show', [$category->id]);
+        $route = route($this->resource . '.show', [$category->id]);
         $response = $this->apiCall('GET', $route);
         $response->assertStatus(200);
         $response->assertJsonStructure($this->structure);
@@ -310,7 +310,7 @@ class ScreenCategoriesTest extends TestCase
     {
         $item = factory(ScreenCategory::class)->create();
 
-        $route = route($this->resource.'.update', [$item->id]);
+        $route = route($this->resource . '.update', [$item->id]);
         $fields = [
             'name' => $this->faker->name,
             'status' => 'ACTIVE',
@@ -331,7 +331,7 @@ class ScreenCategoriesTest extends TestCase
     {
         $item = factory(ScreenCategory::class)->create(['status' => 'ACTIVE']);
 
-        $route = route($this->resource.'.update', [$item->id]);
+        $route = route($this->resource . '.update', [$item->id]);
         $fields = [
             'name' => 'test',
             'status' => 'INACTIVE',
@@ -352,7 +352,7 @@ class ScreenCategoriesTest extends TestCase
     {
         $item = factory(ScreenCategory::class)->create();
 
-        $route = route($this->resource.'.update', [$item->id]);
+        $route = route($this->resource . '.update', [$item->id]);
         $fields = [
             'name' => null,
             'status' => 'ACTIVE',
@@ -373,7 +373,7 @@ class ScreenCategoriesTest extends TestCase
         factory(ScreenCategory::class)->create(['name' => $name]);
         $item = factory(ScreenCategory::class)->create();
 
-        $route = route($this->resource.'.update', [$item->id]);
+        $route = route($this->resource . '.update', [$item->id]);
         $fields = [
             'name' => $name,
             'status' => 'ACTIVE',
@@ -392,7 +392,7 @@ class ScreenCategoriesTest extends TestCase
     {
         $item = factory(ScreenCategory::class)->create();
 
-        $route = route($this->resource.'.update', [$item->id]);
+        $route = route($this->resource . '.update', [$item->id]);
         $fields = [
             'status' => 'NOT_EXISTS',
         ];
@@ -409,7 +409,7 @@ class ScreenCategoriesTest extends TestCase
     public function testDeleteScreenCategory()
     {
         $screenCategory = factory(ScreenCategory::class)->create();
-        $route = route($this->resource.'.destroy', [$screenCategory->id]);
+        $route = route($this->resource . '.destroy', [$screenCategory->id]);
         $response = $this->apiCall('DELETE', $route);
         //validate status
         $response->assertStatus(204);
@@ -422,7 +422,7 @@ class ScreenCategoriesTest extends TestCase
     public function testDeleteFailScreenCategory()
     {
         $screen = factory(Screen::class)->create();
-        $route = route($this->resource.'.destroy', [$screen->screen_category_id]);
+        $route = route($this->resource . '.destroy', [$screen->screen_category_id]);
         $response = $this->apiCall('DELETE', $route);
         $response->assertStatus(422);
         $response->assertJsonStructure($this->errorStructure);
