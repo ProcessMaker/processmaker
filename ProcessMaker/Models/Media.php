@@ -4,7 +4,7 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Validation\ValidationException;
 use ProcessMaker\Models\ProcessRequest;
-use Spatie\MediaLibrary\Models\Media as Model;
+use Spatie\MediaLibrary\MediaCollections\Models\Media as Model;
 
 /**
  * Represents media files stored in the database
