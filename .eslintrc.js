@@ -11,7 +11,12 @@ module.exports = {
     Dispatcher: true,
     ProcessMaker: true,
   },
-  extends: ["eslint:recommended", "plugin:vue/recommended", "airbnb-base"],
+  extends: [
+    "eslint:recommended",
+    "plugin:vue/recommended",
+    "plugin:prettier/recommended",
+    "airbnb-base",
+  ],
   parserOptions: {
     parser: "@babel/eslint-parser",
     sourceType: "module",
@@ -20,21 +25,21 @@ module.exports = {
       configFile: "./babel.config.json",
     },
   },
-  plugins: [
-    "vue",
-  ],
+  plugins: ["vue", "prettier"],
   rules: {
+    "prettier/prettier": "error",
     quotes: ["error", "double"],
-    "max-len": ["error", {
-      code: 140,
-      ignoreComments: true,
-    }],
+    "max-len": [
+      "error",
+      {
+        code: 140,
+        ignoreComments: true,
+      },
+    ],
   },
   overrides: [
     {
-      files: [
-        "tests/**/*.js",
-      ],
+      files: ["tests/**/*.js"],
       plugins: ["jest"],
       extends: ["plugin:jest/recommended"],
     },
