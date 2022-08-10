@@ -18,7 +18,7 @@ class SignalEventTest extends TestCase
     {
         //Create a signal process that TRIGGER a signal with ACTIVE status by default
         ImportProcess::dispatchNow(
-            file_get_contents(__DIR__.'/../../Fixtures/signal_event_process_trigger.json')
+            file_get_contents(__DIR__ . '/../../Fixtures/signal_event_process_trigger.json')
         );
 
         //Get created TRIGGER process
@@ -32,7 +32,7 @@ class SignalEventTest extends TestCase
 
         //Create a signal process that CATCH a signal with ACTIVE status by default
         ImportProcess::dispatchNow(
-            file_get_contents(__DIR__.'/../../Fixtures/signal_event_process_catcher.json')
+            file_get_contents(__DIR__ . '/../../Fixtures/signal_event_process_catcher.json')
         );
 
         //Evaluates that CatchSignalEventProcess is triggering because catcher process is ACTIVE
@@ -46,7 +46,7 @@ class SignalEventTest extends TestCase
     {
         //Create a signal process that TRIGGER a signal with ACTIVE status by default
         ImportProcess::dispatchNow(
-            file_get_contents(__DIR__.'/../../Fixtures/signal_event_process_trigger.json')
+            file_get_contents(__DIR__ . '/../../Fixtures/signal_event_process_trigger.json')
         );
 
         //Get created TRIGGER process
@@ -60,7 +60,7 @@ class SignalEventTest extends TestCase
 
         //Create a signal process that CATCH a signal with ACTIVE status by default
         ImportProcess::dispatchNow(
-            file_get_contents(__DIR__.'/../../Fixtures/signal_event_process_catcher.json')
+            file_get_contents(__DIR__ . '/../../Fixtures/signal_event_process_catcher.json')
         );
 
         //Get created CATCHER process
@@ -87,7 +87,7 @@ class SignalEventTest extends TestCase
     {
         // The process used for the tests
         ImportProcess::dispatchNow(
-            file_get_contents(__DIR__.'/../../Fixtures/signal_catch_with_payload.json')
+            file_get_contents(__DIR__ . '/../../Fixtures/signal_catch_with_payload.json')
         );
 
         // Payload for all the signals in the test
@@ -111,7 +111,7 @@ class SignalEventTest extends TestCase
     {
         // The process used for the tests
         ImportProcess::dispatchNow(
-            file_get_contents(__DIR__.'/../../Fixtures/signal_catch_with_payload.json')
+            file_get_contents(__DIR__ . '/../../Fixtures/signal_catch_with_payload.json')
         );
 
         // Payload for all the signals in the test

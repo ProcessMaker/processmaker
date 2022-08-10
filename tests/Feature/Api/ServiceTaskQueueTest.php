@@ -28,7 +28,7 @@ class ServiceTaskQueueTest extends TestCase
         ]);
 
         // Create a process
-        $process = $this->createProcess(file_get_contents(__DIR__.'/processes/ServiceTaskCustomQueue.bpmn'));
+        $process = $this->createProcess(file_get_contents(__DIR__ . '/processes/ServiceTaskCustomQueue.bpmn'));
         $startEvent = 'node_1';
 
         // Start a process instance
@@ -49,7 +49,7 @@ class ServiceTaskQueueTest extends TestCase
         ]);
 
         // Create a process
-        $process = $this->createProcess(file_get_contents(__DIR__.'/processes/ServiceTaskDefaultQueue.bpmn'));
+        $process = $this->createProcess(file_get_contents(__DIR__ . '/processes/ServiceTaskDefaultQueue.bpmn'));
         $startEvent = 'node_1';
 
         // Start a process instance

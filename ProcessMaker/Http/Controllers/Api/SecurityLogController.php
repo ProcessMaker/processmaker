@@ -52,7 +52,7 @@ class SecurityLogController extends Controller
         $query = SecurityLog::query();
 
         if ($filter = $request->input('filter')) {
-            $filter = '%'.mb_strtolower($filter).'%';
+            $filter = '%' . mb_strtolower($filter) . '%';
             $query->where('event', 'like', $filter)
                   ->orWhere(DB::raw('LOWER(ip)'), 'like', $filter)
                   ->orWhere(DB::raw("LOWER(meta->>'$.browser.name')"), 'like', $filter)
@@ -64,7 +64,7 @@ class SecurityLogController extends Controller
 
             $orderDirection = $request->input('order_direction');
 
-            if (! $orderDirection) {
+            if (!$orderDirection) {
                 $orderDirection = 'asc';
             }
 

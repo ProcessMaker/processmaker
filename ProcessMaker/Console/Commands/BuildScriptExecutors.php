@@ -77,8 +77,8 @@ class BuildScriptExecutors extends Command
             }
             throw $e;
         } finally {
-            if ($this->packagePath && file_exists($this->packagePath.'/Dockerfile.custom')) {
-                unlink($this->packagePath.'/Dockerfile.custom');
+            if ($this->packagePath && file_exists($this->packagePath . '/Dockerfile.custom')) {
+                unlink($this->packagePath . '/Dockerfile.custom');
             }
             if ($this->pidFilePath) {
                 unlink($this->pidFilePath);
@@ -99,7 +99,7 @@ class BuildScriptExecutors extends Command
         }
         $lang = $scriptExecutor->language;
 
-        if (! $this->option('rebuild')) {
+        if (!$this->option('rebuild')) {
             $this->info('Attempting to use an existing docker image');
             if ($scriptExecutor->dockerImageExists()) {
                 $this->info('Already associated with a docker image');
@@ -129,30 +129,30 @@ class BuildScriptExecutors extends Command
             $this->info('Generating SDK json document');
             $this->artisan('l5-swagger:generate');
 
-            $sdkDir = $packagePath.'/sdk';
+            $sdkDir = $packagePath . '/sdk';
 
-            if (! is_dir($sdkDir)) {
+            if (!is_dir($sdkDir)) {
                 mkdir($sdkDir, 0755, true);
             }
 
             $this->info('Building the SDK');
             $cmd = "processmaker:sdk $sdkLanguage $sdkDir --clean";
             if ($this->userId) {
-                $cmd .= ' --user-id='.$this->userId;
+                $cmd .= ' --user-id=' . $this->userId;
             }
             $this->artisan($cmd);
             $this->info("SDK is at ${sdkDir}");
         }
 
-        $dockerfile = ScriptExecutor::initDockerfile($lang)."\n".$scriptExecutor->config;
+        $dockerfile = ScriptExecutor::initDockerfile($lang) . "\n" . $scriptExecutor->config;
 
-        $this->info("Dockerfile:\n  ".implode("\n  ", explode("\n", $dockerfile)));
-        file_put_contents($packagePath.'/Dockerfile.custom', $dockerfile);
+        $this->info("Dockerfile:\n  " . implode("\n  ", explode("\n", $dockerfile)));
+        file_put_contents($packagePath . '/Dockerfile.custom', $dockerfile);
 
         $this->info('Building the docker executor');
 
         $image = $scriptExecutor->dockerImageName();
-        $command = Docker::command()." build --build-arg SDK_DIR=/sdk -t ${image} -f ${packagePath}/Dockerfile.custom ${packagePath}";
+        $command = Docker::command() . " build --build-arg SDK_DIR=/sdk -t ${image} -f ${packagePath}/Dockerfile.custom ${packagePath}";
 
         if ($this->userId) {
             $this->runProc(
@@ -177,7 +177,7 @@ class BuildScriptExecutors extends Command
     public function info($text, $verbosity = null)
     {
         if ($this->userId) {
-            $this->sendEvent($text."\n", 'running');
+            $this->sendEvent($text . "\n", 'running');
         }
         parent::info($text, $verbosity);
     }
@@ -210,7 +210,7 @@ class BuildScriptExecutors extends Command
 
         $start();
 
-        while (! feof($pipes[1])) {
+        while (!feof($pipes[1])) {
             $callback(fgets($pipes[1]));
         }
 
@@ -227,8 +227,8 @@ class BuildScriptExecutors extends Command
         $images = ScriptExecutor::listOfExecutorImages($executor->language);
         $instance = config('app.instance');
         foreach ($images as $image) {
-            if (! preg_match('/executor-'.$instance.'-.+-(\d+):/', $image, $match)) {
-                throw new \Exception('Not a valid image:'.(string) $image);
+            if (!preg_match('/executor-' . $instance . '-.+-(\d+):/', $image, $match)) {
+                throw new \Exception('Not a valid image:' . (string) $image);
             }
             $id = intval($match[1]);
             $existingExecutor = ScriptExecutor::find($id);
@@ -247,7 +247,7 @@ class BuildScriptExecutors extends Command
 
     private function renameDockerImage($old, $new)
     {
-        system(Docker::command()." tag $old $new");
-        system(Docker::command()." rmi $old");
+        system(Docker::command() . " tag $old $new");
+        system(Docker::command() . " rmi $old");
     }
 }

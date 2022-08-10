@@ -30,7 +30,7 @@ class GlobalScriptsManager
         foreach ($this->javascriptRegistry as $script) {
             $path = public_path($script);
             $time = file_exists($path) ? filemtime($path) : 0;
-            $scripts[] = $script.($time ? "?t=$time" : '');
+            $scripts[] = $script . ($time ? "?t=$time" : '');
         }
 
         return $scripts;

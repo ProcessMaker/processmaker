@@ -46,7 +46,7 @@ class ScriptResponseEvent implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('ProcessMaker.Models.User.'.$this->userId);
+        return new PrivateChannel('ProcessMaker.Models.User.' . $this->userId);
     }
 
     /**
@@ -68,7 +68,7 @@ class ScriptResponseEvent implements ShouldBroadcastNow
         $response = $this->cacheResponse($this->response);
 
         return [
-            'type' => '.'.\get_class($this),
+            'type' => '.' . \get_class($this),
             'name' => __('Script executed'),
             'dateTime' => $date->toIso8601String(),
             'status' => $this->status,

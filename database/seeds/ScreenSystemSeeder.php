@@ -26,7 +26,7 @@ class ScreenSystemSeeder extends Seeder
                 }
             }
 
-            if (! $screen) {
+            if (!$screen) {
                 $screen = new Screen();
                 $screen->fill([
                     'title' => $json[0]->name,

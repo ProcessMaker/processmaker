@@ -24,7 +24,7 @@ class AddFieldsToSettingsTable extends Migration
             $table->json('ui')->after('readonly')->nullable();
         });
 
-        if (! Permission::where('name', 'view-settings')->first()) {
+        if (!Permission::where('name', 'view-settings')->first()) {
             factory(Permission::class)->create([
                 'title' => 'View Settings',
                 'name' => 'view-settings',
@@ -32,7 +32,7 @@ class AddFieldsToSettingsTable extends Migration
             ]);
         }
 
-        if (! Permission::where('name', 'update-settings')->first()) {
+        if (!Permission::where('name', 'update-settings')->first()) {
             factory(Permission::class)->create([
                 'title' => 'Update Settings',
                 'name' => 'update-settings',

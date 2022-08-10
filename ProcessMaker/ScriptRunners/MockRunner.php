@@ -23,7 +23,7 @@ class MockRunner
             throw new ScriptTimeoutException('Script timed out');
         }
 
-        putenv('HOST_URL='.config('app.docker_host_url'));
+        putenv('HOST_URL=' . config('app.docker_host_url'));
         if (Str::startsWith($code, '<?php')) {
             $res = eval(str_replace('<?php', '', $code));
         } else {

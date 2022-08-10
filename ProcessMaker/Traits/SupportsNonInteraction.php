@@ -11,7 +11,7 @@ trait SupportsNonInteraction
 
     private function interactive()
     {
-        return ! $this->option('no-interaction');
+        return !$this->option('no-interaction');
     }
 
     private function confirmOptional($param, $question)
@@ -100,7 +100,7 @@ trait SupportsNonInteraction
     {
         $this->error($string);
 
-        if (! $this->interactive()) {
+        if (!$this->interactive()) {
             exit(255);
         }
     }

@@ -75,8 +75,8 @@ class SignalTest extends TestCase
         $page = 1;
         $perPage = 10;
 
-        $route = route($this->resource.'.index');
-        $response = $this->apiCall('GET', $route.'?page='.$page.'&per_page='.$perPage);
+        $route = route($this->resource . '.index');
+        $response = $this->apiCall('GET', $route . '?page=' . $page . '&per_page=' . $perPage);
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -108,8 +108,8 @@ class SignalTest extends TestCase
         $page = 2;
         $perPage = 10;
 
-        $route = route($this->resource.'.index');
-        $response = $this->apiCall('GET', $route.'?page='.$page.'&per_page='.$perPage);
+        $route = route($this->resource . '.index');
+        $response = $this->apiCall('GET', $route . '?page=' . $page . '&per_page=' . $perPage);
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -141,8 +141,8 @@ class SignalTest extends TestCase
         $page = 1;
         $perPage = 10;
 
-        $route = route($this->resource.'.index');
-        $response = $this->apiCall('GET', $route.'?page='.$page.'&per_page='.$perPage);
+        $route = route($this->resource . '.index');
+        $response = $this->apiCall('GET', $route . '?page=' . $page . '&per_page=' . $perPage);
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -173,7 +173,7 @@ class SignalTest extends TestCase
         $signalFound = SignalManager::findSignal($signal['id']);
         $this->assertEquals($signal['id'], $signalFound->getId());
 
-        $route = route($this->resource.'.destroy', $signal['id']);
+        $route = route($this->resource . '.destroy', $signal['id']);
         $response = $this->apiCall('DELETE', $route);
 
         // Assert response 201
@@ -193,16 +193,16 @@ class SignalTest extends TestCase
         $signal = $this->createSignal()[0];
 
         // Create process with the signal assigned
-        $bpmnContent = file_get_contents(__DIR__.'/processes/SignalSimple.bpmn');
+        $bpmnContent = file_get_contents(__DIR__ . '/processes/SignalSimple.bpmn');
         $process = factory(Process::class)->create([
-            'bpmn' => str_replace(['signalRef="MySignalID"', 'id="MySignalID"'], ['signalRef="'.$signal['id'].'"', 'id="'.$signal['id'].'"'], $bpmnContent),
+            'bpmn' => str_replace(['signalRef="MySignalID"', 'id="MySignalID"'], ['signalRef="' . $signal['id'] . '"', 'id="' . $signal['id'] . '"'], $bpmnContent),
         ]);
 
         // Assert signal was created
         $signalFound = SignalManager::findSignal($signal['id']);
         $this->assertEquals($signal['id'], $signalFound->getId());
 
-        $route = route($this->resource.'.destroy', $signal['id']);
+        $route = route($this->resource . '.destroy', $signal['id']);
         $response = $this->apiCall('DELETE', $route);
 
         // Assert response 403
@@ -232,10 +232,10 @@ class SignalTest extends TestCase
         $this->assertEquals($signal['id'], $signalFound->getId());
 
         $data = [
-            'name' => $signal['name'].'-MODIFIED',
-            'id' => $signal['id'].'-MODIFIED',
+            'name' => $signal['name'] . '-MODIFIED',
+            'id' => $signal['id'] . '-MODIFIED',
         ];
-        $route = route($this->resource.'.update', [$signal['id']]);
+        $route = route($this->resource . '.update', [$signal['id']]);
         $response = $this->apiCall('PUT', $route, $data);
 
         // Assert response 200
@@ -259,9 +259,9 @@ class SignalTest extends TestCase
         $systemProcessCategory = factory(ProcessCategory::class)->create(['is_system' => true]);
 
         // Create process with the signal assigned
-        $bpmnContent = file_get_contents(__DIR__.'/processes/SignalSimple.bpmn');
+        $bpmnContent = file_get_contents(__DIR__ . '/processes/SignalSimple.bpmn');
         $process = factory(Process::class)->create([
-            'bpmn' => str_replace(['signalRef="MySignalID"', 'id="MySignalID"'], ['signalRef="'.$signal['id'].'"', 'id="'.$signal['id'].'"'], $bpmnContent),
+            'bpmn' => str_replace(['signalRef="MySignalID"', 'id="MySignalID"'], ['signalRef="' . $signal['id'] . '"', 'id="' . $signal['id'] . '"'], $bpmnContent),
             'process_category_id' => $systemProcessCategory,
         ]);
 
@@ -270,10 +270,10 @@ class SignalTest extends TestCase
         $this->assertEquals($signal['id'], $signalFound->getId());
 
         $data = [
-            'name' => $signal['name'].'-MODIFIED',
-            'id' => $signal['id'].'-MODIFIED',
+            'name' => $signal['name'] . '-MODIFIED',
+            'id' => $signal['id'] . '-MODIFIED',
         ];
-        $route = route($this->resource.'.update', [$signal['id']]);
+        $route = route($this->resource . '.update', [$signal['id']]);
         $response = $this->apiCall('PUT', $route, $data);
 
         // Assert response 403

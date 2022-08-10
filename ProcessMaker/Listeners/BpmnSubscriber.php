@@ -69,9 +69,9 @@ class BpmnSubscriber
         // free the reserved memory
         $this->memory = null;
 
-        file_put_contents($path.'/unhandled_error.txt', $token->id."\n", FILE_APPEND);
-        if (! is_null($err = error_get_last()) && in_array($err['type'], [E_ERROR])) {
-            Log::error('Script/Service task failed with unhandled system error: '.print_r($err, true));
+        file_put_contents($path . '/unhandled_error.txt', $token->id . "\n", FILE_APPEND);
+        if (!is_null($err = error_get_last()) && in_array($err['type'], [E_ERROR])) {
+            Log::error('Script/Service task failed with unhandled system error: ' . print_r($err, true));
         }
     }
 
@@ -101,7 +101,7 @@ class BpmnSubscriber
         if ($event->instance->isNonPersistent()) {
             return;
         }
-        Log::info('Process created: '.json_encode($event->instance->getProperties()));
+        Log::info('Process created: ' . json_encode($event->instance->getProperties()));
 
         $notifiables = $event->instance->getNotifiables('started');
         Notification::send($notifiables, new ProcessCreatedNotification($event->instance));
@@ -118,7 +118,7 @@ class BpmnSubscriber
         if ($token->getInstance()->isNonPersistent()) {
             return;
         }
-        Log::info('Activity activated: '.json_encode($token->getProperties()));
+        Log::info('Activity activated: ' . json_encode($token->getProperties()));
 
         // Do not send activated notification for self service tasks since
         // they do not have a user assigned yet.
@@ -140,7 +140,7 @@ class BpmnSubscriber
         if ($token->getInstance()->isNonPersistent()) {
             return;
         }
-        Log::info('Activity completed: '.json_encode($token->getProperties()));
+        Log::info('Activity completed: ' . json_encode($token->getProperties()));
 
         if ($token->element_type == 'task') {
             $notifiables = $token->getNotifiables('completed');
@@ -156,7 +156,7 @@ class BpmnSubscriber
      */
     public function onActivityClosed(ActivityClosedEvent $event)
     {
-        Log::info('ActivityClosed: '.json_encode($event->token->getProperties()));
+        Log::info('ActivityClosed: ' . json_encode($event->token->getProperties()));
     }
 
     /**
@@ -186,7 +186,7 @@ class BpmnSubscriber
         try {
             WorkflowManager::runScripTask($scriptTask, $token);
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::Error('Unhandled error when running a script task:'.$e->getMessage());
+            \Illuminate\Support\Facades\Log::Error('Unhandled error when running a script task:' . $e->getMessage());
         }
     }
 
@@ -202,7 +202,7 @@ class BpmnSubscriber
         try {
             WorkflowManager::runServiceTask($serviceTask, $token);
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::Error('Unhandled error when running a service task:'.$e->getMessage());
+            \Illuminate\Support\Facades\Log::Error('Unhandled error when running a service task:' . $e->getMessage());
         }
     }
 
@@ -266,7 +266,7 @@ class BpmnSubscriber
             $data = array_merge($data, [$variable => $expressionResult]);
             $data = $data;
             $instance->getDataStore()->setData($data);
-            if (! $instance->isNonPersistent()) {
+            if (!$instance->isNonPersistent()) {
                 $instance->data = $data;
                 $instance->saveOrFail();
             }
@@ -291,22 +291,22 @@ class BpmnSubscriber
      */
     public function subscribe($events)
     {
-        $events->listen(TransitionInterface::EVENT_CONDITIONED_TRANSITION, static::class.'@updateDataWithFlowTransition');
+        $events->listen(TransitionInterface::EVENT_CONDITIONED_TRANSITION, static::class . '@updateDataWithFlowTransition');
 
-        $events->listen(ProcessInterface::EVENT_PROCESS_INSTANCE_CREATED, static::class.'@onProcessCreated');
-        $events->listen(ProcessInterface::EVENT_PROCESS_INSTANCE_COMPLETED, static::class.'@onProcessCompleted');
+        $events->listen(ProcessInterface::EVENT_PROCESS_INSTANCE_CREATED, static::class . '@onProcessCreated');
+        $events->listen(ProcessInterface::EVENT_PROCESS_INSTANCE_COMPLETED, static::class . '@onProcessCompleted');
 
-        $events->listen(ActivityInterface::EVENT_ACTIVITY_COMPLETED, static::class.'@onActivityCompleted');
-        $events->listen(ActivityInterface::EVENT_ACTIVITY_CLOSED, static::class.'@onActivityClosed');
+        $events->listen(ActivityInterface::EVENT_ACTIVITY_COMPLETED, static::class . '@onActivityCompleted');
+        $events->listen(ActivityInterface::EVENT_ACTIVITY_CLOSED, static::class . '@onActivityClosed');
 
-        $events->listen(ActivityInterface::EVENT_ACTIVITY_ACTIVATED, static::class.'@onActivityActivated');
-        $events->listen(ScriptTaskInterface::EVENT_SCRIPT_TASK_ACTIVATED, static::class.'@onScriptTaskActivated');
-        $events->listen(ServiceTaskInterface::EVENT_SERVICE_TASK_ACTIVATED, static::class.'@onServiceTaskActivated');
+        $events->listen(ActivityInterface::EVENT_ACTIVITY_ACTIVATED, static::class . '@onActivityActivated');
+        $events->listen(ScriptTaskInterface::EVENT_SCRIPT_TASK_ACTIVATED, static::class . '@onScriptTaskActivated');
+        $events->listen(ServiceTaskInterface::EVENT_SERVICE_TASK_ACTIVATED, static::class . '@onServiceTaskActivated');
 
-        $events->listen(ActivityInterface::EVENT_ACTIVITY_EXCEPTION, static::class.'@onActivityException');
+        $events->listen(ActivityInterface::EVENT_ACTIVITY_EXCEPTION, static::class . '@onActivityException');
 
-        $events->listen(IntermediateCatchEventInterface::EVENT_CATCH_TOKEN_ARRIVES, static::class.'@onIntermediateCatchEventActivated');
+        $events->listen(IntermediateCatchEventInterface::EVENT_CATCH_TOKEN_ARRIVES, static::class . '@onIntermediateCatchEventActivated');
 
-        $events->listen(TerminateEventDefinitionInterface::EVENT_THROW_EVENT_DEFINITION, static::class.'@onTerminateEndEvent');
+        $events->listen(TerminateEventDefinitionInterface::EVENT_THROW_EVENT_DEFINITION, static::class . '@onTerminateEndEvent');
     }
 }

@@ -29,7 +29,7 @@ trait ExtendedPMQL
      */
     public function scopePMQL(Builder $builder, string $query, callable $callback = null, User $user = null)
     {
-        if (! $callback) {
+        if (!$callback) {
             // If a callback isn't passed to the scope, we handle it here
             return $this->parentScopePMQL($builder, $query, function ($expression) use ($builder, $user) {
                 return $this->handle($expression, $builder, $user);

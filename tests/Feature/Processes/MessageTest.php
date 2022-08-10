@@ -29,7 +29,7 @@ class MessageTest extends TestCase
             'bpmn' => str_replace(
                 '[script_id]',
                 $script->id,
-                file_get_contents(__DIR__.'/../../Fixtures/message_test.bpmn')
+                file_get_contents(__DIR__ . '/../../Fixtures/message_test.bpmn')
             ),
         ]);
 

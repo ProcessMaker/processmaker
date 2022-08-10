@@ -63,8 +63,8 @@ class FileController extends Controller
         $query = Media::query();
         $filter = $request->input('filter', '');
 
-        if (! empty($filter)) {
-            $filter = '%'.$filter.'%';
+        if (!empty($filter)) {
+            $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('file_name', 'like', $filter)
                     ->orWhere('mime_type', 'like', $filter);
@@ -159,7 +159,7 @@ class FileController extends Controller
         // The model class can be a name or a full path
         $classOptions = [
             $request->query('model', null),
-            'ProcessMaker\\Models\\'.ucwords($request->query('model', null)),
+            'ProcessMaker\\Models\\' . ucwords($request->query('model', null)),
         ];
 
         // Check for the model class until we find a match
@@ -171,7 +171,7 @@ class FileController extends Controller
         }
 
         // If no model info was sent in the request
-        if (! $modelClass || ! $modelId) {
+        if (!$modelClass || !$modelId) {
             throw new NotFoundHttpException();
         }
 
@@ -266,8 +266,8 @@ class FileController extends Controller
      */
     public function download(Media $file)
     {
-        $path = Storage::disk('public')->getAdapter()->getPathPrefix().
-                $file->id.'/'.
+        $path = Storage::disk('public')->getAdapter()->getPathPrefix() .
+                $file->id . '/' .
                 $file->file_name;
 
         return response()->download($path);

@@ -47,7 +47,7 @@ trait HasScreenFields
 
     public function walkArray($array, $key = null)
     {
-        if (! is_array($array)) {
+        if (!is_array($array)) {
             $array = json_decode($array);
         }
 
@@ -65,7 +65,7 @@ trait HasScreenFields
 
     public function parseItem($item)
     {
-        if (isset($item['component']) && ! in_array($item['component'], $this->restrictedComponents)) {
+        if (isset($item['component']) && !in_array($item['component'], $this->restrictedComponents)) {
             $this->parsedFields->push(new Column([
                 'field' => $this->parseItemName($item),
                 'label' => $this->parseItemLabel($item),

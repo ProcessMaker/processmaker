@@ -23,7 +23,7 @@ trait ProcessTaskAssignmentsTrait
 
     public static function updateTaskAssignments(Process $process)
     {
-        if (! $process->exists) {
+        if (!$process->exists) {
             return;
         }
         $process->assignments()->delete();
@@ -64,7 +64,7 @@ trait ProcessTaskAssignmentsTrait
             );
             if ($users) {
                 foreach ($users as $user) {
-                    if (! empty($user)) {
+                    if (!empty($user)) {
                         $assignments[] = [
                             'process_task_id' => $node->getAttribute('id'),
                             'assignment_id' => $user,
@@ -80,7 +80,7 @@ trait ProcessTaskAssignmentsTrait
             );
             if ($groups) {
                 foreach ($groups as $group) {
-                    if (! empty($group)) {
+                    if (!empty($group)) {
                         $assignments[] = [
                             'process_task_id' => $node->getAttribute('id'),
                             'assignment_id' => $group,

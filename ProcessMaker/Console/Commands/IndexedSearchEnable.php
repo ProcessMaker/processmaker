@@ -153,7 +153,7 @@ class IndexedSearchEnable extends Command
 
         if (in_array($driver, ['elasticsearch', 'sqlite'])) {
             if ($driver === 'elasticsearch') {
-                if (! $url) {
+                if (!$url) {
                     exit($this->error('No URL provided for Elasticsearch.'));
                 }
             }
@@ -171,8 +171,8 @@ class IndexedSearchEnable extends Command
         if ($driver === 'Elasticsearch') {
             $url = $this->ask('What is the full URL to your Elasticsearch server (including protocol and port number)?');
             $prefix = $this->ask(
-                "What unique prefix would you like to apply to your indices?\n ".
-                "This is needed if using one Elasticache server for multiple ProcessMaker 4 instances.\n ".
+                "What unique prefix would you like to apply to your indices?\n " .
+                "This is needed if using one Elasticache server for multiple ProcessMaker 4 instances.\n " .
                 'Leave empty for none'
             );
         }
@@ -188,8 +188,8 @@ class IndexedSearchEnable extends Command
     {
         if ($this->interactive()) {
             $confirmed = $this->confirm(
-                "Running this command will index data from Requests, Tasks, and packages that support indexed search.\n ".
-                "This may take a very long time and consume system resources on large datasets.\n\n ".
+                "Running this command will index data from Requests, Tasks, and packages that support indexed search.\n " .
+                "This may take a very long time and consume system resources on large datasets.\n\n " .
                 'Are you sure you wish to proceed?'
             );
         } else {

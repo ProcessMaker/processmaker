@@ -105,10 +105,10 @@ class ScreenController extends Controller
      */
     public function download(Screen $screen, $key)
     {
-        $fileName = trim($screen->title).'.json';
+        $fileName = trim($screen->title) . '.json';
         $fileContents = Cache::get($key);
 
-        if (! $fileContents) {
+        if (!$fileContents) {
             return abort(404);
         } else {
             return response()->streamDownload(function () use ($fileContents) {

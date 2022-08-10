@@ -53,7 +53,7 @@ class CssOverrideController extends Controller
      */
     public function store(Request $request)
     {
-        if (! Auth::user()->is_administrator) {
+        if (!Auth::user()->is_administrator) {
             throw new AuthorizationException(__('Not authorized to complete this request.'));
         }
 
@@ -61,7 +61,7 @@ class CssOverrideController extends Controller
 
         $setting = Setting::byKey('css-override');
 
-        if (! $setting) {
+        if (!$setting) {
             $setting = new Setting();
         }
 
@@ -132,7 +132,7 @@ class CssOverrideController extends Controller
 
     public function update(Request $request)
     {
-        if (! Auth::user()->is_administrator) {
+        if (!Auth::user()->is_administrator) {
             throw new AuthorizationException(__('Not authorized to complete this request.'));
         }
 
@@ -179,9 +179,9 @@ class CssOverrideController extends Controller
         // Now generate the _colors.scss file
         $contents = "// Changed theme colors\n";
         foreach ($data as $key => $value) {
-            $contents .= $value['id'].': '.$value['value'].";\n";
+            $contents .= $value['id'] . ': ' . $value['value'] . ";\n";
         }
-        File::put(app()->resourcePath('sass').'/_colors.scss', $contents);
+        File::put(app()->resourcePath('sass') . '/_colors.scss', $contents);
     }
 
     /**
@@ -195,8 +195,8 @@ class CssOverrideController extends Controller
         $sansSerif = $sansSerif ? $sansSerif : $this->sansSerifFontDefault();
         // Generate the _fonts.scss file
         $contents = "// Changed theme fonts\n";
-        $contents .= '$font-family-sans-serif: '.$sansSerif->id." !default;\n";
-        File::put(app()->resourcePath('sass').'/_fonts.scss', $contents);
+        $contents .= '$font-family-sans-serif: ' . $sansSerif->id . " !default;\n";
+        File::put(app()->resourcePath('sass') . '/_fonts.scss', $contents);
     }
 
     /**
@@ -275,7 +275,7 @@ class CssOverrideController extends Controller
             $data = substr($data[$filename], strpos($data[$filename], ',') + 1);
             $type = strtolower($type[1]); // jpg, png, gif
 
-            if (! in_array($type, ['jpg', 'jpeg', 'gif', 'png'])) {
+            if (!in_array($type, ['jpg', 'jpeg', 'gif', 'png'])) {
                 throw new \Exception('invalid image type');
             }
 
@@ -289,7 +289,7 @@ class CssOverrideController extends Controller
 
             $setting->addMedia("/tmp/img.{$type}")
                 ->toMediaCollection($collectionName, $diskName);
-        } elseif (isset($data[$filename]) && ! empty($data[$filename]) && $data[$filename] != 'null') {
+        } elseif (isset($data[$filename]) && !empty($data[$filename]) && $data[$filename] != 'null') {
             $customMessage = ['mimes' => __('The :attribute must be a file of type: jpg, jpeg, png, or gif.')];
             $this->validate($request, [$filename => '  mimes:jpg,jpeg,png,gif'], $customMessage);
             $setting->addMedia($request->file($filename))

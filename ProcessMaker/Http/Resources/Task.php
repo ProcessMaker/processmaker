@@ -103,7 +103,7 @@ class Task extends ApiResource
 
     private function addUser($data, $user)
     {
-        if (! $user) {
+        if (!$user) {
             return $data;
         }
 
@@ -111,7 +111,7 @@ class Task extends ApiResource
         unset($userData['remember_token']);
 
         $data = array_merge($data, ['_user' => $userData]);
-        if (! empty($this->token_properties['data'])) {
+        if (!empty($this->token_properties['data'])) {
             $data = array_merge($data, $this->token_properties['data']);
         }
 

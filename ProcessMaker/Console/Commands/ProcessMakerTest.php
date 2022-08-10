@@ -58,7 +58,7 @@ class ProcessMakerTest extends Command
         try {
             $callback();
         } catch (Throwable $error) {
-            $this->error("[{$name}] ".$error->getMessage());
+            $this->error("[{$name}] " . $error->getMessage());
 
             return false;
         }
@@ -128,7 +128,7 @@ class ProcessMakerTest extends Command
             }
             sleep(1);
         }
-        throw new Exception('FAILED: '.$name);
+        throw new Exception('FAILED: ' . $name);
     }
 
     private function testDockerService()
@@ -147,13 +147,13 @@ class ProcessMakerTest extends Command
         $script->script_executor_id = $executor->id;
         $script->code = $code;
         $res = $script->runScript(['foo' => 'bar'], ['conf'=>'val']);
-        if (! is_array($res) || empty($res['output'])) {
+        if (!is_array($res) || empty($res['output'])) {
             throw new Exception("Failed execution of `{$language}` script.");
         }
         if (json_encode($res['output']['data1']) !== '{"foo":"bar"}' ||
             json_encode($res['output']['config1']) !== '{"conf":"val"}'
         ) {
-            throw new Exception("Unexpected response of the {$language} script execution.\n".json_encode($res['output']));
+            throw new Exception("Unexpected response of the {$language} script execution.\n" . json_encode($res['output']));
         }
     }
 
@@ -176,7 +176,7 @@ class ProcessMakerTest extends Command
     {
         $email = $this->ask('Send email to');
         Mail::to($email)->send(new TestStatusEmail());
-        $this->info('An email was sent to '.$email.'. Please open it to complete the email test.');
+        $this->info('An email was sent to ' . $email . '. Please open it to complete the email test.');
         $this->waitTestPassed('Email received');
     }
 }

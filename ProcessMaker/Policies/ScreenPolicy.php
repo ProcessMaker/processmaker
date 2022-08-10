@@ -26,13 +26,13 @@ class ScreenPolicy
         }
 
         $taskId = request()->input('task');
-        if (! $taskId) {
+        if (!$taskId) {
             return false;
         }
 
         $task = ProcessRequestToken::findOrFail($taskId);
 
-        if (! $user->can('update', $task)) {
+        if (!$user->can('update', $task)) {
             return false;
         }
 

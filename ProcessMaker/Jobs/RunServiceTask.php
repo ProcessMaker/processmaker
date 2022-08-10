@@ -60,7 +60,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
     public function action(ProcessRequestToken $token = null, ServiceTaskInterface $element = null, Definitions $processModel, ProcessRequest $instance)
     {
         // Exit if the task was completed or closed
-        if (! $token || ! $element) {
+        if (!$token || !$element) {
             return;
         }
         $implementation = $element->getImplementation();
@@ -78,8 +78,8 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
             // Check if service task implementation exists
             $existsImpl = WorkflowManager::existsServiceImplementation($implementation);
 
-            if (! $existsImpl && empty($script)) {
-                throw new ScriptException('Service task not implemented: '.$implementation);
+            if (!$existsImpl && empty($script)) {
+                throw new ScriptException('Service task not implemented: ' . $implementation);
             }
 
             $this->unlock();
@@ -95,7 +95,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
             }
             $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
                 // Exit if the task was completed or closed
-                if (! $token || ! $element) {
+                if (!$token || !$element) {
                     return;
                 }
                 // Update data
@@ -116,7 +116,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
             $error = $element->getRepository()->createError();
             $error->setName($exception->getMessage());
             $token->setProperty('error', $error);
-            Log::info('Service task failed: '.$implementation.' - '.$exception->getMessage());
+            Log::info('Service task failed: ' . $implementation . ' - ' . $exception->getMessage());
             Log::error($exception->getTraceAsString());
         }
     }
@@ -126,12 +126,12 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
      */
     public function failed(Throwable $exception)
     {
-        if (! $this->tokenId) {
-            Log::error('Script failed: '.$exception->getMessage());
+        if (!$this->tokenId) {
+            Log::error('Script failed: ' . $exception->getMessage());
 
             return;
         }
-        Log::error('Script (#'.$this->tokenId.') failed: '.$exception->getMessage());
+        Log::error('Script (#' . $this->tokenId . ') failed: ' . $exception->getMessage());
         Log::error($exception->getTraceAsString());
         $token = ProcessRequestToken::find($this->tokenId);
         if ($token) {

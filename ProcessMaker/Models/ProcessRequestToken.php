@@ -305,7 +305,7 @@ class ProcessRequestToken extends Model implements TokenInterface
         $process = $request->processVersion ?: $request->process;
         $definitions = $process->getDefinitions();
         $element = $definitions->findElementById($this->element_id);
-        if (! $element) {
+        if (!$element) {
             return [];
         }
 
@@ -347,7 +347,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     {
         $screen = $this->getScreen();
 
-        if (! $screen) {
+        if (!$screen) {
             return null;
         }
 
@@ -365,7 +365,7 @@ class ProcessRequestToken extends Model implements TokenInterface
         $interstitialScreen = $this->getInterstitial()['interstitial_screen'];
         $screenIds = [];
 
-        if (! $taskScreen && ! $interstitialScreen) {
+        if (!$taskScreen && !$interstitialScreen) {
             $screenIds = [];
         }
 
@@ -407,7 +407,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     {
         $script = $this->getScript();
 
-        if (! $script) {
+        if (!$script) {
             return null;
         }
 
@@ -429,7 +429,7 @@ class ProcessRequestToken extends Model implements TokenInterface
             $result = 'overdue';
         }
 
-        if (! $isOverdue && $this->status === 'ACTIVE') {
+        if (!$isOverdue && $this->status === 'ACTIVE') {
             $result = 'open';
         }
 
@@ -518,7 +518,7 @@ class ProcessRequestToken extends Model implements TokenInterface
                 $query->whereIn('id', $matches);
             }
         } else {
-            $filter = '%'.mb_strtolower($filter).'%';
+            $filter = '%' . mb_strtolower($filter) . '%';
             $query->where(function ($query) use ($filter) {
                 $query->where(DB::raw('LOWER(element_name)'), 'like', $filter)
                     ->orWhere(DB::raw('LOWER(data)'), 'like', $filter)
@@ -602,7 +602,7 @@ class ProcessRequestToken extends Model implements TokenInterface
 
         return function ($query) use ($value, $statusMap, $expression, $user) {
             if ($value === 'self service') {
-                if (! $user) {
+                if (!$user) {
                     $user = auth()->user();
                 }
 
@@ -680,7 +680,7 @@ class ProcessRequestToken extends Model implements TokenInterface
                 $field = $expression->field->field();
                 $operator = $expression->operator;
                 if (is_string($value)) {
-                    $value = '"'.$value.'"';
+                    $value = '"' . $value . '"';
                 }
 
                 $pmql = "$field $operator $value";
@@ -776,7 +776,7 @@ class ProcessRequestToken extends Model implements TokenInterface
 
     public function persistUserData($user)
     {
-        if (! is_a($user, User::class)) {
+        if (!is_a($user, User::class)) {
             $user = User::find($user);
         }
 
@@ -919,7 +919,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     {
         $definition = $this->getDefinition(true);
         $config = json_decode($definition->getProperty('config', '{}'), true);
-        if (! empty($config) && \is_array($config)) {
+        if (!empty($config) && \is_array($config)) {
             return Arr::get($config, $key, $default);
         }
 

@@ -83,7 +83,7 @@ class LoginController extends Controller
 
         // Check the status of the user
         $user = User::where('username', $request->input('username'))->first();
-        if (! $user || $user->status === 'INACTIVE') {
+        if (!$user || $user->status === 'INACTIVE') {
             $this->sendFailedLoginResponse($request);
         }
 

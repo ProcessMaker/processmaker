@@ -63,7 +63,7 @@ class RequestController extends Controller
      */
     public function show(ProcessRequest $request, Media $mediaItems)
     {
-        if (! request()->input('skipInterstitial') && $request->status === 'ACTIVE') {
+        if (!request()->input('skipInterstitial') && $request->status === 'ACTIVE') {
             $startEvent = $request->tokens()->orderBy('id')->first();
             if ($startEvent) {
                 $definition = $startEvent->getDefinition();
@@ -85,16 +85,16 @@ class RequestController extends Controller
 
         $userHasCommentsForRequest = Comment::where('commentable_type', ProcessRequest::class)
                 ->where('commentable_id', $request->id)
-                ->where('body', 'like', '%{{'.\Auth::user()->id.'}}%')
+                ->where('body', 'like', '%{{' . \Auth::user()->id . '}}%')
                 ->count() > 0;
 
         $requestMedia = $request->media()->get()->pluck('id');
         $userHasCommentsForMedia = Comment::where('commentable_type', \ProcessMaker\Models\Media::class)
                 ->whereIn('commentable_id', $requestMedia)
-                ->where('body', 'like', '%{{'.\Auth::user()->id.'}}%')
+                ->where('body', 'like', '%{{' . \Auth::user()->id . '}}%')
                 ->count() > 0;
 
-        if (! $userHasCommentsForMedia && ! $userHasCommentsForRequest) {
+        if (!$userHasCommentsForMedia && !$userHasCommentsForRequest) {
             $this->authorize('view', $request);
         }
 
@@ -131,7 +131,7 @@ class RequestController extends Controller
     public function screenPreview(ProcessRequest $request, ProcessRequestToken $task, ScreenVersion $screen)
     {
         $this->authorize('view', $request);
-        if (! $this->canUserPrintScreen($request)) {
+        if (!$this->canUserPrintScreen($request)) {
             //user without permissions
             return redirect('403');
         }
@@ -174,7 +174,7 @@ class RequestController extends Controller
     public function downloadFiles(ProcessRequest $request, Media $media)
     {
         $ids = $request->getMedia()->pluck('id');
-        if (! $ids->contains($media->id)) {
+        if (!$ids->contains($media->id)) {
             abort(403);
         }
 

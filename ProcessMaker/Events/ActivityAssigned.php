@@ -48,7 +48,7 @@ class ActivityAssigned implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('ProcessMaker.Models.ProcessRequest.'.$this->processRequest->getKey());
+        return new PrivateChannel('ProcessMaker.Models.ProcessRequest.' . $this->processRequest->getKey());
     }
 
     /**

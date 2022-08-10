@@ -42,12 +42,12 @@ class SettingController extends Controller
         $query->select('group')->groupBy('group');
 
         $filter = $request->input('filter', '');
-        if (! empty($filter)) {
+        if (!empty($filter)) {
             $query->filterGroups($filter);
         }
 
         $pmql = $request->input('pmql', '');
-        if (! empty($pmql)) {
+        if (!empty($pmql)) {
             try {
                 $query->pmql($pmql);
             } catch (\ProcessMaker\Query\SyntaxError $e) {
@@ -128,7 +128,7 @@ class SettingController extends Controller
         $query = Setting::query();
 
         $group = $request->input('group');
-        if (! empty($group)) {
+        if (!empty($group)) {
             if ($group === 'System') {
                 $query->whereNull('group');
             } else {
@@ -137,12 +137,12 @@ class SettingController extends Controller
         }
 
         $filter = $request->input('filter', '');
-        if (! empty($filter)) {
+        if (!empty($filter)) {
             $query->filter($filter);
         }
 
         $pmql = $request->input('pmql', '');
-        if (! empty($pmql)) {
+        if (!empty($pmql)) {
             try {
                 $query->pmql($pmql);
             } catch (\ProcessMaker\Query\SyntaxError $e) {
@@ -235,7 +235,7 @@ class SettingController extends Controller
 
     public function upload(Request $request)
     {
-        if (! Auth::user()->is_administrator) {
+        if (!Auth::user()->is_administrator) {
             throw new AuthorizationException(__('Not authorized to complete this request.'));
         }
 
@@ -248,7 +248,7 @@ class SettingController extends Controller
     {
         $data = $request->all();
 
-        if (isset($data[$filename]) && ! empty($data[$filename]) && $data[$filename] != 'null') {
+        if (isset($data[$filename]) && !empty($data[$filename]) && $data[$filename] != 'null') {
             $disk = $setting->ui->is_public ? 'settings' : 'private_settings';
             Storage::disk($disk)->put($collectionName, file_get_contents($request->file($filename)));
             if (property_exists($setting->ui, 'copy_to') && $setting->ui->copy_to) {
@@ -263,7 +263,7 @@ class SettingController extends Controller
                 if ($copyTo) {
                     $this->createStoragePathIfNotExists(storage_path($copyTo));
                     copy(
-                        storage_path('app/private/settings/').$collectionName,
+                        storage_path('app/private/settings/') . $collectionName,
                         // Saving upload file into storage folder
                         // Note: $copyTo MUST always be a relative path
                         storage_path($copyTo)
@@ -281,7 +281,7 @@ class SettingController extends Controller
     private function createStoragePathIfNotExists($path)
     {
         $dir = pathinfo($path, PATHINFO_DIRNAME);
-        if (! file_exists($dir)) {
+        if (!file_exists($dir)) {
             mkdir($dir, 0755, true);
         }
     }

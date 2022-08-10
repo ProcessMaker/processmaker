@@ -15,11 +15,11 @@ class BrowserCache
      */
     public function handle($request, Closure $next)
     {
-        if (! env('BROWSER_CACHE', true)) {
+        if (!env('BROWSER_CACHE', true)) {
             $response = $next($request);
 
             // from vendor/laravel/framework/src/Illuminate/Http/Middleware/SetCacheHeaders.php
-            if (! $request->isMethodCacheable() || ! $response->getContent()) {
+            if (!$request->isMethodCacheable() || !$response->getContent()) {
                 return $response;
             }
 

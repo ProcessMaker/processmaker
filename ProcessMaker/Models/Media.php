@@ -122,7 +122,7 @@ class Media extends Model
         parent::boot();
         self::creating(function ($media) {
             $user = pmUser();
-            if (! $media->hasCustomProperty('createdBy')) {
+            if (!$media->hasCustomProperty('createdBy')) {
                 $media->setCustomProperty('createdBy', $user ? $user->id : null);
             }
             $media->setCustomProperty('updatedBy', $user ? $user->id : null);
@@ -162,7 +162,7 @@ class Media extends Model
         if ($this->isPublicFile()) {
             $route = route('file-manager.index');
 
-            return $route.'#/public/'.$this->custom_properties['data_name'];
+            return $route . '#/public/' . $this->custom_properties['data_name'];
         } else {
             return route('requests.show.files.viewer', [
                 'request' => $this->model,

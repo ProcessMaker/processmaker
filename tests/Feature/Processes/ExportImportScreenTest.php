@@ -136,7 +136,7 @@ class ExportImportScreenTest extends TestCase
     public function testImportScreenWithWatchers()
     {
         // Load the file to test
-        $fileName = __DIR__.'/../../Fixtures/screen_with_watchers.json';
+        $fileName = __DIR__ . '/../../Fixtures/screen_with_watchers.json';
 
         $file = new UploadedFile($fileName, 'screen_with_watchers.json', null, null, null, true);
 
@@ -154,7 +154,7 @@ class ExportImportScreenTest extends TestCase
     public function testImportNestedScreen()
     {
         // Load the file to test
-        $fileName = __DIR__.'/../../Fixtures/nested_screens.json';
+        $fileName = __DIR__ . '/../../Fixtures/nested_screens.json';
         $file = new UploadedFile($fileName, 'nested_screens.json', null, null, null, true);
 
         // Import the file

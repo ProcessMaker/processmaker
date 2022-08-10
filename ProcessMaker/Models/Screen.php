@@ -156,7 +156,7 @@ class Screen extends Model implements ScreenInterface
     {
         $columns = array_diff($this->columns, (array) $value);
         $columns = array_map(function ($column) {
-            return $this->table.'.'.$column;
+            return $this->table . '.' . $column;
         }, $columns);
 
         return $query->select($columns);

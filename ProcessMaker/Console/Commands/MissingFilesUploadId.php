@@ -65,7 +65,7 @@ class MissingFilesUploadId extends Command
     {
         $this->{$type}($message);
         if ($toLog) {
-            Log::Info('Garbage Collector: '.$message);
+            Log::Info('Garbage Collector: ' . $message);
         }
     }
 }

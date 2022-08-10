@@ -30,7 +30,7 @@ class PreviousTaskAssignee implements AssignmentRuleInterface
         $previous = $request->tokens()
             ->where('element_type', 'task')
             ->orderBy('id', 'desc')->first();
-        if (! $previous) {
+        if (!$previous) {
             return null;
         }
 

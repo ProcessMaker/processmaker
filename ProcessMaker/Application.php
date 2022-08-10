@@ -70,6 +70,6 @@ class Application extends IlluminateApplication
      */
     public function path($path = '')
     {
-        return $this->basePath.DIRECTORY_SEPARATOR.'ProcessMaker'.($path ? DIRECTORY_SEPARATOR.$path : $path);
+        return $this->basePath . DIRECTORY_SEPARATOR . 'ProcessMaker' . ($path ? DIRECTORY_SEPARATOR . $path : $path);
     }
 }

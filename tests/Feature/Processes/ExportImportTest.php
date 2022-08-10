@@ -62,7 +62,7 @@ class ExportImportTest extends TestCase
         $fileName = 'test_process_import_refs.json';
 
         // Load file to import
-        $file = new UploadedFile(base_path($filePath).$fileName, $fileName, null, null, null, true);
+        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
 
         // Import process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -144,7 +144,7 @@ class ExportImportTest extends TestCase
         $newWatcherScript = Script::where('title', 'Watcher Script 2')->firstOrFail();
         $scriptWatcherConfig = $this->screen02->watchers[1];
 
-        $this->assertEquals('script-'.$newWatcherScript->id, $scriptWatcherConfig['script']['id']);
+        $this->assertEquals('script-' . $newWatcherScript->id, $scriptWatcherConfig['script']['id']);
         $this->assertEquals($newWatcherScript->id, $scriptWatcherConfig['script_id']);
         $this->assertEquals(null, $scriptWatcherConfig['script_key']);
         $this->assertEquals($newWatcherScript->title, $scriptWatcherConfig['script']['title']);
@@ -152,7 +152,7 @@ class ExportImportTest extends TestCase
         $assignable = Arr::first($response->json()['assignable'], function ($a) {
             return $a['type'] === 'watcherDataSource';
         });
-        $this->assertEquals($assignable['id'], strval($this->screen02->id).'|0');
+        $this->assertEquals($assignable['id'], strval($this->screen02->id) . '|0');
 
         $assignable['value'] = ['id' => 123, 'name' => 'data source name'];
         $response = $this->apiCall('POST', route('api.processes.import.assignments', [$this->process]), [
@@ -340,7 +340,7 @@ class ExportImportTest extends TestCase
     public function test_different_assignments_should_not_be_removed_except_by_user_group()
     {
         // Load file to import
-        $file = new UploadedFile(base_path('tests/storage/process/').'test_process_import_different_tasks_assignments.json', 'test_process_import_different_tasks_assignments.json', null, null, null, true);
+        $file = new UploadedFile(base_path('tests/storage/process/') . 'test_process_import_different_tasks_assignments.json', 'test_process_import_different_tasks_assignments.json', null, null, null, true);
 
         //Import sample working process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -393,7 +393,7 @@ class ExportImportTest extends TestCase
         }
 
         //Assignments after import process
-        $response = $this->apiCall('POST', '/processes/'.$processId.'/import/assignments', [
+        $response = $this->apiCall('POST', '/processes/' . $processId . '/import/assignments', [
             'assignable' => $assignable,
         ]);
 
@@ -451,7 +451,7 @@ class ExportImportTest extends TestCase
     public function test_assignmets_after_import()
     {
         // Load file to import
-        $file = new UploadedFile(base_path('tests/storage/process/').'test_process_import.json', 'test_process_import.json', null, null, null, true);
+        $file = new UploadedFile(base_path('tests/storage/process/') . 'test_process_import.json', 'test_process_import.json', null, null, null, true);
 
         //Import process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -471,8 +471,8 @@ class ExportImportTest extends TestCase
                     $new = factory(User::class)->create(['status' => 'ACTIVE'])->toArray();
                 } else {
                     $new = $faker->randomElement([factory(User::class)->create(['status' => 'ACTIVE'])->toArray(), factory(Group::class)->create(['status' => 'ACTIVE'])->toArray()]);
-                    if (! isset($new['firstname'])) {
-                        $new['id'] = 'group-'.$new['id'];
+                    if (!isset($new['firstname'])) {
+                        $new['id'] = 'group-' . $new['id'];
                     }
                 }
                 $item['value'] = $new;
@@ -499,7 +499,7 @@ class ExportImportTest extends TestCase
         $processId = $response->json('process')['id'];
 
         //Assignments after import process
-        $response = $this->apiCall('POST', '/processes/'.$processId.'/import/assignments', [
+        $response = $this->apiCall('POST', '/processes/' . $processId . '/import/assignments', [
             'assignable' => $assignable,
             'cancel_request' => $cancelRequest,
             'edit_data' => $editData,
@@ -578,7 +578,7 @@ class ExportImportTest extends TestCase
         $fileName = 'test_process_import_invalid_text_file.json';
 
         // Load file to import
-        $file = new UploadedFile(base_path($filePath).$fileName, $fileName, null, null, null, true);
+        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
 
         // Import process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -601,7 +601,7 @@ class ExportImportTest extends TestCase
         $fileName = 'test_process_import_invalid_json_file.json';
 
         // Load file to import
-        $file = new UploadedFile(base_path($filePath).$fileName, $fileName, null, null, null, true);
+        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
 
         // Import process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -624,7 +624,7 @@ class ExportImportTest extends TestCase
         $fileName = 'test_process_import_invalid_base64_file.json';
 
         // Load file to import
-        $file = new UploadedFile(base_path($filePath).$fileName, $fileName, null, null, null, true);
+        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
 
         // Import process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -647,7 +647,7 @@ class ExportImportTest extends TestCase
         $fileName = 'test_process_import_invalid_bin_file.json';
 
         // Load file to import
-        $file = new UploadedFile(base_path($filePath).$fileName, $fileName, null, null, null, true);
+        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
 
         // Import process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -678,7 +678,7 @@ class ExportImportTest extends TestCase
         $fileName = 'test_process_multiple_assets.json';
 
         // Load file to import
-        $file = new UploadedFile(base_path($filePath).$fileName, $fileName, null, null, null, true);
+        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
 
         // Import process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -737,7 +737,7 @@ class ExportImportTest extends TestCase
         // Verify reference of watcher in nested screen
         $nested = Screen::find($screens['Nested Screen']);
         //$this->assertEquals($screens['Nested Screen'], $screen->config[0]['items'][0]['config']['screen']);
-        $this->assertEquals('script-'.$scripts['Script for Watcher'], $nested->watchers[0]['script']['id']);
+        $this->assertEquals('script-' . $scripts['Script for Watcher'], $nested->watchers[0]['script']['id']);
         $this->assertEquals($scripts['Script for Watcher'], $nested->watchers[0]['script_id']);
     }
 
@@ -748,7 +748,7 @@ class ExportImportTest extends TestCase
         });
 
         $content = file_get_contents(
-            __DIR__.'/../../Fixtures/nested_screen_process.json'
+            __DIR__ . '/../../Fixtures/nested_screen_process.json'
         );
         $result = ImportProcess::dispatchNow($content);
         $processId = $result->process->id;
@@ -784,7 +784,7 @@ class ExportImportTest extends TestCase
 
         $managerUser = factory(User::class)->create();
 
-        $response = $this->apiCall('POST', '/processes/'.$process->id.'/import/assignments', [
+        $response = $this->apiCall('POST', '/processes/' . $process->id . '/import/assignments', [
             'assignable' => [],
             'manager_id' => $managerUser->id,
             'cancel_request' => [

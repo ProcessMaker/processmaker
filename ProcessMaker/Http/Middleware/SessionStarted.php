@@ -44,7 +44,7 @@ class SessionStarted
         $guard = \Auth::guard();
 
         // Remember me is validate only in user session guards
-        if (! is_a($guard, \Illuminate\Auth\SessionGuard::class)) {
+        if (!is_a($guard, \Illuminate\Auth\SessionGuard::class)) {
             return false;
         }
 

@@ -64,7 +64,7 @@ class TasksTest extends TestCase
             'process_request_id' => $request->id,
         ]);
         //Get a page of tokens
-        $route = route('api.'.$this->resource.'.index', ['per_page' => 10, 'page' => 2]);
+        $route = route('api.' . $this->resource . '.index', ['per_page' => 10, 'page' => 2]);
         $response = $this->apiCall('GET', $route);
         //Verify the status
         $response->assertStatus(200);
@@ -95,7 +95,7 @@ class TasksTest extends TestCase
         ]);
         //Get a page of tokens
         //Since PR #3470, user_id is required as parameter
-        $route = route('api.'.$this->resource.'.index', ['user_id' => $user_1->id]);
+        $route = route('api.' . $this->resource . '.index', ['user_id' => $user_1->id]);
         $response = $this->apiCall('GET', $route);
 
         // should only see the user's 2 tasks
@@ -138,7 +138,7 @@ class TasksTest extends TestCase
             'user_id' => $user_2->id,
         ]);
         //Get a page of tokens
-        $route = route('api.'.$this->resource.'.index', ['status' => 'CLOSED']);
+        $route = route('api.' . $this->resource . '.index', ['status' => 'CLOSED']);
         $response = $this->apiCall('GET', $route);
 
         // should only see the 3 closed tasks, not the active one
@@ -175,7 +175,7 @@ class TasksTest extends TestCase
 
         // Get a page of tokens
         // Since PR #4189, non_system = true is a default parameter
-        $route = route('api.'.$this->resource.'.index', ['user_id' => $user_1->id, 'non_system' => true]);
+        $route = route('api.' . $this->resource . '.index', ['user_id' => $user_1->id, 'non_system' => true]);
         $response = $this->apiCall('GET', $route);
 
         // should only see the user's 2 tasks
@@ -194,7 +194,7 @@ class TasksTest extends TestCase
             'user_id' => $this->user->id,
             'process_request_id' => $request->id,
         ]);
-        $route = route('api.'.$this->resource.'.index', []);
+        $route = route('api.' . $this->resource . '.index', []);
         $response = $this->apiCall('GET', $route);
 
         $this->assertEquals(
@@ -230,7 +230,7 @@ class TasksTest extends TestCase
         ]);
 
         //Get active tokens
-        $route = route('api.'.$this->resource.'.index', ['per_page' => 10, 'status' => 'ACTIVE']);
+        $route = route('api.' . $this->resource . '.index', ['per_page' => 10, 'status' => 'ACTIVE']);
         $response = $this->apiCall('GET', $route);
         //Verify the status
         $response->assertStatus(200);
@@ -264,7 +264,7 @@ class TasksTest extends TestCase
         ]);
 
         //Get tasks
-        $route = route('api.'.$this->resource.'.index', ['per_page' => 100]);
+        $route = route('api.' . $this->resource . '.index', ['per_page' => 100]);
         $response = $this->apiCall('GET', $route);
 
         //Verify the status
@@ -294,7 +294,7 @@ class TasksTest extends TestCase
         ]);
 
         //List sorted by completed_at returns as first row {"completed_at": null}
-        $route = route('api.'.$this->resource.'.index', ['order_by' => 'completed_at', 'order_direction' => 'asc']);
+        $route = route('api.' . $this->resource . '.index', ['order_by' => 'completed_at', 'order_direction' => 'asc']);
         $response = $this->apiCall('GET', $route);
         //Verify the status
         $response->assertStatus(200);
@@ -317,7 +317,7 @@ class TasksTest extends TestCase
         $tasks = ProcessRequestToken::all()->pluck('process_request_id')->sort();
 
         // Order by process_request_id
-        $route = route('api.'.$this->resource.'.index', [
+        $route = route('api.' . $this->resource . '.index', [
             'order_by' => 'process_request_id',
             'order_direction' =>'asc',
         ]);
@@ -327,7 +327,7 @@ class TasksTest extends TestCase
         $this->assertEquals($tasks->first(), $firstRow['process_request_id']);
 
         // Order by the request name (id + name)
-        $route = route('api.'.$this->resource.'.index', [
+        $route = route('api.' . $this->resource . '.index', [
             'order_by' => 'process_requests.id,process_requests.name',
             'order_direction' =>'desc',
         ]);
@@ -358,7 +358,7 @@ class TasksTest extends TestCase
         // Get the second page, should have 5 items
         $perPage = 5;
         $page = 2;
-        $response = $this->apiCall('GET', route('api.'.$this->resource.'.index', ['per_page' => $perPage, 'page' => $page]));
+        $response = $this->apiCall('GET', route('api.' . $this->resource . '.index', ['per_page' => $perPage, 'page' => $page]));
         $response->assertJsonCount($perPage, 'data');
         // Verify the meta information
         $this->assertArraySubset(
@@ -385,7 +385,7 @@ class TasksTest extends TestCase
         ]);
 
         //Test that is correctly displayed
-        $route = route('api.'.$this->resource.'.show', [$token->id]);
+        $route = route('api.' . $this->resource . '.show', [$token->id]);
         $response = $this->apiCall('GET', $route);
         //Check the status
         $response->assertStatus(200);
@@ -405,7 +405,7 @@ class TasksTest extends TestCase
         ]);
 
         //Test that is correctly displayed
-        $route = route('api.'.$this->resource.'.show', [$token->id, 'include' => 'user,definition']);
+        $route = route('api.' . $this->resource . '.show', [$token->id, 'include' => 'user,definition']);
         $response = $this->apiCall('GET', $route);
         //Check the status
         $this->assertStatus(200, $response);
@@ -426,7 +426,7 @@ class TasksTest extends TestCase
         WorkflowManager::shouldReceive('completeTask')
             ->once()
             ->with(\Mockery::any(), \Mockery::any(), \Mockery::any(), ['foo' => 'bar']);
-        $response = $this->apiCall('PUT', '/tasks/'.$token->id, $params);
+        $response = $this->apiCall('PUT', '/tasks/' . $token->id, $params);
         $this->assertStatus(200, $response);
     }
 
@@ -442,7 +442,7 @@ class TasksTest extends TestCase
         ]);
 
         $bpmn = file_get_contents(base_path('tests/Fixtures/single_task_with_screen.bpmn'));
-        $bpmn = str_replace('pm:screenRef="1"', 'pm:screenRef="'.$screen->id.'"', $bpmn);
+        $bpmn = str_replace('pm:screenRef="1"', 'pm:screenRef="' . $screen->id . '"', $bpmn);
         $process = factory(Process::class)->create([
             'bpmn' => $bpmn,
             'user_id' => $this->user->id,
@@ -450,7 +450,7 @@ class TasksTest extends TestCase
 
         $route = route('api.process_events.trigger', $process);
 
-        $response = $this->apiCall('POST', $route.'?event=node_1');
+        $response = $this->apiCall('POST', $route . '?event=node_1');
         $this->assertStatus(201, $response);
         $request = ProcessRequest::find($response->json()['id']);
         $token = $request->tokens()->where('status', 'ACTIVE')->firstOrFail();
@@ -467,7 +467,7 @@ class TasksTest extends TestCase
                 'richtext1' => '<p>bar</p>', // do not sanitize rich text
                 'richtext2' => '<p>another</p>',
             ]);
-        $response = $this->apiCall('PUT', '/tasks/'.$token->id, $params);
+        $response = $this->apiCall('PUT', '/tasks/' . $token->id, $params);
         $this->assertStatus(200, $response);
     }
 
@@ -480,7 +480,7 @@ class TasksTest extends TestCase
         $token = factory(ProcessRequestToken::class)->create([
             'process_request_id' => $request->id,
         ]);
-        $url = route('api.'.$this->resource.'.show', [$token->id, 'include' => 'user,definition']);
+        $url = route('api.' . $this->resource . '.show', [$token->id, 'include' => 'user,definition']);
 
         //The call is done without an authenticated user so it should return 401
         $response = $this->actingAs(factory(User::class)->create())
@@ -552,7 +552,7 @@ class TasksTest extends TestCase
         ]);
 
         $userId = $user->id;
-        $url = route('api.tasks.index').'?pmql=(status%20%3D%20%22Self%20Service%22)';
+        $url = route('api.tasks.index') . '?pmql=(status%20%3D%20%22Self%20Service%22)';
         $response = $this->apiCall('GET', $url);
 
         $expectedTaskIds = collect([
@@ -573,7 +573,7 @@ class TasksTest extends TestCase
         $bpmn = str_replace(
             '[self_serve_user_id]',
             $this->user->id,
-            file_get_contents(__DIR__.'/../../Fixtures/self_serve_notifications_process.bpmn')
+            file_get_contents(__DIR__ . '/../../Fixtures/self_serve_notifications_process.bpmn')
         );
         $process = factory(Process::class)->create([
             'bpmn' => $bpmn,

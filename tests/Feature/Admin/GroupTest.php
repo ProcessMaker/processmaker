@@ -33,7 +33,7 @@ class GroupTest extends TestCase
     {
         $groupId = factory(Group::class)->create()->getKey();
         // get the URL
-        $response = $this->webCall('GET', '/admin/groups/'.$groupId.'/edit');
+        $response = $this->webCall('GET', '/admin/groups/' . $groupId . '/edit');
 
         $response->assertStatus(200);
         // check the correct view is called

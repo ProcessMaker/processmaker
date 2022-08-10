@@ -13,7 +13,7 @@ class AuthClient extends ApiResource
     public function toArray($request)
     {
         $types = [];
-        if (! empty($this->redirect)) {
+        if (!empty($this->redirect)) {
             $types[] = 'authorization_code_grant';
         }
         if ($this->personal_access_client) {

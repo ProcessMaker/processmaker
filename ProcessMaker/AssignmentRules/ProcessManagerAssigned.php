@@ -30,7 +30,7 @@ class ProcessManagerAssigned implements AssignmentRuleInterface
     public function getNextUser(ActivityInterface $task, TokenInterface $token, Process $process, ProcessRequest $request)
     {
         $user_id = $request->processVersion->manager_id;
-        if (! $user_id) {
+        if (!$user_id) {
             throw new ThereIsNoProcessManagerAssignedException($task);
         }
 

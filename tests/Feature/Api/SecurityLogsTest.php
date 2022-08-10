@@ -108,7 +108,7 @@ class SecurityLogsTest extends TestCase
 
         // Test a PMQL search query.
         $response = $this->apiCall('GET', '/security-logs', [
-            'pmql' => 'user_id='.$this->user->id.' AND (event = "login")',
+            'pmql' => 'user_id=' . $this->user->id . ' AND (event = "login")',
             'filter' => '',
         ]);
         $response->assertStatus(200);

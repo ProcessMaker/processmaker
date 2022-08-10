@@ -65,7 +65,7 @@ class Comment extends Model
         return [
             'user_id' => 'required',
             'commentable_id' => 'required',
-            'commentable_type' => 'required|in:'.ProcessRequestToken::class.','.ProcessRequest::class,
+            'commentable_type' => 'required|in:' . ProcessRequestToken::class . ',' . ProcessRequest::class,
             'subject' => 'required',
             'body' => 'required',
             'hidden' => 'required|boolean',
@@ -147,7 +147,7 @@ class Comment extends Model
             $username = str_replace([' @', '@'], '', $matches[0]);
             $user = User::where('username', $username)->first();
             if ($user) {
-                return ' {{'.$user->id.'}}';
+                return ' {{' . $user->id . '}}';
             }
 
             return $matches[0];
@@ -161,7 +161,7 @@ class Comment extends Model
         $body = preg_replace_callback('/\{\{(\d+)\}\}/', function ($matches) {
             $user = User::find($matches[1]);
             if ($user) {
-                return '@'.$user->username;
+                return '@' . $user->username;
             }
         }, $body);
 
@@ -173,7 +173,7 @@ class Comment extends Model
      */
     public function getUrlAttribute($id = null)
     {
-        if (! $id) {
+        if (!$id) {
             $id = $this->id;
         }
 

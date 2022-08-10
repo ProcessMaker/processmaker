@@ -22,7 +22,7 @@ class TaskTest extends TestCase
         $this->be($this->user);
 
         $content = file_get_contents(
-            __DIR__.'/../Fixtures/nested_screen_process.json'
+            __DIR__ . '/../Fixtures/nested_screen_process.json'
         );
         $import = ImportProcess::dispatchNow($content);
 
@@ -87,7 +87,7 @@ class TaskTest extends TestCase
 
         // Include token
         $r = $processRequest->requestFiles(true);
-        $this->assertEquals($r->single[0]['token'], md5('single'.$media1->id.$media1->created_at));
+        $this->assertEquals($r->single[0]['token'], md5('single' . $media1->id . $media1->created_at));
     }
 
     public function tearDown() : void

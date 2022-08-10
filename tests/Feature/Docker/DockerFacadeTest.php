@@ -55,15 +55,15 @@ class DockerFacadeTest extends TestCase
         $this->assertTrue(Docker::hasRemoteDocker());
 
         $envInjection = Docker::getDockerHost();
-        $this->assertEquals($envInjection, 'DOCKER_HOST='.$dockerHost);
+        $this->assertEquals($envInjection, 'DOCKER_HOST=' . $dockerHost);
 
         $command = Docker::command();
-        $this->assertEquals($command, 'DOCKER_HOST='.$dockerHost.' '.self::DEFAULT_DOCKER_COMMAND);
+        $this->assertEquals($command, 'DOCKER_HOST=' . $dockerHost . ' ' . self::DEFAULT_DOCKER_COMMAND);
 
         $commandWithTimeout = Docker::command($timeout);
         $this->assertEquals($commandWithTimeout,
             implode(' ', [
-                'DOCKER_HOST='.$dockerHost,
+                'DOCKER_HOST=' . $dockerHost,
                 self::DEFAULT_TIMEOUT_COMMAND,
                 '-s 9',
                 $timeout,

@@ -26,7 +26,7 @@ class CommentsSubscriber
         $user_id = $token->user ? $token->user_id : null;
         $user_name = $token->user ? $token->user->fullname : __('The System');
 
-        if (! is_int($token->process_request_id)) {
+        if (!is_int($token->process_request_id)) {
             return;
         }
 
@@ -51,7 +51,7 @@ class CommentsSubscriber
     {
         $taskName = $token->getOwnerElement()->getName();
 
-        if (! is_int($token->getInstance()->getId())) {
+        if (!is_int($token->getInstance()->getId())) {
             return;
         }
 
@@ -104,7 +104,7 @@ class CommentsSubscriber
                 ? $flowProps['name']
                 : __('Label Undefined');
 
-            if (! is_int($token->getInstance()->getId())) {
+            if (!is_int($token->getInstance()->getId())) {
                 return;
             }
 
@@ -114,7 +114,7 @@ class CommentsSubscriber
                 'commentable_type' => ProcessRequest::class,
                 'commentable_id' => $token->getInstance()->getId(),
                 'subject' => 'Gateway',
-                'body' => $sourceLabel.': '.$flowLabel,
+                'body' => $sourceLabel . ': ' . $flowLabel,
             ]);
         }
     }
@@ -126,8 +126,8 @@ class CommentsSubscriber
      */
     public function subscribe($events)
     {
-        $events->listen(ActivityInterface::EVENT_ACTIVITY_COMPLETED, static::class.'@onActivityCompleted');
-        $events->listen(ActivityInterface::EVENT_ACTIVITY_SKIPPED, static::class.'@onActivitySkipped');
-        $events->listen(GatewayInterface::EVENT_GATEWAY_TOKEN_PASSED, static::class.'@onGatewayPassed');
+        $events->listen(ActivityInterface::EVENT_ACTIVITY_COMPLETED, static::class . '@onActivityCompleted');
+        $events->listen(ActivityInterface::EVENT_ACTIVITY_SKIPPED, static::class . '@onActivitySkipped');
+        $events->listen(GatewayInterface::EVENT_GATEWAY_TOKEN_PASSED, static::class . '@onGatewayPassed');
     }
 }

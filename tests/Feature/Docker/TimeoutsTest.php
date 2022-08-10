@@ -86,7 +86,7 @@ class TimeoutsTest extends TestCase
         Event::assertDispatched(ScriptResponseEvent::class, function ($event) {
             $response = $event->response;
 
-            return ! array_key_exists('exception', $response);
+            return !array_key_exists('exception', $response);
         });
     }
 

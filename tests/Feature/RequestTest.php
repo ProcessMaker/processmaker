@@ -61,12 +61,12 @@ class RequestTest extends TestCase
         $this->user = factory(User::class)->create();
         $request = factory(ProcessRequest::class)->create();
 
-        $response = $this->webCall('GET', '/requests/'.$request->id);
+        $response = $this->webCall('GET', '/requests/' . $request->id);
         $response->assertStatus(403);
 
         $this->user->is_administrator = true;
         $this->user->save();
-        $response = $this->webCall('GET', '/requests/'.$request->id);
+        $response = $this->webCall('GET', '/requests/' . $request->id);
 
         $response->assertStatus(200);
 
@@ -84,13 +84,13 @@ class RequestTest extends TestCase
         $this->user = factory(User::class)->create();
         $request = factory(ProcessRequest::class)->create();
 
-        $response = $this->webCall('GET', '/requests/'.$request->id);
+        $response = $this->webCall('GET', '/requests/' . $request->id);
         $response->assertStatus(403);
 
         $request->update(['user_id' => $this->user->id]);
         // $request->refresh();
 
-        $response = $this->webCall('GET', '/requests/'.$request->id);
+        $response = $this->webCall('GET', '/requests/' . $request->id);
         $response->assertStatus(200);
 
         // check the correct view is called
@@ -106,7 +106,7 @@ class RequestTest extends TestCase
     {
         $Request_id = factory(ProcessRequest::class)->create()->id;
         // get the URL
-        $response = $this->webCall('GET', '/requests/'.$Request_id);
+        $response = $this->webCall('GET', '/requests/' . $Request_id);
         $response->assertStatus(200);
         // check the correct view is called
         $response->assertViewIs('requests.show');
@@ -121,7 +121,7 @@ class RequestTest extends TestCase
             'user_id' => $this->user->id,
         ])->id;
 
-        $response = $this->webCall('GET', '/requests/'.$request_id);
+        $response = $this->webCall('GET', '/requests/' . $request_id);
         $response->assertStatus(200);
     }
 
@@ -133,7 +133,7 @@ class RequestTest extends TestCase
 
         $request_id = factory(ProcessRequest::class)->create()->id;
 
-        $response = $this->webCall('GET', '/requests/'.$request_id);
+        $response = $this->webCall('GET', '/requests/' . $request_id);
         $response->assertStatus(200);
     }
 
@@ -153,7 +153,7 @@ class RequestTest extends TestCase
             ->withCustomProperties(['data_name' => 'test'])
             ->toMediaCollection();
 
-        $response = $this->webCall('GET', '/requests/'.$process_request->id);
+        $response = $this->webCall('GET', '/requests/' . $process_request->id);
         // Full request->getMedia payload is sent for Vue, so assert some HTML also
         $response->assertSee('photo2.jpg</a>');
         $response->assertSee('photo3.jpg</a>');
@@ -189,7 +189,7 @@ class RequestTest extends TestCase
             'data' => ['form_input_1' => 'TEST DATA'],
         ]);
         // get the URL
-        $response = $this->webCall('GET', '/requests/'.$process_request->id);
+        $response = $this->webCall('GET', '/requests/' . $process_request->id);
 
         $response->assertStatus(200);
         // check the correct view is called
@@ -217,7 +217,7 @@ class RequestTest extends TestCase
             'data' => ['form_input_1' => 'TEST DATA'],
         ]);
         // get the URL
-        $response = $this->webCall('GET', '/requests/'.$process_request->id);
+        $response = $this->webCall('GET', '/requests/' . $process_request->id);
 
         $response->assertStatus(200);
         // check the correct view is called

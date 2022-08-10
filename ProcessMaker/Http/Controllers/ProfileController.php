@@ -66,7 +66,7 @@ class ProfileController extends Controller
     {
         if (
             $request->user()->id !== intval($id) &&
-            ! $request->user()->can('view-other-users-profiles')
+            !$request->user()->can('view-other-users-profiles')
         ) {
             abort(404);
         }

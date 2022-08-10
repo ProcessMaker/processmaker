@@ -101,7 +101,7 @@ class Group extends Model
     {
         // Parent is used to determine the top level group in order to prevent
         // infinite loops in the case of two groups nested within each other
-        if (! $parent) {
+        if (!$parent) {
             $parent = $this;
         }
 

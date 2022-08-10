@@ -47,7 +47,7 @@ trait RequestHelper
         $url = preg_replace('/^.*\/api\/1\.0/i', '', $url);
 
         $response = $this->actingAs($this->user, 'api')
-                         ->json($method, '/api/1.0'.$url, $params);
+                         ->json($method, '/api/1.0' . $url, $params);
         $this->_debug_response = $response;
 
         return $response;
@@ -70,7 +70,7 @@ trait RequestHelper
     public function tearDown(): void
     {
         parent::tearDown();
-        if (! $this->debug) {
+        if (!$this->debug) {
             return;
         }
 
@@ -87,12 +87,12 @@ trait RequestHelper
                 ];
             }
             $json['trace'] = array_slice($json['trace'], 0, 15);
-            error_log((isset($this->_debug_response->exception) ? get_class($this->_debug_response->exception) : '').': '.$json['message']);
-            isset($json['file']) ? error_log($json['file'].':'.$json['line'])
-                : error_log($json['class'].'::'.$json['function']);
+            error_log((isset($this->_debug_response->exception) ? get_class($this->_debug_response->exception) : '') . ': ' . $json['message']);
+            isset($json['file']) ? error_log($json['file'] . ':' . $json['line'])
+                : error_log($json['class'] . '::' . $json['function']);
             foreach ($json['trace'] as $trace) {
-                isset($trace['file']) ? error_log($trace['file'].':'.$trace['line'])
-                : error_log($trace['class'].'::'.$trace['function']);
+                isset($trace['file']) ? error_log($trace['file'] . ':' . $trace['line'])
+                : error_log($trace['class'] . '::' . $trace['function']);
             }
         }
     }

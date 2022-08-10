@@ -24,7 +24,7 @@ trait ProcessStartEventAssignmentsTrait
 
     public static function updateStartEventAssignments(Process $process)
     {
-        if (! $process->exists) {
+        if (!$process->exists) {
             return;
         }
         $definitions = $process->getDefinitions(true);

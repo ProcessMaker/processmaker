@@ -87,7 +87,7 @@ trait StreamsJsonToFile
             $data = json_encode($data);
         }
 
-        if (! $isLast) {
+        if (!$isLast) {
             $data .= ', ';
         }
 
@@ -129,7 +129,7 @@ trait StreamsJsonToFile
      */
     protected function closeFile($noBracket = false)
     {
-        if (! $noBracket) {
+        if (!$noBracket) {
             fwrite($this->file, '}');
         }
 

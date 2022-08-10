@@ -64,7 +64,7 @@ class GroupController extends Controller
      */
     public function index(Request $request)
     {
-        if (! (Auth::user()->can('view-groups') ||
+        if (!(Auth::user()->can('view-groups') ||
             Auth::user()->can('create-processes') ||
             Auth::user()->can('edit-processes'))) {
             throw new AuthorizationException(__('Not authorized to view groups.'));
@@ -83,8 +83,8 @@ class GroupController extends Controller
             }
         }
         $filter = $request->input('filter', '');
-        if (! empty($filter)) {
-            $filter = '%'.$filter.'%';
+        if (!empty($filter)) {
+            $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('name', 'like', $filter)
                     ->orWhere('description', 'like', $filter);
@@ -170,7 +170,7 @@ class GroupController extends Controller
      */
     public function show(Group $group)
     {
-        if (! (Auth::user()->can('view-groups') ||
+        if (!(Auth::user()->can('view-groups') ||
             Auth::user()->can('create-processes') ||
             Auth::user()->can('edit-processes'))) {
             throw new AuthorizationException(__('Not authorized to view groups.'));
@@ -312,8 +312,8 @@ class GroupController extends Controller
         $query->where('group_members.member_type', User::class);
 
         $filter = $request->input('filter', '');
-        if (! empty($filter)) {
-            $filter = '%'.$filter.'%';
+        if (!empty($filter)) {
+            $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('username', 'like', $filter)
                     ->orWhere('firstname', 'like', $filter)
@@ -396,8 +396,8 @@ class GroupController extends Controller
         $query->where('group_members.member_type', Group::class);
 
         $filter = $request->input('filter', '');
-        if (! empty($filter)) {
-            $filter = '%'.$filter.'%';
+        if (!empty($filter)) {
+            $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('name', 'like', $filter)
                     ->orWhere('description', 'like', $filter);

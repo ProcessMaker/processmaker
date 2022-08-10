@@ -25,7 +25,7 @@ class ScriptsInScreen
         $config = $screen->watchers;
         if (is_array($config)) {
             $this->findInArray($config, function ($item) use (&$scripts) {
-                if (is_array($item) && ! empty($item['script_id'])) {
+                if (is_array($item) && !empty($item['script_id'])) {
                     $scripts[] = [Script::class, $item['script_id']];
                 }
             });

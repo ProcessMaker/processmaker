@@ -11,7 +11,7 @@ use ProcessMaker\Models\User;
  * Model factory for a ProcessVersion
  */
 $factory->define(ProcessVersion::class, function (Faker $faker) {
-    $emptyProcess = Arr::random(glob(Process::getProcessTemplatesPath().'/*.bpmn'));
+    $emptyProcess = Arr::random(glob(Process::getProcessTemplatesPath() . '/*.bpmn'));
     $process = factory(Process::class)->make();
 
     return [

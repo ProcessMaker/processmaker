@@ -37,7 +37,7 @@ class SettingsController extends Controller
         $query = Setting::query();
 
         $group = $request->input('group');
-        if (! empty($group)) {
+        if (!empty($group)) {
             if ($group === 'System') {
                 $fileName = 'System.json';
                 $query->whereNull('group');

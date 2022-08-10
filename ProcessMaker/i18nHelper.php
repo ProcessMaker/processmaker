@@ -21,7 +21,7 @@ class i18nHelper
     {
         $mdates = [];
         foreach (self::files() as $key => $file) {
-            $mdates[$key] = filemtime(resource_path('lang').'/'.$file);
+            $mdates[$key] = filemtime(resource_path('lang') . '/' . $file);
         }
 
         return $mdates;
@@ -32,7 +32,7 @@ class i18nHelper
         $files = [];
         foreach (scandir(resource_path('lang')) as $file) {
             preg_match("/([a-z]{2})\.json/", $file, $matches);
-            if (! empty($matches)) {
+            if (!empty($matches)) {
                 $files[$matches[1]] = $file;
             }
         }

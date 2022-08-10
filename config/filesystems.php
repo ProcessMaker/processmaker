@@ -65,7 +65,7 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'url' => env('APP_URL') . '/storage',
             'visibility' => 'public',
         ],
         's3' => [
@@ -79,13 +79,13 @@ return [
         'profile' => [
             'driver' => 'local',
             'root' => storage_path('app/public/profile'),
-            'url' => env('APP_URL').'/storage/profile',
+            'url' => env('APP_URL') . '/storage/profile',
             'visibility' => 'public',
         ],
         'settings' => [
             'driver' => 'local',
             'root' => storage_path('app/public/setting'),
-            'url' => env('APP_URL').'/storage/setting',
+            'url' => env('APP_URL') . '/storage/setting',
             'visibility' => 'public',
         ],
         'private_settings' => [
@@ -96,7 +96,7 @@ return [
         'tmp' => [
             'driver' => 'local',
             'root' => storage_path('app/public/tmp'),
-            'url' => env('APP_URL').'/storage/tmp',
+            'url' => env('APP_URL') . '/storage/tmp',
             'visibility' => 'public',
         ],
     ],

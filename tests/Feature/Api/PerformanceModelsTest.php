@@ -120,7 +120,7 @@ class PerformanceModelsTest extends TestCase
             $connection = DB::connection($name);
             $list = $connection->getDoctrineSchemaManager()->listTableNames();
             foreach ($list as $table) {
-                if (! isset($tables[$table])) {
+                if (!isset($tables[$table])) {
                     $tables[$table] = $connection->table($table)->count();
                 }
             }

@@ -94,7 +94,7 @@ class ProcessRequestFileController extends Controller
         $filter = $name ? $name : $id;
 
         // If no filter, return entire collection; otherwise, filter collection
-        if (! $filter) {
+        if (!$filter) {
             return new ResourceCollection($media);
         } else {
             $filtered = $media->reject(function ($item, $key) use ($filter, $name, $id) {
@@ -160,8 +160,8 @@ class ProcessRequestFileController extends Controller
      */
     public function show(Request $laravel_request, ProcessRequest $request, Media $file)
     {
-        $path = Storage::disk('public')->getAdapter()->getPathPrefix().
-            $file->id.'/'.
+        $path = Storage::disk('public')->getAdapter()->getPathPrefix() .
+            $file->id . '/' .
             $file->file_name;
 
         return response()->download($path);

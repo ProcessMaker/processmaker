@@ -32,17 +32,17 @@ class MessageEventDefinition extends Base
 
         if ($parent && $child) {
             $collaboration_id = $parent->process_collaboration_id ?: $child->process_collaboration_id;
-            if (! $collaboration_id) {
+            if (!$collaboration_id) {
                 $collaboration = new ProcessCollaboration();
                 $collaboration->process_id = $parent->process->getKey();
                 $collaboration->saveOrFail();
                 $collaboration_id = $collaboration->getKey();
             }
-            if (! $parent->process_collaboration_id) {
+            if (!$parent->process_collaboration_id) {
                 $parent->process_collaboration_id = $collaboration_id;
                 $parent->saveOrFail();
             }
-            if (! $child->process_collaboration_id) {
+            if (!$child->process_collaboration_id) {
                 $child->process_collaboration_id = $collaboration_id;
                 $child->saveOrFail();
             }

@@ -21,13 +21,13 @@ class HideSystemCategoriesTest extends TestCase
     private function categoryFiltered($model)
     {
         $prefix = strtolower(substr(strrchr($model, '\\'), 1));
-        $category = factory($model.'Category')->create([
+        $category = factory($model . 'Category')->create([
             'is_system' => false,
         ]);
-        $hiddenCategory = factory($model.'Category')->create([
+        $hiddenCategory = factory($model . 'Category')->create([
             'is_system' => true,
         ]);
-        $response = $this->apiCall('GET', route('api.'.$prefix.'_categories.index'));
+        $response = $this->apiCall('GET', route('api.' . $prefix . '_categories.index'));
         $json = $response->json();
         $ids = array_map(function ($d) {
             return $d['id'];
@@ -48,20 +48,20 @@ class HideSystemCategoriesTest extends TestCase
     private function resourceInCategoryFiltered($model)
     {
         $prefix = strtolower(substr(strrchr($model, '\\'), 1));
-        $category = factory($model.'Category')->create([
+        $category = factory($model . 'Category')->create([
             'is_system' => false,
         ]);
         $instance = factory($model)->create([
-            $prefix.'_category_id' => $category->id,
+            $prefix . '_category_id' => $category->id,
         ]);
-        $hiddenCategory = factory($model.'Category')->create([
+        $hiddenCategory = factory($model . 'Category')->create([
             'is_system' => true,
         ]);
         $hiddenInstance = factory($model)->create([
-            $prefix.'_category_id' => $hiddenCategory->id,
+            $prefix . '_category_id' => $hiddenCategory->id,
         ]);
 
-        $response = $this->apiCall('GET', route('api.'.Str::plural($prefix).'.index'));
+        $response = $this->apiCall('GET', route('api.' . Str::plural($prefix) . '.index'));
         $json = $response->json();
         $ids = array_map(function ($d) {
             return $d['id'];
@@ -83,10 +83,10 @@ class HideSystemCategoriesTest extends TestCase
     {
         $prefix = strtolower(substr(strrchr($model, '\\'), 1));
         $instance = factory($model)->create([
-            $prefix.'_category_id' => null,
+            $prefix . '_category_id' => null,
         ]);
 
-        $response = $this->apiCall('GET', route('api.'.Str::plural($prefix).'.index'));
+        $response = $this->apiCall('GET', route('api.' . Str::plural($prefix) . '.index'));
         $json = $response->json();
         $ids = array_map(function ($d) {
             return $d['id'];

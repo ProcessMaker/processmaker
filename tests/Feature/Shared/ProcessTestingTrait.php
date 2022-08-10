@@ -55,12 +55,12 @@ trait ProcessTestingTrait
         $assignment = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
         if ($assignment === 'user' || $assignment === 'user_group') {
             $userId = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedUsers');
-            if (! $userId) {
+            if (!$userId) {
                 return;
             }
             if (isset($users[$userId])) {
                 $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedUsers', $users[$userId]->id);
-            } elseif (! User::find($userId)) {
+            } elseif (!User::find($userId)) {
                 $users[$userId] = factory(User::class)->create([
                     'id' => $userId,
                     'status' => 'ACTIVE',

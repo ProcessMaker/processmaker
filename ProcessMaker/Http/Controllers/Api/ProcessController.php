@@ -99,11 +99,11 @@ class ProcessController extends Controller
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
             ->orderBy(...$orderBy)
             ->where(function ($query) use ($filter) {
-                $query->where('processes.name', 'like', '%'.$filter.'%')
-                    ->orWhere('processes.description', 'like', '%'.$filter.'%')
+                $query->where('processes.name', 'like', '%' . $filter . '%')
+                    ->orWhere('processes.description', 'like', '%' . $filter . '%')
                     ->orWhere('processes.status', '=', $filter)
-                    ->orWhere('user.firstname', 'like', '%'.$filter.'%')
-                    ->orWhere('user.lastname', 'like', '%'.$filter.'%')
+                    ->orWhere('user.firstname', 'like', '%' . $filter . '%')
+                    ->orWhere('user.lastname', 'like', '%' . $filter . '%')
                     ->orWhereIn('processes.id', function ($qry) use ($filter) {
                         $qry->select('assignable_id')
                             ->from('category_assignments')
@@ -112,7 +112,7 @@ class ProcessController extends Controller
                                 $join->where('category_assignments.category_type', '=', ProcessCategory::class);
                                 $join->where('category_assignments.assignable_type', '=', Process::class);
                             })
-                            ->where('process_categories.name', 'like', '%'.$filter.'%');
+                            ->where('process_categories.name', 'like', '%' . $filter . '%');
                     });
             })->get();
 
@@ -430,7 +430,7 @@ class ProcessController extends Controller
             }
             $schemaErrors = $this->validateOnlyOneDiagram($document, $schemaErrors);
             $rulesValidation = new BPMNValidation;
-            if (! $rulesValidation->passes('document', $document)) {
+            if (!$rulesValidation->passes('document', $document)) {
                 $errors = $rulesValidation->errors('document', $document)->getMessages();
                 $schemaErrors[] = [
                     'title' => 'BPMN Validation failed',
@@ -590,7 +590,7 @@ class ProcessController extends Controller
                     }
                 }
 
-                return ! $eventIsTimerStart && ! $eventIsWebEntry;
+                return !$eventIsTimerStart && !$eventIsWebEntry;
             })->values();
 
             // Filter all processes that have event definitions (start events like message event, conditional event, signal event, timer event)
@@ -608,7 +608,7 @@ class ProcessController extends Controller
                 $processes->forget($key);
             }
             // filter only valid executable processes
-            if (! $process->isValidForExecution()) {
+            if (!$process->isValidForExecution()) {
                 $processes->forget($key);
             }
         }
@@ -783,7 +783,7 @@ class ProcessController extends Controller
     public function import(Process $process, Request $request)
     {
         $content = $request->file('file')->get();
-        if (! $this->validateImportedFile($content)) {
+        if (!$this->validateImportedFile($content)) {
             return response(
                 ['message' => __('Invalid Format')],
                 422
@@ -967,7 +967,7 @@ class ProcessController extends Controller
                 $watchers = $screen->watchers;
                 $watchers[$watcherIndex]['script_id'] = $watcherDataSource['value']['id'];
                 $watchers[$watcherIndex]['script'] = $watcherDataSource['value'];
-                $watchers[$watcherIndex]['script']['id'] = 'data_source-'.strval($watcherDataSource['value']['id']);
+                $watchers[$watcherIndex]['script']['id'] = 'data_source-' . strval($watcherDataSource['value']['id']);
                 $watchers[$watcherIndex]['script']['title'] = $watcherDataSource['value']['name'];
                 $screen->watchers = $watchers;
                 $screen->saveOrFail();
@@ -1053,21 +1053,21 @@ class ProcessController extends Controller
     {
         //Get the event BPMN element
         $id = $request->query('event');
-        if (! $id) {
+        if (!$id) {
             return abort(404);
         }
 
         $definitions = $process->getDefinitions();
-        if (! $definitions->findElementById($id)) {
+        if (!$definitions->findElementById($id)) {
             return abort(404);
         }
         $event = $definitions->getEvent($id);
         $data = request()->post();
         // Validate if process is bpmn executable
         $validation = [];
-        if (! $process->validateBpmnDefinition(false, $validation)) {
+        if (!$process->validateBpmnDefinition(false, $validation)) {
             return response()->json([
-                'message' => $validation['title'].': '.$validation['text'],
+                'message' => $validation['title'] . ': ' . $validation['text'],
             ], 422);
         }
         // Trigger the start event
@@ -1104,7 +1104,7 @@ class ProcessController extends Controller
                     // filtering by status must match the entire string
                     $sub_search = '';
                 }
-                $where[] = [$column, 'like', $sub_search.$filter.$sub_search, 'or'];
+                $where[] = [$column, 'like', $sub_search . $filter . $sub_search, 'or'];
             }
         }
 

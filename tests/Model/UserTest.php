@@ -88,8 +88,8 @@ class UserTest extends TestCase
         ];
 
         $testFor = function ($singular, $plural) {
-            $viewCatPerm = factory(Permission::class)->create(['name' => 'view-'.$singular.'-categories']);
-            $editCatePerm = factory(Permission::class)->create(['name' => 'edit-'.$singular.'-categories']);
+            $viewCatPerm = factory(Permission::class)->create(['name' => 'view-' . $singular . '-categories']);
+            $editCatePerm = factory(Permission::class)->create(['name' => 'edit-' . $singular . '-categories']);
 
             foreach (['create', 'edit'] as $method) {
                 $user = factory(User::class)->create();

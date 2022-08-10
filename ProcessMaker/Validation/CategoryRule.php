@@ -21,7 +21,7 @@ class CategoryRule implements ImplicitRule
     public function passes($attribute, $value)
     {
         $type = explode('_', $attribute)[0];
-        $class = '\\ProcessMaker\\Models\\'.ucfirst($type).'Category';
+        $class = '\\ProcessMaker\\Models\\' . ucfirst($type) . 'Category';
 
         /**
          * If the model has previously been saved to the database,
@@ -42,7 +42,7 @@ class CategoryRule implements ImplicitRule
             $ids = [$value];
         }
         foreach ($ids as $id) {
-            if (! $class::where('id', $id)->exists()) {
+            if (!$class::where('id', $id)->exists()) {
                 return false;
             }
         }

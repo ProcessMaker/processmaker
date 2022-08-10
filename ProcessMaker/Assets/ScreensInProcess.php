@@ -81,7 +81,7 @@ class ScreensInProcess
         $nodes = $xpath->query("//*[@pm:interstitialScreenRef!='']");
         foreach ($nodes as $node) {
             $oldRef = $node->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'interstitialScreenRef');
-            if (! \is_numeric($oldRef)) {
+            if (!\is_numeric($oldRef)) {
                 // Skip screens referenced by package key
                 continue;
             }

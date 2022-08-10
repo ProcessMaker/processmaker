@@ -28,7 +28,7 @@ class ScreenBuilderManager
      */
     public function addScript($script)
     {
-        if (! in_array($script, $this->javascriptRegistry)) {
+        if (!in_array($script, $this->javascriptRegistry)) {
             $this->javascriptRegistry[] = $script;
         }
     }
@@ -45,7 +45,7 @@ class ScreenBuilderManager
         foreach ($this->javascriptRegistry as $script) {
             $path = public_path($script);
             $time = file_exists($path) ? filemtime($path) : 0;
-            $scripts[] = $script.($time ? "?t=$time" : '');
+            $scripts[] = $script . ($time ? "?t=$time" : '');
         }
 
         return $scripts;
@@ -54,14 +54,14 @@ class ScreenBuilderManager
     public function addPackageScripts($type = 'DISPLAY')
     {
         // Depending of the form type we load the correct file with the components to display
-        $extensionsFile = 'screen-builder-'.strtolower($type).'-components.js';
+        $extensionsFile = 'screen-builder-' . strtolower($type) . '-components.js';
 
         $directories = glob('vendor/processmaker/packages/*', GLOB_ONLYDIR);
         foreach ($directories as $directory) {
-            $extensionsFullName = $directory.'/js/'.$extensionsFile;
+            $extensionsFullName = $directory . '/js/' . $extensionsFile;
             $files = glob($extensionsFullName);
             if (count($files) > 0) {
-                $this->addScript('/'.$files[0]);
+                $this->addScript('/' . $files[0]);
             }
         }
     }

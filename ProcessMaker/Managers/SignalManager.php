@@ -73,7 +73,7 @@ class SignalManager
                     'id' => $node->getAttribute('id'),
                     'name' => $node->getAttribute('name'),
                     'detail' => $node->getAttribute('detail'),
-                    'process' => (! $process->category->is_system || $includeSystemProcesses)
+                    'process' => (!$process->category->is_system || $includeSystemProcesses)
                                     ? [
                                         'id' => $process->id,
                                         'name' => $process->name,
@@ -88,7 +88,7 @@ class SignalManager
         $result = $signals->reduce(function ($carry, $signal) {
             $foundSignal = $carry->firstWhere('id', $signal['id']);
             if ($foundSignal) {
-                if ($signal['process'] && ! in_array($signal['process'], $foundSignal['processes'])) {
+                if ($signal['process'] && !in_array($signal['process'], $foundSignal['processes'])) {
                     $foundSignal['processes'][] = $signal['process'];
                     $carry = $carry->merge([$foundSignal['id'] => $foundSignal]);
                 }
@@ -135,8 +135,8 @@ class SignalManager
             $newNode->setAttribute('detail', $newSignal->getDetail());
 
             $domDefinitions = new DOMXPath($definitions);
-            if ($domDefinitions->query("//*[@id='".$oldSignal->getId()."']")->count() > 0) {
-                $oldNode = $domDefinitions->query("//*[@id='".$oldSignal->getId()."']")->item(0);
+            if ($domDefinitions->query("//*[@id='" . $oldSignal->getId() . "']")->count() > 0) {
+                $oldNode = $domDefinitions->query("//*[@id='" . $oldSignal->getId() . "']")->item(0);
                 $definitions->firstChild->replaceChild($newNode, $oldNode);
             }
 
@@ -165,8 +165,8 @@ class SignalManager
             }
             $definitions = $process->getDefinitions();
             $domDefinitions = new DOMXPath($definitions);
-            if ($domDefinitions->query("//*[@id='".$signal->getId()."']")->count() > 0) {
-                $node = $domDefinitions->query("//*[@id='".$signal->getId()."']")->item(0);
+            if ($domDefinitions->query("//*[@id='" . $signal->getId() . "']")->count() > 0) {
+                $node = $domDefinitions->query("//*[@id='" . $signal->getId() . "']")->item(0);
                 $definitions->firstChild->removeChild($node);
                 $process->bpmn = $definitions->saveXML();
                 $process->save();
@@ -179,7 +179,7 @@ class SignalManager
      */
     public static function getGlobalSignalProcess()
     {
-        $list = Process::where('name', ''.static::PROCESS_NAME)->get();
+        $list = Process::where('name', '' . static::PROCESS_NAME)->get();
         if ($list->count() === 0) {
             throw new \Exception('Global store of signals not found');
         }
@@ -224,7 +224,7 @@ class SignalManager
     {
         $result = [];
 
-        if (! preg_match('/^[a-zA-Z_][\w.-]*$/', $newSignal->getId())) {
+        if (!preg_match('/^[a-zA-Z_][\w.-]*$/', $newSignal->getId())) {
             self::addError($result, 'id', 'The signal ID should be an alphanumeric string');
         }
 
@@ -299,7 +299,7 @@ class SignalManager
      */
     private static function addError(array &$errors, string $field, string $message)
     {
-        if (! array_key_exists($field, $errors)) {
+        if (!array_key_exists($field, $errors)) {
             $errors[$field] = [];
         }
 

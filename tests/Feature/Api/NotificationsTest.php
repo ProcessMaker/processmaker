@@ -105,7 +105,7 @@ class NotificationsTest extends TestCase
         $notification = factory(Notification::class)->create()->id;
 
         //load api
-        $response = $this->apiCall('GET', self::API_TEST_URL.'/'.$notification);
+        $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $notification);
 
         //Validate the status is correct
         $response->assertStatus(200);
@@ -119,7 +119,7 @@ class NotificationsTest extends TestCase
      */
     public function testUpdateNotification()
     {
-        $url = self::API_TEST_URL.'/'.factory(Notification::class)->create()->id;
+        $url = self::API_TEST_URL . '/' . factory(Notification::class)->create()->id;
 
         //Load the starting notification data
         $verify = $this->apiCall('GET', $url);
@@ -145,7 +145,7 @@ class NotificationsTest extends TestCase
     public function testDeleteNotification()
     {
         //Remove notification
-        $url = self::API_TEST_URL.'/'.factory(Notification::class)->create()->id;
+        $url = self::API_TEST_URL . '/' . factory(Notification::class)->create()->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code
@@ -158,7 +158,7 @@ class NotificationsTest extends TestCase
     public function testDeleteNotificationNotExist()
     {
         //Notification not exist
-        $url = self::API_TEST_URL.'/'.factory(Notification::class)->make()->id;
+        $url = self::API_TEST_URL . '/' . factory(Notification::class)->make()->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code

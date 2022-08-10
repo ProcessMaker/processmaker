@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\Setting;
 
-if (! function_exists('settings')) {
+if (!function_exists('settings')) {
     /**
      * @param  string|null  $key
      *
@@ -25,7 +25,7 @@ if (! function_exists('settings')) {
         $cache = cache()->tags('setting');
 
         // Cache all Setting models
-        if (! $cache->has('all')) {
+        if (!$cache->has('all')) {
             $cache->put('all', Setting::get(), 60 * 60 * 24 * 7);
         }
 
@@ -37,7 +37,7 @@ if (! function_exists('settings')) {
 
         // No key present means we should return all
         // cached settings
-        if (! $key) {
+        if (!$key) {
             return $nested;
         }
 
@@ -45,7 +45,7 @@ if (! function_exists('settings')) {
     }
 }
 
-if (! function_exists('flush_settings')) {
+if (!function_exists('flush_settings')) {
     /**
      * Flush the ProcessMaker settings from the cache and global configuration.
      *
@@ -70,7 +70,7 @@ if (! function_exists('flush_settings')) {
     }
 }
 
-if (! function_exists('cache_settings')) {
+if (!function_exists('cache_settings')) {
     /**
      * Cache all ProcessMaker settings
      *
@@ -92,7 +92,7 @@ if (! function_exists('cache_settings')) {
                 // Calling the settings() helper function will
                 // automatically cache all Setting models that
                 // are available if they aren't cached yet
-                if (! $cache->has('all')) {
+                if (!$cache->has('all')) {
                     $settings = settings();
                     $cache = cache()->tags('setting');
                 }

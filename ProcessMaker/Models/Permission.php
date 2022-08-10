@@ -91,7 +91,7 @@ class Permission extends Model
                 return self::where('name', $name)->firstOrFail();
             }
         } catch (ModelNotFoundException $e) {
-            throw new ModelNotFoundException($name.' permission does not exist');
+            throw new ModelNotFoundException($name . ' permission does not exist');
         }
     }
 

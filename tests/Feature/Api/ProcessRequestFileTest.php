@@ -34,7 +34,7 @@ class ProcessRequestFileTest extends TestCase
             ->withCustomProperties(['data_name' => 'test'])
             ->toMediaCollection();
 
-        $response = $this->apiCall('GET', '/requests/'.$process_request->id.'/files');
+        $response = $this->apiCall('GET', '/requests/' . $process_request->id . '/files');
         $response->assertStatus(200);
         $this->assertEquals($response->json()['data'][0]['file_name'], 'photo.jpg');
     }
@@ -48,7 +48,7 @@ class ProcessRequestFileTest extends TestCase
         $process_request = factory(ProcessRequest::class)->create();
 
         //post photo id with the request
-        $response = $this->apiCall('POST', '/requests/'.$process_request->id.'/files', [
+        $response = $this->apiCall('POST', '/requests/' . $process_request->id . '/files', [
             'file' => File::image('photo.jpg'),
             'data_name' => 'photo',
         ]);
@@ -99,7 +99,7 @@ class ProcessRequestFileTest extends TestCase
             ->withCustomProperties(['data_name' => 'test'])
             ->toMediaCollection();
 
-        $response = $this->apiCall('GET', '/requests/'.$process_request->id.'/files/'.$file2->id);
+        $response = $this->apiCall('GET', '/requests/' . $process_request->id . '/files/' . $file2->id);
         $response->assertStatus(200);
         $this->assertEquals(
             'attachment; filename=photo2.jpg',

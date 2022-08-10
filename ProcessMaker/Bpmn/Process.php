@@ -18,7 +18,7 @@ class Process extends ModelsProcess
     public function getProperty($name, $default = null)
     {
         if ($name === 'conditionals') {
-            $key = '_process_'.$this->getOwnerDocument()->getModel()->getKey();
+            $key = '_process_' . $this->getOwnerDocument()->getModel()->getKey();
             $properties = Cache::store('global_variables')->get($key, []);
 
             return $properties[$name] ?? $default;
@@ -38,7 +38,7 @@ class Process extends ModelsProcess
     public function setProperty($name, $value)
     {
         if ($name === 'conditionals') {
-            $key = '_process_'.$this->getOwnerDocument()->getModel()->getKey();
+            $key = '_process_' . $this->getOwnerDocument()->getModel()->getKey();
             $properties = Cache::store('global_variables')->get($key, []);
             $properties[$name] = $value;
             \Log::info(['global_variables', $key, $properties]);

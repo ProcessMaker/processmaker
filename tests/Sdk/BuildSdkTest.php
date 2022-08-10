@@ -36,7 +36,7 @@ class BuildSdkTest extends TestCase
         $builder->setLang('php');
         $builder->run();
 
-        $userApiFile = $output.'/lib/Api/UsersApi.php';
+        $userApiFile = $output . '/lib/Api/UsersApi.php';
         $this->assertFileExists($userApiFile);
     }
 }

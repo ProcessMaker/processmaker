@@ -62,7 +62,7 @@ class GroupMemberController extends Controller
      */
     public function index(Request $request)
     {
-        if (! (Auth::user()->can('view-groups') || Auth::user()->can('view-users'))) {
+        if (!(Auth::user()->can('view-groups') || Auth::user()->can('view-users'))) {
             throw new AuthorizationException(__('Not authorized to view groups.'));
         }
 
@@ -294,9 +294,9 @@ class GroupMemberController extends Controller
         $query = Group::where('status', 'ACTIVE');
 
         $filter = $request->input('filter', '');
-        if (! empty($filter)) {
+        if (!empty($filter)) {
             //filter by name group
-            $filter = '%'.$filter.'%';
+            $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('name', 'like', $filter);
             });
@@ -399,9 +399,9 @@ class GroupMemberController extends Controller
             ->whereNotIn('id', $members);
 
         $filter = $request->input('filter', '');
-        if (! empty($filter)) {
+        if (!empty($filter)) {
             //filter by name group
-            $filter = '%'.$filter.'%';
+            $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('firstname', 'like', $filter)
                     ->orWhere('lastname', 'like', $filter);

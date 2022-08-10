@@ -69,7 +69,7 @@ class SanitizeHelperTest extends TestCase
         $childScreen = $this->screen;
         $this->createScreen('tests/Fixtures/sanitize_single_rich_text_nested_screen.json');
         // Configure childId screen to nested screen
-        $config = str_replace('"screen":1', '"screen":'.$childScreen->id, json_encode($this->screen->config));
+        $config = str_replace('"screen":1', '"screen":' . $childScreen->id, json_encode($this->screen->config));
         $this->screen->config = json_decode($config);
         $this->screen->save();
         $this->createProcess('tests/Fixtures/sanitize_single_task_nested.bpmn');
@@ -127,7 +127,7 @@ class SanitizeHelperTest extends TestCase
         $childScreen = $this->screen;
         $this->createScreen('tests/Fixtures/sanitize_single_rich_text_nested_loop_screen.json');
         // Configure childId screen to nested screen
-        $config = str_replace('"screen":1', '"screen":'.$childScreen->id, json_encode($this->screen->config));
+        $config = str_replace('"screen":1', '"screen":' . $childScreen->id, json_encode($this->screen->config));
         $this->screen->config = json_decode($config);
         $this->screen->save();
         $this->createProcess('tests/Fixtures/sanitize_single_task_nested_loop.bpmn');
@@ -308,7 +308,7 @@ class SanitizeHelperTest extends TestCase
     private function createProcess($processFilePath)
     {
         $bpmn = file_get_contents(base_path($processFilePath));
-        $bpmn = str_replace('pm:screenRef="1"', 'pm:screenRef="'.$this->screen->id.'"', $bpmn);
+        $bpmn = str_replace('pm:screenRef="1"', 'pm:screenRef="' . $this->screen->id . '"', $bpmn);
         $this->process = factory(Process::class)->create([
             'bpmn' => $bpmn,
             'user_id' => $this->user->id,

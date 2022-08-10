@@ -25,7 +25,7 @@ class ProcessPatternsTest extends TestCase
     use RequestHelper;
     use ProcessTestingTrait;
 
-    private $basePath = __DIR__.'/bpmnPatterns/';
+    private $basePath = __DIR__ . '/bpmnPatterns/';
 
     /**
      * Make sure we have a personal access client set up
@@ -76,7 +76,7 @@ class ProcessPatternsTest extends TestCase
     {
         $file = "{$this->basePath}{$bpmnFile}";
         $name = basename($bpmnFile, '.bpmn');
-        $jsonFile = substr($file, 0, -4).'json';
+        $jsonFile = substr($file, 0, -4) . 'json';
         if (file_exists($jsonFile)) {
             $contexts = json_decode(file_get_contents($jsonFile), true);
             foreach ($contexts as $context) {
@@ -174,7 +174,7 @@ class ProcessPatternsTest extends TestCase
                 $this->completeTask($token, []);
             }
             // Trigger intermediate events
-            if (! $submited) {
+            if (!$submited) {
                 $tokens = ProcessRequestToken::where('status', 'ACTIVE')
                     ->where('element_type', 'event')
                     ->get();
@@ -195,7 +195,7 @@ class ProcessPatternsTest extends TestCase
             }
             $pending = ProcessRequest::where('status', 'ACTIVE')
                 ->count();
-            if (! $submited && $pending) {
+            if (!$submited && $pending) {
                 $elements = implode(
                     ', ',
                     ProcessRequestToken::whereIn('status', ['ACTIVE', 'FAILING'])
@@ -257,11 +257,11 @@ class ProcessPatternsTest extends TestCase
      */
     private function assertData($subset, $data, $message = 'data', $skip = false)
     {
-        if (! is_array($subset) || ! is_array($data)) {
+        if (!is_array($subset) || !is_array($data)) {
             if ($skip) {
                 return $subset == $data;
             } else {
-                return $this->assertEquals($subset, $data, $message.' = '.\json_encode($data).' does not match '.\json_encode($subset));
+                return $this->assertEquals($subset, $data, $message . ' = ' . \json_encode($data) . ' does not match ' . \json_encode($subset));
             }
         }
         foreach ($subset as $key => $value) {

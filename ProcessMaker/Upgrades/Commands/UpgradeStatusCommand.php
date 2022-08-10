@@ -42,7 +42,7 @@ class UpgradeStatusCommand extends BaseCommand
      */
     public function handle()
     {
-        if (! $this->migrator->repositoryExists()) {
+        if (!$this->migrator->repositoryExists()) {
             $this->error('No upgrade migrations found.');
 
             return 1;

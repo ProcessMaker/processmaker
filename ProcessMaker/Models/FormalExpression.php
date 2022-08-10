@@ -222,11 +222,11 @@ class FormalExpression implements FormalExpressionInterface
             function () {
             },
             function ($__data, $user_id, $assigned_groups) {
-                if (! $user_id) {
+                if (!$user_id) {
                     return null;
                 }
                 $user = User::find($user_id);
-                if (! $user) {
+                if (!$user) {
                     return null;
                 }
                 $user_groups = $user->groups()->get();
@@ -235,7 +235,7 @@ class FormalExpression implements FormalExpressionInterface
                         return $group->manager_id;
                     }
                 }
-                if (! $user->manager_id) {
+                if (!$user->manager_id) {
                     // If no manager is found, then assign the task to the Process Manager.
                     $request = ProcessRequest::find($__data['_request']['id']);
                     $process = $request->processVersion;
@@ -377,12 +377,12 @@ class FormalExpression implements FormalExpressionInterface
     {
         $body = $templateEngine->render($expression, $data);
 
-        if (! trim($body)) {
+        if (!trim($body)) {
             return true;
         }
 
         $language = $this->getLanguage() ?: self::defaultLanguage;
-        if (! isset(self::languages[$language])) {
+        if (!isset(self::languages[$language])) {
             throw new ScriptLanguageNotSupported($language);
         }
         $evaluator = self::languages[$language][0];

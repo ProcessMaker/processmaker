@@ -68,7 +68,7 @@ class SanitizeHelper
      */
     private static function convertTagToRegExp($tag)
     {
-        return '/'.str_replace(['\<', '\>'], ['<[\s\/]*', '[^>]*>'], preg_quote($tag)).'/i';
+        return '/' . str_replace(['\<', '\>'], ['<[\s\/]*', '[^>]*>'], preg_quote($tag)) . '/i';
     }
 
     /**
@@ -96,7 +96,7 @@ class SanitizeHelper
 
         // Get process request exceptions stored in do_not_sanitize column ..
         $processRequestExceptions = $task->processRequest->do_not_sanitize;
-        if (! $processRequestExceptions) {
+        if (!$processRequestExceptions) {
             $processRequestExceptions = [];
         }
 
@@ -113,8 +113,8 @@ class SanitizeHelper
     private static function sanitizeWithExceptions(array $data, array $except, $parent = null)
     {
         foreach ($data as $key => $value) {
-            if (! is_int($key)) {
-                $searchKey = ($parent ? $parent.'.'.$key : $key);
+            if (!is_int($key)) {
+                $searchKey = ($parent ? $parent . '.' . $key : $key);
             } else {
                 $searchKey = $parent;
             }
@@ -122,7 +122,7 @@ class SanitizeHelper
                 $data[$key] = self::sanitizeWithExceptions($value, $except, $searchKey);
             } else {
                 // Only allow skipping on top-level data for now
-                $strip_tags = ! in_array($searchKey, $except);
+                $strip_tags = !in_array($searchKey, $except);
                 $data[$key] = self::sanitize($value, $strip_tags);
             }
         }
@@ -133,7 +133,7 @@ class SanitizeHelper
     private static function getExceptions($screen)
     {
         $except = [];
-        if (! $screen) {
+        if (!$screen) {
             return $except;
         }
         $config = $screen->config;
@@ -154,9 +154,9 @@ class SanitizeHelper
             if (isset($item['items']) && is_array($item['items'])) {
                 // Inside loop ..
                 if ($item['component'] == 'FormLoop') {
-                    $elements = array_merge($elements, self::getRichTextElements($item['items'], ($parent ? $parent.'.'.$item['config']['name'] : $item['config']['name'])));
+                    $elements = array_merge($elements, self::getRichTextElements($item['items'], ($parent ? $parent . '.' . $item['config']['name'] : $item['config']['name'])));
                 } elseif (isset($item['component']) && $item['component'] === 'FormTextArea' && isset($item['config']['richtext']) && $item['config']['richtext'] === true) {
-                    $elements[] = ($parent ? $parent.'.'.$item['config']['name'] : $item['config']['name']);
+                    $elements[] = ($parent ? $parent . '.' . $item['config']['name'] : $item['config']['name']);
                 // Inside a table ..
                 } elseif ($item['component'] == 'FormMultiColumn') {
                     foreach ($item['items'] as $cell) {
@@ -175,7 +175,7 @@ class SanitizeHelper
                 }
             } else {
                 if (isset($item['component']) && $item['component'] === 'FormTextArea' && isset($item['config']['richtext']) && $item['config']['richtext'] === true) {
-                    $elements[] = ($parent ? $parent.'.'.$item['config']['name'] : $item['config']['name']);
+                    $elements[] = ($parent ? $parent . '.' . $item['config']['name'] : $item['config']['name']);
                 }
             }
         }

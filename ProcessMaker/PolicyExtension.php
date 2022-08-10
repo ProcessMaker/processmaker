@@ -16,7 +16,7 @@ class PolicyExtension
 
     private function key(string $action, string $class)
     {
-        return $action.'-'.$class;
+        return $action . '-' . $class;
     }
 
     public function has(string $action, string $class)
@@ -30,7 +30,7 @@ class PolicyExtension
     public function add(string $action, string $class, callable $policy)
     {
         $key = $this->key($action, $class);
-        if (! $this->has($action, $class)) {
+        if (!$this->has($action, $class)) {
             $this->extensions[$key] = [];
         }
 
@@ -40,7 +40,7 @@ class PolicyExtension
     public function authorize(string $action, User $user, Model $model)
     {
         $class = get_class($model);
-        if (! $this->has($action, $class)) {
+        if (!$this->has($action, $class)) {
             return false;
         }
 

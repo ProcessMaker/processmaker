@@ -95,7 +95,7 @@ class TaskController extends Controller
     {
         // If a specific user is specified, use it; otherwise use the authorized user
         // This is necessary to produce accurate counts for Saved Searches
-        if (! $user) {
+        if (!$user) {
             $user = Auth::user();
         }
 
@@ -112,7 +112,7 @@ class TaskController extends Controller
         $query->with($include);
 
         $filter = $request->input('filter', '');
-        if (! empty($filter)) {
+        if (!empty($filter)) {
             $query->filter($filter);
         }
 
@@ -166,7 +166,7 @@ class TaskController extends Controller
         // order by one or more columns
         $orderColumns = explode(',', $request->input('order_by', 'updated_at'));
         foreach ($orderColumns as $column) {
-            if (! Str::contains($column, '.')) {
+            if (!Str::contains($column, '.')) {
                 $query->orderBy($column, $request->input('order_direction', 'asc'));
             }
         }
@@ -180,7 +180,7 @@ class TaskController extends Controller
         }
 
         $pmql = $request->input('pmql', '');
-        if (! empty($pmql)) {
+        if (!empty($pmql)) {
             try {
                 $query->pmql($pmql, null, $user);
             } catch (QueryException $e) {
@@ -207,7 +207,7 @@ class TaskController extends Controller
             $regex = '~Column not found: 1054 Unknown column \'(.*?)\' in \'where clause\'~';
             preg_match($regex, $e->getMessage(), $m);
 
-            return response(['message' => __('PMQL Is Invalid.').' '.__('Column not found: ').'"'.$m[1].'"'], 422);
+            return response(['message' => __('PMQL Is Invalid.') . ' ' . __('Column not found: ') . '"' . $m[1] . '"'], 422);
         }
 
         // Only filter results if the user id was specified
@@ -321,10 +321,10 @@ class TaskController extends Controller
             WorkflowManager::completeTask($process, $instance, $task, $data);
 
             return new Resource($task->refresh());
-        } elseif (! empty($request->input('user_id'))) {
+        } elseif (!empty($request->input('user_id'))) {
             $userToAssign = $request->input('user_id');
             $sendActivityActivatedNotifications = false;
-            if ($task->is_self_service && $userToAssign == Auth::id() && ! $task->user_id) {
+            if ($task->is_self_service && $userToAssign == Auth::id() && !$task->user_id) {
                 // Claim task
                 $task->is_self_service = 0;
                 $task->user_id = $userToAssign;

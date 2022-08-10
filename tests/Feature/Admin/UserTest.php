@@ -38,7 +38,7 @@ class UserTest extends TestCase
     {
         $user_id = factory(User::class)->create()->id;
         // get the URL
-        $response = $this->webCall('GET', '/admin/users/'.$user_id.'/edit');
+        $response = $this->webCall('GET', '/admin/users/' . $user_id . '/edit');
 
         $response->assertStatus(200);
         // check the correct view is called
@@ -60,7 +60,7 @@ class UserTest extends TestCase
             'group' => 'Users',
         ]);
         // get the URL
-        $response = $this->webCall('GET', '/admin/users/'.$user_id.'/edit');
+        $response = $this->webCall('GET', '/admin/users/' . $user_id . '/edit');
         $response->assertStatus(200);
         // check the correct view is called
         $response->assertViewIs('admin.users.edit');

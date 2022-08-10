@@ -29,7 +29,7 @@ class SearchAutocompleteTraitTest extends TestCase
         ]);
 
         $call = function ($query) {
-            $result = $this->webCall('GET', '/requests/search?'.$query);
+            $result = $this->webCall('GET', '/requests/search?' . $query);
             $result = json_decode($result->getContent(), true);
             $processes = collect($result['process']);
 

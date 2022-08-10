@@ -86,7 +86,7 @@ class ProcessVersion extends Model implements ProcessModelInterface
         ];
 
         foreach ($processables as $relationshipName => $methodName) {
-            if (! $this->process->$relationshipName()->exists()) {
+            if (!$this->process->$relationshipName()->exists()) {
                 continue;
             }
 

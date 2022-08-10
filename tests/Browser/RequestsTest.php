@@ -16,7 +16,7 @@ class RequestsTest extends DuskTestCase
     {
         $user = User::where('username', 'testuser')->first();
 
-        if (! $user) {
+        if (!$user) {
             $user = factory(User::class)->create([
                 'username' => 'testuser',
                 'password' => Hash::make('secret'),
@@ -54,7 +54,7 @@ class RequestsTest extends DuskTestCase
         $this->browse(function ($first) use ($user) {
             $first->loginAs($user)
                 ->visit(new RequestsPage)
-                ->assertVue('pmql', '(status = "In Progress") AND (requester = "'.$user->username.'")', '#requests-listing');
+                ->assertVue('pmql', '(status = "In Progress") AND (requester = "' . $user->username . '")', '#requests-listing');
         });
     }
 

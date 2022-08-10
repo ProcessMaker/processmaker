@@ -201,10 +201,10 @@ class ProcessController extends Controller
      */
     public function download(Process $process, $key)
     {
-        $fileName = trim($process->name).'.json';
+        $fileName = trim($process->name) . '.json';
         $fileContents = Cache::get($key);
 
-        if (! $fileContents) {
+        if (!$fileContents) {
             return abort(404);
         } else {
             return response()->streamDownload(function () use ($fileContents) {
@@ -237,7 +237,7 @@ class ProcessController extends Controller
         $response = $api_request->triggerStartEvent($process, $request);
         $instance_id = $response->data['_request']['id'];
 
-        return redirect('/requests/'.$instance_id);
+        return redirect('/requests/' . $instance_id);
     }
 
     private function checkAuth()

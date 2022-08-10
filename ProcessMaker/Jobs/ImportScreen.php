@@ -55,12 +55,12 @@ class ImportScreen extends ImportProcess
                 foreach ($screen->watchers as $watcher) {
                     $names[] = $watcher->name;
                 }
-                $this->status['screens']['info'] = __('Please assign a run script user to: ').implode(', ', $names);
+                $this->status['screens']['info'] = __('Please assign a run script user to: ') . implode(', ', $names);
             }
         }
         $this->finishStatus('screens');
 
-        if (! isset($this->file->scripts)) {
+        if (!isset($this->file->scripts)) {
             $this->findWatcherScripts($new[Screen::class]);
         }
 

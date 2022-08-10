@@ -79,7 +79,7 @@ class ScriptExecutor extends Model
         $initialExecutor = self::where('language', $language)
             ->orderBy('created_at', 'asc')
             ->first();
-        if (! $initialExecutor) {
+        if (!$initialExecutor) {
             throw new ScriptLanguageNotSupported($language);
         }
 
@@ -95,17 +95,17 @@ class ScriptExecutor extends Model
     {
         // remove try/catch block after lang packages updated
         try {
-            $dockerfile = file_get_contents(self::packagePath($language).'/Dockerfile');
+            $dockerfile = file_get_contents(self::packagePath($language) . '/Dockerfile');
         } catch (\ErrorException $e) {
             $dockerfile = '';
         }
         $initDockerfile = self::config($language)['init_dockerfile'];
 
         // remove check after lang packages updated
-        if (! is_array($initDockerfile)) {
+        if (!is_array($initDockerfile)) {
             $initDockerfile = explode("\n", $initDockerfile);
         }
-        $dockerfile .= "\n".implode("\n", $initDockerfile);
+        $dockerfile .= "\n" . implode("\n", $initDockerfile);
 
         return $dockerfile;
     }
@@ -119,8 +119,8 @@ class ScriptExecutor extends Model
     {
         $config = config('script-runners');
         $language = strtolower($language);
-        if (! isset($config[$language])) {
-            throw new \ErrorException('Language not in config: '.$language);
+        if (!isset($config[$language])) {
+            throw new \ErrorException('Language not in config: ' . $language);
         }
 
         return $config[$language];
@@ -149,7 +149,7 @@ class ScriptExecutor extends Model
         }
 
         foreach ($executors->get() as $executor) {
-            $list[$executor->id] = $executor->language.' - '.$executor->title;
+            $list[$executor->id] = $executor->language . ' - ' . $executor->title;
         }
 
         return $list;
@@ -202,7 +202,7 @@ class ScriptExecutor extends Model
         return array_values(array_filter($result, function ($image) use ($filterByLanguage, $instance) {
             $filter = "processmaker4/executor-${instance}-";
             if ($filterByLanguage) {
-                $filter .= $filterByLanguage.'-';
+                $filter .= $filterByLanguage . '-';
             }
 
             return strpos($image, $filter) !== false;

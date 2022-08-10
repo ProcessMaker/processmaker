@@ -37,7 +37,7 @@ class PackageChecker
 
     public function hasDatabaseEntry($class, $name, $column = 'key')
     {
-        if (! $class::where($column, $name)->exists()) {
+        if (!$class::where($column, $name)->exists()) {
             $model = new $class;
             $this->errors[] = "{$model->getTable()} table does not have $name in the $column column";
         }
@@ -56,7 +56,7 @@ class PackageChecker
     {
         $installedCorePackages = $this->composerPackages();
         foreach ($this->requiredPackages() as $package => $version) {
-            if (! isset($installedCorePackages[$package])) {
+            if (!isset($installedCorePackages[$package])) {
                 $this->errors[] = "Package missing: $package";
             } elseif ($installedCorePackages[$package] !== '') {
                 // TODO: Check semver satisfies. See Composer\Semver package
