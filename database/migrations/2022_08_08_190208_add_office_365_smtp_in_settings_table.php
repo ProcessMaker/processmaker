@@ -46,8 +46,7 @@ class AddOffice365SmtpInSettingsTable extends Migration
      */
     public function down()
     {
-        Schema::table('settings', function (Blueprint $table) {
-            //
-        });
-    }    
+        Setting::where('key', 'LIKE', "EMAIL_CONNECTOR_OFFICE_365%")->delete();
+    }
+   
 }
