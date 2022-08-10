@@ -49,7 +49,7 @@ class ProcessSeeder extends Seeder
             $processes = $process->getDefinitions()->getElementsByTagName('process');
             if ($processes->item(0)) {
                 $processDefinition = $processes->item(0)->getBpmnElementInstance();
-                if (! empty($processDefinition->getName())) {
+                if (!empty($processDefinition->getName())) {
                     $process->name = $processDefinition->getName();
                 }
             }
@@ -57,7 +57,7 @@ class ProcessSeeder extends Seeder
             $collaborations = $process->getDefinitions()->getElementsByTagName('collaboration');
             if ($collaborations->item(0)) {
                 $collaborationDefinition = $collaborations->item(0)->getBpmnElementInstance();
-                if (! empty($collaborationDefinition->getName())) {
+                if (!empty($collaborationDefinition->getName())) {
                     $process->name = $collaborationDefinition->getName();
                 }
             }
@@ -89,7 +89,7 @@ class ProcessSeeder extends Seeder
                 $lane = $nodeLane->getBpmnElementInstance();
                 $user = $this->getUserOrCreate($lane->getName());
                 foreach ($lane->getFlowNodes() as $node) {
-                    if ($node instanceof ActivityInterface && ! ($node instanceof ScriptTaskInterface)) {
+                    if ($node instanceof ActivityInterface && !($node instanceof ScriptTaskInterface)) {
                         factory(ProcessTaskAssignment::class)->create([
                             'process_id' => $process->getKey(),
                             'process_task_id' => $node->getId(),
@@ -126,7 +126,7 @@ class ProcessSeeder extends Seeder
                     $assignments = ProcessTaskAssignment::where('process_id', $process->getKey())
                         ->where('process_task_id', $id)
                         ->count();
-                    if (! $assignments) {
+                    if (!$assignments) {
                         factory(ProcessTaskAssignment::class)->create([
                             'process_id' => $process->getKey(),
                             'process_task_id' => $id,
@@ -220,7 +220,7 @@ class ProcessSeeder extends Seeder
         $name = $this->formatName($userFullName);
         $user = User::where('username', $name)
             ->first();
-        if (! $user) {
+        if (!$user) {
             $user = factory(User::class)->create([
                 'username' => $name,
                 'password' => Hash::make('admin'),
@@ -242,7 +242,7 @@ class ProcessSeeder extends Seeder
     private function getGroupOrCreate($name)
     {
         $group = Group::where('name', $name)->first();
-        if (! $group) {
+        if (!$group) {
             $group = factory(Group::class)->create([
                 'name' => $name,
                 'status' => 'ACTIVE',

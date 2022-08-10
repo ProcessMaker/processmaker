@@ -42,7 +42,7 @@ class CategoryRule implements ImplicitRule
             $ids = [$value];
         }
         foreach ($ids as $id) {
-            if (! $class::where('id', $id)->exists()) {
+            if (!$class::where('id', $id)->exists()) {
                 return false;
             }
         }

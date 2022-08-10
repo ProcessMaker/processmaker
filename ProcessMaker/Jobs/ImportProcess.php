@@ -149,7 +149,7 @@ class ImportProcess implements ShouldQueue
      */
     private function currentUser()
     {
-        if (! app()->runningInConsole()) {
+        if (!app()->runningInConsole()) {
             return Auth::user();
         } else {
             return User::first();
@@ -249,7 +249,7 @@ class ImportProcess implements ShouldQueue
         $this->parseAssignableScripts();
         $this->parseAssignableWatchers();
 
-        if (! $this->assignable->count()) {
+        if (!$this->assignable->count()) {
             $this->assignable = null;
         }
     }
@@ -265,7 +265,7 @@ class ImportProcess implements ShouldQueue
         foreach ($tasks as $task) {
             $assignment = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
             $eventDefinition = $task->getElementsByTagName('timerEventDefinition');
-            if (! $assignment && $eventDefinition->count() === 0) {
+            if (!$assignment && $eventDefinition->count() === 0) {
                 $this->assignable->push((object) [
                     'type' => 'startEvent',
                     'id' => $task->getAttribute('id'),
@@ -292,7 +292,7 @@ class ImportProcess implements ShouldQueue
                 continue;
             }
 
-            if (! $assignment) {
+            if (!$assignment) {
                 $this->assignable->push((object) [
                     'type' => 'callActivity',
                     'id' => $task->getAttribute('id'),
@@ -581,7 +581,7 @@ class ImportProcess implements ShouldQueue
      */
     protected function saveCategory($type, $category)
     {
-        if (! array_key_exists($type . '_categories', $this->new)) {
+        if (!array_key_exists($type . '_categories', $this->new)) {
             $this->new[$type . '_categories'] = [];
         }
 
@@ -711,10 +711,10 @@ class ImportProcess implements ShouldQueue
                 $implementation = $task->getAttribute('implementation');
                 if ($implementation) {
                     $implementation = explode('/', $implementation);
-                    if (! in_array($implementation[0], $packages, true)) {
+                    if (!in_array($implementation[0], $packages, true)) {
                         $packages[] = $implementation[0];
                         $exists = $this->isRegisteredPackage($implementation[0]);
-                        if (! $exists) {
+                        if (!$exists) {
                             $exists = $this->isBackwardCompatiblePackage($implementation[0]);
                         }
                         $response = $exists === false ? false : $response;
@@ -761,7 +761,7 @@ class ImportProcess implements ShouldQueue
      */
     private function parseFileV1()
     {
-        if (! $this->validatePackages($this->file->process)) {
+        if (!$this->validatePackages($this->file->process)) {
             return (object) [
                 'status' => collect($this->status),
                 'assignable' => [],
@@ -802,7 +802,7 @@ class ImportProcess implements ShouldQueue
         $humanTasks = ['startEvent', 'task', 'userTask', 'manualTask'];
         $ns = WorkflowServiceProvider::PROCESS_MAKER_NS;
 
-        if (! isset($this->file->process->anonymousUserId)) {
+        if (!isset($this->file->process->anonymousUserId)) {
             return;
         }
 
@@ -840,7 +840,7 @@ class ImportProcess implements ShouldQueue
      */
     public function handle()
     {
-        if ($this->path && ! $this->fileContents) {
+        if ($this->path && !$this->fileContents) {
             $this->fileContents = Storage::get($this->path);
         }
         //First, decode the file

@@ -63,7 +63,7 @@ class GarbageCollector extends Command
     {
         $tasks = $this->getTaskList();
 
-        if (! $tasks->count()) {
+        if (!$tasks->count()) {
             $this->writeln("No failing script or service tasks found.\n", 'line');
 
             return;
@@ -76,7 +76,7 @@ class GarbageCollector extends Command
 
         foreach ($tasks as $token) {
             $bar->advance();
-            if (! $this->canRunScriptOfToken($token)) {
+            if (!$this->canRunScriptOfToken($token)) {
                 $this->writeln("Script of the token { $token->id } is still running...\n", 'line', true);
                 continue;
             }
@@ -107,7 +107,7 @@ class GarbageCollector extends Command
 
             $tokens = [];
             if ($file = fopen($fileName, 'r')) {
-                while (! feof($file)) {
+                while (!feof($file)) {
                     $token = fgets($file);
                     $tokens[] = trim($token);
                 }
@@ -117,7 +117,7 @@ class GarbageCollector extends Command
             foreach ($tokens as $tokenId) {
                 $token = ProcessRequestToken::find($tokenId);
 
-                if (! $this->canRunScriptOfToken($token)) {
+                if (!$this->canRunScriptOfToken($token)) {
                     $this->writeln("Script of the token { $token->id } is still running...\n", 'line', true);
                     continue;
                 }

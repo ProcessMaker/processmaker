@@ -48,7 +48,7 @@ class ScriptRunner
     {
         $language = strtolower($executor->language);
         $runner = config("script-runners.{$language}.runner");
-        if (! $runner) {
+        if (!$runner) {
             throw new ScriptLanguageNotSupported($language);
         } else {
             $class = "ProcessMaker\\ScriptRunners\\{$runner}";

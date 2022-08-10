@@ -95,7 +95,7 @@ class ScreenConsolidator
         $this->recursion++;
 
         $topLevelNestedScreen = false;
-        if (! $this->inNestedScreen) {
+        if (!$this->inNestedScreen) {
             $this->inNestedScreen = true;
             $topLevelNestedScreen = true;
         }
@@ -206,7 +206,7 @@ class ScreenConsolidator
 
     private function appendWatchers($screen)
     {
-        if (! is_array($screen->watchers)) {
+        if (!is_array($screen->watchers)) {
             return;
         }
 
@@ -217,7 +217,7 @@ class ScreenConsolidator
 
     private function appendComputed($screen)
     {
-        if (! is_array($screen->computed)) {
+        if (!is_array($screen->computed)) {
             return;
         }
 
@@ -238,7 +238,7 @@ class ScreenConsolidator
 
     private function computedMaxId()
     {
-        if (! $this->computed) {
+        if (!$this->computed) {
             return 0;
         }
 
@@ -250,7 +250,7 @@ class ScreenConsolidator
         foreach ($items as $key => $item) {
 
             //If the element has containers
-            if (is_array($item) && ! array_key_exists('config', $item)) {
+            if (is_array($item) && !array_key_exists('config', $item)) {
                 $items[$key] = $this->hiddenNavButtons($item);
             }
 

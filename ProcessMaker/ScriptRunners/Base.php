@@ -63,7 +63,7 @@ abstract class Base
     {
         // Prepare the docker parameters
         $environmentVariables = $this->getEnvironmentVariables();
-        if (! getenv('HOME')) {
+        if (!getenv('HOME')) {
             putenv('HOME=' . base_path());
         }
 
@@ -99,7 +99,7 @@ abstract class Base
         ]);
 
         // If the image is not specified, use the one set by the executor
-        if (! isset($dockerConfig['image'])) {
+        if (!isset($dockerConfig['image'])) {
             $dockerConfig['image'] = $this->scriptExecutor->dockerImageName();
         }
 

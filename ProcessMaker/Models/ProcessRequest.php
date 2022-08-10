@@ -547,7 +547,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $this->errors = $errors;
         $this->status = 'ERROR';
         \Log::error($exception);
-        if (! $this->isNonPersistent()) {
+        if (!$this->isNonPersistent()) {
             $this->save();
         }
     }

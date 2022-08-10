@@ -551,11 +551,11 @@ class Process extends Model implements HasMedia, ProcessModelInterface
             return $user;
         }
         if ($user === null) {
-            if ($assignmentType === 'self_service' && ! $escalateToManager) {
+            if ($assignmentType === 'self_service' && !$escalateToManager) {
                 return null;
             }
             $user = $request->processVersion->manager;
-            if (! $user) {
+            if (!$user) {
                 throw new ThereIsNoProcessManagerAssignedException($activity);
             }
         }
@@ -607,7 +607,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
             $userId = $mustache->render($userExpression, $instanceData);
 
             $user = User::find($userId);
-            if (! $user) {
+            if (!$user) {
                 throw new InvalidUserAssignmentException($userExpression, $userId);
             }
 
@@ -859,11 +859,11 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     {
         $user = Auth::user();
         // Load Process Start Events
-        if (! isset($this->start_events)) {
+        if (!isset($this->start_events)) {
             $this->start_events = $this->getUpdatedStartEvents();
         }
         // If user is administrator heshe can access all the start events
-        if (! $filterWithPermissions || $user->is_administrator) {
+        if (!$filterWithPermissions || $user->is_administrator) {
             return $this->start_events;
         }
         // Filter the start events assigned to the user
@@ -1051,7 +1051,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
 
         $validateUserId = $activity instanceof Activity;
 
-        if ($validateUserId && ! $processRequest->user_id) {
+        if ($validateUserId && !$processRequest->user_id) {
             throw new TaskDoesNotHaveRequesterException();
         }
 
@@ -1063,7 +1063,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
      */
     public function convertFromExternalBPM()
     {
-        if (! $this->bpmn) {
+        if (!$this->bpmn) {
             return;
         }
         $warnings = $this->warnings;
@@ -1160,7 +1160,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
             if ($child->nodeName !== '#text') {
                 $shortName = explode(':', $child->nodeName);
                 $shortName = count($shortName) === 2 ? $shortName[1] : $shortName[0];
-                if ($include && ! in_array($shortName, $include)) {
+                if ($include && !in_array($shortName, $include)) {
                     continue;
                 }
                 if ($exclude && in_array($shortName, $exclude)) {
@@ -1171,7 +1171,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
             $newnode->appendChild($child);
         }
         foreach ($node->attributes as $attrName => $attrNode) {
-            if (! in_array($attrName, $excludeAttributes)) {
+            if (!in_array($attrName, $excludeAttributes)) {
                 $newnode->setAttribute($attrName, $attrNode->nodeValue);
             }
         }
@@ -1214,7 +1214,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
      */
     public function isValidForExecution()
     {
-        return empty($this->warnings) && ! empty($this->getLatestVersion());
+        return empty($this->warnings) && !empty($this->getLatestVersion());
     }
 
     /**
@@ -1299,11 +1299,11 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         $startId = is_array($config) && isset($config['startEvent']) ? $config['startEvent'] : null;
         if ($startId) {
             $element = $targetProcess->getOwnerDocument()->findElementById($startId);
-            if (! $element) {
+            if (!$element) {
                 throw new Exception(__('The start event with id ":node_id" does not exist', ['node_id' => $startId]));
             }
             $startEvent = $element->getBpmnElementInstance();
-            if (! ($startEvent instanceof StartEventInterface)) {
+            if (!($startEvent instanceof StartEventInterface)) {
                 throw new Exception(__('The start event of the call activity is not a start event'));
             }
             $eventDefinitions = $startEvent->getEventDefinitions();
@@ -1333,7 +1333,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
             $schemaErrors[] = $e->getMessage();
         }
         $rulesValidation = new BPMNValidation;
-        if (! $rulesValidation->passes('document', $document)) {
+        if (!$rulesValidation->passes('document', $document)) {
             $errors = $rulesValidation->errors('document', $document)->getMessages();
             $schemaErrors[] = [
                 'title' => 'BPMN Validation failed',

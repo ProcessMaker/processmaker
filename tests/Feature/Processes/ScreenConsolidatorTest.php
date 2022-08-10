@@ -371,11 +371,11 @@ class ScreenConsolidatorTest extends TestCase
                         break;
                     }
                 }
-                if (! $found) {
+                if (!$found) {
                     return false;
                 }
             } else {
-                if (! isset($page[$key])) {
+                if (!isset($page[$key])) {
                     return false;
                 }
                 $item = $page[$key];

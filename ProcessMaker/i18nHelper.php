@@ -32,7 +32,7 @@ class i18nHelper
         $files = [];
         foreach (scandir(resource_path('lang')) as $file) {
             preg_match("/([a-z]{2})\.json/", $file, $matches);
-            if (! empty($matches)) {
+            if (!empty($matches)) {
                 $files[$matches[1]] = $file;
             }
         }

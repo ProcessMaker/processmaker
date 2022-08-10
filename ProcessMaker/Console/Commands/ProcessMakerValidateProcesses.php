@@ -42,7 +42,7 @@ class ProcessMakerValidateProcesses extends Command
         foreach ($processes as $process) {
             $this->info('Process: ' . $process->name);
             $process->warnings = [];
-            if (! $process->validateBpmnDefinition()) {
+            if (!$process->validateBpmnDefinition()) {
                 // Save validation errors
                 $process->save();
             }

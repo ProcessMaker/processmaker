@@ -60,7 +60,7 @@ class ImportScreen extends ImportProcess
         }
         $this->finishStatus('screens');
 
-        if (! isset($this->file->scripts)) {
+        if (!isset($this->file->scripts)) {
             $this->findWatcherScripts($new[Screen::class]);
         }
 

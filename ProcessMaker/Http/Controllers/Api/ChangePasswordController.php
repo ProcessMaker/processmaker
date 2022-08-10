@@ -17,12 +17,12 @@ class ChangePasswordController extends Controller
 
         // On the rare occasion an authenticated user
         // can't be found, then bail out
-        if (! $user instanceof User) {
+        if (!$user instanceof User) {
             return response()->json([], 422);
         }
 
         // Same if we don't have the required fields
-        if (! $request->has(['password', 'confpassword'])) {
+        if (!$request->has(['password', 'confpassword'])) {
             return response()->json([], 422);
         }
 

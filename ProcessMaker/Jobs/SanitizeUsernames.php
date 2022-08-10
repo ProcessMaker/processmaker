@@ -80,7 +80,7 @@ class SanitizeUsernames implements ShouldQueue
      */
     public static function findAndReplaceUsernameInComments(string $previous_username, string $new_username)
     {
-        if (! self::packageCommentsInstalled()) {
+        if (!self::packageCommentsInstalled()) {
             return;
         }
 

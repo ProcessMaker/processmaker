@@ -90,9 +90,9 @@ class ScriptController extends Controller
 
         $filter = $request->input('filter', '');
         $isSelectList = $request->input('selectList', '');
-        if (! empty($filter)) {
+        if (!empty($filter)) {
             $filter = '%' . $filter . '%';
-            if (! $isSelectList) {
+            if (!$isSelectList) {
                 $query->where(function ($query) use ($filter) {
                     $query->Where('title', 'like', $filter)
                         ->orWhere('description', 'like', $filter)
@@ -418,7 +418,7 @@ class ScriptController extends Controller
 
         $exclude = ['id', 'created_at', 'updated_at'];
         foreach ($script->getAttributes() as $attribute => $value) {
-            if (! in_array($attribute, $exclude)) {
+            if (!in_array($attribute, $exclude)) {
                 $newScript->{$attribute} = $script->{$attribute};
             }
         }

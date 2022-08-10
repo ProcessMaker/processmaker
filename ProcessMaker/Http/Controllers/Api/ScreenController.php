@@ -102,9 +102,9 @@ class ScreenController extends Controller
 
         $filter = $request->input('filter', '');
         $isSelectList = $request->input('selectList', '');
-        if (! empty($filter)) {
+        if (!empty($filter)) {
             $filter = '%' . $filter . '%';
-            if (! $isSelectList) {
+            if (!$isSelectList) {
                 $query->where(function ($query) use ($filter) {
                     $query->where('title', 'like', $filter)
                         ->orWhere('description', 'like', $filter)
@@ -130,13 +130,13 @@ class ScreenController extends Controller
             $screens = ScreenType::where('is_interactive', $interactive)->get('name');
             $query->whereIn('type', $screens);
         }
-        if (! $interactive && $request->input('type')) {
+        if (!$interactive && $request->input('type')) {
             $types = explode(',', $request->input('type'));
             $query->whereIn('type', $types);
         }
 
         $pmql = $request->input('pmql', '');
-        if (! empty($pmql)) {
+        if (!empty($pmql)) {
             try {
                 $query->pmql($pmql);
             } catch (SyntaxError $e) {
@@ -300,7 +300,7 @@ class ScreenController extends Controller
 
         $exclude = ['id', 'created_at', 'updated_at'];
         foreach ($screen->getAttributes() as $attribute => $value) {
-            if (! in_array($attribute, $exclude)) {
+            if (!in_array($attribute, $exclude)) {
                 $newScreen->{$attribute} = $screen->{$attribute};
             }
         }
@@ -434,7 +434,7 @@ class ScreenController extends Controller
     public function import(Request $request)
     {
         $content = $request->file('file')->get();
-        if (! $this->validateImportedFile($content)) {
+        if (!$this->validateImportedFile($content)) {
             return response(
                 ['message' => __('Invalid Format')],
                 422

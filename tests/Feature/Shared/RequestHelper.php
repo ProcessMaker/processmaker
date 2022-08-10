@@ -70,7 +70,7 @@ trait RequestHelper
     public function tearDown(): void
     {
         parent::tearDown();
-        if (! $this->debug) {
+        if (!$this->debug) {
             return;
         }
 

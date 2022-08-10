@@ -96,7 +96,7 @@ class SanitizeHelper
 
         // Get process request exceptions stored in do_not_sanitize column ..
         $processRequestExceptions = $task->processRequest->do_not_sanitize;
-        if (! $processRequestExceptions) {
+        if (!$processRequestExceptions) {
             $processRequestExceptions = [];
         }
 
@@ -113,7 +113,7 @@ class SanitizeHelper
     private static function sanitizeWithExceptions(array $data, array $except, $parent = null)
     {
         foreach ($data as $key => $value) {
-            if (! is_int($key)) {
+            if (!is_int($key)) {
                 $searchKey = ($parent ? $parent . '.' . $key : $key);
             } else {
                 $searchKey = $parent;
@@ -122,7 +122,7 @@ class SanitizeHelper
                 $data[$key] = self::sanitizeWithExceptions($value, $except, $searchKey);
             } else {
                 // Only allow skipping on top-level data for now
-                $strip_tags = ! in_array($searchKey, $except);
+                $strip_tags = !in_array($searchKey, $except);
                 $data[$key] = self::sanitize($value, $strip_tags);
             }
         }
@@ -133,7 +133,7 @@ class SanitizeHelper
     private static function getExceptions($screen)
     {
         $except = [];
-        if (! $screen) {
+        if (!$screen) {
             return $except;
         }
         $config = $screen->config;

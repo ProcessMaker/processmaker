@@ -19,7 +19,7 @@ trait HideSystemResources
             return $item;
         }
 
-        if (! $item) {
+        if (!$item) {
             abort(404);
         }
 

@@ -173,7 +173,7 @@ class Comment extends Model
      */
     public function getUrlAttribute($id = null)
     {
-        if (! $id) {
+        if (!$id) {
             $id = $this->id;
         }
 

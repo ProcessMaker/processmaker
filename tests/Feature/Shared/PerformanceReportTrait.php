@@ -17,7 +17,7 @@ trait PerformanceReportTrait
 
     private function addMeasurement($name, $measure)
     {
-        if (! isset(static::$measurements[$name])) {
+        if (!isset(static::$measurements[$name])) {
             static::$measurements[$name] = [];
         }
         static::$measurements[$name][] = $measure;

@@ -57,7 +57,7 @@ class PackageLanguage
                 $packageLanguage = json_decode(utf8_encode(file_get_contents($resourcePackage)), true);
                 $response = $this->errors($language) ? $response : false;
 
-                if (! $packageLanguage) {
+                if (!$packageLanguage) {
                     $packageLanguage = [];
                 }
                 $data = json_encode(array_merge($localLanguage, $packageLanguage), JSON_PRETTY_PRINT);

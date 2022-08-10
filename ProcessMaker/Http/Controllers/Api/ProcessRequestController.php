@@ -94,7 +94,7 @@ class ProcessRequestController extends Controller
     public function index(Request $request, $getTotal = false, User $user = null)
     {
         // If a specific user is specified, use it; otherwise use the authorized user
-        if (! $user) {
+        if (!$user) {
             $user = Auth::user();
         }
 
@@ -128,12 +128,12 @@ class ProcessRequestController extends Controller
         }
 
         $filter = $request->input('filter', '');
-        if (! empty($filter)) {
+        if (!empty($filter)) {
             $query->filter($filter);
         }
 
         $pmql = $request->input('pmql', '');
-        if (! empty($pmql)) {
+        if (!empty($pmql)) {
             try {
                 $query->pmql($pmql);
             } catch (SyntaxError $e) {
@@ -143,7 +143,7 @@ class ProcessRequestController extends Controller
             }
         }
 
-        if (! $user->can('view-all_requests')) {
+        if (!$user->can('view-all_requests')) {
             $query->pmql('requester = "' . $user->username . '" OR participant = "' . $user->username . '"');
         }
 
@@ -256,7 +256,7 @@ class ProcessRequestController extends Controller
     public function update(ProcessRequest $request, Request $httpRequest)
     {
         if ($httpRequest->post('status') === 'CANCELED') {
-            if (! Auth::user()->can('cancel', $request->processVersion)) {
+            if (!Auth::user()->can('cancel', $request->processVersion)) {
                 throw new AuthorizationException(__('Not authorized to cancel this request.'));
             }
             $this->cancelRequestToken($request);
@@ -264,7 +264,7 @@ class ProcessRequestController extends Controller
             return response([], 204);
         }
         if ($httpRequest->post('status') === 'COMPLETED') {
-            if (! Auth::user()->is_administrator) {
+            if (!Auth::user()->is_administrator) {
                 throw new AuthorizationException(__('Not authorized to complete this request.'));
             }
             if ($request->status != 'ERROR') {
@@ -278,7 +278,7 @@ class ProcessRequestController extends Controller
         }
         $fields = $httpRequest->json()->all();
         if (array_keys($fields) === ['data'] || array_keys($fields) === ['data', 'task_element_id']) {
-            if (! Auth::user()->can('editData', $request)) {
+            if (!Auth::user()->can('editData', $request)) {
                 throw new AuthorizationException(__('Not authorized to edit request data.'));
             }
 
@@ -398,12 +398,12 @@ class ProcessRequestController extends Controller
         // Get the process definition
         $process = $request->process;
         $catchEvent = $request->getVersionDefinitions()->findElementById($event)->getBpmnElementInstance();
-        if (! ($catchEvent instanceof CatchEventInterface)) {
+        if (!($catchEvent instanceof CatchEventInterface)) {
             return abort(423, __('Invalid element, not a catch event ' . get_class($catchEvent)));
         }
         // Get token and data
         $token = $request->tokens()->where('element_id', $event)->where('status', 'ACTIVE')->first();
-        if (! $token) {
+        if (!$token) {
             return abort(404, __('Token not found in catch event :element_id', ['element_id' => $event]));
         }
 
@@ -416,7 +416,7 @@ class ProcessRequestController extends Controller
             $domain = Cache::remember("ip_domain_{$ip}", self::DOMAIN_CACHE_TIME, function () use ($ip) {
                 return gethostbyaddr($ip);
             });
-            if (! IpUtils::checkIp($ip, $ipWhitelist) && ! $this->checkDomain($domain, $domainWhitelist)) {
+            if (!IpUtils::checkIp($ip, $ipWhitelist) && !$this->checkDomain($domain, $domainWhitelist)) {
                 return abort(403, __('Not authorized to trigger this event.'));
             }
         }
@@ -436,7 +436,7 @@ class ProcessRequestController extends Controller
                 $groupId = trim($groupId);
                 $groupId ? $process->getConsolidatedUsers($groupId, $users) : null;
             }
-            if (! in_array(Auth::id(), $users)) {
+            if (!in_array(Auth::id(), $users)) {
                 return abort(403, __('Not authorized to trigger this event.'));
             }
         }
@@ -542,7 +542,7 @@ class ProcessRequestController extends Controller
      */
     private function getTaskName($fields, $request)
     {
-        if (! array_key_exists('task_element_id', $fields)) {
+        if (!array_key_exists('task_element_id', $fields)) {
             return null;
         }
         $task_element_id = $fields['task_element_id'];

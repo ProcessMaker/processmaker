@@ -42,7 +42,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     public function loadExecutionInstanceByUid($instanceId, StorageInterface $storage)
     {
         $instance = Instance::find($instanceId);
-        if (! $instance) {
+        if (!$instance) {
             abort(404, 'Instance not found');
         }
         $callableId = $instance->callable_id;
@@ -121,7 +121,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     private function findParticipantFor(ExecutionInstanceInterface $instance)
     {
         $collaboration = $instance->getProcess()->getEngine()->getEventDefinitionBus()->getCollaboration();
-        if (! $collaboration) {
+        if (!$collaboration) {
             return;
         }
         foreach ($collaboration->getParticipants() as $participant) {
@@ -235,7 +235,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
                 break;
             }
         }
-        if (! $collaboration) {
+        if (!$collaboration) {
             $collaboration = new ProcessCollaboration();
             $collaboration->process_id = $request->process->getKey();
             $collaboration->saveOrFail();

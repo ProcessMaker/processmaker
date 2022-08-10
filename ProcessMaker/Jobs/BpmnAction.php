@@ -64,7 +64,7 @@ abstract class BpmnAction implements ShouldQueue
         } catch (Throwable $exception) {
             Log::error($exception->getMessage());
             // Change the Request to error status
-            $request = ! $this->instance && $this instanceof StartEvent ? $response : $this->instance;
+            $request = !$this->instance && $this instanceof StartEvent ? $response : $this->instance;
             if ($request) {
                 $request->logError($exception, $element);
             }
@@ -87,12 +87,12 @@ abstract class BpmnAction implements ShouldQueue
             $instance = $this->lockInstance($this->instanceId);
             $processModel = $instance->process;
             $definitions = ($instance->processVersion ?? $instance->process)->getDefinitions(true);
-            $engine = app(BpmnEngine::class, ['definitions' => $definitions, 'globalEvents' => ! $this->disableGlobalEvents]);
+            $engine = app(BpmnEngine::class, ['definitions' => $definitions, 'globalEvents' => !$this->disableGlobalEvents]);
             $instance = $engine->loadProcessRequest($instance);
         } else {
             $processModel = Definitions::find($this->definitionsId);
             $definitions = $processModel->getDefinitions();
-            $engine = app(BpmnEngine::class, ['definitions' => $definitions, 'globalEvents' => ! $this->disableGlobalEvents]);
+            $engine = app(BpmnEngine::class, ['definitions' => $definitions, 'globalEvents' => !$this->disableGlobalEvents]);
             $instance = null;
         }
 
@@ -173,7 +173,7 @@ abstract class BpmnAction implements ShouldQueue
             $maxRetries = ceil($timeout / $interval);
             for ($tries = 0; $tries < $maxRetries; $tries++) {
                 $currentLock = $this->currentLock($ids);
-                if (! $currentLock) {
+                if (!$currentLock) {
                     if (ProcessRequest::find($instanceId)) {
                         $lock = $this->requestLock($ids);
                     } else {

@@ -55,7 +55,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
     public function action(ProcessRequestToken $token = null, ScriptTaskInterface $element = null, ProcessRequest $instance)
     {
         // Exit if the task was completed or closed
-        if (! $token || ! $element) {
+        if (!$token || !$element) {
             return;
         }
         $scriptRef = $element->getProperty('scriptRef');
@@ -89,7 +89,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
 
             $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
                 // Exit if the task was completed or closed
-                if (! $token || ! $element) {
+                if (!$token || !$element) {
                     return;
                 }
                 // Update data
@@ -120,7 +120,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
      */
     public function failed(Throwable $exception)
     {
-        if (! $this->tokenId) {
+        if (!$this->tokenId) {
             Log::error('Script failed: ' . $exception->getMessage());
 
             return;

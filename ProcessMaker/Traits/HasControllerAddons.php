@@ -16,7 +16,7 @@ trait HasControllerAddons
      */
     protected function getPluginAddons($method, array $data)
     {
-        if (! isset(static::$addons)) {
+        if (!isset(static::$addons)) {
             return;
         }
 
@@ -27,7 +27,7 @@ trait HasControllerAddons
                 if (isset($addon['data']) && is_callable($addon['data'])) {
                     $data = call_user_func($addon['data'], $data);
                 }
-                $addon['content'] = isset($addon['view']) && ! isset($addon['content'])
+                $addon['content'] = isset($addon['view']) && !isset($addon['content'])
                     ? view($addon['view'], $data)->render() : (isset($addon['content'])
                     ? $addon['content'] : '');
                 $addon['script'] = isset($addon['script']) ? view($addon['script'], $data)->render() : '';

@@ -18,7 +18,7 @@ class SettingServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if (! config('settings_loaded')) {
+        if (!config('settings_loaded')) {
             cache_settings();
         }
     }

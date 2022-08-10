@@ -47,7 +47,7 @@ class RetryScriptTasks extends Command
     {
         $tasks = $this->retrieveTaskList();
 
-        if (! $tasks->count()) {
+        if (!$tasks->count()) {
             exit($this->error('No failing script tasks found.'));
         }
 
@@ -82,9 +82,9 @@ class RetryScriptTasks extends Command
             exit($this->error('Please specify either a Process ID or a Request ID, not both.'));
         }
 
-        if (! $this->option('process') && ! $this->option('request')) {
+        if (!$this->option('process') && !$this->option('request')) {
             $this->line("\nThis will retry *all* failing script tasks. It is recommended to specify a Process ID or Request ID.");
-            if (! $this->confirm('Are you sure you wish to continue?')) {
+            if (!$this->confirm('Are you sure you wish to continue?')) {
                 exit;
             }
         }

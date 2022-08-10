@@ -132,12 +132,12 @@ class DataManager
 
         // Magic Variable: _request
         $request = $token->getInstance() ?: $token->processRequest;
-        if (! (isset($data['not_override_request']) && $data['not_override_request'] === true)) {
+        if (!(isset($data['not_override_request']) && $data['not_override_request'] === true)) {
             $data['_request'] = $request->attributesToArray();
         }
 
         // Magic Variable: _parent
-        if ($token->isMultiInstance() && ! $token->getConfigParam('withoutMIParentVariables', false)) {
+        if ($token->isMultiInstance() && !$token->getConfigParam('withoutMIParentVariables', false)) {
             if ($whenTokenSaved) {
                 $data['_parent'] = $token->data ?: [];
             } else {

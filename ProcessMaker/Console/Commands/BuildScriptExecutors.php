@@ -99,7 +99,7 @@ class BuildScriptExecutors extends Command
         }
         $lang = $scriptExecutor->language;
 
-        if (! $this->option('rebuild')) {
+        if (!$this->option('rebuild')) {
             $this->info('Attempting to use an existing docker image');
             if ($scriptExecutor->dockerImageExists()) {
                 $this->info('Already associated with a docker image');
@@ -131,7 +131,7 @@ class BuildScriptExecutors extends Command
 
             $sdkDir = $packagePath . '/sdk';
 
-            if (! is_dir($sdkDir)) {
+            if (!is_dir($sdkDir)) {
                 mkdir($sdkDir, 0755, true);
             }
 
@@ -210,7 +210,7 @@ class BuildScriptExecutors extends Command
 
         $start();
 
-        while (! feof($pipes[1])) {
+        while (!feof($pipes[1])) {
             $callback(fgets($pipes[1]));
         }
 
@@ -227,7 +227,7 @@ class BuildScriptExecutors extends Command
         $images = ScriptExecutor::listOfExecutorImages($executor->language);
         $instance = config('app.instance');
         foreach ($images as $image) {
-            if (! preg_match('/executor-' . $instance . '-.+-(\d+):/', $image, $match)) {
+            if (!preg_match('/executor-' . $instance . '-.+-(\d+):/', $image, $match)) {
                 throw new \Exception('Not a valid image:' . (string) $image);
             }
             $id = intval($match[1]);

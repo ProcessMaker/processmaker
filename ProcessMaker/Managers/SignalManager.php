@@ -73,7 +73,7 @@ class SignalManager
                     'id' => $node->getAttribute('id'),
                     'name' => $node->getAttribute('name'),
                     'detail' => $node->getAttribute('detail'),
-                    'process' => (! $process->category->is_system || $includeSystemProcesses)
+                    'process' => (!$process->category->is_system || $includeSystemProcesses)
                                     ? [
                                         'id' => $process->id,
                                         'name' => $process->name,
@@ -88,7 +88,7 @@ class SignalManager
         $result = $signals->reduce(function ($carry, $signal) {
             $foundSignal = $carry->firstWhere('id', $signal['id']);
             if ($foundSignal) {
-                if ($signal['process'] && ! in_array($signal['process'], $foundSignal['processes'])) {
+                if ($signal['process'] && !in_array($signal['process'], $foundSignal['processes'])) {
                     $foundSignal['processes'][] = $signal['process'];
                     $carry = $carry->merge([$foundSignal['id'] => $foundSignal]);
                 }
@@ -224,7 +224,7 @@ class SignalManager
     {
         $result = [];
 
-        if (! preg_match('/^[a-zA-Z_][\w.-]*$/', $newSignal->getId())) {
+        if (!preg_match('/^[a-zA-Z_][\w.-]*$/', $newSignal->getId())) {
             self::addError($result, 'id', 'The signal ID should be an alphanumeric string');
         }
 
@@ -299,7 +299,7 @@ class SignalManager
      */
     private static function addError(array &$errors, string $field, string $message)
     {
-        if (! array_key_exists($field, $errors)) {
+        if (!array_key_exists($field, $errors)) {
             $errors[$field] = [];
         }
 

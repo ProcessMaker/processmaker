@@ -79,7 +79,7 @@ class UnblockRequest extends Command
                     break;
             }
         }
-        if (! $processed) {
+        if (!$processed) {
             $this->info("Request $requestId: no pending scripts found.");
         }
     }

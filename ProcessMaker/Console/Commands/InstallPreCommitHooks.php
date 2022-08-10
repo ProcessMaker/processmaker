@@ -40,7 +40,7 @@ class InstallPreCommitHooks extends Command
     public function handle()
     {
         $coreHooksPath = base_path('.git/hooks');
-        if (! is_dir($coreHooksPath)) {
+        if (!is_dir($coreHooksPath)) {
             // Not in a development environment
             return;
         }

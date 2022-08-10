@@ -153,7 +153,7 @@ class ExportManager
     {
         $result = [];
         foreach ($array as $item) {
-            if (! in_array($item, $references) && ! in_array($item, $result)) {
+            if (!in_array($item, $references) && !in_array($item, $result)) {
                 $result[] = $item;
             }
         }

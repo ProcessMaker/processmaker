@@ -67,7 +67,7 @@ class ProcessCategoryController extends Controller
         }
 
         $filter = $request->input('filter', '');
-        if (! empty($filter)) {
+        if (!empty($filter)) {
             $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('name', 'like', $filter)

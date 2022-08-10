@@ -74,12 +74,12 @@ class ProcessRequestTokenPolicy
      */
     public function viewScreen(User $user, ProcessRequestToken $task, Screen $screen)
     {
-        if (! $user->can('update', $task)) {
+        if (!$user->can('update', $task)) {
             return false;
         }
 
         $screenIds = $task->getScreenAndNestedIds();
-        if (! in_array($screen->id, $screenIds)) {
+        if (!in_array($screen->id, $screenIds)) {
             return false;
         }
 

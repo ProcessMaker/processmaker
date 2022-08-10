@@ -62,7 +62,7 @@ class CallActivity implements CallActivityInterface
         $data = $dataManager->getData($token);
 
         // Add info about parent (Note MultiInstance also adds _parent info)
-        if (! isset($data['_parent'])) {
+        if (!isset($data['_parent'])) {
             $data['_parent'] = [];
         }
 
@@ -210,7 +210,7 @@ class CallActivity implements CallActivityInterface
      */
     public function addToken(ExecutionInstanceInterface $instance, TokenInterface $token)
     {
-        if ($token->getStatus() === ActivityInterface::TOKEN_STATE_ACTIVE && ! empty($token->subprocess_request_id)) {
+        if ($token->getStatus() === ActivityInterface::TOKEN_STATE_ACTIVE && !empty($token->subprocess_request_id)) {
             // Set subprocess request (to get the right process version)
             $this->subProcessRequestVersion = $token->subProcessRequest->processVersion;
             $subprocess = $this->getProcess()->getEngine()->loadProcessRequest($token->subProcessRequest);
@@ -256,6 +256,6 @@ class CallActivity implements CallActivityInterface
     {
         $ref = explode('-', $this->getProperty(CallActivityInterface::BPMN_PROPERTY_CALLED_ELEMENT));
 
-        return count($ref) === 2 && ! is_numeric($ref[1]);
+        return count($ref) === 2 && !is_numeric($ref[1]);
     }
 }

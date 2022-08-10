@@ -56,7 +56,7 @@ class SignalController extends Controller
     {
         $query = Process::query()->orderBy('updated_at', 'desc');
         $pmql = $request->input('pmql', '');
-        if (! empty($pmql)) {
+        if (!empty($pmql)) {
             try {
                 $query->pmql($pmql);
             } catch (SyntaxError $e) {
@@ -74,13 +74,13 @@ class SignalController extends Controller
 
             foreach ($collection as $item) {
                 $collectionsEnabled[] = $item->id;
-                if (! $item->signal_create) {
+                if (!$item->signal_create) {
                     $collections[] = 'collection_' . $item->id . '_create';
                 }
-                if (! $item->signal_update) {
+                if (!$item->signal_update) {
                     $collections[] = 'collection_' . $item->id . '_update';
                 }
-                if (! $item->signal_delete) {
+                if (!$item->signal_delete) {
                     $collections[] = 'collection_' . $item->id . '_delete';
                 }
             }
@@ -89,7 +89,7 @@ class SignalController extends Controller
         //verify active signals
         $replace = ['collection_', '_create', '_update', '_delete'];
         $signals = $signals->transform(function ($item) use ($collections, $collectionsEnabled, $replace) {
-            if (! in_array($item['id'], $collections)) {
+            if (!in_array($item['id'], $collections)) {
                 $item['type'] = 'signal';
 
                 if (preg_match('/\bcollection_[0-9]+_(create|update|delete)\b/', $item['id']) && in_array(str_replace($replace, '', $item['id']), $collectionsEnabled)) {
@@ -273,7 +273,7 @@ class SignalController extends Controller
             }
         }
 
-        if (! $editable) {
+        if (!$editable) {
             return abort(403, __('System signals cannot be modified.'));
         }
 

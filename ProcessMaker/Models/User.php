@@ -383,7 +383,7 @@ class User extends Authenticatable implements HasMedia
      */
     public function canSelfServe(ProcessRequestToken $task)
     {
-        if (! $task->is_self_service) {
+        if (!$task->is_self_service) {
             return false;
         }
 

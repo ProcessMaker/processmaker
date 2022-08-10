@@ -44,7 +44,7 @@ class PackageHelper
 
     public static function isPackageInstalled(string $serviceProviderClass): bool
     {
-        if (! $serviceProviderClass) {
+        if (!$serviceProviderClass) {
             return false;
         }
 
@@ -65,7 +65,7 @@ class PackageHelper
         $matchesMagicMethodSignature = preg_match('/^is(.+)Installed$/', $methodName, $matches);
         if ($matchesMagicMethodSignature) {
             $constantName = self::magicNameToConstantName($matches[1]);
-            if (! defined('self::' . $constantName)) {
+            if (!defined('self::' . $constantName)) {
                 throw new \Exception(
                     sprintf('%s: No constant named \'%s\' defined.', self::class, $constantName)
                 );

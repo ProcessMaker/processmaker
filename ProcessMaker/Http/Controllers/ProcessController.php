@@ -204,7 +204,7 @@ class ProcessController extends Controller
         $fileName = trim($process->name) . '.json';
         $fileContents = Cache::get($key);
 
-        if (! $fileContents) {
+        if (!$fileContents) {
             return abort(404);
         } else {
             return response()->streamDownload(function () use ($fileContents) {

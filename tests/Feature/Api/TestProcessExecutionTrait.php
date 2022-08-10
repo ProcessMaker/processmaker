@@ -32,7 +32,7 @@ trait TestProcessExecutionTrait
                 $userId = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedUsers');
                 if (isset($users[$userId])) {
                     $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedUsers', $users[$userId]->id);
-                } elseif (! User::find($userId)) {
+                } elseif (!User::find($userId)) {
                     $users[$userId] = factory(User::class)->create([
                         'id' => $userId,
                         'status' => 'ACTIVE',

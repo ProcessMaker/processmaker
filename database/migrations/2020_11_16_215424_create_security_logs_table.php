@@ -25,7 +25,7 @@ class CreateSecurityLogsTable extends Migration
             $table->timestamp('occurred_at');
         });
 
-        if (! Permission::where('name', 'view-security-logs')->first()) {
+        if (!Permission::where('name', 'view-security-logs')->first()) {
             factory(Permission::class)->create([
                 'title' => 'View Security Logs',
                 'name' => 'view-security-logs',

@@ -40,7 +40,7 @@ class CreateTestDBs extends Command
     public function handle()
     {
         $processes = env('PARALLEL_TEST_PROCESSES');
-        if (! $processes) {
+        if (!$processes) {
             throw new Exception('PARALLEL_TEST_PROCESSES not set');
         }
 

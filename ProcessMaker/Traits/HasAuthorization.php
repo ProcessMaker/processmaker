@@ -74,7 +74,7 @@ trait HasAuthorization
                 in_array('create-' . $resource, $permissions) ||
                 in_array('edit-' . $resource, $permissions)
             ) {
-                if (! in_array($categoryPermission, $permissions)) {
+                if (!in_array($categoryPermission, $permissions)) {
                     $permissions[] = $categoryPermission;
                 }
             }

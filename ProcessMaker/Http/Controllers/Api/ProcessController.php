@@ -430,7 +430,7 @@ class ProcessController extends Controller
             }
             $schemaErrors = $this->validateOnlyOneDiagram($document, $schemaErrors);
             $rulesValidation = new BPMNValidation;
-            if (! $rulesValidation->passes('document', $document)) {
+            if (!$rulesValidation->passes('document', $document)) {
                 $errors = $rulesValidation->errors('document', $document)->getMessages();
                 $schemaErrors[] = [
                     'title' => 'BPMN Validation failed',
@@ -590,7 +590,7 @@ class ProcessController extends Controller
                     }
                 }
 
-                return ! $eventIsTimerStart && ! $eventIsWebEntry;
+                return !$eventIsTimerStart && !$eventIsWebEntry;
             })->values();
 
             // Filter all processes that have event definitions (start events like message event, conditional event, signal event, timer event)
@@ -608,7 +608,7 @@ class ProcessController extends Controller
                 $processes->forget($key);
             }
             // filter only valid executable processes
-            if (! $process->isValidForExecution()) {
+            if (!$process->isValidForExecution()) {
                 $processes->forget($key);
             }
         }
@@ -783,7 +783,7 @@ class ProcessController extends Controller
     public function import(Process $process, Request $request)
     {
         $content = $request->file('file')->get();
-        if (! $this->validateImportedFile($content)) {
+        if (!$this->validateImportedFile($content)) {
             return response(
                 ['message' => __('Invalid Format')],
                 422
@@ -1053,19 +1053,19 @@ class ProcessController extends Controller
     {
         //Get the event BPMN element
         $id = $request->query('event');
-        if (! $id) {
+        if (!$id) {
             return abort(404);
         }
 
         $definitions = $process->getDefinitions();
-        if (! $definitions->findElementById($id)) {
+        if (!$definitions->findElementById($id)) {
             return abort(404);
         }
         $event = $definitions->getEvent($id);
         $data = request()->post();
         // Validate if process is bpmn executable
         $validation = [];
-        if (! $process->validateBpmnDefinition(false, $validation)) {
+        if (!$process->validateBpmnDefinition(false, $validation)) {
             return response()->json([
                 'message' => $validation['title'] . ': ' . $validation['text'],
             ], 422);

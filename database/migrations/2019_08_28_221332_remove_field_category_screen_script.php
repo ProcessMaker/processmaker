@@ -67,12 +67,12 @@ class RemoveFieldCategoryScreenScript extends Migration
         });
         foreach (Script::all() as $script) {
             $category = $script->category()->first();
-            ! $category ?: $script->category = $category->name;
+            !$category ?: $script->category = $category->name;
             $script->save();
         }
         foreach (Screen::all() as $screen) {
             $category = $screen->category()->first();
-            ! $category ?: $screen->category = $category->name;
+            !$category ?: $screen->category = $category->name;
             $screen->save();
         }
     }

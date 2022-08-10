@@ -64,7 +64,7 @@ class ImportSettings
             if (property_exists($setting, 'key') && property_exists($setting, 'config')) {
                 $db = Setting::byKey($setting->key);
                 if ($db) {
-                    if (! $db->readonly) {
+                    if (!$db->readonly) {
                         $db->config = $setting->config;
                         $saved = $db->save();
                         if ($saved) {

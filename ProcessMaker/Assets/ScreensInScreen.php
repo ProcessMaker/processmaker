@@ -41,7 +41,7 @@ class ScreensInScreen
         $config = $screen->versionFor($this->processRequest)->config;
         if (is_array($config)) {
             $this->findInArray($config, function ($item) use (&$screens, $manager, $recursive) {
-                if (is_array($item) && isset($item['component']) && $item['component'] === 'FormNestedScreen' && ! empty($item['config']['screen'])) {
+                if (is_array($item) && isset($item['component']) && $item['component'] === 'FormNestedScreen' && !empty($item['config']['screen'])) {
                     $screens[] = [Screen::class, $item['config']['screen']];
                     if ($recursive) {
                         $screen = app(Screen::class)->findOrFail($item['config']['screen']);
@@ -69,7 +69,7 @@ class ScreensInScreen
         $config = $screen->config;
         if (is_array($config)) {
             $this->findInArray($config, function ($item, $key) use ($references, &$config) {
-                if (is_array($item) && isset($item['component']) && $item['component'] === 'FormNestedScreen' && ! empty($item['config']['screen'])) {
+                if (is_array($item) && isset($item['component']) && $item['component'] === 'FormNestedScreen' && !empty($item['config']['screen'])) {
                     $oldRef = $item['config']['screen'];
                     $newRef = $references[Screen::class][$oldRef]->getKey();
                     Arr::set($config, "$key.config.screen", $newRef);

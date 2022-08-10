@@ -13,7 +13,7 @@ class MigrateFresh extends FreshCommand
      */
     public function handle()
     {
-        if (! $this->confirmToProceed()) {
+        if (!$this->confirmToProceed()) {
             return;
         }
 

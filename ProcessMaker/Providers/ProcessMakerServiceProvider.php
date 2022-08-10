@@ -77,7 +77,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
     public function register()
     {
         // Dusk, if env is appropriate
-        if (! $this->app->environment('production')) {
+        if (!$this->app->environment('production')) {
             $this->app->register(\Laravel\Dusk\DuskServiceProvider::class);
         }
 
@@ -176,7 +176,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         //Enable
         Horizon::auth(function ($request) {
-            return ! empty(Auth::user());
+            return !empty(Auth::user());
         });
 
         // we are using custom passport migrations

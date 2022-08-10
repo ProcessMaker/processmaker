@@ -174,7 +174,7 @@ class ProcessPatternsTest extends TestCase
                 $this->completeTask($token, []);
             }
             // Trigger intermediate events
-            if (! $submited) {
+            if (!$submited) {
                 $tokens = ProcessRequestToken::where('status', 'ACTIVE')
                     ->where('element_type', 'event')
                     ->get();
@@ -195,7 +195,7 @@ class ProcessPatternsTest extends TestCase
             }
             $pending = ProcessRequest::where('status', 'ACTIVE')
                 ->count();
-            if (! $submited && $pending) {
+            if (!$submited && $pending) {
                 $elements = implode(
                     ', ',
                     ProcessRequestToken::whereIn('status', ['ACTIVE', 'FAILING'])
@@ -257,7 +257,7 @@ class ProcessPatternsTest extends TestCase
      */
     private function assertData($subset, $data, $message = 'data', $skip = false)
     {
-        if (! is_array($subset) || ! is_array($data)) {
+        if (!is_array($subset) || !is_array($data)) {
             if ($skip) {
                 return $subset == $data;
             } else {

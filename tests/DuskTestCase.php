@@ -96,7 +96,7 @@ abstract class DuskTestCase extends BaseTestCase
             $sqlFile,
         ];
 
-        if (! file_exists($sqlFile) || env('CLEAN_DB', false) === true) {
+        if (!file_exists($sqlFile) || env('CLEAN_DB', false) === true) {
             $this->artisan('migrate:fresh', [
                 '--seed' => true,
                 '--force' => true,

@@ -79,7 +79,7 @@ class ScriptExecutor extends Model
         $initialExecutor = self::where('language', $language)
             ->orderBy('created_at', 'asc')
             ->first();
-        if (! $initialExecutor) {
+        if (!$initialExecutor) {
             throw new ScriptLanguageNotSupported($language);
         }
 
@@ -102,7 +102,7 @@ class ScriptExecutor extends Model
         $initDockerfile = self::config($language)['init_dockerfile'];
 
         // remove check after lang packages updated
-        if (! is_array($initDockerfile)) {
+        if (!is_array($initDockerfile)) {
             $initDockerfile = explode("\n", $initDockerfile);
         }
         $dockerfile .= "\n" . implode("\n", $initDockerfile);
@@ -119,7 +119,7 @@ class ScriptExecutor extends Model
     {
         $config = config('script-runners');
         $language = strtolower($language);
-        if (! isset($config[$language])) {
+        if (!isset($config[$language])) {
             throw new \ErrorException('Language not in config: ' . $language);
         }
 

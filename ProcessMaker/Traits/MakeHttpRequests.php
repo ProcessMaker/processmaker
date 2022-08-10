@@ -306,7 +306,7 @@ trait MakeHttpRequests
     {
         $status = $response->getStatusCode();
         $bodyContent = $response->getBody()->getContents();
-        if (! $this->isJson($bodyContent)) {
+        if (!$this->isJson($bodyContent)) {
             return ['response' => $bodyContent, 'status' => $status];
         }
 
@@ -315,13 +315,13 @@ trait MakeHttpRequests
                 $content = json_decode($bodyContent, true);
                 break;
             case $status > 200 && $status < 300:
-                $content = ! empty($bodyContent) ? json_decode($bodyContent, true) : [];
+                $content = !empty($bodyContent) ? json_decode($bodyContent, true) : [];
                 break;
             default:
                 throw new HttpResponseException($response);
         }
         $mapped = [];
-        ! is_array($content) ?: $merged = array_merge($data, $content);
+        !is_array($content) ?: $merged = array_merge($data, $content);
         $mapped['status'] = $status;
         $mapped['response'] = $content;
 
@@ -343,7 +343,7 @@ trait MakeHttpRequests
     {
         $status = $response->getStatusCode();
         $bodyContent = $response->getBody()->getContents();
-        if (! $this->isJson($bodyContent)) {
+        if (!$this->isJson($bodyContent)) {
             return ['response' => $bodyContent, 'status' => $status];
         }
 
@@ -352,7 +352,7 @@ trait MakeHttpRequests
                 $content = json_decode($bodyContent, true);
                 break;
             case $status > 200 && $status < 300:
-                $content = ! empty($bodyContent) ? json_decode($bodyContent, true) : [];
+                $content = !empty($bodyContent) ? json_decode($bodyContent, true) : [];
                 break;
             default:
                 throw new HttpResponseException($response);
@@ -360,7 +360,7 @@ trait MakeHttpRequests
 
         $mapped = [];
 
-        if (! isset($config['dataMapping'])) {
+        if (!isset($config['dataMapping'])) {
             return $mapped;
         }
 
@@ -496,7 +496,7 @@ trait MakeHttpRequests
         $headers = ['Accept' => 'application/json'];
 
         // evaluate headers defined in the data source
-        if (! array_key_exists('outboundConfig', $config)) {
+        if (!array_key_exists('outboundConfig', $config)) {
             if (isset($endpoint['headers']) && is_array($endpoint['headers'])) {
                 foreach ($endpoint['headers'] as $header) {
                     $headers[$this->getMustache()->render($header['key'], $data)] = $this->getMustache()->render($header['value'], $data);
@@ -523,7 +523,7 @@ trait MakeHttpRequests
                     $existsInDataSourceParams = true;
                 }
             }
-            if (! $existsInDataSourceParams) {
+            if (!$existsInDataSourceParams) {
                 array_push($dataSourceParams, [
                     'key' => $cfgParam['key'],
                     'value' => $cfgParam['value'],
@@ -614,7 +614,7 @@ trait MakeHttpRequests
         $pass = isset($parsed_url['pass']) ? ':' . $parsed_url['pass'] : '';
         $pass = ($user || $pass) ? "$pass@" : '';
         $path = isset($parsed_url['path']) ? $parsed_url['path'] : '';
-        $query = ! empty($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+        $query = !empty($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
         $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
 
         return "$scheme$user$pass$host$port$path$query$fragment";

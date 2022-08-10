@@ -68,7 +68,7 @@ class ClientController extends PassportClientController
     {
         $client = $this->clients->find($clientId);
 
-        if (! $client) {
+        if (!$client) {
             return new Response('', 404);
         }
 
@@ -99,7 +99,7 @@ class ClientController extends PassportClientController
     {
         $client = $this->clients->find($clientId);
 
-        if (! $client) {
+        if (!$client) {
             return new Response('', 404);
         }
 

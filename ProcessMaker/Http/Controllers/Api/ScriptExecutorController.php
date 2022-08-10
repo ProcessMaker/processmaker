@@ -241,7 +241,7 @@ class ScriptExecutorController extends Controller
 
     private function checkAuth($request)
     {
-        if (! $request->user()->is_administrator) {
+        if (!$request->user()->is_administrator) {
             throw new AuthorizationException;
         }
     }

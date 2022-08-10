@@ -63,7 +63,7 @@ class FileController extends Controller
         $query = Media::query();
         $filter = $request->input('filter', '');
 
-        if (! empty($filter)) {
+        if (!empty($filter)) {
             $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('file_name', 'like', $filter)
@@ -171,7 +171,7 @@ class FileController extends Controller
         }
 
         // If no model info was sent in the request
-        if (! $modelClass || ! $modelId) {
+        if (!$modelClass || !$modelId) {
             throw new NotFoundHttpException();
         }
 

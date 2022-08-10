@@ -46,7 +46,7 @@ class BoundaryEvent extends BpmnAction
      */
     public function action(BpmnDocumentInterface $definitions, TokenInterface $token = null)
     {
-        if (! $token) {
+        if (!$token) {
             return;
         }
         $element = $definitions->getBoundaryEvent($this->boundaryEventId);

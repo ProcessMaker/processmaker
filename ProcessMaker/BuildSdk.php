@@ -57,7 +57,7 @@ class BuildSdk
 
     public function setUserId($userId)
     {
-        if (! is_numeric($userId)) {
+        if (!is_numeric($userId)) {
             throw new \Exception('User id must be a number');
         }
         $this->userId = $userId;
@@ -87,7 +87,7 @@ class BuildSdk
     public function setLang($value)
     {
         $langs = $this->getAvailableLanguages();
-        if (! in_array($value, $langs)) {
+        if (!in_array($value, $langs)) {
             throw new Exception("$value language is not supported. Must be one of these: " . implode(',', $langs));
         }
         $this->lang = $value;
@@ -95,7 +95,7 @@ class BuildSdk
 
     public function getOptions()
     {
-        if (! $this->lang) {
+        if (!$this->lang) {
             throw new Exception('Language must be specified using setLang()');
         }
 
@@ -111,19 +111,19 @@ class BuildSdk
 
     private function runChecks()
     {
-        if (! $this->lang) {
+        if (!$this->lang) {
             throw new Exception('Language must be specified using setLang()');
         }
 
-        if (! is_dir($this->outputPath)) {
+        if (!is_dir($this->outputPath)) {
             throw new Exception("{$this->outputPath} is not a valid directory");
         }
 
-        if (! is_writable($this->outputPath)) {
+        if (!is_writable($this->outputPath)) {
             throw new Exception('Folder is not writeable: ' . $this->outputPath);
         }
 
-        if (! is_file($this->jsonPath) || ! is_readable($this->jsonPath)) {
+        if (!is_file($this->jsonPath) || !is_readable($this->jsonPath)) {
             throw new Exception('Json file does not exist or can not be read: ' . $this->jsonPath);
         }
     }
@@ -185,7 +185,7 @@ class BuildSdk
         $process = proc_open("($cmd) 2>&1", $dsc, $pipes);
 
         $output = '';
-        while (! feof($pipes[1])) {
+        while (!feof($pipes[1])) {
             $line = fgets($pipes[1]);
 
             if ($this->userId) {

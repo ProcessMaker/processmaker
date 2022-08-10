@@ -28,7 +28,7 @@ class ProcessController extends Controller
     {
         $model = Process::where('uid', '=', $process)->first();
 
-        if (! $model) {
+        if (!$model) {
             request()->session()->flash('_alert', json_encode(['danger', __('The process was not found.')]));
 
             return redirect('processes');

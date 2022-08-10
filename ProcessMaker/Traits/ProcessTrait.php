@@ -29,7 +29,7 @@ trait ProcessTrait
     {
         if ($forceParse || empty($this->bpmnDefinitions)) {
             $options = ['process' => $this instanceof ProcessVersion ? $this->process : $this];
-            ! $engine ?: $options['engine'] = $engine;
+            !$engine ?: $options['engine'] = $engine;
             $this->bpmnDefinitions = app(BpmnDocumentInterface::class, $options);
             if ($this->bpmn) {
                 $this->bpmnDefinitions->loadXML($this->bpmn);

@@ -58,7 +58,7 @@ trait ScriptDockerCopyingFilesTrait
         if ($returnCode) {
             throw new RuntimeException('Unable to create a docker container: ' . implode("\n", $output));
         }
-        if (! file_exists($cidfile)) {
+        if (!file_exists($cidfile)) {
             throw new RuntimeException('Unable to create a docker container: ' . implode("\n", $output));
         }
         $cid = file_get_contents($cidfile);

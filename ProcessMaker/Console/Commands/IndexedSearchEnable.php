@@ -153,7 +153,7 @@ class IndexedSearchEnable extends Command
 
         if (in_array($driver, ['elasticsearch', 'sqlite'])) {
             if ($driver === 'elasticsearch') {
-                if (! $url) {
+                if (!$url) {
                     exit($this->error('No URL provided for Elasticsearch.'));
                 }
             }

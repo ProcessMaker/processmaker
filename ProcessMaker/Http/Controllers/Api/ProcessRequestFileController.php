@@ -94,7 +94,7 @@ class ProcessRequestFileController extends Controller
         $filter = $name ? $name : $id;
 
         // If no filter, return entire collection; otherwise, filter collection
-        if (! $filter) {
+        if (!$filter) {
             return new ResourceCollection($media);
         } else {
             $filtered = $media->reject(function ($item, $key) use ($filter, $name, $id) {

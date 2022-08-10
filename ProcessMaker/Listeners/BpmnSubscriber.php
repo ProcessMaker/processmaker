@@ -70,7 +70,7 @@ class BpmnSubscriber
         $this->memory = null;
 
         file_put_contents($path . '/unhandled_error.txt', $token->id . "\n", FILE_APPEND);
-        if (! is_null($err = error_get_last()) && in_array($err['type'], [E_ERROR])) {
+        if (!is_null($err = error_get_last()) && in_array($err['type'], [E_ERROR])) {
             Log::error('Script/Service task failed with unhandled system error: ' . print_r($err, true));
         }
     }
@@ -266,7 +266,7 @@ class BpmnSubscriber
             $data = array_merge($data, [$variable => $expressionResult]);
             $data = $data;
             $instance->getDataStore()->setData($data);
-            if (! $instance->isNonPersistent()) {
+            if (!$instance->isNonPersistent()) {
                 $instance->data = $data;
                 $instance->saveOrFail();
             }

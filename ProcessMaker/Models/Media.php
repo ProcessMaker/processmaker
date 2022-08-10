@@ -122,7 +122,7 @@ class Media extends Model
         parent::boot();
         self::creating(function ($media) {
             $user = pmUser();
-            if (! $media->hasCustomProperty('createdBy')) {
+            if (!$media->hasCustomProperty('createdBy')) {
                 $media->setCustomProperty('createdBy', $user ? $user->id : null);
             }
             $media->setCustomProperty('updatedBy', $user ? $user->id : null);

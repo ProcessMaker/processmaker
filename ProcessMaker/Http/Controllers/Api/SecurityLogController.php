@@ -64,7 +64,7 @@ class SecurityLogController extends Controller
 
             $orderDirection = $request->input('order_direction');
 
-            if (! $orderDirection) {
+            if (!$orderDirection) {
                 $orderDirection = 'asc';
             }
 

@@ -471,7 +471,7 @@ class ExportImportTest extends TestCase
                     $new = factory(User::class)->create(['status' => 'ACTIVE'])->toArray();
                 } else {
                     $new = $faker->randomElement([factory(User::class)->create(['status' => 'ACTIVE'])->toArray(), factory(Group::class)->create(['status' => 'ACTIVE'])->toArray()]);
-                    if (! isset($new['firstname'])) {
+                    if (!isset($new['firstname'])) {
                         $new['id'] = 'group-' . $new['id'];
                     }
                 }
