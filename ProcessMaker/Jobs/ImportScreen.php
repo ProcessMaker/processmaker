@@ -47,6 +47,14 @@ class ImportScreen extends ImportProcess
         $this->prepareStatus('screens', count($this->file->screens));
         foreach ($this->file->screens as $screen) {
             $new[Screen::class][$screen->id] = $this->saveScreen($screen);
+            //determine if the screen has watchers
+            if (property_exists($screen, "watchers")) {
+                $names = [];
+                foreach ($screen->watchers as $watcher) {
+                    $names[] = $watcher->name;
+                }
+                $this->status['screens']['info'] = __('Please assign a run script user to: ') . implode(', ', $names);
+            }
         }
         $this->finishStatus('screens');
 
