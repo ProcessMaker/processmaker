@@ -1,6 +1,6 @@
 {
   "name": "processmaker/processmaker",
-  "version": "4.2.30",
+  "version": "4.2.30+ellucian-patch-1",
   "description": "BPM PHP Software",
   "keywords": [
     "php bpm processmaker"
@@ -88,7 +88,7 @@
       ]
     },
     "processmaker": {
-      "build": "449a40f4",
+      "build": "1b8744c1",
       "enterprise": {
         "connector-docusign": "0.1.9",
         "connector-pdf-print": "1.7.7",
