@@ -98,16 +98,16 @@ class OauthTransportManager extends TransportManager
         $client = new GoogleClient();
         $authConfig = array(
             "web" => array(
-                'client_id' => $this->token['client_id'], 
-                'client_secret' => $this->token['client_secret']
+                'client_id' => $this->token->client_id, 
+                'client_secret' => $this->token->client_secret
             )
         );
         $client->setAuthConfig($authConfig);
-        $client->setAccessToken($this->token);
-        $accessToken = $this->token['access_token'];
+        $client->setAccessToken((array) $this->token);
+        $accessToken = $this->token->access_token;
 
         if ($client->isAccessTokenExpired()) {
-            $newToken = $client->fetchAccessTokenWithRefreshToken($this->token['refresh_token']);
+            $newToken = $client->fetchAccessTokenWithRefreshToken($this->token->refresh_token);
             $client->setAccessToken($newToken['access_token']);
             $accessToken = $newToken['access_token'];
 
