@@ -132,39 +132,12 @@ class Setting extends Model implements HasMedia
      */
     public static function byKey(string $key)
     {
-        $cache = cache()->tags('setting');
-
-        if ($cache->has($key)) {
-            return $cache->get($key);
+        if (cache()->has($key)) {
+            return config()->get($key);
         }
 
-        $setting = (new self)->where('key', $key)
-                             ->first();
-
-        if (!$setting instanceof self) {
-            return null;
-        }
-
-        // Check the global config for the
-        // setting key and value. Add it in
-        // if it's not present.
-        $setting->addToConfig();
-
-        // Cache the found Settings model for 7 days
-        $cache->put($setting->key, $setting, 60 * 60 * 24 * 7);
-
-        return $setting;
-    }
-
-    public function addToConfig()
-    {
-        if (!$this->exists) {
-            return;
-        }
-
-        if (!config()->has($this->key)) {
-            config([$this->key => $this->config]);
-        }
+        return (new self)->where('key', '=', $key)
+                         ->first();
     }
 
     /**
@@ -325,7 +298,7 @@ class Setting extends Model implements HasMedia
 
         return $url . '?id=' . bin2hex(random_bytes(16));
     }
-    
+
     public static function getFavicon()
     {
         //default icon
@@ -334,7 +307,7 @@ class Setting extends Model implements HasMedia
         $setting = self::byKey('css-override');
         if ($setting) {
             $mediaFile = $setting->getMedia(self::COLLECTION_CSS_FAVICON);
-    
+
             foreach ($mediaFile as $media) {
                 $url = $media->getFullUrl();
             }
