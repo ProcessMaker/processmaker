@@ -89,6 +89,9 @@
         },
         "processmaker": {
             "build": "6f008378",
+            "custom": {
+                "package-ellucian-ethos": "1.6.0"
+            },
             "enterprise": {
                 "connector-docusign": "1.0.0",
                 "connector-pdf-print": "1.8.0",
@@ -103,7 +106,6 @@
                 "package-conversational-forms": "1.2.0",
                 "package-data-sources": "1.10.1",
                 "package-dynamic-ui": "1.4.0",
-                "package-ellucian-ethos": "1.6.0",
                 "package-files": "1.4.1",
                 "package-googleplaces": "1.2.0",
                 "package-process-documenter": "1.1.0",
