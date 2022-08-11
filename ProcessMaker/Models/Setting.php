@@ -132,7 +132,7 @@ class Setting extends Model implements HasMedia
      */
     public static function byKey(string $key)
     {
-        $cache = cache()->tags('setting');
+        $cache = Cache::driver('array')->tags('setting');
 
         if ($cache->has($key)) {
             return $cache->get($key);
@@ -325,7 +325,7 @@ class Setting extends Model implements HasMedia
 
         return $url . '?id=' . bin2hex(random_bytes(16));
     }
-    
+
     public static function getFavicon()
     {
         //default icon
@@ -334,7 +334,7 @@ class Setting extends Model implements HasMedia
         $setting = self::byKey('css-override');
         if ($setting) {
             $mediaFile = $setting->getMedia(self::COLLECTION_CSS_FAVICON);
-    
+
             foreach ($mediaFile as $media) {
                 $url = $media->getFullUrl();
             }
