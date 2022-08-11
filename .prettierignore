@@ -1,7 +1,4 @@
 .DS_Store
-**/dist
-/vendor
-/node_modules
 
 # Ignore artifacts:
 build
@@ -27,3 +24,32 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw*
+
+# Ignore resources files except js folder
+resources/fonts
+resources/img
+resources/lang
+resources/sass
+resources/views
+
+# Ignore folders that are not resources
+.circleci
+.gitbook
+.github
+boostrap
+config
+cypress
+database
+docs
+getting-started
+homestead
+jest
+node_modules
+ProcessMaker
+public
+routes
+storage
+stubs
+tests
+upgrades
+vendor

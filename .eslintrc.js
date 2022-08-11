@@ -1,22 +1,17 @@
 module.exports = {
-  root: true,
   env: {
-    node: true,
     browser: true,
+    es2020: true,
+    node: true,
   },
-  globals: {
-    Vue: true,
-    BpmnModdle: true,
-    Snap: true,
-    Dispatcher: true,
-    ProcessMaker: true,
-  },
+
   extends: [
-    "eslint:recommended",
     "plugin:vue/recommended",
-    "plugin:prettier/recommended",
     "airbnb-base",
+    "eslint:recommended",
+    "plugin:prettier/recommended",
   ],
+
   parserOptions: {
     parser: "@babel/eslint-parser",
     sourceType: "module",
@@ -25,23 +20,40 @@ module.exports = {
       configFile: "./babel.config.json",
     },
   },
-  plugins: ["vue", "prettier"],
-  rules: {
-    "prettier/prettier": "error",
-    quotes: ["error", "double"],
-    "max-len": [
-      "error",
-      {
-        code: 140,
-        ignoreComments: true,
-      },
-    ],
+
+  globals: {
+    Vue: true,
+    BpmnModdle: true,
+    Snap: true,
+    Dispatcher: true,
+    ProcessMaker: true,
   },
+
+  plugins: ["vue", "prettier"],
+
+  rules: {
+    "prettier/prettier": ["error", { trailingComma: "none" }],
+    "no-unexpected-multiline": "error",
+    "no-param-reassign": 1,
+    eqeqeq: "error",
+    "max-len": ["error", { code: 140, ignoreUrls: true }],
+    "comma-dangle": ["error", "never"],
+    quotes: ["error", "double", { allowTemplateLiterals: true }],
+    "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
+    "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
+  },
+
+  root: true,
+
   overrides: [
     {
-      files: ["tests/**/*.js"],
-      plugins: ["jest"],
-      extends: ["plugin:jest/recommended"],
+      files: [
+        "**/__tests__/*.{j,t}s?(x)",
+        "**/tests/unit/**/*.spec.{j,t}s?(x)",
+      ],
+      env: {
+        jest: true,
+      },
     },
   ],
 };
