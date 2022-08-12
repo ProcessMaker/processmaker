@@ -36,7 +36,12 @@ class UserController extends Controller
      *     operationId="getUsers",
      *     tags={"Users"},
      *     @OA\Parameter(ref="#/components/parameters/status"),
-     *     @OA\Parameter(ref="#/components/parameters/filter"),
+     *     @OA\Parameter(
+     *         name="filter",
+     *         in="query",
+     *         description="Filter results by string. Searches First Name, Last Name, Email and Username.",
+     *         @OA\Schema(type="string"),
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
@@ -80,7 +85,7 @@ class UserController extends Controller
         if (!empty($filter)) {
             $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
-                $query->Where('username', 'like', $filter)
+                $query->where('username', 'like', $filter)
                     ->orWhere('firstname', 'like', $filter)
                     ->orWhere('lastname', 'like', $filter)
                     ->orWhere('email', 'like', $filter);
