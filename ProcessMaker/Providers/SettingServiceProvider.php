@@ -6,10 +6,19 @@ use Throwable;
 use ProcessMaker\Models\Setting;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Artisan;
+use ProcessMaker\Jobs\TerminateHorizon;
+use Laravel\Horizon\Console\TerminateCommand;
+use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Contracts\Config\Repository as RepositoryContract;
 
 class SettingServiceProvider extends ServiceProvider
 {
+    public function register()
+    {
+        $this->app['events']->listen(CommandFinished::class, [$this, 'configurationWasCached']);
+    }
+
     /**
      * Bootstrap settings into the global app configuration
      *
@@ -22,6 +31,23 @@ class SettingServiceProvider extends ServiceProvider
     {
         if (!$this->app->configurationIsCached()) {
             $this->loadSettingsFromDatabase($this->app->get('config'));
+        }
+    }
+
+    /**
+     * Restart the horizon queue manager whenever the configuration is cached so ensure
+     * the new configuration is picked up by the supervisor/queue processes
+     *
+     * @param  \Illuminate\Console\Events\CommandFinished  $event
+     *
+     * @return void
+     */
+    public function configurationWasCached(CommandFinished $event): void
+    {
+        $command = $event->command ?? $event->input->getArguments()['command'] ?? 'default';
+
+        if (is_int(strpos($command, 'config:cache'))) {
+            TerminateHorizon::dispatch();
         }
     }
 
