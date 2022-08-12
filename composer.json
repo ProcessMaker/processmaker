@@ -17,6 +17,7 @@
     "doctrine/dbal": "^2.9",
     "fideloper/proxy": "^4.0",
     "fzaninotto/faker": "^1.4",
+    "google/apiclient": "^2.12",
     "guzzlehttp/guzzle": "^6.5",
     "igaster/laravel-theme": "2.0.*",
     "laravel/framework": "^6.18.35",
@@ -28,16 +29,20 @@
     "laravelcollective/html": "^6.1.2",
     "lavary/laravel-menu": "^1.7",
     "lcobucci/jwt": "^3.3",
+    "microsoft/microsoft-graph": "^1.73",
     "moontoast/math": "^1.1",
     "mustache/mustache": "^2.12",
     "phing/phing": "^2.16",
     "pion/laravel-chunk-upload": "^1.4",
     "predis/predis": "^1.1",
+    "processmaker/connector-send-email": "^1.10",
     "processmaker/docker-executor-lua": "^1.0",
     "processmaker/docker-executor-node": "^1.0",
+    "processmaker/docker-executor-node-ssr": "^1.0",
     "processmaker/docker-executor-php": "^1.0",
     "processmaker/laravel-i18next": "dev-master",
     "processmaker/nayra": "1.9.3",
+    "processmaker/package-actions-by-email": "^1.4",
     "processmaker/pmql": "1.5.1",
     "pusher/pusher-php-server": "^4.0",
     "ralouphie/getallheaders": "^2.0",
@@ -87,6 +92,9 @@
         "laravel/passport"
       ]
     },
+    "google/apiclient-services": [
+      "Gmail"
+    ],
     "processmaker": {
       "build": "945e68c4",
       "enterprise": {
@@ -134,6 +142,18 @@
     {
       "type": "vcs",
       "url": "https://github.com/ProcessMaker/SocialiteProviders"
+    },
+    {
+      "type": "path",
+      "url": "../processmaker-plugins/connector-send-email"
+    },
+    {
+      "type": "path",
+      "url": "../processmaker-plugins/package-actions-by-email"
+    },
+    {
+      "type": "path",
+      "url": "../processmaker-plugins/docker-executor-node-ssr"
     }
   ],
   "config": {
