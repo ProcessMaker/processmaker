@@ -17,8 +17,6 @@ class OauthMailServiceProvider extends MailServiceProvider
      */
     protected function registerSwiftTransport()
     {
-        parent::registerSwiftTransport(); 
-
         $this->app->singleton('swift.transport', function ($app) {
             return new OauthTransportManager($app->config);
         });
