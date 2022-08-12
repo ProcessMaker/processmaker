@@ -77,7 +77,6 @@ class OauthTransportManager extends TransportManager
                     break;
                 case 'office365':
                     $accessToken = $this->checkForExpiredOffice365AccessToken($this->emailServerIndex);
-                    dd($accessToken);
                     // Update Authencation Mode
                     $transport->setAuthMode('XOAUTH2')
                     ->setUsername($this->fromAddress)
