@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+export PATH="$PATH:$HOME/.composer/vendor/bin"
+
 if ! command -v php-cs-fixer &> /dev/null; then
     echo "php-cs-fixer could not be found"
     echo "It must be installed globally with composer: composer global require friendsofphp/php-cs-fixer"
