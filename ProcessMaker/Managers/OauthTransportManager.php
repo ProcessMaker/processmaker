@@ -124,7 +124,7 @@ class OauthTransportManager extends TransportManager
     {
         $now = new DateTime();
         $now->format('Y-m-d H:i:s');
-        $expireDate = $this->token->expires_in->format('Y-m-d H:i:s');
+        $expireDate = $this->token->expires_in;
         $accessToken = $this->token->access_token;
 
         if ($now->format('Y-m-d H:i:s') > $expireDate ) {
@@ -136,6 +136,7 @@ class OauthTransportManager extends TransportManager
     private function refreshAccessToken() 
     {
         try {
+            $index = $this->emailServerIndex ? "_{$this->emailServerIndex}" : '';
             $guzzle = new Client();
             $url = 'https://login.microsoftonline.com/' . $this->token->tenant_id . '/oauth2/v2.0/token';
             $newToken = json_decode($guzzle->post($url, [
@@ -152,9 +153,9 @@ class OauthTransportManager extends TransportManager
             $expireTime = $now->add(new DateInterval('PT' . $newToken->expires_in . 'S'));
             $expireDate = $expireTime->format('Y-m-d H:i:s');
 
-            $this->updateEnvVar("EMAIL_CONNECTOR_OFFICE_365_ACCESS_TOKEN{$this->emailServerIndex}", $newToken->access_token);
-            $this->updateEnvVar("EMAIL_CONNECTOR_OFFICE_365_REFRESH_TOKEN{$this->emailServerIndex}", $newToken->refresh_token);
-            $this->updateEnvVar("EMAIL_CONNECTOR_OFFICE_365_ACCESS_TOKEN_EXPIRE_DATE{$this->emailServerIndex}", $expireDate);
+            $this->updateEnvVar("EMAIL_CONNECTOR_OFFICE_365_ACCESS_TOKEN{$index}", $newToken->access_token);
+            $this->updateEnvVar("EMAIL_CONNECTOR_OFFICE_365_REFRESH_TOKEN{$index}", $newToken->refresh_token);
+            $this->updateEnvVar("EMAIL_CONNECTOR_OFFICE_365_ACCESS_TOKEN_EXPIRE_DATE{$index}", $expireDate);
         return $newToken->access_token;
 
         } catch (Throwable $error) {
