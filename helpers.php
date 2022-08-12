@@ -5,43 +5,21 @@ use Symfony\Component\Process\Process;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Artisan;
 
-function settings($key = null)
-{
-    return $key ? config()->get($key) : config()->all();
-}
-
-if (!function_exists('clear_artisan_caches')) {
+if (!function_exists('settings')) {
     /**
-     * Clears any available/cacheable artisan commands and
-     * returns with which were cached to before clearing
+     * Forwards call to the config() helper.
      *
-     * @return array
+     * TODO Remove this helper function as it exists now only for backwards compatability
+     *
+     * @param $key
+     *
+     * @return array|mixed
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    function clear_artisan_caches(): array
+    function settings($key = null)
     {
-        $options = [
-            '--no-interaction' => true,
-            '--quiet' => true,
-            '--env' => app()->environment(),
-        ];
-
-        if ($config = app()->configurationIsCached()) {
-            Artisan::call('config:clear', $options);
-        }
-
-        if ($routes = app()->routesAreCached()) {
-            Artisan::call('route:clear', $options);
-        }
-
-        if ($events = app()->eventsAreCached()) {
-            Artisan::call('event:clear', $options);
-        }
-
-        return [
-            'configuration' => $config,
-            'routes' => $routes,
-            'events' => $events,
-        ];
+        return $key ? config()->get($key) : config()->all();
     }
 }
 

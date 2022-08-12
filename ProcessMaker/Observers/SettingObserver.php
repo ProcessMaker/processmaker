@@ -70,7 +70,7 @@ class SettingObserver
     public function saved(Setting $setting)
     {
         try {
-            refresh_artisan_caches(clear_artisan_caches());
+            refresh_artisan_caches();
         } catch (Exception $exception) {
             Log::error('Could not cache configuration.', [
                 'message' => $exception->getMessage(),
@@ -89,7 +89,7 @@ class SettingObserver
     public function deleted(Setting $setting)
     {
         try {
-            refresh_artisan_caches(clear_artisan_caches());
+            refresh_artisan_caches();
         } catch (Exception $exception) {
             Log::error('Could not cache configuration.', [
                 'message' => $exception->getMessage(),

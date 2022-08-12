@@ -14,6 +14,11 @@ use Illuminate\Contracts\Config\Repository as RepositoryContract;
 
 class SettingServiceProvider extends ServiceProvider
 {
+    /**
+     * Register an event listener for the service provider
+     *
+     * @return void
+     */
     public function register()
     {
         $this->app['events']->listen(CommandFinished::class, [$this, 'configurationWasCached']);
@@ -46,6 +51,8 @@ class SettingServiceProvider extends ServiceProvider
     {
         $command = $event->command ?? $event->input->getArguments()['command'] ?? 'default';
 
+        // If the command that was run cached the configuration,
+        // then dispatch a job to (ironically) restart horizon
         if (is_int(strpos($command, 'config:cache'))) {
             TerminateHorizon::dispatch();
         }
