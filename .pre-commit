@@ -7,11 +7,6 @@ if ! command -v php-cs-fixer &> /dev/null; then
     exit 1
 fi
 
-if git rev-parse -q --verify MERGE_HEAD; then
-    echo "Skipping merge commit"
-    exit 0
-fi
-
 
 pm4dir="$(dirname "$(readlink -f "$0")")"
 files=$(git status --porcelain=v2 | grep -E '^\d [AM].*\.php$' | cut -d ' ' -f 9)
