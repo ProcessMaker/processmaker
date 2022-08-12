@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Providers;
 
+use Throwable;
 use ProcessMaker\Models\Setting;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
@@ -33,10 +34,25 @@ class SettingServiceProvider extends ServiceProvider
      */
     protected function loadSettingsFromDatabase(RepositoryContract $repository): void
     {
-        if (!Schema::hasTable('settings')) {
+        try {
+            // Attempt to connect to the database and check
+            // for the settings table, if it doesn't exist,
+            // then bail
+            if (!Schema::hasTable('settings')) {
+                return;
+            }
+
+            // It's also possible a database connection has
+            // not be established, such as when running
+            // composer install. We need to catch that
+            // exception and then bail.
+        } catch (Throwable $exception) {
             return;
         }
 
+        // Query only what we need from the database and
+        // set each item as a key/value pair in the
+        // global app config
         foreach (Setting::select('id', 'key', 'config')->get() as $setting) {
             $repository->set($setting->key, $setting->config);
         }
