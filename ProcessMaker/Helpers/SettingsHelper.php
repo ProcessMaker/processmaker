@@ -4,6 +4,8 @@ use ProcessMaker\Models\Setting;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 
 if (!function_exists('settings')) {
     /**
@@ -22,10 +24,13 @@ if (!function_exists('settings')) {
             }
         }
 
-        $cache = cache()->tags('setting');
+        $cache = Cache::driver('array')->tags('setting');
 
         // Cache all Setting models
         if (!$cache->has('all')) {
+            if (!Schema::hasTable('settings')) {
+                return [];
+            }
             $cache->put('all', Setting::get(), 60 * 60 * 24 * 7);
         }
 
@@ -54,7 +59,7 @@ if (!function_exists('flush_settings')) {
      */
     function flush_settings()
     {
-        cache()->tags('setting')->flush();
+        Cache::driver('array')->tags('setting')->flush();
 
         if (app()->configurationIsCached()) {
             Artisan::call('config:cache');
@@ -82,7 +87,7 @@ if (!function_exists('cache_settings')) {
     {
         try {
             if ((new Setting())->exists()) {
-                $cache = cache()->tags('setting');
+                $cache = Cache::driver('array')->tags('setting');
 
                 // If $force is true, flush the settings cache
                 if ($force) {
@@ -94,7 +99,7 @@ if (!function_exists('cache_settings')) {
                 // are available if they aren't cached yet
                 if (!$cache->has('all')) {
                     $settings = settings();
-                    $cache = cache()->tags('setting');
+                    $cache = Cache::driver('array')->tags('setting');
                 }
 
                 // Iterating through each and calling the byKey()
