@@ -60,7 +60,7 @@ class CommentsTest extends TestCase
         ]);
 
         // Assert that the comment body without the accessor is stored as userid with mustaches
-        $this->assertEquals('Should replace the username to user id in mustaches {{' . $testUser->id . '}}', $comment->getOriginal('body'));
+        $this->assertEquals('Should replace the username to user id in mustaches {{' . $testUser->id . '}}', $comment->getRawOriginal('body'));
 
         // Assert that the comment body with the accessor is parsed to username to the ui
         $this->assertEquals('Should replace the username to user id in mustaches @' . $testUser->username, $comment->body);
@@ -88,7 +88,7 @@ class CommentsTest extends TestCase
         ]);
 
         // Assert that the comment body without the accessor is stored as userid with mustaches
-        $this->assertEquals('Should replace the username to user id in mustaches {{' . $testUser->id . '}}', $comment->getOriginal('body'));
+        $this->assertEquals('Should replace the username to user id in mustaches {{' . $testUser->id . '}}', $comment->getRawOriginal('body'));
 
         // Assert that the comment body with the accessor is parsed to username to the ui
         $this->assertEquals('Should replace the username to user id in mustaches @' . $testUser->username, $comment->body);
@@ -116,7 +116,7 @@ class CommentsTest extends TestCase
         ]);
 
         // Assert that the comment body without the accessor is stored as userid with mustaches
-        $this->assertEquals('Should replace the username to user id in mustaches {{' . $testUser->id . '}}', $comment->getOriginal('body'));
+        $this->assertEquals('Should replace the username to user id in mustaches {{' . $testUser->id . '}}', $comment->getRawOriginal('body'));
 
         // Assert that the comment body with the accessor is parsed to username to the ui
         $this->assertEquals('Should replace the username to user id in mustaches @' . $testUser->username, $comment->body);
@@ -144,7 +144,7 @@ class CommentsTest extends TestCase
         ]);
 
         // Assert that the comment body without the accessor is stored as userid with mustaches
-        $this->assertEquals('Should replace the username to user id in mustaches {{' . $testUser->id . '}}', $comment->getOriginal('body'));
+        $this->assertEquals('Should replace the username to user id in mustaches {{' . $testUser->id . '}}', $comment->getRawOriginal('body'));
 
         // Assert that the comment body with the accessor is parsed to username to the ui
         $this->assertEquals('Should replace the username to user id in mustaches @' . $testUser->username, $comment->body);
@@ -172,7 +172,7 @@ class CommentsTest extends TestCase
         ]);
 
         // Assert that the comment body without the accessor is stored as userid with mustaches
-        $this->assertEquals('Should replace the username to user id in mustaches {{' . $testUser->id . '}}', $comment->getOriginal('body'));
+        $this->assertEquals('Should replace the username to user id in mustaches {{' . $testUser->id . '}}', $comment->getRawOriginal('body'));
 
         // Assert that the comment body with the accessor is parsed to username to the ui
         $this->assertEquals('Should replace the username to user id in mustaches @' . $testUser->username, $comment->body);
@@ -200,7 +200,7 @@ class CommentsTest extends TestCase
         ]);
 
         // Assert that the comment body without the accessor is stored as userid with mustaches
-        $this->assertEquals('Should replace the username to user id in mustaches {{' . $testUser->id . '}}', $comment->getOriginal('body'));
+        $this->assertEquals('Should replace the username to user id in mustaches {{' . $testUser->id . '}}', $comment->getRawOriginal('body'));
 
         // Assert that the comment body with the accessor is parsed to username to the ui
         $this->assertEquals('Should replace the username to user id in mustaches @' . $testUser->username, $comment->body);
