@@ -87,7 +87,7 @@ class IndexedSearchEnable extends Command
                         $bar->advance();
                     }
                 });
-                
+
                 $bar->finish();
                 $this->info("\nAll {$index->name} records have been imported.");
             }
@@ -134,7 +134,7 @@ class IndexedSearchEnable extends Command
 
         Storage::disk('install')->put('.env', $env);
 
-        $this->callSilent('config:cache');
+        refresh_artisan_caches();
 
         config([
             'scout.driver' => $driver,

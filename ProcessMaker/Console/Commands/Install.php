@@ -265,9 +265,7 @@ class Install extends Command
             // Now store the env file
             Storage::disk('install')->put('.env', $contents);
 
-            $this->call('config:cache');
-            $this->call('config:clear');
-            $this->call('cache:clear');
+            refresh_artisan_caches();
 
             // Set username, email, password
             $this->fetchUserInformation();

@@ -5,7 +5,6 @@ namespace ProcessMaker\Observers;
 use Exception;
 use ProcessMaker\Models\Setting;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Artisan;
 
 class SettingObserver
 {
@@ -70,9 +69,13 @@ class SettingObserver
     public function saved(Setting $setting)
     {
         try {
-            cache_settings(true);
+            refresh_artisan_caches();
         } catch (Exception $exception) {
-            Log::error('Could not cache configuration.', [$exception]);
+            Log::error('Could not cache configuration.', [
+                'message' => $exception->getMessage(),
+                'file' =>$exception->getFile(),
+                'line' => $exception->getLine(),
+            ]);
         }
     }
 
@@ -85,9 +88,13 @@ class SettingObserver
     public function deleted(Setting $setting)
     {
         try {
-            cache_settings(true);
+            refresh_artisan_caches();
         } catch (Exception $exception) {
-            Log::error('Could not cache configuration.', [$exception]);
+            Log::error('Could not cache configuration.', [
+                'message' => $exception->getMessage(),
+                'file' =>$exception->getFile(),
+                'line' => $exception->getLine(),
+            ]);
         }
     }
 }

@@ -132,39 +132,7 @@ class Setting extends Model implements HasMedia
      */
     public static function byKey(string $key)
     {
-        $cache = Cache::driver('array')->tags('setting');
-
-        if ($cache->has($key)) {
-            return $cache->get($key);
-        }
-
-        $setting = (new self)->where('key', $key)
-                             ->first();
-
-        if (!$setting instanceof self) {
-            return null;
-        }
-
-        // Check the global config for the
-        // setting key and value. Add it in
-        // if it's not present.
-        $setting->addToConfig();
-
-        // Cache the found Settings model for 7 days
-        $cache->put($setting->key, $setting, 60 * 60 * 24 * 7);
-
-        return $setting;
-    }
-
-    public function addToConfig()
-    {
-        if (!$this->exists) {
-            return;
-        }
-
-        if (!config()->has($this->key)) {
-            config([$this->key => $this->config]);
-        }
+        return (new self)->where('key', $key)->first();
     }
 
     /**
