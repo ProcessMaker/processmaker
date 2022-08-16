@@ -42,7 +42,7 @@ class PerformanceApiTest extends TestCase
 
     // Endpoints to be tested
     private $endpoints = [
-        ['l5-swagger.oauth2_callback', []],
+        ['l5-swagger.default.oauth2_callback', []],
         ['passport.tokens.index', []],
         ['passport.clients.index', []],
         ['api.users.index', []],
