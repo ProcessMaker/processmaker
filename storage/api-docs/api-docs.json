@@ -1763,7 +1763,10 @@
                         "name": "without_event_definitions",
                         "in": "path",
                         "description": "If true return only processes that haven't start event definitions",
-                        "required": false
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
                     }
                 ],
                 "responses": {
@@ -4440,7 +4443,12 @@
                         "$ref": "#/components/parameters/status"
                     },
                     {
-                        "$ref": "#/components/parameters/filter"
+                        "name": "filter",
+                        "in": "query",
+                        "description": "Filter results by string. Searches First Name, Last Name, Email and Username.",
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     {
                         "$ref": "#/components/parameters/order_by"
@@ -4631,6 +4639,7 @@
                     "Users"
                 ],
                 "summary": "Set the groups a users belongs to",
+                "description": "Update a user's groups",
                 "operationId": "updateUserGroups",
                 "parameters": [
                     {
@@ -4666,6 +4675,7 @@
                     "Users"
                 ],
                 "summary": "Restore a soft deleted user",
+                "description": "Reverses the soft delete of a user",
                 "operationId": "restoreUser",
                 "requestBody": {
                     "required": true,
@@ -4864,7 +4874,6 @@
                 "type": "object"
             },
             "updateUserGroups": {
-                "description": "Update a user's groups",
                 "properties": {
                     "groups": {
                         "type": "array",
@@ -4877,7 +4886,6 @@
                 "type": "object"
             },
             "restoreUser": {
-                "description": "Reverses the soft delete of a user",
                 "properties": {
                     "username": {
                         "description": "Username to restore",
@@ -4935,6 +4943,9 @@
                 "type": "object",
                 "allOf": [
                     {
+                        "$ref": "#/components/schemas/metadata"
+                    },
+                    {
                         "properties": {
                             "filter": {
                                 "type": "string"
@@ -4980,15 +4991,13 @@
                                 "type": "integer"
                             }
                         }
-                    },
-                    {
-                        "$ref": "#/components/schemas/metadata"
                     }
                 ]
             },
             "signalsEditable": {
                 "properties": {
                     "id": {
+                        "description": "Represents a business signal definition.",
                         "type": "string",
                         "format": "id"
                     },
@@ -5002,8 +5011,10 @@
                 "type": "object"
             },
             "signals": {
-                "description": "Represents a business signal definition.",
                 "allOf": [
+                    {
+                        "$ref": "#/components/schemas/signalsEditable"
+                    },
                     {
                         "properties": {
                             "type": {
@@ -5047,9 +5058,6 @@
                             }
                         },
                         "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/signalsEditable"
                     }
                 ]
             },
@@ -5079,6 +5087,7 @@
             "commentsEditable": {
                 "properties": {
                     "id": {
+                        "description": "Represents a business process definition.",
                         "type": "string",
                         "format": "id"
                     },
@@ -5119,9 +5128,11 @@
                 "type": "object"
             },
             "comments": {
-                "description": "Represents a business process definition.",
                 "type": "object",
                 "allOf": [
+                    {
+                        "$ref": "#/components/schemas/commentsEditable"
+                    },
                     {
                         "properties": {
                             "created_at": {
@@ -5133,9 +5144,6 @@
                                 "format": "date-time"
                             }
                         }
-                    },
-                    {
-                        "$ref": "#/components/schemas/commentsEditable"
                     }
                 ]
             },
@@ -5156,6 +5164,9 @@
             "EnvironmentVariable": {
                 "allOf": [
                     {
+                        "$ref": "#/components/schemas/EnvironmentVariableEditable"
+                    },
+                    {
                         "properties": {
                             "id": {
                                 "type": "integer",
@@ -5171,22 +5182,20 @@
                             }
                         },
                         "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/EnvironmentVariableEditable"
                     }
                 ]
             },
             "groupsEditable": {
                 "properties": {
                     "name": {
+                        "description": "Represents a group definition.",
                         "type": "string"
                     },
                     "description": {
                         "type": "string"
                     },
                     "manager_id": {
-                        "type": "int",
+                        "type": "integer",
                         "format": "id"
                     },
                     "status": {
@@ -5200,8 +5209,10 @@
                 "type": "object"
             },
             "groups": {
-                "description": "Represents a group definition.",
                 "allOf": [
+                    {
+                        "$ref": "#/components/schemas/groupsEditable"
+                    },
                     {
                         "properties": {
                             "created_at": {
@@ -5218,15 +5229,13 @@
                             }
                         },
                         "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/groupsEditable"
                     }
                 ]
             },
             "groupMembersEditable": {
                 "properties": {
                     "group_id": {
+                        "description": "Represents a group Members definition.",
                         "type": "string",
                         "format": "id"
                     },
@@ -5246,6 +5255,9 @@
             "groupMembers": {
                 "allOf": [
                     {
+                        "$ref": "#/components/schemas/groupMembersEditable"
+                    },
+                    {
                         "properties": {
                             "id": {
                                 "type": "string",
@@ -5261,14 +5273,14 @@
                             }
                         },
                         "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/groupMembersEditable"
                     }
                 ]
             },
             "createGroupMembers": {
                 "allOf": [
+                    {
+                        "$ref": "#/components/schemas/groupMembersEditable"
+                    },
                     {
                         "properties": {
                             "id": {
@@ -5291,9 +5303,6 @@
                             }
                         },
                         "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/groupMembersEditable"
                     }
                 ]
             },
@@ -5330,7 +5339,6 @@
                 ]
             },
             "availableGroupMembers": {
-                "description": "Represents a group Members definition.",
                 "allOf": [
                     {
                         "properties": {
@@ -5367,6 +5375,7 @@
             "mediaEditable": {
                 "properties": {
                     "id": {
+                        "description": "Represents media files stored in the database",
                         "type": "integer",
                         "format": "id"
                     },
@@ -5415,6 +5424,9 @@
                 "type": "object",
                 "allOf": [
                     {
+                        "$ref": "#/components/schemas/mediaEditable"
+                    },
+                    {
                         "properties": {
                             "created_at": {
                                 "type": "string",
@@ -5425,14 +5437,10 @@
                                 "format": "date-time"
                             }
                         }
-                    },
-                    {
-                        "$ref": "#/components/schemas/mediaEditable"
                     }
                 ]
             },
             "mediaExported": {
-                "description": "Represents media files stored in the database",
                 "properties": {
                     "url": {
                         "type": "string"
@@ -5443,6 +5451,7 @@
             "NotificationEditable": {
                 "properties": {
                     "type": {
+                        "description": "Represents a notification definition.",
                         "type": "string"
                     },
                     "notifiable_type": {
@@ -5473,8 +5482,10 @@
                 "type": "object"
             },
             "Notification": {
-                "description": "Represents a notification definition.",
                 "allOf": [
+                    {
+                        "$ref": "#/components/schemas/NotificationEditable"
+                    },
                     {
                         "properties": {
                             "id": {
@@ -5494,15 +5505,13 @@
                             }
                         },
                         "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/NotificationEditable"
                     }
                 ]
             },
             "ProcessEditable": {
                 "properties": {
                     "process_category_id": {
+                        "description": "Represents a business process definition.",
                         "type": "integer",
                         "format": "id"
                     },
@@ -5557,7 +5566,9 @@
                             "type": "object"
                         }
                     },
-                    "category": {},
+                    "category": {
+                        "type": "object"
+                    },
                     "manager_id": {
                         "type": "integer",
                         "format": "id"
@@ -5567,6 +5578,9 @@
             },
             "Process": {
                 "allOf": [
+                    {
+                        "$ref": "#/components/schemas/ProcessEditable"
+                    },
                     {
                         "properties": {
                             "user_id": {
@@ -5597,9 +5611,6 @@
                             }
                         },
                         "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/ProcessEditable"
                     }
                 ]
             },
@@ -5629,6 +5640,9 @@
             "ProcessWithStartEvents": {
                 "allOf": [
                     {
+                        "$ref": "#/components/schemas/Process"
+                    },
+                    {
                         "properties": {
                             "events": {
                                 "type": "array",
@@ -5638,14 +5652,14 @@
                             }
                         },
                         "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/Process"
                     }
                 ]
             },
             "ProcessImport": {
                 "allOf": [
+                    {
+                        "$ref": "#/components/schemas/ProcessEditable"
+                    },
                     {
                         "properties": {
                             "status": {
@@ -5663,14 +5677,10 @@
                             "process": {}
                         },
                         "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/ProcessEditable"
                     }
                 ]
             },
             "ProcessAssignments": {
-                "description": "Represents a business process definition.",
                 "properties": {
                     "assignable": {
                         "type": "array",
@@ -5690,6 +5700,7 @@
             "ProcessCategoryEditable": {
                 "properties": {
                     "name": {
+                        "description": "Represents a business process category definition.",
                         "type": "string"
                     },
                     "status": {
@@ -5703,8 +5714,10 @@
                 "type": "object"
             },
             "ProcessCategory": {
-                "description": "Represents a business process category definition.",
                 "allOf": [
+                    {
+                        "$ref": "#/components/schemas/ProcessCategoryEditable"
+                    },
                     {
                         "properties": {
                             "id": {
@@ -5721,15 +5734,13 @@
                             }
                         },
                         "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/ProcessCategoryEditable"
                     }
                 ]
             },
             "processPermissionsEditable": {
                 "properties": {
                     "id": {
+                        "description": "Represents a Process permission.",
                         "type": "integer",
                         "format": "id"
                     },
@@ -5752,9 +5763,11 @@
                 "type": "object"
             },
             "processPermissions": {
-                "description": "Represents a Process permission.",
                 "type": "object",
                 "allOf": [
+                    {
+                        "$ref": "#/components/schemas/processPermissionsEditable"
+                    },
                     {
                         "properties": {
                             "created_at": {
@@ -5766,15 +5779,13 @@
                                 "format": "date-time"
                             }
                         }
-                    },
-                    {
-                        "$ref": "#/components/schemas/processPermissionsEditable"
                     }
                 ]
             },
             "processRequestEditable": {
                 "properties": {
                     "user_id": {
+                        "description": "Represents an Eloquent model of a Request which is an instance of a Process.",
                         "type": "string",
                         "format": "id"
                     },
@@ -5807,8 +5818,10 @@
                 "type": "object"
             },
             "processRequest": {
-                "description": "Represents an Eloquent model of a Request which is an instance of a Process.",
                 "allOf": [
+                    {
+                        "$ref": "#/components/schemas/processRequestEditable"
+                    },
                     {
                         "properties": {
                             "id": {
@@ -5848,15 +5861,13 @@
                             }
                         },
                         "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/processRequestEditable"
                     }
                 ]
             },
             "processRequestTokenEditable": {
                 "properties": {
                     "user_id": {
+                        "description": "ProcessRequestToken is used to store the state of a token of the\nNayra engine",
                         "type": "string",
                         "format": "id"
                     },
@@ -5864,7 +5875,8 @@
                         "type": "string"
                     },
                     "due_at": {
-                        "type": "date-time"
+                        "type": "string",
+                        "format": "date-time"
                     },
                     "initiated_at": {
                         "type": "string",
@@ -5884,8 +5896,10 @@
                 "type": "object"
             },
             "processRequestToken": {
-                "description": "ProcessRequestToken is used to store the state of a token of the\nNayra engine",
                 "allOf": [
+                    {
+                        "$ref": "#/components/schemas/processRequestTokenEditable"
+                    },
                     {
                         "properties": {
                             "id": {
@@ -5932,20 +5946,24 @@
                             "due_notified": {
                                 "type": "integer"
                             },
-                            "user": {},
-                            "process": {},
-                            "process_request": {}
+                            "user": {
+                                "type": "object"
+                            },
+                            "process": {
+                                "type": "object"
+                            },
+                            "process_request": {
+                                "type": "object"
+                            }
                         },
                         "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/processRequestTokenEditable"
                     }
                 ]
             },
             "taskAssignmentsEditable": {
                 "properties": {
                     "process_id": {
+                        "description": "Represents a business process task assignment definition.",
                         "type": "integer",
                         "format": "id"
                     },
@@ -5968,9 +5986,11 @@
                 "type": "object"
             },
             "taskAssignments": {
-                "description": "Represents a business process task assignment definition.",
                 "type": "object",
                 "allOf": [
+                    {
+                        "$ref": "#/components/schemas/taskAssignmentsEditable"
+                    },
                     {
                         "properties": {
                             "id": {
@@ -5986,15 +6006,13 @@
                                 "format": "date-time"
                             }
                         }
-                    },
-                    {
-                        "$ref": "#/components/schemas/taskAssignmentsEditable"
                     }
                 ]
             },
             "screensEditable": {
                 "properties": {
                     "title": {
+                        "description": "Class Screen",
                         "type": "string"
                     },
                     "type": {
@@ -6033,6 +6051,9 @@
             "screens": {
                 "allOf": [
                     {
+                        "$ref": "#/components/schemas/screensEditable"
+                    },
+                    {
                         "properties": {
                             "id": {
                                 "type": "string",
@@ -6048,14 +6069,10 @@
                             }
                         },
                         "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/screensEditable"
                     }
                 ]
             },
             "screenExported": {
-                "description": "Class Screen",
                 "properties": {
                     "url": {
                         "type": "string"
@@ -6066,6 +6083,7 @@
             "ScreenCategoryEditable": {
                 "properties": {
                     "name": {
+                        "description": "Represents a business screen category definition.",
                         "type": "string"
                     },
                     "status": {
@@ -6079,8 +6097,10 @@
                 "type": "object"
             },
             "ScreenCategory": {
-                "description": "Represents a business screen category definition.",
                 "allOf": [
+                    {
+                        "$ref": "#/components/schemas/ScreenCategoryEditable"
+                    },
                     {
                         "properties": {
                             "id": {
@@ -6097,23 +6117,23 @@
                             }
                         },
                         "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/ScreenCategoryEditable"
                     }
                 ]
             },
             "ScreenTypeEditable": {
                 "properties": {
                     "name": {
+                        "description": "Represents a business screen Type definition.",
                         "type": "string"
                     }
                 },
                 "type": "object"
             },
             "ScreenType": {
-                "description": "Represents a business screen Type definition.",
                 "allOf": [
+                    {
+                        "$ref": "#/components/schemas/ScreenTypeEditable"
+                    },
                     {
                         "properties": {
                             "id": {
@@ -6122,15 +6142,13 @@
                             }
                         },
                         "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/ScreenTypeEditable"
                     }
                 ]
             },
             "scriptsEditable": {
                 "properties": {
                     "title": {
+                        "description": "Represents an Eloquent model of a Script",
                         "type": "string"
                     },
                     "description": {
@@ -6160,6 +6178,9 @@
             "scripts": {
                 "allOf": [
                     {
+                        "$ref": "#/components/schemas/scriptsEditable"
+                    },
+                    {
                         "properties": {
                             "id": {
                                 "type": "integer",
@@ -6175,14 +6196,10 @@
                             }
                         },
                         "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/scriptsEditable"
                     }
                 ]
             },
             "scriptsPreview": {
-                "description": "Represents an Eloquent model of a Script",
                 "properties": {
                     "status": {
                         "type": "string"
@@ -6196,6 +6213,7 @@
             "ScriptCategoryEditable": {
                 "properties": {
                     "name": {
+                        "description": "Represents a business script category definition.",
                         "type": "string"
                     },
                     "status": {
@@ -6209,8 +6227,10 @@
                 "type": "object"
             },
             "ScriptCategory": {
-                "description": "Represents a business script category definition.",
                 "allOf": [
+                    {
+                        "$ref": "#/components/schemas/ScriptCategoryEditable"
+                    },
                     {
                         "properties": {
                             "id": {
@@ -6227,15 +6247,13 @@
                             }
                         },
                         "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/ScriptCategoryEditable"
                     }
                 ]
             },
             "scriptExecutorsEditable": {
                 "properties": {
                     "title": {
+                        "description": "Represents an Eloquent model of a Script Executor",
                         "type": "string"
                     },
                     "description": {
@@ -6253,6 +6271,9 @@
             "scriptExecutors": {
                 "allOf": [
                     {
+                        "$ref": "#/components/schemas/scriptExecutorsEditable"
+                    },
+                    {
                         "properties": {
                             "id": {
                                 "type": "integer",
@@ -6268,14 +6289,10 @@
                             }
                         },
                         "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/scriptExecutorsEditable"
                     }
                 ]
             },
             "availableLanguages": {
-                "description": "Represents an Eloquent model of a Script Executor",
                 "properties": {
                     "text": {
                         "type": "string"
@@ -6290,9 +6307,9 @@
                 "type": "object"
             },
             "securityLog": {
-                "description": "Class SecurityLog",
                 "properties": {
                     "id": {
+                        "description": "Class SecurityLog",
                         "type": "integer"
                     },
                     "event": {
@@ -6352,6 +6369,7 @@
             "settingsEditable": {
                 "properties": {
                     "key": {
+                        "description": "Class Settings",
                         "type": "string"
                     },
                     "config": {
@@ -6388,8 +6406,10 @@
                 "type": "object"
             },
             "settings": {
-                "description": "Class Settings",
                 "allOf": [
+                    {
+                        "$ref": "#/components/schemas/settingsEditable"
+                    },
                     {
                         "properties": {
                             "id": {
@@ -6406,9 +6426,6 @@
                             }
                         },
                         "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/settingsEditable"
                     }
                 ]
             },
@@ -6452,6 +6469,7 @@
             "usersEditable": {
                 "properties": {
                     "email": {
+                        "description": "The attributes that are mass assignable.",
                         "type": "string",
                         "format": "email"
                     },
@@ -6559,8 +6577,10 @@
                 "type": "object"
             },
             "users": {
-                "description": "The attributes that are mass assignable.",
                 "allOf": [
+                    {
+                        "$ref": "#/components/schemas/usersEditable"
+                    },
                     {
                         "properties": {
                             "id": {
@@ -6580,9 +6600,6 @@
                             }
                         },
                         "type": "object"
-                    },
-                    {
-                        "$ref": "#/components/schemas/usersEditable"
                     }
                 ]
             },
@@ -6742,39 +6759,29 @@
             }
         },
         "securitySchemes": {
-            "pm_api_auth_code": {
+            "passport": {
                 "type": "oauth2",
+                "description": "Laravel passport oauth2 security.",
                 "flows": {
                     "authorizationCode": {
-                        "authorizationUrl": "/oauth/authorize",
-                        "tokenUrl": "/oauth/token",
-                        "scopes": {
-                            "*": ""
-                        }
+                        "authorizationUrl": "http://pmdev42.nossl/oauth/authorize",
+                        "tokenUrl": "http://pmdev42.nossl/oauth/token",
+                        "refreshUrl": "http://pmdev42.nossl/token/refresh",
+                        "scopes": {}
                     }
                 }
             },
-            "pm_api_bearer": {
+            "bearer": {
                 "type": "http",
                 "scheme": "bearer",
                 "bearerFormat": "JWT"
-            },
-            "pm_api_key": {
-                "type": "apiKey",
-                "in": "header",
-                "name": "Authorization"
             }
         }
     },
     "security": [
         {
-            "pm_api_auth_code": []
-        },
-        {
-            "pm_api_bearer": []
-        },
-        {
-            "pm_api_key": []
+            "passport": [],
+            "bearer": []
         }
     ]
 }
