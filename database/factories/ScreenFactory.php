@@ -14,5 +14,6 @@ $factory->define(Screen::class, function (Faker $faker) {
         'screen_category_id' => function () {
             return factory(ScreenCategory::class)->create()->getKey();
         },
+        'watchers' => [],
     ];
 });

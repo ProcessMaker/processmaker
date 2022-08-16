@@ -62,7 +62,7 @@ class ExportImportTest extends TestCase
         $fileName = 'test_process_import_refs.json';
 
         // Load file to import
-        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
+        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, true);
 
         // Import process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -235,7 +235,7 @@ class ExportImportTest extends TestCase
         // Save the file contents and convert them to an UploadedFile
         $fileName = tempnam(sys_get_temp_dir(), 'exported');
         file_put_contents($fileName, $content);
-        $file = new UploadedFile($fileName, 'leave_absence_request.json', null, null, null, true);
+        $file = new UploadedFile($fileName, 'leave_absence_request.json', null, null, true);
 
         // Test to ensure our standard user cannot import a process
         $this->user = $standardUser;
@@ -307,7 +307,7 @@ class ExportImportTest extends TestCase
         // Save the file contents and convert them to an UploadedFile
         $fileName = tempnam(sys_get_temp_dir(), 'exported');
         file_put_contents($fileName, $content);
-        $file = new UploadedFile($fileName, 'leave_absence_request.json', null, null, null, true);
+        $file = new UploadedFile($fileName, 'leave_absence_request.json', null, null, true);
 
         $newAnonUser = factory(User::class)->create(['status' => 'active']);
         $this->app->extend(AnonymousUser::class, function ($app) use ($newAnonUser) {
@@ -340,7 +340,7 @@ class ExportImportTest extends TestCase
     public function test_different_assignments_should_not_be_removed_except_by_user_group()
     {
         // Load file to import
-        $file = new UploadedFile(base_path('tests/storage/process/') . 'test_process_import_different_tasks_assignments.json', 'test_process_import_different_tasks_assignments.json', null, null, null, true);
+        $file = new UploadedFile(base_path('tests/storage/process/') . 'test_process_import_different_tasks_assignments.json', 'test_process_import_different_tasks_assignments.json', null, null, true);
 
         //Import sample working process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -370,7 +370,7 @@ class ExportImportTest extends TestCase
         // Save the file contents and convert them to an UploadedFile
         $fileName = tempnam(sys_get_temp_dir(), 'exported');
         file_put_contents($fileName, $content);
-        $file = new UploadedFile($fileName, 'Different Task Assignments.json', null, null, null, true);
+        $file = new UploadedFile($fileName, 'Different Task Assignments.json', null, null, true);
 
         // Test to ensure our admin user can import a process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -451,7 +451,7 @@ class ExportImportTest extends TestCase
     public function test_assignmets_after_import()
     {
         // Load file to import
-        $file = new UploadedFile(base_path('tests/storage/process/') . 'test_process_import.json', 'test_process_import.json', null, null, null, true);
+        $file = new UploadedFile(base_path('tests/storage/process/') . 'test_process_import.json', 'test_process_import.json', null, null, true);
 
         //Import process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -578,7 +578,7 @@ class ExportImportTest extends TestCase
         $fileName = 'test_process_import_invalid_text_file.json';
 
         // Load file to import
-        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
+        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, true);
 
         // Import process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -601,7 +601,7 @@ class ExportImportTest extends TestCase
         $fileName = 'test_process_import_invalid_json_file.json';
 
         // Load file to import
-        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
+        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, true);
 
         // Import process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -624,7 +624,7 @@ class ExportImportTest extends TestCase
         $fileName = 'test_process_import_invalid_base64_file.json';
 
         // Load file to import
-        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
+        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, true);
 
         // Import process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -647,7 +647,7 @@ class ExportImportTest extends TestCase
         $fileName = 'test_process_import_invalid_bin_file.json';
 
         // Load file to import
-        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
+        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, true);
 
         // Import process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -678,7 +678,7 @@ class ExportImportTest extends TestCase
         $fileName = 'test_process_multiple_assets.json';
 
         // Load file to import
-        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
+        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, true);
 
         // Import process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -773,7 +773,7 @@ class ExportImportTest extends TestCase
         // Save the file contents and convert them to an UploadedFile
         $fileName = tempnam(sys_get_temp_dir(), 'exported');
         file_put_contents($fileName, $content);
-        $file = new UploadedFile($fileName, 'test.json', null, null, null, true);
+        $file = new UploadedFile($fileName, 'test.json', null, null, true);
 
         // Import the process
         $response = $this->apiCall('POST', '/processes/import', ['file' => $file]);

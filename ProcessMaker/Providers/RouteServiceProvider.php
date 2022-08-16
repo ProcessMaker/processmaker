@@ -41,7 +41,7 @@ class RouteServiceProvider extends ServiceProvider
         Route::pattern('task', '[0-9]+');
         Route::pattern('request', '[0-9]+');
         Route::pattern('file', '[0-9]+');
-        Route::pattern('notification', '[0-9]+');
+        Route::pattern('notification', '[0-9a-zA-Z-]+');
         Route::pattern('task_assignment', '[0-9]+');
         Route::pattern('comment', '[0-9]+');
         Route::pattern('script_executor', '[0-9]+');

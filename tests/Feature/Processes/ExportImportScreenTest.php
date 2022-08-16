@@ -73,7 +73,7 @@ class ExportImportScreenTest extends TestCase
         // Save the file contents and convert them to an UploadedFile
         $fileName = tempnam(sys_get_temp_dir(), 'exported');
         file_put_contents($fileName, $content);
-        $file = new UploadedFile($fileName, 'approve.json', null, null, null, true);
+        $file = new UploadedFile($fileName, 'approve.json', null, null, true);
 
         // Test to ensure our standard user cannot import a screen
         $this->user = $standardUser;
@@ -119,7 +119,7 @@ class ExportImportScreenTest extends TestCase
         // Save the file contents and convert them to an UploadedFile
         $fileName = tempnam(sys_get_temp_dir(), 'exported');
         file_put_contents($fileName, $content);
-        $file = new UploadedFile($fileName, 'leave_absence_request.json', null, null, null, true);
+        $file = new UploadedFile($fileName, 'leave_absence_request.json', null, null, true);
 
         // Test to ensure our admin user can import a other file
         // file type process_package
@@ -138,7 +138,7 @@ class ExportImportScreenTest extends TestCase
         // Load the file to test
         $fileName = __DIR__ . '/../../Fixtures/screen_with_watchers.json';
 
-        $file = new UploadedFile($fileName, 'screen_with_watchers.json', null, null, null, true);
+        $file = new UploadedFile($fileName, 'screen_with_watchers.json', null, null, true);
 
         // Test to ensure our admin user can import a other file
         //$this->user = $adminUser;
@@ -155,7 +155,7 @@ class ExportImportScreenTest extends TestCase
     {
         // Load the file to test
         $fileName = __DIR__ . '/../../Fixtures/nested_screens.json';
-        $file = new UploadedFile($fileName, 'nested_screens.json', null, null, null, true);
+        $file = new UploadedFile($fileName, 'nested_screens.json', null, null, true);
 
         // Import the file
         $response = $this->apiCall('POST', '/screens/import', [

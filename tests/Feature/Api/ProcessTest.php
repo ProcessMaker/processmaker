@@ -734,7 +734,7 @@ class ProcessTest extends TestCase
 
         //Test that is correctly displayed with null category
         $this->assertModelShow($process->id, ['category'])
-            ->assertJsonFragment(['category' => null]);
+            ->assertJsonFragment(['category' => []]);
 
         //Create a new process with category
         $process = factory(Process::class)->create();

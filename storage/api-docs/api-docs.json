@@ -6764,9 +6764,9 @@
                 "description": "Laravel passport oauth2 security.",
                 "flows": {
                     "authorizationCode": {
-                        "authorizationUrl": "http://pmdev42.nossl/oauth/authorize",
-                        "tokenUrl": "http://pmdev42.nossl/oauth/token",
-                        "refreshUrl": "http://pmdev42.nossl/token/refresh",
+                        "authorizationUrl": "http://localhost/oauth/authorize",
+                        "tokenUrl": "http://localhost/oauth/token",
+                        "refreshUrl": "http://localhost/token/refresh",
                         "scopes": {}
                     }
                 }
