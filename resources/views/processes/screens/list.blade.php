@@ -15,7 +15,7 @@
                     <div class="d-flex ml-md-0 flex-column flex-md-row">
                         @can('import-screens')
                             <div class="mb-3 mb-md-0 ml-md-2">
-                                <a href="#"  aria-label="{{ __('Import Screen') }}" class="btn btn-outline-secondary w-100" @click="goToImport">
+                                <a href="#"  aria-label="{{ __('Import Screen') }}" class="btn btn-outline-secondary w-100" @click="goToImport" data-cy="button-import-screen">
                                     <i class="fas fa-file-import"></i> {{__('Import')}}
                                 </a>
                             </div>
