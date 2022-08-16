@@ -112,7 +112,7 @@ if (!function_exists('hasPackage')) {
     }
 }
 
-if (!function_exists('')) {
+if (!function_exists('pmUser')) {
     /**
      * Check both the web and api middleware for an existing user
      *
