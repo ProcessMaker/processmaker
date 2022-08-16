@@ -31,6 +31,7 @@
         "babel-preset-stage-2": "^6.24.1",
         "chartjs-plugin-colorschemes": "^0.4.0",
         "cypress": "^9.5.4",
+        "cypress-file-upload": "^5.0.8",
         "eslint-config-airbnb": "^16.1.0",
         "eslint-config-standard": "^11.0.0",
         "eslint-plugin-flowtype": "^2.50.0",
