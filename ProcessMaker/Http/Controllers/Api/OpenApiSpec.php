@@ -1,4 +1,7 @@
 <?php
+
+namespace ProcessMaker\Http\Controllers\Api;
+
 /**
  * @OA\OpenApi(
  *     @OA\Info(
@@ -89,10 +92,8 @@
  *           )
  *         ),
  *     ),
- *     security={
- *         {"pm_api_auth_code": {}},
- *         {"pm_api_bearer": {}},
- *         {"pm_api_key": {}}
- *     },
  * )
  */
+class OpenApiSpec
+{
+}
