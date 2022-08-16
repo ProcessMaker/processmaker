@@ -4,6 +4,7 @@ namespace ProcessMaker\Console\Commands;
 
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Database\Query\Grammars\SqlServerGrammar;
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Facades\DB;
@@ -265,7 +266,10 @@ class Install extends Command
             // Now store the env file
             Storage::disk('install')->put('.env', $contents);
 
-            refresh_artisan_caches();
+            Artisan::call('config:clear', [
+                '--no-interaction' => true,
+                '--quiet' => true,
+            ]);
 
             // Set username, email, password
             $this->fetchUserInformation();
