@@ -134,7 +134,7 @@ class Setting extends Model implements HasMedia
      */
     public static function byKey(string $key)
     {
-        $cache = cache()->tags('setting');
+        $cache = Cache::driver('array')->tags('setting');
 
         if ($cache->has($key)) {
             return $cache->get($key);

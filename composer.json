@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.2.34-RC1",
+    "version": "4.2.34",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -88,7 +88,10 @@
             ]
         },
         "processmaker": {
-            "build": "6f008378",
+            "build": "96378470",
+            "custom": {
+                "package-ellucian-ethos": "1.6.0"
+            },
             "enterprise": {
                 "connector-docusign": "1.0.0",
                 "connector-pdf-print": "1.8.0",
@@ -103,12 +106,11 @@
                 "package-conversational-forms": "1.2.0",
                 "package-data-sources": "1.10.1",
                 "package-dynamic-ui": "1.4.0",
-                "package-ellucian-ethos": "1.6.0",
                 "package-files": "1.4.1",
                 "package-googleplaces": "1.2.0",
                 "package-process-documenter": "1.1.0",
                 "package-process-optimization": "1.2.0",
-                "package-savedsearch": "1.17.2",
+                "package-savedsearch": "1.17.3",
                 "package-sentry": "1.2.0",
                 "package-signature": "1.3.1",
                 "package-translations": "2.2.0",
