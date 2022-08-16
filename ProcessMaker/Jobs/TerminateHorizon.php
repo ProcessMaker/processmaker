@@ -35,7 +35,7 @@ class TerminateHorizon implements ShouldQueue
             '--no-interaction' => true,
         ]);
 
-        logger('Horizon Restart Attempted', [
+        logger()->info('Horizon Restart Attempted', [
             'exit_code' => $exitCode,
             'command_output' => Artisan::output(),
         ]);
