@@ -155,9 +155,9 @@ class RequestTest extends TestCase
 
         $response = $this->webCall('GET', '/requests/' . $process_request->id);
         // Full request->getMedia payload is sent for Vue, so assert some HTML also
-        $response->assertSee('photo2.jpg</a>');
-        $response->assertSee('photo3.jpg</a>');
-        $response->assertSee('photo1.jpg</a>');
+        $response->assertSee('photo2.jpg</a>', false);
+        $response->assertSee('photo3.jpg</a>', false);
+        $response->assertSee('photo1.jpg</a>', false);
     }
 
     public function testCompletedCount()

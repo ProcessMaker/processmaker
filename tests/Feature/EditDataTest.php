@@ -200,7 +200,7 @@ class EditDataTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewIs('requests.show');
         $response->assertSee('Summary');
-        $response->assertSee('<!-- data edit -->');
+        $response->assertSee('<!-- data edit -->', false);
     }
 
     /**
@@ -236,7 +236,7 @@ class EditDataTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewIs('tasks.edit');
         $response->assertSee('Form');
-        $response->assertSee('<!-- data edit -->');
+        $response->assertSee('<!-- data edit -->', false);
     }
 
     /**
@@ -277,7 +277,7 @@ class EditDataTest extends TestCase
         $response = $this->webCall('GET', 'tasks/' . $task->id . '/edit');
         $response->assertStatus(200);
         $response->assertViewIs('tasks.edit');
-        $response->assertSee('<!-- data edit -->');
+        $response->assertSee('<!-- data edit -->', false);
     }
 
     /**
@@ -318,6 +318,6 @@ class EditDataTest extends TestCase
         $response->assertViewIs('requests.show');
         $response->assertSee('Completed');
         $response->assertSee('Summary');
-        $response->assertSee('<!-- data edit -->');
+        $response->assertSee('<!-- data edit -->', false);
     }
 }
