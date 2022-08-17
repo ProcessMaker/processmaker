@@ -26,7 +26,7 @@ trait PluginServiceProviderTrait
      */
     protected function completePluginBoot()
     {
-        if (defined('static::version') && ! $this->isUpdated()) {
+        if (defined('static::version') && !$this->isUpdated()) {
             $this->updateVersion();
             $key = str_replace('\\', '_', static::class);
             Cache::forever($key, static::version);
@@ -198,5 +198,28 @@ trait PluginServiceProviderTrait
     protected function registerJsToScriptBuilder($path, $public)
     {
         $this->scriptBuilderScripts[$path] = $public;
+    }
+
+    /**
+     * Update config so l5-swagger knows where to look for @OA annotations
+     *
+     * @param array $paths
+     *
+     * @return void
+     */
+    public function registerOpenApiAnnotationPaths(array $paths)
+    {
+        if (!app()->runningInConsole()) {
+            return;
+        }
+
+        $configString = 'l5-swagger.documentations.default.paths.annotations';
+
+        config([
+            $configString => array_merge(
+                config($configString),
+                $paths
+            ),
+        ]);
     }
 }
