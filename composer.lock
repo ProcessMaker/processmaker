@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "897703c7ff46d1eb6db7ae2c209bab68",
+    "content-hash": "2568eaa8acf368cb4854a3168805eed2",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -1735,16 +1735,16 @@
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "6.5.5",
+            "version": "6.5.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "9d4290de1cfd701f38099ef7e183b64b4b7b0c5e"
+                "reference": "724562fa861e21a4071c652c8a159934e4f05592"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/9d4290de1cfd701f38099ef7e183b64b4b7b0c5e",
-                "reference": "9d4290de1cfd701f38099ef7e183b64b4b7b0c5e",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/724562fa861e21a4071c652c8a159934e4f05592",
+                "reference": "724562fa861e21a4071c652c8a159934e4f05592",
                 "shasum": ""
             },
             "require": {
@@ -1782,9 +1782,39 @@
             ],
             "authors": [
                 {
+                    "name": "Graham Campbell",
+                    "email": "hello@gjcampbell.co.uk",
+                    "homepage": "https://github.com/GrahamCampbell"
+                },
+                {
                     "name": "Michael Dowling",
                     "email": "mtdowling@gmail.com",
                     "homepage": "https://github.com/mtdowling"
+                },
+                {
+                    "name": "Jeremy Lindblom",
+                    "email": "jeremeamia@gmail.com",
+                    "homepage": "https://github.com/jeremeamia"
+                },
+                {
+                    "name": "George Mponos",
+                    "email": "gmponos@gmail.com",
+                    "homepage": "https://github.com/gmponos"
+                },
+                {
+                    "name": "Tobias Nyholm",
+                    "email": "tobias.nyholm@gmail.com",
+                    "homepage": "https://github.com/Nyholm"
+                },
+                {
+                    "name": "Márk Sági-Kazár",
+                    "email": "mark.sagikazar@gmail.com",
+                    "homepage": "https://github.com/sagikazarmark"
+                },
+                {
+                    "name": "Tobias Schultze",
+                    "email": "webmaster@tubo-world.de",
+                    "homepage": "https://github.com/Tobion"
                 }
             ],
             "description": "Guzzle is a PHP HTTP client library",
@@ -1800,9 +1830,23 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/guzzle/issues",
-                "source": "https://github.com/guzzle/guzzle/tree/6.5"
+                "source": "https://github.com/guzzle/guzzle/tree/6.5.7"
             },
-            "time": "2020-06-16T21:01:06+00:00"
+            "funding": [
+                {
+                    "url": "https://github.com/GrahamCampbell",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/Nyholm",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/guzzlehttp/guzzle",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2022-06-09T21:36:50+00:00"
         },
         {
             "name": "guzzlehttp/promises",
@@ -4845,16 +4889,16 @@
         },
         {
             "name": "processmaker/docker-executor-php",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/docker-executor-php.git",
-                "reference": "7a67c6aaa79d8ce4004b1c0600229317aab15c81"
+                "reference": "fa170f095279f6f0a55361d33ac177a6e0331310"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-php/zipball/7a67c6aaa79d8ce4004b1c0600229317aab15c81",
-                "reference": "7a67c6aaa79d8ce4004b1c0600229317aab15c81",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-php/zipball/fa170f095279f6f0a55361d33ac177a6e0331310",
+                "reference": "fa170f095279f6f0a55361d33ac177a6e0331310",
                 "shasum": ""
             },
             "type": "library",
@@ -4872,12 +4916,15 @@
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GAGPL-3.0-or-later"
+            ],
             "description": "PHP script executor for processmaker 4",
             "support": {
                 "issues": "https://github.com/ProcessMaker/docker-executor-php/issues",
-                "source": "https://github.com/ProcessMaker/docker-executor-php/tree/v1.0.0"
+                "source": "https://github.com/ProcessMaker/docker-executor-php/tree/v1.0.1"
             },
-            "time": "2020-03-31T21:45:33+00:00"
+            "time": "2022-07-05T20:26:35+00:00"
         },
         {
             "name": "processmaker/laravel-i18next",
@@ -4971,16 +5018,16 @@
         },
         {
             "name": "processmaker/pmql",
-            "version": "1.5.1",
+            "version": "1.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/pmql.git",
-                "reference": "97a151405ee39c4ffa03e905904f4c1e5d703aaa"
+                "reference": "c99e089b142489869989421a280bf668e7042254"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/97a151405ee39c4ffa03e905904f4c1e5d703aaa",
-                "reference": "97a151405ee39c4ffa03e905904f4c1e5d703aaa",
+                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/c99e089b142489869989421a280bf668e7042254",
+                "reference": "c99e089b142489869989421a280bf668e7042254",
                 "shasum": ""
             },
             "require": {
@@ -5011,9 +5058,9 @@
             "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent",
             "support": {
                 "issues": "https://github.com/ProcessMaker/pmql/issues",
-                "source": "https://github.com/ProcessMaker/pmql/tree/v1.5.1"
+                "source": "https://github.com/ProcessMaker/pmql/tree/v1.6.0"
             },
-            "time": "2022-01-28T22:54:49+00:00"
+            "time": "2022-06-29T01:01:21+00:00"
         },
         {
             "name": "psr/cache",
@@ -12152,5 +12199,5 @@
         "php": ">=7.2.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.0.0"
 }

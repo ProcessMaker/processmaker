@@ -343,7 +343,7 @@ class ProcessRequestFileController extends Controller
      */
     public function destroy(Request $laravel_request, ProcessRequest $request, Media $file)
     {
-        $request->getMedia()->firstWhere('id', $file->id)->destroy();
+        $request->getMedia()->firstWhere('id', $file->id)->delete();
         return response([], 204);
     }
 }
