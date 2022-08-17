@@ -79,6 +79,11 @@ return [
     // Unique name on multi-tenant installations. Just use the DB name for now
     'instance' => env('DB_DATABASE'),
 
+    // Global app settings
+    'settings' => [
+        'loaded' => false,
+    ],
+
     'providers' => [
         Illuminate\Auth\AuthServiceProvider::class,
         Illuminate\Broadcasting\BroadcastServiceProvider::class,
@@ -115,8 +120,8 @@ return [
         ProcessMaker\Providers\RouteServiceProvider::class,
         ProcessMaker\Providers\BroadcastServiceProvider::class,
         ProcessMaker\Providers\WorkflowServiceProvider::class,
-        ProcessMaker\Providers\SettingServiceProvider::class,
         ProcessMaker\Providers\UpgradeServiceProvider::class,
+        ProcessMaker\Providers\SettingServiceProvider::class,
         Laravel\Passport\PassportServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
         TeamTNT\Scout\TNTSearchScoutServiceProvider::class,
@@ -180,7 +185,6 @@ return [
          * Overwrite package classes
          */
         'ElasticScoutDriver\Factories\SearchRequestFactory' => ProcessMaker\Factories\SearchRequestFactory::class,
-
 
     ],
 

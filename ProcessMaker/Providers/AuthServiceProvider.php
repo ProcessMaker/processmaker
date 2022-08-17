@@ -14,7 +14,6 @@ use ProcessMaker\Policies\ProcessRequestPolicy;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Policies\ProcessRequestTokenPolicy;
 use ProcessMaker\Models\Permission;
-use Illuminate\Auth\RequestGuard;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -24,9 +23,7 @@ use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Policies\UserPolicy;
-use ProcessMaker\Models\Screen;
 use ProcessMaker\Policies\ProcessVersionPolicy;
-use ProcessMaker\Policies\ScreenPolicy;
 use ProcessMaker\Policies\ScriptPolicy;
 
 /**
@@ -49,7 +46,6 @@ class AuthServiceProvider extends ServiceProvider
         ProcessRequest::class => ProcessRequestPolicy::class,
         ProcessRequestToken::class => ProcessRequestTokenPolicy::class,
         User::class => UserPolicy::class,
-        User::class => UserPolicy::class,
         Script::class => ScriptPolicy::class,
     ];
 
@@ -61,6 +57,7 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
+
         Passport::routes(function ($router) {
             $router->forAuthorization();
             $router->forAccessTokens();
@@ -75,7 +72,7 @@ class AuthServiceProvider extends ServiceProvider
                 return true;
             }
         });
-        
+
         try {
             Permission::all()->each(function($permission) {
                 Gate::define($permission->name, function ($user, $model = false) use($permission) {
