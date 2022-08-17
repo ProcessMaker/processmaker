@@ -3,12 +3,15 @@
 namespace ProcessMaker\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use ProcessMaker\Jobs\TerminateHorizon;
 use ProcessMaker\Upgrades\Commands as Commands;
 use ProcessMaker\Upgrades\UpgradeCreator;
 use ProcessMaker\Upgrades\UpgradeMigrator;
+use Illuminate\Console\Events\CommandFinished;
+use Illuminate\Contracts\Support\DeferrableProvider;
 use ProcessMaker\Upgrades\UpgradeMigrationRepository;
 
-class UpgradeServiceProvider extends ServiceProvider
+class UpgradeServiceProvider extends ServiceProvider implements DeferrableProvider
 {
     /**
      * Indicates if loading of the provider is deferred.
@@ -38,6 +41,8 @@ class UpgradeServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->registerListeners();
+
         $this->registerCommands();
 
         $this->registerRepository();
@@ -45,6 +50,39 @@ class UpgradeServiceProvider extends ServiceProvider
         $this->registerMigrator();
 
         $this->registerCreator();
+    }
+
+    /**
+     * Register upgrade service event listeners
+     *
+     * @return void
+     */
+    public function registerListeners(): void
+    {
+        $this->app['events']->listen(CommandFinished::class, function (CommandFinished $event) {
+
+            // We only want to refresh the artisan caches and
+            // restart horizon if any upgrade migrations were
+            // run, rolled back, or reset
+            if (in_array($event->command, ['upgrade', 'upgrade:reset', 'upgrade:rollback'])) {
+
+                // No need to flush the cache(s) and restart
+                // horizon if we're just pretending
+                if ($event->input->hasParameterOption('--pretend')) {
+                    return;
+                }
+
+                // Clear the compiled bootstrap files and will
+                // clear the cached config, cached routes, and
+                // cached events and re-cache them
+                refresh_artisan_caches();
+
+                // Once the artisan caches are cleared, we
+                // to restart horizon to pick up the new
+                // configuration changes (if any were made)
+                TerminateHorizon::dispatch();
+            }
+        });
     }
 
     /**
