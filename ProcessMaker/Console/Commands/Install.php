@@ -266,7 +266,17 @@ class Install extends Command
             // Now store the env file
             Storage::disk('install')->put('.env', $contents);
 
-            Artisan::call('config:clear', [
+            $this->call('config:cache', [
+                '--no-interaction' => true,
+                '--quiet' => true,
+            ]);
+
+            $this->call('config:clear', [
+                '--no-interaction' => true,
+                '--quiet' => true,
+            ]);
+
+            $this->call('cache:clear', [
                 '--no-interaction' => true,
                 '--quiet' => true,
             ]);
