@@ -3,7 +3,6 @@
 namespace ProcessMaker\Providers;
 
 use Laravel\Telescope\Telescope;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Telescope\IncomingEntry;
 use Laravel\Telescope\TelescopeApplicationServiceProvider;
@@ -17,17 +16,9 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
      */
     public function register()
     {
-        Telescope::night();
+        // Telescope::night();
 
         $this->hideSensitiveRequestDetails();
-
-        Telescope::tag(function (IncomingEntry $entry) {
-            if (($entry->type === 'query') && is_int(strpos($sql = $entry->content['sql'], 'settings'))) {
-                return ['SettingsQuery'];
-            }
-
-            return [];
-        });
 
         Telescope::filter(function (IncomingEntry $entry) {
             if ($this->app->isLocal()) {
@@ -35,9 +26,9 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
             }
 
             return $entry->isReportableException() ||
-                   $entry->isFailedJob() ||
-                   $entry->isScheduledTask() ||
-                   $entry->hasMonitoredTag();
+                $entry->isFailedJob() ||
+                $entry->isScheduledTask() ||
+                $entry->hasMonitoredTag();
         });
     }
 
