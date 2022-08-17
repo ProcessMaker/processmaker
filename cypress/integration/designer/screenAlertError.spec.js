@@ -9,6 +9,8 @@ describe('screen page', () => {
 
       cy.importScreen('screen_error_alert.json');
       cy.wait(500);
+
+      cy.get('#screenIndex > #search-bar > :nth-child(1) > .flex-grow-1 > #search > .input-group > #search-box').type('Screen Error Alert');
       cy.get('span').contains('Screen Error Alert').click();
       cy.get('.btn-outline-secondary').click();
       
