@@ -17,6 +17,7 @@
     "doctrine/dbal": "^2.9",
     "fideloper/proxy": "^4.0",
     "fzaninotto/faker": "^1.4",
+    "google/apiclient": "^2.12",
     "guzzlehttp/guzzle": "^6.5",
     "igaster/laravel-theme": "2.0.*",
     "laravel/framework": "^6.18.35",
@@ -87,6 +88,9 @@
         "laravel/passport"
       ]
     },
+    "google/apiclient-services": [
+        "Gmail"
+    ],
     "processmaker": {
       "build": "945e68c4",
       "enterprise": {
@@ -128,7 +132,8 @@
     "post-autoload-dump": [
       "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
       "@php artisan package:discover"
-    ]
+    ],
+    "pre-autoload-dump": "Google\\Task\\Composer::cleanup"
   },
   "repositories": [
     {
