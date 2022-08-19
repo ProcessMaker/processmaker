@@ -46,5 +46,6 @@ class SanitizeHelperTest extends TestCase
         $this->assertEquals('NEAT  STUFF', SanitizeHelper::strip_tags('NEAT <?
             echo \'\\\'\'
         ?> STUFF'));
+        $this->assertEquals('Next is a php code with closing tag  > <', SanitizeHelper::strip_tags('Next is a php code with closing tag <test of < character ' . "\n" . '<?php' . "\n" . ' class SanitizeHelper { > } ?>' . "\n" . ' < > > <'));
     }
 }
