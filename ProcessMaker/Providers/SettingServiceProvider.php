@@ -3,11 +3,15 @@
 namespace ProcessMaker\Providers;
 
 use Throwable;
+use Exception;
+use RuntimeException;
 use ProcessMaker\Models\Setting;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Jobs\TerminateHorizon;
 use ProcessMaker\Events\SettingsLoaded;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Console\Events\CommandFinished;
+use Symfony\Component\Debug\Exception\FatalThrowableError;
 use Illuminate\Contracts\Config\Repository as RepositoryContract;
 
 class SettingServiceProvider extends ServiceProvider
@@ -61,12 +65,20 @@ class SettingServiceProvider extends ServiceProvider
                 // Mark all settings as bound to the config
                 $repository->set($key, true);
             }
+        } catch (RuntimeException $exception) {
+            // Log the exception for debugging
+            Log::notice('Exception caught while loading settings into app configuration', [
+                'message' => $exception->getMessage(),
+                'line' => $exception->getLine(),
+                'file' => $exception->getFile(),
+                'code' => $exception->getCode(),
+                'trace' => $exception->getTrace(),
+            ]);
 
             // It's also possible a database connection has
             // not be established, such as when running
             // composer install. We need to catch that
             // exception and then bail.
-        } catch (Throwable $exception) {
             $repository->set($key, false);
         } finally {
             // Fire off the SettingsLoaded event to indicate

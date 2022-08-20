@@ -2,14 +2,12 @@
 
 namespace ProcessMaker\Events;
 
-use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Config\Repository as RepositoryContract;
 
 class SettingsLoaded
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
 
     /**
      * @var \Illuminate\Contracts\Config\Repository

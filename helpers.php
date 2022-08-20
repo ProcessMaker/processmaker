@@ -24,13 +24,11 @@ if (!function_exists('settings')) {
 
 if (!function_exists('refresh_artisan_caches')) {
     /**
-     * Refreshes identified caches (configuration, routes, and/or events)
-     *
-     * @param  array  $caches
+     * Re-caches artisan config, routes, and/or events when they are already cached
      *
      * @return void
      */
-    function refresh_artisan_caches(array $caches = []): void
+    function refresh_artisan_caches(): void
     {
         Artisan::call('clear-compiled', $options = [
             '--no-interaction' => true,
@@ -38,15 +36,15 @@ if (!function_exists('refresh_artisan_caches')) {
             '--env' => app()->environment(),
         ]);
 
-        if ($caches['configuration'] ?? app()->configurationIsCached()) {
+        if (app()->configurationIsCached()) {
             Artisan::call('config:cache', $options);
         }
 
-        if ($caches['routes'] ?? app()->routesAreCached()) {
+        if (app()->routesAreCached()) {
             Artisan::call('route:cache', $options);
         }
 
-        if ($caches['events'] ?? app()->eventsAreCached()) {
+        if (app()->eventsAreCached()) {
             Artisan::call('event:cache', $options);
         }
     }
