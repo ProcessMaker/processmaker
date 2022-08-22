@@ -4,6 +4,8 @@ use ProcessMaker\Models\Setting;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 
 if (!function_exists('settings')) {
     /**
@@ -22,16 +24,19 @@ if (!function_exists('settings')) {
             }
         }
 
-        $cache = cache()->tags('setting');
+        $cache = Cache::driver('array')->tags('setting');
 
         // Cache all Setting models
         if (!$cache->has('all')) {
+            if (!Schema::hasTable('settings')) {
+                return [];
+            }
             $cache->put('all', Setting::get(), 60 * 60 * 24 * 7);
         }
 
         $nested = [];
 
-        foreach ($cache->get('all') ?? [] as $setting) {
+        foreach ($cache->get('all') as $setting) {
             Arr::set($nested, $setting->key, $setting->config);
         }
 
@@ -49,75 +54,22 @@ if (!function_exists('flush_settings')) {
     /**
      * Flush the ProcessMaker settings from the cache and global configuration.
      *
-     * @return bool
+     * @return void
      * @throws \Exception
      */
-    function flush_settings(): bool
+    function flush_settings()
     {
-        return cache()->tags('setting')->flush();
-    }
-}
+        Cache::driver('array')->tags('setting')->flush();
 
-if (!function_exists('clear_artisan_caches')) {
-    /**
-     * Clears any available/cacheable artisan commands and
-     * returns with which were cached to before clearing
-     *
-     * @return array
-     */
-    function clear_artisan_caches(): array
-    {
-        if ($configuration = app()->configurationIsCached()) {
-            Artisan::call('config:clear');
-        }
-
-        if ($routes = app()->routesAreCached()) {
-            Artisan::call('route:clear');
-        }
-
-        if ($events = app()->eventsAreCached()) {
-            Artisan::call('event:clear');
-        }
-
-        return [
-            'configuration' => $configuration ?? false,
-            'routes' => $routes ?? false,
-            'events' => $events ?? false,
-        ];
-    }
-}
-
-if (!function_exists('refresh_artisan_caches')) {
-    /**
-     * Refreshes identified caches (configuration, routes, and/or events)
-     *
-     * @param  array  $caches
-     *
-     * @return void
-     */
-    function refresh_artisan_caches(array $caches = []): void
-    {
-        if (!array_key_exists('configuration', $caches)) {
-            $caches['configuration'] = app()->configurationIsCached();
-        }
-
-        if (!array_key_exists('routes', $caches)) {
-            $caches['routes'] = app()->routesAreCached();
-        }
-
-        if (!array_key_exists('events', $caches)) {
-            $caches['events'] = app()->eventsAreCached();
-        }
-
-        if ($caches['configuration']) {
+        if (app()->configurationIsCached()) {
             Artisan::call('config:cache');
         }
 
-        if ($caches['routes']) {
+        if (app()->routesAreCached()) {
             Artisan::call('route:cache');
         }
 
-        if ($caches['events']) {
+        if (app()->eventsAreCached()) {
             Artisan::call('event:cache');
         }
     }
@@ -131,23 +83,15 @@ if (!function_exists('cache_settings')) {
      *
      * @return bool
      */
-    function cache_settings(bool $force = false): bool
+    function cache_settings(bool $force = false)
     {
         try {
-            if (Setting::exists()) {
-                $cache = cache()->tags('setting');
+            if ((new Setting())->exists()) {
+                $cache = Cache::driver('array')->tags('setting');
 
-                if (config()->has('settings_loaded')) {
-                    config()->set('settings_loaded', false);
-                }
-
+                // If $force is true, flush the settings cache
                 if ($force) {
-                    // Flush the settings cache
                     flush_settings();
-
-                    // Clear any cached events, routes,
-                    // and/or the configuration itself
-                    $cleared_caches = clear_artisan_caches();
                 }
 
                 // Calling the settings() helper function will
@@ -155,24 +99,17 @@ if (!function_exists('cache_settings')) {
                 // are available if they aren't cached yet
                 if (!$cache->has('all')) {
                     $settings = settings();
-                    $cache = cache()->tags('setting');
-                }
-
-                if ($force) {
-                    // Refresh any cached routes, config, or events
-                    refresh_artisan_caches($cleared_caches ?? []);
+                    $cache = Cache::driver('array')->tags('setting');
                 }
 
                 // Iterating through each and calling the byKey()
                 // static method will also cache the config value
                 // automatically, making them available through
                 // the global config() helper function.
-                ($cache->get('all') ?? collect())->each(function (Setting $setting) {
+                $cache->get('all')->each(function (Setting $setting) {
                     $setting->addToConfig();
                 });
 
-                // Set the config option to indicate the settings
-                // are now available via the configuration
                 config(['settings_loaded' => true]);
             }
         } catch (Exception $e) {

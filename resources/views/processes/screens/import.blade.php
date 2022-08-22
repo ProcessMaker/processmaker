@@ -48,7 +48,8 @@
             <ul v-show="options" class="list-unstyled">
                 <li v-for="item in options">
                     <i :class="item.success ? 'fas fa-check text-success' : 'fas fa-times text-danger'"></i>
-                    @{{item.label}} - @{{item.message}}
+                    @{{item.label}} - @{{item.message}} 
+                    <span v-if="item.info" :class="'text-danger d-block'"> @{{item.info}}.</span>
                 </li>
             </ul>
             <div slot="modal-footer" class="w-100" align="right">
