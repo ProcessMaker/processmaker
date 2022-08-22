@@ -68,19 +68,13 @@ class UpgradeServiceProvider extends ServiceProvider implements DeferrableProvid
 
                 // No need to flush the cache(s) and restart
                 // horizon if we're just pretending
-                if ($event->input->hasParameterOption('--pretend')) {
-                    return;
+                if (!$event->input->hasParameterOption('--pretend')) {
+
+                    // Clear the compiled bootstrap files and will
+                    // clear the cached config, cached routes, and
+                    // cached events and re-cache them
+                    refresh_artisan_caches();
                 }
-
-                // Clear the compiled bootstrap files and will
-                // clear the cached config, cached routes, and
-                // cached events and re-cache them
-                refresh_artisan_caches();
-
-                // Once the artisan caches are cleared, we
-                // to restart horizon to pick up the new
-                // configuration changes (if any were made)
-                TerminateHorizon::dispatch();
             }
         });
     }

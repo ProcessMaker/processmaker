@@ -2,16 +2,13 @@
 
 namespace ProcessMaker\Providers;
 
-use Throwable;
-use Exception;
 use RuntimeException;
 use ProcessMaker\Models\Setting;
-use Illuminate\Support\Facades\Log;
 use ProcessMaker\Jobs\TerminateHorizon;
 use ProcessMaker\Events\SettingsLoaded;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Console\Events\CommandFinished;
-use Symfony\Component\Debug\Exception\FatalThrowableError;
 use Illuminate\Contracts\Config\Repository as RepositoryContract;
 
 class SettingServiceProvider extends ServiceProvider
@@ -59,13 +56,21 @@ class SettingServiceProvider extends ServiceProvider
                 // bind the key/config value to the global
                 // app config for each
                 foreach (Setting::select('id', 'key', 'config', 'format')->get() as $setting) {
-                    $repository->set($setting->key, $setting->config);
+                    if ($repository->get($setting->key) !== $setting->config) {
+                        $repository->set($setting->key, $setting->config);
+                    }
                 }
 
                 // Mark all settings as bound to the config
                 $repository->set($key, true);
             }
+
+            // It's also possible a database connection has
+            // not be established, such as when running
+            // composer install. We need to catch that
+            // exception and then bail.
         } catch (RuntimeException $exception) {
+
             // Log the exception for debugging
             Log::notice('Exception caught while loading settings into app configuration', [
                 'message' => $exception->getMessage(),
@@ -75,10 +80,8 @@ class SettingServiceProvider extends ServiceProvider
                 'trace' => $exception->getTrace(),
             ]);
 
-            // It's also possible a database connection has
-            // not be established, such as when running
-            // composer install. We need to catch that
-            // exception and then bail.
+            // Mark the settings as not loaded
+            // into the configuration
             $repository->set($key, false);
         } finally {
             // Fire off the SettingsLoaded event to indicate

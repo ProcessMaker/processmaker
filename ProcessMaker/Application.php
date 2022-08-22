@@ -18,11 +18,15 @@ class Application extends IlluminateApplication
 
     /**
      * Sets the timezone for the application and for php with the specified timezone
-     * @param $tz string The timezone to set to
+     *
+     * @param $timezone string The timezone to set to
      */
-    public function setTimezone($tz)
+    public function setTimezone($timezone)
     {
-        config(['app.timezone' => $tz]);
+        if (!$this->configurationIsCached()) {
+            config(['app.timezone' => $timezone]);
+        }
+
         date_default_timezone_set(config('app.timezone'));
     }
 

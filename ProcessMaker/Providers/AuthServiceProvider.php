@@ -74,8 +74,8 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         try {
-            Permission::all()->each(function($permission) {
-                Gate::define($permission->name, function ($user, $model = false) use($permission) {
+            Permission::select('name')->get()->each(function ($permission) {
+                Gate::define($permission->name, function ($user) use ($permission) {
                     return $user->hasPermission($permission->name);
                 });
             });
