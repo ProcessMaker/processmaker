@@ -36,16 +36,18 @@ if (!function_exists('refresh_artisan_caches')) {
             '--env' => app()->environment(),
         ]);
 
-        if (app()->configurationIsCached()) {
-            Artisan::call('config:cache', $options);
-        }
-
         if (app()->routesAreCached()) {
             Artisan::call('route:cache', $options);
         }
 
         if (app()->eventsAreCached()) {
             Artisan::call('event:cache', $options);
+        }
+
+        if (app()->configurationIsCached()) {
+            Artisan::call('config:cache', $options);
+        } else {
+            Artisan::call('queue:restart', $options);
         }
     }
 }

@@ -2,23 +2,24 @@
 
 namespace ProcessMaker\Jobs;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Laravel\Horizon\Console\TerminateCommand;
 
 class TerminateHorizon implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable;
 
     /**
-     * Create a new job instance.
+     * Number of tries to run this job
      *
-     * @return void
+     * @var int
      */
+    public $tries = 1;
+
     public function __construct()
     {
         //
@@ -29,13 +30,13 @@ class TerminateHorizon implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         $exitCode = Artisan::call('horizon:terminate', [
             '--no-interaction' => true,
         ]);
 
-        logger()->info('Horizon Restart Attempted', [
+        Log::info('Horizon Restart Attempted', [
             'exit_code' => $exitCode,
             'command_output' => Artisan::output(),
         ]);
