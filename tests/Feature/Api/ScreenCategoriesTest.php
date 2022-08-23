@@ -133,8 +133,8 @@ class ScreenCategoriesTest extends TestCase
             'num' => 15,
             'status' => 'INACTIVE',
         ];
-        factory(ScreenCategory::class, $screenActive['num'])->create(['status' => $screenActive['status']]);
-        factory(ScreenCategory::class, $screenInactive['num'])->create(['status' => $screenInactive['status']]);
+        factory(ScreenCategory::class)->state($screenActive['num'])->create(['status' => $screenActive['status']]);
+        factory(ScreenCategory::class)->state($screenInactive['num'])->create(['status' => $screenInactive['status']]);
 
         $name = 'Script search';
         factory(ScreenCategory::class)->create(['status' => 'ACTIVE', 'name' => $name]);
@@ -194,8 +194,8 @@ class ScreenCategoriesTest extends TestCase
             'status' => 'INACTIVE',
         ];
 
-        factory(ScreenCategory::class, $screenActive['num'])->create(['status' => $screenActive['status']]);
-        factory(ScreenCategory::class, $screenInactive['num'])->create(['status' => $screenInactive['status']]);
+        factory(ScreenCategory::class)->state($screenActive['num'])->create(['status' => $screenActive['status']]);
+        factory(ScreenCategory::class)->state($screenInactive['num'])->create(['status' => $screenInactive['status']]);
 
         //Get active screens
         $route = route($this->resource . '.index');
