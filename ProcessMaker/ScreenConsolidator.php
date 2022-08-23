@@ -2,19 +2,27 @@
 
 namespace ProcessMaker;
 
-use ProcessMaker\Exception\MaximumRecursionException;
-use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Contracts\ScreenInterface;
+use ProcessMaker\Exception\MaximumRecursionException;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\Screen;
 
-class ScreenConsolidator {
+class ScreenConsolidator
+{
     private $screen;
+
     private $watchers = [];
+
     private $computed = [];
+
     private $custom_css = '';
+
     private $recursion = 0;
+
     private $additionalPages = [];
+
     private $inNestedScreen = false;
+
     private $processRequest = null;
 
     public function __construct(ScreenInterface $screen, ProcessRequest $processRequest = null)
@@ -31,7 +39,7 @@ class ScreenConsolidator {
         if (is_array($this->screen->watchers)) {
             $this->watchers = $this->screen->watchers;
         }
-        
+
         if (is_array($this->screen->computed)) {
             $this->computed = $this->screen->computed;
         }
@@ -42,7 +50,7 @@ class ScreenConsolidator {
 
         $this->additionalPages = [];
         $config = $this->replace($this->screen->config);
-        foreach($this->additionalPages as $page) {
+        foreach ($this->additionalPages as $page) {
             $config[] = $page;
         }
 
@@ -65,20 +73,17 @@ class ScreenConsolidator {
                 $this->setNavButton($item, $new, $index0);
             } elseif ($this->is('FormMultiColumn', $item)) {
                 $new[] = $this->getMultiColumn($item, $index0);
-
             } elseif ($this->is('FormNestedScreen', $item)) {
                 $this->setNestedScreen($item, $new, $index0);
-
             } elseif ($this->is('FormRecordList', $item)) {
                 $this->setRecordList($item, $new, $index0);
-
             } elseif ($this->hasItems($item)) {
                 $new[] = $this->getWithItems($item, $index0);
-
             } else {
                 $new[] = $item;
             }
         }
+
         return $new;
     }
 
@@ -111,14 +116,14 @@ class ScreenConsolidator {
         // @todo: If the same nested screen is inserted multiple times it repeats the subpages,
         // it could be improved appending them once
         $index0 = count($this->screen->config) + count($this->additionalPages) - 1;
-        foreach($config as $index => $page) {
+        foreach ($config as $index => $page) {
             if ($index === 0) {
                 foreach ($this->replace($page['items'], $index0) as $screenItem) {
                     if (isset($item['config']['conditionalHide'])) {
                         if (isset($screenItem['config']['conditionalHide'])) {
                             $screenItem['config']['conditionalHide'] = $screenItem['config']['conditionalHide'] . ' and ' . $item['config']['conditionalHide'];
                         } else {
-                            $screenItem['config']['conditionalHide'] =  $item['config']['conditionalHide'];
+                            $screenItem['config']['conditionalHide'] = $item['config']['conditionalHide'];
                         }
                     }
                     $new[] = $screenItem;
@@ -151,19 +156,22 @@ class ScreenConsolidator {
         $new[] = $item;
     }
 
-    private function is($component, $item) {
+    private function is($component, $item)
+    {
         return is_array($item) &&
                isset($item['component']) &&
                $item['component'] === $component;
     }
 
-    private function isNavButton($item) {
+    private function isNavButton($item)
+    {
         return is_array($item) &&
                isset($item['editor-control']) &&
                $item['editor-control'] === 'PageNavigation';
     }
 
-    private function isSubmitButton($item) {
+    private function isSubmitButton($item)
+    {
         return is_array($item) &&
                isset($item['editor-control']) &&
                isset($item['editor-component']) &&
@@ -171,7 +179,8 @@ class ScreenConsolidator {
                $item['editor-component'] === 'FormButton';
     }
 
-    private function hasItems($item) {
+    private function hasItems($item)
+    {
         return is_array($item) && isset($item['items']);
     }
 
@@ -183,6 +192,7 @@ class ScreenConsolidator {
             $newItems[] = $this->replace($column, $index0);
         }
         $new['items'] = $newItems;
+
         return $new;
     }
 
@@ -190,6 +200,7 @@ class ScreenConsolidator {
     {
         $new = $item;
         $new['items'] = $this->replace($item['items'], $index0);
+
         return $new;
     }
 
@@ -202,10 +213,9 @@ class ScreenConsolidator {
         foreach ($screen->watchers as $watcher) {
             $this->watchers[] = $watcher;
         }
-        
     }
 
-    private function appendComputed($screen) 
+    private function appendComputed($screen)
     {
         if (!is_array($screen->computed)) {
             return;
@@ -231,12 +241,12 @@ class ScreenConsolidator {
         if (!$this->computed) {
             return 0;
         }
+
         return collect($this->computed)->max('id');
     }
 
     private function hiddenNavButtons($items)
     {
-
         foreach ($items as $key => $item) {
 
             //If the element has containers
@@ -252,10 +262,8 @@ class ScreenConsolidator {
             if ($this->isNavButton($item)) {
                 $items[$key]['config']['hidden'] = true;
             }
-
         }
 
         return $items;
     }
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker;
 
 use Igaster\LaravelTheme\Facades\Theme;
@@ -7,9 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 /**
  * Class Application
- * @package ProcessMaker
- *
- * This represents our top level processmaker application.
  */
 class Application extends IlluminateApplication
 {
@@ -42,7 +40,7 @@ class Application extends IlluminateApplication
      *
      * @note: This is ported from Gulliver System. This will most likely need to be refactored/removed
      * @return array Contents of system contents.
-    */
+     */
     public function getSystemConstants()
     {
         $sysCon = [];
@@ -53,10 +51,10 @@ class Application extends IlluminateApplication
 
         // The following items should be refactored to no longer use $_SESSION
         // Since these items should be request scope specific and not session specific
-        $sysCon["APPLICATION"]  = (isset($_SESSION["APPLICATION"]))?  $_SESSION["APPLICATION"]  : "";
-        $sysCon["PROCESS"]      = (isset($_SESSION["PROCESS"]))?      $_SESSION["PROCESS"]      : "";
-        $sysCon["TASK"]         = (isset($_SESSION["TASK"]))?         $_SESSION["TASK"]         : "";
-        $sysCon["INDEX"]        = (isset($_SESSION["INDEX"]))?        $_SESSION["INDEX"]        : "";
+        $sysCon['APPLICATION'] = (isset($_SESSION['APPLICATION'])) ? $_SESSION['APPLICATION'] : '';
+        $sysCon['PROCESS'] = (isset($_SESSION['PROCESS'])) ? $_SESSION['PROCESS'] : '';
+        $sysCon['TASK'] = (isset($_SESSION['TASK'])) ? $_SESSION['TASK'] : '';
+        $sysCon['INDEX'] = (isset($_SESSION['INDEX'])) ? $_SESSION['INDEX'] : '';
         $sysCon['USER_LOGGED'] = Auth::user() ? Auth::user()->USR_UID : '';
         $sysCon['USER_USERNAME'] = Auth::user() ? Auth::user()->USR_USERNAME : '';
 
@@ -72,8 +70,6 @@ class Application extends IlluminateApplication
      */
     public function path($path = '')
     {
-        return $this->basePath.DIRECTORY_SEPARATOR.'ProcessMaker'.($path ? DIRECTORY_SEPARATOR.$path : $path);
+        return $this->basePath . DIRECTORY_SEPARATOR . 'ProcessMaker' . ($path ? DIRECTORY_SEPARATOR . $path : $path);
     }
-
-
 }

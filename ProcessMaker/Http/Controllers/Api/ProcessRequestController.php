@@ -15,8 +15,8 @@ use ProcessMaker\Exception\PmqlMethodException;
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
 use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
 use ProcessMaker\Jobs\CancelRequest;
 use ProcessMaker\Jobs\TerminateRequest;
 use ProcessMaker\Models\Comment;
@@ -94,10 +94,10 @@ class ProcessRequestController extends Controller
     public function index(Request $request, $getTotal = false, User $user = null)
     {
         // If a specific user is specified, use it; otherwise use the authorized user
-        if (! $user) {
+        if (!$user) {
             $user = Auth::user();
         }
-        
+
         // Update request permissions for the user
         $user->updatePermissionsToRequests();
 
@@ -126,11 +126,11 @@ class ProcessRequestController extends Controller
                 $query->get();
                 break;
         }
-        
+
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $query->filter($filter);
-        }        
+        }
 
         $pmql = $request->input('pmql', '');
         if (!empty($pmql)) {
@@ -143,7 +143,7 @@ class ProcessRequestController extends Controller
             }
         }
 
-        if (! $user->can('view-all_requests')) {
+        if (!$user->can('view-all_requests')) {
             $query->pmql('requester = "' . $user->username . '" OR participant = "' . $user->username . '"');
         }
 
@@ -161,7 +161,7 @@ class ProcessRequestController extends Controller
                 )->paginate($request->input('per_page', 10));
                 $total = $response->total();
             }
-        } catch(QueryException $e) {
+        } catch (QueryException $e) {
             throw $e;
             $rawMessage = $e->getMessage();
             if (preg_match("/Column not found: 1054 (.*) in 'where clause'/", $rawMessage, $matches)) {
@@ -169,9 +169,10 @@ class ProcessRequestController extends Controller
             } else {
                 $message = $rawMessage;
             }
+
             return response(['message' => $message], 400);
         }
-        
+
         if (isset($response)) {
             //Map each item through its resource
             $response = $response->map(function ($processRequest) use ($request) {
@@ -259,6 +260,7 @@ class ProcessRequestController extends Controller
                 throw new AuthorizationException(__('Not authorized to cancel this request.'));
             }
             $this->cancelRequestToken($request);
+
             return response([], 204);
         }
         if ($httpRequest->post('status') === 'COMPLETED') {
@@ -267,10 +269,11 @@ class ProcessRequestController extends Controller
             }
             if ($request->status != 'ERROR') {
                 throw \Illuminate\Validation\ValidationException::withMessages([
-                    'status' => __('Only requests with status: ERROR can be manually completed')
+                    'status' => __('Only requests with status: ERROR can be manually completed'),
                 ]);
             }
             $this->completeRequest($request);
+
             return response([], 204);
         }
         $fields = $httpRequest->json()->all();
@@ -308,6 +311,7 @@ class ProcessRequestController extends Controller
             $request->fill($fields);
             $request->saveOrFail();
         }
+
         return response([], 204);
     }
 
@@ -344,6 +348,7 @@ class ProcessRequestController extends Controller
     {
         try {
             $request->delete();
+
             return response([], 204);
         } catch (\Exception $e) {
             abort($e->getCode(), $e->getMessage());
@@ -358,7 +363,7 @@ class ProcessRequestController extends Controller
      * @param ProcessRequest $request
      * @param string $event
      * @return void
-     * 
+     *
      * @OA\Post(
      *     path="/requests/{process_request_id}/events/{event_id}",
      *     summary="Update a process request event",
@@ -436,10 +441,11 @@ class ProcessRequestController extends Controller
             }
         }
 
-        $data = (array)request()->json()->all();
+        $data = (array) request()->json()->all();
 
         // Trigger the catch event
         WorkflowManager::completeCatchEvent($process, $request, $token, $data);
+
         return response([]);
     }
 
@@ -463,6 +469,7 @@ class ProcessRequestController extends Controller
                 }
             }
         }
+
         return [$ipWhitelist, $domainWhitelist];
     }
 
@@ -472,7 +479,7 @@ class ProcessRequestController extends Controller
      * @param string $domain
      * @param array $whitelist
      *
-     * @return boolean
+     * @return bool
      */
     private function checkDomain($domain, $whitelist)
     {
@@ -482,6 +489,7 @@ class ProcessRequestController extends Controller
                 return true;
             }
         }
+
         return false;
     }
 
@@ -541,6 +549,7 @@ class ProcessRequestController extends Controller
         $token = ProcessRequestToken::where(
             ['element_id' => $task_element_id, 'process_request_id' => $request->id]
         )->firstOrFail();
+
         return $token->element_name;
     }
 }

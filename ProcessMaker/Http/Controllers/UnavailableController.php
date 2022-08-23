@@ -12,7 +12,6 @@ use ProcessMaker\Traits\SearchAutocompleteTrait;
 
 class UnavailableController extends Controller
 {
-
     public function show()
     {
         return view('errors.unavailable');

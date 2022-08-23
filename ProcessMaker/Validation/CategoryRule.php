@@ -1,18 +1,20 @@
 <?php
+
 namespace ProcessMaker\Validation;
 
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Contracts\Validation\ImplicitRule;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 /**
  * Must implement ImplicitRule because this always needs
  * to be run, even if the field is empty.
  */
-class CategoryRule implements ImplicitRule 
+class CategoryRule implements ImplicitRule
 {
-    public function __construct($model) {
+    public function __construct($model)
+    {
         $this->model = $model;
     }
 
@@ -35,15 +37,16 @@ class CategoryRule implements ImplicitRule
         }
 
         if (strpos($value, ',') !== false) {
-            $ids = explode(",", $value);
+            $ids = explode(',', $value);
         } else {
             $ids = [$value];
         }
-        foreach($ids as $id) {
+        foreach ($ids as $id) {
             if (!$class::where('id', $id)->exists()) {
                 return false;
             }
         }
+
         return true;
     }
 

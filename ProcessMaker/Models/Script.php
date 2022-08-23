@@ -5,29 +5,28 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Contracts\ScriptInterface;
-use ProcessMaker\Traits\SerializeToIso8601;
+use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\GenerateAccessToken;
+use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
 use ProcessMaker\ScriptRunners\ScriptRunner;
-use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\HideSystemResources;
+use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Validation\CategoryRule;
-use ProcessMaker\Exception\ScriptLanguageNotSupported;
 
 /**
  * Represents an Eloquent model of a Script
  *
- * @package ProcessMaker\Model
  *
- * @property integer id
+ * @property int id
  * @property string key
  * @property string title
  * @property text description
  * @property string language
  * @property text code
- * @property integer timeout
+ * @property int timeout
  *
  * @OA\Schema(
  *   schema="scriptsEditable",
@@ -57,7 +56,6 @@ use ProcessMaker\Exception\ScriptLanguageNotSupported;
  *   @OA\Property(property="status", type="string"),
  *   @OA\Property(property="key", type="string"),
  * )
- *
  */
 class Script extends Model implements ScriptInterface
 {
@@ -79,16 +77,16 @@ class Script extends Model implements ScriptInterface
     protected $casts = [
         'timeout' => 'integer',
     ];
-    
+
     /**
-     * Override the default boot method to allow access to lifecycle hooks 
+     * Override the default boot method to allow access to lifecycle hooks
      *
      * @return null
      */
     public static function boot()
     {
         parent::boot();
-        self::saving(function($script) {
+        self::saving(function ($script) {
             // If a script executor has not been set, choose one
             // automatically based on the scripts set language
             $script->setDefaultExecutor();
@@ -111,13 +109,13 @@ class Script extends Model implements ScriptInterface
             'title' => ['required', 'string', $unique, 'alpha_spaces'],
             'language' => [
                 'required_without:script_executor_id',
-                Rule::in(static::scriptFormatValues())
+                Rule::in(static::scriptFormatValues()),
             ],
             'script_executor_id' => 'required_without:language|exists:script_executors,id',
             'description' => 'required',
             'run_as_user_id' => 'required',
             'timeout' => 'integer|min:0|max:65535',
-            'script_category_id' => [new CategoryRule($existing)]
+            'script_category_id' => [new CategoryRule($existing)],
         ];
     }
 
@@ -136,8 +134,9 @@ class Script extends Model implements ScriptInterface
         $runner->setTokenId($tokenId);
         $user = User::find($this->run_as_user_id);
         if (!$user) {
-            throw new \RuntimeException("A user is required to run scripts");
+            throw new \RuntimeException('A user is required to run scripts');
         }
+
         return $runner->run($this->code, $data, $config, $this->timeout, $user);
     }
 
@@ -260,7 +259,7 @@ class Script extends Model implements ScriptInterface
      */
     public static function defaultRunAsUser()
     {
-        # return the default admin user
+        // return the default admin user
         return User::where('is_administrator', true)->firstOrFail();
     }
 

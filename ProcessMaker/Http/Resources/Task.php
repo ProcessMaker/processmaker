@@ -3,18 +3,17 @@
 namespace ProcessMaker\Http\Resources;
 
 use ProcessMaker\Http\Resources\ApiCollection;
-use ProcessMaker\Http\Resources\Users;
-use ProcessMaker\Models\User;
 use ProcessMaker\Http\Resources\Screen as ScreenResource;
-use ProcessMaker\Managers\DataManager;
-use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Http\Resources\ScreenVersion as ScreenVersionResource;
+use ProcessMaker\Http\Resources\Users;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\GroupMember;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\User;
 use StdClass;
 
 class Task extends ApiResource
 {
-
     /**
      * Transform the resource into an array.
      *
@@ -77,27 +76,28 @@ class Task extends ApiResource
         /**
          * @deprecated since 4.1 Use instead `/api/1.0/users`
          */
-         
-         // Used to retrieve the assignable users for self service tasks
-         if (in_array('assignableUsers', $include)) {
+
+        // Used to retrieve the assignable users for self service tasks
+        if (in_array('assignableUsers', $include)) {
             $definition = $this->getDefinition();
             if (isset($definition['assignment']) && $definition['assignment'] == 'self_service') {
                 $users = [];
                 $selfServiceUsers = $array['self_service_groups']['users'];
                 $selfServiceGroups = $array['self_service_groups']['groups'];
 
-                if ($selfServiceUsers !== [""]) {
+                if ($selfServiceUsers !== ['']) {
                     $assignedUsers = $this->getAssignedUsers($selfServiceUsers);
                     $users = array_unique(array_merge($users, $assignedUsers));
                 }
 
-                if ($selfServiceGroups !== [""]) {
+                if ($selfServiceGroups !== ['']) {
                     $assignedUsers = $this->getAssignedGroupMembers($selfServiceGroups);
                     $users = array_unique(array_merge($users, $assignedUsers));
                 }
-                $array['assignable_users'] = $users;   
+                $array['assignable_users'] = $users;
             }
         }
+
         return $array;
     }
 
@@ -110,30 +110,33 @@ class Task extends ApiResource
         $userData = $user->attributesToArray();
         unset($userData['remember_token']);
 
-        $data =  array_merge($data, ['_user' => $userData]);
+        $data = array_merge($data, ['_user' => $userData]);
         if (!empty($this->token_properties['data'])) {
-            $data =  array_merge($data, $this->token_properties['data']);
+            $data = array_merge($data, $this->token_properties['data']);
         }
+
         return $data;
     }
 
     private function getAssignedUsers($users)
     {
-        foreach($users as $user) {
+        foreach ($users as $user) {
             $assignedUsers[] = User::where('status', 'ACTIVE')->where('id', $user)->first();
         }
+
         return $assignedUsers;
     }
 
     private function getAssignedGroupMembers($groups)
     {
-        \Log::debug("groups", ["groups" =>$groups]);
-        foreach($groups as $group) {
+        \Log::debug('groups', ['groups' =>$groups]);
+        foreach ($groups as $group) {
             $groupMembers = GroupMember::where('group_id', $group)->get();
             foreach ($groupMembers as $member) {
                 $assignedUsers[] = User::where('status', 'ACTIVE')->where('id', $member->member_id)->first();
             }
         }
+
         return $assignedUsers;
     }
 }

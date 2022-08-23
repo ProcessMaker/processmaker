@@ -1,15 +1,14 @@
 <?php
+
 namespace ProcessMaker\Exception;
 
 use Exception;
 
 /**
  * The task does not have users to assign
- *
  */
 class UserOrGroupAssignmentEmptyException extends Exception
 {
-
     /**
      * @param string $task
      */

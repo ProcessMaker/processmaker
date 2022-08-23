@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature\Api;
 
 use Carbon\Carbon;
@@ -22,16 +23,16 @@ use Tests\TestCase;
  */
 class IntermediateTimerEventTest extends TestCase
 {
-
     use ResourceAssertionsTrait;
     use WithFaker;
     use RequestHelper;
     use ProcessTestingTrait;
 
     /**
-     * @var Process $process
+     * @var Process
      */
     protected $process;
+
     private $requestStructure = [
         'id',
         'process_id',
@@ -40,7 +41,7 @@ class IntermediateTimerEventTest extends TestCase
         'name',
         'initiated_at',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
@@ -50,6 +51,7 @@ class IntermediateTimerEventTest extends TestCase
     {
         $data['bpmn'] = Process::getProcessTemplate('IntermediateTimerEvent.bpmn');
         $process = factory(Process::class)->create($data);
+
         return $process;
     }
 
@@ -76,7 +78,6 @@ class IntermediateTimerEventTest extends TestCase
         $this->assertCount(4, $tasks->toArray());
     }
 
-
     public function testScheduleIntermediateTimerEvent()
     {
         $this->process = $this->createTestProcess();
@@ -94,7 +95,7 @@ class IntermediateTimerEventTest extends TestCase
         $task->process_id = $process->id;
         $task->process_request_id = $request->id;
         $task->configuration = '{"type":"TimeCycle","interval":"R4\/2019-02-13T13:08:00Z\/PT1M", "element_id" : "_5"}';
-        $task->type= 'INTERMEDIATE_TIMER_EVENT';
+        $task->type = 'INTERMEDIATE_TIMER_EVENT';
 
         Bus::fake();
         $manager->executeIntermediateTimerEvent($task, json_decode($task->configuration));
@@ -194,7 +195,7 @@ class IntermediateTimerEventTest extends TestCase
 
         $iteToken = $request->tokens()->where('element_id', '_5')->firstOrFail();
         $this->assertEquals('ACTIVE', $iteToken->status); // Not enough time has passed
-        
+
         // Time travel 5 more minutes into the future
         Carbon::setTestNow(Carbon::now()->addMinute(5));
 

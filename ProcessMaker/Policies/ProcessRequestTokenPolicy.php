@@ -2,12 +2,12 @@
 
 namespace ProcessMaker\Policies;
 
-use ProcessMaker\Models\User;
+use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Request;
+use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
-use Illuminate\Auth\Access\HandlesAuthorization;
-use ProcessMaker\Models\AnonymousUser;
-use Illuminate\Support\Facades\Request;
+use ProcessMaker\Models\User;
 
 class ProcessRequestTokenPolicy
 {
@@ -19,7 +19,7 @@ class ProcessRequestTokenPolicy
      *
      * @param  \ProcessMaker\Models\User  $user
      * @return mixed
-     */    
+     */
     public function before(User $user)
     {
         if ($user->is_administrator) {
@@ -54,7 +54,7 @@ class ProcessRequestTokenPolicy
     public function update(User $user, ProcessRequestToken $processRequestToken)
     {
         if (
-            $processRequestToken->user_id === $user->id || 
+            $processRequestToken->user_id === $user->id ||
             $processRequestToken->user_id === app(AnonymousUser::class)->id
         ) {
             return true;
@@ -85,5 +85,4 @@ class ProcessRequestTokenPolicy
 
         return true;
     }
-    
 }

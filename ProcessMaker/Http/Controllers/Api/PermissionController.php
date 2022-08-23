@@ -5,9 +5,9 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
-use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\User;
 
 class PermissionController extends Controller
 {
@@ -18,7 +18,7 @@ class PermissionController extends Controller
      * @var array
      */
     public $doNotSanitize = [
-       //
+        //
     ];
 
     /**
@@ -27,14 +27,13 @@ class PermissionController extends Controller
      * @param Request $request
      *
      * @return Response
-     * 
      */
     public function index(Request $request)
     {
         $all_permissions = Permission::all();
+
         return $all_permissions->sortBy('title')->groupBy('group')->sortKeys();
     }
-
 
     /**
      * Update permissions
@@ -77,7 +76,7 @@ class PermissionController extends Controller
      *     ),
      * )
      */
-    public function update(Request $request) 
+    public function update(Request $request)
     {
         //Obtain the requested user or group
         if ($request->input('user_id')) {
@@ -89,9 +88,9 @@ class PermissionController extends Controller
         } elseif ($request->input('group_id')) {
             $entity = Group::findOrFail($request->input('group_id'));
         }
-        
+
         //Obtain the requested permission names for that entity
-        $requestPermissions = $request->input('permission_names');    
+        $requestPermissions = $request->input('permission_names');
 
         //Convert permission names into a collection of Permission models
         $permissions = Permission::whereIn('name', $requestPermissions)->get();
@@ -101,5 +100,4 @@ class PermissionController extends Controller
 
         return response([], 204);
     }
-
 }

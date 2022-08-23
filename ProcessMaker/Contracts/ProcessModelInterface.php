@@ -10,7 +10,7 @@ interface ProcessModelInterface
     /**
      * Get bpmn definitions of the process model
      *
-     * @param boolean $forceParse
+     * @param bool $forceParse
      * @param BpmnEngine $engine
      *
      * @return BpmnDocument

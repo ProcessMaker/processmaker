@@ -2,11 +2,11 @@
 
 namespace ProcessMaker\Events;
 
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 use ProcessMaker\Models\ProcessRequest;
 
 class ProcessUpdated implements ShouldBroadcastNow
@@ -14,8 +14,9 @@ class ProcessUpdated implements ShouldBroadcastNow
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $payloadUrl;
+
     public $event;
-    
+
     private $processRequest;
 
     /**
@@ -27,7 +28,7 @@ class ProcessUpdated implements ShouldBroadcastNow
     {
         $this->payloadUrl = route('api.requests.show', ['request' => $processRequest->getKey()]);
         $this->event = $event;
-        
+
         $this->processRequest = $processRequest;
     }
 
@@ -50,12 +51,12 @@ class ProcessUpdated implements ShouldBroadcastNow
     {
         return new PrivateChannel('ProcessMaker.Models.ProcessRequest.' . $this->processRequest->getKey());
     }
-    
+
     /**
      * Return the process request.
      *
      * @return \ProcessMaker\Models\ProcessRequest
-     */    
+     */
     public function getProcessRequest()
     {
         return $this->processRequest;

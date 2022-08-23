@@ -9,8 +9,8 @@ use ProcessMaker\Providers\WorkflowServiceProvider;
 
 class ScreensInProcess
 {
-
     public $type = Screen::class;
+
     public $owner = Process::class;
 
     /**
@@ -47,6 +47,7 @@ class ScreensInProcess
         if ($process->request_detail_screen_id) {
             $references[] = [Screen::class, $process->request_detail_screen_id];
         }
+
         return $references;
     }
 

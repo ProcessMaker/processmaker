@@ -1,11 +1,11 @@
 <?php
 
-use ProcessMaker\Models\Setting;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
+use ProcessMaker\Models\Setting;
 
 if (!function_exists('settings')) {
     /**

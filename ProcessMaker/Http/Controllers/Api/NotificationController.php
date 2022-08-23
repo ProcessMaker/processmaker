@@ -24,7 +24,7 @@ class NotificationController extends Controller
      * @var array
      */
     public $doNotSanitize = [
-        'data'
+        'data',
     ];
 
     /**
@@ -122,7 +122,6 @@ class NotificationController extends Controller
         return new ApiCollection($response);
     }
 
-
     /**
      * Store a newly created resource in storage.
      *
@@ -153,9 +152,9 @@ class NotificationController extends Controller
         $notification = new Notification();
         $notification->fill($request->input());
         $notification->saveOrFail();
+
         return new NotificationResource($notification);
     }
-
 
     /**
      * Display the specified resource.
@@ -191,7 +190,6 @@ class NotificationController extends Controller
     {
         return new NotificationResource($notification);
     }
-
 
     /**
      * Update a user
@@ -231,9 +229,9 @@ class NotificationController extends Controller
         $request->validate(Notification::rules($notification));
         $notification->fill($request->input());
         $notification->saveOrFail();
+
         return response([], 204);
     }
-
 
     /**
      * Delete a notification
@@ -265,9 +263,9 @@ class NotificationController extends Controller
     public function destroy(Notification $notification)
     {
         $notification->delete();
+
         return response([], 204);
     }
-
 
     /**
      * Update notification as read
@@ -312,10 +310,11 @@ class NotificationController extends Controller
             ->whereIn('id', $messageIds)
             ->orWhereIn('data->url', $routes)
             ->update(['read_at' => Carbon::now()]);
+
         return response([], 201);
     }
 
-     /**
+    /**
      * Update notifications as unread
      *
      * @param Request $request
@@ -349,7 +348,6 @@ class NotificationController extends Controller
      *     ),
      * )
      */
-
     public function updateAsUnread(Request $request)
     {
         $messageIds = $request->input('message_ids');
@@ -364,9 +362,9 @@ class NotificationController extends Controller
             ->whereIn('id', $messageIds)
             ->orWhereIn('data->url', $routes)
             ->update(['read_at' => null]);
+
         return response($updated, 201);
     }
-
 
     /**
      * Update all notification as read.
@@ -411,6 +409,7 @@ class NotificationController extends Controller
             ->where('notifiable_id', $id)
             ->where('notifiable_type', $type)
             ->update(['read_at' => Carbon::now()]);
+
         return response([], 201);
     }
 
@@ -425,7 +424,7 @@ class NotificationController extends Controller
             ->where('due_at', '<', Carbon::now())
             ->where('due_notified', 0)
             ->get();
-        foreach($inOverdue as $token) {
+        foreach ($inOverdue as $token) {
             $notifiables = $token->getNotifiables('due');
             NotificationFacade::send($notifiables, new TaskOverdueNotification($token));
         }

@@ -14,8 +14,6 @@ use ProcessMaker\Nayra\RepositoryTrait;
 
 /**
  * Execution Instance Repository.
- *
- * @package ProcessMaker\Models
  */
 class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterface
 {
@@ -30,6 +28,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     {
         $instance = new Instance();
         $instance->setId(uniqid('request', true));
+
         return $instance;
     }
 
@@ -68,6 +67,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
             $element = $storage->getElementInstanceById($tokenInfo['element_ref']);
             $element->addToken($instance, $token);
         }
+
         return $instance;
     }
 

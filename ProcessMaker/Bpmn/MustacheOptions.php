@@ -2,8 +2,8 @@
 
 namespace ProcessMaker\Bpmn;
 
-use Mustache_LambdaHelper;
 use Illuminate\Support\Facades\Hash;
+use Mustache_LambdaHelper;
 
 class MustacheOptions
 {
@@ -20,7 +20,7 @@ class MustacheOptions
             'xml' => [$this, 'xml'],
         ];
     }
-    
+
     public function html64($text, Mustache_LambdaHelper $helper)
     {
         return base64_encode('<html><body>' . $helper->render($text) . '</body></html>');
@@ -35,17 +35,17 @@ class MustacheOptions
     {
         return urlencode(Hash::make($helper->render($text)));
     }
-    
+
     public function json($text, Mustache_LambdaHelper $helper)
     {
         return json_encode($helper->render($text));
     }
-    
+
     public function serialize($text, Mustache_LambdaHelper $helper)
     {
         return serialize($helper->render($text));
     }
-    
+
     public function xml($text, Mustache_LambdaHelper $helper)
     {
         return xmlrpc_encode($helper->render($text));

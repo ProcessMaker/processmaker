@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Http\Middleware;
 
 use Closure;
@@ -7,13 +8,9 @@ use Illuminate\Http\Request;
 
 /**
  * Class SetSkin
- * @package ProcessMaker\Http\Middleware
- *
- * Sets the skin requested by the request
  */
 class SetSkin
 {
-
     /**
      * Handle request. If the request has a route parameter called skin, set the skin property in our view config
      * @param Request $request

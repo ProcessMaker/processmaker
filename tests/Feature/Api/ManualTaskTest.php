@@ -7,9 +7,9 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
+use ProcessMaker\Providers\WorkflowServiceProvider;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
-use ProcessMaker\Providers\WorkflowServiceProvider;
 
 class ManualTaskTest extends TestCase
 {
@@ -28,7 +28,7 @@ class ManualTaskTest extends TestCase
                 '2' => factory(User::class)->create([
                     'status' => 'ACTIVE',
                     'is_administrator' => false,
-                ])
+                ]),
             ]
         );
 
@@ -45,7 +45,7 @@ class ManualTaskTest extends TestCase
         $response = $this->actingAs($uploadTask->user, 'api')
                          ->json('POST', $route, [
                              'file' => File::image('photo.jpg'),
-                             'data_name' => 'photo'
+                             'data_name' => 'photo',
                          ]);
         // Check the user has access to upload a file
         $response->assertStatus(200);

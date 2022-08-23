@@ -3,9 +3,9 @@
 namespace ProcessMaker\Listeners;
 
 use Carbon\Carbon;
-use ProcessMaker\Events\SessionStarted;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use ProcessMaker\Events\SessionStarted;
 
 class ActiveUserListener
 {

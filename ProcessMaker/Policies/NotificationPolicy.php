@@ -2,14 +2,14 @@
 
 namespace ProcessMaker\Policies;
 
-use ProcessMaker\Models\User;
-use ProcessMaker\Models\Notification;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use ProcessMaker\Models\Notification;
+use ProcessMaker\Models\User;
 
 class NotificationPolicy
 {
     use HandlesAuthorization;
-    
+
     private function userCan(User $user, Notification $notification)
     {
         if (
@@ -28,7 +28,7 @@ class NotificationPolicy
      *
      * @param  \ProcessMaker\Models\User  $user
      * @return mixed
-     */    
+     */
     public function before(User $user)
     {
         if ($user->is_administrator) {
@@ -48,7 +48,7 @@ class NotificationPolicy
         if ($this->userCan($user, $notification)) {
             return true;
         }
-        
+
         return Gate::allows('view-notifications', $post);
     }
 
@@ -91,7 +91,7 @@ class NotificationPolicy
         if ($this->userCan($user, $notification)) {
             return true;
         }
-        
+
         return Gate::allows('delete-notifications', $post);
     }
 }

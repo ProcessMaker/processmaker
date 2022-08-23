@@ -8,7 +8,7 @@ class SettingServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        require_once(app_path('/Helpers/SettingsHelper.php'));
+        require_once app_path('/Helpers/SettingsHelper.php');
     }
 
     /**

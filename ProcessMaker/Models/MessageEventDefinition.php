@@ -2,20 +2,18 @@
 
 namespace ProcessMaker\Models;
 
+use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Nayra\Bpmn\Models\MessageEventDefinition as Base;
 use ProcessMaker\Nayra\Contracts\Bpmn\EventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowNodeInterface;
-use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
-use ProcessMaker\Models\ProcessCollaboration;
+use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 
 /**
  * Implementation of the message element.
- *
  */
 class MessageEventDefinition extends Base
 {
-
     /**
      * Implement the event definition behavior when an event is triggered.
      *
@@ -49,7 +47,7 @@ class MessageEventDefinition extends Base
                 $child->saveOrFail();
             }
         }
-        
+
         return $this;
     }
 }

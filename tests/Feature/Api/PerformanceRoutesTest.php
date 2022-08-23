@@ -13,7 +13,6 @@ use Tests\TestCase;
 
 /**
  * Tests routes related to processes / CRUD related methods
- *
  */
 class PerformanceRoutesTest extends TestCase
 {
@@ -25,7 +24,7 @@ class PerformanceRoutesTest extends TestCase
     /**
      * Time unit base for the performce tests
      *
-     * @param integer $times
+     * @param int $times
      *
      * @return float
      */
@@ -36,6 +35,7 @@ class PerformanceRoutesTest extends TestCase
         factory($model, $times)->create();
         $baseTime = microtime(true) - $t;
         $model::getQuery()->delete();
+
         return $baseTime;
     }
 
@@ -69,15 +69,20 @@ class PerformanceRoutesTest extends TestCase
 
     // High values ​​improve measurement accuracy and reduce the effect of database caches
     private $repetitions = 50;
+
     // Inicial size of database
     private $dbSize = 50;
+
     const MIN_ROUTE_SPEED = 0.1;
+
     const ACCEPTABLE_ROUTE_SPEED = 1;
+
     const DESIRABLE_ROUTE_SPEED = 11;
 
     public function RoutesListProvider()
     {
         file_exists('coverage') ?: mkdir('coverage');
+
         return $this->endpoints;
     }
 
@@ -100,7 +105,7 @@ class PerformanceRoutesTest extends TestCase
         $fn = (substr($route, 0, 4) === 'api.') ? 'apiCall' : 'webCall';
         $times = $this->repetitions;
         $t = microtime(true);
-        for ($i = 0;$i < $times;$i++) {
+        for ($i = 0; $i < $times; $i++) {
             $this->$fn('GET', $path);
         }
         $time = microtime(true) - $t;

@@ -1,9 +1,11 @@
 <?php
+
 namespace ProcessMaker;
 
-class GenerateAccessToken {
-
+class GenerateAccessToken
+{
     private $token;
+
     private $oauth_access_token;
 
     public function __construct($user)
