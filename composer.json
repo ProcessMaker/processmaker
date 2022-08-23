@@ -47,7 +47,8 @@
         "teamtnt/laravel-scout-tntsearch-driver": "^9.0",
         "typo3/class-alias-loader": "^1.0",
         "watson/validating": "^3.1",
-        "whichbrowser/parser": "^2.0"
+        "whichbrowser/parser": "^2.0",
+        "laravel/ui": "^2.0"
     },
     "require-dev": {
         "brianium/paratest": "^6.3",
