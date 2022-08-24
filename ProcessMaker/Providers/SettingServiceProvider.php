@@ -6,6 +6,7 @@ use RuntimeException;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Jobs\TerminateHorizon;
 use ProcessMaker\Events\SettingsLoaded;
+use ProcessMaker\Repositories\RedisJobRepository;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Console\Events\CommandFinished;
@@ -17,14 +18,11 @@ class SettingServiceProvider extends ServiceProvider
      * Bootstrap settings into the global app configuration
      *
      * @return void
-     *
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function boot(): void
     {
         if (!$this->app->configurationIsCached()) {
-            $this->loadSettingsFromDatabase($this->app->get('config'));
+            $this->loadSettingsFromDatabase($this->app['config']);
         }
     }
 
@@ -104,10 +102,16 @@ class SettingServiceProvider extends ServiceProvider
     {
         $command = $event->command ?? $event->input->getArguments()['command'] ?? 'default';
 
-        // If the command that was run cached or cleared
-        // the cached configuration, then dispatch a
-        // job to (ironically) restart horizon
-        if (is_int(strpos($command, 'config:cache'))) {
+        // Check if the command just run cached the
+        // app configuration, which is the only
+        // one we care about
+        if (!is_int(strpos($command, 'config:cache'))) {
+            return;
+        }
+
+        // If there's already a job pending top terminate
+        // horizon, we don't need to queue another one
+        if (!app(RedisJobRepository::class)->isPending(TerminateHorizon::class)) {
             TerminateHorizon::dispatch();
         }
     }

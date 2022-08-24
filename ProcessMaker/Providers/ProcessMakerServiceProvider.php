@@ -2,9 +2,10 @@
 
 namespace ProcessMaker\Providers;
 
-use Blade;
-use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Validator;
+use Laravel\Horizon\Horizon;
+use Laravel\Horizon\Repositories\RedisJobRepository;
+use Laravel\Passport\Passport;
+use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Managers\DockerManager;
 use ProcessMaker\Managers\IndexManager;
 use ProcessMaker\Managers\LoginManager;
@@ -12,11 +13,6 @@ use ProcessMaker\Managers\ModelerManager;
 use ProcessMaker\Managers\PackageManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Managers\ScriptBuilderManager;
-use ProcessMaker\Events\ScreenBuilderStarting;
-use Laravel\Horizon\Horizon;
-use Laravel\Passport\Passport;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Event;
 use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCollaboration;
@@ -31,6 +27,11 @@ use ProcessMaker\Observers\UserObserver;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Observers\ProcessRequestTokenObserver;
 use ProcessMaker\PolicyExtension;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 /**
  * Provide our ProcessMaker specific services
@@ -38,7 +39,6 @@ use ProcessMaker\PolicyExtension;
  */
 class ProcessMakerServiceProvider extends ServiceProvider
 {
-
     /**
      * Bootstrap ProcessMaker services.
      *
@@ -77,6 +77,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->extend(RedisJobRepository::class, function ($repository) {
+            return new \ProcessMaker\Repositories\RedisJobRepository($repository->redis);
+        });
+
         // Dusk, if env is appropriate
         if(!$this->app->environment('production')) {
             $this->app->register(\Laravel\Dusk\DuskServiceProvider::class);
