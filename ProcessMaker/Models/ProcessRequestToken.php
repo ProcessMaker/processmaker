@@ -134,27 +134,18 @@ class ProcessRequestToken extends Model implements TokenInterface
     ];
 
     /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
-     */
-    protected $dates = [
-        'completed_at',
-        'due_at',
-        'initiated_at',
-        'riskchanges_at',
-    ];
-
-    /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
     protected $casts = [
+        'completed_at' => 'datetime',
+        'due_at' => 'datetime',
+        'initiated_at' => 'datetime',
+        'riskchanges_at' => 'datetime',
         'data' => 'array',
         'self_service_groups' => 'array',
-        'token_properties' => 'array',
-    ];
+        'token_properties' => 'array',    ];
 
     /**
      * Get the indexable data array for the model.

@@ -174,10 +174,6 @@ class Process extends Model implements HasMedia, ProcessModelInterface
      *
      * @var array
      */
-    protected $dates = [
-        'deleted_at',
-    ];
-
     /**
      * The attributes that should be hidden for serialization.
      *
