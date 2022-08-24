@@ -4,7 +4,6 @@ namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Traits\ExtendedPMQL;
@@ -116,6 +115,9 @@ class Setting extends Model implements HasMedia
         ];
     }
 
+    /**
+     * @return array
+     */
     public static function messages()
     {
         return [
@@ -252,8 +254,8 @@ class Setting extends Model implements HasMedia
      */
     public static function getLogin()
     {
-        //default login
-        $url = asset(config('LOGIN_LOGO_PATH', '/img/processmaker-login.svg'));
+        // default login
+        $url = asset(config('app.settings.login_logo_path'));
 
         //custom login
         $setting = self::byKey('css-override');
@@ -276,15 +278,18 @@ class Setting extends Model implements HasMedia
     public static function getLogo()
     {
         // default logo
-        $url = asset(env('MAIN_LOGO_PATH', '/img/processmaker-logo.svg'));
+        $url = asset(config('app.settings.main_logo_path'));
 
         // custom logo
         if (config()->has($key = 'css-override')) {
             $setting = self::byKey($key);
-            $mediaFile = $setting->getMedia(self::COLLECTION_CSS_LOGO);
 
-            foreach ($mediaFile as $media) {
-                $url = $media->getFullUrl();
+            if ($setting instanceof self) {
+                $mediaFile = $setting->getMedia(self::COLLECTION_CSS_LOGO);
+
+                foreach ($mediaFile as $media) {
+                    $url = $media->getFullUrl();
+                }
             }
         }
 
@@ -298,15 +303,18 @@ class Setting extends Model implements HasMedia
     public static function getIcon()
     {
         // default icon
-        $url = asset(env('ICON_PATH_PATH', '/img/processmaker-icon.svg'));
+        $url = asset(config('app.settings.icon_path'));
 
         // custom icon
         if (config()->has($key = 'css-override')) {
             $setting = self::byKey($key);
-            $mediaFile = $setting->getMedia(self::COLLECTION_CSS_ICON);
 
-            foreach ($mediaFile as $media) {
-                $url = $media->getFullUrl();
+            if ($setting instanceof self) {
+                $mediaFile = $setting->getMedia(self::COLLECTION_CSS_ICON);
+
+                foreach ($mediaFile as $media) {
+                    $url = $media->getFullUrl();
+                }
             }
         }
 
@@ -320,15 +328,18 @@ class Setting extends Model implements HasMedia
     public static function getFavicon()
     {
         // default icon
-        $url = asset(env('FAVICON_PATH', '/favicon.png'));
+        $url = asset(config('app.settings.favicon_path'));
 
         // custom icon
         if (config()->has($key = 'css-override')) {
             $setting = self::byKey($key);
-            $mediaFile = $setting->getMedia(self::COLLECTION_CSS_FAVICON);
 
-            foreach ($mediaFile as $media) {
-                $url = $media->getFullUrl();
+            if ($setting instanceof self) {
+                $mediaFile = $setting->getMedia(self::COLLECTION_CSS_FAVICON);
+
+                foreach ($mediaFile as $media) {
+                    $url = $media->getFullUrl();
+                }
             }
         }
 
