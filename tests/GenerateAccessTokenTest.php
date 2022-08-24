@@ -1,5 +1,7 @@
 <?php
+
 namespace Tests;
+
 use ProcessMaker\GenerateAccessToken;
 use ProcessMaker\Models\User;
 use RuntimeException;

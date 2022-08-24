@@ -28,5 +28,4 @@ class EnvironmentVariablesController extends Controller
     {
         return view('processes.environment-variables.edit', compact('environmentVariable'));
     }
-
 }

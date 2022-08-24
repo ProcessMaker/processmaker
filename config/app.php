@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Cache\CacheServiceProvider;
+use Illuminate\Database\DatabaseServiceProvider;
 use Illuminate\Filesystem\FilesystemServiceProvider;
 use Illuminate\View\ViewServiceProvider;
-use Illuminate\Database\DatabaseServiceProvider;
 use ProcessMaker\Providers\RouteServiceProvider;
 
 return [
@@ -71,10 +71,10 @@ return [
 
     // The url of our host from inside the docker
     'docker_host_url' => env('DOCKER_HOST_URL', preg_replace('/(\w+):\/\/([^:\/]+)(\:\d+)?/', '$1://172.17.0.1$3',
-                env('APP_URL', 'http://localhost'))),
+        env('APP_URL', 'http://localhost'))),
 
     // Allows our script executors to ignore invalid SSL. This should only be set to false for development.
-    'api_ssl_verify' => env('API_SSL_VERIFY', "true"),
+    'api_ssl_verify' => env('API_SSL_VERIFY', 'true'),
 
     // Unique name on multi-tenant installations. Just use the DB name for now
     'instance' => env('DB_DATABASE'),
@@ -108,7 +108,6 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
 
-
         /**
          * ProcessMaker Providers
          */
@@ -128,7 +127,6 @@ return [
         ProcessMaker\Providers\SettingServiceProvider::class,
 
     ],
-
 
     'aliases' => [
         'App' => Illuminate\Support\Facades\App::class,
@@ -193,15 +191,14 @@ return [
             'DB_USERNAME',
             'DB_PASSWORD',
             'DATA_DB_PASSWORD',
-            'DATA_DB_USERNAME'
+            'DATA_DB_USERNAME',
         ],
         '_SERVER' => [
             'DB_USERNAME',
             'DB_PASSWORD',
             'DATA_DB_PASSWORD',
-            'DATA_DB_USERNAME'
-        ]
-    ]
-
+            'DATA_DB_USERNAME',
+        ],
+    ],
 
 ];

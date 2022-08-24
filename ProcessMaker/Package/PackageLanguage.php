@@ -41,8 +41,7 @@ class PackageLanguage
      */
     public function mergeLanguage()
     {
-        try
-        {
+        try {
             $response = true;
             foreach ($this->languages as $language) {
                 //Language local
@@ -66,8 +65,8 @@ class PackageLanguage
                 //Merge languages
                 file_put_contents($resourceLocal, stripslashes($data));
             }
-            return $response;
 
+            return $response;
         } catch (\Exception $e) {
             return false;
         }
@@ -83,7 +82,7 @@ class PackageLanguage
     private function errors($language)
     {
         $response = false;
-        switch(json_last_error()) {
+        switch (json_last_error()) {
             case JSON_ERROR_NONE:
                 //without errors.
                 $response = true;
@@ -110,5 +109,4 @@ class PackageLanguage
 
         return $response;
     }
-
 }

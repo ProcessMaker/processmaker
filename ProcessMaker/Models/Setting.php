@@ -2,19 +2,19 @@
 
 namespace ProcessMaker\Models;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\SerializeToIso8601;
-use Carbon\Carbon;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Validation\Rule;
 
 /**
  * Class Settings
  *
- * @package ProcessMaker\Models
  *
  * @property string id
  * @property string key
@@ -46,7 +46,6 @@ use Illuminate\Validation\Rule;
  *     ),
  *   },
  * )
- *
  */
 class Setting extends Model implements HasMedia
 {
@@ -57,9 +56,13 @@ class Setting extends Model implements HasMedia
     protected $connection = 'processmaker';
 
     public const DISK_CSS = 'settings';
+
     public const COLLECTION_CSS_LOGIN = 'login';
+
     public const COLLECTION_CSS_LOGO = 'logo';
+
     public const COLLECTION_CSS_ICON = 'icon';
+
     public const COLLECTION_CSS_FAVICON = 'favicon';
 
     /**
@@ -109,7 +112,7 @@ class Setting extends Model implements HasMedia
 
         return [
             'key' => ['required', $unique],
-            'config.*' => ($validateConfig ? ['required', 'valid_variable'] : [])
+            'config.*' => ($validateConfig ? ['required', 'valid_variable'] : []),
         ];
     }
 
@@ -177,11 +180,11 @@ class Setting extends Model implements HasMedia
             case 'range':
                 return $this->attributes['config'] = $this->attributes['config'];
             case 'boolean':
-                return $this->attributes['config'] = (boolean) $this->attributes['config'];
+                return $this->attributes['config'] = (bool) $this->attributes['config'];
             case 'object':
                 if (is_string($this->attributes['config'])) {
                     return $this->attributes['config'] = json_decode($this->attributes['config']);
-                } elseif (is_object($this->attributes['config'])) {
+                } else if (is_object($this->attributes['config'])) {
                     return $this->attributes['config'];
                 }
             case 'array':
@@ -273,7 +276,7 @@ class Setting extends Model implements HasMedia
     public static function getLogo()
     {
         // default logo
-        $url = asset(config('MAIN_LOGO_PATH', '/img/processmaker-logo.svg'));
+        $url = asset(env('MAIN_LOGO_PATH', '/img/processmaker-logo.svg'));
 
         // custom logo
         if (config()->has($key = 'css-override')) {
@@ -295,7 +298,7 @@ class Setting extends Model implements HasMedia
     public static function getIcon()
     {
         // default icon
-        $url = asset(config('ICON_PATH_PATH', '/img/processmaker-icon.svg'));
+        $url = asset(env('ICON_PATH_PATH', '/img/processmaker-icon.svg'));
 
         // custom icon
         if (config()->has($key = 'css-override')) {
@@ -317,7 +320,7 @@ class Setting extends Model implements HasMedia
     public static function getFavicon()
     {
         // default icon
-        $url = asset(config('FAVICON_PATH', '/favicon.png'));
+        $url = asset(env('FAVICON_PATH', '/favicon.png'));
 
         // custom icon
         if (config()->has($key = 'css-override')) {

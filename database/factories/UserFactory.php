@@ -8,7 +8,6 @@ use ProcessMaker\Models\User;
  * Model factory for a User
  */
 $factory->define(User::class, function (Faker $faker) {
-
     if (!isset($GLOBALS['testPassword'])) {
         $GLOBALS['testPassword'] = Hash::make('oneOnlyPassword');
     }

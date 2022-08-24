@@ -1,10 +1,10 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\User;
 
 class PermissionSeeder extends Seeder
 {
@@ -111,7 +111,7 @@ class PermissionSeeder extends Seeder
             foreach ($permissions as $permissionString) {
                 Permission::updateOrCreate([
                     'name' => $permissionString,
-                ],[
+                ], [
                     'title' => ucwords(preg_replace('/(\-|_)/', ' ', $permissionString)),
                     'group' => $groupName,
                 ]);

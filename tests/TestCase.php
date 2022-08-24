@@ -2,10 +2,10 @@
 
 namespace Tests;
 
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Support\Facades\Artisan;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Facades\Artisan;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -17,7 +17,6 @@ abstract class TestCase extends BaseTestCase
 
     /**
      * Run additional setUps from traits.
-     *
      */
     protected function setUp(): void
     {
@@ -32,13 +31,12 @@ abstract class TestCase extends BaseTestCase
 
     public static function setUpMockScriptRunners(): void
     {
-        config()->set("script-runners.php.runner", 'MockRunner');
-        config()->set("script-runners.lua.runner", 'MockRunner');
+        config()->set('script-runners.php.runner', 'MockRunner');
+        config()->set('script-runners.lua.runner', 'MockRunner');
     }
 
     /**
      * Run additional tearDowns from traits.
-     *
      */
     protected function tearDown(): void
     {

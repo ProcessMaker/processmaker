@@ -10,7 +10,7 @@ class ProcessVersionPolicy
 {
     use HandlesAuthorization;
 
-     /**
+    /**
      * Run before all methods to determine if the
      * user is an admin and can do everything.
      *

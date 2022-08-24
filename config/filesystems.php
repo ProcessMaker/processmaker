@@ -52,20 +52,20 @@ return [
         ],
         'keys' => [
             'driver' => 'local',
-            'root' => env('KEYS_PATH') ? base_path(env('KEYS_PATH')) : storage_path('keys')
+            'root' => env('KEYS_PATH') ? base_path(env('KEYS_PATH')) : storage_path('keys'),
         ],
         'mailtemplates' => [
             'driver' => 'local',
-            'root' => env('MAILTEMPLATES_PATH') ? base_path(env('MAILTEMPLATES_PATH')) : storage_path('mailTemplates')
+            'root' => env('MAILTEMPLATES_PATH') ? base_path(env('MAILTEMPLATES_PATH')) : storage_path('mailTemplates'),
         ],
         'process_templates' => [
             'driver' => 'local',
-            'root' => env('PROCESS_TEMPLATES_PATH') ? base_path(env('PROCESS_TEMPLATES_PATH')) : database_path('processes/templates')
+            'root' => env('PROCESS_TEMPLATES_PATH') ? base_path(env('PROCESS_TEMPLATES_PATH')) : database_path('processes/templates'),
         ],
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'url' => env('APP_URL') . '/storage',
             'visibility' => 'public',
         ],
         's3' => [
@@ -79,13 +79,13 @@ return [
         'profile' => [
             'driver' => 'local',
             'root' => storage_path('app/public/profile'),
-            'url' => env('APP_URL').'/storage/profile',
+            'url' => env('APP_URL') . '/storage/profile',
             'visibility' => 'public',
         ],
         'settings' => [
             'driver' => 'local',
             'root' => storage_path('app/public/setting'),
-            'url' => env('APP_URL').'/storage/setting',
+            'url' => env('APP_URL') . '/storage/setting',
             'visibility' => 'public',
         ],
         'private_settings' => [
@@ -96,10 +96,9 @@ return [
         'tmp' => [
             'driver' => 'local',
             'root' => storage_path('app/public/tmp'),
-            'url' => env('APP_URL').'/storage/tmp',
+            'url' => env('APP_URL') . '/storage/tmp',
             'visibility' => 'public',
         ],
-    ]
-
+    ],
 
 ];

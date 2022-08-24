@@ -2,14 +2,13 @@
 
 namespace ProcessMaker\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use ProcessMaker\Jobs\TerminateHorizon;
-use ProcessMaker\Upgrades\Commands as Commands;
-use ProcessMaker\Upgrades\UpgradeCreator;
-use ProcessMaker\Upgrades\UpgradeMigrator;
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Contracts\Support\DeferrableProvider;
+use Illuminate\Support\ServiceProvider;
+use ProcessMaker\Upgrades\Commands as Commands;
+use ProcessMaker\Upgrades\UpgradeCreator;
 use ProcessMaker\Upgrades\UpgradeMigrationRepository;
+use ProcessMaker\Upgrades\UpgradeMigrator;
 
 class UpgradeServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -142,7 +141,7 @@ class UpgradeServiceProvider extends ServiceProvider implements DeferrableProvid
     protected function registerCommands()
     {
         foreach (array_keys(self::$commands) as $command) {
-            call_user_func_array([$this, 'register'.class_basename($command)], []);
+            call_user_func_array([$this, 'register' . class_basename($command)], []);
         }
 
         $this->commands(array_values(self::$commands));

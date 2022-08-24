@@ -10,6 +10,6 @@ $factory->define(ProcessCategory::class, function (Faker $faker) {
     return [
         'name' => $faker->unique()->sentence(),
         'status' => 'ACTIVE',
-        'is_system' => false
+        'is_system' => false,
     ];
 });
