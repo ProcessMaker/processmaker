@@ -68,7 +68,7 @@ trait RequestHelper
         return $this->webCall('GET', $url, $params);
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         parent::tearDown();
         if (!$this->debug) {
