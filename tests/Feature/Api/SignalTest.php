@@ -10,7 +10,6 @@ use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\SignalData;
-
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 

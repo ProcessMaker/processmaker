@@ -5,7 +5,6 @@ namespace Tests\Feature\Api;
 use Database\Seeders\PermissionSeeder;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
-
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Models\User;

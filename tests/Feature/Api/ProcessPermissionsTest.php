@@ -4,7 +4,6 @@ namespace Tests\Feature\Api;
 
 use Database\Seeders\PermissionSeeder;
 use Illuminate\Support\Facades\Hash;
-
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;

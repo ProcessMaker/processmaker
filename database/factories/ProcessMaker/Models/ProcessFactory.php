@@ -10,7 +10,6 @@ use ProcessMaker\Models\User;
 /**
  * Model factory for a process
  */
-
 class ProcessFactory extends Factory
 {
     /**

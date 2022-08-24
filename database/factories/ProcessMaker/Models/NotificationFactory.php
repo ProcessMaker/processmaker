@@ -9,7 +9,6 @@ use Ramsey\Uuid\Uuid;
 /**
  * Model factory for a Notification
  */
-
 class NotificationFactory extends Factory
 {
     /**

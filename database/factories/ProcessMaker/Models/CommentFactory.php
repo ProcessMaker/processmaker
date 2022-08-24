@@ -11,7 +11,6 @@ use ProcessMaker\Models\User;
 /**
  * Model factory for a Comment
  */
-
 class CommentFactory extends Factory
 {
     /**

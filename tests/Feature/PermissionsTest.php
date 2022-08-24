@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use Database\Seeders\PermissionSeeder;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
-
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;

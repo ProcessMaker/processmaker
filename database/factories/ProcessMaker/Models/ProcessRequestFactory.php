@@ -12,7 +12,6 @@ use ProcessMaker\Nayra\Storage\BpmnDocument;
 /**
  * Model factory for a process request
  */
-
 class ProcessRequestFactory extends Factory
 {
     /**

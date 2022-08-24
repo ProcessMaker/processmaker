@@ -8,7 +8,6 @@ use ProcessMaker\Models\ScriptCategory;
 /**
  * Model factory for a script category.
  */
-
 class ScriptCategoryFactory extends Factory
 {
     /**

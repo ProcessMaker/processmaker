@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * Model factory for a settings.
  */
-
 class SettingFactory extends Factory
 {
     /**

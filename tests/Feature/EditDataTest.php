@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use Database\Seeders\PermissionSeeder;
 use Illuminate\Support\Facades\Hash;
-
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;

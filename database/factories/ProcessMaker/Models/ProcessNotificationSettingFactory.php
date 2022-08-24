@@ -9,7 +9,6 @@ use ProcessMaker\Models\ProcessNotificationSetting;
 /**
  * Model factory for a Process Notification Setting
  */
-
 class ProcessNotificationSettingFactory extends Factory
 {
     /**

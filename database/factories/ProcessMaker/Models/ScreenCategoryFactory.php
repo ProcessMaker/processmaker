@@ -8,7 +8,6 @@ use ProcessMaker\Models\ScreenCategory;
 /**
  * Model factory for a screen category.
  */
-
 class ScreenCategoryFactory extends Factory
 {
     /**

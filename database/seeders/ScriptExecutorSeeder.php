@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\ScriptExecutor;
 
 class ScriptExecutorSeeder extends Seeder
@@ -20,7 +21,7 @@ class ScriptExecutorSeeder extends Seeder
                 if (isset($this->command)) {
                     $this->command->line("Running docker-executor-{$key}:install");
                 }
-                \Artisan::call("docker-executor-{$key}:install");
+                Artisan::call("docker-executor-{$key}:install");
             } catch (\Predis\Connection\ConnectionException $e) {
                 // horizon:terminate command when redis is not configured
                 // this happens in CircleCI

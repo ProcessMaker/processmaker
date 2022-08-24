@@ -11,7 +11,6 @@ use ProcessMaker\Models\User;
 /**
  * Model factory for a Process Task Assignment
  */
-
 class ProcessTaskAssignmentFactory extends Factory
 {
     /**

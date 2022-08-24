@@ -12,7 +12,6 @@ use ProcessMaker\Models\User;
 /**
  * Model factory for a ProcessVersion
  */
-
 class ProcessVersionFactory extends Factory
 {
     /**

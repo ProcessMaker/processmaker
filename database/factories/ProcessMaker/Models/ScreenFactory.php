@@ -9,7 +9,6 @@ use ProcessMaker\Models\ScreenCategory;
 /**
  * Model factory for a screen.
  */
-
 class ScreenFactory extends Factory
 {
     /**

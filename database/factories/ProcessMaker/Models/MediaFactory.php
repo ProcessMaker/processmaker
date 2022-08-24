@@ -9,7 +9,6 @@ use ProcessMaker\Models\User;
 /**
  * Model factory for Media
  */
-
 class MediaFactory extends Factory
 {
     /**

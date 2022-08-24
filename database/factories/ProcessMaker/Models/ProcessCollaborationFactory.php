@@ -9,7 +9,6 @@ use ProcessMaker\Models\ProcessCollaboration;
 /**
  * Model factory for a process collaboration
  */
-
 class ProcessCollaborationFactory extends Factory
 {
     /**

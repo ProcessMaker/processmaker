@@ -8,7 +8,6 @@ use ProcessMaker\Models\ProcessCategory;
 /**
  * Model factory for a process category.
  */
-
 class ProcessCategoryFactory extends Factory
 {
     /**

@@ -8,7 +8,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Notification;
 use Mockery;
-
 use ProcessMaker\Events\ScriptResponseEvent;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Facades\WorkflowManager;

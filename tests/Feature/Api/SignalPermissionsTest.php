@@ -5,7 +5,6 @@ namespace Tests\Feature\Api;
 use Database\Seeders\SignalSeeder;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\User;
-
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 

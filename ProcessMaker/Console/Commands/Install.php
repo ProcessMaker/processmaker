@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use ProcessMaker\Traits\SupportsNonInteraction;
 use Symfony\Component\Console\Helper\Table;
-
 use Validator;
 
 /**

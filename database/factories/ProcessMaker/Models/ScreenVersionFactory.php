@@ -1,7 +1,5 @@
 <?php
 
-
-
 namespace Database\Factories\ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -12,7 +10,6 @@ use ProcessMaker\Models\ScreenVersion;
 /**
  * Model factory for a ScreenVersion
  */
-
 class ScreenVersionFactory extends Factory
 {
     /**
