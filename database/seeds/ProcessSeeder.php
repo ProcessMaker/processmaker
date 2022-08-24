@@ -40,7 +40,7 @@ class ProcessSeeder extends Seeder
         $admin = User::where('username', 'admin')->firstOrFail();
 
         foreach (glob(database_path('processes') . '/*.bpmn') as $filename) {
-            $process = factory(Process::class)->make([
+            $process = Process::factory()->make([
                 'bpmn' => file_get_contents($filename),
                 'user_id' => $admin->getKey(),
                 'status' => 'ACTIVE',
@@ -70,7 +70,7 @@ class ProcessSeeder extends Seeder
             foreach ($scriptTasks as $scriptTaskNode) {
                 $scriptTask = $scriptTaskNode->getBpmnElementInstance();
                 //Create a row in the Scripts table
-                $script = factory(Script::class)->create([
+                $script = Script::factory()->create([
                     'title' => $scriptTask->getName('name') . ' Script',
                     'code' => $scriptTaskNode->getElementsByTagName('script')->item(0)->nodeValue,
                     'language' => $this->languageOfMimeType($scriptTask->getScriptFormat()),
@@ -90,7 +90,7 @@ class ProcessSeeder extends Seeder
                 $user = $this->getUserOrCreate($lane->getName());
                 foreach ($lane->getFlowNodes() as $node) {
                     if ($node instanceof ActivityInterface && !($node instanceof ScriptTaskInterface)) {
-                        factory(ProcessTaskAssignment::class)->create([
+                        ProcessTaskAssignment::factory()->create([
                             'process_id' => $process->getKey(),
                             'process_task_id' => $node->getId(),
                             'assignment_id' => $user->getKey(),
@@ -103,7 +103,7 @@ class ProcessSeeder extends Seeder
             //Add notifications to request events
             $notificationTypes = ['started', 'canceled', 'completed'];
             foreach ($notificationTypes as $notificationType) {
-                factory(ProcessNotificationSetting::class)->create([
+                ProcessNotificationSetting::factory()->create([
                     'process_id' => $process->getKey(),
                     'notifiable_type' => 'requester',
                     'notification_type' => $notificationType,
@@ -127,7 +127,7 @@ class ProcessSeeder extends Seeder
                         ->where('process_task_id', $id)
                         ->count();
                     if (!$assignments) {
-                        factory(ProcessTaskAssignment::class)->create([
+                        ProcessTaskAssignment::factory()->create([
                             'process_id' => $process->getKey(),
                             'process_task_id' => $id,
                             'assignment_id' => $admin->getKey(),
@@ -135,13 +135,13 @@ class ProcessSeeder extends Seeder
                         ]);
                     }
                     //Add notifications to task events
-                    factory(ProcessNotificationSetting::class)->create([
+                    ProcessNotificationSetting::factory()->create([
                         'process_id' => $process->getKey(),
                         'element_id' => $id,
                         'notifiable_type' => 'assignee',
                         'notification_type' => 'assigned',
                     ]);
-                    factory(ProcessNotificationSetting::class)->create([
+                    ProcessNotificationSetting::factory()->create([
                         'process_id' => $process->getKey(),
                         'element_id' => $id,
                         'notifiable_type' => 'requester',
@@ -170,14 +170,14 @@ class ProcessSeeder extends Seeder
         if (file_exists(database_path('processes/screens/' . $screenRef . '.json'))) {
             $json = json_decode(file_get_contents(database_path('processes/screens/' . $screenRef . '.json')));
 
-            return factory(Screen::class)->create([
+            return Screen::factory()->create([
                 'title' => $json[0]->name,
                 'config' => $json,
             ]);
         } elseif (file_exists(database_path('processes/screens/' . $id . '.json'))) {
             $json = json_decode(file_get_contents(database_path('processes/screens/' . $id . '.json')));
 
-            return factory(Screen::class)->create([
+            return Screen::factory()->create([
                 'title' => $json[0]->name,
                 'config' => $json,
             ]);
@@ -221,7 +221,7 @@ class ProcessSeeder extends Seeder
         $user = User::where('username', $name)
             ->first();
         if (!$user) {
-            $user = factory(User::class)->create([
+            $user = User::factory()->create([
                 'username' => $name,
                 'password' => Hash::make('admin'),
                 'status' => 'ACTIVE',
@@ -243,12 +243,12 @@ class ProcessSeeder extends Seeder
     {
         $group = Group::where('name', $name)->first();
         if (!$group) {
-            $group = factory(Group::class)->create([
+            $group = Group::factory()->create([
                 'name' => $name,
                 'status' => 'ACTIVE',
             ]);
         }
-        factory(GroupMember::class)->create([
+        GroupMember::factory()->create([
             'member_id' => function () use ($name) {
                 return $this->getUserOrCreate($name)->getKey();
             },

@@ -11,7 +11,7 @@ class ScreenConsolidatorTest extends TestCase
 {
     public function test()
     {
-        $this->be(factory(User::class)->create());
+        $this->be(User::factory()->create());
 
         $content = file_get_contents(
             __DIR__ . '/Fixtures/nested_screen_process.json'

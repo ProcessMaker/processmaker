@@ -34,10 +34,10 @@ class ProcessPermissionsTest extends TestCase
     public function testUpdateProcessPermissionRequestCancelTypeUser()
     {
         // Create a process
-        $process = factory(Process::class)->create();
+        $process = Process::factory()->create();
 
         // Create a "normal" user
-        $normalUser = factory(User::class)->create([
+        $normalUser = User::factory()->create([
             'password' => Hash::make('password'),
         ]);
 

@@ -17,9 +17,9 @@ class CommentsTest extends TestCase
     private function createTask(array $data = [])
     {
         $data['bpmn'] = file_get_contents(__DIR__ . '/Api/processes/ManualTask.bpmn');
-        $process = factory(Process::class)->create($data);
+        $process = Process::factory()->create($data);
         $taskId = 'TaskUID';
-        factory(ProcessTaskAssignment::class)->create([
+        ProcessTaskAssignment::factory()->create([
             'process_id' => $process->id,
             'process_task_id' => $taskId,
             'assignment_id' => $this->user->id,
@@ -47,12 +47,12 @@ class CommentsTest extends TestCase
         $task = $this->createTask();
 
         // Create sample user
-        $testUser = factory(User::class)->create([
+        $testUser = User::factory()->create([
             'username' => 'testuser',
         ]);
 
         // Create a comment where the user is tagged
-        $comment = factory(Comment::class)->create([
+        $comment = Comment::factory()->create([
             'user_id' => $this->user->id,
             'body' => 'Should replace the username to user id in mustaches @' . $testUser->username,
             'commentable_type' => ProcessRequestToken::class,
@@ -75,12 +75,12 @@ class CommentsTest extends TestCase
         $task = $this->createTask();
 
         // Create sample user
-        $testUser = factory(User::class)->create([
+        $testUser = User::factory()->create([
             'username' => '测试用户',
         ]);
 
         // Create a comment where the user is tagged
-        $comment = factory(Comment::class)->create([
+        $comment = Comment::factory()->create([
             'user_id' => $this->user->id,
             'body' => 'Should replace the username to user id in mustaches @' . $testUser->username,
             'commentable_type' => ProcessRequestToken::class,
@@ -103,12 +103,12 @@ class CommentsTest extends TestCase
         $task = $this->createTask();
 
         // Create sample user
-        $testUser = factory(User::class)->create([
+        $testUser = User::factory()->create([
             'username' => 'النسر',
         ]);
 
         // Create a comment where the user is tagged
-        $comment = factory(Comment::class)->create([
+        $comment = Comment::factory()->create([
             'user_id' => $this->user->id,
             'body' => 'Should replace the username to user id in mustaches @' . $testUser->username,
             'commentable_type' => ProcessRequestToken::class,
@@ -131,12 +131,12 @@ class CommentsTest extends TestCase
         $task = $this->createTask();
 
         // Create sample user with german characters
-        $testUser = factory(User::class)->create([
+        $testUser = User::factory()->create([
             'username' => 'ÄÖÜäöü',
         ]);
 
         // Create a comment where the user is tagged
-        $comment = factory(Comment::class)->create([
+        $comment = Comment::factory()->create([
             'user_id' => $this->user->id,
             'body' => 'Should replace the username to user id in mustaches @' . $testUser->username,
             'commentable_type' => ProcessRequestToken::class,
@@ -159,12 +159,12 @@ class CommentsTest extends TestCase
         $task = $this->createTask();
 
         // Create sample user with swiss characters
-        $testUser = factory(User::class)->create([
+        $testUser = User::factory()->create([
             'username' => 'օգտագործող',
         ]);
 
         // Create a comment where the user is tagged
-        $comment = factory(Comment::class)->create([
+        $comment = Comment::factory()->create([
             'user_id' => $this->user->id,
             'body' => 'Should replace the username to user id in mustaches @' . $testUser->username,
             'commentable_type' => ProcessRequestToken::class,
@@ -187,12 +187,12 @@ class CommentsTest extends TestCase
         $task = $this->createTask();
 
         // Create sample user with bulgarian characters
-        $testUser = factory(User::class)->create([
+        $testUser = User::factory()->create([
             'username' => 'Тестов',
         ]);
 
         // Create a comment where the user is tagged
-        $comment = factory(Comment::class)->create([
+        $comment = Comment::factory()->create([
             'user_id' => $this->user->id,
             'body' => 'Should replace the username to user id in mustaches @' . $testUser->username,
             'commentable_type' => ProcessRequestToken::class,

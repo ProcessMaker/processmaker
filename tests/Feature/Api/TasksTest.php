@@ -58,9 +58,9 @@ class TasksTest extends TestCase
      */
     public function testGetListOfTasks()
     {
-        $request = factory(ProcessRequest::class)->create();
+        $request = ProcessRequest::factory()->create();
         // Create some tokens
-        factory(ProcessRequestToken::class, 20)->create([
+        ProcessRequestToken::factory()->count(20)->create([
             'process_request_id' => $request->id,
         ]);
         //Get a page of tokens
@@ -77,18 +77,18 @@ class TasksTest extends TestCase
      */
     public function testGetListAssignedTasks()
     {
-        $user_1 = factory(User::class)->create();
-        $user_2 = factory(User::class)->create();
+        $user_1 = User::factory()->create();
+        $user_2 = User::factory()->create();
         $this->user = $user_1;
 
-        $request = factory(ProcessRequest::class)->create();
+        $request = ProcessRequest::factory()->create();
         // Create some tokens
-        factory(ProcessRequestToken::class, 2)->create([
+        ProcessRequestToken::factory()->count(2)->create([
             'process_request_id' => $request->id,
             'status' => 'ACTIVE',
             'user_id' => $user_1->id,
         ]);
-        factory(ProcessRequestToken::class, 3)->create([
+        ProcessRequestToken::factory()->count(3)->create([
             'process_request_id' => $request->id,
             'status' => 'ACTIVE',
             'user_id' => $user_2->id,
@@ -116,23 +116,23 @@ class TasksTest extends TestCase
         $asp = new AuthServiceProvider(app());
         $asp->boot();
 
-        $user_1 = factory(User::class)->create();
+        $user_1 = User::factory()->create();
         $user_1->giveDirectPermission('view-all_requests');
         // $user_1->refresh();
         // $this->flushSession();
 
         $this->user = $user_1;
 
-        $user_2 = factory(User::class)->create();
+        $user_2 = User::factory()->create();
 
-        $request = factory(ProcessRequest::class)->create();
+        $request = ProcessRequest::factory()->create();
         // Create some closed tasks
-        factory(ProcessRequestToken::class, 3)->create([
+        ProcessRequestToken::factory()->count(3)->create([
             'process_request_id' => $request->id,
             'status' => 'CLOSED',
             'user_id' => $user_2->id,
         ]);
-        factory(ProcessRequestToken::class, 1)->create([
+        ProcessRequestToken::factory()->count(1)->create([
             'process_request_id' => $request->id,
             'status' => 'ACTIVE',
             'user_id' => $user_2->id,
@@ -150,24 +150,24 @@ class TasksTest extends TestCase
      */
     public function testGetListNonSystemTasks()
     {
-        $user_1 = factory(User::class)->create();
-        $user_2 = factory(User::class)->create();
+        $user_1 = User::factory()->create();
+        $user_2 = User::factory()->create();
 
-        $process = factory(Process::class)->create();
-        $category = factory(ProcessCategory::class)->create(['status' => 'ACTIVE', 'is_system' => true]);
-        $systemProcess = factory(Process::class)->create(['process_category_id' => $category->id]);
+        $process = Process::factory()->create();
+        $category = ProcessCategory::factory()->create(['status' => 'ACTIVE', 'is_system' => true]);
+        $systemProcess = Process::factory()->create(['process_category_id' => $category->id]);
         // Create some tokens
-        factory(ProcessRequestToken::class, 2)->create([
+        ProcessRequestToken::factory()->count(2)->create([
             'process_id' => $process->id,
             'status' => 'ACTIVE',
             'user_id' => $user_1->id,
         ]);
-        factory(ProcessRequestToken::class, 3)->create([
+        ProcessRequestToken::factory()->count(3)->create([
             'process_id' => $process->id,
             'status' => 'ACTIVE',
             'user_id' => $user_2->id,
         ]);
-        factory(ProcessRequestToken::class, 1)->create([
+        ProcessRequestToken::factory()->count(1)->create([
             'process_id' => $systemProcess->id,
             'status' => 'ACTIVE',
             'user_id' => $user_1->id,
@@ -188,9 +188,9 @@ class TasksTest extends TestCase
     public function testTaskListDates()
     {
         $name = 'testTaskTimezone';
-        $request = factory(ProcessRequest::class)->create(['name' => $name]);
+        $request = ProcessRequest::factory()->create(['name' => $name]);
         // Create some tokens
-        $newEntity = factory(ProcessRequestToken::class)->create([
+        $newEntity = ProcessRequestToken::factory()->create([
             'user_id' => $this->user->id,
             'process_request_id' => $request->id,
         ]);
@@ -218,13 +218,13 @@ class TasksTest extends TestCase
      */
     public function testFilteringGetActiveTasks()
     {
-        $request = factory(ProcessRequest::class)->create();
+        $request = ProcessRequest::factory()->create();
         // Create some tokens
-        factory(ProcessRequestToken::class, 10)->create([
+        ProcessRequestToken::factory()->count(10)->create([
             'status' => 'ACTIVE',
             'process_request_id' => $request->id,
         ]);
-        factory(ProcessRequestToken::class, 10)->create([
+        ProcessRequestToken::factory()->count(10)->create([
             'status' => 'CLOSED',
             'process_request_id' => $request->id,
         ]);
@@ -243,22 +243,22 @@ class TasksTest extends TestCase
      */
     public function testFilteringGetOnlyHumanTasks()
     {
-        $request = factory(ProcessRequest::class)->create();
+        $request = ProcessRequest::factory()->create();
 
         // Create some startEvent tokens
-        factory(ProcessRequestToken::class, 5)->create([
+        ProcessRequestToken::factory()->count(5)->create([
             'element_type' => 'startEvent',
             'process_request_id' => $request->id,
         ]);
 
         // Create some scriptTask tokens
-        factory(ProcessRequestToken::class, 5)->create([
+        ProcessRequestToken::factory()->count(5)->create([
             'element_type' => 'scriptTask',
             'process_request_id' => $request->id,
         ]);
 
         // Create some task tokens
-        factory(ProcessRequestToken::class, 5)->create([
+        ProcessRequestToken::factory()->count(5)->create([
             'element_type' => 'task',
             'process_request_id' => $request->id,
         ]);
@@ -280,14 +280,14 @@ class TasksTest extends TestCase
      */
     public function testSorting()
     {
-        $request = factory(ProcessRequest::class)->create();
+        $request = ProcessRequest::factory()->create();
         // Create some tokens
-        factory(ProcessRequestToken::class)->create([
+        ProcessRequestToken::factory()->create([
             'user_id' => $this->user->id,
             'completed_at' => null,
             'process_request_id' => $request->id,
         ]);
-        factory(ProcessRequestToken::class)->create([
+        ProcessRequestToken::factory()->create([
             'user_id' => $this->user->id,
             'completed_at' => Carbon::now(),
             'process_request_id' => $request->id,
@@ -307,9 +307,9 @@ class TasksTest extends TestCase
 
     public function testSortByRequestName()
     {
-        //$request = factory(ProcessRequest::class)->create();
+        //$request = ProcessRequest::factory()->create();
 
-        factory(ProcessRequestToken::class, 5)->create([
+        ProcessRequestToken::factory()->count(5)->create([
             'user_id' => $this->user->id,
             'completed_at' => Carbon::now(),
         ]);
@@ -342,7 +342,7 @@ class TasksTest extends TestCase
      */
     public function testPagination()
     {
-        $request = factory(ProcessRequest::class)->create();
+        $request = ProcessRequest::factory()->create();
         // Number of tokens in the tables at the moment of starting the test
         $initialRows = ProcessRequestToken::all()->count();
 
@@ -350,7 +350,7 @@ class TasksTest extends TestCase
         $rowsToAdd = 10;
 
         // Now we create the specified number of tokens
-        factory(ProcessRequestToken::class, $rowsToAdd)->create([
+        ProcessRequestToken::factory()->count($rowsToAdd)->create([
             'user_id' => $this->user->id,
             'process_request_id' => $request->id,
         ]);
@@ -378,9 +378,9 @@ class TasksTest extends TestCase
      */
     public function testShowTask()
     {
-        $request = factory(ProcessRequest::class)->create();
+        $request = ProcessRequest::factory()->create();
         //Create a new process without category
-        $token = factory(ProcessRequestToken::class)->create([
+        $token = ProcessRequestToken::factory()->create([
             'process_request_id' => $request->id,
         ]);
 
@@ -398,9 +398,9 @@ class TasksTest extends TestCase
      */
     public function testShowTaskWithUser()
     {
-        $request = factory(ProcessRequest::class)->create();
+        $request = ProcessRequest::factory()->create();
         //Create a new process without category
-        $token = factory(ProcessRequestToken::class)->create([
+        $token = ProcessRequestToken::factory()->create([
             'process_request_id' => $request->id,
         ]);
 
@@ -416,9 +416,9 @@ class TasksTest extends TestCase
 
     public function testUpdateTask()
     {
-        $this->user = factory(User::class)->create(); // normal user
-        $request = factory(ProcessRequest::class)->create();
-        $token = factory(ProcessRequestToken::class)->create([
+        $this->user = User::factory()->create(); // normal user
+        $request = ProcessRequest::factory()->create();
+        $token = ProcessRequestToken::factory()->create([
             'user_id' => $this->user->id,
             'status' => 'ACTIVE',
         ]);
@@ -432,8 +432,8 @@ class TasksTest extends TestCase
 
     public function testUpdateTaskRichText()
     {
-        // $this->user = factory(User::class)->create(); // normal user
-        $screen = factory(Screen::class)->create([
+        // $this->user = User::factory()->create(); // normal user
+        $screen = Screen::factory()->create([
             'config' => json_decode(
                 file_get_contents(
                     base_path('tests/Fixtures/rich_text_screen.json')
@@ -443,7 +443,7 @@ class TasksTest extends TestCase
 
         $bpmn = file_get_contents(base_path('tests/Fixtures/single_task_with_screen.bpmn'));
         $bpmn = str_replace('pm:screenRef="1"', 'pm:screenRef="' . $screen->id . '"', $bpmn);
-        $process = factory(Process::class)->create([
+        $process = Process::factory()->create([
             'bpmn' => $bpmn,
             'user_id' => $this->user->id,
         ]);
@@ -474,33 +474,33 @@ class TasksTest extends TestCase
     public function testWithUserWithoutAuthorization()
     {
         // We'll test viewing a new task with someone that is not authenticated
-        $request = factory(ProcessRequest::class)->create();
+        $request = ProcessRequest::factory()->create();
 
         //Create a new process without category
-        $token = factory(ProcessRequestToken::class)->create([
+        $token = ProcessRequestToken::factory()->create([
             'process_request_id' => $request->id,
         ]);
         $url = route('api.' . $this->resource . '.show', [$token->id, 'include' => 'user,definition']);
 
         //The call is done without an authenticated user so it should return 401
-        $response = $this->actingAs(factory(User::class)->create())
+        $response = $this->actingAs(User::factory()->create())
             ->json('GET', $url, []);
         $response->assertStatus(401);
     }
 
     public function testSelfServeTasks()
     {
-        $this->user = $user = factory(User::class)->create(['status' => 'ACTIVE']);
-        $otherUser = factory(User::class)->create(['status' => 'ACTIVE']);
+        $this->user = $user = User::factory()->create(['status' => 'ACTIVE']);
+        $otherUser = User::factory()->create(['status' => 'ACTIVE']);
 
-        $group1 = factory(Group::class)->create();
-        factory(GroupMember::class)->create([
+        $group1 = Group::factory()->create();
+        GroupMember::factory()->create([
             'member_id' => $user->id,
             'member_type' => User::class,
             'group_id' => $group1->id,
         ]);
-        $group2 = factory(Group::class)->create();
-        factory(GroupMember::class)->create([
+        $group2 = Group::factory()->create();
+        GroupMember::factory()->create([
             'member_id' => $user->id,
             'member_type' => User::class,
             'group_id' => $group2->id,
@@ -512,33 +512,33 @@ class TasksTest extends TestCase
             'is_self_service' => true,
         ];
 
-        $selfServiceTaskOriginal = factory(ProcessRequestToken::class)->create(
+        $selfServiceTaskOriginal = ProcessRequestToken::factory()->create(
             array_merge($params, [
                 'self_service_groups' => [(string) $group1->id],
             ])
         );
-        $selfServiceTaskGroups = factory(ProcessRequestToken::class)->create(
+        $selfServiceTaskGroups = ProcessRequestToken::factory()->create(
             array_merge($params, [
                 'self_service_groups' => [
                     'groups' => [(string) $group2->id],
                 ],
             ])
         );
-        $selfServiceTaskUsers = factory(ProcessRequestToken::class)->create(
+        $selfServiceTaskUsers = ProcessRequestToken::factory()->create(
             array_merge($params, [
                 'self_service_groups' => [
                     'users' => [(string) $user->id, (string) $otherUser->id],
                 ],
             ])
         );
-        $selfServiceTaskOtherUser = factory(ProcessRequestToken::class)->create(
+        $selfServiceTaskOtherUser = ProcessRequestToken::factory()->create(
             array_merge($params, [
                 'self_service_groups' => [
                     'users' => [(string) $otherUser->id],
                 ],
             ])
         );
-        $selfServiceTaskAssigned = factory(ProcessRequestToken::class)->create(
+        $selfServiceTaskAssigned = ProcessRequestToken::factory()->create(
             array_merge($params, [
                 'self_service_groups' => [
                     'users' => [(string) $group1->id],
@@ -546,7 +546,7 @@ class TasksTest extends TestCase
                 'user_id' => $user->id,
             ])
         );
-        $regularTask = factory(ProcessRequestToken::class)->create([
+        $regularTask = ProcessRequestToken::factory()->create([
             'status' => 'ACTIVE',
             'user_id' => $user->id,
         ]);
@@ -575,10 +575,10 @@ class TasksTest extends TestCase
             $this->user->id,
             file_get_contents(__DIR__ . '/../../Fixtures/self_serve_notifications_process.bpmn')
         );
-        $process = factory(Process::class)->create([
+        $process = Process::factory()->create([
             'bpmn' => $bpmn,
         ]);
-        factory(ProcessNotificationSetting::class)->create([
+        ProcessNotificationSetting::factory()->create([
             'process_id' => $process->id,
             'element_id' => 'node_3',
             'notifiable_type' => 'requester',

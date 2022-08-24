@@ -49,9 +49,9 @@ class ExportImportTest extends TestCase
     public function testProcessImportRefs()
     {
         // Create a pre-existing screen and script
-        factory(Screen::class, 1)->create(['title' => 'Existing Screen']);
-        factory(Script::class, 1)->create(['title' => 'Existing Script']);
-        factory(Script::class, 1)->create(['title' => 'Watcher Script']); // To check if '2' is appended to title
+        Screen::factory()->count(1)->create(['title' => 'Existing Screen']);
+        Script::factory()->count(1)->create(['title' => 'Existing Script']);
+        Script::factory()->count(1)->create(['title' => 'Watcher Script']); // To check if '2' is appended to title
 
         // Assert that they now exist
         $this->assertDatabaseHas('screens', ['title' => 'Existing Screen']);
@@ -174,12 +174,12 @@ class ExportImportTest extends TestCase
     public function testExportImportProcess()
     {
         // Create an admin user
-        $adminUser = factory(User::class)->create([
+        $adminUser = User::factory()->create([
             'username' => 'admin',
             'is_administrator' => true,
         ]);
 
-        $standardUser = factory(User::class)->create([
+        $standardUser = User::factory()->create([
             'username' => 'standard',
             'is_administrator' => false,
         ]);
@@ -199,7 +199,7 @@ class ExportImportTest extends TestCase
         $process = Process::where('name', 'Leave Absence Request')->first();
 
         // Add additional categories
-        $secondProcessCategory = factory(ProcessCategory::class)->create(['name' => 'Second Category']);
+        $secondProcessCategory = ProcessCategory::factory()->create(['name' => 'Second Category']);
         $process->categories()->save($secondProcessCategory);
 
         $script = Script::where('title', 'Get available days Script')->firstOrFail();
@@ -285,7 +285,7 @@ class ExportImportTest extends TestCase
     public function testExportWithAnonymousUser()
     {
         $originalAnonUser = app(AnonymousUser::class);
-        $adminUser = factory(User::class)->create([
+        $adminUser = User::factory()->create([
             'username' => 'admin',
             'is_administrator' => true,
         ]);
@@ -309,7 +309,7 @@ class ExportImportTest extends TestCase
         file_put_contents($fileName, $content);
         $file = new UploadedFile($fileName, 'leave_absence_request.json', null, null, true);
 
-        $newAnonUser = factory(User::class)->create(['status' => 'active']);
+        $newAnonUser = User::factory()->create(['status' => 'active']);
         $this->app->extend(AnonymousUser::class, function ($app) use ($newAnonUser) {
             return $newAnonUser;
         });
@@ -386,7 +386,7 @@ class ExportImportTest extends TestCase
         //Create assignments in startEvent, task, userTask, callActivity
         foreach ($response->json('assignable') as $item) {
             if ($item['type'] === 'task') {
-                $newUser = $faker->randomElement([factory(User::class)->create(['status' => 'ACTIVE'])->toArray(), factory(Group::class)->create(['status' => 'ACTIVE'])->toArray()]);
+                $newUser = $faker->randomElement([User::factory()->create(['status' => 'ACTIVE'])->toArray(), Group::factory()->create(['status' => 'ACTIVE'])->toArray()]);
                 $item['value'] = $newUser;
                 $assignable[] = $item;
             }
@@ -465,12 +465,12 @@ class ExportImportTest extends TestCase
         //Create assignments in startEvent, task, userTask, callActivity
         foreach ($response->json('assignable') as $item) {
             if ($item['type'] === 'callActivity') {
-                $item['value'] = factory(Process::class)->create(['name' => 'process test', 'status' => 'ACTIVE'])->toArray();
+                $item['value'] = Process::factory()->create(['name' => 'process test', 'status' => 'ACTIVE'])->toArray();
             } else {
                 if ($item['type'] === 'script') {
-                    $new = factory(User::class)->create(['status' => 'ACTIVE'])->toArray();
+                    $new = User::factory()->create(['status' => 'ACTIVE'])->toArray();
                 } else {
-                    $new = $faker->randomElement([factory(User::class)->create(['status' => 'ACTIVE'])->toArray(), factory(Group::class)->create(['status' => 'ACTIVE'])->toArray()]);
+                    $new = $faker->randomElement([User::factory()->create(['status' => 'ACTIVE'])->toArray(), Group::factory()->create(['status' => 'ACTIVE'])->toArray()]);
                     if (!isset($new['firstname'])) {
                         $new['id'] = 'group-' . $new['id'];
                     }
@@ -482,10 +482,10 @@ class ExportImportTest extends TestCase
         }
 
         //Create assignments in Cancel Request and Edit Data
-        $cancelGroup1 = factory(Group::class)->create(['name' => 'groupCancelRequest', 'status' => 'ACTIVE']);
-        $cancelUser1 = factory(User::class)->create(['firstname' => 'userCancelRequest', 'status' => 'ACTIVE']);
-        $ediGroup1 = factory(Group::class)->create(['name' => 'groupEditData', 'status' => 'ACTIVE']);
-        $ediUser1 = factory(User::class)->create(['firstname' => 'userEditData', 'status' => 'ACTIVE']);
+        $cancelGroup1 = Group::factory()->create(['name' => 'groupCancelRequest', 'status' => 'ACTIVE']);
+        $cancelUser1 = User::factory()->create(['firstname' => 'userCancelRequest', 'status' => 'ACTIVE']);
+        $ediGroup1 = Group::factory()->create(['name' => 'groupEditData', 'status' => 'ACTIVE']);
+        $ediUser1 = User::factory()->create(['firstname' => 'userEditData', 'status' => 'ACTIVE']);
         $cancelRequest = [
             'users' => [$cancelUser1->id],
             'groups' => [$cancelGroup1->id],
@@ -666,8 +666,8 @@ class ExportImportTest extends TestCase
     public function testImportMultipleAssets()
     {
         // Create a pre-existing screen and script
-        factory(Screen::class, 2)->create(['title' => 'Existing Screen']);
-        factory(Script::class, 2)->create(['title' => 'Existing Script']);
+        Screen::factory()->count(2)->create(['title' => 'Existing Screen']);
+        Script::factory()->count(2)->create(['title' => 'Existing Script']);
 
         // Assert that they now exist
         $this->assertDatabaseHas('screens', ['title' => 'Existing Screen']);
@@ -757,7 +757,7 @@ class ExportImportTest extends TestCase
 
     public function testExportImportWithProcessManager()
     {
-        $process = factory(Process::class)->create(['name' => 'Manager test']);
+        $process = Process::factory()->create(['name' => 'Manager test']);
         $process->manager_id = 123;
         $process->setProperty('manager_can_cancel_request', true);
         $process->saveOrFail();
@@ -782,7 +782,7 @@ class ExportImportTest extends TestCase
         $this->assertNull($process->manager);
         $this->assertTrue($process->getProperty('manager_can_cancel_request'));
 
-        $managerUser = factory(User::class)->create();
+        $managerUser = User::factory()->create();
 
         $response = $this->apiCall('POST', '/processes/' . $process->id . '/import/assignments', [
             'assignable' => [],

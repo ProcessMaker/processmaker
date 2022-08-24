@@ -49,7 +49,7 @@ class TaskAssignmentPreviousOwnerTest extends TestCase
     private function loadTestProcessPreviousUserAssignment()
     {
         // Create a new process
-        $this->process = factory(Process::class)->create();
+        $this->process = Process::factory()->create();
 
         // Load a single task process
         $this->process->bpmn = file_get_contents(__DIR__ . '/processes/PreviousTaskAssignee.bpmn');
@@ -57,7 +57,7 @@ class TaskAssignmentPreviousOwnerTest extends TestCase
         // Create user to be assigned to the task
         $task_uid = 'UserTaskUID';
         $this->task = $this->process->getDefinitions()->getActivity($task_uid);
-        $this->assigned = factory(User::class)->create([
+        $this->assigned = User::factory()->create([
             'id' => $this->task->getProperty('assignedUsers'),
             'status' => 'ACTIVE',
         ]);

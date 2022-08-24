@@ -37,14 +37,14 @@ class PermissionsTest extends TestCase
 
     public function testApiPermissions()
     {
-        $group = factory(Group::class)->create([
+        $group = Group::factory()->create([
             'name' => 'All Permissions',
         ]);
         $permissions = Permission::all()->pluck('id');
         $group->permissions()->attach($permissions);
         $group->save();
 
-        factory(GroupMember::class)->create([
+        GroupMember::factory()->create([
             'group_id' => $group->id,
             'member_type' => User::class,
             'member_id' => $this->user->id,
@@ -53,7 +53,7 @@ class PermissionsTest extends TestCase
         $this->user->refresh();
         $this->flushSession();
 
-        $process = factory(Process::class)->create([
+        $process = Process::factory()->create([
             'user_id' => $this->user->id,
             'status' => 'ACTIVE',
         ]);
@@ -83,13 +83,13 @@ class PermissionsTest extends TestCase
 
     public function testSetPermissionsForUser()
     {
-        $this->user = factory(User::class)->create([
+        $this->user = User::factory()->create([
             'password' => Hash::make('password'),
             'is_administrator' => true,
         ]);
 
-        $testUser = factory(User::class)->create();
-        $testPermission = factory(Permission::class)->create();
+        $testUser = User::factory()->create();
+        $testPermission = Permission::factory()->create();
         $response = $this->apiCall('PUT', '/permissions', [
             'user_id' => $testUser->id,
             'permission_names' => [$testPermission->name],
@@ -111,10 +111,10 @@ class PermissionsTest extends TestCase
             $response->assertStatus(403);
 
             // Now give the user permission via a group
-            $group = factory(Group::class)->create([
+            $group = Group::factory()->create([
                 'name' => 'Test',
             ]);
-            factory(GroupMember::class)->create([
+            GroupMember::factory()->create([
                 'group_id' => $group->id,
                 'member_type' => User::class,
                 'member_id' => $this->user->id,

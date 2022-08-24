@@ -16,12 +16,12 @@ class SignalPermissionsTest extends TestCase
 
     private function createUser()
     {
-        $this->user = factory(User::class)->create(['status' => 'ACTIVE']);
+        $this->user = User::factory()->create(['status' => 'ACTIVE']);
     }
 
     public function setUpSignalAssets(): void
     {
-        factory(ProcessCategory::class)->create(['is_system' => true]);
+        ProcessCategory::factory()->create(['is_system' => true]);
         (new SignalSeeder)->run();
     }
 

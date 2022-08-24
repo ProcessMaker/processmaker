@@ -36,7 +36,7 @@ class UserTest extends TestCase
      */
     public function testEditRoute()
     {
-        $user_id = factory(User::class)->create()->id;
+        $user_id = User::factory()->create()->id;
         // get the URL
         $response = $this->webCall('GET', '/admin/users/' . $user_id . '/edit');
 
@@ -52,8 +52,8 @@ class UserTest extends TestCase
      */
     public function testCanSeeAditionalInformationInEditRoute()
     {
-        $user_id = factory(User::class)->create()->id;
-        factory(Setting::class)->create([
+        $user_id = User::factory()->create()->id;
+        Setting::factory()->create([
             'key' => 'users.properties',
             'config' => '{"MyVar":"Test Var"}',
             'format' => 'object',
@@ -73,8 +73,8 @@ class UserTest extends TestCase
      */
     public function testCannotSeeAditionalInformationInProfileRoute()
     {
-        factory(User::class)->create()->id;
-        factory(Setting::class)->create([
+        User::factory()->create()->id;
+        Setting::factory()->create([
             'key' => 'users.properties',
             'config' => '{"MyVar":"Test Var"}',
             'format' => 'object',

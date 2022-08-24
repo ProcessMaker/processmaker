@@ -83,7 +83,7 @@ class GroupSeeder extends Seeder
 
         foreach ($this->defaults as $defaultGroup) {
             // Create the group
-            $createdGroup = factory(Group::class)->create([
+            $createdGroup = Group::factory()->create([
                 'name' => $defaultGroup['name'],
                 'description' => $defaultGroup['description'],
                 'status' => 'ACTIVE',

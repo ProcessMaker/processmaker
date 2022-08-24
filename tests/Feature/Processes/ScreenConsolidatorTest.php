@@ -24,7 +24,7 @@ class ScreenConsolidatorTest extends TestCase
     public function testExportImportProcess()
     {
         // Create an admin user
-        $adminUser = factory(User::class)->create([
+        $adminUser = User::factory()->create([
             'username' => 'admin',
             'is_administrator' => true,
         ]);
@@ -261,7 +261,7 @@ class ScreenConsolidatorTest extends TestCase
     public function testNestedNavButtons()
     {
         // Create an admin user
-        $adminUser = factory(User::class)->create([
+        $adminUser = User::factory()->create([
             'username' => 'admin',
             'is_administrator' => true,
         ]);
@@ -328,7 +328,7 @@ class ScreenConsolidatorTest extends TestCase
     public function testRecordListWithoutRecordForm()
     {
         // Create an admin user
-        $adminUser = factory(User::class)->create([
+        $adminUser = User::factory()->create([
             'username' => 'admin',
             'is_administrator' => true,
         ]);

@@ -105,22 +105,22 @@ class HideSystemCategoriesTest extends TestCase
 
     public function testProcessRequestFiltered()
     {
-        $category = factory(ProcessCategory::class)->create([
+        $category = ProcessCategory::factory()->create([
             'is_system' => false,
         ]);
-        $instance = factory(Process::class)->create([
+        $instance = Process::factory()->create([
             'process_category_id' => $category->id,
         ]);
-        $hiddenCategory = factory(ProcessCategory::class)->create([
+        $hiddenCategory = ProcessCategory::factory()->create([
             'is_system' => true,
         ]);
-        $hiddenInstance = factory(Process::class)->create([
+        $hiddenInstance = Process::factory()->create([
             'process_category_id' => $hiddenCategory->id,
         ]);
-        $processRequest = factory(ProcessRequest::class)->create([
+        $processRequest = ProcessRequest::factory()->create([
             'process_id' => $instance->id,
         ]);
-        $hiddenProcessRequest = factory(ProcessRequest::class)->create([
+        $hiddenProcessRequest = ProcessRequest::factory()->create([
             'process_id' => $hiddenInstance->id,
         ]);
 

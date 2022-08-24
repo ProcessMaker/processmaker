@@ -17,11 +17,11 @@ class GarbageCollectorTest extends TestCase
     {
         Bus::fake();
         //create a serve task and a script task in status ACTIVE and FAILING
-        factory(ProcessRequestToken::class)->create([
+        ProcessRequestToken::factory()->create([
             'status' => 'ACTIVE',
             'element_type' => 'scriptTask', ]);
 
-        factory(ProcessRequestToken::class)->create([
+        ProcessRequestToken::factory()->create([
             'status' => 'FAILING',
             'element_type' => 'serviceTask', ]);
 
@@ -42,11 +42,11 @@ class GarbageCollectorTest extends TestCase
     {
         Bus::fake();
         // simulate the creation of 2 unhandled errors with 2 tokens
-        $token1 = factory(ProcessRequestToken::class)->create([
+        $token1 = ProcessRequestToken::factory()->create([
             'status' => 'ACTIVE',
             'element_type' => 'scriptTask', ]);
 
-        $token2 = factory(ProcessRequestToken::class)->create([
+        $token2 = ProcessRequestToken::factory()->create([
             'status' => 'FAILING',
             'element_type' => 'serviceTask', ]);
 
@@ -73,23 +73,23 @@ class GarbageCollectorTest extends TestCase
 
     public function testProcessDuplicatedTimerEvents()
     {
-        $token1 = factory(ProcessRequestToken::class)->create([
+        $token1 = ProcessRequestToken::factory()->create([
             'status' => 'ACTIVE',
             'element_type' => 'event', ]);
 
-        $token2 = factory(ProcessRequestToken::class)->create([
+        $token2 = ProcessRequestToken::factory()->create([
             'process_request_id' => $token1->process_request_id,
             'status' => 'ACTIVE',
             'element_id' => $token1->element_id,
             'element_type' => 'event', ]);
 
         // Create duplicated scheduled tasks for the same token
-        $schedule = factory(ScheduledTask::class)->create([
+        $schedule = ScheduledTask::factory()->create([
             'process_request_id' => $token1->process_request_id,
             'configuration' => json_encode(['node_id' => $token1->element_id]),
         ]);
 
-        $schedule = factory(ScheduledTask::class)->create([
+        $schedule = ScheduledTask::factory()->create([
             'process_request_id' => $token1->process_request_id,
             'configuration' => json_encode(['node_id' => $token1->element_id]),
         ]);
@@ -107,11 +107,11 @@ class GarbageCollectorTest extends TestCase
 
     protected function generateErrorHandlerFileWith2Tokens()
     {
-        $token1 = factory(ProcessRequestToken::class)->create([
+        $token1 = ProcessRequestToken::factory()->create([
             'status' => 'ACTIVE',
             'element_type' => 'scriptTask', ]);
 
-        $token2 = factory(ProcessRequestToken::class)->create([
+        $token2 = ProcessRequestToken::factory()->create([
             'status' => 'FAILING',
             'element_type' => 'serviceTask', ]);
 

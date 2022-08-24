@@ -20,7 +20,7 @@ trait RequestHelper
     {
         parent::setUp();
 
-        $this->user = factory(User::class)->create([
+        $this->user = User::factory()->create([
             'password' => Hash::make('password'),
             'is_administrator' => true,
         ]);

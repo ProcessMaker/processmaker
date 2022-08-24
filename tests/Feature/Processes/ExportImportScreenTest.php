@@ -25,12 +25,12 @@ class ExportImportScreenTest extends TestCase
     public function testExportImportProcess()
     {
         // Create an admin user
-        $adminUser = factory(User::class)->create([
+        $adminUser = User::factory()->create([
             'username' => 'admin',
             'is_administrator' => true,
         ]);
 
-        $standardUser = factory(User::class)->create([
+        $standardUser = User::factory()->create([
             'username' => 'standard',
             'is_administrator' => false,
         ]);

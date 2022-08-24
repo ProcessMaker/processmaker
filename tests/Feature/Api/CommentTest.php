@@ -56,13 +56,13 @@ class CommentTest extends TestCase
             ProcessRequest::class,
         ]))->create();
 
-        factory(Comment::class, 10)->create([
+        Comment::factory()->count(10)->create([
             'commentable_id' => $model->getKey(),
             'commentable_type' => get_class($model),
             'hidden' => false,
         ]);
 
-        factory(Comment::class, 5)->create([
+        Comment::factory()->count(5)->create([
             'commentable_id' => $model->getKey(),
             'commentable_type' => get_class($model),
             'hidden' => true,
@@ -84,19 +84,19 @@ class CommentTest extends TestCase
             ProcessRequest::class,
         ]))->create();
 
-        factory(Comment::class, 10)->create([
+        Comment::factory()->count(10)->create([
             'commentable_id' => $model->getKey(),
             'commentable_type' => get_class($model),
             'hidden' => false,
         ]);
 
-        factory(Comment::class, 5)->create([
+        Comment::factory()->count(5)->create([
             'commentable_id' => $model->getKey(),
             'commentable_type' => get_class($model),
             'hidden' => true,
         ]);
 
-        $this->user = factory(User::class)->create([
+        $this->user = User::factory()->create([
             'password' => Hash::make('password'),
             'is_administrator' => false,
         ]);
@@ -112,35 +112,35 @@ class CommentTest extends TestCase
     {
         $permission = 'view-comments';
 
-        $model = factory(ProcessRequestToken::class)->create();
+        $model = ProcessRequestToken::factory()->create();
 
-        factory(Comment::class, 10)->create([
+        Comment::factory()->count(10)->create([
             'commentable_id' => $model->getKey(),
             'commentable_type' => get_class($model),
             'hidden' => false,
         ]);
 
-        factory(Comment::class, 5)->create([
+        Comment::factory()->count(5)->create([
             'commentable_id' => $model->getKey(),
             'commentable_type' => get_class($model),
             'hidden' => true,
         ]);
 
-        $model2 = factory(ProcessRequest::class)->create();
+        $model2 = ProcessRequest::factory()->create();
 
-        factory(Comment::class, 10)->create([
+        Comment::factory()->count(10)->create([
             'commentable_id' => $model2->getKey(),
             'commentable_type' => get_class($model2),
             'hidden' => false,
         ]);
 
-        factory(Comment::class, 5)->create([
+        Comment::factory()->count(5)->create([
             'commentable_id' => $model2->getKey(),
             'commentable_type' => get_class($model2),
             'hidden' => true,
         ]);
 
-        $this->user = factory(User::class)->create([
+        $this->user = User::factory()->create([
             'password' => Hash::make('password'),
             'is_administrator' => false,
         ]);
@@ -167,7 +167,7 @@ class CommentTest extends TestCase
 
     public function testCreateComment()
     {
-        $comment = factory(Comment::class)->make();
+        $comment = Comment::factory()->make();
 
         $response = $this->apiCall('POST', self::API_TEST_URL, $comment->toArray());
 
@@ -186,7 +186,7 @@ class CommentTest extends TestCase
     public function testGetComment()
     {
         //get the id from the factory
-        $comment = factory(Comment::class)->create()->id;
+        $comment = Comment::factory()->create()->id;
 
         //load api
         $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $comment);
@@ -204,7 +204,7 @@ class CommentTest extends TestCase
     public function testDeleteComment()
     {
         //Remove comment
-        $url = self::API_TEST_URL . '/' . factory(Comment::class)->create(['user_id' => $this->user->getKey()])->id;
+        $url = self::API_TEST_URL . '/' . Comment::factory()->create(['user_id' => $this->user->getKey()])->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code
@@ -217,7 +217,7 @@ class CommentTest extends TestCase
     public function testDeleteCommentNotExist()
     {
         //Comment not exist
-        $url = self::API_TEST_URL . '/' . factory(Comment::class)->make()->id;
+        $url = self::API_TEST_URL . '/' . Comment::factory()->make()->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code

@@ -27,7 +27,7 @@ class DashboardTest extends TestCase
 
     public function testIndexRoute()
     {
-        $this->user = factory(User::class)->create();
+        $this->user = User::factory()->create();
         $response = $this->webCall('GET', '/admin');
         $response->assertStatus(403);
 

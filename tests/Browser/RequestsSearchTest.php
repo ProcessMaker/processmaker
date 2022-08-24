@@ -18,7 +18,7 @@ class RequestsSearchTest extends DuskTestCase
 
         $user = User::first();
 
-        factory(ProcessRequest::class)->create([
+        ProcessRequest::factory()->create([
             'name' => 'Some Request',
             'user_id' => $user->id,
             'status' => 'ACTIVE',

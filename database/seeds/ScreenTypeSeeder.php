@@ -12,11 +12,11 @@ class ScreenTypeSeeder extends Seeder
      */
     public function run()
     {
-        factory(ScreenType::class)->create([
+        ScreenType::factory()->create([
             'name' => 'FORM',
             'is_interactive' => true,
         ]);
-        factory(ScreenType::class)->create([
+        ScreenType::factory()->create([
             'name' => 'DISPLAY',
             'is_interactive' => false,
         ]);

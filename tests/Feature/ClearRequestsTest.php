@@ -54,7 +54,7 @@ class ClearRequestsTest extends TestCase
     private function createTestProcess(array $data = [])
     {
         $data['bpmn'] = Process::getProcessTemplate('IntermediateTimerEvent.bpmn');
-        $process = factory(Process::class)->create($data);
+        $process = Process::factory()->create($data);
 
         return $process;
     }
@@ -64,23 +64,23 @@ class ClearRequestsTest extends TestCase
      */
     private function createTestCollaborationProcess()
     {
-        $process = factory(Process::class)->create([
+        $process = Process::factory()->create([
             'bpmn' => Process::getProcessTemplate('Collaboration.bpmn'),
         ]);
         //Assign the task to $this->user
-        factory(ProcessTaskAssignment::class)->create([
+        ProcessTaskAssignment::factory()->create([
             'process_id' => $process->id,
             'process_task_id' => '_5',
             'assignment_id' => $this->user->id,
             'assignment_type' => 'user',
         ]);
-        factory(ProcessTaskAssignment::class)->create([
+        ProcessTaskAssignment::factory()->create([
             'process_id' => $process->id,
             'process_task_id' => '_10',
             'assignment_id' => $this->user->id,
             'assignment_type' => 'user',
         ]);
-        factory(ProcessTaskAssignment::class)->create([
+        ProcessTaskAssignment::factory()->create([
             'process_id' => $process->id,
             'process_task_id' => '_24',
             'assignment_id' => $this->user->id,
@@ -153,14 +153,14 @@ class ClearRequestsTest extends TestCase
         $response = $this->apiCall('GET', self::API_TEST_URL);
         $response->assertStatus(200);
 
-        $process = factory(Process::class)->create([
+        $process = Process::factory()->create([
             'bpmn' => Process::getProcessTemplate('SingleTask.bpmn'),
         ]);
         $bpmnProcess = $process->getDefinitions()->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'process')->item(0);
         $bpmnProcessId = $bpmnProcess->getAttribute('id');
 
         // Add comments to Tokens
-        $model = factory(ProcessRequestToken::class)->create([
+        $model = ProcessRequestToken::factory()->create([
             'process_id' => $process->id,
             'process_request_id' => ProcessRequest::create([
                 'name' => $this->faker->sentence(3),
@@ -173,32 +173,32 @@ class ClearRequestsTest extends TestCase
             ])->id,
         ]);
 
-        factory(Comment::class, 5)->create([
+        Comment::factory()->count(5)->create([
             'commentable_id' => $model->getKey(),
             'commentable_type' => get_class($model),
             'hidden' => false,
         ]);
 
-        factory(Comment::class, 5)->create([
+        Comment::factory()->count(5)->create([
             'commentable_id' => $model->getKey(),
             'commentable_type' => get_class($model),
             'hidden' => true,
         ]);
 
         // Add comments to Requests
-        $model = factory(ProcessRequest::class)->create([
+        $model = ProcessRequest::factory()->create([
             'process_id' => $process->id,
             'callable_id' => 'PROCESS_1',
             'process_collaboration_id' => null,
         ]);
 
-        factory(Comment::class, 5)->create([
+        Comment::factory()->count(5)->create([
             'commentable_id' => $model->getKey(),
             'commentable_type' => get_class($model),
             'hidden' => false,
         ]);
 
-        factory(Comment::class, 5)->create([
+        Comment::factory()->count(5)->create([
             'commentable_id' => $model->getKey(),
             'commentable_type' => get_class($model),
             'hidden' => true,
@@ -206,7 +206,7 @@ class ClearRequestsTest extends TestCase
 
         // Add 3 comments to Process
         $model = $process;
-        factory(Comment::class, 3)->create([
+        Comment::factory()->count(3)->create([
             'commentable_id' => $model->getKey(),
             'commentable_type' => get_class($model),
             'hidden' => false,
@@ -220,7 +220,7 @@ class ClearRequestsTest extends TestCase
         $fileUpload = UploadedFile::fake()->create('my_test_file123.txt', 1);
 
         // We create a model (in this case a user) and associate to him the file
-        $model = factory(User::class)->create();
+        $model = User::factory()->create();
         $model->addMedia($fileUpload)->toMediaCollection('local');
 
         // Basic listing assertions

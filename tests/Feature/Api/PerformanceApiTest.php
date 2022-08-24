@@ -91,8 +91,8 @@ class PerformanceApiTest extends TestCase
      */
     public function testRoutesSpeed($route, $params)
     {
-        $this->user = factory(User::class)->create(['is_administrator' => true]);
-        factory(Comment::class, $this->dbSize)->create();
+        $this->user = User::factory()->create(['is_administrator' => true]);
+        Comment::factory()->count($this->dbSize)->create();
         $this->actingAs($this->user);
         $this->withoutExceptionHandling();
 
@@ -127,8 +127,8 @@ class PerformanceApiTest extends TestCase
     public function testGetProcessStartEvents()
     {
         // Create a group (id=10) with 1000 non admin users
-        $group = factory(Group::class)->create(['id' => 10]);
-        $users = factory(User::class, 1000)->create(['is_administrator' => false]);
+        $group = Group::factory()->create(['id' => 10]);
+        $users = User::factory()->count(1000)->create(['is_administrator' => false]);
         foreach ($users as $user) {
             $group->groupMembers()->create([
                 'group_id' => $group->id,
@@ -138,7 +138,7 @@ class PerformanceApiTest extends TestCase
         }
         // Create a process assigned to group (id=10)
         $bpmn = file_get_contents(__DIR__ . '/processes/AssignedToGroup.bpmn');
-        factory(Process::class)->create(['bpmn' => $bpmn]);
+        Process::factory()->create(['bpmn' => $bpmn]);
         $tInit = microtime(true);
         // Call API with a non admin user
         $this->user = $user;

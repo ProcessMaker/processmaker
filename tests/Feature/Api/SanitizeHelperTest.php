@@ -293,11 +293,11 @@ class SanitizeHelperTest extends TestCase
 
     private function createScreen($screenConfigFilePath)
     {
-        $this->screen = factory(Screen::class)->create([
+        $this->screen = Screen::factory()->create([
             'config' => json_decode(file_get_contents(base_path($screenConfigFilePath))),
         ]);
 
-        $this->screenVersion = factory(ScreenVersion::class)->create([
+        $this->screenVersion = ScreenVersion::factory()->create([
             'screen_id' => $this->screen->id,
             'type' => 'FORM',
             'config' => $this->screen->config,
@@ -309,7 +309,7 @@ class SanitizeHelperTest extends TestCase
     {
         $bpmn = file_get_contents(base_path($processFilePath));
         $bpmn = str_replace('pm:screenRef="1"', 'pm:screenRef="' . $this->screen->id . '"', $bpmn);
-        $this->process = factory(Process::class)->create([
+        $this->process = Process::factory()->create([
             'bpmn' => $bpmn,
             'user_id' => $this->user->id,
         ]);
@@ -330,7 +330,7 @@ class SanitizeHelperTest extends TestCase
 
     private function createTask($processId, $screenVersionId, $processRequestId, $node)
     {
-        $task = factory(ProcessRequestToken::class)->create([
+        $task = ProcessRequestToken::factory()->create([
             'process_id' => $processId,
             'version_type' => 'ProcessMaker\Models\ScreenVersion',
             'version_id' => $screenVersionId,

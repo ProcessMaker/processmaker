@@ -22,7 +22,7 @@ class PMConfigGenericExportManagerTest extends TestCase
         //
         //
 
-        $process = factory(Process::class)->create([
+        $process = Process::factory()->create([
             'bpmn' => file_get_contents(__DIR__ . '/../Fixtures/pm_config_generic_export.bpmn'),
         ]);
 
@@ -37,10 +37,10 @@ class PMConfigGenericExportManagerTest extends TestCase
             [Screen::class, 9994],
         ], $result);
 
-        $abeScreen = factory(Screen::class)->create();
-        $abeAnotherScreen = factory(Screen::class)->create();
-        $anotherAbeScreen = factory(Screen::class)->create();
-        $anotherAbeAnotherScreen = factory(Screen::class)->create();
+        $abeScreen = Screen::factory()->create();
+        $abeAnotherScreen = Screen::factory()->create();
+        $anotherAbeScreen = Screen::factory()->create();
+        $anotherAbeAnotherScreen = Screen::factory()->create();
         $references = [
             Screen::class => [
                 9991 => $abeScreen,

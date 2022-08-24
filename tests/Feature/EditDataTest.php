@@ -29,21 +29,21 @@ class EditDataTest extends TestCase
         parent::setUp();
 
         // Creates an admin user
-        $this->admin = factory(User::class)->create([
+        $this->admin = User::factory()->create([
             'password' => Hash::make('password'),
             'is_administrator' => true,
         ]);
 
         // Creates a user
-        $this->user = factory(User::class)->create([
+        $this->user = User::factory()->create([
             'password' => Hash::make('password'),
             'is_administrator' => false,
         ]);
 
         // Create a group
-        $this->group = factory(Group::class)->create(['name' => 'group']);
+        $this->group = Group::factory()->create(['name' => 'group']);
 
-        factory(GroupMember::class)->create([
+        GroupMember::factory()->create([
             'member_id' => $this->user->id,
             'member_type' => User::class,
             'group_id' => $this->group->id,
@@ -108,7 +108,7 @@ class EditDataTest extends TestCase
     private function createSingleTaskProcessUserAssignment(User $userAssigned)
     {
         // Create a new process
-        $process = factory(Process::class)->create();
+        $process = Process::factory()->create();
 
         // Load a single task process
         $process->bpmn = Process::getProcessTemplate('SingleTask.bpmn');

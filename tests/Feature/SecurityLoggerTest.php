@@ -22,7 +22,7 @@ class SecurityLoggerTest extends TestCase
         config(['auth.log_auth_events' => true]);
 
         // Build a user with a specified password
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'username' =>'newuser',
             'password' => Hash::make('password'),
         ]);
