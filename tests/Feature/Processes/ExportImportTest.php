@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Processes;
 
+use Database\Seeders\ProcessSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;

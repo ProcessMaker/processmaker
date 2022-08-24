@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
+use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\Permission;

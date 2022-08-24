@@ -2,8 +2,9 @@
 
 namespace Tests\Feature;
 
+use Database\Seeders\PermissionSeeder;
 use Illuminate\Support\Facades\Hash;
-use PermissionSeeder;
+
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Group;

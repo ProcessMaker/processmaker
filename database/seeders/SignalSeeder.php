@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;

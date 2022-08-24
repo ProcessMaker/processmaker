@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Database\Seeders\PermissionSeeder;
 use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;

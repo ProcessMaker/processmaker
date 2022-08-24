@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ScreenCategory;

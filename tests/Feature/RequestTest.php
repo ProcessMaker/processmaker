@@ -2,8 +2,9 @@
 
 namespace Tests\Feature;
 
+use Database\Seeders\PermissionSeeder;
 use Illuminate\Http\Testing\File;
-use PermissionSeeder;
+
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\PermissionAssignment;
 use ProcessMaker\Models\Process;

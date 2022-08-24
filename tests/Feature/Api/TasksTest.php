@@ -2,10 +2,11 @@
 
 namespace Tests\Feature\Api;
 
+use Database\Seeders\PermissionSeeder;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Notification;
-use PermissionSeeder;
+
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;

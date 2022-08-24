@@ -2,10 +2,11 @@
 
 namespace Tests\Feature;
 
+use Database\Seeders\PermissionSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use PermissionSeeder;
+
 use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;

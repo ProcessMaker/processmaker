@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Processes;
 
+use Database\Seeders\ProcessSeeder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\Process;

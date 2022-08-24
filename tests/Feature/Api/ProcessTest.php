@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Group;
@@ -749,7 +750,7 @@ class ProcessTest extends TestCase
     public function testUpdateProcess()
     {
         //Seeder Permissions
-        (new \PermissionSeeder())->run($this->user);
+        (new PermissionSeeder())->run($this->user);
 
         //Test to update name process
         $name = $this->faker->sentence(3);
@@ -770,7 +771,7 @@ class ProcessTest extends TestCase
     public function testUpdateProcessWithCategoryNull()
     {
         //Seeder Permissions
-        (new \PermissionSeeder())->run($this->user);
+        (new PermissionSeeder())->run($this->user);
 
         //Test update process category to null
         $this->assertModelUpdateFails(
@@ -790,7 +791,7 @@ class ProcessTest extends TestCase
     public function testUpdateProcessWithCategory()
     {
         //Seeder Permissions
-        (new \PermissionSeeder())->run($this->user);
+        (new PermissionSeeder())->run($this->user);
 
         //Test update process category
         $this->assertModelUpdate(
@@ -858,7 +859,7 @@ class ProcessTest extends TestCase
     public function testUpdateBPMN()
     {
         //Seeder Permissions
-        (new \PermissionSeeder())->run($this->user);
+        (new PermissionSeeder())->run($this->user);
 
         $process = Process::factory()->create([
             'bpmn' => Process::getProcessTemplate('OnlyStartElement.bpmn'),
