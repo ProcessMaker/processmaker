@@ -2,13 +2,7 @@
 
 use ProcessMaker\Http\Controllers\TestStatusController;
 
-Route::group(
-    [
-        'middleware' => ['auth:api', 'setlocale', 'bindings', 'sanitize'],
-        'prefix' => 'api/1.0',
-        'namespace' => 'ProcessMaker\Http\Controllers\Api',
-        'as' => 'api.',
-    ], function () {
+Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/1.0')->namespace('ProcessMaker\Http\Controllers\Api')->name('api.')->group(function () {
 
     // Users
         Route::get('users', 'UserController@index')->name('users.index'); //Permissions handled in the controller
