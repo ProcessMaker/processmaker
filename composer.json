@@ -67,14 +67,12 @@
         "files": [
             "ProcessMaker/Helper/helper.php"
         ],
-        "classmap": [
-            "database/seeds",
-            "database/factories"
-        ],
         "psr-4": {
             "ProcessMaker\\": [
                 "ProcessMaker/"
-            ]
+            ],
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
         }
     },
     "autoload-dev": {
