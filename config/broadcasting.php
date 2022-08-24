@@ -1,6 +1,7 @@
 <?php
 
 return [
+
     /*
     |--------------------------------------------------------------------------
     | Default Broadcaster
@@ -10,10 +11,12 @@ return [
     | framework when an event needs to be broadcast. You may set this to
     | any of the connections defined in the "connections" array below.
     |
-    | Supported: "pusher", "redis", "log", "null"
+    | Supported: "pusher", "ably", "redis", "log", "null"
     |
     */
+
     'default' => env('BROADCAST_DRIVER', 'null'),
+
     /*
     |--------------------------------------------------------------------------
     | Broadcast Connections
@@ -24,29 +27,42 @@ return [
     | each available type of connection are provided inside this array.
     |
     */
+
     'connections' => [
+
         'pusher' => [
             'driver' => 'pusher',
             'key' => env('PUSHER_APP_KEY'),
             'secret' => env('PUSHER_APP_SECRET'),
             'app_id' => env('PUSHER_APP_ID'),
             'options' => [
-                'cluster' => env('PUSHER_CLUSTER'),
+                'cluster' => env('PUSHER_APP_CLUSTER'),
                 'debug' => env('PUSHER_DEBUG', false),
                 'use_tls' => env('PUSHER_TLS', true),
+                'useTLS' => true,
             ],
         ],
+
+        'ably' => [
+            'driver' => 'ably',
+            'key' => env('ABLY_KEY'),
+        ],
+
         'redis' => [
             'driver' => 'redis',
             'connection' => 'default',
             'host' => env('BROADCASTER_HOST'),
             'key' => env('BROADCASTER_KEY'),
         ],
+
         'log' => [
             'driver' => 'log',
         ],
+
         'null' => [
             'driver' => 'null',
         ],
+
     ],
+
 ];
