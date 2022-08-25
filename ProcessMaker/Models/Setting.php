@@ -188,7 +188,7 @@ class Setting extends Model implements HasMedia
             case 'object':
                 if (is_string($this->attributes['config'])) {
                     return $this->attributes['config'] = json_decode($this->attributes['config']);
-                } else if (is_object($this->attributes['config'])) {
+                } elseif (is_object($this->attributes['config'])) {
                     return $this->attributes['config'];
                 }
             case 'array':

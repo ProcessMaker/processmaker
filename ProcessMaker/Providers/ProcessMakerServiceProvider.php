@@ -2,6 +2,10 @@
 
 namespace ProcessMaker\Providers;
 
+use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Illuminate\Notifications\Events\BroadcastNotificationCreated;
+use Illuminate\Notifications\Events\NotificationSent;
+use Illuminate\Support\Facades;
 use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
 use Laravel\Horizon\Repositories\RedisJobRepository;
@@ -12,10 +16,6 @@ use ProcessMaker\Models;
 use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
 use ProcessMaker\Repositories\RedisJobRepository as JobRepository;
-use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Notifications\Events\BroadcastNotificationCreated;
-use Illuminate\Notifications\Events\NotificationSent;
-use Illuminate\Support\Facades;
 
 /**
  * Provide our ProcessMaker specific services
@@ -135,7 +135,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
         // Listen to the events for our core screen
         // types and add our javascript
         Facades\Event::listen(ScreenBuilderStarting::class, function ($event) {
-
             // Add any extensions to form builder
             //and renderer from packages
             $event->manager->addPackageScripts($event->type);
@@ -152,7 +151,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         // Log Notifications
         Facades\Event::listen(NotificationSent::class, function ($event) {
-
             $id = $event->notifiable->id;
             $notifiable = get_class($event->notifiable);
             $notification = get_class($event->notification);
@@ -162,10 +160,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         // Log Broadcasts (messages sent to laravel-echo-server and redis)
         Facades\Event::listen(BroadcastNotificationCreated::class, function ($event) {
-
             $channels = implode(', ', $event->broadcastOn());
 
-            Facades\Log::debug('Broadcasting Notification '.$event->broadcastType().'on channel(s) '.$channels);
+            Facades\Log::debug('Broadcasting Notification ' . $event->broadcastType() . 'on channel(s) ' . $channels);
         });
     }
 

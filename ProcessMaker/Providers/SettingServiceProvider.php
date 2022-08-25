@@ -2,16 +2,16 @@
 
 namespace ProcessMaker\Providers;
 
-use RuntimeException;
-use ProcessMaker\Models\Setting;
-use ProcessMaker\Jobs\TerminateHorizon;
-use ProcessMaker\Events\SettingsLoaded;
-use ProcessMaker\Repositories\RedisJobRepository;
+use Illuminate\Console\Events\CommandFinished;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Illuminate\Database\ConnectionResolverInterface as ConnectionResolver;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Console\Events\CommandFinished;
-use Illuminate\Database\ConnectionResolverInterface as ConnectionResolver;
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use ProcessMaker\Events\SettingsLoaded;
+use ProcessMaker\Jobs\TerminateHorizon;
+use ProcessMaker\Models\Setting;
+use ProcessMaker\Repositories\RedisJobRepository;
+use RuntimeException;
 
 class SettingServiceProvider extends ServiceProvider
 {
@@ -43,7 +43,6 @@ class SettingServiceProvider extends ServiceProvider
             // Bind the settings keys and values to
             // the app configuration repository
             if ($repository->get($key = 'app.settings.loaded') !== true) {
-
                 // Set up the database connection
                 $this->bindConnectionResolver($resolver);
 
@@ -65,7 +64,6 @@ class SettingServiceProvider extends ServiceProvider
             // composer install. We need to catch that
             // exception and then bail.
         } catch (RuntimeException $exception) {
-
             // Log the exception for debugging
             Log::notice('Exception caught while loading settings into app configuration', [
                 'message' => $exception->getMessage(),

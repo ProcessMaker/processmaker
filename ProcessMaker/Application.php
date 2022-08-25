@@ -2,12 +2,12 @@
 
 namespace ProcessMaker;
 
-use ProcessMaker\Models\Setting;
 use Igaster\LaravelTheme\Facades\Theme;
-use ProcessMaker\Providers\SettingServiceProvider;
+use Illuminate\Database\ConnectionResolverInterface as ConnectionResolver;
 use Illuminate\Foundation\Application as IlluminateApplication;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\ConnectionResolverInterface as ConnectionResolver;
+use ProcessMaker\Models\Setting;
+use ProcessMaker\Providers\SettingServiceProvider;
 
 /**
  * Class Application
