@@ -2,24 +2,36 @@
 
 namespace ProcessMaker;
 
+use ProcessMaker\Models\Setting;
 use Igaster\LaravelTheme\Facades\Theme;
+use ProcessMaker\Providers\SettingServiceProvider;
 use Illuminate\Foundation\Application as IlluminateApplication;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\ConnectionResolverInterface as ConnectionResolver;
 
 /**
  * Class Application
  */
 class Application extends IlluminateApplication
 {
-    // Our ProcessMaker Version
-    const VERSION = '4.0.0';
+    // ProcessMaker Version
+    public const VERSION = '4.0.0';
+
+    public function __construct($basePath = null)
+    {
+        parent::__construct($basePath);
+
+        $this->afterLoadingEnvironment(function () {
+            $this->register(SettingServiceProvider::class);
+        });
+    }
 
     /**
      * Sets the timezone for the application and for php with the specified timezone
      *
-     * @param $timezone string The timezone to set to
+     * @param $timezone string
      */
-    public function setTimezone($timezone)
+    public function setTimezone(string $timezone): void
     {
         if (!$this->configurationIsCached()) {
             config(['app.timezone' => $timezone]);
@@ -30,14 +42,17 @@ class Application extends IlluminateApplication
 
     /**
      * Retrieves the currently set timezone
-     * @return string The timezone for the system
+     *
+     * @return string
      */
-    public function getTimezone()
+    public function getTimezone(): string
     {
         return config('app.timezone');
     }
 
     /**
+     * TODO Is this method, getSystemConstants() still necessary?
+     *
      * Return the System defined constants and Application variables
      *   Constants: SYS_*
      *   Sessions : USER_* , URS_*

@@ -142,7 +142,15 @@ return [
         Illuminate\View\ViewServiceProvider::class,
 
         /**
-         * ProcessMaker Providers
+         * Package Service Providers
+         */
+        Laravel\Passport\PassportServiceProvider::class,
+        Laravel\Scout\ScoutServiceProvider::class,
+        Collective\Html\HtmlServiceProvider::class,
+        TeamTNT\Scout\TNTSearchScoutServiceProvider::class,
+
+        /**
+         * ProcessMaker Service Providers
          */
         ProcessMaker\Providers\ProcessMakerServiceProvider::class,
         ProcessMaker\Providers\AuthServiceProvider::class,
@@ -153,11 +161,6 @@ return [
         ProcessMaker\Providers\BroadcastServiceProvider::class,
         ProcessMaker\Providers\WorkflowServiceProvider::class,
         ProcessMaker\Providers\UpgradeServiceProvider::class,
-        Laravel\Passport\PassportServiceProvider::class,
-        Collective\Html\HtmlServiceProvider::class,
-        TeamTNT\Scout\TNTSearchScoutServiceProvider::class,
-        Laravel\Scout\ScoutServiceProvider::class,
-        ProcessMaker\Providers\SettingServiceProvider::class,
 
     ],
 

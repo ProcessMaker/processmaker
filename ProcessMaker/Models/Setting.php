@@ -52,6 +52,8 @@ class Setting extends Model implements HasMedia
     use HasMediaTrait;
     use SerializeToIso8601;
 
+    protected $table = 'settings';
+
     protected $connection = 'processmaker';
 
     public const DISK_CSS = 'settings';

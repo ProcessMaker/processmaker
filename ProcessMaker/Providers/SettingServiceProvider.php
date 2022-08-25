@@ -10,22 +10,11 @@ use ProcessMaker\Repositories\RedisJobRepository;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Console\Events\CommandFinished;
-use Illuminate\Contracts\Config\Repository as RepositoryContract;
+use Illuminate\Database\ConnectionResolverInterface as ConnectionResolver;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 
 class SettingServiceProvider extends ServiceProvider
 {
-    /**
-     * Bootstrap settings into the global app configuration
-     *
-     * @return void
-     */
-    public function boot(): void
-    {
-        if (!$this->app->configurationIsCached()) {
-            $this->loadSettingsFromDatabase($this->app['config']);
-        }
-    }
-
     /**
      * Register an event listener for the service provider
      *
@@ -40,15 +29,23 @@ class SettingServiceProvider extends ServiceProvider
      * Bind setting keys and config values to the global app configuration
      *
      * @param  \Illuminate\Contracts\Config\Repository  $repository
+     * @param  \Illuminate\Database\ConnectionResolverInterface  $resolver
      *
      * @return void
      */
-    protected function loadSettingsFromDatabase(RepositoryContract $repository): void
+    public function boot(ConfigRepository $repository, ConnectionResolver $resolver): void
     {
+        if ($this->app->configurationIsCached()) {
+            return;
+        }
+
         try {
             // Bind the settings keys and values to
             // the app configuration repository
             if ($repository->get($key = 'app.settings.loaded') !== true) {
+
+                // Set up the database connection
+                $this->bindConnectionResolver($resolver);
 
                 // Query only what we need from the database and
                 // bind the key/config value to the global
@@ -88,6 +85,18 @@ class SettingServiceProvider extends ServiceProvider
                 SettingsLoaded::dispatch($repository);
             }
         }
+    }
+
+    /**
+     * Make and bind a database connection resolver for Settings models
+     *
+     * @param  \Illuminate\Database\ConnectionResolverInterface  $resolver
+     *
+     * @return void
+     */
+    public function bindConnectionResolver(ConnectionResolver $resolver): void
+    {
+        Setting::setConnectionResolver($resolver);
     }
 
     /**
