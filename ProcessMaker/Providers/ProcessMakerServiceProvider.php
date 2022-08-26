@@ -8,25 +8,18 @@ use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Support\Facades;
 use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
-use Laravel\Horizon\Repositories\RedisJobRepository;
 use Laravel\Passport\Passport;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Managers;
 use ProcessMaker\Models;
 use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
-use ProcessMaker\Repositories\RedisJobRepository as JobRepository;
 
 /**
- * Provide our ProcessMaker specific services
+ * Provide our ProcessMaker specific services.
  */
 class ProcessMakerServiceProvider extends ServiceProvider
 {
-    /**
-     * Bootstrap ProcessMaker services.
-     *
-     * @return void
-     */
     public function boot(): void
     {
         static::bootObservers();
@@ -36,15 +29,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
         parent::boot();
     }
 
-    /**
-     * Register our bindings in the service container
-     */
     public function register(): void
     {
-        $this->app->extend(RedisJobRepository::class, function ($repository) {
-            return new JobRepository($repository->redis);
-        });
-
         // Dusk, if env is appropriate
         // TODO Remove Dusk references and remove from composer dependencies
         if (!$this->app->environment('production')) {
@@ -59,7 +45,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return new Managers\LoginManager();
         });
 
-        /**
+        /*
          * Maps our Index Manager as a singleton. The Index Manager is used
          * to manage customizations to the search indexer.
          */
@@ -73,7 +59,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->make(Managers\IndexManager::class)
                   ->add('Tasks', Models\ProcessRequestToken::class);
 
-        /**
+        /*
          * Maps our Modeler Manager as a singleton. The Modeler Manager is used
          * to manage customizations to the Process Modeler.
          */
@@ -81,7 +67,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return new Managers\ModelerManager();
         });
 
-        /**
+        /*
          * Maps our Screen Builder Manager as a singleton. The Screen Builder Manager is used
          * to manage customizations to the Screen Builder.
          */
@@ -89,7 +75,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return new Managers\ScreenBuilderManager();
         });
 
-        /**
+        /*
          * Maps our Script Builder Manager as a singleton. The Script builder Manager is used
          * to manage customizations to the Process Script Builder.
          */
@@ -97,7 +83,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return new Managers\ScriptBuilderManager();
         });
 
-        /**
+        /*
          * Maps our Docker Manager as a singleton. The Docker Manager is used
          * to manage docker execution over the application.
          */
@@ -126,9 +112,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register app-level events
-     *
-     * @return void
+     * Register app-level events.
      */
     protected static function registerEvents(): void
     {
@@ -136,15 +120,18 @@ class ProcessMakerServiceProvider extends ServiceProvider
         // types and add our javascript
         Facades\Event::listen(ScreenBuilderStarting::class, function ($event) {
             // Add any extensions to form builder
-            //and renderer from packages
+            // and renderer from packages
             $event->manager->addPackageScripts($event->type);
 
             switch ($event->type) {
                 case 'FORM':
                     $event->manager->addScript(mix('js/processes/screen-builder/typeForm.js'));
+
                     break;
+
                 case 'DISPLAY':
                     $event->manager->addScript(mix('js/processes/screen-builder/typeDisplay.js'));
+
                     break;
             }
         });
@@ -167,9 +154,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bind and boot model observers
-     *
-     * @return void
+     * Bind and boot model observers.
      */
     protected static function bootObservers(): void
     {
@@ -187,9 +172,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register and extend existing validators
-     *
-     * @return void
+     * Register and extend existing validators.
      */
     protected static function extendValidators(): void
     {
@@ -216,9 +199,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
     }
 
     /**
-     * Setup/configure various vendor services
-     *
-     * @return void
+     * Setup/configure various vendor services.
      */
     protected static function configureVendors(): void
     {
