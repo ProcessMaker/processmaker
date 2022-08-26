@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use Auth;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityCompleted;
@@ -12,14 +11,12 @@ use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Events\ProcessCompleted;
 use ProcessMaker\Events\ProcessUpdated;
 use ProcessMaker\Events\ScreenBuilderStarting;
-use ProcessMaker\Events\ScriptBuilderStarting;
 use ProcessMaker\Events\ScriptResponseEvent;
 use ProcessMaker\Events\SessionStarted as SessionStartedEvent;
 use ProcessMaker\Events\TestStatusEvent;
 use ProcessMaker\Managers\ModelerManager as Modeler;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Managers\ScreenBuilderManager as ScreenBuilder;
-use ProcessMaker\Managers\ScriptBuilderManager as ScriptBuilder;
 use ProcessMaker\Models\ProcessRequest as Request;
 use ProcessMaker\Models\ProcessRequestToken as Task;
 use ProcessMaker\Models\Screen;
@@ -27,28 +24,39 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\LoggingHelper;
 use Tests\TestCase;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class BroadcastTest extends TestCase
 {
-    use LoggingHelper, WithFaker;
+    use LoggingHelper;
+    use WithFaker;
 
     public function testBroadcastEventsHaveTesting()
     {
-        $path = app_path('Events');
-        $files = scandir($path);
-        foreach ($files as $file) {
-            $doesMatch = preg_match('/(?<name>.+).php/', $file, $matches);
-            if ($doesMatch) {
-                $name = $matches['name'];
-                $methodName = "test{$name}Broadcast";
-                $this->assertTrue(method_exists($this, $methodName), "Failed asserting that broadcast event $name has a test.");
+        foreach (scandir(app_path('Events')) as $file) {
+            if (!preg_match('/(?<name>.+).php/', $file, $matches)) {
+                continue;
             }
+
+            $name = $matches['name'];
+            $methodName = "test{$name}Broadcast";
+
+            $this->assertTrue(method_exists($this, $methodName), "Failed asserting that broadcast event {$name} has a test.");
         }
     }
 
     /**
+     * Test that the SettingsLoaded event was fired during the Application boot up.
+     */
+    public function testSettingsLoadedBroadcast()
+    {
+        $this->assertTrue(config('app.settings.loaded'));
+    }
+
+    /**
      * Asserts that the ActivityAssigned broadcast event works.
-     *
-     * @return void
      */
     public function testActivityAssignedBroadcast()
     {
@@ -66,8 +74,6 @@ class BroadcastTest extends TestCase
 
     /**
      * Asserts that the ActivityCompleted broadcast event works.
-     *
-     * @return void
      */
     public function testActivityCompletedBroadcast()
     {
@@ -84,8 +90,6 @@ class BroadcastTest extends TestCase
 
     /**
      * Asserts that the ProcessCompleted broadcast event works.
-     *
-     * @return void
      */
     public function testProcessCompletedBroadcast()
     {
@@ -102,8 +106,6 @@ class BroadcastTest extends TestCase
 
     /**
      * Asserts that the ProcessUpdated broadcast event works.
-     *
-     * @return void
      */
     public function testProcessUpdatedBroadcast()
     {
@@ -120,8 +122,6 @@ class BroadcastTest extends TestCase
 
     /**
      * Asserts that the ScreenBuilderStarting broadcast event works.
-     *
-     * @return void
      */
     public function testScreenBuilderStartingBroadcast()
     {
@@ -134,8 +134,6 @@ class BroadcastTest extends TestCase
 
     /**
      * Asserts that the ScreenBuilderStarting broadcast event works.
-     *
-     * @return void
      */
     public function testModelerStartingBroadcast()
     {
@@ -148,8 +146,6 @@ class BroadcastTest extends TestCase
 
     /**
      * Asserts that the SessionStart broadcast event works.
-     *
-     * @return void
      */
     public function testSessionStartedBroadcast()
     {
@@ -162,8 +158,6 @@ class BroadcastTest extends TestCase
 
     /**
      * Asserts that the BuildScriptExecutor event works.
-     *
-     * @return void
      */
     public function testBuildScriptExecutorBroadcast()
     {
@@ -177,8 +171,6 @@ class BroadcastTest extends TestCase
 
     /**
      * Asserts that the ScreenBuilderStarting broadcast event works.
-     *
-     * @return void
      */
     public function testScriptBuilderStartingBroadcast()
     {
@@ -192,8 +184,6 @@ class BroadcastTest extends TestCase
 
     /**
      * Asserts that the BuildScriptExecutor event works.
-     *
-     * @return void
      */
     public function testImportedScreenSavedBroadcast()
     {
@@ -206,8 +196,6 @@ class BroadcastTest extends TestCase
 
     /**
      * Asserts that the TestStatusEvent event works.
-     *
-     * @return void
      */
     public function testTestStatusEventBroadcast()
     {
@@ -219,8 +207,6 @@ class BroadcastTest extends TestCase
 
     /**
      * Asserts that the BuildScriptExecutor event works.
-     *
-     * @return void
      */
     public function testScriptResponseEventBroadcast()
     {
