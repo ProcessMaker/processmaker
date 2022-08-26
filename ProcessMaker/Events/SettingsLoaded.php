@@ -2,25 +2,27 @@
 
 namespace ProcessMaker\Events;
 
+use Illuminate\Contracts\Config\Repository;
 use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Contracts\Config\Repository as RepositoryContract;
 
 class SettingsLoaded
 {
     use Dispatchable;
 
     /**
-     * @var \Illuminate\Contracts\Config\Repository
+     * @implements Illuminate\Contracts\Config\Repository::class
      */
-    public $repository;
+    public $configuration;
 
     /**
      * Create a new event instance.
      *
+     * @param  \Illuminate\Contracts\Config\Repository  $configuration
+     *
      * @return void
      */
-    public function __construct(RepositoryContract $repository)
+    public function __construct(Repository $configuration)
     {
-        $this->repository = &$repository;
+        $this->configuration = &$configuration;
     }
 }

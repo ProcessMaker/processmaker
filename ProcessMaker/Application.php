@@ -3,14 +3,14 @@
 namespace ProcessMaker;
 
 use Igaster\LaravelTheme\Facades\Theme;
-use Illuminate\Database\ConnectionResolverInterface as ConnectionResolver;
 use Illuminate\Foundation\Application as IlluminateApplication;
+use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Providers\SettingServiceProvider;
 
 /**
- * Class Application
+ * Class Application.
  */
 class Application extends IlluminateApplication
 {
@@ -21,13 +21,13 @@ class Application extends IlluminateApplication
     {
         parent::__construct($basePath);
 
-        $this->afterLoadingEnvironment(function () {
+        $this->afterBootstrapping(LoadEnvironmentVariables::class, function () {
             $this->register(SettingServiceProvider::class);
         });
     }
 
     /**
-     * Sets the timezone for the application and for php with the specified timezone
+     * Sets the timezone for the application and for php with the specified timezone.
      *
      * @param $timezone string
      */
@@ -41,9 +41,7 @@ class Application extends IlluminateApplication
     }
 
     /**
-     * Retrieves the currently set timezone
-     *
-     * @return string
+     * Retrieves the currently set timezone.
      */
     public function getTimezone(): string
     {
@@ -58,7 +56,8 @@ class Application extends IlluminateApplication
      *   Sessions : USER_* , URS_*
      *
      * @note: This is ported from Gulliver System. This will most likely need to be refactored/removed
-     * @return array Contents of system contents.
+     *
+     * @return array contents of system contents
      */
     public function getSystemConstants()
     {
@@ -84,7 +83,9 @@ class Application extends IlluminateApplication
      * Get the path to the application "app" directory.
      *
      * @note This extends the base Application to specify ProcessMaker instead of app as the main directory
-     * @param  string  $path Optionally, a path to append to the app path
+     *
+     * @param string $path Optionally, a path to append to the app path
+     *
      * @return string
      */
     public function path($path = '')

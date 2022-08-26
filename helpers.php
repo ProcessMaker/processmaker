@@ -1,8 +1,35 @@
 <?php
 
-use ProcessMaker\SanitizeHelper;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
+use Laravel\Horizon\Repositories\RedisJobRepository;
+use ProcessMaker\SanitizeHelper;
+
+if (!function_exists('job_pending')) {
+    /**
+     * Check if a given job (by instance or class) is already pending in the queue.
+     *
+     * @param $job
+     *
+     * @return bool
+     */
+    function job_pending($job): bool
+    {
+        if (is_object($job)) {
+            $job = class_basename($job);
+        }
+
+        $queue = app(RedisJobRepository::class)->getRecent();
+
+        return $queue->filter(
+            function ($queued) use ($job) {
+                return $queued->name === $job
+                    && ('delayed' === $queued->status
+                    || 'pending' === $queued->status);
+            }
+        )->isNotEmpty();
+    }
+}
 
 if (!function_exists('settings')) {
     /**
@@ -12,9 +39,10 @@ if (!function_exists('settings')) {
      *
      * @param $key
      *
-     * @return array|mixed
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
+     *
+     * @return array|mixed
      */
     function settings($key = null)
     {
@@ -24,9 +52,7 @@ if (!function_exists('settings')) {
 
 if (!function_exists('refresh_artisan_caches')) {
     /**
-     * Re-caches artisan config, routes, and/or events when they are already cached
-     *
-     * @return void
+     * Re-caches artisan config, routes, and/or events when they are already cached.
      */
     function refresh_artisan_caches(): void
     {
@@ -54,9 +80,10 @@ if (!function_exists('refresh_artisan_caches')) {
 
 if (!function_exists('lavaryMenuArray')) {
     /**
-     * Convert the Laravy menu into associative array
+     * Convert the Laravy menu into associative array.
      *
      * @param \Lavary\Menu\Item $menu
+     * @param mixed             $includeSubMenus
      *
      * @return array
      */
@@ -83,7 +110,7 @@ if (!function_exists('lavaryMenuArray')) {
 
 if (!function_exists('lavaryMenuJson')) {
     /**
-     * Convert the Laravy menu into json string
+     * Convert the Laravy menu into json string.
      *
      * @param \Lavary\Menu\Item $menu
      *
@@ -97,12 +124,13 @@ if (!function_exists('lavaryMenuJson')) {
 
 if (!function_exists('hasPackage')) {
     /**
-     * Check if a package exists based on its provider name
+     * Check if a package exists based on its provider name.
      *
      * @param $name
      *
-     * @return bool
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     *
+     * @return bool
      */
     function hasPackage($name)
     {
@@ -114,9 +142,9 @@ if (!function_exists('hasPackage')) {
 
 if (!function_exists('pmUser')) {
     /**
-     * Check both the web and api middleware for an existing user
+     * Check both the web and api middleware for an existing user.
      *
-     * @return \ProcessMaker\Models\User|null
+     * @return null|\ProcessMaker\Models\User
      */
     function pmUser()
     {
@@ -146,7 +174,7 @@ if (!function_exists('sanitizeVueExp')) {
 
 if (!function_exists('packTemporalData')) {
     /**
-     * Store data into store/app/private
+     * Store data into store/app/private.
      *
      * @param $data
      *
@@ -161,7 +189,6 @@ if (!function_exists('packTemporalData')) {
 
         return $uid;
     }
-
 }
 
 if (!function_exists('unpackTemporalData')) {
@@ -185,8 +212,6 @@ if (!function_exists('unpackTemporalData')) {
 if (!function_exists('removeTemporalData')) {
     /**
      * @param $uid
-     *
-     * @return void
      */
     function removeTemporalData($uid)
     {

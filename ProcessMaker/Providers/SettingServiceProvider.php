@@ -3,56 +3,44 @@
 namespace ProcessMaker\Providers;
 
 use Illuminate\Console\Events\CommandFinished;
-use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use Illuminate\Database\ConnectionResolverInterface as ConnectionResolver;
+use Illuminate\Contracts\Config\Repository;
+use Illuminate\Database\ConnectionResolverInterface as Resolver;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use ProcessMaker\Events\SettingsLoaded;
 use ProcessMaker\Jobs\TerminateHorizon;
 use ProcessMaker\Models\Setting;
-use ProcessMaker\Repositories\RedisJobRepository;
 use RuntimeException;
 
 class SettingServiceProvider extends ServiceProvider
 {
     /**
-     * Register an event listener for the service provider
-     *
-     * @return void
+     * Register an event listener for the service provider.
      */
     public function register(): void
     {
-        $this->app['events']->listen(CommandFinished::class, [$this, 'configurationWasCached']);
+        $this->app['events']->listen(CommandFinished::class, function (CommandFinished $event) {
+            $this->configurationWasCached($event);
+        });
     }
 
     /**
-     * Bind setting keys and config values to the global app configuration
-     *
-     * @param  \Illuminate\Contracts\Config\Repository  $repository
-     * @param  \Illuminate\Database\ConnectionResolverInterface  $resolver
-     *
-     * @return void
+     * Bind setting keys and config values to the global app configuration.
      */
-    public function boot(ConfigRepository $repository, ConnectionResolver $resolver): void
+    public function boot(Repository $repository, Resolver $resolver): void
     {
-        if ($this->app->configurationIsCached()) {
-            return;
-        }
-
         try {
             // Bind the settings keys and values to
             // the app configuration repository
-            if ($repository->get($key = 'app.settings.loaded') !== true) {
+            if (true !== $repository->get($key = 'app.settings.loaded')) {
                 // Set up the database connection
-                $this->bindConnectionResolver($resolver);
+                Setting::setConnectionResolver($resolver);
 
                 // Query only what we need from the database and
                 // bind the key/config value to the global
                 // app config for each
                 foreach (Setting::select('id', 'key', 'config', 'format')->get() as $setting) {
-                    if ($repository->get($setting->key) !== $setting->config) {
-                        $repository->set($setting->key, $setting->config);
-                    }
+                    $repository->set($setting->key, $setting->config);
                 }
 
                 // Mark all settings as bound to the config
@@ -60,7 +48,7 @@ class SettingServiceProvider extends ServiceProvider
             }
 
             // It's also possible a database connection has
-            // not be established, such as when running
+            // not been established, such as when running
             // composer install. We need to catch that
             // exception and then bail.
         } catch (RuntimeException $exception) {
@@ -79,31 +67,15 @@ class SettingServiceProvider extends ServiceProvider
         } finally {
             // Fire off the SettingsLoaded event to indicate
             // they are ready in the config()
-            if ($repository->get($key) === true) {
+            if (true === $repository->get($key)) {
                 SettingsLoaded::dispatch($repository);
             }
         }
     }
 
     /**
-     * Make and bind a database connection resolver for Settings models
-     *
-     * @param  \Illuminate\Database\ConnectionResolverInterface  $resolver
-     *
-     * @return void
-     */
-    public function bindConnectionResolver(ConnectionResolver $resolver): void
-    {
-        Setting::setConnectionResolver($resolver);
-    }
-
-    /**
      * Restart the horizon queue manager whenever the configuration is cached so ensure
-     * the new configuration is picked up by the supervisor/queue processes
-     *
-     * @param  \Illuminate\Console\Events\CommandFinished  $event
-     *
-     * @return void
+     * the new configuration is picked up by the supervisor/queue processes.
      */
     public function configurationWasCached(CommandFinished $event): void
     {
@@ -118,7 +90,7 @@ class SettingServiceProvider extends ServiceProvider
 
         // If there's already a job pending top terminate
         // horizon, we don't need to queue another one
-        if (!app(RedisJobRepository::class)->isPending(TerminateHorizon::class)) {
+        if (!job_pending(TerminateHorizon::class)) {
             TerminateHorizon::dispatch();
         }
     }
