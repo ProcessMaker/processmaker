@@ -16,6 +16,7 @@ use ProcessMaker\Http\Resources\ProcessCollection;
 use ProcessMaker\Http\Resources\ProcessRequests;
 use ProcessMaker\Jobs\ExportProcess;
 use ProcessMaker\Jobs\ImportProcess;
+use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessPermission;
@@ -28,6 +29,7 @@ use ProcessMaker\Nayra\Storage\BpmnElement;
 use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 use ProcessMaker\Rules\BPMNValidation;
+use ProcessMaker\SanitizeHelper;
 use Throwable;
 
 class ProcessController extends Controller

@@ -99,35 +99,8 @@ class SanitizeHelper
      *
      * @return string
      */
-    public static function sanitizeData($data, $task)
+    public static function sanitizeData($data, $except = [])
     {
-        // Get current and nested screens IDs ..
-        $currentScreenExceptions = [];
-        $currentScreenAndNestedIds = $task->getScreenAndNestedIds();
-        foreach ($currentScreenAndNestedIds as $id) {
-            // Find the screen version ..
-            $screen = Screen::findOrFail($id);
-            $screen = $screen->versionFor($task->processRequest)->toArray();
-            // Get exceptions ..
-            $exceptions = self::getExceptions((object) $screen);
-            if (count($exceptions)) {
-                $currentScreenExceptions = array_unique(array_merge($exceptions, $currentScreenExceptions));
-            }
-        }
-
-        // Get process request exceptions stored in do_not_sanitize column ..
-        $processRequestExceptions = $task->processRequest->do_not_sanitize;
-        if (!$processRequestExceptions) {
-            $processRequestExceptions = [];
-        }
-
-        // Merge (nestedSreensExceptions and currentScreenExceptions) with processRequestExceptions ..
-        $except = array_unique(array_merge($processRequestExceptions, $currentScreenExceptions));
-
-        // Update database with all the exceptions ..
-        $task->processRequest->do_not_sanitize = $except;
-        $task->processRequest->save();
-
         return self::sanitizeWithExceptions($data, $except);
     }
 
