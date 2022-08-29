@@ -1,15 +1,15 @@
 <?php
 
-use App\Http\Controllers\ProcessMaker;
 use Illuminate\Support\Facades\Route;
+use ProcessMaker\Http\Controllers\ProcessMaker;
 use ProcessMaker\Http\Controllers\TestStatusController;
 
 Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/1.0')->name('api.')->group(function () {
 
     // Users
-        Route::get('users', [ProcessMaker\Http\Controllers\Api\UserController::class, 'index'])->name('users.index'); //Permissions handled in the controller
-        Route::get('users/{user}', [ProcessMaker\Http\Controllers\Api\UserController::class, 'show'])->name('users.show'); //Permissions handled in the controller
-        Route::get('deleted_users', [ProcessMaker\Http\Controllers\Api\UserController::class, 'deletedUsers'])->name('users.deletedUsers')->middleware('can:view-users');
+    Route::get('users', [ProcessMaker\Http\Controllers\Api\UserController::class, 'index'])->name('users.index'); //Permissions handled in the controller
+    Route::get('users/{user}', [ProcessMaker\Http\Controllers\Api\UserController::class, 'show'])->name('users.show'); //Permissions handled in the controller
+    Route::get('deleted_users', [ProcessMaker\Http\Controllers\Api\UserController::class, 'deletedUsers'])->name('users.deletedUsers')->middleware('can:view-users');
     Route::post('users', [ProcessMaker\Http\Controllers\Api\UserController::class, 'store'])->name('users.store')->middleware('can:create-users');
     Route::put('users/restore', [ProcessMaker\Http\Controllers\Api\UserController::class, 'restore'])->name('users.restore')->middleware('can:create-users');
     Route::put('users/{user}', [ProcessMaker\Http\Controllers\Api\UserController::class, 'update'])->name('users.update'); //Permissions handled in the controller
@@ -18,23 +18,23 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // User Groups
     Route::put('users/{user}/groups', [ProcessMaker\Http\Controllers\Api\UserController::class, 'updateGroups'])->name('users.groups.update')->middleware('can:edit-users');
     // User personal access tokens
-        Route::get('users/{user}/tokens', [ProcessMaker\Http\Controllers\Api\UserTokenController::class, 'index'])->name('users.tokens.index'); //Permissions handled in the controller
-        Route::get('users/{user}/tokens/{tokenId}', [ProcessMaker\Http\Controllers\Api\UserTokenController::class, 'show'])->name('users.tokens.show'); //Permissions handled in the controller
-        Route::post('users/{user}/tokens', [ProcessMaker\Http\Controllers\Api\UserTokenController::class, 'store'])->name('users.tokens.store'); // Permissions handled in the controller
-        Route::delete('users/{user}/tokens/{tokenId}', [ProcessMaker\Http\Controllers\Api\UserTokenController::class, 'destroy'])->name('users.tokens.destroy'); // Permissions handled in the controller
+    Route::get('users/{user}/tokens', [ProcessMaker\Http\Controllers\Api\UserTokenController::class, 'index'])->name('users.tokens.index'); //Permissions handled in the controller
+    Route::get('users/{user}/tokens/{tokenId}', [ProcessMaker\Http\Controllers\Api\UserTokenController::class, 'show'])->name('users.tokens.show'); //Permissions handled in the controller
+    Route::post('users/{user}/tokens', [ProcessMaker\Http\Controllers\Api\UserTokenController::class, 'store'])->name('users.tokens.store'); // Permissions handled in the controller
+    Route::delete('users/{user}/tokens/{tokenId}', [ProcessMaker\Http\Controllers\Api\UserTokenController::class, 'destroy'])->name('users.tokens.destroy'); // Permissions handled in the controller
 
     // Groups//Permissions policy
-        Route::get('groups', [ProcessMaker\Http\Controllers\Api\GroupController::class, 'index'])->name('groups.index'); //Permissions handled in the controller
-        Route::get('groups/{group}', [ProcessMaker\Http\Controllers\Api\GroupController::class, 'show'])->name('groups.show'); //Permissions handled in the controller
-        Route::post('groups', [ProcessMaker\Http\Controllers\Api\GroupController::class, 'store'])->name('groups.store')->middleware('can:create-groups');
+    Route::get('groups', [ProcessMaker\Http\Controllers\Api\GroupController::class, 'index'])->name('groups.index'); //Permissions handled in the controller
+    Route::get('groups/{group}', [ProcessMaker\Http\Controllers\Api\GroupController::class, 'show'])->name('groups.show'); //Permissions handled in the controller
+    Route::post('groups', [ProcessMaker\Http\Controllers\Api\GroupController::class, 'store'])->name('groups.store')->middleware('can:create-groups');
     Route::put('groups/{group}', [ProcessMaker\Http\Controllers\Api\GroupController::class, 'update'])->name('groups.update')->middleware('can:edit-groups');
     Route::delete('groups/{group}', [ProcessMaker\Http\Controllers\Api\GroupController::class, 'destroy'])->name('groups.destroy')->middleware('can:delete-groups');
     Route::get('groups/{group}/users', [ProcessMaker\Http\Controllers\Api\GroupController::class, 'users'])->name('groups.users')->middleware('can:view-groups');
     Route::get('groups/{group}/groups', [ProcessMaker\Http\Controllers\Api\GroupController::class, 'groups'])->name('groups.groups')->middleware('can:view-groups');
 
     // Group Members
-        Route::get('group_members', [ProcessMaker\Http\Controllers\Api\GroupMemberController::class, 'index'])->name('group_members.index'); //Already filtered in controller
-        Route::get('group_members/{group_member}', [ProcessMaker\Http\Controllers\Api\GroupMemberController::class, 'show'])->name('group_members.show')->middleware('can:view-groups');
+    Route::get('group_members', [ProcessMaker\Http\Controllers\Api\GroupMemberController::class, 'index'])->name('group_members.index'); //Already filtered in controller
+    Route::get('group_members/{group_member}', [ProcessMaker\Http\Controllers\Api\GroupMemberController::class, 'show'])->name('group_members.show')->middleware('can:view-groups');
     Route::get('group_members_available', [ProcessMaker\Http\Controllers\Api\GroupMemberController::class, 'groupsAvailable'])->name('group_members_available.show'); //Permissions handled in the controller
     Route::get('user_members_available', [ProcessMaker\Http\Controllers\Api\GroupMemberController::class, 'usersAvailable'])->name('user_members_available.show')->middleware('can:view-groups');
     Route::post('group_members', [ProcessMaker\Http\Controllers\Api\GroupMemberController::class, 'store'])->name('group_members.store')->middleware('can:edit-groups');
@@ -48,9 +48,9 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::delete('environment_variables/{environment_variable}', [ProcessMaker\Http\Controllers\Api\EnvironmentVariablesController::class, 'destroy'])->name('environment_variables.destroy')->middleware('can:delete-environment_variables');
 
     // Screens
-        Route::get('screens', [ProcessMaker\Http\Controllers\Api\ScreenController::class, 'index'])->name('screens.index'); //Permissions handled in the controller
-        Route::get('screens/{screen}', [ProcessMaker\Http\Controllers\Api\ScreenController::class, 'show'])->name('screens.show'); //Permissions handled in the controller
-        Route::post('screens', [ProcessMaker\Http\Controllers\Api\ScreenController::class, 'store'])->name('screens.store')->middleware('can:create-screens');
+    Route::get('screens', [ProcessMaker\Http\Controllers\Api\ScreenController::class, 'index'])->name('screens.index'); //Permissions handled in the controller
+    Route::get('screens/{screen}', [ProcessMaker\Http\Controllers\Api\ScreenController::class, 'show'])->name('screens.show'); //Permissions handled in the controller
+    Route::post('screens', [ProcessMaker\Http\Controllers\Api\ScreenController::class, 'store'])->name('screens.store')->middleware('can:create-screens');
     Route::put('screens/{screen}', [ProcessMaker\Http\Controllers\Api\ScreenController::class, 'update'])->name('screens.update')->middleware('can:edit-screens');
     Route::put('screens/{screen}/duplicate', [ProcessMaker\Http\Controllers\Api\ScreenController::class, 'duplicate'])->name('screens.duplicate')->middleware('can:create-screens');
     Route::delete('screens/{screen}', [ProcessMaker\Http\Controllers\Api\ScreenController::class, 'destroy'])->name('screens.destroy')->middleware('can:delete-screens');
@@ -96,9 +96,9 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('process_events/{process}', [ProcessMaker\Http\Controllers\Api\ProcessController::class, 'triggerStartEvent'])->name('process_events.trigger')->middleware('can:start,process');
 
     // List of Processes that the user can start
-        Route::get('start_processes', [ProcessMaker\Http\Controllers\Api\ProcessController::class, 'startProcesses'])->name('processes.start'); //Filtered in controller
+    Route::get('start_processes', [ProcessMaker\Http\Controllers\Api\ProcessController::class, 'startProcesses'])->name('processes.start'); //Filtered in controller
 
-        // Process Categories
+    // Process Categories
     Route::get('process_categories', [ProcessMaker\Http\Controllers\Api\ProcessCategoryController::class, 'index'])->name('process_categories.index')->middleware('can:view-process-categories');
     Route::get('process_categories/{process_category}', [ProcessMaker\Http\Controllers\Api\ProcessCategoryController::class, 'show'])->name('process_categories.show')->middleware('can:view-process-categories');
     Route::post('process_categories', [ProcessMaker\Http\Controllers\Api\ProcessCategoryController::class, 'store'])->name('process_categories.store')->middleware('can:create-process-categories');
@@ -110,14 +110,14 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('permissions', [ProcessMaker\Http\Controllers\Api\PermissionController::class, 'update'])->name('permissions.update')->middleware('can:edit-users');
 
     // Tasks
-        Route::get('tasks', [ProcessMaker\Http\Controllers\Api\TaskController::class, 'index'])->name('tasks.index'); //Already filtered in controller
-        Route::get('tasks/{task}', [ProcessMaker\Http\Controllers\Api\TaskController::class, 'show'])->name('tasks.show')->middleware('can:view,task');
+    Route::get('tasks', [ProcessMaker\Http\Controllers\Api\TaskController::class, 'index'])->name('tasks.index'); //Already filtered in controller
+    Route::get('tasks/{task}', [ProcessMaker\Http\Controllers\Api\TaskController::class, 'show'])->name('tasks.show')->middleware('can:view,task');
     Route::put('tasks/{task}', [ProcessMaker\Http\Controllers\Api\TaskController::class, 'update'])->name('tasks.update')->middleware('can:update,task');
     Route::get('tasks/{task}/screens/{screen}', [ProcessMaker\Http\Controllers\Api\TaskController::class, 'getScreen'])->name('tasks.get_screen')->middleware('can:viewScreen,task,screen');
 
     // Requests
-        Route::get('requests', [ProcessMaker\Http\Controllers\Api\ProcessRequestController::class, 'index'])->name('requests.index'); //Already filtered in controller
-        Route::get('requests/{request}', [ProcessMaker\Http\Controllers\Api\ProcessRequestController::class, 'show'])->name('requests.show')->middleware('can:view,request');
+    Route::get('requests', [ProcessMaker\Http\Controllers\Api\ProcessRequestController::class, 'index'])->name('requests.index'); //Already filtered in controller
+    Route::get('requests/{request}', [ProcessMaker\Http\Controllers\Api\ProcessRequestController::class, 'show'])->name('requests.show')->middleware('can:view,request');
     Route::put('requests/{request}', [ProcessMaker\Http\Controllers\Api\ProcessRequestController::class, 'update'])->name('requests.update')->middleware('can:update,request');
     Route::delete('requests/{request}', [ProcessMaker\Http\Controllers\Api\ProcessRequestController::class, 'destroy'])->name('requests.destroy')->middleware('can:destroy,request');
     Route::post('requests/{request}/events/{event}', [ProcessMaker\Http\Controllers\Api\ProcessRequestController::class, 'activateIntermediateEvent'])->name('requests.update,request');
@@ -137,18 +137,18 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::delete('files/{file}', [ProcessMaker\Http\Controllers\Api\FileController::class, 'destroy'])->name('files.destroy')->middleware('can:delete,file');
 
     // Notifications
-        Route::get('notifications', [ProcessMaker\Http\Controllers\Api\NotificationController::class, 'index'])->name('notifications.index');  //Already filtered in controller
-        Route::get('notifications/{notification}', [ProcessMaker\Http\Controllers\Api\NotificationController::class, 'show'])->name('notifications.show')->middleware('can:view,notification');
+    Route::get('notifications', [ProcessMaker\Http\Controllers\Api\NotificationController::class, 'index'])->name('notifications.index');  //Already filtered in controller
+    Route::get('notifications/{notification}', [ProcessMaker\Http\Controllers\Api\NotificationController::class, 'show'])->name('notifications.show')->middleware('can:view,notification');
     Route::post('notifications', [ProcessMaker\Http\Controllers\Api\NotificationController::class, 'store'])->name('notifications.store')->middleware('can:create,ProcessMaker\Models\Notification');
     Route::put('notifications/{notification}', [ProcessMaker\Http\Controllers\Api\NotificationController::class, 'update'])->name('notifications.update')->middleware('can:edit,notification');
     Route::delete('notifications/{notification}', [ProcessMaker\Http\Controllers\Api\NotificationController::class, 'destroy'])->name('notifications.destroy')->middleware('can:delete,notification');
 
     // Mark Notifications as Read & Unread
-        Route::put('read_notifications', [ProcessMaker\Http\Controllers\Api\NotificationController::class, 'updateAsRead'])->name('notifications.update_as_read'); //No permissions necessary
-        Route::put('unread_notifications', [ProcessMaker\Http\Controllers\Api\NotificationController::class, 'updateAsUnread'])->name('notifications.update_as_unread'); //No permissions necessary
-        Route::put('read_all_notifications', [ProcessMaker\Http\Controllers\Api\NotificationController::class, 'updateAsReadAll'])->name('notifications.update_as_read'); //No permissions necessary
+    Route::put('read_notifications', [ProcessMaker\Http\Controllers\Api\NotificationController::class, 'updateAsRead'])->name('notifications.update_as_read'); //No permissions necessary
+    Route::put('unread_notifications', [ProcessMaker\Http\Controllers\Api\NotificationController::class, 'updateAsUnread'])->name('notifications.update_as_unread'); //No permissions necessary
+    Route::put('read_all_notifications', [ProcessMaker\Http\Controllers\Api\NotificationController::class, 'updateAsReadAll'])->name('notifications.update_as_read'); //No permissions necessary
 
-        // Task Assignments
+    // Task Assignments
     Route::get('task_assignments', [ProcessMaker\Http\Controllers\Api\TaskAssignmentController::class, 'index'])->name('task_assignments.index')->middleware('can:view-task_assignments');
     Route::post('task_assignments', [ProcessMaker\Http\Controllers\Api\TaskAssignmentController::class, 'store'])->name('task_assignments.store')->middleware('can:create-task_assignments');
     Route::put('task_assignments/{task_assignment}', [ProcessMaker\Http\Controllers\Api\TaskAssignmentController::class, 'update'])->name('task_assignments.update')->middleware('can:edit-task_assignments');

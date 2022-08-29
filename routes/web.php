@@ -1,20 +1,20 @@
 <?php
 
-use App\Http\Controllers\AboutController;
-use App\Http\Controllers\Admin;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\Auth;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\Process;
-use App\Http\Controllers\ProcessController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\RequestController;
-use App\Http\Controllers\TaskController;
-use App\Http\Controllers\TestStatusController;
-use App\Http\Controllers\UnavailableController;
 use Illuminate\Support\Facades\Route;
-use ProcessMaker\Http\Controllers\Api\Requests\RequestsController;
+use ProcessMaker\Http\Controllers\AboutController;
+use ProcessMaker\Http\Controllers\Admin;
+use ProcessMaker\Http\Controllers\AdminController;
+use ProcessMaker\Http\Controllers\Auth;
+use ProcessMaker\Http\Controllers\HomeController;
+use ProcessMaker\Http\Controllers\NotificationController;
+use ProcessMaker\Http\Controllers\Process;
+use ProcessMaker\Http\Controllers\Process\ModelerController;
+use ProcessMaker\Http\Controllers\ProcessController;
+use ProcessMaker\Http\Controllers\ProfileController;
+use ProcessMaker\Http\Controllers\RequestController;
+use ProcessMaker\Http\Controllers\TaskController;
+use ProcessMaker\Http\Controllers\TestStatusController;
+use ProcessMaker\Http\Controllers\UnavailableController;
 
 Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_password')->group(function () {
 
@@ -84,7 +84,7 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
     Route::get('profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::get('profile/{id}', [ProfileController::class, 'show'])->name('profile.show');
     // Ensure our modeler loads at a distinct url
-    Route::get('modeler/{process}', 'Process\ModelerController')->name('modeler.show')->middleware('can:edit-processes');
+    Route::get('modeler/{process}', [ModelerController::class])->name('modeler.show')->middleware('can:edit-processes');
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
