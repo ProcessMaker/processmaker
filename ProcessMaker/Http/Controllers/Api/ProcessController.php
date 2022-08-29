@@ -1203,7 +1203,7 @@ class ProcessController extends Controller
         }
     }
 
-    private function getDoNotSanitizeFields($process)
+    public function getDoNotSanitizeFields($process)
     {
         $manager = app(ExportManager::class);
         $screenIds = $manager->getDependenciesOfType(Screen::class, $process, []);
