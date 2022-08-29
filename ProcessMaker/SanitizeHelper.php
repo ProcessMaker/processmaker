@@ -236,4 +236,13 @@ class SanitizeHelper
 
         return str_replace(array_keys($codes), array_values($codes), $string);
     }
+
+    public static function getDoNotSanitizeFields($screenId)
+    {
+        $screen = Screen::findOrFail($screenId);
+        $doNotSanitizeFields = self::getExceptions((object) $screen);
+
+        return $doNotSanitizeFields;
+    }
+
 }
