@@ -352,15 +352,9 @@ class User extends Authenticatable implements HasMedia
      * Check if the user can do any of the listed permissions.
      * If so, return the permission name, otherwise false
      */
-    public function canAny($permissions)
+    public function canAny($permissions, $arguments = [])
     {
-        foreach (explode('|', $permissions) as $permission) {
-            if ($this->can($permission)) {
-                return $permission;
-            }
-        }
-
-        return false;
+        return parent::canAny(explode('|', $permissions), $arguments);
     }
 
     /**
