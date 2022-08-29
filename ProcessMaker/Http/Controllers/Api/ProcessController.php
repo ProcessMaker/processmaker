@@ -1078,6 +1078,8 @@ class ProcessController extends Controller
         // Trigger the start event
         try {
             $processRequest = WorkflowManager::triggerStartEvent($process, $event, $data);
+            $processRequest->do_not_sanitize = $this->getDoNotSanitizeFields($process);
+            $processRequest->save();
         } catch (Throwable $exception) {
             throw $exception;
 
@@ -1197,5 +1199,18 @@ class ProcessController extends Controller
             $config['web_entry']['webentryRouteConfig']['entryUrl'] = $newEntryUrl;
             $node->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'config', json_encode($config));
         }
+    }
+
+    private function getDoNotSanitizeFields($process)
+    {
+        $manager = app(ExportManager::class);
+        $screenIds = $manager->getDependenciesOfType(Screen::class, $process, []);
+        $doNotSanitizeFields = [];
+        foreach ($screenIds as $screenId) {
+            $doNotSanitizeFieldsForScreen = SanitizeHelper::getDoNotSanitizeFields($screenId);
+            $doNotSanitizeFields = array_unique(array_merge($doNotSanitizeFieldsForScreen, $doNotSanitizeFields));
+        }
+
+        return $doNotSanitizeFields;
     }
 }
