@@ -2,16 +2,15 @@
 
 namespace ProcessMaker;
 
-use function GuzzleHttp\json_decode;
 use Illuminate\Support\Facades\Validator;
-use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Models\Screen;
 
 class SanitizeHelper
 {
     /**
      * The tags that should always be sanitized, even
-     * when the controller specifies doNotSanitize
+     * when the controller specifies doNotSanitize.
      *
      * @var array
      */
@@ -89,7 +88,7 @@ class SanitizeHelper
      */
     private static function convertTagToRegExp($tag)
     {
-        return '/' . str_replace(['\<', '\>'], ['<[\s\/]*', '[^>]*>'], preg_quote($tag)) . '/i';
+        return '/'.str_replace(['\<', '\>'], ['<[\s\/]*', '[^>]*>'], preg_quote($tag)).'/i';
     }
 
     /**
@@ -108,7 +107,7 @@ class SanitizeHelper
     {
         foreach ($data as $key => $value) {
             if (!is_int($key)) {
-                $searchKey = ($parent ? $parent . '.' . $key : $key);
+                $searchKey = ($parent ? $parent.'.'.$key : $key);
             } else {
                 $searchKey = $parent;
             }
@@ -148,9 +147,9 @@ class SanitizeHelper
             if (isset($item['items']) && is_array($item['items'])) {
                 // Inside loop ..
                 if ($item['component'] == 'FormLoop') {
-                    $elements = array_merge($elements, self::getRichTextElements($item['items'], ($parent ? $parent . '.' . $item['config']['name'] : $item['config']['name'])));
+                    $elements = array_merge($elements, self::getRichTextElements($item['items'], ($parent ? $parent.'.'.$item['config']['name'] : $item['config']['name'])));
                 } elseif (isset($item['component']) && $item['component'] === 'FormTextArea' && isset($item['config']['richtext']) && $item['config']['richtext'] === true) {
-                    $elements[] = ($parent ? $parent . '.' . $item['config']['name'] : $item['config']['name']);
+                    $elements[] = ($parent ? $parent.'.'.$item['config']['name'] : $item['config']['name']);
                 // Inside a table ..
                 } elseif ($item['component'] == 'FormMultiColumn') {
                     foreach ($item['items'] as $cell) {
@@ -169,7 +168,7 @@ class SanitizeHelper
                 }
             } else {
                 if (isset($item['component']) && $item['component'] === 'FormTextArea' && isset($item['config']['richtext']) && $item['config']['richtext'] === true) {
-                    $elements[] = ($parent ? $parent . '.' . $item['config']['name'] : $item['config']['name']);
+                    $elements[] = ($parent ? $parent.'.'.$item['config']['name'] : $item['config']['name']);
                 }
             }
         }
@@ -180,7 +179,7 @@ class SanitizeHelper
     public static function sanitizeEmail($email)
     {
         $validator = Validator::make(['email' => $email], [
-            'email'=>'required|email',
+            'email' => 'required|email',
         ]);
         if ($validator->fails()) {
             return '';
@@ -210,7 +209,21 @@ class SanitizeHelper
         return str_replace(array_keys($codes), array_values($codes), $string);
     }
 
-    public static function getDoNotSanitizeFields($screenId)
+    public static function getDoNotSanitizeFields($process)
+    {
+        $manager = app(ExportManager::class);
+        $screenIds = $manager->getDependenciesOfType(Screen::class, $process, []);
+        $doNotSanitizeFields = [];
+
+        foreach ($screenIds as $screenId) {
+            $doNotSanitizeFieldsForScreen = self::findFieldsInScreen($screenId);
+            $doNotSanitizeFields = array_unique(array_merge($doNotSanitizeFieldsForScreen, $doNotSanitizeFields));
+        }
+
+        return $doNotSanitizeFields;
+    }
+
+    public static function findFieldsInScreen($screenId)
     {
         $screen = Screen::find($screenId);
         $doNotSanitizeFields = [];
@@ -220,5 +233,4 @@ class SanitizeHelper
 
         return $doNotSanitizeFields;
     }
-
 }

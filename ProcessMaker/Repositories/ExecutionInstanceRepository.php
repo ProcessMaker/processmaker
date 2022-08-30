@@ -217,7 +217,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     }
 
     /**
-     * Persist current collaboration
+     * Persist current collaboration.
      *
      * @param ProcessRequest $instance
      * @return void
@@ -242,5 +242,21 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         }
         $request->process_collaboration_id = $collaboration->id;
         $request->saveOrFail();
+    }
+
+    /**
+     * Persists instance do not sanitize fields related to the event Process Instance.
+     *
+     * @return mixed
+     */
+    public function persistInstanceDoNotSanitizeFields(ExecutionInstanceInterface $instance, array $doNotSanitizeFields)
+    {
+        $process = $instance->getProcess();
+        if ($process->isNonPersistent()) {
+            return;
+        }
+        //Save instance
+        $instance->do_not_sanitize = $doNotSanitizeFields;
+        $instance->save();
     }
 }
