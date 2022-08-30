@@ -2,22 +2,17 @@
 
 namespace Tests\Feature\Api;
 
-use Tests\TestCase;
-use ProcessMaker\Models\User;
-use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\Process;
-use ProcessMaker\SanitizeHelper;
-use ProcessMaker\Models\ScreenVersion;
-use ProcessMaker\Models\ProcessRequest;
-use Tests\Feature\Shared\RequestHelper;
-use ProcessMaker\Repositories\BpmnDocument;
 use Illuminate\Foundation\Testing\WithFaker;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ScreenVersion;
+use ProcessMaker\SanitizeHelper;
 use Tests\Feature\Shared\ProcessTestingTrait;
-use ProcessMaker\Models\ProcessTaskAssignment;
+use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use ProcessMaker\Http\Controllers\Api\ProcessController;
+use Tests\TestCase;
 
 class SanitizeHelperTest extends TestCase
 {
@@ -301,8 +296,6 @@ class SanitizeHelperTest extends TestCase
 
     private function createProcessRequest()
     {
-        $processController = app(ProcessController::class);
-
         $this->processRequest = ProcessRequest::create([
             'name' => $this->faker->sentence(3),
             'data' => [],
@@ -310,7 +303,7 @@ class SanitizeHelperTest extends TestCase
             'callable_id' => 'ProcessId',
             'user_id' => $this->user->id,
             'process_id' => $this->process->getKey(),
-            'do_not_sanitize' => $processController->getDoNotSanitizeFields($this->process),
+            'do_not_sanitize' => SanitizeHelper::getDoNotSanitizeFields($this->process),
             'process_collaboration_id' => null,
         ]);
     }
