@@ -4,7 +4,6 @@ namespace ProcessMaker\Models;
 
 use DOMElement;
 use Exception;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -134,7 +133,7 @@ use Throwable;
  *     @OA\Property(property="edit_data", type="object"),
  * )
  */
-class Process extends Model implements HasMedia, ProcessModelInterface
+class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterface
 {
     use InteractsWithMedia;
     use SerializeToIso8601;

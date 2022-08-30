@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Traits\SerializeToIso8601;
@@ -36,7 +35,7 @@ use ProcessMaker\Traits\SerializeToIso8601;
  *   }
  * )
  */
-class Group extends Model
+class Group extends ProcessMakerModel
 {
     use PMQL;
     use SerializeToIso8601;

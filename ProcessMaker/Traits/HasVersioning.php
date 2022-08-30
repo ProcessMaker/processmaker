@@ -53,7 +53,7 @@ trait HasVersioning
      * Return the version that was active when the task's request was started
      *
      * @param ProcessRequestToken $task
-     * @return Model
+     * @return ProcessMakerModel
      */
     public function versionFor(ProcessRequest $processRequest = null)
     {

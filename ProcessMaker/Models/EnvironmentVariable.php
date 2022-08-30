@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 
 /**
@@ -24,7 +23,7 @@ use Illuminate\Validation\Rule;
  *   },
  * )
  */
-class EnvironmentVariable extends Model
+class EnvironmentVariable extends ProcessMakerModel
 {
     protected $connection = 'processmaker';
 

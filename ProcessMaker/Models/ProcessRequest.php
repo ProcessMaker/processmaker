@@ -4,7 +4,6 @@ namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
 use DB;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
 use Laravel\Scout\Searchable;
@@ -78,7 +77,7 @@ use Throwable;
  *   },
  * )
  */
-class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMedia
+class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInterface, HasMedia
 {
     use ExecutionInstanceTrait;
     use SerializeToIso8601;

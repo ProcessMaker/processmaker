@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Traits\HideSystemResources;
@@ -34,7 +33,7 @@ use ProcessMaker\Traits\SerializeToIso8601;
  *   },
  * )
  */
-class ScreenCategory extends Model
+class ScreenCategory extends ProcessMakerModel
 {
     use SerializeToIso8601;
     use HideSystemResources;

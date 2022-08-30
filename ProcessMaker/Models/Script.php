@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Contracts\ScriptInterface;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
@@ -57,7 +56,7 @@ use ProcessMaker\Validation\CategoryRule;
  *   @OA\Property(property="key", type="string"),
  * )
  */
-class Script extends Model implements ScriptInterface
+class Script extends ProcessMakerModel implements ScriptInterface
 {
     use SerializeToIso8601;
     use HideSystemResources;

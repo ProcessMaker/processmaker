@@ -2,11 +2,10 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Contracts\ScriptInterface;
 use ProcessMaker\Traits\HasCategories;
 
-class ScriptVersion extends Model implements ScriptInterface
+class ScriptVersion extends ProcessMakerModel implements ScriptInterface
 {
     use HasCategories;
 

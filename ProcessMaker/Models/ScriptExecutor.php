@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
@@ -46,7 +45,7 @@ use ProcessMaker\Traits\HasVersioning;
  *   @OA\Property(property="initDockerFile", type="string"),
  * ),
  */
-class ScriptExecutor extends Model
+class ScriptExecutor extends ProcessMakerModel
 {
     use HasVersioning;
 

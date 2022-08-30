@@ -5,7 +5,6 @@ namespace ProcessMaker\Models;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Notification;
 use Laravel\Scout\Searchable;
@@ -79,7 +78,7 @@ use Throwable;
  *
  * @method ProcessRequest getInstance()
  */
-class ProcessRequestToken extends Model implements TokenInterface
+class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 {
     use ExtendedPMQL;
     use TokenTrait;

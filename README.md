@@ -253,7 +253,7 @@ To keep things dry, you can define 2 schemas. One that inherits the other.
  *
  * )
  */
-class Process extends Model implements HasMedia
+class Process extends ProcessMakerModel implements HasMedia
 {
 ...
 ```

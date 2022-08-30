@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Traits\ExtendedPMQL;
 
 /**
@@ -38,7 +37,7 @@ use ProcessMaker\Traits\ExtendedPMQL;
  *   @OA\Property(property="occured_at", type="string"),
  * ),
  */
-class SecurityLog extends Model
+class SecurityLog extends ProcessMakerModel
 {
     use ExtendedPMQL;
 

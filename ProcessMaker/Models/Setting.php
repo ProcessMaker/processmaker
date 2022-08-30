@@ -4,7 +4,6 @@ namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
 use DB;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Traits\ExtendedPMQL;
@@ -47,7 +46,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  *   },
  * )
  */
-class Setting extends Model implements HasMedia
+class Setting extends ProcessMakerModel implements HasMedia
 {
     use ExtendedPMQL;
     use InteractsWithMedia;
