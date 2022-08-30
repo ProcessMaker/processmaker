@@ -2,13 +2,28 @@
 
 use Illuminate\Support\Facades\Route;
 use ProcessMaker\Http\Controllers\AboutController;
-use ProcessMaker\Http\Controllers\Admin;
+use ProcessMaker\Http\Controllers\Admin\AuthClientController;
+use ProcessMaker\Http\Controllers\Admin\CssOverrideController;
+use ProcessMaker\Http\Controllers\Admin\GroupController;
+use ProcessMaker\Http\Controllers\Admin\LdapLogsController;
+use ProcessMaker\Http\Controllers\Admin\QueuesController;
+use ProcessMaker\Http\Controllers\Admin\ScriptExecutorController;
+use ProcessMaker\Http\Controllers\Admin\SettingsController;
+use ProcessMaker\Http\Controllers\Admin\UserController;
 use ProcessMaker\Http\Controllers\AdminController;
-use ProcessMaker\Http\Controllers\Auth;
+use ProcessMaker\Http\Controllers\Auth\ChangePasswordController;
+use ProcessMaker\Http\Controllers\Auth\ClientController;
+use ProcessMaker\Http\Controllers\Auth\ForgotPasswordController;
+use ProcessMaker\Http\Controllers\Auth\LoginController;
+use ProcessMaker\Http\Controllers\Auth\ResetPasswordController;
 use ProcessMaker\Http\Controllers\HomeController;
 use ProcessMaker\Http\Controllers\NotificationController;
-use ProcessMaker\Http\Controllers\Process;
+use ProcessMaker\Http\Controllers\Process\EnvironmentVariablesController;
 use ProcessMaker\Http\Controllers\Process\ModelerController;
+use ProcessMaker\Http\Controllers\Process\ScreenBuilderController;
+use ProcessMaker\Http\Controllers\Process\ScreenController;
+use ProcessMaker\Http\Controllers\Process\ScriptController;
+use ProcessMaker\Http\Controllers\Process\SignalController;
 use ProcessMaker\Http\Controllers\ProcessController;
 use ProcessMaker\Http\Controllers\ProfileController;
 use ProcessMaker\Http\Controllers\RequestController;
@@ -17,54 +32,53 @@ use ProcessMaker\Http\Controllers\TestStatusController;
 use ProcessMaker\Http\Controllers\UnavailableController;
 
 Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_password')->group(function () {
-
     // Routes related to Authentication (password reset, etc)
     // Auth::routes();
     Route::prefix('admin')->group(function () {
-        Route::get('queues', [Admin\QueuesController::class, 'index'])->name('queues.index');
-        Route::get('settings', [Admin\SettingsController::class, 'index'])->name('settings.index')->middleware('can:view-settings');
-        Route::get('ldap-logs', [Admin\LdapLogsController::class, 'index'])->name('ldap.index')->middleware('can:view-settings');
-        Route::get('settings/export', [Admin\SettingsController::class, 'export'])->name('settings.export')->middleware('can:view-settings');
-        Route::get('groups', [Admin\GroupController::class, 'index'])->name('groups.index')->middleware('can:view-groups');
-        // Route::get('groups/{group}', [Admin\GroupController::class, 'show'])->name('groups.show')->middleware('can:show-groups,group');
-        Route::get('groups/{group}/edit', [Admin\GroupController::class, 'edit'])->name('groups.edit')->middleware('can:edit-groups,group');
+        Route::get('queues', [QueuesController::class, 'index'])->name('queues.index');
+        Route::get('settings', [SettingsController::class, 'index'])->name('settings.index')->middleware('can:view-settings');
+        Route::get('ldap-logs', [LdapLogsController::class, 'index'])->name('ldap.index')->middleware('can:view-settings');
+        Route::get('settings/export', [SettingsController::class, 'export'])->name('settings.export')->middleware('can:view-settings');
+        Route::get('groups', [GroupController::class, 'index'])->name('groups.index')->middleware('can:view-groups');
+        // Route::get('groups/{group}', [GroupController::class, 'show'])->name('groups.show')->middleware('can:show-groups,group');
+        Route::get('groups/{group}/edit', [GroupController::class, 'edit'])->name('groups.edit')->middleware('can:edit-groups,group');
 
-        Route::get('users', [Admin\UserController::class, 'index'])->name('users.index')->middleware('can:view-users');
-        Route::get('users/{user}/edit', [Admin\UserController::class, 'edit'])->name('users.edit')->middleware('can:edit-users,user');
+        Route::get('users', [UserController::class, 'index'])->name('users.index')->middleware('can:view-users');
+        Route::get('users/{user}/edit', [UserController::class, 'edit'])->name('users.edit')->middleware('can:edit-users,user');
 
-        Route::get('auth-clients', [Admin\AuthClientController::class, 'index'])->name('auth-clients.index')->middleware('can:view-auth_clients');
+        Route::get('auth-clients', [AuthClientController::class, 'index'])->name('auth-clients.index')->middleware('can:view-auth_clients');
 
-        Route::get('customize-ui/{tab?}', [Admin\CssOverrideController::class, 'edit'])->name('customize-ui.edit');
+        Route::get('customize-ui/{tab?}', [CssOverrideController::class, 'edit'])->name('customize-ui.edit');
 
-        Route::get('script-executors', [Admin\ScriptExecutorController::class, 'index'])->name('script-executors.index');
+        Route::get('script-executors', [ScriptExecutorController::class, 'index'])->name('script-executors.index');
     });
 
     Route::get('admin', [AdminController::class, 'index'])->name('admin.index');
 
     Route::prefix('designer')->group(function () {
-        Route::get('environment-variables', [Process\EnvironmentVariablesController::class, 'index'])->name('environment-variables.index')->middleware('can:view-environment_variables');
-        Route::get('environment-variables/{environment_variable}/edit', [Process\EnvironmentVariablesController::class, 'edit'])->name('environment-variables.edit')->middleware('can:edit-environment_variables,environment_variable ');
+        Route::get('environment-variables', [EnvironmentVariablesController::class, 'index'])->name('environment-variables.index')->middleware('can:view-environment_variables');
+        Route::get('environment-variables/{environment_variable}/edit', [EnvironmentVariablesController::class, 'edit'])->name('environment-variables.edit')->middleware('can:edit-environment_variables,environment_variable ');
 
-        Route::get('screens', [Process\ScreenController::class, 'index'])->name('screens.index')->middleware('can:view-screens');
-        Route::get('screens/{screen}/edit', [Process\ScreenController::class, 'edit'])->name('screens.edit')->middleware('can:edit-screens,screen');
-        Route::get('screens/{screen}/export', [Process\ScreenController::class, 'export'])->name('screens.export')->middleware('can:export-screens');
-        Route::get('screens/import', [Process\ScreenController::class, 'import'])->name('screens.import')->middleware('can:import-screens');
-        Route::get('screens/{screen}/download/{key}', [Process\ScreenController::class, 'download'])->name('screens.download')->middleware('can:export-screens');
-        Route::get('screen-builder/{screen}/edit', [Process\ScreenBuilderController::class, 'edit'])->name('screen-builder.edit')->middleware('can:edit-screens,screen');
+        Route::get('screens', [ScreenController::class, 'index'])->name('screens.index')->middleware('can:view-screens');
+        Route::get('screens/{screen}/edit', [ScreenController::class, 'edit'])->name('screens.edit')->middleware('can:edit-screens,screen');
+        Route::get('screens/{screen}/export', [ScreenController::class, 'export'])->name('screens.export')->middleware('can:export-screens');
+        Route::get('screens/import', [ScreenController::class, 'import'])->name('screens.import')->middleware('can:import-screens');
+        Route::get('screens/{screen}/download/{key}', [ScreenController::class, 'download'])->name('screens.download')->middleware('can:export-screens');
+        Route::get('screen-builder/{screen}/edit', [ScreenBuilderController::class, 'edit'])->name('screen-builder.edit')->middleware('can:edit-screens,screen');
 
-        Route::get('scripts', [Process\ScriptController::class, 'index'])->name('scripts.index')->middleware('can:view-scripts');
-        Route::get('scripts/{script}/edit', [Process\ScriptController::class, 'edit'])->name('scripts.edit')->middleware('can:edit-scripts,script');
-        Route::get('scripts/{script}/builder', [Process\ScriptController::class, 'builder'])->name('scripts.builder')->middleware('can:edit-scripts,script');
+        Route::get('scripts', [ScriptController::class, 'index'])->name('scripts.index')->middleware('can:view-scripts');
+        Route::get('scripts/{script}/edit', [ScriptController::class, 'edit'])->name('scripts.edit')->middleware('can:edit-scripts,script');
+        Route::get('scripts/{script}/builder', [ScriptController::class, 'builder'])->name('scripts.builder')->middleware('can:edit-scripts,script');
 
-        Route::get('signals', [Process\SignalController::class, 'index'])->name('signals.index')->middleware('can:view-signals');
-        Route::get('signals/{signalId}/edit', [Process\SignalController::class, 'edit'])->name('signals.edit')->middleware('can:edit-signals');
+        Route::get('signals', [SignalController::class, 'index'])->name('signals.index')->middleware('can:view-signals');
+        Route::get('signals/{signalId}/edit', [SignalController::class, 'edit'])->name('signals.edit')->middleware('can:edit-signals');
     });
 
     Route::get('designer/processes/categories', [ProcessController::class, 'index'])->name('process-categories.index')->middleware('can:view-process-categories');
 
-    Route::get('designer/screens/categories', [Process\ScreenController::class, 'index'])->name('screen-categories.index')->middleware('can:view-screen-categories');
+    Route::get('designer/screens/categories', [ScreenController::class, 'index'])->name('screen-categories.index')->middleware('can:view-screen-categories');
 
-    Route::get('designer/scripts/categories', [Process\ScriptController::class, 'index'])->name('script-categories.index')->middleware('can:view-script-categories');
+    Route::get('designer/scripts/categories', [ScriptController::class, 'index'])->name('script-categories.index')->middleware('can:view-script-categories');
 
     Route::get('processes', [ProcessController::class, 'index'])->name('processes.index');
     Route::get('processes/{process}/edit', [ProcessController::class, 'edit'])->name('processes.edit')->middleware('can:edit-processes');
@@ -84,11 +98,11 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
     Route::get('profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::get('profile/{id}', [ProfileController::class, 'show'])->name('profile.show');
     // Ensure our modeler loads at a distinct url
-    Route::get('modeler/{process}', [ModelerController::class])->name('modeler.show')->middleware('can:edit-processes');
+    Route::get('modeler/{process}', [ModelerController::class, 'show'])->name('modeler.show')->middleware('can:edit-processes');
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
-    Route::post('/keep-alive', [Auth\LoginController::class, 'keepAlive'])->name('keep-alive');
+    Route::post('/keep-alive', [LoginController::class, 'keepAlive'])->name('keep-alive');
 
     Route::get('requests/search', [RequestController::class, 'search'])->name('requests.search');
     Route::get('requests/{type?}', [RequestController::class, 'index'])
@@ -118,23 +132,23 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
 Broadcast::routes();
 
 // Authentication Routes...
-Route::get('login', [Auth\LoginController::class, 'showLoginForm'])->name('login');
-Route::post('login', [Auth\LoginController::class, 'loginWithIntendedCheck']);
-Route::get('logout', [Auth\LoginController::class, 'logout'])->name('logout');
+Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('login', [LoginController::class, 'loginWithIntendedCheck']);
+Route::get('logout', [LoginController::class, 'logout'])->name('logout');
 
 // Password Reset Routes...
-Route::get('password/reset', [Auth\ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
-Route::post('password/email', [Auth\ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
-Route::get('password/reset/{token}', [Auth\ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-Route::post('password/reset', [Auth\ResetPasswordController::class, 'reset']);
-Route::get('password/change', [Auth\ChangePasswordController::class, 'edit'])->name('password.change');
+Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('password/reset', [ResetPasswordController::class, 'reset']);
+Route::get('password/change', [ChangePasswordController::class, 'edit'])->name('password.change');
 
 //overwrite laravel passport
-Route::get('oauth/clients', [Auth\ClientController::class, 'index'])->name('passport.clients.index')->middleware('can:view-auth_clients');
-Route::get('oauth/clients/{client_id}', [Auth\ClientController::class, 'show'])->name('passport.clients.show')->middleware('can:view-auth_clients');
-Route::post('oauth/clients', [Auth\ClientController::class, 'store'])->name('passport.clients.store')->middleware('can:create-auth_clients');
-Route::put('oauth/clients/{client_id}', [Auth\ClientController::class, 'update'])->name('passport.clients.update')->middleware('can:edit-auth_clients');
-Route::delete('oauth/clients/{client_id}', [Auth\ClientController::class, 'destroy'])->name('passport.clients.update')->middleware('can:delete-auth_clients');
+Route::get('oauth/clients', [ClientController::class, 'index'])->name('passport.clients.index')->middleware('can:view-auth_clients');
+Route::get('oauth/clients/{client_id}', [ClientController::class, 'show'])->name('passport.clients.show')->middleware('can:view-auth_clients');
+Route::post('oauth/clients', [ClientController::class, 'store'])->name('passport.clients.store')->middleware('can:create-auth_clients');
+Route::put('oauth/clients/{client_id}', [ClientController::class, 'update'])->name('passport.clients.update')->middleware('can:edit-auth_clients');
+Route::delete('oauth/clients/{client_id}', [ClientController::class, 'destroy'])->name('passport.clients.update')->middleware('can:delete-auth_clients');
 
 Route::get('password/success', function () {
     return view('auth.passwords.success', ['title' => __('Password Reset')]);
