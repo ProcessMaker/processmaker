@@ -3,10 +3,12 @@
 namespace ProcessMaker\Providers;
 
 use Blade;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
 use ProcessMaker\Events\ScreenBuilderStarting;
@@ -66,6 +68,18 @@ class ProcessMakerServiceProvider extends ServiceProvider
             $key = explode('.', $attr)[1];
 
             return preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $key);
+        });
+
+        Factory::guessFactoryNamesUsing(function (string $modelName) {
+            $modelName = Str::afterLast($modelName, '\\');
+
+            return 'Database\\Factories\\ProcessMaker\\Models\\' . $modelName . 'Factory';
+        });
+
+        Factory::guessModelNamesUsing(function ($factory) {
+            preg_match('/Database\\\\Factories\\\\(.*)Factory/', get_class($factory), $match);
+
+            return $match[1];
         });
 
         parent::boot();
