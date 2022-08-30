@@ -5,13 +5,9 @@ namespace ProcessMaker\Jobs;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
-use ProcessMaker\Repositories\ExecutionInstanceRepository;
-use ProcessMaker\SanitizeHelper;
 
 class StartEvent extends BpmnAction
 {
-    public $definitions;
-
     public $definitionsId;
 
     public $processId;
@@ -27,7 +23,6 @@ class StartEvent extends BpmnAction
      */
     public function __construct(Definitions $definitions, StartEventInterface $event, array $data)
     {
-        $this->definitions = $definitions;
         $this->definitionsId = $definitions->getKey();
         $this->processId = $event->getOwnerProcess()->getId();
         $this->elementId = $event->getId();
@@ -46,9 +41,6 @@ class StartEvent extends BpmnAction
         $dataStorage->setData($this->data);
         $instance = $process->getEngine()->createExecutionInstance($process, $dataStorage);
         $element->start($instance);
-
-        $instanceRepo = new ExecutionInstanceRepository();
-        $instanceRepo->persistInstanceDoNotSanitizeFields($instance, SanitizeHelper::getDoNotSanitizeFields($this->definitions));
 
         //Return the instance created
         return $instance;
