@@ -113,7 +113,6 @@ class BoundaryEventsTest extends TestCase
 
     /**
      * Tests a process with a error boundary event in a CallActivity
-     *
      */
     public function testErrorBoundaryEventCallActivity()
     {
@@ -412,7 +411,7 @@ class BoundaryEventsTest extends TestCase
                 ['abc' => 123],
                 ['abc' => 456],
                 ['abc' => 789],
-            ]
+            ],
         ]);
 
         // Get active tokens

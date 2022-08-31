@@ -11,6 +11,7 @@ class TestStatusController extends Controller
     public function test()
     {
         TestStatusJob::dispatch('BroadcastService', 'Echo message received')->delay(Carbon::now()->addSeconds(5));
+
         return view('test.status');
     }
 
@@ -28,6 +29,7 @@ class TestStatusController extends Controller
             'name' => 'Email received',
             'description' => 'Email received',
         ]);
+
         return 'Email received.<script>setTimeout("window.close()", 2000);</script>';
     }
 }

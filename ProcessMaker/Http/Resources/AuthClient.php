@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Http\Resources;
 
 class AuthClient extends ApiResource
@@ -21,6 +22,7 @@ class AuthClient extends ApiResource
         if ($this->password_client) {
             $types[] = 'password_client';
         }
+
         return [
             'id' => $this->id,
             'name' => $this->name,

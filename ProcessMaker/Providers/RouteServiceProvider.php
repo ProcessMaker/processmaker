@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Route;
 
 /**
  * Our Route Service Provider
- * @package ProcessMaker\Providers
  */
 class RouteServiceProvider extends ServiceProvider
 {

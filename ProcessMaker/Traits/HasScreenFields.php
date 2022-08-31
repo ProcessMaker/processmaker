@@ -10,9 +10,9 @@ trait HasScreenFields
     private $parsedFields;
 
     private $restrictedComponents = [
-        'FormImage'
+        'FormImage',
     ];
-    
+
     public function getFieldsAttribute()
     {
         if (empty($this->parsedFields)) {
@@ -40,7 +40,7 @@ trait HasScreenFields
     public function parseNestedScreen($node)
     {
         $nested = Screen::find($node['config']['screen']);
-        foreach($nested->fields as $field) {
+        foreach ($nested->fields as $field) {
             $this->parsedFields->push($field);
         }
     }
@@ -62,10 +62,10 @@ trait HasScreenFields
             }
         }
     }
-    
+
     public function parseItem($item)
     {
-        if (isset($item['component']) && ! in_array($item['component'], $this->restrictedComponents)) {
+        if (isset($item['component']) && !in_array($item['component'], $this->restrictedComponents)) {
             $this->parsedFields->push(new Column([
                 'field' => $this->parseItemName($item),
                 'label' => $this->parseItemLabel($item),
@@ -76,12 +76,12 @@ trait HasScreenFields
             ]));
         }
     }
-    
+
     public function parseItemName($item)
     {
         return $item['config']['name'];
     }
-    
+
     public function parseItemLabel($item)
     {
         if (isset($item['config']['label'])) {
@@ -94,11 +94,11 @@ trait HasScreenFields
     public function parseItemFormat($item)
     {
         $format = 'string';
-        
+
         if (isset($item['config']['dataFormat'])) {
             $format = $item['config']['dataFormat'];
         }
-        
+
         if (isset($item['component'])) {
             switch ($item['component']) {
                 case 'FileUpload':
@@ -125,15 +125,14 @@ trait HasScreenFields
                     break;
             }
         }
-        
+
         return $format;
     }
-    
+
     public function parseItemMask($item)
     {
         return $item['config']['dataMask'] ?? null;
         if (isset($item['config']['dataMask'])) {
-            
         }
     }
 }

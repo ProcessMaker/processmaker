@@ -5,11 +5,11 @@ namespace Tests\Feature;
 use Carbon\Carbon;
 use DB;
 use Faker\Factory;
-use Tests\TestCase;
 use ProcessMaker\Models\ProcessRequest;
-use Tests\Feature\Shared\RequestHelper;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
+use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class ExtendedPMQLTest extends TestCase
 {
@@ -86,7 +86,7 @@ class ExtendedPMQLTest extends TestCase
     public function testInUsersTimezone()
     {
         // Ensure the mysql server timezone is set to UTC
-        $this->assertContains(\DB::select("select @@time_zone as tz")[0]->tz, ['+00:00', 'UTC']);
+        $this->assertContains(\DB::select('select @@time_zone as tz')[0]->tz, ['+00:00', 'UTC']);
 
         // Ensure the app timezone is set to UTC
         config(['app.timezone' => 'UTC']);
@@ -104,8 +104,7 @@ class ExtendedPMQLTest extends TestCase
         $url = route('api.requests.index', ['pmql' => 'completed_at > "2021-10-05 10:00:00"']); // America/Los_Angeles
         $result = $this->apiCall('GET', $url);
         $this->assertCount(1, $result->json()['data']); // Match only the one created at 11am Los Angeles Time (18:00/6pm UTC)
-        $this->assertEquals($processRequest2->id, $result->json()['data'][0]['id'] );
-
+        $this->assertEquals($processRequest2->id, $result->json()['data'][0]['id']);
     }
 
     public function testRelativeDate()
@@ -120,31 +119,32 @@ class ExtendedPMQLTest extends TestCase
         $url = route('api.requests.index', ['pmql' => 'data.date > now -1 hour']);
         $result = $this->apiCall('GET', $url);
         $this->assertCount(1, $result->json()['data']); // Match only the one that completed 10 minutes ago
-        $this->assertEquals($processRequest1->id, $result->json()['data'][0]['id'] );
+        $this->assertEquals($processRequest1->id, $result->json()['data'][0]['id']);
     }
 
     public function testCharComparison()
     {
         $processRequest1 = factory(ProcessRequest::class)->create([
-            'data' => ['gender' => 'F']
+            'data' => ['gender' => 'F'],
         ]);
 
         $processRequest2 = factory(ProcessRequest::class)->create([
-            'data' => ['gender' => 'M']
+            'data' => ['gender' => 'M'],
         ]);
 
         $url = route('api.requests.index', ['pmql' => 'data.gender = "F"']);
         $result = $this->apiCall('GET', $url);
         $this->assertCount(1, $result->json()['data']); // Match only F
-        $this->assertEquals($processRequest1->id, $result->json()['data'][0]['id'] );
+        $this->assertEquals($processRequest1->id, $result->json()['data'][0]['id']);
     }
 
-    public function testFilterUsernameWithNumbers() {
+    public function testFilterUsernameWithNumbers()
+    {
         $user = factory(User::class)->create([
-            'username' => 'W0584'
+            'username' => 'W0584',
         ]);
         $processRequest = factory(ProcessRequest::class)->create([
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
 
         $url = route('api.requests.index', ['pmql' => 'requester = "W0584"']);

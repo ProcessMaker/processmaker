@@ -46,7 +46,7 @@ class ScriptCategory extends Model
     protected $fillable = [
         'name',
         'status',
-        'is_system'
+        'is_system',
     ];
 
     public static function rules($existing = null)
@@ -55,7 +55,7 @@ class ScriptCategory extends Model
 
         return [
             'name' => ['required', 'string', 'max:100', $unique, 'alpha_spaces'],
-            'status' => 'required|string|in:ACTIVE,INACTIVE'
+            'status' => 'required|string|in:ACTIVE,INACTIVE',
         ];
     }
 

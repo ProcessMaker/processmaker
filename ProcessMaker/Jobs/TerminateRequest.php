@@ -8,8 +8,11 @@ use ProcessMaker\Models\ProcessRequest;
 class TerminateRequest extends BpmnAction implements ShouldQueue
 {
     public $definitionsId;
+
     public $instanceId;
+
     public $tokenId;
+
     public $data;
 
     /**

@@ -9,12 +9,12 @@ use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\PermissionAssignment;
-use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
+use ProcessMaker\Providers\AuthServiceProvider;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 use Tests\Feature\Shared\RequestHelper;
-use ProcessMaker\Providers\AuthServiceProvider;
 use Tests\TestCase;
 
 /**
@@ -60,7 +60,6 @@ class EditDataTest extends TestCase
 
     /**
      * Assign the required permission to the user and group.
-     *
      */
     private function assignPermissions(Process $process)
     {
@@ -126,6 +125,7 @@ class EditDataTest extends TestCase
 
         // When save the process creates the assignments
         $process->save();
+
         return $process;
     }
 
@@ -142,6 +142,7 @@ class EditDataTest extends TestCase
     {
         // Trigger the start event
         $event = $process->getDefinitions()->getEvent($startEvent);
+
         return WorkflowManager::triggerStartEvent($process, $event, $data);
     }
 
@@ -159,6 +160,7 @@ class EditDataTest extends TestCase
         $process = $task->process;
         $instance = $task->processRequest;
         WorkflowManager::completeTask($process, $instance, $task, $data);
+
         return $task->refresh();
     }
 

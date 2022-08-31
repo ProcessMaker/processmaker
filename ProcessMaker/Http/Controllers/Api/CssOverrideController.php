@@ -3,10 +3,10 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
-use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Jobs\CompileSass;
@@ -21,7 +21,7 @@ class CssOverrideController extends Controller
      * @var array
      */
     public $doNotSanitize = [
-        'loginFooter'
+        'loginFooter',
     ];
 
     /**
@@ -50,7 +50,6 @@ class CssOverrideController extends Controller
      *     ),
      * )
      * @throws \Throwable
-     *
      */
     public function store(Request $request)
     {
@@ -80,12 +79,12 @@ class CssOverrideController extends Controller
         }
 
         if ($request->has('fileLogin')) {
-          $this->uploadFile($setting->refresh(), $request, 'fileLogin', Setting::COLLECTION_CSS_LOGIN, Setting::DISK_CSS);
-          Cache::forget('css-login');
+            $this->uploadFile($setting->refresh(), $request, 'fileLogin', Setting::COLLECTION_CSS_LOGIN, Setting::DISK_CSS);
+            Cache::forget('css-login');
         }
 
         if ($request->has('reset') && $request->input('reset')) {
-          $setting->delete();
+            $setting->delete();
         }
 
         $request->validate(Setting::rules($setting));
@@ -96,7 +95,7 @@ class CssOverrideController extends Controller
         $this->setAltText($request);
 
         $this->writeColors(json_decode($request->input('variables', '[]'), true));
-        $this->writeFonts(json_decode($request->input("sansSerifFont", '')));
+        $this->writeFonts(json_decode($request->input('sansSerifFont', '')));
         $this->compileSass($request->user('api')->id, json_decode($request->input('variables', '[]'), true));
 
         return new ApiResource($setting);
@@ -105,22 +104,22 @@ class CssOverrideController extends Controller
     private function setLoginFooter(Request $request)
     {
         $footerContent = $request->input('loginFooter', '');
-        if ($footerContent === "null") {
-            $footerContent = "";
+        if ($footerContent === 'null') {
+            $footerContent = '';
         }
 
         Setting::updateOrCreate([
-            'key' => 'login-footer'
+            'key' => 'login-footer',
         ], [
-            'config' => ['html' => $footerContent]
+            'config' => ['html' => $footerContent],
         ]);
     }
 
     private function setAltText(Request $request)
     {
         $altText = $request->input('altText', '');
-        if ($altText === "null") {
-            $altText = "";
+        if ($altText === 'null') {
+            $altText = '';
         }
 
         Setting::updateOrCreate([
@@ -159,12 +158,12 @@ class CssOverrideController extends Controller
             $this->uploadFile($setting->refresh(), $request, 'fileFavicon', Setting::COLLECTION_CSS_FAVICON, Setting::DISK_CSS);
             Cache::forget('css-favicon');
         }
-        
+
         $this->setLoginFooter($request);
         $this->setAltText($request);
 
         $this->writeColors(json_decode($request->input('variables', '[]'), true));
-        $this->writeFonts(json_decode($request->input("sansSerifFont", '')));
+        $this->writeFonts(json_decode($request->input('sansSerifFont', '')));
         $this->compileSass($request->user('api')->id, json_decode($request->input('variables', '[]'), true));
 
         return response([], 204);
@@ -183,7 +182,6 @@ class CssOverrideController extends Controller
             $contents .= $value['id'] . ': ' . $value['value'] . ";\n";
         }
         File::put(app()->resourcePath('sass') . '/_colors.scss', $contents);
-
     }
 
     /**
@@ -211,19 +209,19 @@ class CssOverrideController extends Controller
             'tag' => 'sidebar',
             'origin' => 'resources/sass/sidebar/sidebar.scss',
             'target' => 'public/css/sidebar.css',
-            'user' => $userId
+            'user' => $userId,
         ]));
         $this->dispatch(new CompileSass([
             'tag' => 'app',
             'origin' => 'resources/sass/app.scss',
             'target' => 'public/css/app.css',
-            'user' => $userId
+            'user' => $userId,
         ]));
         $this->dispatch(new CompileSass([
             'tag' => 'queues',
             'origin' => 'resources/sass/admin/queues.scss',
             'target' => 'public/css/admin/queues.css',
-            'user' => $userId
+            'user' => $userId,
         ]));
     }
 
@@ -256,6 +254,7 @@ class CssOverrideController extends Controller
         $data = new \stdClass();
         $data->id = "'Open Sans'";
         $data->title = "'Open Sans'";
+
         return $data;
     }
 
@@ -290,13 +289,11 @@ class CssOverrideController extends Controller
 
             $setting->addMedia("/tmp/img.{$type}")
                 ->toMediaCollection($collectionName, $diskName);
-        } else if (isset($data[$filename]) && !empty($data[$filename]) && $data[$filename] != 'null') {
+        } elseif (isset($data[$filename]) && !empty($data[$filename]) && $data[$filename] != 'null') {
             $customMessage = ['mimes' => __('The :attribute must be a file of type: jpg, jpeg, png, or gif.')];
-            $this->validate($request, [ $filename => '  mimes:jpg,jpeg,png,gif'], $customMessage);
+            $this->validate($request, [$filename => '  mimes:jpg,jpeg,png,gif'], $customMessage);
             $setting->addMedia($request->file($filename))
                 ->toMediaCollection($collectionName, $diskName);
         }
-
     }
-
 }

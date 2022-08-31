@@ -2,13 +2,12 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class ProfileTest extends TestCase
 {
-
     use RequestHelper;
 
     /**
@@ -18,7 +17,6 @@ class ProfileTest extends TestCase
      */
     public function testEditRoute()
     {
-
         $user_id = factory(User::class)->create()->id;
         // get the URL
         $response = $this->webCall('GET', '/profile/edit');
@@ -35,7 +33,6 @@ class ProfileTest extends TestCase
      */
     public function testShowRoute()
     {
-
         $user_id = factory(User::class)->create()->id;
         // get the URL
         $response = $this->webCall('GET', '/profile/' . $user_id);

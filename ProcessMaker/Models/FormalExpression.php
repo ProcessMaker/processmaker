@@ -15,8 +15,6 @@ use Throwable;
 
 /**
  * FormalExpression
- *
- * @package ProcessMaker\Model
  */
 class FormalExpression implements FormalExpressionInterface
 {
@@ -37,7 +35,7 @@ class FormalExpression implements FormalExpressionInterface
 
     /**
      * FEEL expression object to be used to evaluate
-     * @var \Symfony\Component\ExpressionLanguage\ExpressionLanguage $expressionLanguage
+     * @var \Symfony\Component\ExpressionLanguage\ExpressionLanguage
      */
     private $feelExpression;
 
@@ -62,7 +60,6 @@ class FormalExpression implements FormalExpressionInterface
 
     /**
      * Register system functions
-     *
      */
     private function registerPMFunctions()
     {
@@ -75,6 +72,7 @@ class FormalExpression implements FormalExpressionInterface
                     ->where('process_request_id', $request_id)
                     ->where('status', 'ACTIVE')
                     ->first();
+
                 return $task;
             }
         );
@@ -113,6 +111,7 @@ class FormalExpression implements FormalExpressionInterface
                 foreach ($activeTasks as $task) {
                     $task->reassignTo($target_user_id)->save();
                 }
+
                 return $target_user_id;
             }
         );
@@ -121,7 +120,7 @@ class FormalExpression implements FormalExpressionInterface
             function () {
             },
             function ($arguments, $o, $a) {
-                return ((array)$o)[$a];
+                return ((array) $o)[$a];
             }
         );
         // date($format, $timestamp)
@@ -135,8 +134,7 @@ class FormalExpression implements FormalExpressionInterface
                 }
                 if ($b) {
                     return Carbon::createFromTimestamp($b, $timezone)->format($a);
-                }
-                else {
+                } else {
                     return Carbon::now($timezone)->format($a);
                 }
             }
@@ -160,6 +158,7 @@ class FormalExpression implements FormalExpressionInterface
                 if ($env) {
                     return $env->value;
                 }
+
                 return env($name);
             }
         );
@@ -240,8 +239,10 @@ class FormalExpression implements FormalExpressionInterface
                     // If no manager is found, then assign the task to the Process Manager.
                     $request = ProcessRequest::find($__data['_request']['id']);
                     $process = $request->processVersion;
+
                     return $process->manager_id;
                 }
+
                 return $user->manager_id;
             }
         );
@@ -285,7 +286,7 @@ class FormalExpression implements FormalExpressionInterface
         if (self::templateEngine == 'Mustache') {
             return new MustacheExpressionEvaluator();
         } else {
-            throw new \Exception("Template engine not supported");
+            throw new \Exception('Template engine not supported');
         }
     }
 
@@ -309,6 +310,7 @@ class FormalExpression implements FormalExpressionInterface
     public function setBody($body)
     {
         $this->setProperty(FormalExpressionInterface::BPMN_PROPERTY_BODY, $body);
+
         return $this;
     }
 
@@ -342,6 +344,7 @@ class FormalExpression implements FormalExpressionInterface
     public function setLanguage($language)
     {
         $this->setProperty(FormalExpressionInterface::BPMN_PROPERTY_LANGUAGE, $language);
+
         return $this;
     }
 

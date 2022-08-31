@@ -8,7 +8,7 @@ use ProcessMaker\Models\User;
 
 class RequestUserPermission extends Model
 {
-    protected $table = "request_user_permissions";
+    protected $table = 'request_user_permissions';
 
     protected $connection = 'data';
 

@@ -4,9 +4,9 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
-use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Traits\Exportable;
+use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
  * Represents a group definition.
@@ -36,7 +36,6 @@ use ProcessMaker\Traits\Exportable;
  *      )
  *   }
  * )
- *
  */
 class Group extends Model
 {
@@ -59,7 +58,7 @@ class Group extends Model
 
         return [
             'name' => ['required', 'string', 'max:255', $unique, 'alpha_spaces'],
-            'status' => 'in:ACTIVE,INACTIVE'
+            'status' => 'in:ACTIVE,INACTIVE',
         ];
     }
 
@@ -82,7 +81,7 @@ class Group extends Model
     {
         return $this->hasMany(GroupMember::class);
     }
-    
+
     public function getUsersAttribute()
     {
         return $this->groupMembers->where('member_type', User::class)->map(function ($member) {
@@ -99,25 +98,25 @@ class Group extends Model
     {
         return $this->belongsTo(User::class, 'manager_id');
     }
-    
-    public function getRecursiveUsersAttribute(Group $parent = null)
+
+    public function getRecursiveUsersAttribute(self $parent = null)
     {
         // Parent is used to determine the top level group in order to prevent
         // infinite loops in the case of two groups nested within each other
-        if (! $parent) {
+        if (!$parent) {
             $parent = $this;
         }
-        
+
         $users = collect();
-        
+
         $users = $users->merge($this->users);
-        
+
         $this->groupMembers->where('member_type', self::class)->each(function ($member) use (&$users, $parent) {
             if ($member->member->id != $parent->id) {
                 $users = $users->merge($member->member->getRecursiveUsersAttribute($parent));
             }
         });
-        
+
         return $users->unique(function ($user) {
             return $user->id;
         })->sortBy('id')->values();

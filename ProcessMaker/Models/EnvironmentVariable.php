@@ -34,11 +34,11 @@ class EnvironmentVariable extends Model
     protected $fillable = [
         'name',
         'description',
-        'value'
+        'value',
     ];
 
     protected $hidden = [
-        'value'
+        'value',
     ];
 
     /**

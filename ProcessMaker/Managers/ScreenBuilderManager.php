@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Managers;
 
 use Illuminate\Support\Facades\Storage;
@@ -19,9 +20,9 @@ class ScreenBuilderManager
     }
 
     /**
-     * Add a new script to the modeler load.  These scripts can then interact with the modeler 
+     * Add a new script to the modeler load.  These scripts can then interact with the modeler
      * during it's startup lifecycle to do this such as register new node types.
-     * 
+     *
      * @param string $script Path to the javascript to load
      * @return void
      */
@@ -33,19 +34,20 @@ class ScreenBuilderManager
     }
 
     /**
-     * Retrieve the list of scripts that have been added. This is used in the modeler blade 
+     * Retrieve the list of scripts that have been added. This is used in the modeler blade
      * to execute each script in a script tag before the modeler is started.
-     * 
+     *
      * @return array Collection of paths to scripts to load
      */
     public function getScripts()
     {
         $scripts = [];
-        foreach($this->javascriptRegistry as $script) {
+        foreach ($this->javascriptRegistry as $script) {
             $path = public_path($script);
             $time = file_exists($path) ? filemtime($path) : 0;
             $scripts[] = $script . ($time ? "?t=$time" : '');
         }
+
         return $scripts;
     }
 
@@ -55,10 +57,10 @@ class ScreenBuilderManager
         $extensionsFile = 'screen-builder-' . strtolower($type) . '-components.js';
 
         $directories = glob('vendor/processmaker/packages/*', GLOB_ONLYDIR);
-        foreach($directories as $directory) {
+        foreach ($directories as $directory) {
             $extensionsFullName = $directory . '/js/' . $extensionsFile;
             $files = glob($extensionsFullName);
-            if (count($files) > 0){
+            if (count($files) > 0) {
                 $this->addScript('/' . $files[0]);
             }
         }
