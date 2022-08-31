@@ -16,7 +16,7 @@ class SanitizeHelperTest extends TestCase
         // This is not a valid html tag
         $this->assertEquals('Monitor <90in', SanitizeHelper::strip_tags('Monitor <90in'));
         // ADOA example
-        $equipment = <<<EQUIPMENT
+        $equipment = <<<'EQUIPMENT'
         Computer                         Serial # DE1013356        
         Monitor (s)                     CNK51105LD      <AF3412-23
         Keyboard (s)                    CNK51105LD      <FF0012-23

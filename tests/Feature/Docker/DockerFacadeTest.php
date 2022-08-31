@@ -19,6 +19,8 @@ class DockerFacadeTest extends TestCase
 
     protected function setUp() : void
     {
+        $this->markTestSkipped('FOUR-6653');
+
         // Set empty env variables
         config(['app.processmaker_scripts_docker_host' => '']);
         config(['app.processmaker_scripts_docker' => self::DEFAULT_DOCKER_COMMAND]);
