@@ -20,6 +20,8 @@ class BuildSdkTest extends TestCase
 
     public function testWithUnsupportedLanguage()
     {
+        $this->markTestSkipped('FOUR-6653');
+
         $builder = new BuildSdk($this->jsonFile(), '/tmp/output');
         try {
             $builder->setLang('foo');
@@ -31,6 +33,8 @@ class BuildSdkTest extends TestCase
 
     public function testBuildPhp()
     {
+        $this->markTestSkipped('FOUR-6653');
+
         $output = '/tmp/output';
         $builder = new BuildSdk($this->jsonFile(), $output);
         $builder->setLang('php');
