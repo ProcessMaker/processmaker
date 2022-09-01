@@ -21,6 +21,7 @@ class Kernel extends HttpKernel
         \ProcessMaker\Http\Middleware\TrustProxies::class,
         \ProcessMaker\Http\Middleware\BrowserCache::class,
     ];
+
     /**
      * The application's route middleware groups.
      *
@@ -40,14 +41,13 @@ class Kernel extends HttpKernel
             \ProcessMaker\Http\Middleware\GenerateMenus::class,
             \Laravel\Passport\Http\Middleware\CreateFreshApiToken::class,
 
-
-
         ],
         'api' => [
             // API Middleware is defined with routeMiddleware below.
             // See routes/api.php
         ],
     ];
+
     /**
      * The application's route middleware.
      *

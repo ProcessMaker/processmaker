@@ -1,12 +1,14 @@
 <?php
+
 namespace ProcessMaker;
 
+use function GuzzleHttp\json_decode;
 use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
-use function GuzzleHttp\json_decode;
 
-class SanitizeHelper {
+class SanitizeHelper
+{
     /**
      * The tags that should always be sanitized, even
      * when the controller specifies doNotSanitize
@@ -31,14 +33,14 @@ class SanitizeHelper {
      *
      * @param  string  $key
      * @param  mixed  $value
-     * @param  boolean $strip_tags
+     * @param  bool $strip_tags
      * @return mixed
      */
     public static function sanitize($value, $strip_tags = true)
     {
         if (is_string($value) && $strip_tags) {
             // Remove most injectable code
-            $value = strip_tags($value);
+            $value = self::strip_tags($value);
             $value = self::sanitizeVueExp($value);
 
             // Return the sanitized string
@@ -49,11 +51,32 @@ class SanitizeHelper {
                 $regexp = self::convertTagToRegExp($tag);
                 $value = preg_replace($regexp, '', $value);
             }
+
             return $value;
         }
 
         // Return the original value.
         return $value;
+    }
+
+    /**
+     * Strip php and html tags
+     * 
+     * @param string $string
+     *
+     * @return string
+     */
+    public static function strip_tags($string)
+    {
+        // strip server side tags
+        $string = preg_replace('/(<\?((?!\?>)[\w\W])+\?>)/', '', $string);
+        // strip html comments
+        $string = preg_replace('/(<!--((?!-->)[\w\W])+-->)/', '', $string);
+        // strip html tags
+        $string = preg_replace('/<[a-zA-Z0-9]+[^>]*>/', '', $string);
+        $string = preg_replace('/<\/[a-zA-Z0-9]+[^>]*>/', '', $string);
+        $string = preg_replace('/<[a-zA-Z0-9]+[^>]*\/>/', '', $string);
+        return $string;
     }
 
     /**
@@ -107,7 +130,7 @@ class SanitizeHelper {
         return self::sanitizeWithExceptions($data, $except);
     }
 
-    private static function sanitizeWithExceptions(Array $data, Array $except, $parent = null)
+    private static function sanitizeWithExceptions(array $data, array $except, $parent = null)
     {
         foreach ($data as $key => $value) {
             if (!is_int($key)) {
@@ -123,6 +146,7 @@ class SanitizeHelper {
                 $data[$key] = self::sanitize($value, $strip_tags);
             }
         }
+
         return $data;
     }
 
@@ -138,6 +162,7 @@ class SanitizeHelper {
                 $except = array_merge($except, self::getRichTextElements($page['items']));
             }
         }
+
         return $except;
     }
 
@@ -150,10 +175,10 @@ class SanitizeHelper {
                 // Inside loop ..
                 if ($item['component'] == 'FormLoop') {
                     $elements = array_merge($elements, self::getRichTextElements($item['items'], ($parent ? $parent . '.' . $item['config']['name'] : $item['config']['name'])));
-                } else if (isset($item['component']) && $item['component'] === 'FormTextArea' && isset($item['config']['richtext']) && $item['config']['richtext'] === true) {
+                } elseif (isset($item['component']) && $item['component'] === 'FormTextArea' && isset($item['config']['richtext']) && $item['config']['richtext'] === true) {
                     $elements[] = ($parent ? $parent . '.' . $item['config']['name'] : $item['config']['name']);
                 // Inside a table ..
-                } else if ($item['component'] == 'FormMultiColumn') {
+                } elseif ($item['component'] == 'FormMultiColumn') {
                     foreach ($item['items'] as $cell) {
                         if (
                             isset($cell['component']) &&
@@ -181,7 +206,7 @@ class SanitizeHelper {
     public static function sanitizeEmail($email)
     {
         $validator = Validator::make(['email' => $email], [
-            'email'=>'required|email'
+            'email'=>'required|email',
         ]);
         if ($validator->fails()) {
             return '';
@@ -207,6 +232,7 @@ class SanitizeHelper {
             '{{' => '',
             '}}' => '',
         ];
+
         return str_replace(array_keys($codes), array_values($codes), $string);
     }
 }

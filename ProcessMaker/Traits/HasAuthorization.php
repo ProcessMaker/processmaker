@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Traits;
 
 use Illuminate\Support\Facades\Auth;
@@ -17,17 +18,18 @@ trait HasAuthorization
             $this->loadGroupPermissions()
         );
     }
-    
+
     public function loadUserPermissions()
     {
         $permissions = $this->permissions->pluck('name')->toArray();
+
         return $this->addCategoryViewPermissions($permissions);
     }
-    
+
     public function loadGroupPermissions()
     {
         $permissions = [];
-        
+
         foreach ($this->groupMembersFromMemberable as $gm) {
             $group = $gm->group;
             $names = $group->permissions->pluck('name')->toArray();
@@ -57,16 +59,17 @@ trait HasAuthorization
      * If a user can create or edit a resource,
      * they should be able to view its categories.
      *
-     * @param Array $permissions
-     * @return Array $permissions
+     * @param array $permissions
+     * @return array $permissions
      */
-    private function addCategoryViewPermissions($permissions) {
+    private function addCategoryViewPermissions($permissions)
+    {
         $addFor = [
             'processes' => 'view-process-categories',
             'scripts' => 'view-script-categories',
-            'screens' => 'view-screen-categories'
+            'screens' => 'view-screen-categories',
         ];
-        foreach($addFor as $resource => $categoryPermission) {
+        foreach ($addFor as $resource => $categoryPermission) {
             if (
                 in_array('create-' . $resource, $permissions) ||
                 in_array('edit-' . $resource, $permissions)
@@ -76,15 +79,15 @@ trait HasAuthorization
                 }
             }
         }
+
         return $permissions;
     }
 
     public function giveDirectPermission($permissionNames)
     {
         foreach ((array) $permissionNames as $permissionName) {
-            $permissionId = Permission::byName($permissionName)->id;            
+            $permissionId = Permission::byName($permissionName)->id;
             $this->permissions()->attach($permissionId);
         }
     }
-
 }

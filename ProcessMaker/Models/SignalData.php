@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Exception;
+use ProcessMaker\Jobs\CopyRequestFiles;
 use ProcessMaker\Nayra\Bpmn\ActivitySubProcessTrait;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityClosedEvent;
@@ -13,12 +14,9 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ErrorInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
-use ProcessMaker\Jobs\CopyRequestFiles;
 
 /**
  * Represents Signal Data
- *
- * @package ProcessMaker\Model
  */
 class SignalData
 {
@@ -82,5 +80,4 @@ class SignalData
         $this->name = $name ?? '';
         $this->detail = $detail ?? '';
     }
-
 }

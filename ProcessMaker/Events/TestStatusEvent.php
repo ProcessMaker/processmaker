@@ -13,6 +13,7 @@ class TestStatusEvent implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $name;
+
     public $description;
 
     /**
@@ -40,6 +41,7 @@ class TestStatusEvent implements ShouldBroadcast
     {
         return 'TestStatusEvent';
     }
+
     public function broadcastWith()
     {
         return [

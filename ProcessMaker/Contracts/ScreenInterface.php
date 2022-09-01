@@ -2,4 +2,6 @@
 
 namespace ProcessMaker\Contracts;
 
-interface ScreenInterface { }
+interface ScreenInterface
+{
+}

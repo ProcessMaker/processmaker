@@ -6,5 +6,4 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class Notifications extends ApiResource
 {
-
 }

@@ -2,8 +2,8 @@
 
 namespace ProcessMaker\Upgrades;
 
-use Illuminate\Database\Migrations\MigrationRepositoryInterface;
 use Illuminate\Database\Migrations\DatabaseMigrationRepository as DMR;
+use Illuminate\Database\Migrations\MigrationRepositoryInterface;
 
 class UpgradeMigrationRepository extends DMR implements MigrationRepositoryInterface
 {
@@ -184,5 +184,4 @@ class UpgradeMigrationRepository extends DMR implements MigrationRepositoryInter
     {
         return $this->resolver->connection($this->connection);
     }
-
 }

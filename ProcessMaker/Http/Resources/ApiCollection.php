@@ -3,11 +3,11 @@
 namespace ProcessMaker\Http\Resources;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Resources\Json\ResourceCollection;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\AbstractPaginator;
-use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Pagination\AbstractPaginator;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 /**
  *  @OA\Schema(
@@ -17,7 +17,7 @@ use Illuminate\Http\Request;
  *    @OA\Property(property="sort_order", type="string", enum={"asc", "desc"}),
  *    @OA\Property(property="count", type="integer"),
  *    @OA\Property(property="total_pages", type="integer"),
- *    
+ *
  *    @OA\Property(property="current_page", type="integer"),
  *    @OA\Property(property="form", type="integer"),
  *    @OA\Property(property="last_page", type="integer"),
@@ -30,11 +30,11 @@ use Illuminate\Http\Request;
 class ApiCollection extends ResourceCollection
 {
     public $appends = [];
-    
+
     protected $appended;
 
     protected $totalCount;
-    
+
     /**
      * Create a new resource instance.
      *
@@ -48,10 +48,10 @@ class ApiCollection extends ResourceCollection
         if ($total !== null) {
             $this->totalCount = (int) $total;
         }
-        
+
         $this->appended = (object) [];
-        
-        foreach ($this->appends as $property) {            
+
+        foreach ($this->appends as $property) {
             if (property_exists($resource, $property)) {
                 $this->appended->{$property} = $resource->{$property};
             }
@@ -79,8 +79,8 @@ class ApiCollection extends ResourceCollection
                 /**
                  * total_pages: (integer, the total number of pages available, based on per_page and total)
                  */
-                'total_pages' => ceil($this->resource->total() / $this->resource->perPage())
-            ]
+                'total_pages' => ceil($this->resource->total() / $this->resource->perPage()),
+            ],
         ];
 
         return $payload;
@@ -97,7 +97,7 @@ class ApiCollection extends ResourceCollection
         if ($this->resource instanceof Collection) {
             $this->resource = $this->collectionToPaginator($this->resource, $request);
         }
-        
+
         return $this->resource instanceof AbstractPaginator
                     ? (new ApiPaginatedResourceResponse($this))->toResponse($request)
                     : parent::toResponse($request);
@@ -120,17 +120,17 @@ class ApiCollection extends ResourceCollection
 
         $page = (int) $request->input('page', 1);
         $perPage = (int) $request->input('per_page', 10);
-        
+
         $startIndex = ($page - 1) * $perPage;
         $limit = $perPage;
 
         if ($this->collection->count() > $limit) {
             $this->collection = $collection->slice($startIndex, $limit)->values();
         }
-        
+
         return new LengthAwarePaginator($this->collection, $count, $perPage);
-    }    
-    
+    }
+
     /**
      * Return the total count.
      *
@@ -146,7 +146,7 @@ class ApiCollection extends ResourceCollection
                 return $resource['total'];
             }
         }
-        
+
         return null;
     }
 }

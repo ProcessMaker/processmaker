@@ -2,15 +2,15 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
-use ProcessMaker\Models\User;
-use ProcessMaker\Models\Group;
 use Illuminate\Support\Facades\Auth;
-use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
-use Illuminate\Auth\Access\AuthorizationException;
 use ProcessMaker\Http\Resources\GroupMembers as GroupMemberResource;
+use ProcessMaker\Models\Group;
+use ProcessMaker\Models\GroupMember;
+use ProcessMaker\Models\User;
 
 class GroupMemberController extends Controller
 {
@@ -202,6 +202,7 @@ class GroupMemberController extends Controller
     public function destroy(GroupMember $group_member)
     {
         $group_member->delete();
+
         return response([], 204);
     }
 
@@ -264,13 +265,13 @@ class GroupMemberController extends Controller
         $member_id = $request->input('member_id', null);
         $member_type = $request->input('member_type', null);
         $assignedResult = collect([]);
-        
+
         if ($request->input('order_by') == 'assigned' && $member_id && $member_type) {
             $orderByAssigned = true;
         } else {
             $orderByAssigned = false;
         }
-        
+
         if ($orderByAssigned) {
             $orderBy = 'name';
         } else {
@@ -289,7 +290,7 @@ class GroupMemberController extends Controller
                 ->where('member_id', $member_id)
                 ->get()->pluck('group_id');
         }
-        
+
         $query = Group::where('status', 'ACTIVE');
 
         $filter = $request->input('filter', '');
@@ -305,22 +306,23 @@ class GroupMemberController extends Controller
             $orderBy,
             $request->input('order_direction', 'ASC')
         );
-        
+
         if ($orderByAssigned) {
             $assignedQuery = clone $query;
             $assignedQuery->whereIn('id', $members);
         }
-        
+
         $query->whereNotIn('id', $members);
 
         $response = $query->get();
-        
+
         if ($orderByAssigned) {
             $assignedResponse = $assignedQuery->get();
             $response = $assignedResponse->merge($response);
-            
-            $response = $response->map(function($group) use ($members) {
+
+            $response = $response->map(function ($group) use ($members) {
                 $group->assigned = $members->contains($group->id);
+
                 return $group;
             })->values();
         }

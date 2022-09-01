@@ -1,10 +1,9 @@
 <?php
+
 namespace ProcessMaker\Traits;
 
 /**
  * Trait that allows that all dates of an Eloquent model be serialized in ISO 8601 format
- *
- * @package ProcessMaker\Traits
  */
 trait SerializeToIso8601
 {
@@ -12,5 +11,4 @@ trait SerializeToIso8601
     {
         return $date->format('c');
     }
-
 }

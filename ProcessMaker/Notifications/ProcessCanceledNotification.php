@@ -14,7 +14,9 @@ class ProcessCanceledNotification extends Notification
     use Queueable;
 
     private $processUid;
+
     private $processName;
+
     private $instanceUid;
 
     /**
@@ -68,6 +70,7 @@ class ProcessCanceledNotification extends Notification
     public function toArray($notifiable)
     {
         $instance = Instance::find($this->instanceUid);
+
         return [
             'type' => 'PROCESS_CANCELED',
             'name' => sprintf('Request canceled: %s', $this->processName),
@@ -78,7 +81,7 @@ class ProcessCanceledNotification extends Notification
             'url' => sprintf(
                 '/requests/%s',
                 $this->instanceUid
-            )
+            ),
         ];
     }
 
@@ -86,5 +89,4 @@ class ProcessCanceledNotification extends Notification
     {
         return new BroadcastMessage($this->toArray($notifiable));
     }
-
 }

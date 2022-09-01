@@ -1,8 +1,7 @@
 <?php
 
-use ProcessMaker\SanitizeHelper;
-
 use function GuzzleHttp\json_encode;
+use ProcessMaker\SanitizeHelper;
 
 /**
  * Convert the Laravy menu into associative array
@@ -69,6 +68,7 @@ function pmUser()
     if (Auth::guard('api')->user()) {
         return Auth::guard('api')->user();
     }
+
     return null;
 }
 
@@ -83,6 +83,7 @@ function packTemporalData($data)
     $uid = uniqid('data_', true);
     $path = storage_path('app/private/' . $uid);
     file_put_contents($path, \json_encode($data));
+
     return $uid;
 }
 
@@ -92,6 +93,7 @@ function unpackTemporalData($uid)
     if (file_exists($path)) {
         return \json_decode(file_get_contents($path), true);
     }
+
     return [];
 }
 

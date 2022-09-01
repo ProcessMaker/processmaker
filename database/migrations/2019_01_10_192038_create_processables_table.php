@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateProcessablesTable extends Migration
 {
@@ -19,7 +19,7 @@ class CreateProcessablesTable extends Migration
             $table->unsignedInteger('processable_id');
             $table->string('processable_type');
             $table->enum('method', ['START', 'CANCEL', 'EDIT_DATA']);
-            
+
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
         });
     }

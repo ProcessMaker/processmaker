@@ -40,6 +40,7 @@ trait ProcessTestingTrait
         $process->bpmn = $definitions->saveXml();
         // When save the process creates the assignments
         $process->save();
+
         return $process;
     }
 
@@ -85,6 +86,7 @@ trait ProcessTestingTrait
         $route = route('api.process_events.trigger', [$process->getKey(), 'event' => $startEvent]);
         $response = $this->apiCall('POST', $route, $data);
         $requestJson = $response->json();
+
         return ProcessRequest::find($requestJson['id']);
     }
 
@@ -139,7 +141,6 @@ trait ProcessTestingTrait
 
     /**
      * Run scheduled tasks
-     *
      */
     private function runScheduledTasks()
     {
@@ -155,7 +156,6 @@ trait ProcessTestingTrait
 
     /**
      * Restore the fake date for TaskSchedulerManager
-     *
      */
     protected function teardownProcessTestingTrait()
     {

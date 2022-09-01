@@ -2,9 +2,9 @@
 
 namespace ProcessMaker\Policies;
 
-use ProcessMaker\Models\User;
-use ProcessMaker\Models\Media;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use ProcessMaker\Models\Media;
+use ProcessMaker\Models\User;
 
 class MediaPolicy
 {
@@ -16,12 +16,12 @@ class MediaPolicy
      *
      * @param  \ProcessMaker\Models\User  $user
      * @return mixed
-     */    
+     */
     public function before(User $user)
     {
         if ($user->is_administrator) {
             return true;
-        }        
+        }
     }
 
     /**
@@ -51,27 +51,27 @@ class MediaPolicy
         if ($user->hasPermission('create-files')) {
             return true;
         }
-        
+
         $request = request();
-        
+
         $class = $request->input('model');
         $modelId = $request->input('model_id');
-        
+
         if ($class && $modelId && class_exists($class)) {
             $model = new $class;
             $model = $model->find($modelId);
-            
+
             if ($model) {
                 if ($user->can('create', $model)) {
                     return true;
                 }
-                
+
                 if ($user->can('update', $model)) {
                     return true;
                 }
             }
         }
-        
+
         return false;
     }
 
@@ -87,7 +87,7 @@ class MediaPolicy
         if ($user->hasPermission('update-files')) {
             return true;
         }
-        
+
         return $user->can('update', $media->model);
     }
 
@@ -103,7 +103,7 @@ class MediaPolicy
         if ($user->hasPermission('delete-files')) {
             return true;
         }
-        
+
         return $user->can('update', $media->model);
     }
 }

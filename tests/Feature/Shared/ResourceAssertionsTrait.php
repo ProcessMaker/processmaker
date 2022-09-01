@@ -6,7 +6,6 @@ use Illuminate\Foundation\Testing\TestResponse;
 
 /**
  * This trait add assertions to test a Resource Controller
- *
  */
 trait ResourceAssertionsTrait
 {
@@ -14,7 +13,7 @@ trait ResourceAssertionsTrait
 
     protected $errorStructure = [
         'message',
-        'errors'
+        'errors',
     ];
 
     /**
@@ -39,6 +38,7 @@ trait ResourceAssertionsTrait
         $this->assertArraySubset($expectedMeta, $meta);
         //Verify the data size
         $this->assertCount($meta['count'], $data);
+
         return $response;
     }
 
@@ -73,6 +73,7 @@ trait ResourceAssertionsTrait
         $response->assertJsonStructure($this->structure);
         $data = $response->json();
         $this->assertArraySubset($array, $data);
+
         return $response;
     }
 
@@ -94,6 +95,7 @@ trait ResourceAssertionsTrait
         $response->assertStatus(422);
         $response->assertJsonStructure($this->errorStructure);
         $response->assertJsonStructure(['errors' => $errors]);
+
         return $response;
     }
 
@@ -116,6 +118,7 @@ trait ResourceAssertionsTrait
         $response = $this->apiCall('GET', $route);
         $this->assertStatus(200, $response);
         $response->assertJsonStructure($structure);
+
         return $response;
     }
 
@@ -132,6 +135,7 @@ trait ResourceAssertionsTrait
         $response = $this->apiCall('DELETE', $route);
         $response->assertStatus(204);
         $this->assertEmpty($response->getContent());
+
         return $response;
     }
 
@@ -149,6 +153,7 @@ trait ResourceAssertionsTrait
         $response->assertStatus(422);
         $response->assertJsonStructure($this->errorStructure);
         $response->assertJsonStructure(['errors' => $errors]);
+
         return $response;
     }
 
@@ -201,6 +206,7 @@ trait ResourceAssertionsTrait
         $response->assertStatus(422);
         $response->assertJsonStructure($this->errorStructure);
         $response->assertJsonStructure(['errors' => $errors]);
+
         return $response;
     }
 

@@ -10,12 +10,9 @@ use ProcessMaker\Providers\WorkflowServiceProvider as PM;
 
 /**
  * Update the task assignments
- *
- * @package ProcessMaker\Traits
  */
 trait ProcessTaskAssignmentsTrait
 {
-
     /**
      * Create the process task assignments.
      */

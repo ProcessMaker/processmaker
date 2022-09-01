@@ -20,8 +20,11 @@ class ThrowMessageEvent extends BpmnAction implements ShouldQueue
     private const maxJobs = 10;
 
     public $messageRef;
+
     public $payload;
+
     public $instanceId;
+
     public $elementId;
 
     /**

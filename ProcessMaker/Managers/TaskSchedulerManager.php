@@ -35,6 +35,7 @@ use ProcessMaker\Nayra\Storage\BpmnDocument;
 class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 {
     private static $today = null;
+
     protected $registerStartEvents = false;
 
     /**
@@ -49,7 +50,6 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
     }
 
     /**
-     *
      * Register in the database any Timer Start Event of a process
      *
      * @param \ProcessMaker\Models\Process $process
@@ -127,12 +127,12 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
             ->setTimezone(new DateTimeZone('UTC'))
             ->format('Y-m-d H:i:s');
         $scheduledTask->save();
+
         return $scheduledTask;
     }
 
     /**
      * Checks the schedule_tasks table to execute jobs
-     *
      */
     public function scheduleTasks()
     {
@@ -194,10 +194,10 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                                 throw new Exception('Unknown timer event: ' . $task->type);
                         }
                     }
-                } catch(\Throwable $ex) {
-                    Log::Error("Failed Scheduled Task: ", [
+                } catch (\Throwable $ex) {
+                    Log::Error('Failed Scheduled Task: ', [
                         'Task data' => print_r($task->getAttributes(), true),
-                        'Exception' => $ex->__toString()
+                        'Exception' => $ex->__toString(),
                     ]);
                 }
             }
@@ -385,6 +385,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
             $interval = $this->loadTimerFromJson($timer->interval);
             $end = $timer->end ? $this->loadTimerFromJson($timer->end) : null;
             $recurrences = $timer->recurrences;
+
             return new DatePeriod($start, $interval, [$end, $recurrences - 1]);
         } elseif (isset($timer->y)) {
             return new DateInterval(sprintf(
@@ -399,6 +400,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         } elseif (is_string($timer)) {
             $expression = new TimerExpression();
             $expression->setBody($timer);
+
             return $expression([]);
         }
     }
@@ -430,6 +432,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
             $recurrences--;
             $dateTime->add($cycle->interval);
         }
+
         return $nextDateTime;
     }
 
@@ -445,6 +448,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
     private function nextDateForOneDate(DateTimeInterface $currentDate, $jsonDateTime, DateTimeInterface $lastExecution = null, DateTimeInterface $ownerDateTime = null)
     {
         $dateTime = $this->loadTimerFromJson($jsonDateTime);
+
         return (!$lastExecution || $lastExecution < $dateTime) ? $dateTime : null;
     }
 
@@ -462,6 +466,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         $interval = $this->loadTimerFromJson($jsonInterval);
         $dateTime = (clone ($ownerDateTime ?: $lastExecution ?: $currentDate))->add($interval);
         $method = config('app.timer_events_seconds') . 'DateTime';
+
         return (!$lastExecution || $this->$method($lastExecution) < $this->$method($dateTime)) ? $dateTime : null;
     }
 
@@ -486,11 +491,13 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
     {
         if ($today === null) {
             Carbon::setTestNow(null);
+
             return self::$today = $today;
         }
         $fake = $today instanceof DateTime ? clone $today : (new DateTime($today))->setTimezone(new DateTimeZone('UTC'));
         self::$today = new Carbon($fake->format('c'));
         Carbon::setTestNow($fake->format('c'));
+
         return clone self::$today;
     }
 
@@ -561,7 +568,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      */
     public function evaluateConditionals()
     {
-        $processes = Process::where('conditional_events', '!=', DB::raw("json_array()"))
+        $processes = Process::where('conditional_events', '!=', DB::raw('json_array()'))
             ->where('status', 'ACTIVE')
             ->get();
         foreach ($processes as $process) {

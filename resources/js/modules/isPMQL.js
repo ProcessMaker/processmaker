@@ -1,3 +1,3 @@
-String.prototype.isPMQL = function() {
+String.prototype.isPMQL = function () {
   return /^.+(?:[=><]|LIKE).+$/i.test(this);
 };

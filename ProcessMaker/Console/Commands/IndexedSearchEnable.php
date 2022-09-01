@@ -3,12 +3,12 @@
 namespace ProcessMaker\Console\Commands;
 
 use App;
-use Log;
-use Storage;
 use Illuminate\Console\Command;
+use Log;
 use ProcessMaker\Managers\IndexManager;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Traits\SupportsNonInteraction;
+use Storage;
 
 class IndexedSearchEnable extends Command
 {
@@ -19,12 +19,12 @@ class IndexedSearchEnable extends Command
      *
      * @var string
      */
-    protected $signature = "
+    protected $signature = '
         indexed-search:enable
             {--driver= : Choose a search driver (either Elasticsearch or SQLite)}
             {--url=    : If Elasticsearch, the URL to the server (including protocol and port number)}
             {--prefix= : The prefix of your search indices (needed if using one Elasticache instance for multiple ProcessMaker 4 instances)}
-    ";
+    ';
 
     /**
      * The console command description.
@@ -50,6 +50,7 @@ class IndexedSearchEnable extends Command
     private function setCommandDescription()
     {
         $items = $this->manager->list()->pluck('name')->implode(', ');
+
         return $this->description = "{$this->description} of {$items}";
     }
 
@@ -81,13 +82,13 @@ class IndexedSearchEnable extends Command
                 $bar = $this->output->createProgressBar($query->count());
                 $bar->start();
 
-                $query->chunk(5, function($items) use(&$bar, &$count) {
+                $query->chunk(5, function ($items) use (&$bar, &$count) {
                     $this->addToIndex($items);
                     foreach ($items as $item) {
                         $bar->advance();
                     }
                 });
-                
+
                 $bar->finish();
                 $this->info("\nAll {$index->name} records have been imported.");
             }
@@ -98,7 +99,7 @@ class IndexedSearchEnable extends Command
     {
         config(['filesystems.disks.install' => [
             'driver' => 'local',
-            'root' => base_path()
+            'root' => base_path(),
         ]]);
 
         if (Storage::disk('install')->exists('.env')) {
@@ -108,16 +109,16 @@ class IndexedSearchEnable extends Command
         }
 
         $driver = mb_strtolower($driver);
-        $prefix = mb_strtolower(preg_replace("/[^A-Za-z0-9]/", '', $prefix));
+        $prefix = mb_strtolower(preg_replace('/[^A-Za-z0-9]/', '', $prefix));
 
         if (empty($prefix)) {
             $prefix = null;
         } else {
-            $prefix .=  '_';
+            $prefix .= '_';
         }
 
         switch ($driver) {
-            case "elasticsearch":
+            case 'elasticsearch':
                 $driver = 'elastic';
                 $env .= "\n\nSCOUT_DRIVER={$driver}";
                 $env .= "\nELASTIC_HOST={$url}";
@@ -152,7 +153,7 @@ class IndexedSearchEnable extends Command
 
         if (in_array($driver, ['elasticsearch', 'sqlite'])) {
             if ($driver === 'elasticsearch') {
-                if (! $url) {
+                if (!$url) {
                     exit($this->error('No URL provided for Elasticsearch.'));
                 }
             }
@@ -172,7 +173,7 @@ class IndexedSearchEnable extends Command
             $prefix = $this->ask(
                 "What unique prefix would you like to apply to your indices?\n " .
                 "This is needed if using one Elasticache server for multiple ProcessMaker 4 instances.\n " .
-                "Leave empty for none"
+                'Leave empty for none'
             );
         }
         $this->setConfig($driver, $url, $prefix);
@@ -189,7 +190,7 @@ class IndexedSearchEnable extends Command
             $confirmed = $this->confirm(
                 "Running this command will index data from Requests, Tasks, and packages that support indexed search.\n " .
                 "This may take a very long time and consume system resources on large datasets.\n\n " .
-                "Are you sure you wish to proceed?"
+                'Are you sure you wish to proceed?'
             );
         } else {
             $confirmed = true;
@@ -203,8 +204,8 @@ class IndexedSearchEnable extends Command
             }
 
             $setting = Setting::updateOrCreate(
-                [ 'key' => 'indexed-search' ],
-                [ 'config' => [ 'enabled' => true ], ]
+                ['key' => 'indexed-search'],
+                ['config' => ['enabled' => true]]
             );
 
             $this->indexRecords();

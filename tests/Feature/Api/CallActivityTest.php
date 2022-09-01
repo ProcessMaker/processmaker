@@ -2,14 +2,14 @@
 
 namespace Tests\Feature\Api;
 
+use Illuminate\Http\Testing\File;
+use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ScriptExecutor;
 use Tests\Feature\Shared\ProcessTestingTrait;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
-use ProcessMaker\Models\ProcessRequestToken;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Http\Testing\File;
 
 class CallActivityTest extends TestCase
 {
@@ -29,7 +29,7 @@ class CallActivityTest extends TestCase
         // Create the processes
         $child = $this->createProcess([
             'id' => 2,
-            'bpmn' => file_get_contents(__DIR__ . '/processes/child.bpmn')
+            'bpmn' => file_get_contents(__DIR__ . '/processes/child.bpmn'),
         ]);
 
         $parent = $this->createProcess([
@@ -38,7 +38,7 @@ class CallActivityTest extends TestCase
                 ['[child_id]', '[start_event_id]'],
                 [$child->id, 'node_8'],
                 file_get_contents(__DIR__ . '/processes/parent.bpmn')
-            )
+            ),
         ]);
 
         // Start a process instance
@@ -61,7 +61,7 @@ class CallActivityTest extends TestCase
         // Create the processes
         $child = $this->createProcess([
             'id' => 2,
-            'bpmn' => file_get_contents(__DIR__ . '/processes/child-files.bpmn')
+            'bpmn' => file_get_contents(__DIR__ . '/processes/child-files.bpmn'),
         ]);
         $parent = $this->createProcess([
             'id' => 1,
@@ -69,7 +69,7 @@ class CallActivityTest extends TestCase
                 ['[child_id]', '[start_event_id]'],
                 [$child->id, 'startevent'],
                 file_get_contents(__DIR__ . '/processes/parent-files.bpmn')
-            )
+            ),
         ]);
         $instance = $this->startProcess($parent, 'node_1');
         $parentTask = $instance->tokens->where('status', 'ACTIVE')->first();
@@ -110,7 +110,7 @@ class CallActivityTest extends TestCase
         $route = route('api.requests.files.store', [$childInstance->id]);
         $response = $this->apiCall('POST', $route, [
             'file' => File::image('child.jpg'),
-            'data_name' => 'child_photo'
+            'data_name' => 'child_photo',
         ]);
 
         // This should overwrite the parent when the call activity finishes
@@ -151,7 +151,7 @@ class CallActivityTest extends TestCase
         // Create the processes
         $child = $this->createProcess([
             'id' => 2,
-            'bpmn' => file_get_contents(__DIR__ . '/processes/child-with-form-task.bpmn')
+            'bpmn' => file_get_contents(__DIR__ . '/processes/child-with-form-task.bpmn'),
         ]);
 
         $parent = $this->createProcess([
@@ -160,7 +160,7 @@ class CallActivityTest extends TestCase
                 ['[child_id]', '[start_event_id]'],
                 [$child->id, 'node_8'],
                 file_get_contents(__DIR__ . '/processes/parent.bpmn')
-            )
+            ),
         ]);
 
         // Start a process instance
@@ -219,11 +219,11 @@ class CallActivityTest extends TestCase
     {
         $child = $this->createProcess([
             'id' => 29,
-            'bpmn' => file_get_contents(__DIR__ . '/processes/SignalStartEvent.bpmn')
+            'bpmn' => file_get_contents(__DIR__ . '/processes/SignalStartEvent.bpmn'),
         ]);
         $parent = $this->createProcess([
             'id' => 30,
-            'bpmn' => file_get_contents(__DIR__ . '/processes/ParentCallActivity.bpmn')
+            'bpmn' => file_get_contents(__DIR__ . '/processes/ParentCallActivity.bpmn'),
         ]);
         // Process should have one warning related to "The start event of the call activity is not empty"
         $this->assertEquals([[
@@ -236,11 +236,11 @@ class CallActivityTest extends TestCase
     {
         $child = $this->createProcess([
             'id' => 29,
-            'bpmn' => file_get_contents(__DIR__ . '/processes/WebEntryStartEvent.bpmn')
+            'bpmn' => file_get_contents(__DIR__ . '/processes/WebEntryStartEvent.bpmn'),
         ]);
         $parent = $this->createProcess([
             'id' => 30,
-            'bpmn' => file_get_contents(__DIR__ . '/processes/ParentCallActivity.bpmn')
+            'bpmn' => file_get_contents(__DIR__ . '/processes/ParentCallActivity.bpmn'),
         ]);
         // Process should have one warning related to "The start event of the call activity can not be a web entry"
         $this->assertEquals([[
@@ -253,14 +253,14 @@ class CallActivityTest extends TestCase
     {
         $child = $this->createProcess([
             'id' => 29,
-            'bpmn' => file_get_contents(__DIR__ . '/processes/WebEntryStartEvent.bpmn')
+            'bpmn' => file_get_contents(__DIR__ . '/processes/WebEntryStartEvent.bpmn'),
         ]);
         $parentBpmn = file_get_contents(__DIR__ . '/processes/ParentCallActivity.bpmn');
         // Point to a EndEvent instead of StartEvent
         $parentBpmn = str_replace('&#34;startEvent&#34;:&#34;node_2&#34;', '&#34;startEvent&#34;:&#34;node_3&#34;', $parentBpmn);
         $parent = $this->createProcess([
             'id' => 30,
-            'bpmn' => $parentBpmn
+            'bpmn' => $parentBpmn,
         ]);
         // Process should have one warning related to "The start event of the call activity is not a start event"
         $this->assertEquals([[
@@ -273,14 +273,14 @@ class CallActivityTest extends TestCase
     {
         $child = $this->createProcess([
             'id' => 29,
-            'bpmn' => file_get_contents(__DIR__ . '/processes/WebEntryStartEvent.bpmn')
+            'bpmn' => file_get_contents(__DIR__ . '/processes/WebEntryStartEvent.bpmn'),
         ]);
         $parentBpmn = file_get_contents(__DIR__ . '/processes/ParentCallActivity.bpmn');
         // Point to a EndEvent instead of StartEvent
         $parentBpmn = str_replace('&#34;startEvent&#34;:&#34;node_2&#34;', '&#34;startEvent&#34;:&#34;deleted_node_id&#34;', $parentBpmn);
         $parent = $this->createProcess([
             'id' => 30,
-            'bpmn' => $parentBpmn
+            'bpmn' => $parentBpmn,
         ]);
         // Process should have one warning related to "The start event with id "deleted_node_id" does not exist"
         $this->assertEquals([[
@@ -297,7 +297,7 @@ class CallActivityTest extends TestCase
         // Create the processes
         $process = $this->createProcess([
             'id' => 2,
-            'bpmn' => file_get_contents(__DIR__ . '/processes/ProcessLoop.bpmn')
+            'bpmn' => file_get_contents(__DIR__ . '/processes/ProcessLoop.bpmn'),
         ]);
 
         // Start a process instance
@@ -341,12 +341,12 @@ class CallActivityTest extends TestCase
         $this->withPersonalAccessClient();
         $child = $this->createProcess([
             'id' => 4,
-            'bpmn' => file_get_contents(__DIR__ . '/processes/SubProcessWithError.bpmn')
+            'bpmn' => file_get_contents(__DIR__ . '/processes/SubProcessWithError.bpmn'),
         ]);
         $parentBpmn = file_get_contents(__DIR__ . '/processes/ParentCallActivityBoundaryError.bpmn');
         $parent = $this->createProcess([
             'id' => 5,
-            'bpmn' => $parentBpmn
+            'bpmn' => $parentBpmn,
         ]);
 
         // Start a process request

@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class AddIsProcessToScriptAndScreenCategories extends Migration
 {
@@ -16,15 +16,15 @@ class AddIsProcessToScriptAndScreenCategories extends Migration
         Schema::table('script_categories', function (Blueprint $table) {
             $table->boolean('is_system')->after('status')->default(false);
         });
-        
+
         Schema::table('screen_categories', function (Blueprint $table) {
             $table->boolean('is_system')->after('status')->default(false);
         });
-        
+
         Schema::table('screens', function (Blueprint $table) {
             $table->string('key')->nullable()->default(null);
         });
-        
+
         Schema::table('screen_versions', function (Blueprint $table) {
             $table->string('key')->nullable()->default(null);
         });

@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Api;
 
-use Tests\TestCase;
-use Tests\Feature\Shared\RequestHelper;
 use Illuminate\Http\Response;
+use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class OAuthTest extends TestCase
 {
@@ -19,20 +19,20 @@ class OAuthTest extends TestCase
 
         $this->assertEquals('The Name field is required.', $response->json()['errors']['name'][0]);
         $this->assertEquals('The Types field is required.', $response->json()['errors']['types'][0]);
-        
+
         $response = $this->actingAs($this->user)
-                         ->json('POST', '/oauth/clients', [ 'name' => 'foo', 'types' => []]);
+                         ->json('POST', '/oauth/clients', ['name' => 'foo', 'types' => []]);
 
         $this->assertEquals('The Auth-Client must have at least 1 item chosen.', $response->json()['errors']['types'][0]);
-        
+
         $response = $this->actingAs($this->user)
-                         ->json('POST', '/oauth/clients', [ 'name' => 'foo', 'types' => ['authorization_code_grant']]);
+                         ->json('POST', '/oauth/clients', ['name' => 'foo', 'types' => ['authorization_code_grant']]);
 
         $this->assertEquals('The Redirect field is required.', $response->json()['errors']['redirect'][0]);
-        
+
         $response = $this->actingAs($this->user)
                          ->json('POST', '/oauth/clients', ['name' => 'test', 'redirect' => 'http://test.com', 'types' => ['authorization_code_grant']]);
-        
+
         $response->assertStatus(201);
         $this->json = $response->json();
     }
@@ -70,7 +70,7 @@ class OAuthTest extends TestCase
                         [
                             'name' => 'test123',
                             'redirect' => 'http://test.com/foo',
-                            'types' => ['authorization_code_grant', 'password_client', 'personal_access_client']
+                            'types' => ['authorization_code_grant', 'password_client', 'personal_access_client'],
                         ]
                     );
         $response->assertStatus(200);
@@ -98,9 +98,9 @@ class OAuthTest extends TestCase
              ->json('POST', '/oauth/clients', [
                  'name' => 'other',
                  'redirect' => 'http://other.net',
-                 'types' => ['authorization_code_grant']
-            ]);
-        
+                 'types' => ['authorization_code_grant'],
+             ]);
+
         $response = $this->actingAs($this->user)
                          ->json('GET', '/oauth/clients');
 
@@ -112,8 +112,8 @@ class OAuthTest extends TestCase
                         '/oauth/clients/' . $this->json['id']
                     );
         $response->assertStatus(Response::HTTP_NO_CONTENT);
-        
-        $response= $this->actingAs($this->user)
+
+        $response = $this->actingAs($this->user)
                         ->json('GET', '/oauth/clients');
 
         $json = $response->json()['data'];

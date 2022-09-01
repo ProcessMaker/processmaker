@@ -1,10 +1,10 @@
-import LdapLogs from './components/LdapLogs';
+import LdapLogs from "./components/LdapLogs";
 
 new Vue({
+  el: "#ldap-logs",
   components: { LdapLogs },
-  el: '#ldap-logs',
   data: {
-    filter: '',
+    filter: "",
   },
   methods: {
     reload() {

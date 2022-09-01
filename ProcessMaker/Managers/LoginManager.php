@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 class LoginManager
 {
     private $addons;
-    
+
     private $block;
 
     public function __construct()
@@ -29,7 +29,7 @@ class LoginManager
             'data' => $data,
         ]);
     }
-    
+
     /**
      * Do not display standard login
      */
@@ -58,11 +58,9 @@ class LoginManager
 
     /**
      * List addons
-     *
      */
     public function list()
     {
         return $this->addons;
     }
-
 }

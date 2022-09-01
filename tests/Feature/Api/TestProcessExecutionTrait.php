@@ -11,9 +11,8 @@ use ProcessMaker\Providers\WorkflowServiceProvider;
 
 trait TestProcessExecutionTrait
 {
-
     /**
-     * @var Process $process
+     * @var Process
      */
     protected $process;
 

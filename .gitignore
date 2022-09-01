@@ -37,3 +37,4 @@ coverage
 cypress/screenshots
 cypress/videos
 cypress/downloads
+.php-cs-fixer.cache

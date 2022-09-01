@@ -7,7 +7,6 @@ use Illuminate\Validation\Validator;
 
 /**
  * Description of ValidationException
- *
  */
 class ValidationException extends ValidationExceptionBase
 {
@@ -25,7 +24,7 @@ class ValidationException extends ValidationExceptionBase
                 'code'    => 422,
                 'message' => $message,
             ],
-            'errors' => $errors
+            'errors' => $errors,
         ];
         $response = response()->json($error, static::ERROR_CODE);
         parent::__construct($validator, $response);
