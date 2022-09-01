@@ -89,9 +89,6 @@
                 "laravel/passport"
             ]
         },
-        "google/apiclient-services": [
-          "Gmail"
-        ],
         "processmaker": {
             "build": "96378470",
             "custom": {
@@ -135,7 +132,8 @@
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover"
+            "@php artisan package:discover",
+            "@php artisan processmaker:install-pre-commit-hooks"
         ],
         "pre-autoload-dump": "Google\\Task\\Composer::cleanup"
     },
