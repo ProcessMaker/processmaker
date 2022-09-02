@@ -2,4 +2,6 @@
 
 namespace ProcessMaker\Http\Resources;
 
-class ProcessCollection extends ApiCollection { }
+class ProcessCollection extends ApiCollection
+{
+}

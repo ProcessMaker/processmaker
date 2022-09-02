@@ -21,6 +21,7 @@ class Kernel extends HttpKernel
         \ProcessMaker\Http\Middleware\TrustProxies::class,
         \ProcessMaker\Http\Middleware\BrowserCache::class,
     ];
+
     /**
      * The application's route middleware groups.
      *
@@ -45,6 +46,7 @@ class Kernel extends HttpKernel
             // See routes/api.php
         ],
     ];
+
     /**
      * The application's route middleware.
      *

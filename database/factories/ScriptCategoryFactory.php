@@ -12,6 +12,6 @@ $factory->define(ScriptCategory::class, function (Faker $faker) {
         'status' => $faker->randomElement(
             ['ACTIVE', 'INACTIVE']
         ),
-        'is_system' => false
+        'is_system' => false,
     ];
 });

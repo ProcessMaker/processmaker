@@ -23,7 +23,7 @@ class FormController extends Controller
             // @todo  This should actually redirect to designer url
             return view('designer.designer', compact('process'));
         }
+
         return view('designer.form', compact(['process', 'form']));
     }
-
 }

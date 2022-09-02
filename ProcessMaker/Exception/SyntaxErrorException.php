@@ -7,13 +7,9 @@ use Throwable;
 
 /**
  * Thrown if an expression failed to be parsed
- *
- * @package ProcessMaker\Exceptions
  */
-
 class SyntaxErrorException extends Exception
 {
-
     /**
      * @param Throwable $previous
      */

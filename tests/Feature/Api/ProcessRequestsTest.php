@@ -7,14 +7,14 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Models\Comment;
+use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
-use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\User;
-use ProcessMaker\Models\Comment;
 
 /**
  * Tests routes related to processes / CRUD related methods
@@ -41,7 +41,7 @@ class ProcessRequestsTest extends TestCase
         'completed_at',
         'initiated_at',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
@@ -209,12 +209,12 @@ class ProcessRequestsTest extends TestCase
     {
         $in_progress = factory(ProcessRequest::class)->create([
             'status' => 'ACTIVE',
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ]);
 
         $completed = factory(ProcessRequest::class)->create([
             'status' => 'COMPLETED',
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ]);
 
         $response = $this->apiCall('GET', self::API_TEST_URL . '/?type=completed');
@@ -292,7 +292,7 @@ class ProcessRequestsTest extends TestCase
         $url = self::API_TEST_URL . '/' . $id;
 
         $response = $this->apiCall('PUT', $url, [
-            'name' => null
+            'name' => null,
         ]);
 
         //Validate the header status code
@@ -315,7 +315,7 @@ class ProcessRequestsTest extends TestCase
         $response = $this->apiCall('PUT', $url, [
             'name' => $faker->unique()->name,
             'data' => '{"test":1}',
-            'process_id' => json_decode($verify->getContent())->process_id
+            'process_id' => json_decode($verify->getContent())->process_id,
         ]);
 
         //Validate the header status code
@@ -358,25 +358,25 @@ class ProcessRequestsTest extends TestCase
         $admin = $this->user;
 
         $nonAdmin = factory(User::class)->create([
-            'is_administrator' => false
+            'is_administrator' => false,
         ]);
 
         // Create a single process in order to create
         // two process requests with the same process
         $process = factory(Process::class)->create([
-            'user_id' => $admin->id
+            'user_id' => $admin->id,
         ]);
 
         // Create the initial process request
         $initialProcessVersionRequest = factory(ProcessRequest::class)->create([
             'user_id' => $nonAdmin->id,
-            'process_id' => $process->id
+            'process_id' => $process->id,
         ]);
 
         // Attempt to cancel a request
         $this->user = $nonAdmin;
         $route = route('api.requests.update', [$initialProcessVersionRequest->id]);
-        $response = $this->apiCall('PUT', $route, ['status' => 'CANCELED',]);
+        $response = $this->apiCall('PUT', $route, ['status' => 'CANCELED']);
 
         // Confirm the user does not have access
         $response->assertStatus(403);
@@ -387,7 +387,7 @@ class ProcessRequestsTest extends TestCase
         $response = $this->apiCall('PUT', $route, [
             'name' => 'Update Process',
             'description' => 'Update Test',
-            'cancel_request' => ['users' => [$nonAdmin->id], 'groups' => []]
+            'cancel_request' => ['users' => [$nonAdmin->id], 'groups' => []],
         ]);
 
         // Create a second process request with the
@@ -395,13 +395,13 @@ class ProcessRequestsTest extends TestCase
         // will honor the new process configuration
         $secondProcessVersionRequest = factory(ProcessRequest::class)->create([
             'user_id' => $nonAdmin->id,
-            'process_id' => $process->id
+            'process_id' => $process->id,
         ]);
 
         // Attempt to cancel a request
         $this->user = $nonAdmin;
         $route = route('api.requests.update', [$secondProcessVersionRequest->id]);
-        $response = $this->apiCall('PUT', $route, ['status' => 'CANCELED',]);
+        $response = $this->apiCall('PUT', $route, ['status' => 'CANCELED']);
 
         // Assert that the API updated
         $response->assertStatus(204);
@@ -420,8 +420,8 @@ class ProcessRequestsTest extends TestCase
         $request->processVersion->usersCanEditData()->sync([
             $this->user->id => [
                 'method' => 'EDIT_DATA',
-                'process_id' => $request->process->id
-            ]
+                'process_id' => $request->process->id,
+            ],
         ]);
 
         $route = route('api.requests.update', [$request->id]);
@@ -472,24 +472,24 @@ class ProcessRequestsTest extends TestCase
 
         $childProcessRequest1 = factory(ProcessRequest::class)->create([
             'status' => 'ACTIVE',
-            'parent_request_id' => $parentProcessRequest->id
+            'parent_request_id' => $parentProcessRequest->id,
         ]);
 
         $childProcessRequest2 = factory(ProcessRequest::class)->create([
             'status' => 'ACTIVE',
-            'parent_request_id' => $childProcessRequest1->id
+            'parent_request_id' => $childProcessRequest1->id,
         ]);
 
         $parentTokens = factory(ProcessRequestToken::class, 3)->create([
-            'process_request_id' => $parentProcessRequest->id
+            'process_request_id' => $parentProcessRequest->id,
         ]);
 
         $childTokens1 = factory(ProcessRequestToken::class, 4)->create([
-            'process_request_id' => $childProcessRequest1->id
+            'process_request_id' => $childProcessRequest1->id,
         ]);
 
         $childTokens2 = factory(ProcessRequestToken::class, 5)->create([
-            'process_request_id' => $childProcessRequest2->id
+            'process_request_id' => $childProcessRequest2->id,
         ]);
 
         // Assert database has parent and child requests
@@ -531,24 +531,24 @@ class ProcessRequestsTest extends TestCase
 
         $childProcessRequest1 = factory(ProcessRequest::class)->create([
             'status' => 'ACTIVE',
-            'parent_request_id' => $parentProcessRequest->id
+            'parent_request_id' => $parentProcessRequest->id,
         ]);
 
         $childProcessRequest2 = factory(ProcessRequest::class)->create([
             'status' => 'ACTIVE',
-            'parent_request_id' => $childProcessRequest1->id
+            'parent_request_id' => $childProcessRequest1->id,
         ]);
 
         $parentTokens = factory(ProcessRequestToken::class, 3)->create([
-            'process_request_id' => $parentProcessRequest->id
+            'process_request_id' => $parentProcessRequest->id,
         ]);
 
         $childTokens1 = factory(ProcessRequestToken::class, 4)->create([
-            'process_request_id' => $childProcessRequest1->id
+            'process_request_id' => $childProcessRequest1->id,
         ]);
 
         $childTokens2 = factory(ProcessRequestToken::class, 5)->create([
-            'process_request_id' => $childProcessRequest2->id
+            'process_request_id' => $childProcessRequest2->id,
         ]);
 
         // Assert database has parent and child requests
@@ -638,7 +638,7 @@ class ProcessRequestsTest extends TestCase
             ->withCustomProperties(['data_name' => 'test'])
             ->toMediaCollection('local');
 
-        $route = self::API_TEST_URL . '/'. $request->id . '/files/' . $addedMedia->id;
+        $route = self::API_TEST_URL . '/' . $request->id . '/files/' . $addedMedia->id;
         $response = $this->apiCall('GET', $route);
 
         // Validate the header status code
@@ -656,7 +656,7 @@ class ProcessRequestsTest extends TestCase
         $request = factory(ProcessRequest::class)->create(['status' => 'ACTIVE']);
         $token = factory(ProcessRequestToken::class)->create([
             'process_request_id' => $request->id,
-            'user_id' => $participant->id
+            'user_id' => $participant->id,
         ]);
 
         $url = route('api.requests.show', $request);

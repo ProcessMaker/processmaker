@@ -12,6 +12,7 @@ use ProcessMaker\Models\ScreenVersion;
  */
 $factory->define(ScreenVersion::class, function (Faker $faker) {
     $screen = factory(Screen::class)->create();
+
     return [
         'screen_id' => $screen->getKey(),
         'screen_category_id' => function () {
@@ -21,6 +22,6 @@ $factory->define(ScreenVersion::class, function (Faker $faker) {
         'description' => $faker->sentence(3),
         'type' => $faker->randomElement(['FORM', 'DYSPLAY', 'CONVERSATIONAL', 'EMAIL']),
         'config' => $screen->config,
-        'status' => $faker->randomElement(['ACTIVE', 'INACTIVE'])
+        'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
     ];
 });

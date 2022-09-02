@@ -11,19 +11,19 @@ use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
-use ProcessMaker\Http\Resources\ProcessCollection;
 use ProcessMaker\Http\Resources\Process as Resource;
+use ProcessMaker\Http\Resources\ProcessCollection;
 use ProcessMaker\Http\Resources\ProcessRequests;
+use ProcessMaker\Jobs\ExportProcess;
+use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessPermission;
-use ProcessMaker\Models\Script;
-use ProcessMaker\Jobs\ExportProcess;
-use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\Script;
 use ProcessMaker\Nayra\Bpmn\Models\TimerEventDefinition;
-use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Nayra\Exceptions\ElementNotFoundException;
+use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Nayra\Storage\BpmnElement;
 use ProcessMaker\Rules\BPMNValidation;
 use ProcessMaker\Providers\WorkflowServiceProvider;
@@ -100,21 +100,21 @@ class ProcessController extends Controller
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
             ->orderBy(...$orderBy)
-            ->where(function($query) use($filter) {
+            ->where(function ($query) use ($filter) {
                 $query->where('processes.name', 'like', '%' . $filter . '%')
-                    ->orWhere('processes.description', 'like', '%' . $filter. '%')
+                    ->orWhere('processes.description', 'like', '%' . $filter . '%')
                     ->orWhere('processes.status', '=', $filter)
-                    ->orWhere('user.firstname', 'like', '%' . $filter. '%')
-                    ->orWhere('user.lastname', 'like', '%' . $filter. '%')
-                    ->orWhereIn('processes.id', function($qry) use ($filter) {
+                    ->orWhere('user.firstname', 'like', '%' . $filter . '%')
+                    ->orWhere('user.lastname', 'like', '%' . $filter . '%')
+                    ->orWhereIn('processes.id', function ($qry) use ($filter) {
                         $qry->select('assignable_id')
                             ->from('category_assignments')
-                            ->leftJoin('process_categories', function($join) {
-                                $join->on('process_categories.id', '=',  'category_assignments.category_id');
+                            ->leftJoin('process_categories', function ($join) {
+                                $join->on('process_categories.id', '=', 'category_assignments.category_id');
                                 $join->where('category_assignments.category_type', '=', ProcessCategory::class);
                                 $join->where('category_assignments.assignable_type', '=', Process::class);
                             })
-                            ->where ('process_categories.name', 'like', '%' . $filter. '%');
+                            ->where('process_categories.name', 'like', '%' . $filter . '%');
                     });
             })->get();
 
@@ -194,7 +194,7 @@ class ProcessController extends Controller
         if ($schemaErrors = $this->validateBpmn($request)) {
             return response(
                 ['message' => __('The bpm definition is not valid'),
-                    'errors' => ['bpmn' => $schemaErrors]],
+                    'errors' => ['bpmn' => $schemaErrors], ],
                 422
             );
         }
@@ -218,13 +218,14 @@ class ProcessController extends Controller
                     'errors' => [
                         'bpmn' => [
                             __('The bpm definition is not valid'),
-                            __('Element ":element_id" not found', ['element_id' => $error->elementId])
-                        ]
-                    ]
+                            __('Element ":element_id" not found', ['element_id' => $error->elementId]),
+                        ],
+                    ],
                 ],
                 422
             );
         }
+
         return new Resource($process->refresh());
     }
 
@@ -312,7 +313,7 @@ class ProcessController extends Controller
         } catch (TaskDoesNotHaveUsersException $e) {
             return response(
                 ['message' => $e->getMessage(),
-                    'errors' => ['bpmn' => $e->getMessage()]],
+                    'errors' => ['bpmn' => $e->getMessage()], ],
                 422
             );
         }
@@ -431,7 +432,7 @@ class ProcessController extends Controller
             }
             $schemaErrors = $this->validateOnlyOneDiagram($document, $schemaErrors);
             $rulesValidation = new BPMNValidation;
-            if(!$rulesValidation->passes('document', $document)) {
+            if (!$rulesValidation->passes('document', $document)) {
                 $errors = $rulesValidation->errors('document', $document)->getMessages();
                 $schemaErrors[] = [
                     'title' => 'BPMN Validation failed',
@@ -439,7 +440,8 @@ class ProcessController extends Controller
                     'errors' => $errors,
                 ];
             }
-    }
+        }
+
         return $schemaErrors;
     }
 
@@ -458,6 +460,7 @@ class ProcessController extends Controller
             $schemaErrors = $schemaErrors ?? [];
             $schemaErrors[] = __('Multiple diagrams are not supported');
         }
+
         return $schemaErrors;
     }
 
@@ -563,7 +566,7 @@ class ProcessController extends Controller
             ->where($where);
 
         // Add the order by columns
-        foreach($orderColumns as $key=>$orderColumn) {
+        foreach ($orderColumns as $key=>$orderColumn) {
             $orderDirection = array_key_exists($key, $orderDirections) ? $orderDirections[$key] : 'asc';
             $query->orderBy($orderColumn, $orderDirection);
         }
@@ -649,6 +652,7 @@ class ProcessController extends Controller
         $process = Process::find($processId);
         $process->status = 'ACTIVE';
         $process->save();
+
         return new Resource($process->refresh());
     }
 
@@ -738,6 +742,7 @@ class ProcessController extends Controller
 
         if ($fileKey) {
             $url = url("/processes/{$process->id}/download/{$fileKey}");
+
             return ['url' => $url];
         } else {
             return response(['message' => __('Unable to Export Process')], 500);
@@ -791,15 +796,17 @@ class ProcessController extends Controller
             $path = $request->file('file')->store('imports');
             $code = uniqid('import', true);
             ImportProcess::dispatch(null, $code, $path, Auth::id());
+
             return [
                 'code' => $code,
             ];
         }
         $import = ImportProcess::dispatchNow($content);
+
         return response([
             'status' => $import->status,
             'assignable' => $import->assignable,
-            'process' => $import->process
+            'process' => $import->process,
         ]);
     }
 
@@ -846,9 +853,11 @@ class ProcessController extends Controller
             if ($notification->data['code'] === $code) {
                 $data = $notification->data['data'];
                 $data['ready'] = true;
+
                 return $data;
             }
         }
+
         return [
             'ready' => false,
         ];
@@ -860,7 +869,7 @@ class ProcessController extends Controller
      * @param Process $process
      * @param Request $request
      *
-     * @return Resource
+     * @return resource
      * @throws \Throwable
      *
      *
@@ -956,7 +965,7 @@ class ProcessController extends Controller
 
             // Update data source watchers
             foreach ($watcherDataSources as $watcherDataSource) {
-                $parts = explode("|", $watcherDataSource['id']);
+                $parts = explode('|', $watcherDataSource['id']);
                 $screenId = $parts[0];
                 $watcherIndex = intval($parts[1]);
                 $screen = Screen::findOrFail($screenId);
@@ -995,7 +1004,7 @@ class ProcessController extends Controller
         $process->saveOrFail();
 
         return response([
-            'process' => $process->refresh()
+            'process' => $process->refresh(),
         ], 204);
     }
 
@@ -1071,10 +1080,12 @@ class ProcessController extends Controller
             $processRequest = WorkflowManager::triggerStartEvent($process, $event, $data);
         } catch (Throwable $exception) {
             throw $exception;
+
             return response()->json([
                 'message' => __('Unable to start process'),
             ], 422);
         }
+
         return new ProcessRequests($processRequest);
     }
 
@@ -1101,6 +1112,7 @@ class ProcessController extends Controller
                 $where[] = [$column, 'like', $sub_search . $filter . $sub_search, 'or'];
             }
         }
+
         return $where;
     }
 
@@ -1115,6 +1127,7 @@ class ProcessController extends Controller
     {
         $column = $request->input('order_by', $default);
         $direction = $request->input('order_direction', 'asc');
+
         return [$column, $direction];
     }
 
@@ -1128,6 +1141,7 @@ class ProcessController extends Controller
     protected function getRequestInclude(Request $request)
     {
         $include = $request->input('include');
+
         return $include ? explode(',', $include) : [];
     }
 
@@ -1158,6 +1172,7 @@ class ProcessController extends Controller
         $validType = $hasType && $decoded->type === 'process_package';
         $hasVersion = $isDecoded && isset($decoded->version) && is_string($decoded->version);
         $validVersion = $hasVersion && method_exists(ImportProcess::class, "parseFileV{$decoded->version}");
+
         return $isDecoded && $validType && $validVersion;
     }
 

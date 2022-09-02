@@ -9,8 +9,6 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 
 /**
  * SignalEventDefinition
- *
- * @package ProcessMaker\Model
  */
 class SignalEventDefinition extends ModelsSignalEventDefinition
 {
@@ -43,13 +41,13 @@ class SignalEventDefinition extends ModelsSignalEventDefinition
         $data = [];
 
         switch ($payloadId) {
-            case "REQUEST_VARIABLE":
+            case 'REQUEST_VARIABLE':
                 if ($payload->variable) {
                     $extractedData = Arr::get($requestData, $payload->variable);
                     Arr::set($data, $payload->variable, $extractedData);
                 }
                 break;
-            case "EXPRESSION":
+            case 'EXPRESSION':
                 $expression = $payload->expression;
                 $formalExp = new FormalExpression();
                 $formalExp->setLanguage('FEEL');
@@ -57,7 +55,7 @@ class SignalEventDefinition extends ModelsSignalEventDefinition
                 $expressionResult = $formalExp($requestData);
                 Arr::set($data, $payload->variable, $expressionResult);
                 break;
-            case "NONE":
+            case 'NONE':
                 $data = [];
                 break;
             default:
@@ -66,7 +64,7 @@ class SignalEventDefinition extends ModelsSignalEventDefinition
         }
         if ($targetVariable) {
             $data = [
-                $targetVariable => $data
+                $targetVariable => $data,
             ];
         }
 

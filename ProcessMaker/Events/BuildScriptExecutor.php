@@ -1,12 +1,16 @@
 <?php
+
 namespace ProcessMaker\Events;
 
-use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 
-class BuildScriptExecutor implements ShouldBroadcastNow {
+class BuildScriptExecutor implements ShouldBroadcastNow
+{
     public $output;
+
     public $userId;
+
     public $status;
 
     public function __construct($output, $userId, $status)
@@ -16,7 +20,8 @@ class BuildScriptExecutor implements ShouldBroadcastNow {
         $this->status = $status;
     }
 
-    public function broadcastAs() {
+    public function broadcastAs()
+    {
         return 'BuildScriptExecutor';
     }
 

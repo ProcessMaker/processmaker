@@ -1,4 +1,5 @@
 <?php
+
 use ProcessMaker\Http\Resources\Process;
 
 return [
@@ -26,12 +27,11 @@ return [
      */
     'media_model' => ProcessMaker\Models\Media::class,
 
-
     's3' => [
         /*
          * The domain that should be prepended when generating urls.
          */
-        'domain' => 'https://'.env('AWS_BUCKET').'.s3.amazonaws.com',
+        'domain' => 'https://' . env('AWS_BUCKET') . '.s3.amazonaws.com',
     ],
 
     'remote' => [

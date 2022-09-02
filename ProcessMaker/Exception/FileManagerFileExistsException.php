@@ -6,7 +6,6 @@ use Exception;
 
 /**
  * Description of FileManagerFileExistsException
- *
  */
 class FileManagerFileExistsException extends Exception
 {

@@ -9,7 +9,6 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 
 /**
  * All expression evaluators like the Mustache evaluator implement this interface
- * @package ProcessMaker\Contracts
  */
 interface TemplateExpressionInterface
 {

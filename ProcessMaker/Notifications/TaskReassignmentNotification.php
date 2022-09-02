@@ -15,9 +15,13 @@ class TaskReassignmentNotification extends Notification
     use Queueable;
 
     private $processUid;
+
     private $instanceUid;
+
     private $tokenUid;
+
     private $tokenElement;
+
     private $tokenStatus;
 
     /**
@@ -83,8 +87,9 @@ class TaskReassignmentNotification extends Notification
         $activity = $definitions->getActivity($this->tokenElement);
         $token = Token::find($this->tokenUid);
         $request = $token->processRequest;
+
         return [
-            'type' => 'TASK_REASSIGNED' ,
+            'type' => 'TASK_REASSIGNED',
             'message' => sprintf('Task reassigned: %s', $activity->getName()),
             'name' => $activity->getName(),
             'processName' => $process->name,
@@ -96,7 +101,7 @@ class TaskReassignmentNotification extends Notification
             'url' => sprintf(
                 '/tasks/%s/edit',
                 $token->id
-            )
+            ),
         ];
     }
 
@@ -110,5 +115,4 @@ class TaskReassignmentNotification extends Notification
     {
         return new BroadcastMessage($this->toArray($notifiable));
     }
-
 }

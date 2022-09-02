@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
+use ProcessMaker\Traits\Exportable;
 
 /**
  * @OA\Schema(
@@ -26,16 +27,18 @@ use Illuminate\Validation\Rule;
  */
 class EnvironmentVariable extends Model
 {
+    use Exportable;
+
     protected $connection = 'processmaker';
 
     protected $fillable = [
         'name',
         'description',
-        'value'
+        'value',
     ];
 
     protected $hidden = [
-        'value'
+        'value',
     ];
 
     /**

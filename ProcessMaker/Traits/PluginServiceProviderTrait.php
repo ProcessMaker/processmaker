@@ -4,8 +4,8 @@ namespace ProcessMaker\Traits;
 
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\File;
 use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Events\ScriptBuilderStarting;
 use ProcessMaker\Managers\IndexManager;
@@ -14,7 +14,6 @@ use ProcessMaker\Managers\PackageManager;
 
 /**
  * Add functionality to control a PM plug-in
- *
  */
 trait PluginServiceProviderTrait
 {
@@ -27,13 +26,13 @@ trait PluginServiceProviderTrait
      */
     protected function completePluginBoot()
     {
-        if (defined("static::version") && !$this->isUpdated()) {
+        if (defined('static::version') && !$this->isUpdated()) {
             $this->updateVersion();
             $key = str_replace('\\', '_', static::class);
             Cache::forever($key, static::version);
         }
 
-        if (defined("static::name")) {
+        if (defined('static::name')) {
             $this->registerPackage(static::name);
         }
 
@@ -70,7 +69,6 @@ trait PluginServiceProviderTrait
 
     /**
      * Executed once when the plug-in version was changed.
-     *
      */
     protected function updateVersion()
     {

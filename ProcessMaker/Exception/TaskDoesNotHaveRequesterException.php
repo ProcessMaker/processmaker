@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Exception;
 
 use Exception;
@@ -6,11 +7,9 @@ use Exception;
 /**
  * The the process was started by an anonymous user so it does
  * not have a requester
- *
  */
 class TaskDoesNotHaveRequesterException extends Exception
 {
-
     /**
      * @param string $task
      */

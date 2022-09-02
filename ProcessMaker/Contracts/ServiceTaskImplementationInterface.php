@@ -4,8 +4,6 @@ namespace ProcessMaker\Contracts;
 
 /**
  * Can be executed as a ServiceTask
- *
- * @package ProcessMaker\Contracts
  */
 interface ServiceTaskImplementationInterface
 {

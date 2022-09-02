@@ -2,36 +2,32 @@
 
 namespace ProcessMaker\Providers;
 
-use ProcessMaker\Models\Media;
-use ProcessMaker\Policies\MediaPolicy;
-use ProcessMaker\Models\Notification;
-use ProcessMaker\Models\User;
-use ProcessMaker\Policies\NotificationPolicy;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Policies\ProcessPolicy;
-use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Policies\ProcessRequestPolicy;
-use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Policies\ProcessRequestTokenPolicy;
-use ProcessMaker\Models\Permission;
-use Illuminate\Auth\RequestGuard;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-use Laravel\Passport\Passport;
-use ProcessMaker\Models\Script;
 use Illuminate\Support\Facades\Log;
+use Laravel\Passport\Passport;
 use ProcessMaker\Models\AnonymousUser;
+use ProcessMaker\Models\Media;
+use ProcessMaker\Models\Notification;
+use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessVersion;
-use ProcessMaker\Policies\UserPolicy;
-use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\Script;
+use ProcessMaker\Models\User;
+use ProcessMaker\Policies\MediaPolicy;
+use ProcessMaker\Policies\NotificationPolicy;
+use ProcessMaker\Policies\ProcessPolicy;
+use ProcessMaker\Policies\ProcessRequestPolicy;
+use ProcessMaker\Policies\ProcessRequestTokenPolicy;
 use ProcessMaker\Policies\ProcessVersionPolicy;
-use ProcessMaker\Policies\ScreenPolicy;
 use ProcessMaker\Policies\ScriptPolicy;
+use ProcessMaker\Policies\UserPolicy;
 
 /**
  * Our AuthService Provider binds our base processmaker provider and registers any policies, if defined.
- * @package ProcessMaker\Providers
  * @todo Add gates to provide authorization functionality. See branch release/3.3 for sample implementations
  */
 class AuthServiceProvider extends ServiceProvider
@@ -49,7 +45,6 @@ class AuthServiceProvider extends ServiceProvider
         ProcessRequest::class => ProcessRequestPolicy::class,
         ProcessRequestToken::class => ProcessRequestTokenPolicy::class,
         User::class => UserPolicy::class,
-        User::class => UserPolicy::class,
         Script::class => ScriptPolicy::class,
     ];
 
@@ -61,6 +56,7 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
+
         Passport::routes(function ($router) {
             $router->forAuthorization();
             $router->forAccessTokens();
@@ -75,10 +71,10 @@ class AuthServiceProvider extends ServiceProvider
                 return true;
             }
         });
-        
+
         try {
-            Permission::all()->each(function($permission) {
-                Gate::define($permission->name, function ($user, $model = false) use($permission) {
+            Permission::select('name')->get()->each(function ($permission) {
+                Gate::define($permission->name, function ($user) use ($permission) {
                     return $user->hasPermission($permission->name);
                 });
             });
@@ -90,9 +86,8 @@ class AuthServiceProvider extends ServiceProvider
             if ($request->user()) {
                 return $request->user();
             }
+
             return app(AnonymousUser::class);
         });
-
     }
-
 }

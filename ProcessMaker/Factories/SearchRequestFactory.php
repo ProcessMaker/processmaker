@@ -1,9 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ProcessMaker\Factories;
 
-use ElasticScoutDriver\Factories\SearchRequestFactoryInterface;
 use ElasticAdapter\Search\SearchRequest;
+use ElasticScoutDriver\Factories\SearchRequestFactoryInterface;
 use Laravel\Scout\Builder;
 use stdClass;
 
@@ -24,7 +26,7 @@ final class SearchRequestFactory implements SearchRequestFactoryInterface
         if ($size = $this->makeSize($builder, $options)) {
             $searchRequest->setSize($size);
         }
-        
+
         $searchRequest->setSource('id');
 
         return $searchRequest;

@@ -15,6 +15,7 @@ class TestStatusJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $name;
+
     public $description;
 
     /**

@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Route;
 
 /**
  * Our Route Service Provider
- * @package ProcessMaker\Providers
  */
 class RouteServiceProvider extends ServiceProvider
 {
@@ -42,7 +41,7 @@ class RouteServiceProvider extends ServiceProvider
         Route::pattern('task', '[0-9]+');
         Route::pattern('request', '[0-9]+');
         Route::pattern('file', '[0-9]+');
-        Route::pattern('notification', '[0-9]+');
+        Route::pattern('notification', '[a-zA-Z0-9-]+');
         Route::pattern('task_assignment', '[0-9]+');
         Route::pattern('comment', '[0-9]+');
         Route::pattern('script_executor', '[0-9]+');
