@@ -2,11 +2,11 @@
 
 namespace ProcessMaker\Traits;
 
-use ProcessMaker\Models\CategoryAssignment;
 use App\Events\Relations\Attached;
 use App\Events\Relations\Detached;
 use App\Events\Relations\Syncing;
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use ProcessMaker\Models\CategoryAssignment;
 
 trait HasCategories
 {
@@ -19,6 +19,7 @@ trait HasCategories
     {
         $categories = $this->morphedByMany(static::categoryClass, 'category', 'category_assignments', 'assignable_id', 'category_id');
         $categories->withPivotValue('assignable_type', static::class);
+
         return $categories->using(CategoryAssignment::class);
     }
 
@@ -35,7 +36,7 @@ trait HasCategories
             if ($this->getKey()) {
                 $this->categories()->sync($value);
             } else {
-                self::created(function($model) use($value) {
+                self::created(function ($model) use ($value) {
                     if ($model->getKey() === $this->getKey()) {
                         $this->categories()->sync($value);
                     }
@@ -44,6 +45,7 @@ trait HasCategories
         } else {
             $this->attributes[$singleColumn] = $value;
         }
+
         return $this;
     }
 }

@@ -1,29 +1,30 @@
 <?php
+
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Carbon\Carbon;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use ProcessMaker\Facades\WorkflowManager;
-use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Http\Resources\Task as Resource;
-use ProcessMaker\Http\Resources\TaskCollection;
-use ProcessMaker\Query\SyntaxError;
-use Illuminate\Database\QueryException;
-use Illuminate\Support\Arr;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\Setting;
-use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Notifications\TaskReassignmentNotification;
-use ProcessMaker\SanitizeHelper;
 use Illuminate\Support\Str;
 use ProcessMaker\Events\ActivityAssigned;
-use ProcessMaker\Models\User;
+use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
+use ProcessMaker\Http\Resources\Task as Resource;
+use ProcessMaker\Http\Resources\TaskCollection;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\Setting;
+use ProcessMaker\Models\User;
+use ProcessMaker\Notifications\TaskReassignmentNotification;
+use ProcessMaker\Query\SyntaxError;
+use ProcessMaker\SanitizeHelper;
 
 class TaskController extends Controller
 {
@@ -94,7 +95,7 @@ class TaskController extends Controller
     {
         // If a specific user is specified, use it; otherwise use the authorized user
         // This is necessary to produce accurate counts for Saved Searches
-        if (! $user) {
+        if (!$user) {
             $user = Auth::user();
         }
 
@@ -102,7 +103,7 @@ class TaskController extends Controller
 
         $query->select('process_request_tokens.*');
 
-        $include  = $request->input('include') ? explode(',',$request->input('include')) : [];
+        $include = $request->input('include') ? explode(',', $request->input('include')) : [];
 
         if (in_array('data', $include)) {
             unset($include[array_search('data', $include)]);
@@ -121,15 +122,15 @@ class TaskController extends Controller
             if (in_array($column, $filterByFields)) {
                 if ($column === 'user_id') {
                     $key = array_search($column, $filterByFields);
-                    $query->where(function($query) use ($key, $column, $fieldFilter){
+                    $query->where(function ($query) use ($key, $column, $fieldFilter) {
                         $userColumn = is_string($key) ? $key : $column;
                         $query->where($userColumn, $fieldFilter);
-                        $query->orWhere(function ($query) use($userColumn, $fieldFilter) {
+                        $query->orWhere(function ($query) use ($userColumn, $fieldFilter) {
                             $query->whereNull($userColumn);
                             $query->where('process_request_tokens.is_self_service', 1);
                             $user = User::find($fieldFilter);
                             $query->where(function ($query) use ($user) {
-                                foreach($user->groups as $group) {
+                                foreach ($user->groups as $group) {
                                     $query->orWhereJsonContains('process_request_tokens.self_service_groups', strval($group->getKey())); // backwards compatibility
                                     $query->orWhereJsonContains('process_request_tokens.self_service_groups->groups', strval($group->getKey()));
                                 }
@@ -164,15 +165,15 @@ class TaskController extends Controller
 
         // order by one or more columns
         $orderColumns = explode(',', $request->input('order_by', 'updated_at'));
-        foreach($orderColumns as $column) {
+        foreach ($orderColumns as $column) {
             if (!Str::contains($column, '.')) {
-                $query->orderBy( $column, $request->input('order_direction', 'asc'));
+                $query->orderBy($column, $request->input('order_direction', 'asc'));
             }
         }
 
         $statusFilter = $request->input('statusfilter', '');
         if ($statusFilter) {
-            $statusFilter = array_map(function($value) {
+            $statusFilter = array_map(function ($value) {
                 return mb_strtoupper(trim($value));
             }, explode(',', $statusFilter));
             $query->whereIn('status', $statusFilter);
@@ -202,18 +203,20 @@ class TaskController extends Controller
 
         try {
             $response = $this->handleOrderByRequestName($request, $query->get());
-        } catch(\Illuminate\Database\QueryException $e){
+        } catch (\Illuminate\Database\QueryException $e) {
             $regex = '~Column not found: 1054 Unknown column \'(.*?)\' in \'where clause\'~';
             preg_match($regex, $e->getMessage(), $m);
-            return response(['message' => __('PMQL Is Invalid.') . ' ' . __('Column not found: ') . '"' . $m[1] . '"',], 422);
+
+            return response(['message' => __('PMQL Is Invalid.') . ' ' . __('Column not found: ') . '"' . $m[1] . '"'], 422);
         }
 
         // Only filter results if the user id was specified
         if ($request->input('user_id') === $user->id) {
-            $response = $response->filter(function($processRequestToken) use ($request, $user) {
+            $response = $response->filter(function ($processRequestToken) use ($request, $user) {
                 if ($request->input('status') === 'CLOSED') {
                     return $user->can('view', $processRequestToken->processRequest);
                 }
+
                 return $user->can('view', $processRequestToken);
             })->values();
         }
@@ -233,7 +236,7 @@ class TaskController extends Controller
      * @TODO remove this method,view and route this is not a used file
      * @param ProcessRequestToken $task
      *
-     * @return Resource
+     * @return resource
      *
      * @OA\Get(
      *     path="/tasks/{task_id}",
@@ -268,7 +271,7 @@ class TaskController extends Controller
      * @param Request $request
      * @param ProcessRequestToken $task
      *
-     * @return Resource
+     * @return resource
      * @throws \Throwable
      *
      * @OA\Put(
@@ -316,6 +319,7 @@ class TaskController extends Controller
             $process = $task->process;
             $instance = $task->processRequest;
             WorkflowManager::completeTask($process, $instance, $task, $data);
+
             return new Resource($task->refresh());
         } elseif (!empty($request->input('user_id'))) {
             $userToAssign = $request->input('user_id');
@@ -348,6 +352,7 @@ class TaskController extends Controller
             $notification = new TaskReassignmentNotification($task);
             $task->user->notify($notification);
             event(new ActivityAssigned($task));
+
             return new Resource($task->refresh());
         } else {
             return abort(422);
@@ -358,10 +363,10 @@ class TaskController extends Controller
     {
         // Get the list of columns to order by - trimmed if spaces were added
         $orderColumns = collect(explode(',', $request->input('order_by', 'updated_at')))
-            ->map(function($value, $key) {
+            ->map(function ($value, $key) {
                 return trim($value);
             });
-        $requestColumns = $orderColumns->filter(function($value, $key) {
+        $requestColumns = $orderColumns->filter(function ($value, $key) {
             return Str::contains($value, 'process_requests.');
         })->sort();
 
@@ -372,7 +377,7 @@ class TaskController extends Controller
 
         $requestQuery = DB::connection('data')->table('process_requests');
 
-        foreach($requestColumns as $column) {
+        foreach ($requestColumns as $column) {
             $columnName = trim(explode('.', $column)[1]);
             $requestQuery->orderBy($columnName, $request->input('order_direction', 'asc'));
         }
@@ -380,8 +385,8 @@ class TaskController extends Controller
         $orderedRequests = $requestQuery->get();
         $orderedTasks = collect([]);
 
-        foreach($orderedRequests as $item) {
-            $elements = $tasksList->filter(function ($value, $key) use($item) {
+        foreach ($orderedRequests as $item) {
+            $elements = $tasksList->filter(function ($value, $key) use ($item) {
                 return $value->process_request_id == $item->id;
             });
 

@@ -4,7 +4,7 @@
                 <div class="flex-grow-1">
                     <div id="search" class="mb-3 mb-md-0">
                         <div class="input-group w-100">
-                            <input id="search-box" v-model="filter" class="form-control" placeholder="{{__('Search')}}"  aria-label="{{__('Search')}}">
+                            <input id="search-box" v-model="filter" class="form-control" placeholder="{{__('Search')}}"  aria-label="{{__('Search')}}" data-cy="input-search">
                             <div class="input-group-append">
                                 <button type="button" class="btn btn-primary" aria-label="{{__('Search')}}"><i class="fas fa-search"></i></button>
                             </div>
@@ -15,7 +15,7 @@
                     <div class="d-flex ml-md-0 flex-column flex-md-row">
                         @can('import-screens')
                             <div class="mb-3 mb-md-0 ml-md-2">
-                                <a href="#"  aria-label="{{ __('Import Screen') }}" class="btn btn-outline-secondary w-100" @click="goToImport">
+                                <a href="#"  aria-label="{{ __('Import Screen') }}" class="btn btn-outline-secondary w-100" @click="goToImport" data-cy="button-import-screen">
                                     <i class="fas fa-file-import"></i> {{__('Import')}}
                                 </a>
                             </div>

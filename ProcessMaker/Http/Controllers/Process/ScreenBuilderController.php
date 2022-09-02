@@ -30,5 +30,4 @@ class ScreenBuilderController extends Controller
 
         return view('processes.screen-builder.screen', compact('screen', 'manager'));
     }
-
 }

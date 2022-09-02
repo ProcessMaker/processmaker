@@ -3,27 +3,27 @@
 namespace ProcessMaker\Jobs;
 
 use Auth;
+use Carbon\Carbon;
 use DB;
 use DOMXPath;
-use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Events\ImportedScreenSaved;
-use ProcessMaker\Models\User;
+use ProcessMaker\Managers\ExportManager;
+use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessNotificationSetting;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use ProcessMaker\Managers\ExportManager;
+use ProcessMaker\Models\User;
+use ProcessMaker\Notifications\ImportReady;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 use ProcessMaker\Traits\PluginServiceProviderTrait;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
-use ProcessMaker\Models\AnonymousUser;
-use ProcessMaker\Notifications\ImportReady;
 
 class ImportProcess implements ShouldQueue
 {
@@ -230,6 +230,7 @@ class ImportProcess implements ShouldQueue
     private function getElementById($id)
     {
         $x = new DOMXPath($this->definitions);
+
         return $x->query("//*[@id='$id']")->item(0);
     }
 
@@ -265,7 +266,7 @@ class ImportProcess implements ShouldQueue
             $assignment = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
             $eventDefinition = $task->getElementsByTagName('timerEventDefinition');
             if (!$assignment && $eventDefinition->count() === 0) {
-                $this->assignable->push((object)[
+                $this->assignable->push((object) [
                     'type' => 'startEvent',
                     'id' => $task->getAttribute('id'),
                     'name' => $task->getAttribute('name'),
@@ -292,7 +293,7 @@ class ImportProcess implements ShouldQueue
             }
 
             if (!$assignment) {
-                $this->assignable->push((object)[
+                $this->assignable->push((object) [
                     'type' => 'callActivity',
                     'id' => $task->getAttribute('id'),
                     'name' => $task->getAttribute('name'),
@@ -315,14 +316,13 @@ class ImportProcess implements ShouldQueue
         foreach ($humanTasks as $humanTask) {
             $tasks = $this->definitions->getElementsByTagName($humanTask);
             foreach ($tasks as $task) {
-
                 $assignment = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
                 // If an assignment rule is already set, do not ask to set it
                 if ($assignment) {
                     continue;
                 }
 
-                $this->assignable->push((object)[
+                $this->assignable->push((object) [
                     'type' => 'task',
                     'id' => $task->getAttribute('id'),
                     'name' => $task->getAttribute('name'),
@@ -341,7 +341,7 @@ class ImportProcess implements ShouldQueue
     private function parseAssignableScripts()
     {
         foreach ($this->new[Script::class] as $script) {
-            $this->assignable->push((object)[
+            $this->assignable->push((object) [
                 'type' => 'script',
                 'id' => $script->id,
                 'name' => $script->title,
@@ -359,7 +359,6 @@ class ImportProcess implements ShouldQueue
     private function parseAssignableWatchers()
     {
         foreach ($this->new[Screen::class] as $screen) {
-
             if (empty($screen->watchers)) {
                 continue;
             }
@@ -371,7 +370,7 @@ class ImportProcess implements ShouldQueue
                 }
                 $this->assignable[] = (object) [
                     'type' => 'watcherDataSource',
-                    'id' => strval($screen->id) . "|" . strval($index),
+                    'id' => strval($screen->id) . '|' . strval($index),
                     'name' => $watcher['name'],
                     'prefix' => __('Assign data source watcher in :screen', ['screen' => $screen->title]),
                     'suffix' => __('to'),
@@ -440,7 +439,7 @@ class ImportProcess implements ShouldQueue
             }
             $this->finishStatus('screens');
         } catch (\Exception $e) {
-            Log::info('*** Error: '. $e->getMessage());
+            Log::info('*** Error: ' . $e->getMessage());
             $this->finishStatus('screens', true);
         }
     }
@@ -463,7 +462,7 @@ class ImportProcess implements ShouldQueue
             $new->description = $screen->description;
             $new->title = $this->formatName($screen->title, 'title', Screen::class);
             $new->type = $screen->type;
-            $new->watchers =  $this->watcherScriptsToSave($screen);
+            $new->watchers = $this->watcherScriptsToSave($screen);
             $new->save();
             event(new ImportedScreenSaved($new->id, $screen));
 
@@ -485,8 +484,8 @@ class ImportProcess implements ShouldQueue
      * Pass an old script ID and a new script ID, then replace any references
      * within the BPMN to the old ID with the new ID.
      *
-     * @param string|integer $oldId
-     * @param string|integer $newId
+     * @param string|int $oldId
+     * @param string|int $newId
      *
      * @return void
      */
@@ -584,7 +583,7 @@ class ImportProcess implements ShouldQueue
     {
         if (!array_key_exists($type . '_categories', $this->new)) {
             $this->new[$type . '_categories'] = [];
-        };
+        }
 
         // use ProcessMaker\Models\ProcessCategory;
         $class = '\\ProcessMaker\\Models\\' . ucfirst($type) . 'Category';
@@ -605,9 +604,11 @@ class ImportProcess implements ShouldQueue
                 $this->new[$type . '_categories'][] = $new;
             }
             $this->finishStatus($type . '_categories');
+
             return $new;
         } catch (\Exception $e) {
             $this->finishStatus($type . '_categories', true);
+
             return null;
         }
     }
@@ -684,7 +685,7 @@ class ImportProcess implements ShouldQueue
      *
      * @param string $package
      *
-     * @return boolean
+     * @return bool
      */
     private function isBackwardCompatiblePackage($package)
     {
@@ -761,10 +762,10 @@ class ImportProcess implements ShouldQueue
     private function parseFileV1()
     {
         if (!$this->validatePackages($this->file->process)) {
-            return (object)[
+            return (object) [
                 'status' => collect($this->status),
                 'assignable' => [],
-                'process' => []
+                'process' => [],
             ];
         }
 
@@ -772,7 +773,7 @@ class ImportProcess implements ShouldQueue
             $this->saveCategory('process', $this->file->process_category);
         }
         if (isset($this->file->process_categories)) {
-            foreach($this->file->process_categories as $category) {
+            foreach ($this->file->process_categories as $category) {
                 $this->saveCategory('process', $category);
             }
         }
@@ -784,10 +785,10 @@ class ImportProcess implements ShouldQueue
         $this->setAnonymousUser();
         $this->saveBpmn($this->file->process);
 
-        return (object)[
+        return (object) [
             'status' => collect($this->status),
             'assignable' => $this->assignable,
-            'process' => $this->new['process']
+            'process' => $this->new['process'],
         ];
     }
 
@@ -808,7 +809,7 @@ class ImportProcess implements ShouldQueue
         $originalAnonymousUserId = $this->file->process->anonymousUserId;
 
         foreach ($humanTasks as $tag) {
-            foreach($this->definitions->getElementsByTagName($tag) as $task) {
+            foreach ($this->definitions->getElementsByTagName($tag) as $task) {
                 $assignedUsers = $task->getAttributeNS($ns, 'assignedUsers');
                 if ($assignedUsers === (string) $originalAnonymousUserId) {
                     $task->setAttributeNS($ns, 'assignedUsers', app(AnonymousUser::class)->id);
@@ -824,7 +825,7 @@ class ImportProcess implements ShouldQueue
      */
     protected function decodeFile()
     {
-        if (substr($this->fileContents, 0, 1) === '{' && !!json_decode($this->fileContents)) {
+        if (substr($this->fileContents, 0, 1) === '{' && (bool) json_decode($this->fileContents)) {
             $this->file = json_decode($this->fileContents);
         } else {
             $this->file = base64_decode($this->fileContents);
@@ -835,7 +836,7 @@ class ImportProcess implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @return boolean
+     * @return bool
      */
     public function handle()
     {
@@ -851,6 +852,7 @@ class ImportProcess implements ShouldQueue
                 $this->resetStatus();
                 $response = $this->{$method}();
                 $this->broadcastResponse($response);
+
                 return $response;
             }
         }
@@ -869,22 +871,22 @@ class ImportProcess implements ShouldQueue
         $this->status['process_categories'] = [
             'label' => __('Process Categories'),
             'success' => false,
-            'message' => __('Starting')];
+            'message' => __('Starting'), ];
 
         $this->status['process'] = [
             'label' => __('Process'),
             'success' => false,
-            'message' => __('Starting')];
+            'message' => __('Starting'), ];
 
         $this->status['scripts'] = [
             'label' => __('Scripts'),
             'success' => false,
-            'message' => __('Starting')];
+            'message' => __('Starting'), ];
 
         $this->status['screens'] = [
             'label' => __('Screens'),
             'success' => false,
-            'message' => __('Starting')];
+            'message' => __('Starting'), ];
     }
 
     /**
@@ -909,7 +911,7 @@ class ImportProcess implements ShouldQueue
      */
     protected function finishStatus($element, $error = false)
     {
-        $label = ucwords(implode(" ", explode('_', $element)));
+        $label = ucwords(implode(' ', explode('_', $element)));
         $this->status[$element]['label'] = __($label);
         $this->status[$element]['success'] = true;
         $this->status[$element]['message'] = __('Successfully imported');
@@ -930,13 +932,14 @@ class ImportProcess implements ShouldQueue
             return null;
         }
 
-        $watcherList =[];
-        foreach($screen->watchers as $watcher) {
+        $watcherList = [];
+        foreach ($screen->watchers as $watcher) {
             $script = $watcher->script;
             $watcher->script_id = $script->id;
             $watcher->script->title = $script->title;
             $watcherList[] = $watcher;
         }
+
         return $watcherList;
     }
 
@@ -944,9 +947,8 @@ class ImportProcess implements ShouldQueue
      * Determine if the call activity is a wrapper around a package
      *
      * @param $task
-     * @return boolean
+     * @return bool
      */
-
     private function isCallActivityFromPackage($task)
     {
         $configString = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'config');
@@ -955,6 +957,7 @@ class ImportProcess implements ShouldQueue
             // calledElement only exists on call activities, not packages
             return false;
         }
+
         return true;
     }
 

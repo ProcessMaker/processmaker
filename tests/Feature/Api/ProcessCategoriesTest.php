@@ -6,9 +6,9 @@ use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\User;
+use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
-use Tests\Feature\Shared\RequestHelper;
 
 /**
  * Tests routes related to processes / CRUD related methods
@@ -17,19 +17,19 @@ use Tests\Feature\Shared\RequestHelper;
  */
 class ProcessCategoriesTest extends TestCase
 {
-
     use WithFaker;
     use ResourceAssertionsTrait;
     use RequestHelper;
 
     protected $resource = 'api.process_categories';
+
     protected $structure = [
         'id',
         'name',
         'status',
         'is_system',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
@@ -128,11 +128,11 @@ class ProcessCategoriesTest extends TestCase
         // Create some processes
         $processActive = [
             'num' => 10,
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
         ];
         $processInactive = [
             'num' => 15,
-            'status' => 'INACTIVE'
+            'status' => 'INACTIVE',
         ];
         factory(ProcessCategory::class, $processActive['num'])->create(['status' => $processActive['status']]);
         factory(ProcessCategory::class, $processInactive['num'])->create(['status' => $processInactive['status']]);
@@ -185,11 +185,11 @@ class ProcessCategoriesTest extends TestCase
         // Create some processes
         $processActive = [
             'num' => 10,
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
         ];
         $processInactive = [
             'num' => 15,
-            'status' => 'INACTIVE'
+            'status' => 'INACTIVE',
         ];
         factory(ProcessCategory::class, $processActive['num'])->create(['status' => $processActive['status']]);
         factory(ProcessCategory::class, $processInactive['num'])->create(['status' => $processInactive['status']]);
@@ -220,10 +220,10 @@ class ProcessCategoriesTest extends TestCase
     {
         // Create some processes
         factory(ProcessCategory::class)->create([
-            'name' => 'aaaaaa'
+            'name' => 'aaaaaa',
         ]);
         factory(ProcessCategory::class)->create([
-            'name' => 'zzzzz'
+            'name' => 'zzzzz',
         ]);
 
         //Test the list sorted by name returns as first row {"name": "aaaaaa"}
@@ -237,14 +237,13 @@ class ProcessCategoriesTest extends TestCase
         $meta = $response->json('meta');
         // Verify the meta values
         $this->assertArraySubset([
-            'count' => count($data)
+            'count' => count($data),
         ], $meta);
 
         $firstRow = $this->getDataAttributes($data[0]);
         $this->assertArraySubset([
-            'name' => 'aaaaaa'
+            'name' => 'aaaaaa',
         ], $firstRow);
-
 
         //Test the list sorted desc returns as first row {"name": "zzzzz"}
         $response = $this->apiCall('GET', $route . '?order_by=name&order_direction=DESC');
@@ -259,13 +258,12 @@ class ProcessCategoriesTest extends TestCase
 
         $firstRow = $this->getDataAttributes($data[0]);
         $this->assertArraySubset([
-            'name' => 'zzzzz'
+            'name' => 'zzzzz',
         ], $firstRow);
     }
 
     /**
      * Test pagination of process list
-     *
      */
     public function testPagination()
     {
@@ -286,8 +284,6 @@ class ProcessCategoriesTest extends TestCase
         $response = $this->apiCall('GET', route($this->resource . '.index', ['per_page' => 5, 'page' => 2]));
         $response->assertJsonCount((2 + $initialRows) % 5, 'data');
     }
-
-
 
     /**
      * Test show process category

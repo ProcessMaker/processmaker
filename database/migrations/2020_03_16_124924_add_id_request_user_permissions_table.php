@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\ProcessRequest;
 
 class AddIdRequestUserPermissionsTable extends Migration
@@ -16,7 +16,7 @@ class AddIdRequestUserPermissionsTable extends Migration
     {
         $model = new ProcessRequest();
         Schema::connection($model->getConnectionName())->table('request_user_permissions', function (Blueprint $table) {
-            $table->dropPrimary( ['request_id', 'user_id'] );
+            $table->dropPrimary(['request_id', 'user_id']);
         });
         Schema::connection($model->getConnectionName())->table('request_user_permissions', function (Blueprint $table) {
             $table->increments('id');

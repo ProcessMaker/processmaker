@@ -2,8 +2,8 @@
 
 namespace ProcessMaker\Logging;
 
-use Monolog\Logger;
 use Monolog\Handler\TestHandler;
+use Monolog\Logger;
 
 class CreateTestLogger
 {
@@ -17,7 +17,7 @@ class CreateTestLogger
     {
         $monolog = new Logger('test');
         $monolog->pushHandler(new TestHandler());
-        
+
         return $monolog;
     }
 }

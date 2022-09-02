@@ -16,9 +16,13 @@ class ScriptResponseEvent implements ShouldBroadcastNow
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $userId;
+
     public $status;
+
     public $response;
+
     public $watcher;
+
     public $nonce;
 
     /**
@@ -54,6 +58,7 @@ class ScriptResponseEvent implements ShouldBroadcastNow
     {
         $key = uniqid('srn', true);
         Cache::put("srn.$key", $this->response, now()->addMinutes(1));
+
         return ['key' => $key];
     }
 
@@ -61,6 +66,7 @@ class ScriptResponseEvent implements ShouldBroadcastNow
     {
         $date = new Carbon();
         $response = $this->cacheResponse($this->response);
+
         return [
             'type' => '.' . \get_class($this),
             'name' => __('Script executed'),

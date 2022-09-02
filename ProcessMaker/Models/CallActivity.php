@@ -3,6 +3,8 @@
 namespace ProcessMaker\Models;
 
 use Exception;
+use ProcessMaker\Jobs\CopyRequestFiles;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Nayra\Bpmn\ActivitySubProcessTrait;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityClosedEvent;
@@ -12,13 +14,9 @@ use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ErrorInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
-use ProcessMaker\Jobs\CopyRequestFiles;
-use ProcessMaker\Managers\DataManager;
 
 /**
  * Call Activity model
- *
- * @package ProcessMaker\Model
  */
 class CallActivity implements CallActivityInterface
 {
@@ -32,7 +30,6 @@ class CallActivity implements CallActivityInterface
 
     /**
      * Initialize the Call Activity element.
-     *
      */
     protected function initActivity()
     {
@@ -133,7 +130,7 @@ class CallActivity implements CallActivityInterface
             $message = [$error->getName()];
         }
         if ($instance->errors && is_array($instance->errors)) {
-            foreach($instance->errors as $err) {
+            foreach ($instance->errors as $err) {
                 $errorMessage = $err['message'];
                 if (array_key_exists('body', $err)) {
                     // add the body but not the stack trace:
@@ -145,6 +142,7 @@ class CallActivity implements CallActivityInterface
         $token->getInstance()->logError(new Exception(implode("\n", $message)), $this);
 
         $this->synchronizeInstances($instance, $token->getInstance());
+
         return $this;
     }
 
@@ -183,6 +181,7 @@ class CallActivity implements CallActivityInterface
                 $definitions = $engine->getDefinition($process->getLatestVersion());
             }
             $response = $definitions->getElementInstanceById($refs[0]);
+
             return $response;
         }
     }
@@ -197,6 +196,7 @@ class CallActivity implements CallActivityInterface
     public function setCalledElement($callableElement)
     {
         $this->setProperty(CallActivityInterface::BPMN_PROPERTY_CALLED_ELEMENT, $callableElement);
+
         return $this;
     }
 
@@ -216,6 +216,7 @@ class CallActivity implements CallActivityInterface
             $subprocess = $this->getProcess()->getEngine()->loadProcessRequest($token->subProcessRequest);
             $this->linkProcesses($token, $subprocess);
         }
+
         return $this->addTokenBase($instance, $token);
     }
 
@@ -237,22 +238,24 @@ class CallActivity implements CallActivityInterface
     /**
      * Returns true if callable element is external to the owner definition
      *
-     * @return boolean
+     * @return bool
      */
     public function isFromExternalDefinition()
     {
         $ref = explode('-', $this->getProperty(CallActivityInterface::BPMN_PROPERTY_CALLED_ELEMENT));
+
         return count($ref) === 2 && is_numeric($ref[1]);
     }
 
     /**
      * Returns true if callable element is a service sub process (like data-connector)
      *
-     * @return boolean
+     * @return bool
      */
     public function isServiceSubProcess()
     {
         $ref = explode('-', $this->getProperty(CallActivityInterface::BPMN_PROPERTY_CALLED_ELEMENT));
+
         return count($ref) === 2 && !is_numeric($ref[1]);
     }
 }

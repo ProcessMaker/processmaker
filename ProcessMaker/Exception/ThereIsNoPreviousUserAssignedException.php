@@ -7,7 +7,6 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 
 /**
  * There is no previous user assigned to assign to the task
- *
  */
 class ThereIsNoPreviousUserAssignedException extends Exception
 {

@@ -20,10 +20,10 @@ class NotificationController extends Controller
 
         $title = __('All Notifications');
 
-        if($status === 'unread') {
-          $title = __('Unread Notifications');
+        if ($status === 'unread') {
+            $title = __('Unread Notifications');
         }
-        
+
         return view('notifications.index', compact('status', 'title'));
     }
 }

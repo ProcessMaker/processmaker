@@ -2,8 +2,8 @@
 
 namespace ProcessMaker\Upgrades;
 
-use ProcessMaker\Exception\InvalidSemanticVersion;
 use Illuminate\Database\Migrations\MigrationCreator;
+use ProcessMaker\Exception\InvalidSemanticVersion;
 
 class UpgradeCreator extends MigrationCreator
 {

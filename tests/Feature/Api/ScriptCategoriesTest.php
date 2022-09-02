@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
@@ -9,7 +10,6 @@ use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
 
-
 /**
  * Tests routes related to script / CRUD related methods
  *
@@ -17,18 +17,18 @@ use Tests\TestCase;
  */
 class ScriptCategoriesTest extends TestCase
 {
-
     use WithFaker;
     use ResourceAssertionsTrait;
     use RequestHelper;
 
     protected $resource = 'api.script_categories';
+
     protected $structure = [
         'id',
         'name',
         'status',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
@@ -121,17 +121,17 @@ class ScriptCategoriesTest extends TestCase
     public function testFiltering()
     {
         $perPage = 10;
-        $initialInactiveCount = ScriptCategory::where('status','INACTIVE')->count();
+        $initialInactiveCount = ScriptCategory::where('status', 'INACTIVE')->count();
 
         factory(ScriptCategory::class, 3)->create(['is_system' => true, 'status' => 'ACTIVE']);
         // Create some script
         $scriptActive = [
             'num' => 10,
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
         ];
         $scriptInactive = [
             'num' => 15,
-            'status' => 'INACTIVE'
+            'status' => 'INACTIVE',
         ];
         factory(ScriptCategory::class, $scriptActive['num'])->create(['status' => $scriptActive['status']]);
         factory(ScriptCategory::class, $scriptInactive['num'])->create(['status' => $scriptInactive['status']]);
@@ -149,7 +149,7 @@ class ScriptCategoriesTest extends TestCase
         $data = $response->json('data');
         $meta = $response->json('meta');
         // Verify the meta values
-        $this->assertArraySubset( [
+        $this->assertArraySubset([
             'total' => 1,
             'count' => 1,
             'per_page' => $perPage,
@@ -166,7 +166,7 @@ class ScriptCategoriesTest extends TestCase
         $data = $response->json('data');
         $meta = $response->json('meta');
         // Verify the meta values
-        $this->assertArraySubset( [
+        $this->assertArraySubset([
             'total' => $initialInactiveCount + $scriptInactive['num'],
             'count' => $perPage,
             'per_page' => $perPage,
@@ -181,17 +181,17 @@ class ScriptCategoriesTest extends TestCase
     public function testFilteringStatus()
     {
         $perPage = 10;
-        $initialActiveCount = ScriptCategory::where('status','ACTIVE')->count();
-        $initialInactiveCount = ScriptCategory::where('status','INACTIVE')->count();
+        $initialActiveCount = ScriptCategory::where('status', 'ACTIVE')->count();
+        $initialInactiveCount = ScriptCategory::where('status', 'INACTIVE')->count();
 
         // Create some script
         $scriptActive = [
             'num' => 10,
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
         ];
         $scriptInactive = [
             'num' => 15,
-            'status' => 'INACTIVE'
+            'status' => 'INACTIVE',
         ];
 
         factory(ScriptCategory::class, $scriptActive['num'])->create(['status' => $scriptActive['status']]);
@@ -207,7 +207,7 @@ class ScriptCategoriesTest extends TestCase
         $data = $response->json('data');
         $meta = $response->json('meta');
         // Verify the meta values
-        $this->assertArraySubset( [
+        $this->assertArraySubset([
             'total' => $initialActiveCount + $scriptActive['num'],
             'count' => $perPage,
             'per_page' => $perPage,
@@ -223,10 +223,10 @@ class ScriptCategoriesTest extends TestCase
     {
         // Create some script
         factory(ScriptCategory::class)->create([
-            'name' => 'aaaaaa'
+            'name' => 'aaaaaa',
         ]);
         factory(ScriptCategory::class)->create([
-            'name' => 'zzzzz'
+            'name' => 'zzzzz',
         ]);
 
         //Test the list sorted by name returns as first row {"name": "aaaaaa"}
@@ -240,14 +240,13 @@ class ScriptCategoriesTest extends TestCase
         $meta = $response->json('meta');
         // Verify the meta values
         $this->assertArraySubset([
-            'count' => count($data)
+            'count' => count($data),
         ], $meta);
 
         $firstRow = $this->getDataAttributes($data[0]);
         $this->assertArraySubset([
-            'name' => 'aaaaaa'
+            'name' => 'aaaaaa',
         ], $firstRow);
-
 
         //Test the list sorted desc returns as first row {"name": "zzzzz"}
         $response = $this->apiCall('GET', $route . '?order_by=name&order_direction=DESC');
@@ -262,13 +261,12 @@ class ScriptCategoriesTest extends TestCase
 
         $firstRow = $this->getDataAttributes($data[0]);
         $this->assertArraySubset([
-            'name' => 'zzzzz'
+            'name' => 'zzzzz',
         ], $firstRow);
     }
 
     /**
      * Test pagination of script list
-     *
      */
     public function testPagination()
     {
@@ -289,8 +287,6 @@ class ScriptCategoriesTest extends TestCase
         $response = $this->apiCall('GET', route($this->resource . '.index', ['per_page' => 5, 'page' => 2]));
         $response->assertJsonCount((2 + $initialRows) % 5, 'data');
     }
-
-
 
     /**
      * Test show script category
@@ -366,7 +362,6 @@ class ScriptCategoriesTest extends TestCase
         $response->assertStatus(422);
         //validate structure
         $response->assertJsonStructure(['errors' => ['name']]);
-
     }
 
     /*
@@ -433,5 +428,4 @@ class ScriptCategoriesTest extends TestCase
         $response->assertJsonStructure($this->errorStructure);
         $response->assertJsonStructure(['errors' => ['scripts']]);
     }
-
 }

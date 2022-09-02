@@ -2,19 +2,21 @@
 
 namespace ProcessMaker\Jobs;
 
-use Illuminate\Support\Arr;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use ProcessMaker\Models\ProcessRequest;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Arr;
+use ProcessMaker\Models\ProcessRequest;
 
 class CopyRequestFiles implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $from, $to;
+    protected $from;
+
+    protected $to;
 
     /**
      * Create a new job instance.
@@ -34,12 +36,11 @@ class CopyRequestFiles implements ShouldQueue
      */
     public function handle()
     {
-        foreach($this->from->getMedia() as $fileToCopy) {
+        foreach ($this->from->getMedia() as $fileToCopy) {
             $originalCreatedBy = $fileToCopy->getCustomProperty('createdBy');
-            foreach($this->to->getMedia() as $mediaItem) {
+            foreach ($this->to->getMedia() as $mediaItem) {
                 if ($mediaItem->getCustomProperty('data_name') == $fileToCopy->getCustomProperty('data_name') &&
                     $mediaItem->getCustomProperty('parent') == $fileToCopy->getCustomProperty('parent')) {
-
                     $originalCreatedBy = $mediaItem->getCustomProperty('createdBy');
                     $mediaItem->delete();
                 }

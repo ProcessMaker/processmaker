@@ -6,5 +6,4 @@ use ProcessMaker\Nayra\Contracts\Bpmn\FormalExpressionInterface;
 
 interface TimerExpressionInterface extends FormalExpressionInterface
 {
-
 }

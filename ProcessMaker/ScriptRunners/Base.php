@@ -3,13 +3,13 @@
 namespace ProcessMaker\ScriptRunners;
 
 use Log;
+use ProcessMaker\GenerateAccessToken;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\ScriptDockerBindingFilesTrait;
 use ProcessMaker\Models\ScriptDockerCopyingFilesTrait;
 use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\User;
 use RuntimeException;
-use ProcessMaker\GenerateAccessToken;
 
 abstract class Base
 {
@@ -31,15 +31,14 @@ abstract class Base
     /**
      * Set the user to run this script as
      *
-     * @var \ProcessMaker\Models\User $user
+     * @var \ProcessMaker\Models\User
      */
     private $user;
-
 
     /**
      * Set the script executor
      *
-     * @var \ProcessMaker\Models\User $user
+     * @var \ProcessMaker\Models\User
      */
     private $scriptExecutor;
 
@@ -54,7 +53,7 @@ abstract class Base
      * @param string $code
      * @param array $data
      * @param array $config
-     * @param integer $timeout
+     * @param int $timeout
      * @param \ProcessMaker\Models\User $user
      *
      * @return array
@@ -95,8 +94,8 @@ abstract class Base
                 '/opt/executor/config.json' => json_encode($config),
             ],
             'outputs' => [
-                'response' => '/opt/executor/output.json'
-            ]
+                'response' => '/opt/executor/output.json',
+            ],
         ]);
 
         // If the image is not specified, use the one set by the executor
@@ -121,15 +120,16 @@ abstract class Base
         $returnCode = $response['returnCode'];
         $stdOutput = $response['output'];
         $output = $response['outputs']['response'];
-        Log::debug("Docker returned " . $this->getRunId(). ': ' . substr(json_encode($response), 0, 500));
+        Log::debug('Docker returned ' . $this->getRunId() . ': ' . substr(json_encode($response), 0, 500));
         if ($returnCode || $stdOutput) {
             // Has an error code
             throw new RuntimeException("(Code: {$returnCode})" . implode("\n", $stdOutput));
         } else {
             // Success
             $response = json_decode($output, true);
+
             return [
-                'output' => $response
+                'output' => $response,
             ];
         }
     }
@@ -156,7 +156,7 @@ abstract class Base
 
     /**
      * Set the tokenId of reference.
-     * 
+     *
      * @param string $tokenId
      *
      * @return void

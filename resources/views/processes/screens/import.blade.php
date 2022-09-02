@@ -26,17 +26,17 @@
                     <div class="card-body">
                         <h5 class="card-title">{{__('You are about to import a Screen.')}}</h5>
                         <input id="import-file" type="file" ref="file" class="d-none" @change="handleFile" accept=".json" aria-label="{{__('select file')}}">
-                        <button type="button" @click="$refs.file.click()" class="btn btn-secondary ml-2">
+                        <button type="button" @click="$refs.file.click()" class="btn btn-secondary ml-2" data-cy="button-browse">
                             <i class="fas fa-upload"></i>
                             {{__('Browse')}}
                         </button>
                     </div>
                     <div class="card-footer bg-light" align="right">
-                        <button type="button" class="btn btn-outline-secondary" @click="onCancel">
+                        <button type="button" class="btn btn-outline-secondary" @click="onCancel" data-cy="button-cancel">
                             {{__('Cancel')}}
                         </button>
                         <button type="button" class="btn btn-secondary ml-2" @click="importFile"
-                                :disabled="uploaded == false">
+                                :disabled="uploaded == false" data-cy="button-import">
                             {{__('Import')}}
                         </button>
                     </div>
@@ -48,11 +48,12 @@
             <ul v-show="options" class="list-unstyled">
                 <li v-for="item in options">
                     <i :class="item.success ? 'fas fa-check text-success' : 'fas fa-times text-danger'"></i>
-                    @{{item.label}} - @{{item.message}}
+                    @{{item.label}} - @{{item.message}} 
+                    <span v-if="item.info" :class="'text-danger d-block'"> @{{item.info}}.</span>
                 </li>
             </ul>
             <div slot="modal-footer" class="w-100" align="right">
-                <button type="button" class="btn btn-secondary ml-2" @click="onCancel">{{__('List Screens')}}
+                <button type="button" class="btn btn-secondary ml-2" @click="onCancel" data-cy="button-list-screen">{{__('List Screens')}}
                 </button>
             </div>
         </b-modal>
