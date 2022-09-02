@@ -120,7 +120,7 @@ button:focus.navbar-toggler {
 
 .multiselect .multiselect__tags {
   border-color: $form-control-border-color;
-  border-radius: $form-control-border-radius;
+  border-radius: 0.125em;
 }
 
 .multiselect__tags {
@@ -209,7 +209,7 @@ button:focus.navbar-toggler {
       .multiselect__tags {
         border-top-color: #ddd;
         border-bottom-width: 0;
-        border-radius: 0;
+        border-radius: 0.125em;
         height: 40px;
         max-height: 40px;
       }
@@ -255,7 +255,7 @@ button:focus.navbar-toggler {
       .multiselect__tags {
         border-left-color: #ddd;
         border-right-width: 0;
-        border-radius: 0;
+        border-radius: 0.125em;
         height: 40px;
         max-height: 40px;
       }

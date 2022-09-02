@@ -724,6 +724,8 @@ class ProcessTest extends TestCase
      */
     public function testShowProcess()
     {
+        $this->markTestSkipped('FOUR-6653');
+
         //Create a new process without category
         $process = factory(Process::class)->create([
             'process_category_id' => null,
