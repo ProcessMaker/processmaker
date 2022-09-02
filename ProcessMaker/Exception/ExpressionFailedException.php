@@ -7,13 +7,9 @@ use Throwable;
 
 /**
  * Thrown if an expression failed to be evaluated
- *
- * @package ProcessMaker\Exceptions
  */
-
 class ExpressionFailedException extends Exception
 {
-
     /**
      * @param Throwable $previous
      */

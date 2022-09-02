@@ -12,26 +12,25 @@ use Tests\TestCase;
 
 class TaskAssignmentPreviousOwnerTest extends TestCase
 {
-
     use RequestHelper;
 
     /**
-     * @var Process $process
+     * @var Process
      */
     protected $process;
 
     /**
-     * @var \ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface $task
+     * @var \ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface
      */
     protected $task;
 
     /**
-     * @var \ProcessMaker\Models\User $assigned
+     * @var \ProcessMaker\Models\User
      */
     protected $assigned;
 
     /**
-     * @var array $requestStructure
+     * @var array
      */
     private $requestStructure = [
         'id',
@@ -41,7 +40,7 @@ class TaskAssignmentPreviousOwnerTest extends TestCase
         'name',
         'initiated_at',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
@@ -102,7 +101,7 @@ class TaskAssignmentPreviousOwnerTest extends TestCase
 
         // Reload request
         $request = ProcessRequest::find($requestId);
-        
+
         // Verify assigned user is the same of the previous task
         $this->assertEquals($request->tokens[1]->user_id, $request->tokens[2]->user_id);
     }
@@ -121,6 +120,7 @@ class TaskAssignmentPreviousOwnerTest extends TestCase
         $process = $task->process;
         $instance = $task->processRequest;
         WorkflowManager::completeTask($process, $instance, $task, $data);
+
         return $task->refresh();
     }
 }

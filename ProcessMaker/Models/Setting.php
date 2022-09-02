@@ -15,7 +15,6 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 /**
  * Class Settings
  *
- * @package ProcessMaker\Models
  *
  * @property string id
  * @property string key
@@ -47,7 +46,6 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  *     ),
  *   },
  * )
- *
  */
 class Setting extends Model implements HasMedia
 {
@@ -59,10 +57,14 @@ class Setting extends Model implements HasMedia
 
     //Disk
     public const DISK_CSS = 'settings';
+
     //collection media library
     public const COLLECTION_CSS_LOGIN = 'login';
+
     public const COLLECTION_CSS_LOGO = 'logo';
+
     public const COLLECTION_CSS_ICON = 'icon';
+
     public const COLLECTION_CSS_FAVICON = 'favicon';
 
     /**
@@ -111,7 +113,7 @@ class Setting extends Model implements HasMedia
 
         return [
             'key' => ['required', $unique],
-            'config.*' => ($validateConfig ? ['required', 'valid_variable'] : [])
+            'config.*' => ($validateConfig ? ['required', 'valid_variable'] : []),
         ];
     }
 
@@ -211,7 +213,7 @@ class Setting extends Model implements HasMedia
             case 'range':
                 return $this->attributes['config'] = $this->attributes['config'];
             case 'boolean':
-                return $this->attributes['config'] = (boolean) $this->attributes['config'];
+                return $this->attributes['config'] = (bool) $this->attributes['config'];
             case 'object':
                 if (is_string($this->attributes['config'])) {
                     return $this->attributes['config'] = json_decode($this->attributes['config']);
@@ -339,6 +341,7 @@ class Setting extends Model implements HasMedia
                 $url = $media->getFullUrl();
             }
         }
+
         return $url . '?id=' . bin2hex(random_bytes(16));
     }
 }

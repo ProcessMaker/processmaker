@@ -6,9 +6,7 @@ use Exception;
 
 /**
  * Description of InvalidFileManagerExtension
- *
  */
 class FileManagerExtensionException extends Exception
 {
-    
 }

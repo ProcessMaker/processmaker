@@ -20,7 +20,6 @@ class ScreenVersion extends ApiResource
         $include = explode(',', $request->input('include', ''));
 
         if (in_array('nested', $include)) {
-            
             $task = $request->route('task');
             $processRequest = null;
             if ($task) {
@@ -34,6 +33,7 @@ class ScreenVersion extends ApiResource
             }
             $screenVersion['nested'] = $nested;
         }
+
         return $screenVersion;
     }
 }

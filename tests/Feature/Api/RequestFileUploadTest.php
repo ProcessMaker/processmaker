@@ -7,10 +7,10 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
-use Tests\Feature\Shared\RequestHelper;
-use Tests\TestCase;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 use Tests\Feature\Api\TestProcessExecutionTrait;
+use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class RequestFileUploadTest extends TestCase
 {
@@ -18,17 +18,17 @@ class RequestFileUploadTest extends TestCase
     use TestProcessExecutionTrait;
 
     /**
-     * @var Process $process
+     * @var Process
      */
     protected $process;
 
     /**
-     * @var \ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface $task
+     * @var \ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface
      */
     protected $task;
 
     /**
-     * @var \ProcessMaker\Models\User[] $assigned
+     * @var \ProcessMaker\Models\User[]
      */
     protected $assigned = [];
 
@@ -44,7 +44,7 @@ class RequestFileUploadTest extends TestCase
                 '2' => factory(User::class)->create([
                     'status' => 'ACTIVE',
                     'is_administrator' => false,
-                ])
+                ]),
             ]
         );
 
@@ -61,7 +61,7 @@ class RequestFileUploadTest extends TestCase
         $response = $this->actingAs($uploadTask->user, 'api')
             ->json('POST', $route, [
                 'file' => File::image('photo.jpg'),
-                'data_name' => 'photo'
+                'data_name' => 'photo',
             ]);
         // Check the user has access to upload a file
         $response->assertStatus(200);
@@ -82,7 +82,7 @@ class RequestFileUploadTest extends TestCase
                 '2' => factory(User::class)->create([
                     'status' => 'ACTIVE',
                     'is_administrator' => false,
-                ])
+                ]),
             ]
         );
 
@@ -103,7 +103,7 @@ class RequestFileUploadTest extends TestCase
         $route = route('api.requests.files.store', [$request->id, 'event' => 'node_1']);
         $response = $this->actingAs($doesNotParticipateUser, 'api')
             ->json('POST', $route, [
-                'file' => File::image('photo.jpg')
+                'file' => File::image('photo.jpg'),
             ]);
         // Check the user does not have access to upload a file
         $response->assertStatus(403);
@@ -113,7 +113,6 @@ class RequestFileUploadTest extends TestCase
 
     /**
      * Test a user that can claim a self task can view the requests uploaded files.
-     *
      */
     public function testViewUploadedRequestFile()
     {
@@ -123,7 +122,7 @@ class RequestFileUploadTest extends TestCase
                 '2' => factory(User::class)->create([
                     'status' => 'ACTIVE',
                     'is_administrator' => false,
-                ])
+                ]),
             ]
         );
         // Create the user assigned to the task (as self service)
@@ -149,7 +148,7 @@ class RequestFileUploadTest extends TestCase
         $response = $this->actingAs($request->user, 'api')
             ->json('POST', $route, [
                 'file' => File::image('photo.jpg'),
-                'data_name' => 'photo'
+                'data_name' => 'photo',
             ]);
 
         // User assigned to the self service task can view the file

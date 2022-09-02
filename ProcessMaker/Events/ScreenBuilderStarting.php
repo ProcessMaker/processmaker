@@ -1,16 +1,18 @@
 <?php
+
 namespace ProcessMaker\Events;
 
 use ProcessMaker\Managers\ScreenBuilderManager;
 
 /**
  * Represents an event that the screen builder is starting.
- * Any listeners can interact with the builder manager to perform things such as 
+ * Any listeners can interact with the builder manager to perform things such as
  * script inclusion.
  */
 class ScreenBuilderStarting
 {
     public $manager;
+
     public $type;
 
     /**
@@ -25,5 +27,4 @@ class ScreenBuilderStarting
         $this->manager = $manager;
         $this->type = $type;
     }
-
 }

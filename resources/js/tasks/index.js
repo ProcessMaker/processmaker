@@ -4,16 +4,16 @@ import AdvancedSearch from "../components/AdvancedSearch";
 
 new Vue({
   el: "#tasks",
+  components: { TasksList, AdvancedSearch },
   data: {
     filter: "",
     pmql: "",
     status: [],
     inOverdueMessage: "",
   },
-  components: { TasksList, AdvancedSearch },
   created() {
-    let params = new URL(document.location).searchParams;
-    let statusParam = params.get("status");
+    const params = new URL(document.location).searchParams;
+    const statusParam = params.get("status");
     let status = "";
 
     switch (statusParam) {
@@ -30,26 +30,26 @@ new Vue({
 
     this.status.push({
       name: status,
-      value: status
+      value: status,
     });
 
-    //translate status labels when available
+    // translate status labels when available
     window.ProcessMaker.i18nPromise.then(() => {
-      this.status.forEach(item => {
+      this.status.forEach((item) => {
         item.name = this.$t(item.name);
       });
     });
   },
   methods: {
-    onChange: function(query) {
+    onChange(query) {
       this.pmql = query;
     },
-    onSearch: function() {
+    onSearch() {
       this.$refs.taskList.fetch(true);
     },
     setInOverdueMessage(inOverdue) {
-      let taskText = (inOverdue > 1) ? this.$t("Tasks").toLowerCase() : this.$t("Task").toLowerCase();
-      this.inOverdueMessage = this.$t("You have {{ inOverDue }} overdue {{ taskText }} pending", {inOverDue: inOverdue, taskText: taskText});
-    }
-  }
+      const taskText = (inOverdue > 1) ? this.$t("Tasks").toLowerCase() : this.$t("Task").toLowerCase();
+      this.inOverdueMessage = this.$t("You have {{ inOverDue }} overdue {{ taskText }} pending", { inOverDue: inOverdue, taskText });
+    },
+  },
 });

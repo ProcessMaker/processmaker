@@ -1,12 +1,14 @@
 <?php
+
 namespace Tests\Feature;
+
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\User;
-use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class TasksTest extends TestCase
 {
@@ -25,17 +27,20 @@ class TasksTest extends TestCase
             'assignment_id' => $this->user->id,
             'assignment_type' => User::class,
         ]);
+
         return $process;
     }
 
-    public function testIndex() {
+    public function testIndex()
+    {
         $response = $this->webGet(self::TASKS_URL, []);
         $response->assertStatus(200);
         $response->assertViewIs('tasks.index');
         $response->assertSee('Tasks');
     }
 
-    public function testViewTaskWithComments() {
+    public function testViewTaskWithComments()
+    {
         //Start a process request
         $process = $this->createTestProcess();
         $route = route('api.process_events.trigger', [$process->id, 'event' => 'StartEventUID']);

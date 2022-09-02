@@ -3,14 +3,13 @@
 namespace ProcessMaker\Models;
 
 use Log;
-use RuntimeException;
-use ProcessMaker\Exception\ScriptTimeoutException;
 use ProcessMaker\Exception\ScriptException;
+use ProcessMaker\Exception\ScriptTimeoutException;
 use ProcessMaker\Facades\Docker;
+use RuntimeException;
 
 /**
  * Execute a docker container copying files to interchange information.
- *
  */
 trait ScriptDockerCopyingFilesTrait
 {
@@ -36,6 +35,7 @@ trait ScriptDockerCopyingFilesTrait
 
         exec(Docker::command() . ' rm ' . $container);
         $response['outputs'] = $outputs;
+
         return $response;
     }
 
@@ -63,6 +63,7 @@ trait ScriptDockerCopyingFilesTrait
         }
         $cid = file_get_contents($cidfile);
         unlink($cidfile);
+
         return $cid;
     }
 
@@ -85,7 +86,7 @@ trait ScriptDockerCopyingFilesTrait
             throw new RuntimeException('Unable to send data to container: ' . implode("\n", $output));
         }
     }
-    
+
     /**
      * Runs the docker copy command
      *
@@ -99,6 +100,7 @@ trait ScriptDockerCopyingFilesTrait
     {
         $cmd = Docker::command() . sprintf(' cp %s %s:%s 2>&1', $source, $container, $dest);
         exec($cmd, $output, $returnCode);
+
         return [$returnCode, $output];
     }
 
@@ -118,6 +120,7 @@ trait ScriptDockerCopyingFilesTrait
         exec($cmd, $output, $returnCode);
         $content = file_get_contents($target);
         unlink($target);
+
         return $content;
     }
 
@@ -125,7 +128,7 @@ trait ScriptDockerCopyingFilesTrait
      * Start the container.
      *
      * @param string $container
-     * @param integer $timeout
+     * @param int $timeout
      *
      * @return array
      */
@@ -150,6 +153,7 @@ trait ScriptDockerCopyingFilesTrait
             $message .= (new \Exception)->getTraceAsString();
             throw new ScriptException($message);
         }
+
         return compact('line', 'output', 'returnCode');
     }
 }

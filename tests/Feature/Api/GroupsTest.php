@@ -4,15 +4,14 @@ namespace Tests\Feature\Api;
 
 use Carbon\Carbon;
 use Faker\Factory as Faker;
-use ProcessMaker\Models\User;
-use ProcessMaker\Models\Group;
-use Tests\TestCase;
-use Tests\Feature\Shared\RequestHelper;
 use Illuminate\Support\Facades\Hash;
+use ProcessMaker\Models\Group;
+use ProcessMaker\Models\User;
+use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class GroupsTest extends TestCase
 {
-
     use RequestHelper;
 
     const API_TEST_URL = '/groups';
@@ -23,9 +22,8 @@ class GroupsTest extends TestCase
         'description',
         'status',
         'updated_at',
-        'created_at'
+        'created_at',
     ];
-
 
     /**
      * Test verify the parameter required for create form
@@ -49,7 +47,7 @@ class GroupsTest extends TestCase
         $url = self::API_TEST_URL;
         $response = $this->apiCall('POST', $url, [
             'name' => 'newgroup',
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
         ]);
 
         //Validate the header status code
@@ -68,7 +66,7 @@ class GroupsTest extends TestCase
         //Post name duplicated
         $faker = Faker::create();
         $response = $this->apiCall('POST', self::API_TEST_URL, [
-            'name' => 'mytestname'
+            'name' => 'mytestname',
         ]);
 
         //Validate the header status code
@@ -99,7 +97,6 @@ class GroupsTest extends TestCase
 
         // Verify count
         $this->assertEquals(10 + $existing, $response->json()['meta']['total']);
-
     }
 
     /**
@@ -152,7 +149,6 @@ class GroupsTest extends TestCase
         $this->assertEquals(1, $response->json()['meta']['total']);
         $this->assertEquals('name', $response->json()['meta']['sort_by']);
         $this->assertEquals('DESC', $response->json()['meta']['sort_order']);
-
     }
 
     /**
@@ -201,7 +197,7 @@ class GroupsTest extends TestCase
         $url = self::API_TEST_URL . '/' . $id;
 
         $response = $this->apiCall('PUT', $url, [
-            'name' => ''
+            'name' => '',
         ]);
 
         //Validate the header status code
@@ -231,7 +227,6 @@ class GroupsTest extends TestCase
 
         //Check that it has changed
         $this->assertNotEquals($verify, $verify_new);
-
     }
 
     /**
@@ -280,5 +275,4 @@ class GroupsTest extends TestCase
         //Validate the header status code
         $response->assertStatus(405);
     }
-
 }

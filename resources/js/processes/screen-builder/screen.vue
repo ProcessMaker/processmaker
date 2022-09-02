@@ -27,7 +27,6 @@
         <b-row class="h-100 m-0" id="preview" v-show="displayPreview">
 
           <b-col class="overflow-auto h-100">
-
             <vue-form-renderer
               v-if="renderComponent === 'task-screen'"
               ref="renderer"

@@ -19,12 +19,11 @@ class GarbageCollectorTest extends TestCase
         //create a serve task and a script task in status ACTIVE and FAILING
         factory(ProcessRequestToken::class)->create([
             'status' => 'ACTIVE',
-            'element_type' => 'scriptTask']);
-
+            'element_type' => 'scriptTask', ]);
 
         factory(ProcessRequestToken::class)->create([
             'status' => 'FAILING',
-            'element_type' => 'serviceTask']);
+            'element_type' => 'serviceTask', ]);
 
         $all = ProcessRequestToken::all();
 
@@ -45,11 +44,11 @@ class GarbageCollectorTest extends TestCase
         // simulate the creation of 2 unhandled errors with 2 tokens
         $token1 = factory(ProcessRequestToken::class)->create([
             'status' => 'ACTIVE',
-            'element_type' => 'scriptTask']);
+            'element_type' => 'scriptTask', ]);
 
         $token2 = factory(ProcessRequestToken::class)->create([
             'status' => 'FAILING',
-            'element_type' => 'serviceTask']);
+            'element_type' => 'serviceTask', ]);
 
         $path = storage_path('app/private');
         $errorFile = $path . '/unhandled_error.txt';
@@ -69,32 +68,31 @@ class GarbageCollectorTest extends TestCase
         Bus::assertDispatched(RunScriptTask::class);
 
         // Verify that the file has been deleted
-        $this->assertFileNotExists($errorFile);
+        $this->assertFileDoesNotExist($errorFile);
     }
 
     public function testProcessDuplicatedTimerEvents()
     {
         $token1 = factory(ProcessRequestToken::class)->create([
             'status' => 'ACTIVE',
-            'element_type' => 'event']);
+            'element_type' => 'event', ]);
 
         $token2 = factory(ProcessRequestToken::class)->create([
             'process_request_id' => $token1->process_request_id,
             'status' => 'ACTIVE',
             'element_id' => $token1->element_id,
-            'element_type' => 'event']);
+            'element_type' => 'event', ]);
 
         // Create duplicated scheduled tasks for the same token
         $schedule = factory(ScheduledTask::class)->create([
             'process_request_id' => $token1->process_request_id,
-            'configuration' => json_encode(['node_id' => $token1->element_id])
+            'configuration' => json_encode(['node_id' => $token1->element_id]),
         ]);
 
         $schedule = factory(ScheduledTask::class)->create([
             'process_request_id' => $token1->process_request_id,
-            'configuration' => json_encode(['node_id' => $token1->element_id])
+            'configuration' => json_encode(['node_id' => $token1->element_id]),
         ]);
-
 
         // Assert that the table was correcly created
         $this->assertNotNull(ProcessRequestToken::find($token1));
@@ -105,18 +103,17 @@ class GarbageCollectorTest extends TestCase
 
         // The duplicated schedule task should be removed
         $this->assertTrue(ScheduledTask::all()->count() === 1);
-
     }
 
     protected function generateErrorHandlerFileWith2Tokens()
     {
         $token1 = factory(ProcessRequestToken::class)->create([
             'status' => 'ACTIVE',
-            'element_type' => 'scriptTask']);
+            'element_type' => 'scriptTask', ]);
 
         $token2 = factory(ProcessRequestToken::class)->create([
             'status' => 'FAILING',
-            'element_type' => 'serviceTask']);
+            'element_type' => 'serviceTask', ]);
 
         $path = storage_path('app/private');
         $errorFile = $path . '/unhandled_error.txt';

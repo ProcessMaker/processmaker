@@ -5,8 +5,8 @@ namespace ProcessMaker\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Group;
-use ProcessMaker\Models\User;
 use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\User;
 use ProcessMaker\Traits\HasControllerAddons;
 
 class GroupController extends Controller
@@ -35,6 +35,7 @@ class GroupController extends Controller
         $permissionGroups = $all_permissions->sortBy('title')->groupBy('group')->sortKeys();
 
         $addons = $this->getPluginAddons('edit', compact(['group']));
+
         return view('admin.groups.edit', compact(
             'group',
             'permissionNames',

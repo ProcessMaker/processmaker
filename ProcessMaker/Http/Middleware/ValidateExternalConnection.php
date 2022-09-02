@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Http\Middleware;
 
 use Closure;
@@ -21,8 +22,7 @@ class ValidateExternalConnection
     {
         try {
             DB::connection('data')->getPdo();
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return redirect('/unavailable');
         }
 
