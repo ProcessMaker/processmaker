@@ -5,6 +5,7 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Query\Traits\PMQL;
+use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
@@ -40,6 +41,7 @@ class Group extends Model
 {
     use PMQL;
     use SerializeToIso8601;
+    use Exportable;
 
     protected $connection = 'processmaker';
 

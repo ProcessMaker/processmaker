@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
+use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HasVersioning;
 
 /**
@@ -49,6 +50,7 @@ use ProcessMaker\Traits\HasVersioning;
 class ScriptExecutor extends Model
 {
     use HasVersioning;
+    use Exportable;
 
     protected $fillable = [
         'title', 'description', 'language', 'config',

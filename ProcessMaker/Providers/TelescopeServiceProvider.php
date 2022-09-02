@@ -16,7 +16,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
      */
     public function register()
     {
-        // Telescope::night();
+        Telescope::night();
 
         $this->hideSensitiveRequestDetails();
 
@@ -29,6 +29,31 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
                    $entry->isFailedJob() ||
                    $entry->isScheduledTask() ||
                    $entry->hasMonitoredTag();
+        });
+
+        Telescope::tag(function (IncomingEntry $entry) {
+            if ($opcache = \function_exists('opcache_get_configuration')) {
+                if ($opcache = \opcache_get_configuration()) {
+                    $opcache = $opcache['directives']['opcache.enable'];
+                }
+            }
+
+            return [
+                // PHP process ID
+                'Pid::'.getmypid(),
+
+                // PHP OPCache enabled
+                $opcache ? 'OPCache::Enabled' : 'OPCache::Disabled',
+
+                // Laravel app config cache
+                $this->app->configurationIsCached() ? 'Configuration::Cached' : 'Configuration::NotCached',
+
+                // Laravel routes cached
+                $this->app->routesAreCached() ? 'Routes::Cached' : 'Routes::NotCached',
+
+                // Laravel events caches
+                $this->app->eventsAreCached() ? 'Events::Cached' : 'Events::NotCached',
+            ];
         });
     }
 
