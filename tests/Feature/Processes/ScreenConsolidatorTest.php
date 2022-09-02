@@ -23,6 +23,8 @@ class ScreenConsolidatorTest extends TestCase
      */
     public function testExportImportProcess()
     {
+        $this->markTestSkipped('FOUR-6653');
+
         // Create an admin user
         $adminUser = factory(User::class)->create([
             'username' => 'admin',
