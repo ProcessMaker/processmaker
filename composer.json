@@ -65,7 +65,7 @@
     },
     "autoload": {
         "files": [
-            "ProcessMaker/Helper/helper.php"
+            "helpers.php"
         ],
         "classmap": [
             "database/seeds",
