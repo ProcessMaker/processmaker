@@ -152,7 +152,6 @@ return [
         /**
          * ProcessMaker Service Providers
          */
-        ProcessMaker\Providers\SettingServiceProvider::class,
         ProcessMaker\Providers\ProcessMakerServiceProvider::class,
         ProcessMaker\Providers\AuthServiceProvider::class,
         ProcessMaker\Providers\EventServiceProvider::class,
