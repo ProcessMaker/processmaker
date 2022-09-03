@@ -11,11 +11,15 @@ self.addEventListener("message", (e) => {
 });
 
 self.start = function (data) {
+  // Exit if timeout control is not enabled
+  if (!data.enabled) {
+    return;
+  }
   const timestampAtStart = Math.floor(Date.now() / 1000);
   const timeoutAt = timestampAtStart + (data.timeout * 60);
 
   clearInterval(self.interval);
-  self.interval = setInterval(() => {
+  self.interval = setInterval(function () {
     const currentTimestamp = Math.floor(Date.now() / 1000);
     const timeRemaining = timeoutAt - currentTimestamp;
 
