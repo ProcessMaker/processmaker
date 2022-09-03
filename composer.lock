@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "de2be8385eb71f5630d3f07db62e26f6",
+    "content-hash": "0cf65394f8a31dc740dc8ca6872645a7",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -5034,20 +5034,20 @@
         },
         {
             "name": "processmaker/pmql",
-            "version": "1.6.0",
+            "version": "1.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/pmql.git",
-                "reference": "c99e089b142489869989421a280bf668e7042254"
+                "reference": "41ee2234c30b0019a99b5c28cbdd0ca1b66c2664"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/c99e089b142489869989421a280bf668e7042254",
-                "reference": "c99e089b142489869989421a280bf668e7042254",
+                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/41ee2234c30b0019a99b5c28cbdd0ca1b66c2664",
+                "reference": "41ee2234c30b0019a99b5c28cbdd0ca1b66c2664",
                 "shasum": ""
             },
             "require": {
-                "laravel/framework": "^5.7|^6"
+                "laravel/framework": "^5.7|^6|^7"
             },
             "require-dev": {
                 "orchestra/testbench": "^4.8.0",
@@ -5074,9 +5074,9 @@
             "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent",
             "support": {
                 "issues": "https://github.com/ProcessMaker/pmql/issues",
-                "source": "https://github.com/ProcessMaker/pmql/tree/v1.6.0"
+                "source": "https://github.com/ProcessMaker/pmql/tree/v1.6.1"
             },
-            "time": "2022-06-29T01:01:21+00:00"
+            "time": "2022-09-03T00:31:44+00:00"
         },
         {
             "name": "psr/cache",
