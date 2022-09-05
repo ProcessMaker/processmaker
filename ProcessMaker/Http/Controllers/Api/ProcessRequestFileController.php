@@ -85,8 +85,15 @@ class ProcessRequestFileController extends Controller
      */
     public function index(Request $laravel_request, ProcessRequest $request)
     {
-        //Retrieve media from ProcessRequest
-        $media = $request->getMedia();
+        $parentId = $request->parent_request_id;
+        $parentRequest = $request;
+
+        while($parentId != null) {
+            $parentRequest = ProcessRequest::find($parentId);
+            $parentId = $parentRequest->parent_request_id;
+        }
+
+        $media = Media::where('model_id', $parentRequest->id)->get();
 
         //Retrieve input filter variables
         $name = $laravel_request->get('name');
@@ -268,6 +275,14 @@ class ProcessRequestFileController extends Controller
      */
     private function saveUploadedFile(UploadedFile $file, ProcessRequest $processRequest, Request $laravelRequest)
     {
+        $parentId = $processRequest->parent_request_id;
+        $parentRequest = $processRequest;
+
+        while($parentId != null) {
+            $parentRequest = ProcessRequest::find($parentId);
+            $parentId = $parentRequest->parent_request_id;
+        }
+
         $user = pmUser();
         $originalCreatedBy = $user ? $user->id : null;
 
@@ -276,7 +291,7 @@ class ProcessRequestFileController extends Controller
         $parent = (int) $laravelRequest->input('parent', null);
         $multiple = $laravelRequest->input('multiple', null);
 
-        foreach ($processRequest->getMedia() as $mediaItem) {
+        foreach ($parentRequest->getMedia() as $mediaItem) {
             if (
                 $mediaItem->getCustomProperty('data_name') == $data_name &&
                 $mediaItem->getCustomProperty('parent') == $parent &&
@@ -289,7 +304,7 @@ class ProcessRequestFileController extends Controller
         }
 
         // save the file and return any response you need
-        $media = $processRequest
+        $media = $parentRequest
             ->addMedia($file)
             ->withCustomProperties([
                 'data_name' => $data_name,

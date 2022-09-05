@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
+use ProcessMaker\Models\Media;
 use ProcessMaker\Models\ProcessRequest;
 
 class CopyRequestFiles implements ShouldQueue
@@ -36,7 +37,8 @@ class CopyRequestFiles implements ShouldQueue
      */
     public function handle()
     {
-        foreach ($this->from->getMedia() as $fileToCopy) {
+        $media = Media::where('model_id', $this->from->id);
+        foreach ($media as $fileToCopy) {
             $originalCreatedBy = $fileToCopy->getCustomProperty('createdBy');
             foreach ($this->to->getMedia() as $mediaItem) {
                 if ($mediaItem->getCustomProperty('data_name') == $fileToCopy->getCustomProperty('data_name') &&
