@@ -72,7 +72,11 @@
                                                 @{{ $t(item.prefix) }} <strong>@{{item.name }}</strong> @{{ $t(item.suffix) }}
                                                 <i class="assignable-arrow fas fa-long-arrow-alt-right"></i>
                                             </td>
-                                            <td class="assignable-entity">
+                                            <td v-if="item.type === 'webentryCustomRoute'" class="assinable-entity">
+                                              <b-input v-model="item.value" @change="checkForExistingRoute(item)" :class="{'is-invalid': item.error }"></b-input>
+                                              <div class="invalid-feedback" v-if="item.error" role="alert"><div v-html="item.error"></div></div>
+                                            </td>
+                                            <td v-else class="assignable-entity">
                                                 <label for="search-task-text" class="d-none">{{__('Type to search task')}}</label>
                                                 <multiselect id="search-task-text"
                                                              v-model="item.value"
@@ -527,6 +531,7 @@
                 this.onCancel();
               })
               .catch(error => {
+                console.log("error", error);
                 ProcessMaker.alert(this.$t('Unable cannot save the assignments.'), 'danger');
               });
           },
@@ -601,6 +606,21 @@
             }
             ProcessMaker.alert(message, variant);
           },
+          checkForExistingRoute(item) {
+            if (!item.value) {
+              item.error = 'Segment is required';
+              return
+            }
+            item.value = item.value.replace(/\s+/g, '-').toLowerCase();
+
+            ProcessMaker.apiClient.get(`/webentry/custom_route/check/${item.value}`)
+              .then(response => {
+                item.error = null;
+              })
+              .catch(error => {
+                item.error = error.response.data.error;
+              });
+          }
         },
         mounted() {
           let received = false;
