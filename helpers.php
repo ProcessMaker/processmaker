@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Events\MarkArtisanCachesAsInvalid;
 use Laravel\Horizon\Repositories\RedisJobRepository;
 use ProcessMaker\SanitizeHelper;
 
@@ -56,25 +56,7 @@ if (!function_exists('refresh_artisan_caches')) {
      */
     function refresh_artisan_caches(): void
     {
-        Artisan::call('clear-compiled', $options = [
-            '--no-interaction' => true,
-            '--quiet' => true,
-            '--env' => app()->environment(),
-        ]);
-
-        if (app()->routesAreCached()) {
-            Artisan::call('route:cache', $options);
-        }
-
-        if (app()->eventsAreCached()) {
-            Artisan::call('event:cache', $options);
-        }
-
-        if (app()->configurationIsCached()) {
-            Artisan::call('config:cache', $options);
-        } else {
-            Artisan::call('queue:restart', $options);
-        }
+        MarkArtisanCachesAsInvalid::dispatch();
     }
 }
 
