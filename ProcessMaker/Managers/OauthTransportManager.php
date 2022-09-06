@@ -1,21 +1,21 @@
-<?php 
+<?php
 
 namespace ProcessMaker\Managers;
 
-use DateTime;
 use DateInterval;
-use GuzzleHttp\Client;
-use Microsoft\Graph\Graph;
-use Swift_Mime_SimpleMessage;
+use DateTime;
 use Google\Client as GoogleClient;
+use GuzzleHttp\Client;
 use Illuminate\Mail\TransportManager;
+use Microsoft\Graph\Graph;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Packages\Connectors\Email\EmailConfig;
+use Swift_Mime_SimpleMessage;
 
 class OauthTransportManager extends TransportManager
 {
     protected $config = null;
-    
+
     private $token = null;
 
     private $authMethodIndex = null;
@@ -27,7 +27,7 @@ class OauthTransportManager extends TransportManager
     private $fromAddress = null;
 
     public function __construct($config)
-    {   
+    {
         $this->config = (object) $config;
         $this->authMethodIndex = $config->get('mail.auth_method');
         $this->authMethod = EmailConfig::authentication_methods[$this->authMethodIndex];
@@ -37,9 +37,9 @@ class OauthTransportManager extends TransportManager
         $this->setTokenVariable();
     }
 
-    private function setTokenVariable() 
+    private function setTokenVariable()
     {
-        $this->token = (object)[];
+        $this->token = (object) [];
         switch ($this->authMethod) {
             case 'google':
                 $this->token->client_id = $this->config->get('services.gmail.key');
@@ -56,11 +56,9 @@ class OauthTransportManager extends TransportManager
                 $this->token->refresh_token = $this->config->get('services.office365.refresh_token');
                 $this->token->expires_in = $this->config->get('services.office365.expires_in');
                 break;
-            default:
-                break;
         }
     }
-    
+
     protected function createSmtpDriver()
     {
         $transport = parent::createSmtpDriver();
@@ -82,26 +80,23 @@ class OauthTransportManager extends TransportManager
                     ->setUsername($this->fromAddress)
                     ->setPassword($accessToken);
                     break;
-                
-                default:
-                    # code...
-                    break;
             }
         }
+
         return $transport;
     }
 
-    public function checkForExpiredGoogleAccessToken($index) 
+    public function checkForExpiredGoogleAccessToken($index)
     {
-        $index = $index ?  "_{$index}" : '';
+        $index = $index ? "_{$index}" : '';
 
         $client = new GoogleClient();
-        $authConfig = array(
-            "web" => array(
-                'client_id' => $this->token->client_id, 
-                'client_secret' => $this->token->client_secret
-            )
-        );
+        $authConfig = [
+            'web' => [
+                'client_id' => $this->token->client_id,
+                'client_secret' => $this->token->client_secret,
+            ],
+        ];
         $client->setAuthConfig($authConfig);
         $client->setAccessToken((array) $this->token);
         $accessToken = $this->token->access_token;
@@ -116,24 +111,25 @@ class OauthTransportManager extends TransportManager
             $this->updateEnvVar("EMAIL_CONNECTOR_GMAIL_API_ACCESS_TOKEN_EXPIRE_DATE{$index}", $newToken['expires_in']);
             $this->updateEnvVar("EMAIL_CONNECTOR_GMAIL_API_TOKEN_CREATED{$index}", $newToken['created']);
         }
-        
+
         return $accessToken;
     }
 
-    public function checkForExpiredOffice365AccessToken($index) 
+    public function checkForExpiredOffice365AccessToken($index)
     {
         $now = new DateTime();
         $now->format('Y-m-d H:i:s');
         $expireDate = $this->token->expires_in;
         $accessToken = $this->token->access_token;
 
-        if ($now->format('Y-m-d H:i:s') > $expireDate ) {
+        if ($now->format('Y-m-d H:i:s') > $expireDate) {
             $accessToken = $this->refreshAccessToken();
         }
+
         return $accessToken;
     }
 
-    private function refreshAccessToken() 
+    private function refreshAccessToken()
     {
         try {
             $index = $this->emailServerIndex ? "_{$this->emailServerIndex}" : '';
@@ -148,7 +144,7 @@ class OauthTransportManager extends TransportManager
                     'grant_type' => 'refresh_token',
                 ],
             ])->getBody()->getContents());
-            
+
             $now = new DateTime();
             $expireTime = $now->add(new DateInterval('PT' . $newToken->expires_in . 'S'));
             $expireDate = $expireTime->format('Y-m-d H:i:s');
@@ -156,11 +152,11 @@ class OauthTransportManager extends TransportManager
             $this->updateEnvVar("EMAIL_CONNECTOR_OFFICE_365_ACCESS_TOKEN{$index}", $newToken->access_token);
             $this->updateEnvVar("EMAIL_CONNECTOR_OFFICE_365_REFRESH_TOKEN{$index}", $newToken->refresh_token);
             $this->updateEnvVar("EMAIL_CONNECTOR_OFFICE_365_ACCESS_TOKEN_EXPIRE_DATE{$index}", $expireDate);
-        return $newToken->access_token;
 
+            return $newToken->access_token;
         } catch (Throwable $error) {
             throw $error;
-        }   
+        }
     }
 
     private function updateEnvVar($name, $value)
