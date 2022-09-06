@@ -3,10 +3,10 @@
 namespace ProcessMaker\Repositories;
 
 use ArrayAccess;
-use Illuminate\Support\Arr;
-use ProcessMaker\Models\Setting;
 use Illuminate\Contracts\Config\Repository as ConfigContract;
 use Illuminate\Database\ConnectionResolverInterface as Resolver;
+use Illuminate\Support\Arr;
+use ProcessMaker\Models\Setting;
 
 class ConfigRepository implements ArrayAccess, ConfigContract
 {
@@ -30,7 +30,7 @@ class ConfigRepository implements ArrayAccess, ConfigContract
         $this->items = $originConfig->all();
     }
 
-    public function setConnectionResolver(Resolver $resolver): ConfigRepository
+    public function setConnectionResolver(Resolver $resolver): self
     {
         $this->resolver = $resolver;
 
@@ -42,7 +42,7 @@ class ConfigRepository implements ArrayAccess, ConfigContract
      *
      * @return void
      */
-    public function load(bool $force = false): ConfigRepository
+    public function load(bool $force = false): self
     {
         if (!$force && app()->configurationIsCached()) {
             return $this;
