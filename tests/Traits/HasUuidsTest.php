@@ -1,9 +1,10 @@
 <?php
+
 namespace Tests\Traits;
 
-use Tests\TestCase;
 use ProcessMaker\Models\Screen;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class HasUuidsTest extends TestCase
 {

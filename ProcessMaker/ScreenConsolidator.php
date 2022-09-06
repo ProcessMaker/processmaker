@@ -248,7 +248,6 @@ class ScreenConsolidator
     private function hiddenNavButtons($items)
     {
         foreach ($items as $key => $item) {
-
             //If the element has containers
             if (is_array($item) && !array_key_exists('config', $item)) {
                 $items[$key] = $this->hiddenNavButtons($item);

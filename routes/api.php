@@ -9,7 +9,6 @@ Route::group(
         'namespace' => 'ProcessMaker\Http\Controllers\Api',
         'as' => 'api.',
     ], function () {
-
     // Users
         Route::get('users', 'UserController@index')->name('users.index'); //Permissions handled in the controller
         Route::get('users/{user}', 'UserController@show')->name('users.show'); //Permissions handled in the controller
