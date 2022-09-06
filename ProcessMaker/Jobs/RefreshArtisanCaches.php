@@ -3,10 +3,10 @@
 namespace ProcessMaker\Jobs;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\Artisan;
 
 class RefreshArtisanCaches implements ShouldQueue
 {

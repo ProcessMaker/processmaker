@@ -5,10 +5,10 @@ namespace ProcessMaker\Providers;
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Database\ConnectionResolverInterface as Resolver;
 use Illuminate\Support\ServiceProvider;
-use ProcessMaker\Models\Setting;
 use ProcessMaker\Events\MarkArtisanCachesAsInvalid;
 use ProcessMaker\Jobs\RefreshArtisanCaches;
 use ProcessMaker\Jobs\TerminateHorizon;
+use ProcessMaker\Models\Setting;
 use ProcessMaker\Repositories\ConfigRepository;
 
 class SettingServiceProvider extends ServiceProvider
@@ -27,8 +27,8 @@ class SettingServiceProvider extends ServiceProvider
      * @var array
      */
     public static $listenFor = [
-        'eloquent.saved: '.Setting::class,
-        'eloquent.deleted: '.Setting::class,
+        'eloquent.saved: ' . Setting::class,
+        'eloquent.deleted: ' . Setting::class,
         MarkArtisanCachesAsInvalid::class,
     ];
 

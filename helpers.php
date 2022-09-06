@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Auth;
-use ProcessMaker\Events\MarkArtisanCachesAsInvalid;
 use Laravel\Horizon\Repositories\RedisJobRepository;
+use ProcessMaker\Events\MarkArtisanCachesAsInvalid;
 use ProcessMaker\SanitizeHelper;
 
 if (!function_exists('job_pending')) {
