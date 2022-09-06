@@ -15,6 +15,7 @@ class SoapServiceCaller implements WebServiceCallerInterface
         }
         $paramsAsArray = json_decode(json_encode($request['parameters']), true);
         $response = $client->callMethod($request['operation']['value'], ['body' => $paramsAsArray]);
+
         return $response;
     }
 }

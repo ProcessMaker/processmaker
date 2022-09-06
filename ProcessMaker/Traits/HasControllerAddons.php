@@ -21,9 +21,9 @@ trait HasControllerAddons
         }
 
         $addons = [];
-        foreach(static::$addons as $addon) {
+        foreach (static::$addons as $addon) {
             // The addon must have the requested method and must be associated to the current controller
-            if($addon['method'] === $method && $addon['scope'] === get_class($this)) {
+            if ($addon['method'] === $method && $addon['scope'] === get_class($this)) {
                 if (isset($addon['data']) && is_callable($addon['data'])) {
                     $data = call_user_func($addon['data'], $data);
                 }
@@ -34,6 +34,7 @@ trait HasControllerAddons
                 $addons[] = $addon;
             }
         }
+
         return $addons;
     }
 

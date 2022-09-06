@@ -1,13 +1,14 @@
 <?php
+
 namespace Tests\Resources;
 
-use Tests\TestCase;
-use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Jobs\ImportProcess;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
-class ScreenTest extends TestCase {
-
+class ScreenTest extends TestCase
+{
     use RequestHelper;
 
     public function testScreens()

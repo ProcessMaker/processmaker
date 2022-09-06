@@ -29,12 +29,13 @@ class SoapRequestBuilder implements WebServiceRequestBuilderInterface
                     'operation' => $config['operation'],
                     'parameters' => $config['parameters'],
                 ];
-            break;
+                break;
             case 'certificate':
-            break;
+                break;
             default:
                 throw new Exception('Invalid authentication method: ' . $config['authentication_method']);
         }
+
         return $parameters;
     }
 }

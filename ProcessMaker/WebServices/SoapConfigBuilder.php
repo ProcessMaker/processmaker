@@ -53,6 +53,7 @@ class SoapConfigBuilder implements WebServiceConfigBuilderInterface
         if (!empty($config['isTest']) && $config['isTest'] === true) {
             $config['parameters'] = $data;
         }
+
         return $config;
     }
 }

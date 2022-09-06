@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature;
 
 use GuzzleHttp\Client;
@@ -11,10 +12,12 @@ use Tests\TestCase;
 class MakeHttpRequestTest extends TestCase
 {
     // Helper function to call private methods in tests
-    private function callMethod($obj, $name, array $args) {
+    private function callMethod($obj, $name, array $args)
+    {
         $class = new \ReflectionClass($obj);
         $method = $class->getMethod($name);
         $method->setAccessible(true);
+
         return $method->invokeArgs($obj, $args);
     }
 
@@ -26,31 +29,31 @@ class MakeHttpRequestTest extends TestCase
         // Prepare the object that will use the trait
         $testStub = $this->getObjectForTrait(MakeHttpRequests::class);
         $testStub->endpoints = json_decode('{"create":{"url":"https://jsonplaceholder.typicode.com/users/{{userIdParam}}","body":"{\n    \"name\":\"{{nameParam}}\",\n    \"age\":\"{{ageParam}}\"\n}","view":false,"method":"PUT","params":[{"id":0,"key":"queryStringParam","value":null,"required":false}],"headers":[{"id":0,"key":"headerParam","value":null,"required":false}],"purpose":"create","updated":"2022-05-30 12:38:48","testData":"{\n    \"nameParam\":\"Dante\",\n    \"ageParam\": 12,\n    \"userIdParam\": 4\n}","body_type":"json","outboundConfig":[]}}', true);
-        $testStub->credentials = array('verify_certificate' => true);
+        $testStub->credentials = ['verify_certificate' => true];
         $testStub->authtype = 'NONE';
 
         // This is the configuration that is created when configuring a connector in modeler
-        $endpointConfig = array(
+        $endpointConfig = [
             'dataSource' => 1,
             'endpoint' => 'create',
             'dataMapping' => [
-                [ 'value' => 'id', 'key' => 'userId', 'format' => 'dotNotation', ]
+                ['value' => 'id', 'key' => 'userId', 'format' => 'dotNotation'],
             ],
             'outboundConfig' => [
-                [ 'value' => '{{nameValue}}', 'type' => 'BODY', 'key' => 'nameParam', 'format' => 'mustache', ],
-                [ 'value' => '{{ageValue}}', 'type' => 'BODY', 'key' => 'ageParam', 'format' => 'mustache', ],
-                [ 'value' => '{{queryStringValue}}', 'type' => 'PARAM', 'key' => 'queryStringParam', 'format' => 'mustache', ],
-                [ 'value' => '{{userIdValue}}', 'type' => 'PARAM', 'key' => 'userIdParam', 'format' => 'mustache', ],
-                [ 'value' => '{{headerValue}}', 'type' => 'HEADER', 'key' => 'headerParam', 'format' => 'mustache', ],
+                ['value' => '{{nameValue}}', 'type' => 'BODY', 'key' => 'nameParam', 'format' => 'mustache'],
+                ['value' => '{{ageValue}}', 'type' => 'BODY', 'key' => 'ageParam', 'format' => 'mustache'],
+                ['value' => '{{queryStringValue}}', 'type' => 'PARAM', 'key' => 'queryStringParam', 'format' => 'mustache'],
+                ['value' => '{{userIdValue}}', 'type' => 'PARAM', 'key' => 'userIdParam', 'format' => 'mustache'],
+                ['value' => '{{headerValue}}', 'type' => 'HEADER', 'key' => 'headerParam', 'format' => 'mustache'],
             ],
-        );
+        ];
 
         $requestData = [
-            "nameValue" => 'testName',
-            "ageValue"=> "testAge",
-            "headerValue" => "testHeader",
-            "queryStringValue" => "testQueryString",
-            "userIdValue" => 11
+            'nameValue' => 'testName',
+            'ageValue'=> 'testAge',
+            'headerValue' => 'testHeader',
+            'queryStringValue' => 'testQueryString',
+            'userIdValue' => 11,
         ];
 
         $request = $this->callMethod($testStub,
@@ -77,33 +80,33 @@ class MakeHttpRequestTest extends TestCase
         $testStub = $this->getObjectForTrait(MakeHttpRequests::class);
         // Parameter endpoint url without protocol (without https://, etc.)
         $testStub->endpoints = json_decode('{"create":{"url":"/users/{{userIdParam}}?queryStringParam2={{queryStringValue2}}","body":"{\n    \"name\":\"{{nameParam}}\",\n    \"age\":\"{{ageParam}}\"\n}","view":false,"method":"PUT","params":[{"id":0,"key":"queryStringParam","value":null,"required":false}],"headers":[{"id":0,"key":"headerParam","value":null,"required":false}],"purpose":"create","updated":"2022-05-30 12:38:48","testData":"{\n    \"nameParam\":\"Dante\",\n    \"ageParam\": 12,\n    \"userIdParam\": 4\n}","body_type":"json","outboundConfig":[]}}', true);
-        $testStub->credentials = array('verify_certificate' => true);
+        $testStub->credentials = ['verify_certificate' => true];
         $testStub->authtype = 'NONE';
 
         // This is the configuration that is created when configuring a connector in modeler
-        $endpointConfig = array(
+        $endpointConfig = [
             'dataSource' => 1,
             'endpoint' => 'create',
             'dataMapping' => [
-                [ 'value' => 'id', 'key' => 'userId', 'format' => 'dotNotation', ]
+                ['value' => 'id', 'key' => 'userId', 'format' => 'dotNotation'],
             ],
             'outboundConfig' => [
-                [ 'value' => '{{nameValue}}', 'type' => 'BODY', 'key' => 'nameParam', 'format' => 'mustache', ],
+                ['value' => '{{nameValue}}', 'type' => 'BODY', 'key' => 'nameParam', 'format' => 'mustache'],
                 // Body Parameter  without mustache expression (hardcoded 88)
-                [ 'value' => '88', 'type' => 'BODY', 'key' => 'ageParam', 'format' => 'mustache', ],
-                [ 'value' => '{{queryStringValue}}', 'type' => 'PARAM', 'key' => 'queryStringParam', 'format' => 'mustache', ],
-                [ 'value' => '{{userIdValue}}', 'type' => 'PARAM', 'key' => 'userIdParam', 'format' => 'mustache', ],
-                [ 'value' => '{{headerValue}}', 'type' => 'HEADER', 'key' => 'headerParam', 'format' => 'mustache', ],
+                ['value' => '88', 'type' => 'BODY', 'key' => 'ageParam', 'format' => 'mustache'],
+                ['value' => '{{queryStringValue}}', 'type' => 'PARAM', 'key' => 'queryStringParam', 'format' => 'mustache'],
+                ['value' => '{{userIdValue}}', 'type' => 'PARAM', 'key' => 'userIdParam', 'format' => 'mustache'],
+                ['value' => '{{headerValue}}', 'type' => 'HEADER', 'key' => 'headerParam', 'format' => 'mustache'],
             ],
-        );
+        ];
 
         $requestData = [
-            "nameValue" => 'testName',
-            "ageValue"=> "testAge",
-            "headerValue" => "testHeader",
-            "queryStringValue" => "testQueryString",
-            "queryStringValue2" => "testQueryString2",
-            "userIdValue" => 11
+            'nameValue' => 'testName',
+            'ageValue'=> 'testAge',
+            'headerValue' => 'testHeader',
+            'queryStringValue' => 'testQueryString',
+            'queryStringValue2' => 'testQueryString2',
+            'userIdValue' => 11,
         ];
 
         $request = $this->callMethod($testStub,
@@ -129,32 +132,32 @@ class MakeHttpRequestTest extends TestCase
         // Prepare the object that will use the trait
         $testStub = $this->getObjectForTrait(MakeHttpRequests::class);
         $testStub->endpoints = json_decode('{"create":{"url":"https://jsonplaceholder.typicode.com/users/{{userIdParam}}","body":"{\n    \"name\":\"{{nameParam}}\",\n    \"age\":\"{{ageParam}}\"\n}","view":false,"method":"PUT","params":[{"id":0,"key":"queryStringParam","value":null,"required":false}],"headers":[{"id":0,"key":"headerParam","value":null,"required":false}],"purpose":"create","updated":"2022-05-30 12:38:48","testData":"{\n    \"nameParam\":\"Dante\",\n    \"ageParam\": 12,\n    \"userIdParam\": 4\n}","body_type":"json","outboundConfig":[]}}', true);
-        $testStub->credentials = array('verify_certificate' => true);
+        $testStub->credentials = ['verify_certificate' => true];
         $testStub->authtype = 'NONE';
 
         // This is the configuration that is created when configuring a connector in modeler
-        $endpointConfig = array(
+        $endpointConfig = [
             'dataSource' => 1,
             'endpoint' => 'create',
             'dataMapping' => [
-                [ 'value' => 'id', 'key' => 'userId', 'format' => 'dotNotation', ]
+                ['value' => 'id', 'key' => 'userId', 'format' => 'dotNotation'],
             ],
             'outboundConfig' => [
-                [ 'value' => '{{nameValue}}', 'type' => 'BODY', 'key' => 'nameParam', 'format' => 'mustache', ],
-                [ 'value' => '88', 'type' => 'BODY', 'key' => 'ageParam', 'format' => 'mustache', ],
-                [ 'value' => '{{queryStringValue}}', 'type' => 'PARAM', 'key' => 'queryStringParam', 'format' => 'mustache', ],
-                [ 'value' => '{{userIdValue}}', 'type' => 'PARAM', 'key' => 'userIdParam', 'format' => 'mustache', ],
-                [ 'value' => '{{headerValue}}', 'type' => 'HEADER', 'key' => 'headerParam', 'format' => 'mustache', ],
+                ['value' => '{{nameValue}}', 'type' => 'BODY', 'key' => 'nameParam', 'format' => 'mustache'],
+                ['value' => '88', 'type' => 'BODY', 'key' => 'ageParam', 'format' => 'mustache'],
+                ['value' => '{{queryStringValue}}', 'type' => 'PARAM', 'key' => 'queryStringParam', 'format' => 'mustache'],
+                ['value' => '{{userIdValue}}', 'type' => 'PARAM', 'key' => 'userIdParam', 'format' => 'mustache'],
+                ['value' => '{{headerValue}}', 'type' => 'HEADER', 'key' => 'headerParam', 'format' => 'mustache'],
             ],
-        );
+        ];
 
         $requestData = [
-            "nameValue" => 'testName',
-            "ageValue"=> "testAge",
-            "headerValue" => "testHeader",
-            "queryStringValue" => "testQueryString",
-            "queryStringValue2" => "testQueryString2",
-            "userIdValue" => 11
+            'nameValue' => 'testName',
+            'ageValue'=> 'testAge',
+            'headerValue' => 'testHeader',
+            'queryStringValue' => 'testQueryString',
+            'queryStringValue2' => 'testQueryString2',
+            'userIdValue' => 11,
         ];
 
         // Verify that the endpoint maps an attribute
@@ -168,7 +171,7 @@ class MakeHttpRequestTest extends TestCase
         // Verify that the endpoint maps all the response when value is empty (in connector config)
         $endpointConfig['dataMapping'] = [
             //value is empty so all the response should be mapped
-            [ 'value' => '', 'key' => 'allData', 'format' => 'dotNotation', ]
+            ['value' => '', 'key' => 'allData', 'format' => 'dotNotation'],
         ];
         $stream = \GuzzleHttp\Psr7\stream_for('{"id" : "11", "name": "testName"}');
         $response = new \GuzzleHttp\Psr7\Response(200, ['Content-Type' => 'application/json'], $stream);
@@ -177,11 +180,10 @@ class MakeHttpRequestTest extends TestCase
             [$response, $requestData, $endpointConfig]);
         $this->assertEquals(['allData' =>['id' => 11, 'name' => 'testName']], $mapped);
 
-
         // Verify that the endpoint maps substructures
         $endpointConfig['dataMapping'] = [
-            [ 'value' => 'data.user', 'key' => 'user', 'format' => 'dotNotation'],
-            [ 'value' => 'data.code', 'key' => 'responseCode', 'format' => 'dotNotation']
+            ['value' => 'data.user', 'key' => 'user', 'format' => 'dotNotation'],
+            ['value' => 'data.code', 'key' => 'responseCode', 'format' => 'dotNotation'],
         ];
         $stream = \GuzzleHttp\Psr7\stream_for('{"data": {"user": {"id" : "11", "name": "testName"}, "code":99}}');
         $response = new \GuzzleHttp\Psr7\Response(200, ['Content-Type' => 'application/json'], $stream);
@@ -197,30 +199,30 @@ class MakeHttpRequestTest extends TestCase
         $testStub = $this->getObjectForTrait(MakeHttpRequests::class);
         $testStub->endpoints = json_decode('{"create":{"url":"https://fake.server.com/users/{{userIdParam}}","body":"{\n    \"name\":\"{{nameParam}}\",\n    \"age\":\"{{ageParam}}\"\n}","view":false,"method":"PUT","params":[{"id":0,"key":"queryStringParam","value":null,"required":false}],"headers":[{"id":0,"key":"headerParam","value":null,"required":false}],"purpose":"create","updated":"2022-05-30 12:38:48","testData":"{\n    \"nameParam\":\"Dante\",\n    \"ageParam\": 12,\n    \"userIdParam\": 4\n}","body_type":"json","outboundConfig":[]}}', true);
         $testStub->authtype = 'BASIC';
-        $testStub->credentials = array('verify_certificate' => false, 'username' => 'test', 'password' => 'test');
+        $testStub->credentials = ['verify_certificate' => false, 'username' => 'test', 'password' => 'test'];
 
         // This is the configuration that is created when configuring a connector in modeler
-        $endpointConfig = array(
+        $endpointConfig = [
             'dataSource' => 1,
             'endpoint' => 'create',
             'dataMapping' => [
-                [ 'value' => 'id', 'key' => 'userId', 'format' => 'dotNotation', ]
+                ['value' => 'id', 'key' => 'userId', 'format' => 'dotNotation'],
             ],
             'outboundConfig' => [
-                [ 'value' => '{{nameValue}}', 'type' => 'BODY', 'key' => 'nameParam', 'format' => 'mustache', ],
-                [ 'value' => '{{ageValue}}', 'type' => 'BODY', 'key' => 'ageParam', 'format' => 'mustache', ],
-                [ 'value' => '{{queryStringValue}}', 'type' => 'PARAM', 'key' => 'queryStringParam', 'format' => 'mustache', ],
-                [ 'value' => '{{userIdValue}}', 'type' => 'PARAM', 'key' => 'userIdParam', 'format' => 'mustache', ],
-                [ 'value' => '{{headerValue}}', 'type' => 'HEADER', 'key' => 'headerParam', 'format' => 'mustache', ],
+                ['value' => '{{nameValue}}', 'type' => 'BODY', 'key' => 'nameParam', 'format' => 'mustache'],
+                ['value' => '{{ageValue}}', 'type' => 'BODY', 'key' => 'ageParam', 'format' => 'mustache'],
+                ['value' => '{{queryStringValue}}', 'type' => 'PARAM', 'key' => 'queryStringParam', 'format' => 'mustache'],
+                ['value' => '{{userIdValue}}', 'type' => 'PARAM', 'key' => 'userIdParam', 'format' => 'mustache'],
+                ['value' => '{{headerValue}}', 'type' => 'HEADER', 'key' => 'headerParam', 'format' => 'mustache'],
             ],
-        );
+        ];
 
         $requestData = [
-            "nameValue" => 'testName',
-            "ageValue"=> "testAge",
-            "headerValue" => "testHeader",
-            "queryStringValue" => "testQueryString",
-            "userIdValue" => 11
+            'nameValue' => 'testName',
+            'ageValue'=> 'testAge',
+            'headerValue' => 'testHeader',
+            'queryStringValue' => 'testQueryString',
+            'userIdValue' => 11,
         ];
 
         $request = $this->callMethod($testStub,
@@ -236,7 +238,7 @@ class MakeHttpRequestTest extends TestCase
         $handlerStack = HandlerStack::create($mock);
         $testStub->client = new Client(['handler' => $handlerStack]);
 
-        $response = $this->callMethod($testStub,'call', [$request]);
+        $response = $this->callMethod($testStub, 'call', [$request]);
 
         //$body = $response->getBody()->getContents();
         $body = $response['response'];
@@ -250,30 +252,30 @@ class MakeHttpRequestTest extends TestCase
         $testStub = $this->getObjectForTrait(MakeHttpRequests::class);
         $testStub->endpoints = json_decode('{"create":{"url":"https://fake.server.com/users/{{userIdParam}}","body":"{\n    \"name\":\"{{nameParam}}\",\n    \"age\":\"{{ageParam}}\"\n}","view":false,"method":"PUT","params":[{"id":0,"key":"queryStringParam","value":null,"required":false}],"headers":[{"id":0,"key":"headerParam","value":null,"required":false}],"purpose":"create","updated":"2022-05-30 12:38:48","testData":"{\n    \"nameParam\":\"Dante\",\n    \"ageParam\": 12,\n    \"userIdParam\": 4\n}","body_type":"json","outboundConfig":[]}}', true);
         $testStub->authtype = 'BASIC';
-        $testStub->credentials = array('verify_certificate' => false, 'username' => 'test', 'password' => 'test');
+        $testStub->credentials = ['verify_certificate' => false, 'username' => 'test', 'password' => 'test'];
 
         // This is the configuration that is created when configuring a connector in modeler
-        $connectorConfig = array(
+        $connectorConfig = [
             'dataSource' => 1,
             'endpoint' => 'create',
             'dataMapping' => [
-                [ 'value' => 'remoteId', 'key' => 'pmRequestId', 'format' => 'dotNotation', ]
+                ['value' => 'remoteId', 'key' => 'pmRequestId', 'format' => 'dotNotation'],
             ],
             'outboundConfig' => [
-                [ 'value' => '{{reqNameValue}}', 'type' => 'BODY', 'key' => 'nameParam', 'format' => 'mustache', ],
-                [ 'value' => '{{reqAgeValue}}', 'type' => 'BODY', 'key' => 'ageParam', 'format' => 'mustache', ],
-                [ 'value' => '{{reqQueryStringValue}}', 'type' => 'PARAM', 'key' => 'queryStringParam', 'format' => 'mustache', ],
-                [ 'value' => '{{reqUserIdValue}}', 'type' => 'PARAM', 'key' => 'userIdParam', 'format' => 'mustache', ],
-                [ 'value' => '{{reqHeaderValue}}', 'type' => 'HEADER', 'key' => 'headerParam', 'format' => 'mustache', ],
+                ['value' => '{{reqNameValue}}', 'type' => 'BODY', 'key' => 'nameParam', 'format' => 'mustache'],
+                ['value' => '{{reqAgeValue}}', 'type' => 'BODY', 'key' => 'ageParam', 'format' => 'mustache'],
+                ['value' => '{{reqQueryStringValue}}', 'type' => 'PARAM', 'key' => 'queryStringParam', 'format' => 'mustache'],
+                ['value' => '{{reqUserIdValue}}', 'type' => 'PARAM', 'key' => 'userIdParam', 'format' => 'mustache'],
+                ['value' => '{{reqHeaderValue}}', 'type' => 'HEADER', 'key' => 'headerParam', 'format' => 'mustache'],
             ],
-        );
+        ];
 
         $requestData = [
-            "reqNameValue" => 'testName',
-            "reqAgeValue"=> "testAge",
-            "reqHeaderValue" => "testHeader",
-            "reqQueryStringValue" => "testQueryString",
-            "reqUserIdValue" => 11
+            'reqNameValue' => 'testName',
+            'reqAgeValue'=> 'testAge',
+            'reqHeaderValue' => 'testHeader',
+            'reqQueryStringValue' => 'testQueryString',
+            'reqUserIdValue' => 11,
         ];
 
         $mock = new MockHandler([
@@ -288,9 +290,8 @@ class MakeHttpRequestTest extends TestCase
 //
 //        [$method, $url, $headers, $body, $bodyType] = $request;
 
-
         $result = $testStub->request($requestData, $connectorConfig);
-        $this->assertEquals(["pmRequestId" => 11], $result);
+        $this->assertEquals(['pmRequestId' => 11], $result);
 
         // Using BEARER Authentication
         $mock = new MockHandler([
@@ -299,9 +300,9 @@ class MakeHttpRequestTest extends TestCase
         $handlerStack = HandlerStack::create($mock);
         $testStub->client = new Client(['handler' => $handlerStack]);
         $testStub->authtype = 'OAUTH2_BEARER';
-        $testStub->credentials = array('verify_certificate' => false, 'token' => 'test');
+        $testStub->credentials = ['verify_certificate' => false, 'token' => 'test'];
         $result = $testStub->request($requestData, $connectorConfig);
-        $this->assertEquals(["pmRequestId" => 11], $result);
+        $this->assertEquals(['pmRequestId' => 11], $result);
 
         // Using OAUTH2_PASSWORD Authentication
         $mock = new MockHandler([
@@ -313,7 +314,7 @@ class MakeHttpRequestTest extends TestCase
         $handlerStack = HandlerStack::create($mock);
         $testStub->client = new Client(['handler' => $handlerStack]);
         $testStub->authtype = 'OAUTH2_PASSWORD';
-        $testStub->credentials = array(
+        $testStub->credentials = [
             'verify_certificate' => false,
             'token' => 'test',
             'username' => 'testUser',
@@ -322,9 +323,9 @@ class MakeHttpRequestTest extends TestCase
             'client_id' => 'testCliendId',
             'client_secret' => 'testSecret',
             'url' => 'http://www.test.com',
-        );
+        ];
         $result = $testStub->request($requestData, $connectorConfig);
-        $this->assertEquals(["pmRequestId" => 11], $result);
+        $this->assertEquals(['pmRequestId' => 11], $result);
     }
 
     public function testRequestCallsWhenEndPointReturnErrors()
@@ -334,28 +335,29 @@ class MakeHttpRequestTest extends TestCase
         $testStub->endpoints = json_decode('{"create":{"url":"https://fake.server.com/users/{{userIdParam}}","body":"{\n    \"name\":\"{{nameParam}}\",\n    \"age\":\"{{ageParam}}\"\n}","view":false,"method":"PUT","params":[{"id":0,"key":"queryStringParam","value":null,"required":false}],"headers":[{"id":0,"key":"headerParam","value":null,"required":false}],"purpose":"create","updated":"2022-05-30 12:38:48","testData":"{\n    \"nameParam\":\"Dante\",\n    \"ageParam\": 12,\n    \"userIdParam\": 4\n}","body_type":"json","outboundConfig":[]}}', true);
         $testStub->authtype = 'NONE';
         // This is the configuration that is created when configuring a connector in modeler
-        $endpointConfig = array(
+        $endpointConfig = [
             'dataSource' => 1,
             'endpoint' => 'create',
             'dataMapping' => [
-                [ 'value' => 'id', 'key' => 'userId', 'format' => 'dotNotation', ]
+                ['value' => 'id', 'key' => 'userId', 'format' => 'dotNotation'],
             ],
             'outboundConfig' => [
-                [ 'value' => '{{nameValue}}', 'type' => 'BODY', 'key' => 'nameParam', 'format' => 'mustache', ],
-                [ 'value' => '{{ageValue}}', 'type' => 'BODY', 'key' => 'ageParam', 'format' => 'mustache', ],
-                [ 'value' => '{{queryStringValue}}', 'type' => 'PARAM', 'key' => 'queryStringParam', 'format' => 'mustache', ],
-                [ 'value' => '{{userIdValue}}', 'type' => 'PARAM', 'key' => 'userIdParam', 'format' => 'mustache', ],
-                [ 'value' => '{{headerValue}}', 'type' => 'HEADER', 'key' => 'headerParam', 'format' => 'mustache', ],
+                ['value' => '{{nameValue}}', 'type' => 'BODY', 'key' => 'nameParam', 'format' => 'mustache'],
+                ['value' => '{{ageValue}}', 'type' => 'BODY', 'key' => 'ageParam', 'format' => 'mustache'],
+                ['value' => '{{queryStringValue}}', 'type' => 'PARAM', 'key' => 'queryStringParam', 'format' => 'mustache'],
+                ['value' => '{{userIdValue}}', 'type' => 'PARAM', 'key' => 'userIdParam', 'format' => 'mustache'],
+                ['value' => '{{headerValue}}', 'type' => 'HEADER', 'key' => 'headerParam', 'format' => 'mustache'],
             ],
-        );
+        ];
 
         $requestData = [
-            "nameValue" => 'testName',
-            "ageValue"=> "testAge",
-            "headerValue" => "testHeader",
-            "queryStringValue" => "testQueryString",
-            "userIdValue" => 11
-        ];   $testStub->credentials = array('verify_certificate' => false);
+            'nameValue' => 'testName',
+            'ageValue'=> 'testAge',
+            'headerValue' => 'testHeader',
+            'queryStringValue' => 'testQueryString',
+            'userIdValue' => 11,
+        ];
+        $testStub->credentials = ['verify_certificate' => false];
 
         // With no json body content
         $mock = new MockHandler([

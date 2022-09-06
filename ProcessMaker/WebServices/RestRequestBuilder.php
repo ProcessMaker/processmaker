@@ -12,7 +12,6 @@ use ProcessMaker\Helpers\DataTypeHelper;
 
 class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
 {
-
     private $authTypes = [
         'BASIC' => 'basicAuthorization',
         'OAUTH2_BEARER' => 'bearerAuthorization',
@@ -30,7 +29,6 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
     {
         $this->client = $client;
     }
-
 
     public function build($config, $requestData) : array
     {
@@ -50,6 +48,7 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
 
         $requestParts = compact('method', 'url', 'headers', 'body', 'bodyType', 'options');
         $request = $this->addAuthorizationHeaders($config, $requestParts);
+
         return $request;
     }
 
@@ -70,7 +69,7 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
 
         $url = $endpoint['url'];
         // If url does not include the protocol and server name complete it with the local server
-        if (substr($url, 0,1) === '/') {
+        if (substr($url, 0, 1) === '/') {
             $url = url($url);
         }
 
@@ -105,6 +104,7 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
 
         $parsedUrl['query'] = http_build_query($query);
         $url = $this->unparseUrl($parsedUrl);
+
         return $url;
     }
 
@@ -130,6 +130,7 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
         foreach ($parts as $name => $value) {
             $parts[$name] = urldecode($value);
         }
+
         return $parts;
     }
 
@@ -141,15 +142,16 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
      */
     private function unparseUrl(array $parsed_url)
     {
-        $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
-        $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
-        $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
-        $user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
-        $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass']  : '';
-        $pass     = ($user || $pass) ? "$pass@" : '';
-        $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
-        $query    = !empty($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+        $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+        $host = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+        $port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+        $user = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+        $pass = isset($parsed_url['pass']) ? ':' . $parsed_url['pass'] : '';
+        $pass = ($user || $pass) ? "$pass@" : '';
+        $path = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+        $query = !empty($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
         $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
+
         return "$scheme$user$pass$host$port$path$query$fragment";
     }
 
@@ -168,9 +170,9 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
                     return $this->passwordAuthorization(...array_values($requestParts));
             }
         }
+
         return $requestParts;
     }
-
 
     /**
      * Add basic authorization to header
@@ -188,6 +190,7 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
         if (isset($this->config['credentials']) && is_array($this->config['credentials'])) {
             $headers['Authorization'] = 'Basic ' . base64_encode($this->config['credentials']['username'] . ':' . $this->config['credentials']['password']);
         }
+
         return compact('method', 'url', 'headers', 'body', 'bodyType', 'options');
     }
 
@@ -207,6 +210,7 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
         if (isset($this->config['credentials']) && is_array($this->config['credentials'])) {
             $headers['Authorization'] = 'Bearer ' . $this->config['credentials']['token'];
         }
+
         return compact('method', 'url', 'headers', 'body', 'bodyType', 'options');
     }
 
@@ -236,6 +240,7 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
             $token = $this->response($this->call('POST', $this->config['credentials']['url'], ['Accept' => 'application/json'], json_encode($config), 'form-data'), [], ['dataMapping' => []], new Mustache_Engine());
             $headers['Authorization'] = 'Bearer ' . $token['response']['access_token'];
         }
+
         return compact('method', 'url', 'headers', 'body', 'bodyType', 'options');
     }
 
@@ -255,7 +260,7 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
         $status = $response->getStatusCode();
         $bodyContent = $response->getBody()->getContents();
         if (!DataTypeHelper::isJson($bodyContent)) {
-            return ["response" => $bodyContent, "status" => $status];
+            return ['response' => $bodyContent, 'status' => $status];
         }
 
         switch (true) {
@@ -284,6 +289,7 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
                 Arr::set($mapped, $map['key'], $value);
             }
         }
+
         return $mapped;
     }
 
@@ -296,6 +302,7 @@ class RestRequestBuilder implements Contracts\WebServiceRequestBuilderInterface
             $options['form_params'] = json_decode($body, true);
         }
         $request = new Request($method, $url, $headers, $body);
+
         return $client->send($request, $options);
     }
 }

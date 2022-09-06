@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class AddExecutorToScriptsTable extends Migration
 {
@@ -16,7 +16,7 @@ class AddExecutorToScriptsTable extends Migration
         Schema::table('scripts', function (Blueprint $table) {
             $table->unsignedInteger('script_executor_id')->nullable();
         });
-        
+
         Schema::table('script_versions', function (Blueprint $table) {
             $table->unsignedInteger('script_executor_id')->nullable();
         });
@@ -32,7 +32,7 @@ class AddExecutorToScriptsTable extends Migration
         Schema::table('scripts', function (Blueprint $table) {
             $table->dropColumn('script_executor_id');
         });
-        
+
         Schema::table('script_versions', function (Blueprint $table) {
             $table->dropColumn('script_executor_id');
         });

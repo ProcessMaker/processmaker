@@ -23,25 +23,25 @@ interface SoapClientInterface
 
     /**
      * Get a list of operations available
-     * 
+     *
      * @param string $serviceName If empty, all operations will be returned
-     * 
+     *
      * @return array
      */
     public function getOperations(string $serviceName = ''): array;
 
     /**
      * Get a list of types available
-     * 
+     *
      * @return array
      */
     public function getTypes(): array;
 
     /**
      * Select a service port
-     * 
+     *
      * @param string $portName
-     * 
+     *
      * @return void
      */
     public function selectServicePort(string $portName);

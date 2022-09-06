@@ -35,7 +35,7 @@ class ServiceTaskQueueTest extends TestCase
         $this->startProcess($process, $startEvent);
 
         Bus::assertDispatched(RunServiceTask::class, function (RunServiceTask $job) {
-            return $job->queue === "custom-queue";
+            return $job->queue === 'custom-queue';
         });
     }
 
@@ -56,7 +56,7 @@ class ServiceTaskQueueTest extends TestCase
         $this->startProcess($process, $startEvent);
 
         Bus::assertDispatched(RunServiceTask::class, function (RunServiceTask $job) {
-            return $job->queue === "bpmn";
+            return $job->queue === 'bpmn';
         });
     }
 }

@@ -2,12 +2,11 @@
 
 namespace ProcessMaker\WebServices;
 
-use ProcessMaker\WebServices\Contracts\WebServiceResponseMapperInterface;
 use ProcessMaker\Models\FormalExpression;
+use ProcessMaker\WebServices\Contracts\WebServiceResponseMapperInterface;
 
 class SoapResponseMapper implements WebServiceResponseMapperInterface
 {
-
     /**
      * Map the response from the WebService to request data
      *
@@ -32,12 +31,11 @@ class SoapResponseMapper implements WebServiceResponseMapperInterface
         $mappings = $config['dataMapping'] ?? [];
 
         $result = [];
-        foreach($mappings as $mapping) {
+        foreach ($mappings as $mapping) {
             if (!empty($mapping['value'])) {
-                $result[$mapping['key']] = ExpressionEvaluator::evaluate('feel', $mapping['value'], $responseArray) ;
-            }
-            else {
-                $result[$mapping['key']] = $responseArray ;
+                $result[$mapping['key']] = ExpressionEvaluator::evaluate('feel', $mapping['value'], $responseArray);
+            } else {
+                $result[$mapping['key']] = $responseArray;
             }
         }
 

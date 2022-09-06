@@ -20,10 +20,15 @@ class TestScript implements ShouldQueue
         SerializesModels;
 
     protected $script;
+
     protected $current_user;
+
     protected $code;
+
     protected $data;
+
     protected $configuration;
+
     protected $nonce;
 
     /**
@@ -53,7 +58,7 @@ class TestScript implements ShouldQueue
     public function handle()
     {
         try {
-            # Just set the code but do not save the object (preview only)
+            // Just set the code but do not save the object (preview only)
             $this->script->code = $this->code;
             $response = $this->script->runScript($this->data, $this->configuration);
             $this->sendResponse(200, $response);

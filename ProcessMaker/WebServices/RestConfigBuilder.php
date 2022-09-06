@@ -4,7 +4,6 @@ namespace ProcessMaker\WebServices;
 
 class RestConfigBuilder implements Contracts\WebServiceConfigBuilderInterface
 {
-
     public function build($connectorConfig, $dataSourceConfig, $requestData)
     {
         // The returned value
@@ -35,6 +34,7 @@ class RestConfigBuilder implements Contracts\WebServiceConfigBuilderInterface
         $config['authtype'] = $dataSourceConfig['authtype'];
         $config['credentials'] = $dataSourceConfig['credentials'];
         $config['endpoints'] = $dataSourceConfig['endpoints'];
+
         return $config;
     }
 
@@ -60,6 +60,7 @@ class RestConfigBuilder implements Contracts\WebServiceConfigBuilderInterface
                 $data[$outbound['key']] = ExpressionEvaluator::evaluate($expressionType, $outbound['value'], $requestData);
             }
         }
+
         return $data;
     }
 
@@ -74,6 +75,7 @@ class RestConfigBuilder implements Contracts\WebServiceConfigBuilderInterface
                     $headers[$this->getMustache()->render($header['key'], $data)] = $this->getMustache()->render($header['value'], $data);
                 }
             }
+
             return $headers;
         }
 
@@ -97,14 +99,15 @@ class RestConfigBuilder implements Contracts\WebServiceConfigBuilderInterface
             if (!$existsInDataSourceParams) {
                 array_push($dataSourceParams, [
                     'key' => $cfgParam['key'],
-                    'value' => $cfgParam['value']
+                    'value' => $cfgParam['value'],
                 ]);
             }
         }
         foreach ($dataSourceParams as $header) {
-            $headerKey = ExpressionEvaluator::evaluate('mustache',$header['key'], $data);
+            $headerKey = ExpressionEvaluator::evaluate('mustache', $header['key'], $data);
             $headers[$headerKey] = ExpressionEvaluator::evaluate('mustache', $header['value'], $data);
         }
+
         return $headers;
     }
 }

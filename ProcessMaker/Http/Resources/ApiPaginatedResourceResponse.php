@@ -4,7 +4,8 @@ namespace ProcessMaker\Http\Resources;
 
 use Illuminate\Http\Resources\Json\PaginatedResourceResponse;
 
-class ApiPaginatedResourceResponse extends PaginatedResourceResponse {
+class ApiPaginatedResourceResponse extends PaginatedResourceResponse
+{
     /**
      * Add the pagination information to the response.
      *
@@ -14,10 +15,9 @@ class ApiPaginatedResourceResponse extends PaginatedResourceResponse {
     protected function paginationInformation($request)
     {
         $paginated = $this->resource->resource->toArray();
+
         return [
             'meta' => $this->meta($paginated),
         ];
     }
 }
-
-?>

@@ -4,16 +4,19 @@ namespace ProcessMaker\Jobs;
 
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\DataStoreInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\MessageEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\MessageEventDefinitionInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\DataStoreInterface;
 
 class CatchEvent extends BpmnAction
 {
     public $definitionsId;
+
     public $processId;
+
     public $elementId;
+
     public $data;
 
     /**

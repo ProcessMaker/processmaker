@@ -8,7 +8,6 @@ use Throwable;
 
 /**
  * Class MustacheExpressionEvaluator
- * @package ProcessMaker\Models
  */
 class FeelExpressionEvaluator implements TemplateExpressionInterface
 {
@@ -25,6 +24,7 @@ class FeelExpressionEvaluator implements TemplateExpressionInterface
         try {
             $formal = new FormalExpression();
             $formal->setBody($template);
+
             return $formal($data);
         } catch (Exception $exception) {
             return "{$template}: " . $exception->getMessage();

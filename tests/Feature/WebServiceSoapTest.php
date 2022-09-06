@@ -18,7 +18,6 @@ class WebServiceSoapTest extends TestCase
     use WithFaker;
 
     /**
-     *
      * @var SoapServiceCaller
      */
     private $manager;
@@ -32,29 +31,29 @@ class WebServiceSoapTest extends TestCase
     {
         $mockedDataSource = Mockery::mock(Model::class, function ($mock) {
             $mock->shouldReceive('getAttribute')->with('credentials')->andReturn([
-                "wsdl"=>"1/TPG_Customer.wsdl",
-                "username"=>"test",
-                "user"=>"test",
-                "password"=>"password",
-                "location"=>"https://jxtest.processmaker.local/jxchange/2008/ServiceGateway/Customer.svc",
-                "authentication_method"=>"password"
+                'wsdl'=>'1/TPG_Customer.wsdl',
+                'username'=>'test',
+                'user'=>'test',
+                'password'=>'password',
+                'location'=>'https://jxtest.processmaker.local/jxchange/2008/ServiceGateway/Customer.svc',
+                'authentication_method'=>'password',
             ]);
             $mock->shouldReceive('toArray')->andReturn([
                 'id' => 1,
                 'endpoints' => [
-                    "Ping" => [
-                        "method"=>"SOAP",
-                        "operation" => ["value" => "Ping", "text" => "Ping"],
-                        "params" => [
+                    'Ping' => [
+                        'method'=>'SOAP',
+                        'operation' => ['value' => 'Ping', 'text' => 'Ping'],
+                        'params' => [
                             [
-                                "key" => "PingRq",
-                                "type" => "string",
-                                "required" => false
-                            ]
-                        ]
-                    ]
+                                'key' => 'PingRq',
+                                'type' => 'string',
+                                'required' => false,
+                            ],
+                        ],
+                    ],
                 ],
-                "debug_mode"=>false
+                'debug_mode'=>false,
             ]);
         });
 
@@ -63,22 +62,22 @@ class WebServiceSoapTest extends TestCase
         // Mock SoapClientInterface
         $mock = Mockery::mock(SoapClientInterface::class, function ($mock) {
             $mock->shouldReceive('callMethod')
-                ->with("Ping", [ "body" => [ "PingRq" => "success" ] ])
-                ->andReturn((object)[ "PingRs" => (object)[ "_" => "success" ] ]);
+                ->with('Ping', ['body' => ['PingRq' => 'success']])
+                ->andReturn((object) ['PingRs' => (object) ['_' => 'success']]);
         });
 
         $this->app->bind(SoapClientInterface::class, function () use ($mock) {
             return $mock;
         });
 
-        $wsConfig =  new SoapConfigBuilder();
+        $wsConfig = new SoapConfigBuilder();
         $wsBuilder = new SoapRequestBuilder();
         $wsMapper = new SoapResponseMapper();
         $wsCaller = new SoapServiceCaller();
         $wsRequest = new WebServiceRequest($wsConfig, $wsBuilder, $wsMapper, $wsCaller, $mockedDataSource);
         $requestData = ['PingRq' => 'success'];
-        $connectorConfig = [ "dataSource" => 1, "endpoint" => "Ping", "dataMapping" => [ [ "value" => "", "key" => "response", "format" => "dotNotation" ] ], "outboundConfig" => []];
+        $connectorConfig = ['dataSource' => 1, 'endpoint' => 'Ping', 'dataMapping' => [['value' => '', 'key' => 'response', 'format' => 'dotNotation']], 'outboundConfig' => []];
         $response = $wsRequest->execute($requestData, $connectorConfig);
-        $this->assertEquals([ 'response' => [ "PingRs" => [ "_" => "success" ] ] ], $response);
+        $this->assertEquals(['response' => ['PingRs' => ['_' => 'success']]], $response);
     }
 }

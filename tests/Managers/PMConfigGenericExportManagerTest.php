@@ -1,17 +1,18 @@
 <?php
+
 namespace Tests\Managers;
 
-use Tests\TestCase;
 use DOMXPath;
 use ProcessMaker\Managers\PMConfigGenericExportManager;
-use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Providers\WorkflowServiceProvider;
+use Tests\TestCase;
 
-class PMConfigGenericExportManagerTest extends TestCase {
-
-    public function test() {
-
+class PMConfigGenericExportManagerTest extends TestCase
+{
+    public function test()
+    {
         //
         //
         //
@@ -21,7 +22,7 @@ class PMConfigGenericExportManagerTest extends TestCase {
         //
 
         $process = factory(Process::class)->create([
-            'bpmn' => file_get_contents(__DIR__ . '/../Fixtures/pm_config_generic_export.bpmn')
+            'bpmn' => file_get_contents(__DIR__ . '/../Fixtures/pm_config_generic_export.bpmn'),
         ]);
 
         $manager = new PMConfigGenericExportManager(
@@ -45,7 +46,7 @@ class PMConfigGenericExportManagerTest extends TestCase {
                 9992 => $abeAnotherScreen,
                 9993 => $anotherAbeScreen,
                 9994 => $anotherAbeAnotherScreen,
-            ]
+            ],
         ];
         $manager->updateReferences($process, $references);
 
@@ -54,7 +55,7 @@ class PMConfigGenericExportManagerTest extends TestCase {
         $xpath->registerNamespace('pm', WorkflowServiceProvider::PROCESS_MAKER_NS);
         $xpath->registerNamespace('bpmn', 'http://www.omg.org/spec/BPMN/20100524/MODEL');
 
-        $nodes = $xpath->query("//bpmn:callActivity");
+        $nodes = $xpath->query('//bpmn:callActivity');
         $abeConfig = json_decode(
             $nodes[0]->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'config')
         );

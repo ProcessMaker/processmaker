@@ -14,9 +14,13 @@ use ProcessMaker\WebServices\Contracts\WebServiceResponseMapperInterface;
 class WebServiceRestRequest
 {
     private $config;
+
     private $request;
+
     private $responseMapper;
+
     private $requestCaller;
+
     private $dataSource;
 
     public function __construct(
@@ -41,6 +45,7 @@ class WebServiceRestRequest
         $request = $this->request->build($config, $data);
         $response = $this->requestCaller->call($request, $config);
         $result = $this->responseMapper->map($response, $config, $data);
+
         return $result;
     }
 }

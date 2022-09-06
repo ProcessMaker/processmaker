@@ -2,8 +2,8 @@
 
 namespace ProcessMaker\Http\Controllers\Auth;
 
-use ProcessMaker\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
+use ProcessMaker\Http\Controllers\Controller;
 
 class ForgotPasswordController extends Controller
 {

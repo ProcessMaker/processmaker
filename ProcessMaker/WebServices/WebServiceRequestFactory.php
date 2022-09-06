@@ -7,8 +7,7 @@ class WebServiceRequestFactory
     public function create($type, $dataSource)
     {
         $result = null;
-        switch($type)
-        {
+        switch($type) {
             case 'soap':
                 $result = $this->createSoapWebService($dataSource);
                 break;
@@ -18,6 +17,7 @@ class WebServiceRequestFactory
             default:
                 throw new \Exception("Can't create WebServiceRequest for type '$type'.");
         }
+
         return $result;
     }
 

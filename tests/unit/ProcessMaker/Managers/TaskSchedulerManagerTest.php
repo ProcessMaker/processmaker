@@ -8,9 +8,7 @@ use Tests\TestCase;
 
 class TaskSchedulerManagerTest extends TestCase
 {
-
     /**
-     *
      * @var TaskSchedulerManager
      */
     private $manager;

@@ -7,7 +7,6 @@ use ProcessMaker\WebServices\Contracts\WebServiceResponseMapperInterface;
 
 class RestResponseMapper implements WebServiceResponseMapperInterface
 {
-
     //TODO remove headers, status and dsConfig
     public function map($response, $config, $data): array
     {
@@ -84,7 +83,7 @@ class RestResponseMapper implements WebServiceResponseMapperInterface
                 $value = trim($value);
             }
         }
+
         return $value;
     }
-
 }

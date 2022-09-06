@@ -29,10 +29,10 @@ class RestServiceCaller implements WebServiceCallerInterface
         $request = new Request($method, $url, $headers, $body, $options);
         $response = $client->send($request, $options);
 
-        $status =  $response->getStatusCode();
+        $status = $response->getStatusCode();
         $bodyContent = $response->getBody()->getContents();
         if (!DataTypeHelper::isJson($bodyContent)) {
-            return ["response" => $bodyContent, "status" => $status];
+            return ['response' => $bodyContent, 'status' => $status];
         }
 
         switch (true) {

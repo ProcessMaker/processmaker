@@ -2,18 +2,20 @@
 
 namespace ProcessMaker\WebServices;
 
-use SoapVar;
-use DOMXPath;
-use SoapClient;
-use SoapHeader;
 use DOMDocument;
+use DOMXPath;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\WebServices\Contracts\SoapClientInterface;
+use SoapClient;
+use SoapHeader;
+use SoapVar;
 
 class NativeSoapClient implements SoapClientInterface
 {
     private $soapClient;
+
     private $services = [];
+
     private $debug = false;
 
     public function __construct(string $wsdl, array $options)
@@ -58,8 +60,7 @@ class NativeSoapClient implements SoapClientInterface
     {
         try {
             $response = $this->soapClient->__soapCall($method, $parameters);
-        }
-        catch (\Throwable $e) {
+        } catch (\Throwable $e) {
             $lastMsg = $e->getMessage();
             $lastResponse = $this->soapClient->__getLastResponse();
             $response = ['response' => $lastMsg . ': ' . $lastResponse, 'status' => 401];
@@ -71,6 +72,7 @@ class NativeSoapClient implements SoapClientInterface
             $this->logSoap('Response: ', $this->soapClient->__getLastResponse());
             $this->logSoap('Response headers: ', $this->soapClient->__getLastResponseHeaders());
         }
+
         return $response;
     }
 
@@ -86,15 +88,14 @@ class NativeSoapClient implements SoapClientInterface
 
             $creddentials = $doc->getElementsByTagName('UsernameToken');
             if ($creddentials->length) {
-                $doc->getElementsByTagName("Username")->item(0)->nodeValue = '************';
-                $doc->getElementsByTagName("Password")->item(0)->nodeValue = '************';
+                $doc->getElementsByTagName('Username')->item(0)->nodeValue = '************';
+                $doc->getElementsByTagName('Password')->item(0)->nodeValue = '************';
             }
-            
+
             Log::channel('data-source')->info($label . $doc->saveXML());
         } catch (\Throwable $th) {
             Log::channel('data-source')->info($label . $log);
         }
-        
     }
 
     public function selectServicePort(string $portName)
@@ -130,7 +131,7 @@ class NativeSoapClient implements SoapClientInterface
         $functions = $this->soapClient->__getFunctions();
         $types = $this->soapClient->__getTypes();
         $operations = [];
-        foreach($functions as $definition) {
+        foreach ($functions as $definition) {
             preg_match('/([\w\d_]+)\s([\w\d_]+)\((.+)\)/', $definition, $matches);
             $type = $matches[1];
             $operation = $matches[2];
@@ -141,6 +142,7 @@ class NativeSoapClient implements SoapClientInterface
                 'parameters' => $parameters,
             ];
         }
+
         return $operations;
     }
 
@@ -155,7 +157,7 @@ class NativeSoapClient implements SoapClientInterface
             $fields = \array_slice($struct, 1, -1);
             $params = [];
             $rand = ['not_defined', 'non_required'];
-            foreach($fields as $i => $field) {
+            foreach ($fields as $i => $field) {
                 list($type, $name) = explode(' ', trim($field, ' ;'));
                 $params[] = [
                     'type' => $type,
@@ -166,6 +168,7 @@ class NativeSoapClient implements SoapClientInterface
             }
             $response[$type] = $params;
         }
+
         return $response;
     }
 
@@ -174,14 +177,14 @@ class NativeSoapClient implements SoapClientInterface
         $parameters = explode(',', $parameters);
         $params = [];
         $rand = ['not_defined', 'non_required'];
-        foreach($parameters as $parameter) {
+        foreach ($parameters as $parameter) {
             list($type, $name) = explode(' ', trim($parameter));
             foreach ($types as $struct) {
                 $struct = explode("\n", $struct);
                 $struct[0] = trim($struct[0]);
-                if ($struct[0]==="struct {$type} {") {
+                if ($struct[0] === "struct {$type} {") {
                     $fields = \array_slice($struct, 1, -1);
-                    foreach($fields as $i => $field) {
+                    foreach ($fields as $i => $field) {
                         list($type, $name) = explode(' ', trim($field, ' ;'));
                         $params[] = [
                             'type' => $type,
@@ -192,8 +195,10 @@ class NativeSoapClient implements SoapClientInterface
                     }
                 }
             }
+
             return $params;
         }
+
         return $parameters;
     }
 }
