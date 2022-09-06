@@ -155,7 +155,7 @@ class OauthTransportManager extends TransportManager
 
             return $newToken->access_token;
         } catch (Throwable $error) {
-            throw $error;
+            \Log::error($error);
         }
     }
 
