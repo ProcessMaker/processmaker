@@ -36,15 +36,17 @@ trait HasSelfServiceTasks
     }
 
     /**
-    * Assign self service
-    */
-    private function assignSelfService($task, $response=[]) {
+     * Assign self service
+     */
+    private function assignSelfService($task, $response = [])
+    {
         $id = $task->getAttribute('id');
         $assignment = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
         if ($assignment === 'self_service') {
             $response[$id]['groups'] = explode(',', $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedGroups'));
             $response[$id]['users'] = explode(',', $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedUsers'));
         }
+
         return $response;
     }
 }

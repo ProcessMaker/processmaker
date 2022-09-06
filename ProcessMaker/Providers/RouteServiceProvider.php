@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Route;
 
 /**
  * Our Route Service Provider
- * @package ProcessMaker\Providers
  */
 class RouteServiceProvider extends ServiceProvider
 {
@@ -27,6 +26,28 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Route::pattern('user', '[0-9]+');
+        Route::pattern('group', '[0-9]+');
+        Route::pattern('group_member', '[0-9]+');
+        Route::pattern('environment_variable', '[0-9]+');
+        Route::pattern('screen', '[0-9]+');
+        Route::pattern('screen_category', '[0-9]+');
+        Route::pattern('script', '[0-9]+');
+        Route::pattern('script_id', '[0-9]+');
+        Route::pattern('script_category', '[0-9]+');
+        Route::pattern('process', '[0-9]+');
+        Route::pattern('processId', '[0-9]+');
+        Route::pattern('process_category', '[0-9]+');
+        Route::pattern('task', '[0-9]+');
+        Route::pattern('request', '[0-9]+');
+        Route::pattern('file', '[0-9]+');
+        Route::pattern('notification', '[a-zA-Z0-9-]+');
+        Route::pattern('task_assignment', '[0-9]+');
+        Route::pattern('comment', '[0-9]+');
+        Route::pattern('script_executor', '[0-9]+');
+        Route::pattern('securityLog', '[0-9]+');
+        Route::pattern('setting', '[0-9]+');
+
         parent::boot();
     }
 

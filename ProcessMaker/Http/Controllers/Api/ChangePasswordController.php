@@ -3,11 +3,11 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Exception;
-use ProcessMaker\Models\User;
-use ProcessMaker\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Http\Request;
+use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Models\User;
 
 class ChangePasswordController extends Controller
 {

@@ -142,6 +142,7 @@ abstract class BpmnAction implements ShouldQueue
     public function withUpdatedContext(callable $callable)
     {
         $context = $this->loadContext();
+
         return App::call($callable, $context);
     }
 
@@ -170,7 +171,7 @@ abstract class BpmnAction implements ShouldQueue
             $timeout = config('app.bpmn_actions_max_lock_timeout', 60000) ?: 60000;
             $interval = config('app.bpmn_actions_lock_check_interval', 1000) ?: 1000;
             $maxRetries = ceil($timeout / $interval);
-            for ($tries=0; $tries < $maxRetries; $tries++) {
+            for ($tries = 0; $tries < $maxRetries; $tries++) {
                 $currentLock = $this->currentLock($ids);
                 if (!$currentLock) {
                     if (ProcessRequest::find($instanceId)) {
@@ -181,6 +182,7 @@ abstract class BpmnAction implements ShouldQueue
                 } elseif ($lock->id == $currentLock->id) {
                     $instance = ProcessRequest::findOrFail($instanceId);
                     $this->activateLock($lock);
+
                     return $instance;
                 }
                 // average of lock time is 1 second
@@ -221,6 +223,7 @@ abstract class BpmnAction implements ShouldQueue
                 $query->orWhereJsonContains('request_ids', $id);
             }
         });
+
         return $query->first();
     }
 
@@ -267,6 +270,7 @@ abstract class BpmnAction implements ShouldQueue
         if (isset($this->elementId)) {
             $tags[] = 'elementId:' . $this->elementId;
         }
+
         return $tags;
     }
 
@@ -274,7 +278,6 @@ abstract class BpmnAction implements ShouldQueue
      * Sleep in milliseconds
      *
      * @param int $milliseconds
-     * 
      */
     private function mSleep($milliseconds)
     {

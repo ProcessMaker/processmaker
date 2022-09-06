@@ -5,7 +5,6 @@ use ProcessMaker\Traits\LoadPluginSeeders;
 
 class DatabaseSeeder extends Seeder
 {
-
     use LoadPluginSeeders;
 
     /**
@@ -17,6 +16,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class,
+            AnonymousUserSeeder::class,
             PermissionSeeder::class,
             ProcessSystemCategorySeeder::class,
             GroupSeeder::class,

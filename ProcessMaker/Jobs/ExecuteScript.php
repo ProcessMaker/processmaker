@@ -21,11 +21,17 @@ class ExecuteScript implements ShouldQueue
         SerializesModels;
 
     protected $script;
+
     protected $current_user;
+
     protected $code;
+
     protected $data;
+
     protected $configuration;
+
     protected $watcher;
+
     protected $sync;
 
     /**
@@ -58,7 +64,7 @@ class ExecuteScript implements ShouldQueue
     {
         //throw new \Exception('This method must be overridden.');
         try {
-            # Just set the code but do not save the object (preview only)
+            // Just set the code but do not save the object (preview only)
             $this->script->code = $this->code;
             $response = $this->script->runScript($this->data, $this->configuration);
             if ($this->sync) {

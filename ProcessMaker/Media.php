@@ -17,7 +17,7 @@ class Media extends BaseMedia
      * @param UploadedFile $newFile
      * @param Models\Media $file
      */
-    public function updateFile(UploadedFile $newFile, \ProcessMaker\Models\Media $file)
+    public function updateFile(UploadedFile $newFile, Models\Media $file)
     {
         $newFileName = $this->sanitizeFileName($newFile->getClientOriginalName());
 

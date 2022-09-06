@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Http\Middleware;
 
 use Closure;
@@ -19,6 +20,7 @@ class RedirectIfAuthenticated
         if (Auth::guard($guard)->check()) {
             return redirect('/');
         }
+
         return $next($request);
     }
 }

@@ -7,7 +7,6 @@ use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
  * Represents a task that will be scheduled to run
- *
  */
 class ScheduledTask extends Model
 {
@@ -16,13 +15,13 @@ class ScheduledTask extends Model
     protected $connection = 'processmaker';
 
     protected $fillable = [
-        'process_id', 'process_request_id', 'process_request_token_id', 'configuration'
+        'process_id', 'process_request_id', 'process_request_token_id', 'configuration',
     ];
 
     public static function rules()
     {
         return [
-            'process_id' => 'required'
+            'process_id' => 'required',
         ];
     }
 
@@ -53,8 +52,7 @@ class ScheduledTask extends Model
     public function fillStartEvents()
     {
         $processes = Process::all();
-        foreach($processes as $process) {
-
+        foreach ($processes as $process) {
         }
     }
 }

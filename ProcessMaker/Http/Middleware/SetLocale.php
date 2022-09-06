@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Http\Middleware;
 
 use Closure;
@@ -7,11 +8,9 @@ use Illuminate\Support\Facades\App;
 
 /**
  * Sets the locale based on url parameter
- * @package ProcessMaker\Http\Middleware
  */
 class SetLocale
 {
-
     /**
      * Handle request. If the request has a route parameter called lang, set the locale on our application
      * @param Request $request

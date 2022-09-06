@@ -10,17 +10,17 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Comment;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenVersion;
-use ProcessMaker\Models\Process;
-use Spatie\MediaLibrary\Models\Media;
-use Spatie\MediaLibrary\HasMedia\HasMedia;
-use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use ProcessMaker\Package\PackageComments\PackageServiceProvider;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
-use ProcessMaker\Package\PackageComments\PackageServiceProvider;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Spatie\MediaLibrary\Models\Media;
 
 class RequestController extends Controller
 {
@@ -41,16 +41,16 @@ class RequestController extends Controller
 
         $title = 'My Requests';
 
-        $types = ['all'=>'All Requests','in_progress'=>'Requests In Progress','completed'=>'Completed Requests'];
+        $types = ['all'=>'All Requests', 'in_progress'=>'Requests In Progress', 'completed'=>'Completed Requests'];
 
-        if(array_key_exists($type,$types)){
-          $title = $types[$type];
+        if (array_key_exists($type, $types)) {
+            $title = $types[$type];
         }
 
         $currentUser = Auth::user()->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
 
         return view('requests.index', compact(
-            ['type','title', 'currentUser']
+            ['type', 'title', 'currentUser']
         ));
     }
 
@@ -77,6 +77,7 @@ class RequestController extends Controller
                         ->where('element_type', 'task')
                         ->where('status', 'ACTIVE')
                         ->orderBy('id')->first();
+
                     return redirect(route('tasks.edit', ['task' => $active ? $active->getKey() : $startEvent->getKey()]));
                 }
             }
@@ -84,13 +85,13 @@ class RequestController extends Controller
 
         $userHasCommentsForRequest = Comment::where('commentable_type', ProcessRequest::class)
                 ->where('commentable_id', $request->id)
-                ->where('body','like', '%{{' . \Auth::user()->id . '}}%')
+                ->where('body', 'like', '%{{' . \Auth::user()->id . '}}%')
                 ->count() > 0;
 
         $requestMedia = $request->media()->get()->pluck('id');
         $userHasCommentsForMedia = Comment::where('commentable_type', \ProcessMaker\Models\Media::class)
                 ->whereIn('commentable_id', $requestMedia)
-                ->where('body','like', '%{{' . \Auth::user()->id . '}}%')
+                ->where('body', 'like', '%{{' . \Auth::user()->id . '}}%')
                 ->count() > 0;
 
         if (!$userHasCommentsForMedia && !$userHasCommentsForRequest) {
@@ -140,6 +141,7 @@ class RequestController extends Controller
 
         $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, ($request->summary_screen) ? $request->summary_screen->type : 'FORM'));
+
         return view('requests.preview', compact('request', 'screen', 'manager', 'data'));
     }
 
@@ -175,6 +177,7 @@ class RequestController extends Controller
         if (!$ids->contains($media->id)) {
             abort(403);
         }
+
         return response()->download($media->getPath(), $media->file_name);
     }
 }

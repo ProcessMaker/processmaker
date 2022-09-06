@@ -1,4 +1,5 @@
 <?php
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -60,8 +61,8 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => ProcessMaker\Models\User::class
-        ]
+            'model' => ProcessMaker\Models\User::class,
+        ],
     ],
     /*
     |--------------------------------------------------------------------------

@@ -29,7 +29,6 @@ class ProcessPatternsTest extends TestCase
 
     /**
      * Make sure we have a personal access client set up
-     *
      */
     public function setUpWithPersonalAccessClient()
     {
@@ -61,6 +60,7 @@ class ProcessPatternsTest extends TestCase
         $tests = $this->prepareTestCases('MultiInstance_SequentialCallActivity.bpmn', $tests);
         $tests = $this->prepareTestCases('Loop_Task.bpmn', $tests);
         $tests = $this->prepareTestCases('SignalWithCustomPayload.bpmn', $tests);
+
         return $tests;
     }
 
@@ -93,6 +93,7 @@ class ProcessPatternsTest extends TestCase
                 $bpmnFile,
             ];
         }
+
         return $tests;
     }
 
@@ -128,7 +129,7 @@ class ProcessPatternsTest extends TestCase
         $events = isset($context['events']) ? $context['events'] : [];
         $output = isset($context['output']) ? $context['output'] : [];
         if (isset($context['requires'])) {
-            foreach($context['requires'] as $index => $process) {
+            foreach ($context['requires'] as $index => $process) {
                 $this->createProcess([
                     'id' => $index + 1,
                     'bpmn' => file_get_contents("{$this->basePath}{$process}"),
@@ -149,7 +150,7 @@ class ProcessPatternsTest extends TestCase
      *
      * @return void
      */
-    private function runProcess($bpmnFile, $data = [], $startEvent, $expectedResult, $events, $output, $context)
+    private function runProcess($bpmnFile, $data, $startEvent, $expectedResult, $events, $output, $context)
     {
         Cache::store('global_variables')->flush();
         $process = $this->createProcess(file_get_contents("{$this->basePath}{$bpmnFile}"));
@@ -240,6 +241,7 @@ class ProcessPatternsTest extends TestCase
                 }
             }
         }
+
         return \implode("\n", $errors);
     }
 

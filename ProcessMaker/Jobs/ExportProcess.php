@@ -4,16 +4,16 @@ namespace ProcessMaker\Jobs;
 
 use Cache;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use ProcessMaker\Managers\ExportManager;
+use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use ProcessMaker\Managers\ExportManager;
-use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 
 class ExportProcess implements ShouldQueue
@@ -59,7 +59,6 @@ class ExportProcess implements ShouldQueue
      * @var ExportManager
      */
     public $manager;
-
 
     /**
      * Create a new job instance, set the process, get BPMN definitions, and
@@ -171,7 +170,7 @@ class ExportProcess implements ShouldQueue
         $this->package['screens'] = [];
         $this->package['screen_categories'] = [];
 
-        if (! isset($this->screen)) {
+        if (!isset($this->screen)) {
             $screenIds = $this->manager->getDependenciesOfType(Screen::class, $this->process, []);
         } else {
             $screenIds = array_merge([$this->screen->id], $this->manager->getDependenciesOfType(Screen::class, $this->screen, []));
@@ -201,8 +200,8 @@ class ExportProcess implements ShouldQueue
     {
         $this->package['scripts'] = [];
 
-        if (! isset($this->screen)) {
-             $scriptIds = $this->manager->getDependenciesOfType(Script::class, $this->process, []);
+        if (!isset($this->screen)) {
+            $scriptIds = $this->manager->getDependenciesOfType(Script::class, $this->process, []);
         } else {
             $scriptIds = $this->manager->getDependenciesOfType(Script::class, $this->screen, []);
         }
@@ -271,7 +270,7 @@ class ExportProcess implements ShouldQueue
      * Save the file to the specified path, then return true on success or
      * false upon failure.
      *
-     * @return boolean
+     * @return bool
      */
     protected function saveFile()
     {
@@ -299,7 +298,7 @@ class ExportProcess implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @return boolean|string
+     * @return bool|string
      */
     public function handle()
     {

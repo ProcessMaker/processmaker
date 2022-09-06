@@ -2,8 +2,8 @@
 
 namespace ProcessMaker\Managers;
 
-use ProcessMaker\Models\Screen;
 use Illuminate\Database\Eloquent\Model;
+use ProcessMaker\Models\Screen;
 
 class ExportManager
 {
@@ -53,6 +53,7 @@ class ExportManager
             list($class, $id) = $ref;
             $class === $modelClass ? $ids[] = $id : null;
         }
+
         return array_unique($ids);
     }
 
@@ -89,6 +90,7 @@ class ExportManager
                 $references = $this->reviewDependenciesOf($nextOwner, $references, $reviewed);
             }
         }
+
         return $references;
     }
 
@@ -125,7 +127,7 @@ class ExportManager
     public function addDependencyManager($class)
     {
         if (is_string($class)) {
-            $instance  = new $class;
+            $instance = new $class;
         } else {
             $instance = $class;
         }
@@ -136,6 +138,7 @@ class ExportManager
             'referencesToExport' => [$instance, 'referencesToExport'],
             'updateReferences' => [$instance, 'updateReferences'],
         ]);
+
         return $this;
     }
 
@@ -154,6 +157,7 @@ class ExportManager
                 $result[] = $item;
             }
         }
+
         return $result;
     }
 

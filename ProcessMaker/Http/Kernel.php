@@ -21,6 +21,7 @@ class Kernel extends HttpKernel
         \ProcessMaker\Http\Middleware\TrustProxies::class,
         \ProcessMaker\Http\Middleware\BrowserCache::class,
     ];
+
     /**
      * The application's route middleware groups.
      *
@@ -32,22 +33,20 @@ class Kernel extends HttpKernel
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
             \ProcessMaker\Http\Middleware\SessionStarted::class,
-            \Illuminate\Session\Middleware\AuthenticateSession::class,
+            \ProcessMaker\Http\Middleware\AuthenticateSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             //\ProcessMaker\Http\Middleware\VerifyCsrfToken::class,
             \ProcessMaker\Http\Middleware\SetLocale::class,       // This is disabled until all routes are handled by our new engine
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \ProcessMaker\Http\Middleware\GenerateMenus::class,
             \Laravel\Passport\Http\Middleware\CreateFreshApiToken::class,
-
-
-
         ],
         'api' => [
             // API Middleware is defined with routeMiddleware below.
             // See routes/api.php
         ],
     ];
+
     /**
      * The application's route middleware.
      *

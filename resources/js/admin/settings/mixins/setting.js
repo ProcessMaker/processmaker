@@ -1,9 +1,9 @@
 export default {
   methods: {
     emitSaved(value) {
-      let setting = this.copy(this.setting);
+      const setting = this.copy(this.setting);
       setting.config = value;
-      this.$emit('saved', setting);
+      this.$emit("saved", setting);
     },
     copy(object) {
       return JSON.parse(JSON.stringify(object));
@@ -11,20 +11,17 @@ export default {
     trimmed(string) {
       if (string) {
         if (string.length > 48) {
-          return string.slice(0, 48) + '...';
-        } else {
-          return string;
+          return `${string.slice(0, 48)}...`;
         }
-      } else {
-        return '';
+        return string;
       }
+      return "";
     },
     ui(key) {
       if (this.setting && this.setting.ui && this.setting.ui[key] !== undefined) {
         return this.setting.ui[key];
-      } else {
-        return null;
       }
+      return null;
     },
   },
 };

@@ -8,27 +8,25 @@ use Illuminate\Support\Facades\DB;
 use ProcessMaker\Models\Notification;
 use ProcessMaker\Models\User;
 use Ramsey\Uuid\Uuid;
-use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class NotificationsTest extends TestCase
 {
-
     use RequestHelper;
 
     const API_TEST_URL = '/notifications';
 
     const STRUCTURE = [
-         'id',
-         'type',
-         'notifiable_type',
-         'notifiable_id',
-         'data',
-         'read_at',
-         'updated_at',
-         'created_at'
+        'id',
+        'type',
+        'notifiable_type',
+        'notifiable_id',
+        'data',
+        'read_at',
+        'updated_at',
+        'created_at',
     ];
-
 
     /**
      * Create new notification successfully
@@ -40,8 +38,8 @@ class NotificationsTest extends TestCase
         $response = $this->apiCall('POST', $url, [
             'type' => 'TEST',
             'notifiable_type' => 'NOTIFIABLE/TEST',
-            'data' => "[]",
-            'notifiable_id' => 1
+            'data' => '[]',
+            'notifiable_id' => 1,
         ]);
 
         //Validate the header status code
@@ -57,7 +55,7 @@ class NotificationsTest extends TestCase
 
         factory(Notification::class, 10)->create([
             'notifiable_type' => User::class,
-            'notifiable_id' => $this->user->id
+            'notifiable_id' => $this->user->id,
         ]);
 
         $response = $this->apiCall('GET', self::API_TEST_URL);
@@ -73,7 +71,6 @@ class NotificationsTest extends TestCase
 
         // Verify count
         $this->assertEquals(10 + $existing, $response->json()['meta']['total']);
-
     }
 
     /**
@@ -83,7 +80,7 @@ class NotificationsTest extends TestCase
     {
         $newEntity = factory(Notification::class)->create([
             'notifiable_type' => User::class,
-            'notifiable_id' => $this->user->id
+            'notifiable_id' => $this->user->id,
         ]);
         $route = self::API_TEST_URL;
         $response = $this->apiCall('GET', $route);
@@ -140,7 +137,6 @@ class NotificationsTest extends TestCase
 
         //Check that it has changed
         $this->assertNotEquals($verify, $verify_new);
-
     }
 
     /**

@@ -13,7 +13,7 @@ use Illuminate\Pagination\AbstractPaginator;
  *    @OA\Property(property="sort_order", type="string", enum={"asc", "desc"}),
  *    @OA\Property(property="count", type="integer"),
  *    @OA\Property(property="total_pages", type="integer"),
- *    
+ *
  *    @OA\Property(property="current_page", type="integer"),
  *    @OA\Property(property="form", type="integer"),
  *    @OA\Property(property="last_page", type="integer"),
@@ -27,7 +27,7 @@ use Illuminate\Pagination\AbstractPaginator;
 class TaskCollection extends ApiCollection
 {
     public $appends = ['inOverdue'];
-    
+
     /**
      * Generic collection to add sorting and filtering metadata.
      *
@@ -50,8 +50,8 @@ class TaskCollection extends ApiCollection
                  * total_pages: (integer, the total number of pages available, based on per_page and total)
                  */
                 'total_pages' => ceil($this->resource->total() / $this->resource->perPage()),
-                'in_overdue' => $this->appended->inOverdue
-            ]
+                'in_overdue' => $this->appended->inOverdue,
+            ],
         ];
 
         return $payload;

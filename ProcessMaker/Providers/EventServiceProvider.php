@@ -1,11 +1,11 @@
 <?php
+
 namespace ProcessMaker\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 /**
  * Register our Events and their Listeners
- * @package ProcessMaker\Providers
  */
 class EventServiceProvider extends ServiceProvider
 {
@@ -26,7 +26,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         'ProcessMaker\Events\SessionStarted' => [
             'ProcessMaker\Listeners\ActiveUserListener',
-        ]
+        ],
     ];
 
     /**

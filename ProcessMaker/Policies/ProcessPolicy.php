@@ -2,13 +2,13 @@
 
 namespace ProcessMaker\Policies;
 
-use ProcessMaker\Models\User;
-use ProcessMaker\Models\Process;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Http\Request;
 use ProcessMaker\Models\AnonymousUser;
-use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Group;
+use ProcessMaker\Models\GroupMember;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\User;
 
 class ProcessPolicy
 {
@@ -40,7 +40,7 @@ class ProcessPolicy
         $userGroupIds = $user->groups->pluck('id')->all();
         $nestedGroupIds = GroupMember::where('member_type', Group::class)->whereIn('member_id', $userGroupIds)->pluck('group_id')->all();
         $groupIds = array_merge($userGroupIds, $nestedGroupIds);
-        
+
         if ($process->groupsCanStart(request()->query('event'))->whereIn('id', $groupIds)->count()) {
             return true;
         }
@@ -50,13 +50,14 @@ class ProcessPolicy
         )->pluck('id');
 
         $userCanStartAsProcessManager = array_reduce($process->getStartEvents(),
-            function ($carry, $item) use($process, $user) {
+            function ($carry, $item) use ($process, $user) {
                 if (array_key_exists('assignment', $item)) {
                     $carry = $carry || ($item['assignment'] === 'process_manager' && $process->manager_id === $user->id);
                 }
+
                 return $carry;
             },
-            False);
+            false);
 
         if (
             $usersCanStart->contains($user->id) ||

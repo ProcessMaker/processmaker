@@ -36,8 +36,8 @@
                     </div>
                     <div class="form-group">
                         {!!Form::label('value', __('Value'))!!}
-                        {!!Form::text('value', null,['class'=> 'form-control', 'v-model'=> 'formData.value',
-                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.value}'])!!}
+                        {!!Form::textArea('value', null, ['class'=> 'form-control', 'v-model'=> 'formData.value',
+                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}','rows'=>3, 'required', 'aria-required' => 'true'])!!}
                         <small class="form-text text-muted">{{__('For security purposes, this field will always appear empty') }}</small>
                         <div class="invalid-feedback" role="alert" v-for="value in errors.value">@{{value}}</div>
                     </div>

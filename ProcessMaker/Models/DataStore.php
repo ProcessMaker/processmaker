@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Models;
 
 use ProcessMaker\Nayra\Bpmn\DataStoreTrait;
@@ -8,12 +9,9 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
 
 /**
  * Application Data
- *
- * @package ProcessMaker\Models
  */
 class DataStore implements DataStoreInterface
 {
-
     use DataStoreTrait;
 
     private $data = [];
@@ -23,13 +21,11 @@ class DataStore implements DataStoreInterface
     private $removed = [];
 
     /**
-     *
      * @var \ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface
      */
     private $process;
 
     /**
-     *
      * @var \ProcessMaker\Nayra\Contracts\Bpmn\ItemDefinitionInterface
      */
     private $itemSubject;
@@ -54,6 +50,7 @@ class DataStore implements DataStoreInterface
     public function setOwnerProcess(ProcessInterface $process)
     {
         $this->process = $process;
+
         return $this;
     }
 
@@ -79,6 +76,7 @@ class DataStore implements DataStoreInterface
     public function setData($data)
     {
         $this->data = $data;
+
         return $this;
     }
 
@@ -95,6 +93,7 @@ class DataStore implements DataStoreInterface
         $this->data[$name] = $data;
         $this->updated[$name] = $name;
         unset($this->removed[$name]);
+
         return $this;
     }
 
@@ -120,12 +119,13 @@ class DataStore implements DataStoreInterface
         unset($this->data[$name]);
         $this->removed[$name] = $name;
         unset($this->updated[$name]);
+
         return $this;
     }
 
     /**
      * Get the value of updated
-     */ 
+     */
     public function getUpdated()
     {
         return $this->updated;
@@ -133,7 +133,7 @@ class DataStore implements DataStoreInterface
 
     /**
      * Get the value of removed
-     */ 
+     */
     public function getRemoved()
     {
         return $this->removed;
@@ -148,12 +148,13 @@ class DataStore implements DataStoreInterface
      */
     public function updateArray(array $array)
     {
-        foreach($this->updated as $name) {
+        foreach ($this->updated as $name) {
             $array[$name] = $this->data[$name];
         }
-        foreach($this->removed as $name) {
+        foreach ($this->removed as $name) {
             unset($array[$name]);
         }
+
         return $array;
     }
 }

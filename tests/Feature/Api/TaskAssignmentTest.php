@@ -25,7 +25,7 @@ class TaskAssignmentTest extends TestCase
         'assignment_id',
         'assignment_type',
         'updated_at',
-        'created_at'
+        'created_at',
     ];
 
     /**
@@ -54,7 +54,7 @@ class TaskAssignmentTest extends TestCase
             'process_id' => $process->id,
             'process_task_id' => $task_uid,
             'assignment_id' => $user->id,
-            'assignment_type' => 'ProcessMaker\Models\User'
+            'assignment_type' => 'ProcessMaker\Models\User',
         ]);
 
         //Validate the header status code
@@ -81,7 +81,7 @@ class TaskAssignmentTest extends TestCase
             'process_id' => $process->id,
             'process_task_id' => $task_uid,
             'assignment_id' => $group->id,
-            'assignment_type' => 'ProcessMaker\Models\Group'
+            'assignment_type' => 'ProcessMaker\Models\Group',
         ]);
 
         //Validate the header status code
@@ -111,7 +111,7 @@ class TaskAssignmentTest extends TestCase
             'process_id' => $process->id,
             'process_task_id' => $task_uid,
             'assignment_id' => $group->id,
-            'assignment_type' => 'ProcessMaker\Models\Group'
+            'assignment_type' => 'ProcessMaker\Models\Group',
         ]);
 
         $response->assertStatus(200);

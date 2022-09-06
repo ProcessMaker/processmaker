@@ -20,6 +20,7 @@ class SettingsController extends Controller
     {
         if (Setting::notHidden()->count()) {
             $addons = $this->getPluginAddons('index', []);
+
             return view('admin.settings.index', compact('addons'));
         } else {
             abort(404);
@@ -53,7 +54,7 @@ class SettingsController extends Controller
         $file = [
             'type' => 'settings_package',
             'version' => '1',
-            'settings' => array_map(function($setting) {
+            'settings' => array_map(function ($setting) {
                 return [
                     'key' => $setting['key'],
                     'config' => $setting['config'],

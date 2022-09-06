@@ -25,8 +25,8 @@ use ProcessMaker\Managers\WebServiceSoapResponseBuilder;
 use ProcessMaker\Managers\WebServiceSoapServiceCaller;
 use ProcessMaker\Managers\WorkflowManager;
 use ProcessMaker\Models\FormalExpression;
-use ProcessMaker\Nayra\Bpmn\Models\EventDefinitionBus;
 use ProcessMaker\Models\SignalEventDefinition;
+use ProcessMaker\Nayra\Bpmn\Models\EventDefinitionBus;
 use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\EventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowNodeInterface;
@@ -93,6 +93,7 @@ class WorkflowServiceProvider extends ServiceProvider
             $engine->setJobManager(new TaskSchedulerManager());
             $definitions->setEngine($engine);
             $engine->loadProcessDefinitions($definitions);
+
             return $engine;
         });
 
@@ -131,7 +132,7 @@ class WorkflowServiceProvider extends ServiceProvider
                         FlowNodeInterface::BPMN_PROPERTY_INCOMING => ['n', [BpmnDocument::BPMN_MODEL, FlowNodeInterface::BPMN_PROPERTY_INCOMING]],
                         FlowNodeInterface::BPMN_PROPERTY_OUTGOING => ['n', [BpmnDocument::BPMN_MODEL, FlowNodeInterface::BPMN_PROPERTY_OUTGOING]],
                         StartEventInterface::BPMN_PROPERTY_EVENT_DEFINITIONS => ['n', EventDefinitionInterface::class],
-                    ]
+                    ],
                 ]
             );
 
@@ -142,7 +143,7 @@ class WorkflowServiceProvider extends ServiceProvider
                     TimerExpressionInterface::class,
                     [
                         FormalExpressionInterface::BPMN_PROPERTY_BODY => ['1', BpmnDocument::DOM_ELEMENT_BODY],
-                    ]
+                    ],
                 ]
             );
 
@@ -153,7 +154,7 @@ class WorkflowServiceProvider extends ServiceProvider
                     TimerExpressionInterface::class,
                     [
                         FormalExpressionInterface::BPMN_PROPERTY_BODY => ['1', BpmnDocument::DOM_ELEMENT_BODY],
-                    ]
+                    ],
                 ]
             );
             $bpmnRepository->setBpmnElementMapping(
@@ -163,7 +164,7 @@ class WorkflowServiceProvider extends ServiceProvider
                     TimerExpressionInterface::class,
                     [
                         FormalExpressionInterface::BPMN_PROPERTY_BODY => ['1', BpmnDocument::DOM_ELEMENT_BODY],
-                    ]
+                    ],
                 ]
             );
 
@@ -175,6 +176,7 @@ class WorkflowServiceProvider extends ServiceProvider
                 'callActivity',
                 $callActivityMap
             );
+
             return $bpmnRepository;
         });
         /**
@@ -186,6 +188,7 @@ class WorkflowServiceProvider extends ServiceProvider
             $instance->addDependencyManager(ScreensInScreen::class);
             $instance->addDependencyManager(ScriptsInProcess::class);
             $instance->addDependencyManager(ScriptsInScreen::class);
+
             return $instance;
         });
         /**
@@ -193,6 +196,7 @@ class WorkflowServiceProvider extends ServiceProvider
          */
         $this->app->bind(Mustache_Engine::class, function () {
             $op = new MustacheOptions;
+
             return new Mustache_Engine([
                 'helpers' => $op->helpers,
                 'pragmas' => [Mustache_Engine::PRAGMA_FILTERS],
