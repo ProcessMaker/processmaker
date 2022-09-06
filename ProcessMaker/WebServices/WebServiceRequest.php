@@ -11,9 +11,13 @@ use ProcessMaker\Contracts\WebServiceResponseMapperInterface;
 class WebServiceRequest
 {
     private $config;
+
     private $request;
+
     private $responseMapper;
+
     private $requestCaller;
+
     private $dataSource;
 
     public function __construct(
@@ -38,6 +42,7 @@ class WebServiceRequest
         $request = $this->request->build($config, $data);
         $response = $this->requestCaller->call($request, $config);
         $result = $this->responseMapper->map($response, $config, $data);
+
         return $result;
     }
 
@@ -72,6 +77,7 @@ class WebServiceRequest
         $config = $this->config->build([], $dataSourceConfig, []);
         $request = $this->request->build($config, []);
         $client = app(SoapClientInterface::class, $request);
+
         return $client->getOperations();
     }
 
@@ -97,6 +103,7 @@ class WebServiceRequest
         $config = $this->config->build([], $dataSourceConfig, []);
         $request = $this->request->build($config, []);
         $client = app(SoapClientInterface::class, $request);
+
         return $client->getTypes();
     }
 }

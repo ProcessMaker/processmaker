@@ -7,9 +7,7 @@ use Tests\TestCase;
 
 class WebServiceSoapRequestBuilderTest extends TestCase
 {
-
     /**
-     *
      * @var WebServiceSoapRequestBuilder
      */
     private $manager;
@@ -54,7 +52,3 @@ class WebServiceSoapRequestBuilderTest extends TestCase
         dump($rr);
     }
 }
-
-
-https://jxtest.jackhenry.com/jxchange/2008/ServiceGateway/ServiceGateway.svc
-https://jxtest.jackhenry.com/jxchange/2008/ServiceGateway/Customer.svc

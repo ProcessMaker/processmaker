@@ -14,7 +14,6 @@ class WebServiceRequestTest extends TestCase
     use WithFaker;
 
     /**
-     *
      * @var WebServiceSoapServiceCaller
      */
     private $manager;
@@ -29,15 +28,15 @@ class WebServiceRequestTest extends TestCase
         // Mock SoapClientInterface
         $mock = Mockery::mock(SoapClientInterface::class, function ($mock) {
             $mock->shouldReceive('callMethod')
-                ->with("Ping", [
-                    "body" => [
-                        "PingRq" => "success"
-                    ]
+                ->with('Ping', [
+                    'body' => [
+                        'PingRq' => 'success',
+                    ],
                 ])
-                ->andReturn((object)[
-                    "PingRs" => (object)[
-                        "_" => "success"
-                    ]
+                ->andReturn((object) [
+                    'PingRs' => (object) [
+                        '_' => 'success',
+                    ],
                 ]);
         });
         $this->app->bind(SoapClientInterface::class, function () use ($mock) {
@@ -45,28 +44,28 @@ class WebServiceRequestTest extends TestCase
         });
         $mockDataSource = Mockery::mock(Model::class, function ($mock) {
             $mock->shouldReceive('getAttribute')->with('credentials')->andReturn([
-                "wsdl"=>"1/TPG_Customer.wsdl",
-                "username"=>"test",
-                "password"=>"password",
-                "location"=>"https://jxtest.processmaker.local/jxchange/2008/ServiceGateway/Customer.svc",
-                "authentication_method"=>"password"
+                'wsdl'=>'1/TPG_Customer.wsdl',
+                'username'=>'test',
+                'password'=>'password',
+                'location'=>'https://jxtest.processmaker.local/jxchange/2008/ServiceGateway/Customer.svc',
+                'authentication_method'=>'password',
             ]);
             $mock->shouldReceive('toArray')->andReturn([
                 'id' => 1,
                 'endpoints' => [
-                    "Ping" => [
-                        "method"=>"SOAP",
-                        "operation" => "Ping",
-                        "params" => [
+                    'Ping' => [
+                        'method'=>'SOAP',
+                        'operation' => 'Ping',
+                        'params' => [
                             [
-                                "key" => "PingRq",
-                                "type" => "string",
-                                "required" => false
-                            ]
-                        ]
-                    ]
+                                'key' => 'PingRq',
+                                'type' => 'string',
+                                'required' => false,
+                            ],
+                        ],
+                    ],
                 ],
-                "debug_mode"=>false
+                'debug_mode'=>false,
             ]);
         });
         $serviceTask = app('WebServiceRequest', ['dataSource' => $mockDataSource]);
@@ -75,44 +74,44 @@ class WebServiceRequestTest extends TestCase
                 'form_input_1' => 'success',
             ],
             [
-                "dataSource" => 1,
-                "endpoint" => "Ping",
-                "dataMapping" => [
+                'dataSource' => 1,
+                'endpoint' => 'Ping',
+                'dataMapping' => [
                     [
-                        "value" => "",
-                        "key" => "response",
-                        "format" => "dotNotation"
-                    ]
+                        'value' => '',
+                        'key' => 'response',
+                        'format' => 'dotNotation',
+                    ],
                 ],
-                "outboundConfig" => [
+                'outboundConfig' => [
                     [
-                        "value" => "{{form_input_1}}",
-                        "type" => "PARAM",
-                        "key" => "PingRq",
-                        "format" => "mustache"
-                    ]
+                        'value' => '{{form_input_1}}',
+                        'type' => 'PARAM',
+                        'key' => 'PingRq',
+                        'format' => 'mustache',
+                    ],
                 ],
-                "callback" => false,
-                "callback_url" => "callback_url",
-                "callback_variable" => "callback",
-                "callback_methods" => [
-                    "POST"
+                'callback' => false,
+                'callback_url' => 'callback_url',
+                'callback_variable' => 'callback',
+                'callback_methods' => [
+                    'POST',
                 ],
-                "callback_data_types" => [
-                    "FORM"
+                'callback_data_types' => [
+                    'FORM',
                 ],
-                "callback_authentication" => null,
-                "callback_authentication_username" => "",
-                "callback_authentication_password" => "",
-                "callback_whitelist" => []
+                'callback_authentication' => null,
+                'callback_authentication_username' => '',
+                'callback_authentication_password' => '',
+                'callback_whitelist' => [],
             ]
         );
         $this->assertEquals([
-            'response' => (object)[
-                "PingRs" => (object)[
-                    "_" => "success"
-                ]
-            ]
+            'response' => (object) [
+                'PingRs' => (object) [
+                    '_' => 'success',
+                ],
+            ],
         ], $response);
     }
 }

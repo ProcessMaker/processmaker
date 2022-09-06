@@ -17,7 +17,6 @@ class EnvironmentVariablesTest extends TestCase
      */
     public function testIndexRoute()
     {
-
         // get the URL
         $response = $this->webCall('GET', '/designer/environment-variables');
         // check the correct view is called

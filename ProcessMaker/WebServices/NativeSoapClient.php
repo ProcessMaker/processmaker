@@ -12,6 +12,7 @@ use SoapVar;
 class NativeSoapClient implements SoapClientInterface
 {
     private $soapClient;
+
     private $services = [];
 
     public function __construct(string $wsdl, array $options)
@@ -54,6 +55,7 @@ class NativeSoapClient implements SoapClientInterface
     public function callMethod(string $method, array $parameters)
     {
         $response = $this->soapClient->__soapCall($method, $parameters);
+
         return $response;
     }
 
@@ -90,7 +92,7 @@ class NativeSoapClient implements SoapClientInterface
         $functions = $this->soapClient->__getFunctions();
         $types = $this->soapClient->__getTypes();
         $operations = [];
-        foreach($functions as $definition) {
+        foreach ($functions as $definition) {
             preg_match('/([\w\d_]+)\s([\w\d_]+)\((.+)\)/', $definition, $matches);
             $type = $matches[1];
             $operation = $matches[2];
@@ -101,6 +103,7 @@ class NativeSoapClient implements SoapClientInterface
                 'parameters' => $parameters,
             ];
         }
+
         return $operations;
     }
 
@@ -115,7 +118,7 @@ class NativeSoapClient implements SoapClientInterface
             $fields = \array_slice($struct, 1, -1);
             $params = [];
             $rand = ['not_defined', 'non_required'];
-            foreach($fields as $i => $field) {
+            foreach ($fields as $i => $field) {
                 list($type, $name) = explode(' ', trim($field, ' ;'));
                 $params[] = [
                     'type' => $type,
@@ -126,6 +129,7 @@ class NativeSoapClient implements SoapClientInterface
             }
             $response[$type] = $params;
         }
+
         return $response;
     }
 
@@ -134,14 +138,14 @@ class NativeSoapClient implements SoapClientInterface
         $parameters = explode(',', $parameters);
         $params = [];
         $rand = ['not_defined', 'non_required'];
-        foreach($parameters as $parameter) {
+        foreach ($parameters as $parameter) {
             list($type, $name) = explode(' ', trim($parameter));
             foreach ($types as $struct) {
                 $struct = explode("\n", $struct);
                 $struct[0] = trim($struct[0]);
-                if ($struct[0]==="struct {$type} {") {
+                if ($struct[0] === "struct {$type} {") {
                     $fields = \array_slice($struct, 1, -1);
-                    foreach($fields as $i => $field) {
+                    foreach ($fields as $i => $field) {
                         list($type, $name) = explode(' ', trim($field, ' ;'));
                         $params[] = [
                             'type' => $type,
@@ -152,8 +156,10 @@ class NativeSoapClient implements SoapClientInterface
                     }
                 }
             }
+
             return $params;
         }
+
         return $parameters;
     }
 }

@@ -19,7 +19,6 @@ class UserTest extends TestCase
      */
     public function testIndexRoute()
     {
-
         // get the URL
         $response = $this->webCall('GET', '/admin/users');
         // check the correct view is called

@@ -14,7 +14,6 @@ class WebServiceSoapServiceCallerTest extends TestCase
     use WithFaker;
 
     /**
-     *
      * @var WebServiceSoapServiceCaller
      */
     private $manager;
@@ -57,7 +56,7 @@ class WebServiceSoapServiceCallerTest extends TestCase
     {
         $mock = $this->partialMock(SoapClientInterface::class, function (MockInterface $mock) {
             $mock->shouldReceive('selectServicePort')->with('CustomerServiceSoap');
-            $mock->shouldReceive('callMethod')->with('Ping', ['body'=>['PingRq' => 'success']])->once()->andReturn((object)['PingRs' => (object)["_" => 'success']]);
+            $mock->shouldReceive('callMethod')->with('Ping', ['body'=>['PingRq' => 'success']])->once()->andReturn((object) ['PingRs' => (object) ['_' => 'success']]);
         });
         $this->app->bind(SoapClientInterface::class, function () use ($mock) {
             return $mock;

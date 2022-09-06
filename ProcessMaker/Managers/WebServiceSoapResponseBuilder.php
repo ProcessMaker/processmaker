@@ -6,7 +6,6 @@ use ProcessMaker\Contracts\WebServiceResponseMapperInterface;
 
 class WebServiceSoapResponseBuilder implements WebServiceResponseMapperInterface
 {
-
     /**
      * Map the response from the WebService to request data
      *

@@ -7,9 +7,7 @@ use Tests\TestCase;
 
 class WebServiceSoapConfigBuilderTest extends TestCase
 {
-
     /**
-     *
      * @var WebServiceSoapConfigBuilder
      */
     private $manager;
@@ -43,36 +41,36 @@ class WebServiceSoapConfigBuilderTest extends TestCase
     public function testBuildServiceTaskConfig()
     {
         $serviceTaskConfig = [
-            "dataSource" => 1,
-            "endpoint" => "list",
-            "dataMapping" => [
+            'dataSource' => 1,
+            'endpoint' => 'list',
+            'dataMapping' => [
                 [
-                    "value" => "PingRs._",
-                    "key" => "response",
-                    "format" => "dotNotation"
-                ]
+                    'value' => 'PingRs._',
+                    'key' => 'response',
+                    'format' => 'dotNotation',
+                ],
             ],
-            "outboundConfig" => [
+            'outboundConfig' => [
                 [
-                    "value" => "{{form_input_1}}",
-                    "type" => "PARAM",
-                    "key" => "key1",
-                    "format" => "mustache"
-                ]
+                    'value' => '{{form_input_1}}',
+                    'type' => 'PARAM',
+                    'key' => 'key1',
+                    'format' => 'mustache',
+                ],
             ],
-            "callback" => false,
-            "callback_url" => "callback_url",
-            "callback_variable" => "callback",
-            "callback_methods" => [
-                "POST"
+            'callback' => false,
+            'callback_url' => 'callback_url',
+            'callback_variable' => 'callback',
+            'callback_methods' => [
+                'POST',
             ],
-            "callback_data_types" => [
-                "FORM"
+            'callback_data_types' => [
+                'FORM',
             ],
-            "callback_authentication" => null,
-            "callback_authentication_username" => "",
-            "callback_authentication_password" => "",
-            "callback_whitelist" => []
+            'callback_authentication' => null,
+            'callback_authentication_username' => '',
+            'callback_authentication_password' => '',
+            'callback_whitelist' => [],
         ];
         $dataSourceConfig = [
             'credentials' => [
@@ -101,10 +99,10 @@ class WebServiceSoapConfigBuilderTest extends TestCase
         $this->assertEquals('callback_url', $config['callback_url']);
         $this->assertEquals('callback', $config['callback_variable']);
         $this->assertEquals([
-            "POST"
+            'POST',
         ], $config['callback_methods']);
         $this->assertEquals([
-            "FORM"
+            'FORM',
         ], $config['callback_data_types']);
         $this->assertEquals(null, $config['callback_authentication']);
         $this->assertEquals('', $config['callback_authentication_username']);

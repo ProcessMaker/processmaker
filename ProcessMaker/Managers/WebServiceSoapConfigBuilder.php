@@ -51,6 +51,7 @@ class WebServiceSoapConfigBuilder implements WebServiceConfigBuilderInterface
             $config['operation'] = '';
             $config['parameters'] = [];
         }
+
         return $config;
     }
 
@@ -71,6 +72,7 @@ class WebServiceSoapConfigBuilder implements WebServiceConfigBuilderInterface
         try {
             $formal = new FormalExpression();
             $formal->setBody($expression);
+
             return $formal($data);
         } catch (Exception $exception) {
             return "{$expression}: " . $exception->getMessage();
@@ -106,6 +108,7 @@ class WebServiceSoapConfigBuilder implements WebServiceConfigBuilderInterface
         if ($this->mustache === null) {
             $this->mustache = app(Mustache_Engine::class);
         }
+
         return $this->mustache;
     }
 }

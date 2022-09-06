@@ -209,12 +209,14 @@ class WorkflowServiceProvider extends ServiceProvider
 
         $this->app->bind(SoapClientInterface::class, function ($app, $request_config) {
             $factory = new SoapClientFactory();
+
             return $factory->createNativeSoapClient($request_config['wsdl'], $request_config['options']);
         });
 
         // @todo Complete the WebServiceRequest Factory
         $this->app->bind('WebServiceRequest', function ($app, $params) {
             $dataSource = $params['dataSource'];
+
             return new WebServiceRequest(
                 new WebServiceSoapConfigBuilder(),
                 new WebServiceSoapRequestBuilder(),
