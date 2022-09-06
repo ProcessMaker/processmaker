@@ -67,7 +67,7 @@ class GroupSeeder extends Seeder
                 'create-auth_clients',
                 'edit-auth_clients',
                 'delete-auth_clients',
-                'delete-comments'
+                'delete-comments',
             ],
         ];
     }
@@ -86,7 +86,7 @@ class GroupSeeder extends Seeder
             $createdGroup = factory(Group::class)->create([
                 'name' => $defaultGroup['name'],
                 'description' => $defaultGroup['description'],
-                'status' => 'ACTIVE'
+                'status' => 'ACTIVE',
             ]);
 
             //Retrieve permission IDs
@@ -95,6 +95,5 @@ class GroupSeeder extends Seeder
             //Attach permissions to this group
             $createdGroup->permissions()->attach($permissions);
         }
-
     }
 }

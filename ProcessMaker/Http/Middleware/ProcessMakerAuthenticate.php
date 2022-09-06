@@ -1,15 +1,12 @@
 <?php
 
-
 namespace ProcessMaker\Http\Middleware;
-
 
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Support\Str;
 
 class ProcessMakerAuthenticate extends Authenticate
 {
-
     protected function authenticate($request, array $guards)
     {
         $this->addAcceptJsonHeaderIfApiCall($request, $guards);
@@ -32,10 +29,8 @@ class ProcessMakerAuthenticate extends Authenticate
      * @param \Illuminate\Http\Request $request
      * @return bool
      */
-
     private function requestHasAcceptJsonHeader(\Illuminate\Http\Request $request): bool
     {
         return Str::contains($request->header('accept'), ['/json', '+json']);
     }
-
 }

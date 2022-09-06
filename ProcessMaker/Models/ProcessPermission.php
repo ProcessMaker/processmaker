@@ -8,10 +8,10 @@ use ProcessMaker\Traits\SerializeToIso8601;
 /**
  * Represents a Process permission.
  *
- * @property integer $id
- * @property integer $process_id
- * @property integer $permission_id
- * @property integer $assignable_id
+ * @property int $id
+ * @property int $process_id
+ * @property int $permission_id
+ * @property int $assignable_id
  * @property string $assignable_type
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
@@ -30,7 +30,6 @@ use ProcessMaker\Traits\SerializeToIso8601;
  *    @OA\Property(property="created_at", type="string", format="date-time"),
  *    @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
- *
  */
 class ProcessPermission extends Model
 {
@@ -42,7 +41,7 @@ class ProcessPermission extends Model
         'process_id',
         'permission_id',
         'assignable_id',
-        'assignable_type'
+        'assignable_type',
     ];
 
     public function assignable()
@@ -61,7 +60,7 @@ class ProcessPermission extends Model
             'process_id' => 'nullable|exists:processes,id',
             'permission_id' => 'nullable|exists:permissions,id',
             'assignable_id' => 'required',
-            'assignable_type' => 'required|in:' . User::class . ',' . Group::class
+            'assignable_type' => 'required|in:' . User::class . ',' . Group::class,
         ];
     }
 }

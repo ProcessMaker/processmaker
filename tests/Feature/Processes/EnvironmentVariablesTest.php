@@ -3,8 +3,8 @@
 namespace Tests\Feature\Processes;
 
 use ProcessMaker\Models\EnvironmentVariable;
-use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class EnvironmentVariablesTest extends TestCase
 {

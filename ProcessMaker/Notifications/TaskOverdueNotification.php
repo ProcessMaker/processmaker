@@ -15,9 +15,13 @@ class TaskOverdueNotification extends Notification
     use Queueable;
 
     private $processUid;
+
     private $instanceUid;
+
     private $tokenUid;
+
     private $tokenElement;
+
     private $tokenStatus;
 
     /**
@@ -85,8 +89,9 @@ class TaskOverdueNotification extends Notification
         $activity = $definitions->getActivity($this->tokenElement);
         $token = Token::find($this->tokenUid);
         $request = $token->processRequest;
+
         return [
-            'type' => 'TASK_OVERDUE' ,
+            'type' => 'TASK_OVERDUE',
             'message' => sprintf('%s was due %s, it is now overdue', $activity->getName(), $token->due_at->diffForHumans()),
             'name' => sprintf('%s was due %s, it is now overdue', $activity->getName(), $token->due_at->diffForHumans()),
             'processName' => $process->name,
@@ -98,7 +103,7 @@ class TaskOverdueNotification extends Notification
             'url' => sprintf(
                 '/tasks/%s/edit',
                 $token->id
-            )
+            ),
         ];
     }
 
@@ -112,5 +117,4 @@ class TaskOverdueNotification extends Notification
     {
         return new BroadcastMessage($this->toArray($notifiable));
     }
-
 }

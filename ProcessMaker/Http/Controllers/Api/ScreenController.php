@@ -108,15 +108,15 @@ class ScreenController extends Controller
                 $query->where(function ($query) use ($filter) {
                     $query->where('title', 'like', $filter)
                         ->orWhere('description', 'like', $filter)
-                        ->orWhereIn('screens.id', function($qry) use ($filter) {
+                        ->orWhereIn('screens.id', function ($qry) use ($filter) {
                             $qry->select('assignable_id')
                                 ->from('category_assignments')
-                                ->leftJoin('screen_categories', function($join) {
-                                    $join->on('screen_categories.id', '=',  'category_assignments.category_id');
+                                ->leftJoin('screen_categories', function ($join) {
+                                    $join->on('screen_categories.id', '=', 'category_assignments.category_id');
                                     $join->where('category_assignments.category_type', '=', ScreenCategory::class);
                                     $join->where('category_assignments.assignable_type', '=', Screen::class);
                                 })
-                                ->where ('screen_categories.name', 'like', $filter);
+                                ->where('screen_categories.name', 'like', $filter);
                         });
                 });
             } else {
@@ -130,7 +130,7 @@ class ScreenController extends Controller
             $screens = ScreenType::where('is_interactive', $interactive)->get('name');
             $query->whereIn('type', $screens);
         }
-        if (!$interactive  && $request->input('type')) {
+        if (!$interactive && $request->input('type')) {
             $types = explode(',', $request->input('type'));
             $query->whereIn('type', $types);
         }
@@ -215,6 +215,7 @@ class ScreenController extends Controller
         $screen->fill($request->input());
 
         $screen->saveOrFail();
+
         return new ApiResource($screen);
     }
 
@@ -255,6 +256,7 @@ class ScreenController extends Controller
         $request->validate(Screen::rules($screen));
         $screen->fill($request->input());
         $screen->saveOrFail();
+
         return response([], 204);
     }
 
@@ -311,11 +313,12 @@ class ScreenController extends Controller
             $newScreen->description = $request->input('description');
         }
 
-        if( $request->has('screen_category_id')) {
+        if ($request->has('screen_category_id')) {
             $newScreen->screen_category_id = $request->input('screen_category_id');
         }
 
         $newScreen->saveOrFail();
+
         return new ApiResource($newScreen);
     }
 
@@ -348,6 +351,7 @@ class ScreenController extends Controller
     public function destroy(Screen $screen)
     {
         $screen->delete();
+
         return response([], 204);
     }
 
@@ -438,6 +442,7 @@ class ScreenController extends Controller
         }
 
         $import = ImportScreen::dispatchNow($content);
+
         return ['status' => $import];
     }
 
@@ -456,6 +461,7 @@ class ScreenController extends Controller
         $validType = $hasType && $decoded->type === 'screen_package';
         $hasVersion = $isDecoded && isset($decoded->version) && is_string($decoded->version);
         $validVersion = $hasVersion && method_exists(ImportScreen::class, "parseFileV{$decoded->version}");
+
         return $isDecoded && $validType && $validVersion;
     }
 

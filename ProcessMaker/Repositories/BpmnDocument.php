@@ -40,6 +40,7 @@ class BpmnDocument extends StorageBpmnDocument
     public function setModel(ProcessModelInterface $model)
     {
         $this->model = $model;
+
         return $this;
     }
 }

@@ -11,14 +11,14 @@ class ImportedScreenSaved
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    /** @var Integer */
+    /** @var int */
     public $newScreenId;
 
     /** @var Screen */
     public $screen;
 
     /**
-     * @param Integer $newScreenId
+     * @param int $newScreenId
      * @param Screen $screen
      */
     public function __construct($newScreenId, $screen)

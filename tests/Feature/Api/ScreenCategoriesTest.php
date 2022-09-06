@@ -1,13 +1,14 @@
 <?php
+
 namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\User;
+use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
-use Tests\Feature\Shared\RequestHelper;
 
 /**
  * Tests routes related to screens / CRUD related methods
@@ -16,18 +17,18 @@ use Tests\Feature\Shared\RequestHelper;
  */
 class ScreenCategoriesTest extends TestCase
 {
-
     use WithFaker;
     use ResourceAssertionsTrait;
     use RequestHelper;
 
     protected $resource = 'api.screen_categories';
+
     protected $structure = [
         'id',
         'name',
         'status',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
@@ -120,17 +121,17 @@ class ScreenCategoriesTest extends TestCase
     public function testFiltering()
     {
         $perPage = 10;
-        $initialInactiveCount = ScreenCategory::where('status','INACTIVE')->count();
+        $initialInactiveCount = ScreenCategory::where('status', 'INACTIVE')->count();
 
         factory(ScreenCategory::class, 3)->create(['is_system' => true, 'status' => 'ACTIVE']);
         // Create some screens
         $screenActive = [
             'num' => 10,
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
         ];
         $screenInactive = [
             'num' => 15,
-            'status' => 'INACTIVE'
+            'status' => 'INACTIVE',
         ];
         factory(ScreenCategory::class, $screenActive['num'])->create(['status' => $screenActive['status']]);
         factory(ScreenCategory::class, $screenInactive['num'])->create(['status' => $screenInactive['status']]);
@@ -148,7 +149,7 @@ class ScreenCategoriesTest extends TestCase
         $data = $response->json('data');
         $meta = $response->json('meta');
         // Verify the meta values
-        $this->assertArraySubset( [
+        $this->assertArraySubset([
             'total' => 1,
             'count' => 1,
             'per_page' => $perPage,
@@ -165,7 +166,7 @@ class ScreenCategoriesTest extends TestCase
         $data = $response->json('data');
         $meta = $response->json('meta');
         // Verify the meta values
-        $this->assertArraySubset( [
+        $this->assertArraySubset([
             'total' => $initialInactiveCount + $screenInactive['num'],
             'count' => $perPage,
             'per_page' => $perPage,
@@ -180,17 +181,17 @@ class ScreenCategoriesTest extends TestCase
     public function testFilteringStatus()
     {
         $perPage = 10;
-        $initialActiveCount = ScreenCategory::where('status','ACTIVE')->count();
-        $initialInactiveCount = ScreenCategory::where('status','INACTIVE')->count();
+        $initialActiveCount = ScreenCategory::where('status', 'ACTIVE')->count();
+        $initialInactiveCount = ScreenCategory::where('status', 'INACTIVE')->count();
 
         // Create some screens
         $screenActive = [
             'num' => 10,
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
         ];
         $screenInactive = [
             'num' => 15,
-            'status' => 'INACTIVE'
+            'status' => 'INACTIVE',
         ];
 
         factory(ScreenCategory::class, $screenActive['num'])->create(['status' => $screenActive['status']]);
@@ -206,7 +207,7 @@ class ScreenCategoriesTest extends TestCase
         $data = $response->json('data');
         $meta = $response->json('meta');
         // Verify the meta values
-        $this->assertArraySubset( [
+        $this->assertArraySubset([
             'total' => $initialActiveCount + $screenActive['num'],
             'count' => $perPage,
             'per_page' => $perPage,
@@ -222,10 +223,10 @@ class ScreenCategoriesTest extends TestCase
     {
         // Create some screens
         factory(ScreenCategory::class)->create([
-            'name' => 'aaaaaa'
+            'name' => 'aaaaaa',
         ]);
         factory(ScreenCategory::class)->create([
-            'name' => 'zzzzz'
+            'name' => 'zzzzz',
         ]);
 
         //Test the list sorted by name returns as first row {"name": "aaaaaa"}
@@ -239,14 +240,13 @@ class ScreenCategoriesTest extends TestCase
         $meta = $response->json('meta');
         // Verify the meta values
         $this->assertArraySubset([
-            'count' => count($data)
+            'count' => count($data),
         ], $meta);
 
         $firstRow = $this->getDataAttributes($data[0]);
         $this->assertArraySubset([
-            'name' => 'aaaaaa'
+            'name' => 'aaaaaa',
         ], $firstRow);
-
 
         //Test the list sorted desc returns as first row {"name": "zzzzz"}
         $response = $this->apiCall('GET', $route . '?order_by=name&order_direction=DESC');
@@ -261,13 +261,12 @@ class ScreenCategoriesTest extends TestCase
 
         $firstRow = $this->getDataAttributes($data[0]);
         $this->assertArraySubset([
-            'name' => 'zzzzz'
+            'name' => 'zzzzz',
         ], $firstRow);
     }
 
     /**
      * Test pagination of screen list
-     *
      */
     public function testPagination()
     {
@@ -288,8 +287,6 @@ class ScreenCategoriesTest extends TestCase
         $response = $this->apiCall('GET', route($this->resource . '.index', ['per_page' => 5, 'page' => 2]));
         $response->assertJsonCount((2 + $initialRows) % 5, 'data');
     }
-
-
 
     /**
      * Test show screen category
@@ -365,7 +362,6 @@ class ScreenCategoriesTest extends TestCase
         $response->assertStatus(422);
         //validate structure
         $response->assertJsonStructure(['errors' => ['name']]);
-
     }
 
     /*
@@ -432,5 +428,4 @@ class ScreenCategoriesTest extends TestCase
         $response->assertJsonStructure($this->errorStructure);
         $response->assertJsonStructure(['errors' => ['screens']]);
     }
-
 }

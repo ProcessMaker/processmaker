@@ -11,7 +11,7 @@ class ModelerPrintController extends Controller
     public function __invoke(Process $process)
     {
         return view('processes.modeler.print', [
-            'process' => $process
+            'process' => $process,
         ]);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-switch(env('DATA_DB_DRIVER', 'mysql')) {
+switch (env('DATA_DB_DRIVER', 'mysql')) {
     case 'pgsql':
         $charset = 'utf8';
         $collation = null;
@@ -72,7 +72,7 @@ return [
             'engine' => env('DATA_DB_ENGINE'),
             'date_format' => env('DATA_DB_DATE_FORMAT'),
             'timezone'  => env('DATA_DB_TIMEZONE'),
-        ]
+        ],
     ],
 
     /*
@@ -110,7 +110,7 @@ return [
     'redis' => [
         'client' => env('REDIS_CLIENT', 'predis'),
         'options' => [
-            'prefix' => env('REDIS_PREFIX', '')
+            'prefix' => env('REDIS_PREFIX', ''),
         ],
         'default' => [
             'host' => env('REDIS_HOST', '127.0.0.1'),

@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Providers;
 
 use Illuminate\Support\Facades\Broadcast;

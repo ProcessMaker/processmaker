@@ -1,21 +1,20 @@
 <?php
+
 namespace ProcessMaker\Listeners;
 
-use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
-use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
-use ProcessMaker\Nayra\Bpmn\Events\ActivityCompletedEvent;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
+use ProcessMaker\Nayra\Bpmn\Events\ActivityCompletedEvent;
+use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\GatewayInterface;
 
 /**
  * Description of BpmnSubscriber
- *
  */
 class CommentsSubscriber
 {
-
     /**
      * When the user completes a task.
      *
@@ -23,8 +22,8 @@ class CommentsSubscriber
      */
     public function onActivityCompleted(ActivityCompletedEvent $event)
     {
-        $token     = $event->token;
-        $user_id   = $token->user ? $token->user_id : null;
+        $token = $event->token;
+        $user_id = $token->user ? $token->user_id : null;
         $user_name = $token->user ? $token->user->fullname : __('The System');
 
         if (!is_int($token->process_request_id)) {
@@ -37,13 +36,13 @@ class CommentsSubscriber
             'commentable_type' => ProcessRequest::class,
             'commentable_id' => $token->process_request_id,
             'subject' => 'Task Complete',
-            'body' => __(":user has completed the task :task_name", ['user' => $user_name, 'task_name' => $token->element_name]),
+            'body' => __(':user has completed the task :task_name', ['user' => $user_name, 'task_name' => $token->element_name]),
         ]);
     }
 
     /**
      * When a task is skipped.
-     * 
+     *
      * ex. When a MultiInstance Task with Empty Input Items
      *
      * @param $event
@@ -62,7 +61,7 @@ class CommentsSubscriber
             'commentable_type' => ProcessRequest::class,
             'commentable_id' => $token->getInstance()->getId(),
             'subject' => 'Task Skipped',
-            'body' => __("The task :task_name was skipped", ['task_name' => $taskName]),
+            'body' => __('The task :task_name was skipped', ['task_name' => $taskName]),
         ]);
     }
 
@@ -71,7 +70,8 @@ class CommentsSubscriber
      * @param $tokens
      * @param $transition
      */
-    public function onGatewayPassed($gateway, $transition = null, $tokens = null) {
+    public function onGatewayPassed($gateway, $transition = null, $tokens = null)
+    {
         if ($transition === null || $tokens === null) {
             return;
         }
@@ -92,8 +92,8 @@ class CommentsSubscriber
         // wee need just one token to get the user data
         $token = $tokens->item(0);
 
-        foreach($usedFlows as $flow) {
-            $user_id   = $token->user ? $token->user_id : null;
+        foreach ($usedFlows as $flow) {
+            $user_id = $token->user ? $token->user_id : null;
             $flowProps = $flow->getProperties();
             $sourceProps = $gateway->getProperties();
             $sourceLabel = array_key_exists('name', $sourceProps) && $sourceProps['name']
@@ -114,7 +114,7 @@ class CommentsSubscriber
                 'commentable_type' => ProcessRequest::class,
                 'commentable_id' => $token->getInstance()->getId(),
                 'subject' => 'Gateway',
-                'body' => $sourceLabel . ': ' . $flowLabel
+                'body' => $sourceLabel . ': ' . $flowLabel,
             ]);
         }
     }

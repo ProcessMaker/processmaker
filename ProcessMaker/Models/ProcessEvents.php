@@ -1,18 +1,17 @@
 <?php
+
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 /**
  * Process events relationship
- *
  */
 class ProcessEvents extends Relation
 {
-
     /**
-     * @var Process[] $processModels
+     * @var Process[]
      */
     private $processModels = [];
 
@@ -73,6 +72,7 @@ class ProcessEvents extends Relation
             $events = collect($model->getStartEvents(true));
             $model->setRelation($relation, $events);
         }
+
         return $models;
     }
 }
