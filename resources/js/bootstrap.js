@@ -251,30 +251,32 @@ if (window.Processmaker && window.Processmaker.broadcasting) {
 
 if (userID) {
   // Session timeout
-  const timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]").content;
+  let timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]").content;
   window.ProcessMaker.AccountTimeoutLength = parseInt(eval(document.head.querySelector("meta[name=\"timeout-length\"]").content));
   window.ProcessMaker.AccountTimeoutWarnSeconds = parseInt(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]").content);
+  window.ProcessMaker.AccountTimeoutEnabled = document.head.querySelector("meta[name=\"timeout-enabled\"]") ? parseInt(document.head.querySelector("meta[name=\"timeout-enabled\"]").content) : 1;
   window.ProcessMaker.AccountTimeoutWorker = new Worker(timeoutScript);
-  window.ProcessMaker.AccountTimeoutWorker.addEventListener("message", (e) => {
-    if (e.data.method === "countdown") {
+  window.ProcessMaker.AccountTimeoutWorker.addEventListener('message', function (e) {
+    if (e.data.method === 'countdown') {
       window.ProcessMaker.sessionModal(
-        "Session Warning",
-        "<p>Your user session is expiring. If your session expires, all of your unsaved data will be lost.</p><p>Would you like to stay connected?</p>",
+        'Session Warning',
+        '<p>Your user session is expiring. If your session expires, all of your unsaved data will be lost.</p><p>Would you like to stay connected?</p>',
         e.data.data.time,
-        window.ProcessMaker.AccountTimeoutWarnSeconds,
+        window.ProcessMaker.AccountTimeoutWarnSeconds
       );
     }
-    if (e.data.method === "timedOut") {
-      window.location = "/logout?timeout=true";
+    if (e.data.method === 'timedOut') {
+      window.location = '/logout?timeout=true';
     }
   });
 
   window.ProcessMaker.AccountTimeoutWorker.postMessage({
-    method: "start",
+    method: 'start',
     data: {
       timeout: window.ProcessMaker.AccountTimeoutLength,
       warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds,
-    },
+      enabled: window.ProcessMaker.AccountTimeoutEnabled
+    }
   });
 }
 
@@ -283,14 +285,14 @@ if (userID) {
     .notification((token) => {
       ProcessMaker.pushNotification(token);
     })
-    .listen(".SessionStarted", (e) => {
-      const lifetime = parseInt(eval(e.lifetime));
+    .listen('.SessionStarted', (e) => {
+      let lifetime = parseInt(eval(e.lifetime));
       window.ProcessMaker.AccountTimeoutWorker.postMessage({
-        method: "start",
+        method: 'start',
         data: {
           timeout: lifetime,
-          warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds,
-        },
+          warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds
+        }
       });
       window.ProcessMaker.closeSessionModal();
     });
