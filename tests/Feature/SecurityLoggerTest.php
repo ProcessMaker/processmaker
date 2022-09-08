@@ -48,6 +48,10 @@ class SecurityLoggerTest extends TestCase
 
         // Disable security logging
         config(['auth.log_auth_events' => false]);
+
+        // We need to do our own teardown here since were not using
+        // transactions for this test
+        User::where('username', '!=', '_pm4_anon_user')->forceDelete();
     }
 
     /**
