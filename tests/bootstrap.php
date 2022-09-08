@@ -94,6 +94,7 @@ if (env('TEST_TOKEN')) {
 } elseif (env('POPULATE_DATABASE')) {
     Artisan::call('db:wipe', ['--database' => \DB::connection()->getName()]);
     Artisan::call('migrate:fresh', []);
+    Artisan::call('db:seed', ['--class' => 'AnonymousUserSeeder']);
 
     ScriptExecutor::firstOrCreate(
         ['language' => 'php'],

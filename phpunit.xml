@@ -53,6 +53,7 @@
       <env name="DATA_DB_TIMEZONE" value="+00:00" />
 
       <!-- Log config -->
+      <env name="LOG_CHANNEL" value="test" />
 
       <!-- MS Sql server -->
       <env name="RUN_MSSQL_TESTS" value="false" />
