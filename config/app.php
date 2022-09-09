@@ -98,10 +98,6 @@ return [
     // Global app settings
     'settings' => [
 
-        // Indicates if settings from the database have
-        // been bound in the global app configuration
-        'loaded' => false,
-
         // Path to logo image to be used on login page
         'login_logo_path' => env('LOGIN_LOGO_PATH', '/img/processmaker-login.svg'),
 
@@ -152,6 +148,7 @@ return [
          * ProcessMaker Service Providers
          */
         ProcessMaker\Providers\ProcessMakerServiceProvider::class,
+        ProcessMaker\Providers\SettingServiceProvider::class,
         ProcessMaker\Providers\AuthServiceProvider::class,
         ProcessMaker\Providers\EventServiceProvider::class,
         ProcessMaker\Providers\HorizonServiceProvider::class,
