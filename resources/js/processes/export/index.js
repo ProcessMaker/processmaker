@@ -8,7 +8,7 @@ const routes = [
         path: '/processes/:processId/export', 
         name: 'main', 
         component: ExportManagerView,
-        props: route => (console.log('route', route), {
+        props: route => ({
             processId: route.params.processId,
             routeName: 'main',
           })
