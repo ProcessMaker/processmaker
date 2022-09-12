@@ -17,9 +17,10 @@ use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
+use ProcessMaker\Http\Resources\ProcessRequests;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\ProcessRequest;
-use Spatie\MediaLibrary\HasMedia\HasMedia;
+//use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
 class ProcessRequestFileController extends Controller
@@ -85,13 +86,14 @@ class ProcessRequestFileController extends Controller
      */
     public function index(Request $laravel_request, ProcessRequest $request)
     {
-        $parentId = $request->parent_request_id;
+        /*$parentId = $request->parent_request_id;
         $parentRequest = $request;
 
         while($parentId != null) {
             $parentRequest = ProcessRequest::find($parentId);
             $parentId = $parentRequest->parent_request_id;
-        }
+        }*/
+        $parentRequest = Media::getParentRequest($request);
 
         $media = Media::where('model_id', $parentRequest->id)->get();
 
@@ -165,8 +167,17 @@ class ProcessRequestFileController extends Controller
      *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
-    public function show(Request $laravel_request, ProcessRequest $request, Media $file)
+    public function show(Request $laravel_request, ProcessRequest $request, $file)
     {
+        dd('-----------------------');
+        \Log::debug($file);
+        $parentRequest = Media::getParentRequest($request);
+        $file = Media::where([
+            'model_id' => $parentRequest->id,
+            'model_type' => ProcessRequests::class,
+            'id' => $file
+        ])->firstOrFail();
+
         $path = Storage::disk('public')->getAdapter()->getPathPrefix() .
             $file->id . '/' .
             $file->file_name;
@@ -278,7 +289,7 @@ class ProcessRequestFileController extends Controller
         $parentId = $processRequest->parent_request_id;
         $parentRequest = $processRequest;
 
-        while($parentId != null) {
+        while ($parentId != null) {
             $parentRequest = ProcessRequest::find($parentId);
             $parentId = $parentRequest->parent_request_id;
         }
@@ -295,7 +306,8 @@ class ProcessRequestFileController extends Controller
             if (
                 $mediaItem->getCustomProperty('data_name') == $data_name &&
                 $mediaItem->getCustomProperty('parent') == $parent &&
-                $mediaItem->getCustomProperty('row_id') == $rowId) {
+                $mediaItem->getCustomProperty('row_id') == $rowId
+            ) {
                 $originalCreatedBy = $mediaItem->getCustomProperty('createdBy');
                 if (empty($multiple)) {
                     $mediaItem->delete();

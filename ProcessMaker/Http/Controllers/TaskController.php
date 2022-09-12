@@ -3,18 +3,19 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Request;
-use ProcessMaker\Events\ScreenBuilderStarting;
-use ProcessMaker\Managers\DataManager;
-use ProcessMaker\Managers\ScreenBuilderManager;
+use ProcessMaker\Models\User;
+use ProcessMaker\Models\Media;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Notification;
+use ProcessMaker\Managers\DataManager;
+use Illuminate\Support\Facades\Request;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\User;
-use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Traits\HasControllerAddons;
+use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
+use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 
 class TaskController extends Controller
 {
@@ -77,12 +78,13 @@ class TaskController extends Controller
         if ($element instanceof ScriptTaskInterface) {
             return redirect(route('requests.show', ['request' => $task->processRequest->getKey()]));
         } else {
+            $parentRequest = Media::getParentRequest($task->processRequest);
             return view('tasks.edit', [
                 'task' => $task,
                 'dueLabels' => self::$dueLabels,
                 'manager' => $manager,
                 'submitUrl' => $submitUrl,
-                'files' => $task->processRequest->requestFiles(),
+                'files' => $parentRequest->requestFiles(),
                 'addons' => $this->getPluginAddons('edit', []),
                 'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
             ]);

@@ -3,24 +3,25 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
-use ProcessMaker\Events\ScreenBuilderStarting;
-use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Managers\DataManager;
-use ProcessMaker\Managers\ScreenBuilderManager;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\ScreenVersion;
-use ProcessMaker\Package\PackageComments\PackageServiceProvider;
-use ProcessMaker\Traits\HasControllerAddons;
-use ProcessMaker\Traits\SearchAutocompleteTrait;
-use Spatie\MediaLibrary\HasMedia\HasMedia;
-use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Spatie\MediaLibrary\Models\Media;
+use ProcessMaker\Managers\DataManager;
+use ProcessMaker\Models\ScreenVersion;
+use ProcessMaker\Models\ProcessRequest;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Traits\HasControllerAddons;
+use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Models\Media as ModelsMedia;
+use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\Managers\ScreenBuilderManager;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use ProcessMaker\Traits\SearchAutocompleteTrait;
+use ProcessMaker\Package\PackageComments\PackageServiceProvider;
 
 class RequestController extends Controller
 {
@@ -113,7 +114,9 @@ class RequestController extends Controller
         $canViewComments = (Auth::user()->hasPermissionsFor('comments')->count() > 0) || class_exists(PackageServiceProvider::class);
         $canManuallyComplete = Auth::user()->is_administrator && $request->status === 'ERROR';
 
-        $files = $request->getMedia();
+        //$files = $request->getMedia();
+        $parentRequest = \ProcessMaker\Models\Media::getParentRequest($request);
+        $files = $parentRequest->getMedia();
 
         $canPrintScreens = $this->canUserPrintScreen($request);
         $screenRequested = $canPrintScreens ? $request->getScreensRequested() : [];
