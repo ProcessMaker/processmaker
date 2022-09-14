@@ -48,7 +48,7 @@ abstract class ExporterBase implements ExporterInterface
         $r = [];
         foreach ($dependents as $dependent) {
             $exporter = $this->manifest->get($dependent->uuid);
-            if ($depth > 3) {
+            if ($depth > 5) {
                 $dependentsInfo = implode(',', array_map(fn ($d) => "($d->type) $d->uuid", $exporter->dependents));
             } else {
                 $dependentsInfo = $this->treeRecursion($exporter->dependents, $depth + 1);

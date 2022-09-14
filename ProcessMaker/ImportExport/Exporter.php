@@ -7,20 +7,18 @@ use ProcessMaker\Models\Screen;
 
 class Exporter
 {
-    public $manifest;
+    public function export($model, $exporterClass)
+    {
+        $manifest = new Manifest();
+        $rootExporter = new $exporterClass($model, $manifest);
+        $manifest->push($model->uuid, $rootExporter);
+        $rootExporter->export();
 
-    private $rootExporter;
+        return $rootExporter->tree();
+    }
 
     public function exportScreen(Screen $screen)
     {
-        $this->manifest = new Manifest();
-        $this->rootExporter = new ScreenExporter($screen, $this->manifest);
-        $this->manifest->push($screen->uuid, $this->rootExporter);
-        $this->rootExporter->export();
-    }
-
-    public function tree()
-    {
-        return $this->rootExporter->tree();
+        return $this->export($screen, ScreenExporter::class);
     }
 }

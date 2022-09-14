@@ -2,13 +2,14 @@
 
 namespace Tests;
 
+use Illuminate\Support\Arr;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 
 class ExporterTest extends TestCase
 {
-    public function testExporter()
+    public function testExportScreen()
     {
         $screen = factory(Screen::class)->create();
         $screenCategory1 = factory(ScreenCategory::class)->create();
@@ -17,13 +18,10 @@ class ExporterTest extends TestCase
         $screen->save();
 
         $exporter = new Exporter();
-        $exporter->exportScreen($screen);
+        $tree = $exporter->exportScreen($screen);
 
-        // WIP
-        echo "\n";
-        foreach ($exporter->manifest->getAll() as $uuid => $manifestExporter) {
-            echo "$uuid -- " . get_class($manifestExporter->model) . "\n";
-        }
-        print_r($exporter->tree());
+        $this->assertEquals($screen->uuid, Arr::get($tree, '0.uuid'));
+        $this->assertEquals($screenCategory1->uuid, Arr::get($tree, '0.dependents.0.uuid'));
+        $this->assertEquals($screenCategory2->uuid, Arr::get($tree, '0.dependents.1.uuid'));
     }
 }
