@@ -21,6 +21,10 @@
               :noDataTemplate="$t('No Data Available')"
       >
         <template slot="name" slot-scope="props">
+          <span v-uni-id="props.rowData.id.toString()">{{props.rowData.name}}</span>
+        </template>
+
+        <template slot="status" slot-scope="props">
           <i tabindex="0"
             v-b-tooltip
             :title="props.rowData.warningMessages.join(' ')"
@@ -31,10 +35,9 @@
             v-if="props.rowData.status == 'ACTIVE' || props.rowData.status == 'INACTIVE'"
             v-b-tooltip
             :title="props.rowData.status"
-            class="mr-2"
             :class="{ 'fas fa-check-circle text-success': props.rowData.status == 'ACTIVE', 'far fa-circle': props.rowData.status == 'INACTIVE' }">
           </i>
-          <span v-uni-id="props.rowData.id.toString()">{{props.rowData.name}}</span>
+          <span>{{ props.rowData.status | capitalize }}</span>
         </template>
 
         <template slot="owner" slot-scope="props">
@@ -155,6 +158,15 @@
   export default {
     mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
     props: ["filter", "id", "status", "permission", "isDocumenterInstalled"],
+    filters: {
+      capitalize(value) {
+        if (!value) {
+          return '';
+        }
+        value = value.toString().toLowerCase();
+        return value.charAt(0).toUpperCase() + value.slice(1);
+      }
+    },
     data() {
       return {
         orderBy: "name",
@@ -172,6 +184,12 @@
             name: "__slot:name",
             field: "name",
             sortField: "name"
+          },
+          {
+            title: () => this.$t("Status"),
+            name: "__slot:status",
+            field: "status",
+            sortField: "status"
           },
           {
             title: () => this.$t("Category"),
