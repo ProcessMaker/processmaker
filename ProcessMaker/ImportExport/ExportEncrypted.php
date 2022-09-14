@@ -24,7 +24,7 @@ class ExportEncrypted
      */
     public function call(array $package): array
     {
-        $package['export'] = $this->encrypter->encrypt($package['export']);
+        $package['export'] = $this->encrypter->encrypt(json_encode($package['export']));
         $package['encrypted'] = true;
 
         return $package;
