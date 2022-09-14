@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Processes;
+namespace Tests\Feature\ImportExport;
 
 use ProcessMaker\ImportExport\ExportEncrypted;
 use Tests\TestCase;
