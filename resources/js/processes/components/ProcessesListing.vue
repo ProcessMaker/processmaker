@@ -21,7 +21,10 @@
               :noDataTemplate="$t('No Data Available')"
       >
         <template slot="name" slot-scope="props">
-          <span v-uni-id="props.rowData.id.toString()">{{props.rowData.name}}</span>
+          <div v-uni-id="props.rowData.id.toString()">
+            <div>{{ props.rowData.name }}</div>
+            <div class="text-muted small">{{ props.rowData.description | characterLimit(40)}}</div>
+          </div>
         </template>
 
         <template slot="status" slot-scope="props">
@@ -165,6 +168,12 @@
         }
         value = value.toString().toLowerCase();
         return value.charAt(0).toUpperCase() + value.slice(1);
+      },
+      characterLimit(value, limit) {
+        if (value.length > limit) {
+          return value.substring(0,limit).trim() + "....";
+        }
+        return value;
       }
     },
     data() {
