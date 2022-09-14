@@ -42,6 +42,21 @@
           </i>
           <span>{{ props.rowData.status | capitalize }}</span>
         </template>
+        <!-- TODO: Configure Process Manager Column -->
+        <!-- <template slot="processManager" slot-scope="props">
+           <avatar-image
+                  v-if="props.rowData.manager_id"
+                  class="d-inline-flex pull-left align-items-center"
+                  size="25"
+                  :input-data="props.rowData.manager_id"
+                  hide-name="true"
+          ></avatar-image>
+          <div v-else>unassigned</div>
+        </template> -->
+
+         <template slot="categories" slot-scope="props">
+          {{ props.rowData }}
+        </template>
 
         <template slot="owner" slot-scope="props">
           <avatar-image
@@ -200,12 +215,24 @@
             field: "status",
             sortField: "status"
           },
+          // TODO: Configure Process Manger column
+          // {
+          //   title: () => this.$t("Process Manager"),
+          //   name: "__slot:processManager",
+          //   field: "processManager",
+          //   sortField: "processManager"
+          // },
           {
             title: () => this.$t("Category"),
             name: "categories",
             sortField: "category.name",
             callback(categories) {
-              return categories.map(item => item.name).join(', ');
+              let length = categories.length - 2;
+              let badge = '';
+              if (length > 0) {
+                badge = "<span class='b-badge'>+" + length + "</span>";
+              }
+              return categories.slice(0,2).map(item => item.name).join(', ') + badge;
             }
           },
           {
@@ -415,12 +442,18 @@
   };
 </script>
 
-<style lang="scss" scoped>
-  >>> th#_updated_at {
-    width: 14%;
-  }
-
-  >>> th#_created_at {
-    width: 14%;
+<style lang="scss">
+  .b-badge {
+    margin-left: 3px;
+    background: #e8f7fbcf;
+    border-radius: 100%;
+    width: 26px;
+    height: 26px;
+    display: inline-block;
+    font-size: 12px;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid white;
+    line-height: 25px;
   }
 </style>
