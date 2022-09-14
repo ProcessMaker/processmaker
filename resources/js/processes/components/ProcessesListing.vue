@@ -54,10 +54,6 @@
           <div v-else>unassigned</div>
         </template> -->
 
-         <template slot="categories" slot-scope="props">
-          {{ props.rowData }}
-        </template>
-
         <template slot="owner" slot-scope="props">
           <avatar-image
                   class="d-inline-flex pull-left align-items-center"
