@@ -13,4 +13,19 @@ class Dependent
         $this->type = $type;
         $this->uuid = $uuid;
     }
+
+    public function toArray()
+    {
+        return [
+            'type' => $this->type,
+            'uuid' => $this->uuid,
+        ];
+    }
+
+    public static function fromArray(array $array)
+    {
+        return array_map(function($dependent) {
+            return new self($dependent['type'], $dependent['uuid']);
+        }, $array);
+    }
 }
