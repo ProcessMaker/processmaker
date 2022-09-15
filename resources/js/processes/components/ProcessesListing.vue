@@ -438,8 +438,8 @@
         const hiddenQuantityIndicator = length - 2;
 
         let filtered = [];
-        filtered['visibleCategories'] = visibleCategories;
-        filtered['hiddenCategories'] = hiddenCategories;
+        filtered['visible'] = visibleCategories;
+        filtered['hidden'] = hiddenCategories;
         filtered['hiddenQuantityIndicator'] = hiddenQuantityIndicator;
         return filtered;
       },

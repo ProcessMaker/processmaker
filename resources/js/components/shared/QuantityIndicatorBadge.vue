@@ -1,7 +1,13 @@
 <template>
     <div>
-       {{ visibleCategoryList }}
-        <div v-if="value.quantity > 0" v-b-tooltip.hover.top class="quanity-badge" :title="hiddenCategorylist" v-text="'+' + quantityIndicator"></div>
+       {{ visibleList }}
+        <div 
+            v-if="quantityIndicator > 0" 
+            v-b-tooltip.hover.top="hiddenList" 
+            class="quantity-badge"
+        >
+            {{quantityIndicator}}
+        </div>
     </div>
 </template>
 
@@ -9,30 +15,30 @@
 export default {
     props: ['value'],
     computed: {
-        visibleCategoryList() {
+        visibleList() {
             if (!this.value) {
                 return;
             }
-            return this.value.visibleCategories;
+            return this.value.visible;
         },
-        hiddenCategorylist() {
+        hiddenList() {
             if (!this.value) {
                 return;
             }
-            return this.value.hiddenCategories;
+            return this.value.hidden;
         },
         quantityIndicator() {
             if (!this.value) {
                 return;
             }
-            return this.value.hiddenQuantityIndicator;
+            return '+' + this.value.hiddenQuantityIndicator;
         }
     }
 }
 </script>
 
 <style>
-    .quanity-badge {
+    .quantity-badge {
         margin-left: 3px;
         background: #e8f7fbcf;
         border-radius: 100%;
