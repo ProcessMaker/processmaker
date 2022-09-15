@@ -10,13 +10,6 @@
                     <div class="card-body">
                         <div id="pre-import" v-if="! importing && ! imported">
                             <draggable-file-upload ref="file" v-model="file" :options="{singleFile: true}" :accept="['.spark', 'application/json']"></draggable-file-upload>
-                            
-                            <!-- <input id="import-file" type="file" ref="file" class="d-none" @change="handleFile" accept=".spark,.json" :aria-label="$t('Select a file')">
-
-                            <button @click="$refs.file.click()" class="btn btn-secondary">
-                                <i class="fas fa-upload"></i>
-                                {{$t('Browse')}}
-                            </button>  -->
                         </div>
                         <div id="during-import" v-if="importing" v-cloak>
                             <h4 class="card-title mt-5 mb-5">
@@ -30,7 +23,7 @@
                                     <span class="fa-li">
                                         <i :class="item.success ? 'fas fa-check text-success' : 'fas fa-times text-danger'"></i>
                                     </span>
-                                    @{{ $t(item.message) }} <strong>@{{ item.label }}</strong>
+                                    {{ $t(item.message) }} <strong>{{ item.label }}</strong>
                                 </li>
                             </ul>
                             <div id="post-import-assignable" v-if="assignable" v-cloak>
@@ -45,7 +38,7 @@
                                         <tbody>
                                         <tr v-for="item in assignable">
                                             <td class="assignable-name text-right">
-                                                @{{ $t(item.prefix) }} <strong>@{{item.name }}</strong> @{{ $t(item.suffix) }}
+                                                {{ $t(item.prefix) }} <strong>{{item.name }}</strong> {{ $t(item.suffix) }}
                                                 <i class="assignable-arrow fas fa-long-arrow-alt-right"></i>
                                             </td>
                                             <td v-if="item.type === 'webentryCustomRoute'" class="assinable-entity">
@@ -329,7 +322,6 @@ export default {
         file() {
             this.uploaded = true;
             this.submitted = false;
-            console.log('FILE CHANGED', this.file);
         }
     },
     computed: {
@@ -470,12 +462,6 @@ export default {
         onAssignmentCancel() {
             this.onCancel();
         },
-        handleFile(e) {
-            console.log('HANDLE FILE', e, this.$refs);
-            this.file = this.$refs.file.files[0];
-            this.uploaded = true;
-            this.submitted = false;
-        },
         reload() {
             window.location.reload();
         },
@@ -486,31 +472,26 @@ export default {
             this.importing = true;
             let formData = new FormData();
             formData.append('file', this.file);
-            formData.append('foo', 'foobar');
-            console.log('IMPORT FILE', this.file);
-            console.log('REFS', this.$refs);
-            console.log('FORM DATA', formData.get('file'));
       
             if (this.submitted) {
-                return
+                return;
             }
             this.submitted = true;
-            ProcessMaker.apiClient.post('/processes/import?queue=1',
-                formData,
+            ProcessMaker.apiClient.post('/processes/import?queue=1', formData,
                 {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
                 }
             )
-                .then(response => {
+            .then(response => {
                 window.location.hash = `#code=${response.data.code}`;
                 this.importingCode = response.data.code;
-                })
-                .catch(error => {
+            })
+            .catch(error => {
                 this.submitted = false;
                 ProcessMaker.alert(this.$t('Unable to import the process.')  + (error.response.data.message ? ': ' + error.response.data.message : ''), 'danger');
-                });
+            });
         },
         importReady(response) {
             let message = this.$t("Unable to import the process.");

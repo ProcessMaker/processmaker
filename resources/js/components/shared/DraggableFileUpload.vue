@@ -38,7 +38,7 @@ const uniqIdsMixin = createUniqIdsMixin();
 export default {
   components: uploader,
   mixins: [uniqIdsMixin],
-  props: [ "options", "name", "accept"],
+  props: [ "options", "accept"],
   computed: {
     inProgress() {
       return this.$refs.uploader.fileList.some(file => file._prevProgress < 1);
@@ -61,17 +61,12 @@ export default {
         }
       }
       file.ignored = false;
-      if (!this.name) {
-        this.options.query.data_name = file.name
-      }
-      
+    //   this.options.query.data_name = file.name
+    
       return true;
     },
     fileUploaded(rootFile, file, message) {
-        console.log('ROOT FILE', rootFile);
-        console.log('file', file);
-        console.log('MESSAGE', message);
-        this.$emit('input', rootFile.file);
+        this.$emit('input', file.file);
     },
   }
 };
