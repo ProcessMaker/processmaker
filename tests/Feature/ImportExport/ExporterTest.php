@@ -42,6 +42,7 @@ class ExporterTest extends TestCase
         $this->assertEquals($screenCategory1->uuid, Arr::get($tree, '0.dependents.0.uuid'));
         $this->assertEquals($screenCategory2->uuid, Arr::get($tree, '0.dependents.1.uuid'));
         $this->assertEquals($script->uuid, Arr::get($tree, '0.dependents.2.uuid'));
+        $this->assertEquals($script->category->uuid, Arr::get($tree, '0.dependents.2.dependents.0.uuid'));
         $this->assertEquals($nestedScreen->uuid, Arr::get($tree, '0.dependents.3.uuid'));
         $this->assertEquals($screenCategory1->uuid, Arr::get($tree, '0.dependents.3.dependents.0.uuid'));
     }
