@@ -31,6 +31,6 @@ class ScreenExporter extends ExporterBase
         }
         $screen->screen_category_id = implode(',', $categoryIds);
 
-        return $screen->save();
+        return $this->model->save();
     }
 }
