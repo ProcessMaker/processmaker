@@ -8,35 +8,42 @@ class Importer
 {
     public $options;
 
-    public function __construct(Options $options)
+    public $payload;
+
+    public $manifest;
+
+    public function __construct(array $payload, Options $options)
     {
+        $this->payload = $payload;
         $this->options = $options;
+        $this->manifest = $this->loadManifest();
     }
 
-    public function prviewImport(array $import)
+    public function prviewImport()
     {
-        $manifest = $this->loadManifest($import);
-
-        return $manifest->toArray();
+        return $this->manifest->toArray();
     }
 
-    public function loadManifest(array $import)
+    public function loadManifest()
     {
-        return Manifest::fromArray($import['export'], $this->options);
+        return Manifest::fromArray($this->payload['export'], $this->options);
     }
 
-    private function doImport($exporters)
+    public function doImport()
     {
         // imports must happen on leaf nodes and go backwards from there??
         DB::transaction(function () {
+            foreach ($this->manifest->orderForImport() as $uuid) {
+                $exporter = $this->manifest->get($uuid);
+                $exporter->import();
+            }
         });
     }
 
-    public function tree(array $import)
+    public function tree()
     {
-        $manifest = $this->loadManifest($import);
-        $rootExporter = $manifest->get($import['root']);
+        $rootExporter = $this->manifest->get($this->payload['root']);
 
-        return (new Tree($manifest))->tree($rootExporter);
+        return (new Tree($this->manifest))->tree($rootExporter);
     }
 }

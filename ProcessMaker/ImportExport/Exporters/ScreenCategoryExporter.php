@@ -12,6 +12,6 @@ class ScreenCategoryExporter extends ExporterBase
 
     public function import() : bool
     {
-        return true;
+        return $this->model->save();
     }
 }

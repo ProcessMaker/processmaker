@@ -17,7 +17,7 @@ class Tree
 
     public function tree(ExporterInterface $rootExporter)
     {
-        $rootDependent = new Dependent('root', $rootExporter->uuid());
+        $rootDependent = new Dependent('root', $rootExporter->uuid(), $this->manifest);
 
         return $this->treeRecursion([$rootDependent]);
     }

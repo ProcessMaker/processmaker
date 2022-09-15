@@ -35,7 +35,7 @@ abstract class ExporterBase implements ExporterInterface
             $exporter->export();
         }
 
-        $this->dependents[] = new Dependent($type, $uuid);
+        $this->dependents[] = new Dependent($type, $uuid, $this->manifest);
     }
 
     public function getExportAttributes()

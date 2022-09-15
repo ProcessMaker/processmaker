@@ -33,7 +33,7 @@ class ScreenExporter extends ExporterBase
         foreach ($this->dependents as $dependent) {
             switch ($dependent->type) {
                 case DependentType::CATEGORIES:
-                    $categoryIds = $dependent->model->id;
+                    $categoryIds[] = $dependent->model->id;
                     break;
             }
         }

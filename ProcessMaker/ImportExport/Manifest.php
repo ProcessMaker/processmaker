@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\ImportExport;
 
+use MJS\TopSort\Implementations\StringSort;
 use ProcessMaker\ImportExport\Exporters\ExporterInterface;
 
 class Manifest
@@ -16,6 +17,11 @@ class Manifest
     public function get($uuid)
     {
         return $this->manifest[$uuid];
+    }
+
+    public function set($manifest)
+    {
+        return $this->manifest = $manifest;
     }
 
     public function toArray()
@@ -34,7 +40,7 @@ class Manifest
         foreach ($array as $uuid => $assetInfo) {
             $model = self::getModel($uuid, $assetInfo, $options);
             $exporter = new $assetInfo['exporter']($model, $manifest);
-            $exporter->dependents = Dependent::fromArray($assetInfo['dependents']);
+            $exporter->dependents = Dependent::fromArray($assetInfo['dependents'], $manifest);
             $manifest->push($uuid, $exporter);
         }
 
@@ -74,5 +80,16 @@ class Manifest
 
                 return $model;
         }
+    }
+
+    public function orderForImport()
+    {
+        $sorter = new StringSort();
+        foreach ($this->manifest as $uuid => $exporter) {
+            $dependentUuids = array_map(fn ($d) => $d->uuid, $exporter->dependents);
+            $sorter->add($uuid, $dependentUuids);
+        }
+
+        return $sorter->sort();
     }
 }
