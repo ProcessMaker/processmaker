@@ -5,25 +5,18 @@
                 <div class="card text-center">
                     <div class="card-header bg-light" align="left">
                         <h5 class="mb-0">{{$t('Import Process')}}</h5>
+                        <small class="text-muted">{{ $t('Import a Process and its associated assets into this ProcessMaker environment') }}</small>
                     </div>
                     <div class="card-body">
                         <div id="pre-import" v-if="! importing && ! imported">
-                            <h5 class="card-title">{{$t('You are about to import a Process.')}}</h5>
-                            <p class="card-text d-flex justify-content-center">{{$t('After importing, you can reassign users and groups to your Process.')}}</p>
-                            <div class="d-flex justify-content-center">
-                                <b-card header-class="d-flex bg-light align-items-center card-size-header border-0"
-                                        class="d-flex flex-row card-border border-0 mb-1" style="width: 40em;">
-                                    <i slot="header" class='fas fa-exclamation-circle fa-4x'></i>
-                                    {{$t('ProcessMaker does not import Environment Variables or Enterprise Packages. You must manually configure these features.')}}
-                                </b-card>
-                            </div>
-
-                            <input id="import-file" type="file" ref="file" class="d-none" @change="handleFile" accept=".spark,.json" :aria-label="$t('Select a file')">
+                            <draggable-file-upload ref="file" v-model="file" :options="{singleFile: true}" :accept="['.spark', 'application/json']" ></draggable-file-upload>
+                            
+                            <!-- <input id="import-file" type="file" ref="file" class="d-none" @change="handleFile" accept=".spark,.json" :aria-label="$t('Select a file')">
 
                             <button @click="$refs.file.click()" class="btn btn-secondary">
                                 <i class="fas fa-upload"></i>
                                 {{$t('Browse')}}
-                            </button>
+                            </button>  -->
                         </div>
                         <div id="during-import" v-if="importing" v-cloak>
                             <h4 class="card-title mt-5 mb-5">
@@ -299,9 +292,10 @@
 
 <script>
 const importingCode = window.location.hash.match(/#code=(.+)/);
+import DraggableFileUpload from '../../../components/shared/DraggableFileUpload';
 export default {
     props: [''],
-    components: {},
+    components: {DraggableFileUpload},
     mixins: [],
     data() {
         return {
@@ -329,6 +323,13 @@ export default {
         titleCase: function (value) {
             value = value.toString();
             return value.charAt(0).toUpperCase() + value.slice(1);
+        }
+    },
+    watch: {
+        file() {
+            this.uploaded = true;
+            this.submitted = false;
+            console.log('FILE CHANGED', this.file);
         }
     },
     computed: {
@@ -470,6 +471,7 @@ export default {
             this.onCancel();
         },
         handleFile(e) {
+            console.log('HANDLE FILE', e, this.$refs);
             this.file = this.$refs.file.files[0];
             this.uploaded = true;
             this.submitted = false;
@@ -484,6 +486,11 @@ export default {
             this.importing = true;
             let formData = new FormData();
             formData.append('file', this.file);
+            formData.append('foo', 'foobar');
+            console.log('IMPORT FILE', this.file);
+            console.log('REFS', this.$refs);
+            console.log('FORM DATA', formData.get('file'));
+      
             if (this.submitted) {
                 return
             }
