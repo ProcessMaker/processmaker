@@ -18,57 +18,13 @@ class Manifest
         return $this->manifest[$uuid];
     }
 
-    public function toArray()
+    public function getAll()
     {
-        $manifest = [];
-        foreach ($this->manifest as $uuid => $exporter) {
-            $manifest[$uuid] = $exporter->toArray();
-        }
-        return $manifest;
-    }
-
-    public static function fromArray(array $array, Options $options)
-    {
-        $manifest = new self();
-        foreach($array as $uuid => $assetInfo) {
-            $model = self::getModel($uuid, $assetInfo, $options);
-            $exporter = new $assetInfo['exporter']($model, $manifest);
-            $exporter->dependents = Dependent::fromArray($assetInfo['dependents']);
-            $manifest->push($uuid, $exporter);
-        }
-        return $manifest;
+        return $this->manifest;
     }
 
     public function push(string $uuid, ExporterInterface $exporter)
     {
         $this->manifest[$uuid] = $exporter;
     }
-    
-    public static function getModel($uuid, $assetInfo, $options){
-        $class = $assetInfo['model'];
-        $mode = $options->get('mode', $uuid);
-
-        $modelQuery = $class::where('uuid', $uuid);
-
-        if ($modelQuery->exists()) {
-            $model = $modelQuery->first();
-        } else {
-            $mode = 'new';
-        }
-
-        switch ($mode) {
-            case 'update' :
-                $model = $modelQuery->first();
-                $model->fill($assetInfo['attributes']);
-                return $model;
-            case 'discard' :
-                return $modelQuery->first();
-            case 'new' :
-                $model = new $class();
-                $model->fill($assetInfo['attributes']);
-                $model->uuid = $uuid;
-                return $model;
-        }
-    }
-
 }

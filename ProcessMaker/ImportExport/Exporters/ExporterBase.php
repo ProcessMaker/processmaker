@@ -12,8 +12,6 @@ abstract class ExporterBase implements ExporterInterface
 
     public $dependents = [];
 
-    public $manifest = null;
-
     public function __construct(Model $model, Manifest $manifest)
     {
         $this->model = $model;
@@ -38,21 +36,32 @@ abstract class ExporterBase implements ExporterInterface
         $this->dependents[] = new Dependent($type, $uuid);
     }
 
-    public function getExportAttributes()
+    public function tree()
     {
-        $attrs = $this->model->getAttributes();
-        unset($attrs['id']);
-        return $attrs;
+        $rootDependent = new Dependent('root', $this->model->uuid);
+
+        return $this->treeRecursion([$rootDependent]);
     }
-    
-    public function toArray()
+
+    public function treeRecursion($dependents, $depth = 0)
     {
-        return [
-            'exporter' => get_class($this),
-            'model' => get_class($this->model),
-            'attributes' => $this->getExportAttributes(),
-            'dependents' => array_map(fn($d) => $d->toArray(), $this->dependents),
-            'existing' => $this->model->exists ? $this->model->id : null,
-        ];
+        $r = [];
+        foreach ($dependents as $dependent) {
+            $exporter = $this->manifest->get($dependent->uuid);
+            if ($depth > 5) {
+                $dependentsInfo = implode(',', array_map(fn ($d) => "($d->type) $d->uuid", $exporter->dependents));
+            } else {
+                $dependentsInfo = $this->treeRecursion($exporter->dependents, $depth + 1);
+            }
+
+            $r[] = [
+                'type' => $dependent->type,
+                'class'=> get_class($exporter),
+                'uuid' => $dependent->uuid,
+                'dependents' => $dependentsInfo,
+            ];
+        }
+
+        return $r;
     }
 }

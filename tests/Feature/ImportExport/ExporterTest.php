@@ -18,8 +18,7 @@ class ExporterTest extends TestCase
         $screen->save();
 
         $exporter = new Exporter();
-        $exporter->exportScreen($screen);
-        $tree = $exporter->tree();
+        $tree = $exporter->exportScreen($screen);
 
         $this->assertEquals($screen->uuid, Arr::get($tree, '0.uuid'));
         $this->assertEquals($screenCategory1->uuid, Arr::get($tree, '0.dependents.0.uuid'));
