@@ -28,6 +28,7 @@
         "laravelcollective/html": "^6.1.2",
         "lavary/laravel-menu": "^1.7",
         "lcobucci/jwt": "^3.3",
+        "marcj/topsort": "^2.0",
         "moontoast/math": "^1.1",
         "mustache/mustache": "^2.12",
         "phing/phing": "^2.16",
