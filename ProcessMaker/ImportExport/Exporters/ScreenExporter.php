@@ -2,6 +2,9 @@
 
 namespace ProcessMaker\ImportExport\Exporters;
 
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\Script;
+
 class ScreenExporter extends ExporterBase
 {
     public function export() : void
@@ -10,11 +13,15 @@ class ScreenExporter extends ExporterBase
             $this->addDependent('categories', $category, ScreenCategoryExporter::class);
         }
 
-        // Nested Screens
-
         // Watcher Scripts
+        foreach ((array) $this->model->watchers as $watcher) {
+            $this->addDependent('scripts', Script::find($watcher['script_id']), ScriptExporter::class);
+        }
 
-        // Others?
+        // Nested Screens
+        foreach ($this->model->nestedScreenIds() as $screenId) {
+            $this->addDependent('screens', Screen::find($screenId), self::class);
+        }
     }
 
     public function import() : bool
