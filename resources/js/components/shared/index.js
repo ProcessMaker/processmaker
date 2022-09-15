@@ -15,6 +15,7 @@ import IconSelector from "./IconSelector";
 import Modal from "./Modal";
 import SidebarNavigation from "./SidebarNavigation";
 import Required from "./Required";
+import QuantityIndicatorBadge from "./QuantityIndicatorBadge";
 
 export {
   BasicSearch,
@@ -34,4 +35,5 @@ export {
   Modal,
   SidebarNavigation,
   Required,
+  QuantityIndicatorBadge,
 };
