@@ -9,10 +9,10 @@
       <uploader-unsupport></uploader-unsupport>
 
       <uploader-drop id="uploaderMain" class="form-control-file p-4">
-        <i class="fas fa-file-upload fa-3x fa-fw"></i>
+        <i class="fas fa-file-upload fa-3x fa-fw text-secondary"></i>
         <p>{{ $t('Drag file here') }}</p>
         <p>- {{ $t('or') }} -</p>
-        <uploader-btn id="submitFile" class="btn btn-link">{{ $t('Select file from computer') }}</uploader-btn>
+        <uploader-btn id="submitFile" class="text-primary">{{ $t('Select file from computer') }}</uploader-btn>
       </uploader-drop>
 
       <uploader-list>
@@ -61,7 +61,6 @@ export default {
         }
       }
       file.ignored = false;
-    //   this.options.query.data_name = file.name
     
       return true;
     },
@@ -79,6 +78,19 @@ export default {
 }
 
 .form-control-file {
-    border: 4px dotted #e0e0e0;
+    border: 3px dotted #e0e0e0;
+}
+
+#uploaderMain {
+    font-size: 18px;
+}
+
+.uploader-drop {
+    background: none;
+}
+
+#submitFile {
+    border:none;
+    text-decoration:underline;
 }
 </style>
