@@ -32,5 +32,17 @@ export default {
 </script>
 
 <style>
-
+    .quanity-badge {
+        margin-left: 3px;
+        background: #e8f7fbcf;
+        border-radius: 100%;
+        width: 26px;
+        height: 26px;
+        display: inline-block;
+        font-size: 12px;
+        text-align: center;
+        font-weight: bold;
+        border: 1px solid white;
+        line-height: 25px;
+  }
 </style>
