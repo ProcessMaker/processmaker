@@ -3,7 +3,6 @@
     <uploader
       :options="options"
       ref="uploader"
-      :value="value"
       @file-success="fileUploaded"
       @file-added="addFile"
     >
@@ -14,15 +13,11 @@
         <p>{{ $t('Drag file here') }}</p>
         <p>- {{ $t('or') }} -</p>
         <uploader-btn id="submitFile" class="btn btn-link">{{ $t('Select file from computer') }}</uploader-btn>
-        <span v-if="config && config.validation === 'required' && !value" class="required">{{ $t('Required') }}</span>
       </uploader-drop>
 
       <uploader-list>
         <template slot-scope="{ fileList }">
           <ul>
-            <li v-if="fileList.length === 0 && value">
-              <i class="fas fa-paperclip"></i> {{ displayName }}
-            </li>
             <li v-for="file in fileList" :key="file.id">
               <uploader-file :file="file" :list="true"></uploader-file>
             </li>
@@ -30,8 +25,6 @@
         </template>
       </uploader-list>
     </uploader>
-
-    <div class="invalid-feedback" role="alert" v-if="error">{{error}}</div>
   </div>
 </template>
 
@@ -43,18 +36,10 @@ import uploader from "vue-simple-uploader";
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  components: {uploader},
+  components: uploader,
   mixins: [uniqIdsMixin],
   props: [ "options", "name", "accept"],
   computed: {
-    displayName() {
-      const requestFiles = _.get(window, 'PM4ConfigOverrides.requestFiles', {});
-      const fileInfo = requestFiles[this.fileDataName];
-      if (fileInfo) {
-        return fileInfo.file_name;
-      }
-      return this.value.name ? this.value.name : this.value;
-    },
     inProgress() {
       return this.$refs.uploader.fileList.some(file => file._prevProgress < 1);
     },

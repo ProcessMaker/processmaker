@@ -9,7 +9,7 @@
                     </div>
                     <div class="card-body">
                         <div id="pre-import" v-if="! importing && ! imported">
-                            <draggable-file-upload ref="file" v-model="file" :options="{singleFile: true}" :accept="['.spark', 'application/json']" ></draggable-file-upload>
+                            <draggable-file-upload ref="file" v-model="file" :options="{singleFile: true}" :accept="['.spark', 'application/json']"></draggable-file-upload>
                             
                             <!-- <input id="import-file" type="file" ref="file" class="d-none" @change="handleFile" accept=".spark,.json" :aria-label="$t('Select a file')">
 
