@@ -54,6 +54,10 @@
           <div v-else>unassigned</div>
         </template> -->
 
+        <template slot="categories" slot-scope="props">
+          <quantity-indicator-badge :value="filterCategories(props.rowData.categories)"></quantity-indicator-badge>
+        </template>
+
         <template slot="owner" slot-scope="props">
           <avatar-image
                   class="d-inline-flex pull-left align-items-center"
@@ -167,11 +171,13 @@
   import datatableMixin from "../../components/common/mixins/datatable";
   import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
   import { createUniqIdsMixin } from "vue-uniq-ids";
+  import QuantityIndicatorBadge from "../../components/shared/QuantityIndicatorBadge";
   const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
     mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
     props: ["filter", "id", "status", "permission", "isDocumenterInstalled"],
+    components: {QuantityIndicatorBadge},
     filters: {
       capitalize(value) {
         if (!value) {
@@ -220,16 +226,8 @@
           // },
           {
             title: () => this.$t("Category"),
-            name: "categories",
-            sortField: "category.name",
-            callback(categories) {
-              let length = categories.length - 2;
-              let badge = '';
-              if (length > 0) {
-                badge = "<span class='b-badge'>+" + length + "</span>";
-              }
-              return categories.slice(0,2).map(item => item.name).join(', ') + badge;
-            }
+            name: "__slot:categories",
+            sortField: "category.name"
           },
           {
             title: () => this.$t("Owner"),
@@ -433,13 +431,25 @@
         });
         return data;
       },
+      filterCategories(categories) {
+        const visibleCategories = categories.slice(0,2).map(item => item.name).join(', ');
+        const length = categories.length;
+        const hiddenCategories = categories.slice(2,length).map(item => item.name).join(', ');
+        const hiddenQuantityIndicator = length - 2;
+
+        let filtered = [];
+        filtered['visibleCategories'] = visibleCategories;
+        filtered['hiddenCategories'] = hiddenCategories;
+        filtered['hiddenQuantityIndicator'] = hiddenQuantityIndicator;
+        return filtered;
+      },
     },
     computed: {}
   };
 </script>
 
 <style lang="scss">
-  .b-badge {
+  .quanity-badge {
     margin-left: 3px;
     background: #e8f7fbcf;
     border-radius: 100%;
