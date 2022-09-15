@@ -68,89 +68,80 @@
         </template>
 
         <template slot="actions" slot-scope="props">
-          <div class="actions">
-            <div class="popout">
-              <b-btn
-                      variant="link"
-                      @click="onAction('unpause-start-timer', props.rowData, props.rowIndex)"
-                      v-b-tooltip.hover
-                      :title="$t('Unpause Start Timer Events')"
-                      v-if="props.rowData.has_timer_start_events && props.rowData.pause_timer_start"
-                      v-uni-aria-describedby="props.rowData.id.toString()"
+          <div>
+            <b-dropdown no-caret no-flip lazy>
+              <template #button-content>
+                <i class="fas fa-ellipsis-h"></i>
+              </template>
+              <b-dropdown-item-button 
+                v-if="props.rowData.has_timer_start_events && props.rowData.pause_timer_start"
+                @click="onAction('unpause-start-timer', props.rowData, props.rowIndex)"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
-                <i class="fas fa-play fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                      variant="link"
-                      @click="onAction('pause-start-timer', props.rowData, props.rowIndex)"
-                      v-b-tooltip.hover
-                      :title="$t('Pause Start Timer Events')"
-                      v-if="props.rowData.has_timer_start_events && !props.rowData.pause_timer_start"
-                      v-uni-aria-describedby="props.rowData.id.toString()"
+                <i class="fas fa-play fa-md fa-fw"></i>
+                {{ $t('Unpause Start Timer Events') }}
+              </b-dropdown-item-button>
+              <b-dropdown-item-button
+                v-if="props.rowData.has_timer_start_events && !props.rowData.pause_timer_start"
+                @click="onAction('pause-start-timer', props.rowData, props.rowIndex)"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
-                <i class="fas fa-pause fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                      variant="link"
-                      @click="onAction('edit-designer', props.rowData, props.rowIndex)"
-                      v-b-tooltip.hover
-                      :title="$t('Edit')"
-                      v-if="permission.includes('edit-processes') && (props.rowData.status === 'ACTIVE' || props.rowData.status === 'INACTIVE')"
-                      v-uni-aria-describedby="props.rowData.id.toString()"
+                <i class="fas fa-pause fa-md fa-fw"></i>
+                {{ $t('Pause Start Timer Events') }}
+              </b-dropdown-item-button>
+              <b-dropdown-item-button 
+                v-if="permission.includes('edit-processes') && (props.rowData.status === 'ACTIVE' || props.rowData.status === 'INACTIVE')"
+                @click="onAction('edit-designer', props.rowData, props.rowIndex)"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
-                <i class="fas fa-pen-square fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                      variant="link"
-                      @click="onAction('edit-item', props.rowData, props.rowIndex)"
-                      v-b-tooltip.hover
-                      :title="$t('Configure')"
-                      v-if="permission.includes('edit-processes') && (props.rowData.status === 'ACTIVE' || props.rowData.status === 'INACTIVE')"
-                      v-uni-aria-describedby="props.rowData.id.toString()"
+                <i class="far fa-edit fa-md fa-fw"></i>
+                {{ $t('Edit Process') }}
+              </b-dropdown-item-button>
+              <b-dropdown-item-button
+                v-if="permission.includes('view-processes') && isDocumenterInstalled"
+                @click="onAction('view-documentation', props.rowData, props.rowIndex)"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
-                <i class="fas fa-cog fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                      variant="link"
-                      @click="onAction('view-documentation', props.rowData, props.rowIndex)"
-                      v-b-tooltip.hover
-                      :title="$t('View Documentation')"
-                      v-if="permission.includes('view-processes') && isDocumenterInstalled"
-                      v-uni-aria-describedby="props.rowData.id.toString()"
+                <i class="fas fa-map-signs fa-md fa-fw"></i>
+                {{ $t('View Documentation') }}
+              </b-dropdown-item-button>
+              
+              <!-- TODO: ADD NEW COPY PROCESS FUNCTIONALITY -->
+              <!-- <b-dropdown-item>Copy Process</b-dropdown-item> -->
+
+              <b-dropdown-item-button
+                v-if="permission.includes('export-processes')"
+                @click="onAction('export-item', props.rowData, props.rowIndex)"
+                 v-uni-aria-describedby="props.rowData.id.toString()"
               >
-                <i class="fas fa-map-signs fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                      variant="link"
-                      @click="onAction('export-item', props.rowData, props.rowIndex)"
-                      v-b-tooltip.hover
-                      :title="$t('Export')"
-                      v-if="permission.includes('export-processes')"
-                      v-uni-aria-describedby="props.rowData.id.toString()"
+                <i class="fas fa-file-export fa-md fa-fw"></i>
+                {{ $t('Export Process') }}
+              </b-dropdown-item-button>
+              <b-dropdown-item-button
+                v-if="permission.includes('edit-processes') && (props.rowData.status === 'ACTIVE' || props.rowData.status === 'INACTIVE')"
+                @click="onAction('edit-item', props.rowData, props.rowIndex)"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
-                <i class="fas fa-file-export fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                      variant="link"
-                      @click="onAction('remove-item', props.rowData, props.rowIndex)"
-                      v-b-tooltip.hover
-                      :title="$t('Archive')"
-                      v-if="permission.includes('archive-processes') && (props.rowData.status === 'ACTIVE' || props.rowData.status === 'INACTIVE')"
-                      v-uni-aria-describedby="props.rowData.id.toString()"
+                <i class="fas fa-cog fa-md fa-fw"></i>
+                {{ $t('Configure Process') }}
+              </b-dropdown-item-button>
+              <b-dropdown-item-button 
+                v-if="permission.includes('archive-processes') && (props.rowData.status === 'ACTIVE' || props.rowData.status === 'INACTIVE')"
+                @click="onAction('remove-item', props.rowData, props.rowIndex)"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
-                <i class="fas fa-download fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                      variant="link"
-                      @click="onAction('restore-item', props.rowData, props.rowIndex)"
-                      v-b-tooltip.hover
-                      :title="$t('Restore')"
-                      v-if="permission.includes('archive-processes') && props.rowData.status === 'ARCHIVED'"
-                      v-uni-aria-describedby="props.rowData.id.toString()"
+                <i class="fas fa-download fa-md fa-fw"></i>
+                {{ $t('Archive Process') }}
+              </b-dropdown-item-button>
+              <b-dropdown-item-button
+                v-if="permission.includes('archive-processes') && props.rowData.status === 'ARCHIVED'"
+                @click="onAction('restore-item', props.rowData, props.rowIndex)"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
-                <i class="fas fa-upload fa-lg fa-fw"></i>
-              </b-btn>
-            </div>
+                <i class="fas fa-upload fa-md fa-fw"></i>
+                {{ $t('Restore Process') }}
+              </b-dropdown-item-button>
+            </b-dropdown>
           </div>
         </template>
       </vuetable>
