@@ -9,4 +9,6 @@ interface ExporterInterface
     public function import() : bool;
 
     public function uuid() : string;
+
+    // public function save() : bool;
 }
