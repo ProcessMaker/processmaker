@@ -3,6 +3,7 @@
 namespace ProcessMaker\ImportExport;
 
 use ProcessMaker\ImportExport\Exporters\ScreenExporter;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
 
 class Exporter
@@ -20,5 +21,10 @@ class Exporter
     public function exportScreen(Screen $screen)
     {
         return $this->export($screen, ScreenExporter::class);
+    }
+
+    public function exportProcess(Process $process)
+    {
+        return $this->export($process, ProcessExporter::class);
     }
 }
