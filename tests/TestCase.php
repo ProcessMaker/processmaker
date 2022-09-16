@@ -6,6 +6,7 @@ use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Artisan;
+use ProcessMaker\Models\Setting;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -33,6 +34,21 @@ abstract class TestCase extends BaseTestCase
     {
         config()->set('script-runners.php.runner', 'MockRunner');
         config()->set('script-runners.lua.runner', 'MockRunner');
+    }
+
+    /**
+     * Calling the real config:cache command reconnects the database
+     * and since we're using transactions for our tests, we lose any data
+     * saved before the command is run. Instead, mock it here and do what
+     * it needs to do for the test to continue.
+     */
+    public static function setUpMockConfigCache(): void
+    {
+        Artisan::command('config:cache', function () {
+            foreach (Setting::select('id', 'key', 'config', 'format')->get() as $setting) {
+                config([$setting->key => $setting->config]);
+            }
+        });
     }
 
     /**
