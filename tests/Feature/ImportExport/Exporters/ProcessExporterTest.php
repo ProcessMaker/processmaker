@@ -7,6 +7,7 @@ use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessNotificationSetting;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\Script;
@@ -46,6 +47,13 @@ class ProcessExporterTest extends TestCase
             'cancel_screen_id' => $cancelScreen->id,
             'request_detail_screen_id' => $requestDetailScreen->id,
             'bpmn' => $bpmn,
+        ]);
+
+        // Notification Settings.
+        factory(ProcessNotificationSetting::class)->create([
+            'process_id' => $process->id,
+            'notifiable_type' => 'requester',
+            'notification_type' => 'assigned',
         ]);
 
         $exporter = new Exporter();

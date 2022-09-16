@@ -8,14 +8,21 @@ use ProcessMaker\Models\Screen;
 
 class ProcessExporter extends ExporterBase
 {
+    public ExportManager $manager;
+
     public function export() : void
     {
-        $manager = resolve(ExportManager::class);
+        $this->manager = resolve(ExportManager::class);
 
         // Process Categories.
         foreach ($this->model->categories as $category) {
             $this->addDependent(DependentType::CATEGORIES, $category, ProcessCategoryExporter::class);
         }
+
+        // TODO Notification Settings.
+        // foreach ($this->model->notification_settings as $notificationSetting) {
+        //     $this->addDependent(DependentType::NOTIFICATION_SETTINGS, $notificationSetting, ProcessNotificationSettingExporter::class);
+        // }
 
         // Screens.
         $screenIds = array_merge(
@@ -23,7 +30,7 @@ class ProcessExporter extends ExporterBase
                 $this->model->cancel_screen_id,
                 $this->model->request_detail_screen_id,
             ],
-            $manager->getDependenciesOfType(Screen::class, $this->model)
+            $this->manager->getDependenciesOfType(Screen::class, $this->model)
         );
         $screens = Screen::findMany($screenIds);
         foreach ($screens as $screen) {

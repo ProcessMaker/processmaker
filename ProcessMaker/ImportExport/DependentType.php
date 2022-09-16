@@ -9,4 +9,6 @@ abstract class DependentType
     const CATEGORIES = 'categories';
 
     const SCREENS = 'screens';
+
+    const NOTIFICATION_SETTINGS = 'process_notification_settings';
 }
