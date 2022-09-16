@@ -9,14 +9,27 @@
                     </div>
                     <div class="card-body">
                         <div id="pre-import" v-if="! importing && ! imported">
-                            <draggable-file-upload ref="file" v-model="file" :options="{singleFile: true}" :accept="['.spark', 'application/json']"></draggable-file-upload>
+                            <draggable-file-upload v-if="!file || file && !fileIsValid" ref="file" v-model="file" :options="{singleFile: true}" :displayUploaderList="false" :accept="['.spark', 'application/json']"></draggable-file-upload>
+                            <div v-else class="text-left">
+                               <h5>{{ $t('You are about to Import [[PROCESS NAME]].') }}</h5>
+                               <div>{{file}}</div>
+                                <b-form-group>
+                                    {{ $t('Select import type') }}
+                                    <b-form-radio v-for="item in importTypeOptions" v-model="selectedImportOption" :key="item.value" :value="item.value">
+                                        {{ item.content }} <br/>
+                                        <small class="text-muted">{{item.helper}}</small>
+                                    </b-form-radio>
+                                </b-form-group>
+                            </div>
                         </div>
                         <div id="during-import" v-if="importing" v-cloak>
                             <h4 class="card-title mt-5 mb-5">
                                 <i class="fas fa-circle-notch fa-spin"></i> {{ $t('Importing') }}...
                             </h4>
                         </div>
-                        <div id="post-import" class="text-left" v-if="imported" v-cloak>
+                        <!-- TODO: This may not be needed anymore -->
+                        <!-- <div id="post-import" class="text-left" v-if="imported" v-cloak>
+                            POST IMPORT
                             <h5>{{ $t('Status') }}</h5>
                             <ul v-show="options" class="mb-0 fa-ul">
                                 <li v-for="item in options">
@@ -27,6 +40,7 @@
                                 </li>
                             </ul>
                             <div id="post-import-assignable" v-if="assignable" v-cloak>
+                                POST IMPORT ASSIGNABLE
                                 <hr>
                                 <h5>{{ $t('Configuration') }}</h5>
                                 <span class="card-text">
@@ -252,7 +266,7 @@
                                     </table>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                     <div id="card-footer-pre-import" class="card-footer bg-light" align="right"
                          v-if="! importing && ! imported">
@@ -309,7 +323,13 @@ export default {
             importingCode: importingCode ? importingCode[1] : null,
             dataSources: [],
             dataSourcesInstalled: true,
-            status: 'ACTIVE'
+            status: 'ACTIVE',
+            importTypeOptions: [
+                {"value": "basic", "content": "Basic", "helper": "Import all assets from the uploaded package."},
+                {"value": "custom", "content": "Custom", "helper": "Select which  types of assets from the uploaded package should be imported to this environment."},
+            ],
+            selectedImportOption: "basic",
+            fileIsValid: false,
         }
     },
     filters: {
@@ -320,8 +340,7 @@ export default {
     },
     watch: {
         file() {
-            this.uploaded = true;
-            this.submitted = false;
+            this.validateFile();
         }
     },
     computed: {
@@ -539,6 +558,24 @@ export default {
                 .catch(error => {
                 item.error = error.response.data.error;
                 });
+        },
+        validateFile() {
+            if (!this.file) {
+                return;
+            }
+            let formData = new FormData();
+            formData.append('file', this.file);
+
+            ProcessMaker.apiClient.post('/processes/import/validation', formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            )
+            .then(response => {
+                this.fileIsValid = true;
+            });
         }
     },
     mounted() {
