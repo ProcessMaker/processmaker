@@ -13,4 +13,6 @@ abstract class DependentType
     const NOTIFICATION_SETTINGS = 'process_notification_settings';
 
     const ENVIRONMENT_VARIABLES = 'environment_variables';
+
+    const SCRIPT_EXECUTORS = 'script_executors';
 }
