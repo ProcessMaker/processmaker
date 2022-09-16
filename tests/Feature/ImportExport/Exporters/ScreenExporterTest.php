@@ -15,38 +15,34 @@ class ScreenExporterTest extends TestCase
 {
     public function testExport()
     {
-        $screen = factory(Screen::class)->create();
-        $screenCategory1 = factory(ScreenCategory::class)->create();
-        $screenCategory2 = factory(ScreenCategory::class)->create();
+        $screen = $this->createScreen();
+        $screenCategory1 = factory(ScreenCategory::class)->create(['name' => 'category 1']);
+        $screenCategory2 = factory(ScreenCategory::class)->create(['name' => 'category 2']);
         $screen->screen_category_id = $screenCategory1->id . ',' . $screenCategory2->id;
 
-        $script = factory(Script::class)->create();
-        $watcher = ['name' => 'Watcher', 'script_id' => $script->id];
-        $screen->watchers = [$watcher];
+        $script = factory(Script::class)->create(['title' => 'script']);
+        $this->associateScriptWatcher($screen, $script);
 
-        $nestedScreen = factory(Screen::class)->create();
+        $nestedScreen = $this->createScreen('nested screen', false);
         $nestedScreen->screen_category_id = $screenCategory1->id;
-        $item = [
-            'label' => 'Nested Screen',
-            'component' => 'FormNestedScreen',
-            'config' => [
-                'value' => null,
-                'screen' => $nestedScreen->id,
-            ],
-        ];
-        $screen->config = ['items' => [$item]];
+        $nestedNestedScreen = factory(Screen::class)->create(['title' => 'nested nested screen']);
+        $nestedNestedScreen->screen_category_id = $screenCategory2->id;
+        $this->associateNestedScreen($nestedScreen, $nestedNestedScreen);
+        $this->associateNestedScreen($screen, $nestedScreen);
 
         $screen->save();
         $exporter = new Exporter();
         $exporter->exportScreen($screen);
         $tree = $exporter->tree();
 
+        $this->assertCount(4, Arr::get($tree, '0.dependents'));
         $this->assertEquals($screen->uuid, Arr::get($tree, '0.uuid'));
         $this->assertEquals($screenCategory1->uuid, Arr::get($tree, '0.dependents.0.uuid'));
         $this->assertEquals($screenCategory2->uuid, Arr::get($tree, '0.dependents.1.uuid'));
         $this->assertEquals($script->uuid, Arr::get($tree, '0.dependents.2.uuid'));
         $this->assertEquals($script->category->uuid, Arr::get($tree, '0.dependents.2.dependents.0.uuid'));
         $this->assertEquals($nestedScreen->uuid, Arr::get($tree, '0.dependents.3.uuid'));
+        $this->assertEquals($nestedNestedScreen->uuid, Arr::get($tree, '0.dependents.3.dependents.1.uuid'));
         $this->assertEquals($screenCategory1->uuid, Arr::get($tree, '0.dependents.3.dependents.0.uuid'));
     }
 
@@ -77,5 +73,36 @@ class ScreenExporterTest extends TestCase
         $this->assertEquals(1, Screen::where('title', 'screen 1')->count());
         $this->assertEquals(1, ScreenCategory::where('name', 'category 2')->count());
         $this->assertEquals('category 1', $screenCategory1->refresh()->name);
+    }
+
+    private function associateNestedScreen($parent, $child)
+    {
+        $config = $parent->config;
+        Arr::set($config, '0.items.2.config.screen', $child->id);
+        $parent->config = $config;
+        $parent->saveOrFail();
+    }
+
+    private function associateScriptWatcher($screen, $script)
+    {
+        $watchers = $screen->watchers;
+        Arr::set($watchers, '0.script.id', 'script-' . $script->id);
+        Arr::set($watchers, '0.script.uuid', $script->uuid);
+        Arr::set($watchers, '0.script_id', $script->id);
+        $screen->watchers = $watchers;
+        $screen->saveOrFail();
+    }
+
+    private function createScreen($title = 'screen', $addWatchers = true)
+    {
+        $config = json_decode(file_get_contents(__DIR__ . '/../fixtures/screen_with_nested_screen.json'), true);
+        $watchers = $addWatchers ? json_decode(file_get_contents(__DIR__ . '/../fixtures/watchers.json'), true) : [];
+        $screen = factory(Screen::class)->create([
+            'title' => $title,
+            'config' => $config,
+            'watchers' => $watchers,
+        ]);
+
+        return $screen;
     }
 }

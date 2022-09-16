@@ -34,7 +34,6 @@ abstract class ExporterBase implements ExporterInterface
             $this->manifest->push($uuid, $exporter);
             $exporter->export();
         }
-
         $this->dependents[] = new Dependent($type, $uuid, $this->manifest);
     }
 
@@ -48,8 +47,17 @@ abstract class ExporterBase implements ExporterInterface
 
     public function toArray()
     {
+        // Mostly for debugging purposes
+        $name = null;
+        if (isset($this->model->name)) {
+            $name = $this->model->name;
+        } elseif (isset($this->model->title)) {
+            $name = $this->model->title;
+        }
+
         return [
             'exporter' => get_class($this),
+            'name' => $name,
             'model' => get_class($this->model),
             'attributes' => $this->getExportAttributes(),
             'dependents' => array_map(fn ($d) => $d->toArray(), $this->dependents),
