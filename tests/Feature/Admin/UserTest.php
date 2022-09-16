@@ -19,7 +19,6 @@ class UserTest extends TestCase
      */
     public function testIndexRoute()
     {
-
         // get the URL
         $response = $this->webCall('GET', '/admin/users');
         // check the correct view is called
@@ -53,12 +52,8 @@ class UserTest extends TestCase
     public function testCanSeeAditionalInformationInEditRoute()
     {
         $user_id = factory(User::class)->create()->id;
-        factory(Setting::class)->create([
-            'key' => 'users.properties',
-            'config' => '{"MyVar":"Test Var"}',
-            'format' => 'object',
-            'group' => 'Users',
-        ]);
+        config(['users.properties' => ['MyVar' => 'Test Var']]);
+
         // get the URL
         $response = $this->webCall('GET', '/admin/users/' . $user_id . '/edit');
         $response->assertStatus(200);
@@ -74,12 +69,7 @@ class UserTest extends TestCase
     public function testCannotSeeAditionalInformationInProfileRoute()
     {
         factory(User::class)->create()->id;
-        factory(Setting::class)->create([
-            'key' => 'users.properties',
-            'config' => '{"MyVar":"Test Var"}',
-            'format' => 'object',
-            'group' => 'Users',
-        ]);
+        config(['users.properties' => ['MyVar' => 'Test Var']]);
         // get the URL
         $response = $this->webCall('GET', '/profile/edit');
         $response->assertStatus(200);
