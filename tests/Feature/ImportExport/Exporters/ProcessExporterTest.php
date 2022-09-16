@@ -6,6 +6,7 @@ use Illuminate\Support\Arr;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
+use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessNotificationSetting;
 use ProcessMaker\Models\Screen;
@@ -22,7 +23,10 @@ class ProcessExporterTest extends TestCase
         $screenCategory1 = factory(ScreenCategory::class)->create();
         $screenCategory2 = factory(ScreenCategory::class)->create();
         $screen->screen_category_id = $screenCategory1->id . ',' . $screenCategory2->id;
-        $script = factory(Script::class)->create();
+        factory(EnvironmentVariable::class)->create(['name' => 'TEST_VAR']);
+        $script = factory(Script::class)->create([
+            'code' => '<?php $config["envVar"] = getenv("TEST_VAR"); return $config; ?>',
+        ]);
         $watcher = ['name' => 'Watcher', 'script_id' => $script->id];
         $screen->watchers = [$watcher];
         $nestedScreen = factory(Screen::class)->create();
