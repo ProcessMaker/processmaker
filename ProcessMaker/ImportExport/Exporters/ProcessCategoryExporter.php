@@ -2,7 +2,7 @@
 
 namespace ProcessMaker\ImportExport\Exporters;
 
-class ScriptCategoryExporter extends ExporterBase
+class ProcessCategoryExporter extends ExporterBase
 {
     public function export() : void
     {
