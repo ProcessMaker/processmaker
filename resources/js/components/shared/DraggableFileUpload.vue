@@ -15,7 +15,7 @@
         <uploader-btn id="submitFile" class="text-primary">{{ $t('Select file from computer') }}</uploader-btn>
       </uploader-drop>
 
-      <uploader-list>
+      <uploader-list v-if="displayUploaderList">
         <template slot-scope="{ fileList }">
           <ul>
             <li v-for="file in fileList" :key="file.id">
@@ -38,7 +38,7 @@ const uniqIdsMixin = createUniqIdsMixin();
 export default {
   components: uploader,
   mixins: [uniqIdsMixin],
-  props: [ "options", "accept"],
+  props: [ "options", "accept", 'displayUploaderList'],
   computed: {
     inProgress() {
       return this.$refs.uploader.fileList.some(file => file._prevProgress < 1);
