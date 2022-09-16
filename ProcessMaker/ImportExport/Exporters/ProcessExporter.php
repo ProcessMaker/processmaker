@@ -25,13 +25,13 @@ class ProcessExporter extends ExporterBase
         // }
 
         // Screens.
-        $screenIds = array_merge(
+        $screenIds = array_unique(array_merge(
             [
                 $this->model->cancel_screen_id,
                 $this->model->request_detail_screen_id,
             ],
-            $this->manager->getDependenciesOfType(Screen::class, $this->model)
-        );
+            $this->manager->getDependenciesOfType(Screen::class, $this->model, [], false)
+        ));
         $screens = Screen::findMany($screenIds);
         foreach ($screens as $screen) {
             $this->addDependent(DependentType::SCREENS, $screen, ScreenExporter::class);

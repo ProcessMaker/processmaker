@@ -23,7 +23,7 @@ class ProcessExporterTest extends TestCase
         $screenCategory1 = factory(ScreenCategory::class)->create();
         $screenCategory2 = factory(ScreenCategory::class)->create();
         $screen->screen_category_id = $screenCategory1->id . ',' . $screenCategory2->id;
-        factory(EnvironmentVariable::class)->create(['name' => 'TEST_VAR']);
+        $environmentVariable = factory(EnvironmentVariable::class)->create(['name' => 'TEST_VAR']);
         $script = factory(Script::class)->create([
             'code' => '<?php $config["envVar"] = getenv("TEST_VAR"); return $config; ?>',
         ]);
@@ -64,40 +64,18 @@ class ProcessExporterTest extends TestCase
         $exporter->exportProcess($process);
         $tree = $exporter->tree();
 
-        dd($tree);
-
-        $this->assertEquals($screen->uuid, Arr::get($tree, '0.uuid'));
-        $this->assertEquals($screenCategory1->uuid, Arr::get($tree, '0.dependents.0.uuid'));
-        $this->assertEquals($screenCategory2->uuid, Arr::get($tree, '0.dependents.1.uuid'));
-        $this->assertEquals($script->uuid, Arr::get($tree, '0.dependents.2.uuid'));
-        $this->assertEquals($script->category->uuid, Arr::get($tree, '0.dependents.2.dependents.0.uuid'));
-        $this->assertEquals($nestedScreen->uuid, Arr::get($tree, '0.dependents.3.uuid'));
-        $this->assertEquals($screenCategory1->uuid, Arr::get($tree, '0.dependents.3.dependents.0.uuid'));
+        $this->assertEquals($process->uuid, Arr::get($tree, '0.uuid'));
+        $this->assertEquals($process->category->uuid, Arr::get($tree, '0.dependents.0.uuid'));
+        $this->assertEquals($screen->uuid, Arr::get($tree, '0.dependents.1.uuid'));
+        $this->assertEquals($script->uuid, Arr::get($tree, '0.dependents.1.dependents.2.uuid'));
+        $this->assertEquals($nestedScreen->uuid, Arr::get($tree, '0.dependents.1.dependents.3.uuid'));
+        $this->assertEquals($environmentVariable->uuid, Arr::get($tree, '0.dependents.1.dependents.2.dependents.1.uuid'));
+        $this->assertEquals($script->scriptExecutor->uuid, Arr::get($tree, '0.dependents.1.dependents.2.dependents.2.uuid'));
+        $this->assertEquals($cancelScreen->uuid, Arr::get($tree, '0.dependents.2.uuid'));
+        $this->assertEquals($requestDetailScreen->uuid, Arr::get($tree, '0.dependents.3.uuid'));
     }
 
     public function testImport()
     {
-        $screen = factory(Screen::class)->create(['title' => 'screen 1']);
-        $screenCategory1 = factory(ScreenCategory::class)->create(['name' => 'category 1']);
-        $screenCategory2 = factory(ScreenCategory::class)->create(['name' => 'category 2']);
-        $screen->screen_category_id = $screenCategory1->id . ',' . $screenCategory2->id;
-        $screen->save();
-
-        $exporter = new Exporter();
-        $exporter->exportScreen($screen);
-        $payload = $exporter->payload();
-
-        $screen->delete();
-        $screenCategory2->delete();
-
-        $this->assertEquals(0, Screen::where('title', 'screen 1')->count());
-        $this->assertEquals(0, ScreenCategory::where('name', 'category 2')->count());
-
-        $options = new Options([]);
-        $importer = new Importer($payload, $options);
-        $importer->doImport();
-
-        $this->assertEquals(1, Screen::where('title', 'screen 1')->count());
-        $this->assertEquals(1, ScreenCategory::where('name', 'category 2')->count());
     }
 }
