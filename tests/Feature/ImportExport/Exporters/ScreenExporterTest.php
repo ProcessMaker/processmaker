@@ -4,12 +4,12 @@ namespace Tests\Feature\ImportExport\Exporters;
 
 use Illuminate\Support\Arr;
 use ProcessMaker\ImportExport\Exporter;
+use ProcessMaker\ImportExport\Importer;
+use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\Script;
 use Tests\TestCase;
-use ProcessMaker\ImportExport\Options;
-use ProcessMaker\ImportExport\Importer;
 
 class ScreenExporterTest extends TestCase
 {
@@ -63,10 +63,12 @@ class ScreenExporterTest extends TestCase
         $payload = $exporter->payload();
 
         $screen->delete();
+        $screenCategory1->update(['name' => 'category name old']);
         $screenCategory2->delete();
 
         $this->assertEquals(0, Screen::where('title', 'screen 1')->count());
         $this->assertEquals(0, ScreenCategory::where('name', 'category 2')->count());
+        $this->assertEquals('category name old', $screenCategory1->refresh()->name);
 
         $options = new Options([]);
         $importer = new Importer($payload, $options);
@@ -74,5 +76,6 @@ class ScreenExporterTest extends TestCase
 
         $this->assertEquals(1, Screen::where('title', 'screen 1')->count());
         $this->assertEquals(1, ScreenCategory::where('name', 'category 2')->count());
+        $this->assertEquals('category 1', $screenCategory1->refresh()->name);
     }
 }
