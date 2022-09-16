@@ -75,7 +75,7 @@
 
 <script>
 export default {
-  props: ["processId"],
+  props: ["processId", 'processName'],
   components: {},
   mixins: [],
   data() {

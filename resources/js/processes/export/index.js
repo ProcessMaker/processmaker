@@ -2,6 +2,7 @@ import Vue from 'vue';
 import ExportManager from './components/ExportManager';
 import ExportManagerView from './components/ExportManagerView';
 
+const processName = document.head.querySelector('meta[name="export-process-name"]').content;
 
 const routes = [
     { 
@@ -11,6 +12,7 @@ const routes = [
         props: route => ({
             processId: route.params.processId,
             routeName: 'main',
+            processName: processName,
           })
     },
 ];

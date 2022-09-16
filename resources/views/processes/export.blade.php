@@ -4,6 +4,10 @@
 {{__('Export Process')}}
 @endsection
 
+@section('meta')
+    <meta name="export-process-name" content="{{ $process->name }}">
+@endsection
+
 @section('sidebar')
 @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_processes')])
 @endsection
