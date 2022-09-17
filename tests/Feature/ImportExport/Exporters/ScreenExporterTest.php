@@ -15,22 +15,9 @@ class ScreenExporterTest extends TestCase
 {
     public function testExport()
     {
-        $screen = $this->createScreen();
-        $screenCategory1 = factory(ScreenCategory::class)->create(['name' => 'category 1']);
-        $screenCategory2 = factory(ScreenCategory::class)->create(['name' => 'category 2']);
-        $screen->screen_category_id = $screenCategory1->id . ',' . $screenCategory2->id;
+        list($screen, $screenCategory1, $screenCategory2, $script, $nestedScreen, $nestedNestedScreen) =
+            $this->fixtures();
 
-        $script = factory(Script::class)->create(['title' => 'script']);
-        $this->associateScriptWatcher($screen, $script);
-
-        $nestedScreen = $this->createScreen('nested screen', false);
-        $nestedScreen->screen_category_id = $screenCategory1->id;
-        $nestedNestedScreen = factory(Screen::class)->create(['title' => 'nested nested screen']);
-        $nestedNestedScreen->screen_category_id = $screenCategory2->id;
-        $this->associateNestedScreen($nestedScreen, $nestedNestedScreen);
-        $this->associateNestedScreen($screen, $nestedScreen);
-
-        $screen->save();
         $exporter = new Exporter();
         $exporter->exportScreen($screen);
         $tree = $exporter->tree();
@@ -48,11 +35,8 @@ class ScreenExporterTest extends TestCase
 
     public function testImport()
     {
-        $screen = factory(Screen::class)->create(['title' => 'screen 1']);
-        $screenCategory1 = factory(ScreenCategory::class)->create(['name' => 'category 1']);
-        $screenCategory2 = factory(ScreenCategory::class)->create(['name' => 'category 2']);
-        $screen->screen_category_id = $screenCategory1->id . ',' . $screenCategory2->id;
-        $screen->save();
+        list($screen, $screenCategory1, $screenCategory2, $script, $nestedScreen, $nestedNestedScreen) =
+            $this->fixtures();
 
         $exporter = new Exporter();
         $exporter->exportScreen($screen);
@@ -62,7 +46,7 @@ class ScreenExporterTest extends TestCase
         $screenCategory1->update(['name' => 'category name old']);
         $screenCategory2->delete();
 
-        $this->assertEquals(0, Screen::where('title', 'screen 1')->count());
+        $this->assertEquals(0, Screen::where('title', 'screen')->count());
         $this->assertEquals(0, ScreenCategory::where('name', 'category 2')->count());
         $this->assertEquals('category name old', $screenCategory1->refresh()->name);
 
@@ -70,9 +54,56 @@ class ScreenExporterTest extends TestCase
         $importer = new Importer($payload, $options);
         $importer->doImport();
 
-        $this->assertEquals(1, Screen::where('title', 'screen 1')->count());
+        $this->assertEquals(1, Screen::where('title', 'screen')->count());
         $this->assertEquals(1, ScreenCategory::where('name', 'category 2')->count());
         $this->assertEquals('category 1', $screenCategory1->refresh()->name);
+
+        $checkScreen = Screen::where('title', 'screen')->first();
+        $checkNestedScreen = Screen::where('title', 'nested screen')->first();
+        $checkNestedNestedScreen = Screen::where('title', 'nested nested screen')->first();
+        $this->assertEquals($checkNestedScreen->id, Arr::get($checkScreen->config, '0.items.2.config.screen'));
+        $this->assertEquals($checkNestedNestedScreen->id, Arr::get($checkNestedScreen->config, '0.items.2.config.screen'));
+    }
+
+    public function testImportNewAssets()
+    {
+        list($screen, $screenCategory1, $screenCategory2, $script, $nestedScreen, $nestedNestedScreen) =
+            $this->fixtures();
+
+        $exporter = new Exporter();
+        $exporter->exportScreen($screen);
+        $payload = $exporter->payload();
+
+        $optionsArray = [];
+        foreach (array_keys($payload['export']) as $uuid) {
+            $optionsArray[$uuid] = ['mode' => 'new'];
+        }
+        $options = new Options($optionsArray);
+        $importer = new Importer($payload, $options);
+        $importer->doImport();
+        // WIP
+    }
+
+    private function fixtures()
+    {
+        $screen = $this->createScreen();
+        $screenCategory1 = factory(ScreenCategory::class)->create(['name' => 'category 1']);
+        $screenCategory2 = factory(ScreenCategory::class)->create(['name' => 'category 2']);
+        $screen->screen_category_id = $screenCategory1->id . ',' . $screenCategory2->id;
+
+        $script = factory(Script::class)->create(['title' => 'script']);
+        $this->associateScriptWatcher($screen, $script);
+
+        $nestedScreen = $this->createScreen('nested screen', false);
+        $nestedScreen->screen_category_id = $screenCategory1->id;
+        $nestedNestedScreen = factory(Screen::class)->create(['title' => 'nested nested screen']);
+        $nestedNestedScreen->screen_category_id = $screenCategory2->id;
+        $this->associateNestedScreen($nestedScreen, $nestedNestedScreen);
+        $this->associateNestedScreen($screen, $nestedScreen);
+
+        $screen->save();
+
+        return [$screen, $screenCategory1, $screenCategory2, $script, $nestedScreen, $nestedNestedScreen];
     }
 
     private function associateNestedScreen($parent, $child)

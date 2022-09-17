@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\ImportExport;
 
+use Illuminate\Database\Eloquent\Model;
 use MJS\TopSort\Implementations\StringSort;
 use ProcessMaker\ImportExport\Exporters\ExporterInterface;
 
@@ -38,8 +39,10 @@ class Manifest
     {
         $manifest = new self();
         foreach ($array as $uuid => $assetInfo) {
-            $model = self::getModel($uuid, $assetInfo, $options);
+            list($importMode, $model) = self::getModel($uuid, $assetInfo, $options);
             $exporter = new $assetInfo['exporter']($model, $manifest);
+            $exporter->importMode = $importMode;
+            $exporter->updateDuplicateAttributes();
             $exporter->dependents = Dependent::fromArray($assetInfo['dependents'], $manifest);
             $manifest->push($uuid, $exporter);
         }
@@ -54,6 +57,7 @@ class Manifest
 
     public static function getModel($uuid, $assetInfo, $options)
     {
+        $model = null;
         $class = $assetInfo['model'];
         $mode = $options->get('mode', $uuid);
 
@@ -69,17 +73,17 @@ class Manifest
             case 'update':
                 $model = $modelQuery->first();
                 $model->fill($assetInfo['attributes']);
-
-                return $model;
+                break;
             case 'discard':
-                return $modelQuery->first();
+                $model = $modelQuery->first();
+                break;
             case 'new':
                 $model = new $class();
                 $model->fill($assetInfo['attributes']);
                 $model->uuid = $uuid;
-
-                return $model;
         }
+
+        return [$mode, $model];
     }
 
     public function orderForImport()

@@ -31,7 +31,6 @@ class Importer
 
     public function doImport()
     {
-        // imports must happen on leaf nodes and go backwards from there??
         DB::transaction(function () {
             foreach ($this->manifest->orderForImport() as $uuid) {
                 $exporter = $this->manifest->get($uuid);

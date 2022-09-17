@@ -10,5 +10,5 @@ interface ExporterInterface
 
     public function uuid() : string;
 
-    // public function save() : bool;
+    public function handleDuplicateAttributes() : array;
 }

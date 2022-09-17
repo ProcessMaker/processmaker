@@ -36,18 +36,32 @@ class ScreenExporter extends ExporterBase
     public function import() : bool
     {
         $screen = $this->model;
+        $screen->config = json_decode($this->model->config, true);
 
         $categoryIds = [];
+        $config = $this->model->config;
+
         foreach ($this->dependents as $dependent) {
             switch ($dependent->type) {
                 case DependentType::CATEGORIES:
                     $categoryIds[] = $dependent->model->id;
                     break;
+                case DependentType::SCREENS:
+                    $this->associateNestedScreen($dependent, $config);
+                    break;
             }
         }
         $screen->screen_category_id = implode(',', $categoryIds);
+        $screen->config = $config;
 
-        return $this->model->save();
+        return $screen->saveOrFail();
+    }
+
+    public function handleDuplicateAttributes() : array
+    {
+        return [
+            'title' => fn ($title) => $this->incrementString($title),
+        ];
     }
 
     private function getNestedScreens() : array
@@ -71,5 +85,19 @@ class ScreenExporter extends ExporterBase
         }
 
         return null;
+    }
+
+    private function associateNestedScreen($dependent, &$config) : void
+    {
+        $id = $dependent->model->id;
+        foreach ($config as $pageKey => $page) {
+            foreach (Arr::get($page, 'items', []) as $itemKey => $item) {
+                if (Arr::get($item, 'component') === 'FormNestedScreen') {
+                    if (Arr::get($item, 'config.screen') === $id) {
+                        Arr::set($config, "$pageKey.items.$itemKey.config.screen", $id);
+                    }
+                }
+            }
+        }
     }
 }
