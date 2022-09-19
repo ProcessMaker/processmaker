@@ -11,13 +11,24 @@
                         <div id="pre-import" v-if="! importing && ! imported">
                             <draggable-file-upload v-if="!file || file && !fileIsValid" ref="file" v-model="file" :options="{singleFile: true}" :displayUploaderList="false" :accept="['.spark', 'application/json']"></draggable-file-upload>
                             <div v-else class="text-left">
-                               <h5>{{ $t('You are about to Import [[PROCESS NAME]].') }}</h5>
-                               <div>{{file}}</div>
+                               <h5> {{ $t("You are about to import") }} <strong>{{processName}}</strong></h5>
+                                <div class="border-dotted p-3 col-4 text-center font-weight-bold my-3">
+                                    {{file.name}} 
+                                    <b-button variant="link" @click="removeFile" class="p-0"><i class="fas fa-times-circle text-danger"></i></b-button>
+                                </div>
                                 <b-form-group>
-                                    {{ $t('Select import type') }}
-                                    <b-form-radio v-for="item in importTypeOptions" v-model="selectedImportOption" :key="item.value" :value="item.value">
-                                        {{ item.content }} <br/>
-                                        <small class="text-muted">{{item.helper}}</small>
+                                    {{ $t('Select Import Type') }}
+                                    <b-form-radio 
+                                        v-for="(item, index) in importTypeOptions" 
+                                        v-model="selectedImportOption" 
+                                        v-uni-aria-describedby="index.toString()"
+                                        :key="item.value" 
+                                        :value="item.value"
+                                    >
+                                        {{ item.content }}
+                                        <div>
+                                            <small v-uni-id="index.toString()" class="text-muted">{{item.helper}}</small>
+                                        </div>
                                     </b-form-radio>
                                 </b-form-group>
                             </div>
@@ -274,7 +285,7 @@
                             {{$t('Cancel')}}
                         </button>
                         <button type="button" class="btn btn-secondary ml-2" @click="importFile"
-                                :disabled="uploaded == false">
+                                :disabled="fileIsValid === false">
                             {{$t('Import')}}
                         </button>
                     </div>
@@ -300,10 +311,13 @@
 <script>
 const importingCode = window.location.hash.match(/#code=(.+)/);
 import DraggableFileUpload from '../../../components/shared/DraggableFileUpload';
+import { createUniqIdsMixin } from "vue-uniq-ids";
+const uniqIdsMixin = createUniqIdsMixin();
+
 export default {
     props: [''],
     components: {DraggableFileUpload},
-    mixins: [],
+    mixins: [uniqIdsMixin],
     data() {
         return {
             file: '',
@@ -330,6 +344,7 @@ export default {
             ],
             selectedImportOption: "basic",
             fileIsValid: false,
+            processName: null,
         }
     },
     filters: {
@@ -340,7 +355,12 @@ export default {
     },
     watch: {
         file() {
+            this.fileIsValid = false;
+            if (!this.file) {
+                return
+            }
             this.validateFile();
+            this.processName = this.file.name.split('.').slice(0,-1).toString();
         }
     },
     computed: {
@@ -576,6 +596,9 @@ export default {
             .then(response => {
                 this.fileIsValid = true;
             });
+        },
+        removeFile() {
+            this.file = '';
         }
     },
     mounted() {
@@ -649,5 +672,9 @@ export default {
 
     .card-body {
         transition: all 1s;
+    }
+
+    .border-dotted {
+        border: 3px dotted #e0e0e0;
     }
 </style>
