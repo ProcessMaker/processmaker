@@ -10,28 +10,6 @@
                     <div class="card-body">
                         <div id="pre-import" v-if="! importing && ! imported">
                             <draggable-file-upload v-if="!file || file && !fileIsValid" ref="file" v-model="file" :options="{singleFile: true}" :displayUploaderList="false" :accept="['.spark', 'application/json']"></draggable-file-upload>
-                            <div v-else class="text-left">
-                               <h5> {{ $t("You are about to import") }} <strong>{{processName}}</strong></h5>
-                                <div class="border-dotted p-3 col-4 text-center font-weight-bold my-3">
-                                    {{file.name}} 
-                                    <b-button variant="link" @click="removeFile" class="p-0"><i class="fas fa-times-circle text-danger"></i></b-button>
-                                </div>
-                                <b-form-group>
-                                    {{ $t('Select Import Type') }}
-                                    <b-form-radio 
-                                        v-for="(item, index) in importTypeOptions" 
-                                        v-model="selectedImportOption" 
-                                        v-uni-aria-describedby="index.toString()"
-                                        :key="item.value" 
-                                        :value="item.value"
-                                    >
-                                        {{ item.content }}
-                                        <div>
-                                            <small v-uni-id="index.toString()" class="text-muted">{{item.helper}}</small>
-                                        </div>
-                                    </b-form-radio>
-                                </b-form-group>
-                            </div>
                         </div>
                         <div id="during-import" v-if="importing" v-cloak>
                             <h4 class="card-title mt-5 mb-5">
@@ -340,9 +318,7 @@ export default {
                 {"value": "basic", "content": "Basic", "helper": "Import all assets from the uploaded package."},
                 {"value": "custom", "content": "Custom", "helper": "Select which  types of assets from the uploaded package should be imported to this environment."},
             ],
-            selectedImportOption: "basic",
             fileIsValid: false,
-            processName: null,
         }
     },
     filters: {
@@ -358,7 +334,6 @@ export default {
                 return
             }
             this.validateFile();
-            this.processName = this.file.name.split('.').slice(0,-1).toString();
         }
     },
     computed: {
@@ -507,17 +482,6 @@ export default {
         },
         importFile() {
             this.importing = true;
-            switch (this.selectedImportOption) {
-                case 'basic':
-                    this.handleBasicImport();
-                    break;
-            
-                default:
-                    // TODO:: IMPORT/EXPORT HANDLE CUSTOM IMPORT
-                    break;
-            }
-        },
-        handleBasicImport() {
             let formData = new FormData();
             formData.append('file', this.file);
       
@@ -604,10 +568,8 @@ export default {
             )
             .then(response => {
                 this.fileIsValid = true;
+                this.importFile();
             });
-        },
-        removeFile() {
-            this.file = '';
         }
     },
     mounted() {
