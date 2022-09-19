@@ -109,5 +109,3 @@ if (env('TEST_TOKEN')) {
         Artisan::call('processmaker:create-test-dbs');
     }
 }
-
-// Trigger CICD - dicard this PR
