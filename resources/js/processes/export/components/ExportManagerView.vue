@@ -36,9 +36,10 @@
             <button type="button" class="btn btn-outline-secondary" @click="onCancel">
               {{ $t("Cancel") }}
             </button>
-            <button type="button" class="btn btn-primary ml-2" @click="onExport">
+            <button type="button" class="btn btn-primary ml-2" v-b-modal.set-password-modal>
               {{ $t("Export") }}
             </button>
+            <set-password-modal></set-password-modal>
           </div>
         </div>
       </div>
@@ -47,9 +48,13 @@
 </template>
 
 <script>
+import SetPasswordModal from './SetPasswordModal.vue';
+
 export default {
   props: ["processId", 'processName'],
-  components: {},
+  components: {
+    SetPasswordModal
+  },
   mixins: [],
   data() {
     return {
@@ -60,17 +65,9 @@ export default {
     onCancel() {
       window.location = "/processes";
     },
-    onExport() {
-      ProcessMaker.apiClient
-        .post("processes/" + this.processId + "/export")
-        .then((response) => {
-          window.location = response.data.url;
-          ProcessMaker.alert(this.$t("The process was exported."), "success");
-        })
-        .catch((error) => {
-          ProcessMaker.alert(error.response.data.message, "danger");
-        });
-    },
+    showSetPasswordModal() {
+        this.$bvModal.show('setPasswordModal');
+    }
   },
 };
 </script>
