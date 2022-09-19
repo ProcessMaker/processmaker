@@ -8,7 +8,7 @@
     >
       <uploader-unsupport></uploader-unsupport>
 
-      <uploader-drop id="uploaderMain" class="form-control-file p-4">
+      <uploader-drop id="uploaderMain" class="dotted-border p-4">
         <i class="fas fa-file-upload fa-3x fa-fw text-secondary"></i>
         <p>{{ $t('Drag file here') }}</p>
         <p>- {{ $t('or') }} -</p>
@@ -77,7 +77,7 @@ export default {
   font-size: 0.8em;
 }
 
-.form-control-file {
+.dotted-border {
     border: 3px dotted #e0e0e0;
 }
 
