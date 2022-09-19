@@ -38,9 +38,8 @@
                                 <i class="fas fa-circle-notch fa-spin"></i> {{ $t('Importing') }}...
                             </h4>
                         </div>
-                        <!-- TODO: This may not be needed anymore -->
-                        <!-- <div id="post-import" class="text-left" v-if="imported" v-cloak>
-                            POST IMPORT
+                        
+                        <div id="post-import" class="text-left" v-if="imported" v-cloak>
                             <h5>{{ $t('Status') }}</h5>
                             <ul v-show="options" class="mb-0 fa-ul">
                                 <li v-for="item in options">
@@ -51,7 +50,6 @@
                                 </li>
                             </ul>
                             <div id="post-import-assignable" v-if="assignable" v-cloak>
-                                POST IMPORT ASSIGNABLE
                                 <hr>
                                 <h5>{{ $t('Configuration') }}</h5>
                                 <span class="card-text">
@@ -277,7 +275,7 @@
                                     </table>
                                 </div>
                             </div>
-                        </div> -->
+                        </div>
                     </div>
                     <div id="card-footer-pre-import" class="card-footer bg-light" align="right"
                          v-if="! importing && ! imported">
@@ -509,6 +507,17 @@ export default {
         },
         importFile() {
             this.importing = true;
+            switch (this.selectedImportOption) {
+                case 'basic':
+                    this.handleBasicImport();
+                    break;
+            
+                default:
+                    // TODO:: IMPORT/EXPORT HANDLE CUSTOM IMPORT
+                    break;
+            }
+        },
+        handleBasicImport() {
             let formData = new FormData();
             formData.append('file', this.file);
       
