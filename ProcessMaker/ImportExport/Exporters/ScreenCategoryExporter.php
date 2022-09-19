@@ -15,4 +15,11 @@ class ScreenCategoryExporter extends ExporterBase
     {
         return $this->model->save();
     }
+
+    public function handleDuplicateAttributes() : array
+    {
+        return [
+            'name' => fn ($name) => $this->incrementString($name),
+        ];
+    }
 }

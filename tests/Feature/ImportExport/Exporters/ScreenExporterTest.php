@@ -65,7 +65,7 @@ class ScreenExporterTest extends TestCase
         $this->assertEquals($checkNestedNestedScreen->id, Arr::get($checkNestedScreen->config, '0.items.2.config.screen'));
     }
 
-    public function testImportNewAssets()
+    private function importWithNew($screenMode)
     {
         list($screen, $screenCategory1, $screenCategory2, $script, $nestedScreen, $nestedNestedScreen) =
             $this->fixtures();
@@ -75,20 +75,43 @@ class ScreenExporterTest extends TestCase
         $payload = $exporter->payload();
 
         $optionsArray = [];
-        foreach (array_keys($payload['export']) as $uuid) {
-            $optionsArray[$uuid] = ['mode' => 'new'];
-        }
+        $optionsArray[$screen->uuid] = ['mode' => $screenMode];
+        $optionsArray[$screenCategory1->uuid] = ['mode' => 'new'];
+        $optionsArray[$screenCategory2->uuid] = ['mode' => 'new'];
+
         $options = new Options($optionsArray);
         $importer = new Importer($payload, $options);
         $importer->doImport();
-        // WIP
+
+        return $screen;
+    }
+
+    public function testImportNewCategoryWithExistingScreen()
+    {
+        $screen = $this->importWithNew('update');
+        $categories = $screen->refresh()->categories()->pluck('name', 'screen_categories.id as id');
+        $this->assertCount(4, $categories);
+        $this->assertContains('category 1', $categories);
+        $this->assertContains('category 2', $categories);
+        $this->assertContains('category 3', $categories);
+        $this->assertContains('category 4', $categories);
+    }
+
+    public function testImportNewCategoryWithNewScreen()
+    {
+        $this->importWithNew('new');
+        $screen = Screen::where('title', 'screen 2')->firstOrFail();
+        $categories = $screen->refresh()->categories()->pluck('name', 'screen_categories.id as id');
+        $this->assertCount(2, $categories);
+        $this->assertContains('category 3', $categories);
+        $this->assertContains('category 4', $categories);
     }
 
     private function fixtures()
     {
         $screen = $this->createScreen();
-        $screenCategory1 = factory(ScreenCategory::class)->create(['name' => 'category 1']);
-        $screenCategory2 = factory(ScreenCategory::class)->create(['name' => 'category 2']);
+        $screenCategory1 = factory(ScreenCategory::class)->create(['name' => 'category 1', 'status' => 'ACTIVE']);
+        $screenCategory2 = factory(ScreenCategory::class)->create(['name' => 'category 2', 'status' => 'ACTIVE']);
         $screen->screen_category_id = $screenCategory1->id . ',' . $screenCategory2->id;
 
         $script = factory(Script::class)->create(['title' => 'script']);

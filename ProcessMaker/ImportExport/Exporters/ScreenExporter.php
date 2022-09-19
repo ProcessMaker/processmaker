@@ -6,6 +6,7 @@ use Illuminate\Support\Arr;
 use ProcessMaker\Assets\ScreensInScreen;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\Script;
 
 class ScreenExporter extends ExporterBase
@@ -36,25 +37,33 @@ class ScreenExporter extends ExporterBase
     public function import() : bool
     {
         $screen = $this->model;
-        $screen->config = json_decode($this->model->config, true);
+        $categories = $screen->categories;
 
-        $categoryIds = [];
+        $screen->config = json_decode($this->model->config, true);
         $config = $this->model->config;
 
         foreach ($this->dependents as $dependent) {
             switch ($dependent->type) {
                 case DependentType::CATEGORIES:
-                    $categoryIds[] = $dependent->model->id;
+                    $categories->push(ScreenCategory::findOrFail($dependent->model->id));
                     break;
                 case DependentType::SCREENS:
                     $this->associateNestedScreen($dependent, $config);
                     break;
             }
         }
-        $screen->screen_category_id = implode(',', $categoryIds);
+        $screen->screen_category_id = $categories->map(fn ($c) => $c->id)->join(',');
         $screen->config = $config;
 
         return $screen->saveOrFail();
+    }
+
+    protected function getExportAttributes() : array
+    {
+        $attrs = parent::getExportAttributes();
+        unset($attrs['screen_category_id']);
+
+        return $attrs;
     }
 
     public function handleDuplicateAttributes() : array
