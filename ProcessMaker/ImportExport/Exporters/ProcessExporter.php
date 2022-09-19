@@ -40,6 +40,9 @@ class ProcessExporter extends ExporterBase
 
     public function import() : bool
     {
+        // Add user
+        // Update screenRef
+        // Associate Categories
         return $this->model->save();
     }
 }

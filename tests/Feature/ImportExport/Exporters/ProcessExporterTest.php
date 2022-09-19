@@ -12,53 +12,44 @@ use ProcessMaker\Models\ProcessNotificationSetting;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\User;
 use Tests\TestCase;
 
 class ProcessExporterTest extends TestCase
 {
-    public function testExport()
+    private function fixtures()
     {
-        // Create Screens.
-        $screen = factory(Screen::class)->create();
-        $screenCategory1 = factory(ScreenCategory::class)->create();
-        $screenCategory2 = factory(ScreenCategory::class)->create();
-        $screen->screen_category_id = $screenCategory1->id . ',' . $screenCategory2->id;
-        $environmentVariable = factory(EnvironmentVariable::class)->create(['name' => 'TEST_VAR']);
-        $script = factory(Script::class)->create([
-            'code' => '<?php $config["envVar"] = getenv("TEST_VAR"); return $config; ?>',
-        ]);
-        $watcher = ['name' => 'Watcher', 'script_id' => $script->id];
-        $screen->watchers = [$watcher];
-        $nestedScreen = factory(Screen::class)->create();
-        $nestedScreen->screen_category_id = $screenCategory1->id;
-        $item = [
-            'label' => 'Nested Screen',
-            'component' => 'FormNestedScreen',
-            'config' => [
-                'value' => null,
-                'screen' => $nestedScreen->id,
-            ],
-        ];
-        $screen->config = ['items' => [$item]];
-        $screen->save();
+        // Create simple screens. Extensive screen tests are in ScreenExporterTest.php
+        $screen = factory(Screen::class)->create(['title' => 'Screen']);
         $cancelScreen = factory(Screen::class)->create();
         $requestDetailScreen = factory(Screen::class)->create();
+        $user = factory(User::class)->create();
 
         // Create Process.
         $bpmn = Process::getProcessTemplate('SingleTaskProcessManager.bpmn');
         $bpmn = str_replace('pm:screenRef="1"', 'pm:screenRef="' . $screen->id . '"', $bpmn);
         $process = factory(Process::class)->create([
+            'name' => 'Process',
+            'user_id' => $user->id,
             'cancel_screen_id' => $cancelScreen->id,
             'request_detail_screen_id' => $requestDetailScreen->id,
             'bpmn' => $bpmn,
         ]);
 
+        // TODO
         // Notification Settings.
-        factory(ProcessNotificationSetting::class)->create([
-            'process_id' => $process->id,
-            'notifiable_type' => 'requester',
-            'notification_type' => 'assigned',
-        ]);
+        // factory(ProcessNotificationSetting::class)->create([
+        //     'process_id' => $process->id,
+        //     'notifiable_type' => 'requester',
+        //     'notification_type' => 'assigned',
+        // ]);
+
+        return [$process, $screen, $cancelScreen, $requestDetailScreen, $user];
+    }
+
+    public function testExport()
+    {
+        list($process, $screen, $cancelScreen, $requestDetailScreen, $user) = $this->fixtures();
 
         $exporter = new Exporter();
         $exporter->exportProcess($process);
@@ -67,15 +58,32 @@ class ProcessExporterTest extends TestCase
         $this->assertEquals($process->uuid, Arr::get($tree, '0.uuid'));
         $this->assertEquals($process->category->uuid, Arr::get($tree, '0.dependents.0.uuid'));
         $this->assertEquals($screen->uuid, Arr::get($tree, '0.dependents.1.uuid'));
-        $this->assertEquals($script->uuid, Arr::get($tree, '0.dependents.1.dependents.2.uuid'));
-        $this->assertEquals($nestedScreen->uuid, Arr::get($tree, '0.dependents.1.dependents.3.uuid'));
-        $this->assertEquals($environmentVariable->uuid, Arr::get($tree, '0.dependents.1.dependents.2.dependents.1.uuid'));
-        $this->assertEquals($script->scriptExecutor->uuid, Arr::get($tree, '0.dependents.1.dependents.2.dependents.2.uuid'));
         $this->assertEquals($cancelScreen->uuid, Arr::get($tree, '0.dependents.2.uuid'));
         $this->assertEquals($requestDetailScreen->uuid, Arr::get($tree, '0.dependents.3.uuid'));
     }
 
     public function testImport()
     {
+        list($process, $screen, $cancelScreen, $requestDetailScreen, $user) = $this->fixtures();
+
+        $exporter = new Exporter();
+        $exporter->exportProcess($process);
+        $payload = $exporter->payload();
+
+        $process->delete();
+        $screen->delete();
+        $user->delete();
+
+        $this->assertEquals(0, Process::where('name', 'Process')->count());
+        $this->assertEquals(0, Screen::where('title', 'Screen')->count());
+        $this->assertEquals(0, User::where('username', 'testuser')->count());
+
+        $options = new Options([]);
+        $importer = new Importer($payload, $options);
+        $importer->doImport();
+
+        $process = Process::where('name', 'Process')->firstOrFail();
+        $this->assertEquals(1, Screen::where('title', 'Screen')->count());
+        $this->assertEquals('testuser', $process->user);
     }
 }

@@ -21,7 +21,7 @@ class ScreenExporter extends ExporterBase
             $this->addDependent(DependentType::CATEGORIES, $category, ScreenCategoryExporter::class);
         }
 
-        // Watcher Scripts
+        // Script Watchers. Data source watchers are are handled in the data-sources package.
         foreach ((array) $this->model->watchers as $watcher) {
             if ($this->watcherType($watcher) === self::WATCHER_TYPE_SCRIPT) {
                 $this->addDependent(DependentType::SCRIPTS, Script::find($watcher['script_id']), ScriptExporter::class);
