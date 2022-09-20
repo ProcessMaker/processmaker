@@ -197,6 +197,7 @@ Route::group(
 
         // Import & Export
         Route::get('export/{type}/tree/{id}', 'ExportController@tree')->name('export.tree')->middleware('can:export-processes');
+        Route::get('export/{type}/download/{id}', 'ExportController@download')->name('export.download')->middleware('can:export-processes');
 
         // debugging javascript errors
         Route::post('debug', 'DebugController@store')->name('debug.store')->middleware('throttle');

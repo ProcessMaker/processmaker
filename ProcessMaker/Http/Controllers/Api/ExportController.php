@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Http\Requests\ImportExport\ExportRequest;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ProcessExporter;
 use ProcessMaker\ImportExport\Exporters\ScreenExporter;
@@ -33,6 +34,30 @@ class ExportController extends Controller
             'tree' => $exporter->tree(),
             'manifest' => $exporter->payload(),
         ], 200);
+    }
+
+    /**
+     * Download the JSON export file.
+     */
+    public function download(ExportRequest $request, string $type, int $id)
+    {
+        $model = $this->getModel($type)->findOrFail($id);
+
+        $exporter = new Exporter();
+        $exporter->export($model, last($this->types[$type]));
+
+        $export = $exporter->payload($request->input('password'));
+        $fileName = 'export.json';
+
+        return response()->streamDownload(
+            function () use ($export) {
+                echo json_encode($export);
+            },
+            $fileName,
+            [
+                'Content-type' => 'application/json',
+            ]
+        );
     }
 
     private function getModel(string $type): Model
