@@ -25,9 +25,9 @@ use ProcessMaker\Nayra\Bpmn\Models\TimerEventDefinition;
 use ProcessMaker\Nayra\Exceptions\ElementNotFoundException;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Nayra\Storage\BpmnElement;
-use ProcessMaker\Rules\BPMNValidation;
-use ProcessMaker\Providers\WorkflowServiceProvider;
 use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
+use ProcessMaker\Providers\WorkflowServiceProvider;
+use ProcessMaker\Rules\BPMNValidation;
 use Throwable;
 
 class ProcessController extends Controller
@@ -750,6 +750,51 @@ class ProcessController extends Controller
     }
 
     /**
+     * Validate the specified process before importing.
+     *
+     * @param $process
+     *
+     * @return Response
+     *
+     * @OA\Post(
+     *     path="/processes/import/validation",
+     *     summary="Validate a import",
+     *     operationId="validateImport",
+     *     tags={"Processes"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/ProcessImport")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="file",
+     *                     description="file to import",
+     *                     type="string",
+     *                     format="binary",
+     *                 ),
+     *             )
+     *         )
+     *     ),
+     * )
+     */
+    public function preimportValidation(Process $process, Request $request)
+    {
+        $content = $request->file('file')->get();
+        if (!$this->validateImportedFile($content)) {
+            return response(
+                ['message' => __('Invalid Format')],
+                422
+            );
+        }
+
+    }
+
+    /**
      * Import the specified process.
      *
      * @param $process
@@ -1176,21 +1221,21 @@ class ProcessController extends Controller
         return $isDecoded && $validType && $validVersion;
     }
 
-    private function checkForExistingRoute($processId, $route) 
-    {   
-        $existingRoute = WebentryRoute::where('first_segment', $route)->where('process_id','!=', $processId)->first();
+    private function checkForExistingRoute($processId, $route)
+    {
+        $existingRoute = WebentryRoute::where('first_segment', $route)->where('process_id', '!=', $processId)->first();
         if ($existingRoute) {
             throw new \Exception('Segment should be unique. Used in process ' . $existingRoute->process_id . 'node ID: "' . $existingRoute->node_id . '"');
         }
     }
 
-    private function updateRoute($node, $route) 
+    private function updateRoute($node, $route)
     {
         $config = json_decode($node->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'config'), true);
         if ($config['web_entry']['webentryRouteConfig']['firstUrlSegment'] !== $route) {
             // update firstUrlSegment to new route
             $config['web_entry']['webentryRouteConfig']['firstUrlSegment'] = $route;
-            
+
             // update entryUrl to new route
             $path = parse_url($config['web_entry']['webentryRouteConfig']['entryUrl'], PHP_URL_PATH);
             $newEntryUrl = str_replace($config['web_entry']['webentryRouteConfig']['firstUrlSegment'], $route, $path);
