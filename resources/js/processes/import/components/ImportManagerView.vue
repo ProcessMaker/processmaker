@@ -351,7 +351,7 @@ export default {
             fileIsValid: false,
             selectedImportOption: "basic",
             processName: null,
-            passwordEnabled: true,
+            passwordEnabled: false,
         }
     },
     filters: {
@@ -552,7 +552,7 @@ export default {
         },
         checkForPassword() {
             if (!this.passwordEnabled) {
-                return;
+               this.importFile();
             }
             this.showEnterPasswordModal();
         },
