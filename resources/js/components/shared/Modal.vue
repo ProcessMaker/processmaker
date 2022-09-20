@@ -2,12 +2,11 @@
   <b-modal
     :id="id"
     ref="pmModal"
-    :title="title"
     footer-class="pm-modal-footer"
     cancel-variant="outline-secondary"
     :cancel-title="$t('Cancel')"
     ok-variant="secondary"
-    :ok-title="$t('Save')"
+    :ok-title="okTitle ? okTitle : $t('Save')"
     :ok-disabled="okDisabled"
     no-close-on-backdrop
     centered
@@ -20,13 +19,17 @@
     @show="onEvent('show', $event)"
     @shown="onEvent('shown', $event)"
   >
+   <template #modal-title>
+      <h5>{{title}}</h5>
+      <small v-if="subtitle" class="text-muted subtitle">{{subtitle}}</small>
+    </template>
     <slot></slot>
   </b-modal>
 </template>
 
 <script>
   export default {
-    props: ["id", "title", "ok-disabled"],
+    props: ["id", "title", "subtitle", "ok-disabled", 'ok-title'],
     methods: {
       onEvent(name, event) {
         this.$emit(name, event);
@@ -45,4 +48,9 @@
   .pm-modal-footer .btn {
     margin: 0;
   }
+
+  .subtitle {
+    font-size: 70%;
+  }
+
 </style>
