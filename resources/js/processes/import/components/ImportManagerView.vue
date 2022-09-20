@@ -14,10 +14,17 @@
                                <h5> {{ $t("You are about to import") }} <strong>{{processName}}</strong></h5>
                                 <div class="border-dotted p-3 col-4 text-center font-weight-bold my-3">
                                     {{file.name}} 
-                                    <b-button variant="link" @click="removeFile" class="p-0"><i class="fas fa-times-circle text-danger"></i></b-button>
+                                    <b-button 
+                                        variant="link" 
+                                        @click="removeFile" 
+                                        class="p-0"
+                                        aria-describedby=""
+                                    >
+                                        <i class="fas fa-times-circle text-danger"></i>
+                                    </b-button>
                                 </div>
                                 <b-form-group>
-                                    {{ $t('Select Import Type') }}
+                                    <h6>{{ $t('Select Import Type') }}</h6>
                                     <b-form-radio 
                                         v-for="(item, index) in importTypeOptions" 
                                         v-model="selectedImportOption" 
@@ -25,13 +32,14 @@
                                         :key="item.value" 
                                         :value="item.value"
                                     >
-                                        {{ item.content }}
+                                        <span class="fw-medium">{{ item.content }}</span>
                                         <div>
                                             <small v-uni-id="index.toString()" class="text-muted">{{item.helper}}</small>
                                         </div>
                                     </b-form-radio>
                                 </b-form-group>
                             </div>
+                            <enter-password-modal ref="enter-password-modal" @verified-password="importFile"></enter-password-modal>
                         </div>
                         <div id="during-import" v-if="importing" v-cloak>
                             <h4 class="card-title mt-5 mb-5">
@@ -282,8 +290,7 @@
                         <button type="button" class="btn btn-outline-secondary" @click="onCancel">
                             {{$t('Cancel')}}
                         </button>
-                        <button type="button" class="btn btn-secondary ml-2" @click="importFile"
-                                :disabled="fileIsValid === false">
+                        <button type="button" class="btn btn-primary ml-2" @click="checkForPassword" :disabled="fileIsValid === false">
                             {{$t('Import')}}
                         </button>
                     </div>
@@ -309,12 +316,13 @@
 <script>
 const importingCode = window.location.hash.match(/#code=(.+)/);
 import DraggableFileUpload from '../../../components/shared/DraggableFileUpload';
+import EnterPasswordModal from '../components/EnterPasswordModal';
 import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
     props: [''],
-    components: {DraggableFileUpload},
+    components: {DraggableFileUpload, EnterPasswordModal},
     mixins: [uniqIdsMixin],
     data() {
         return {
@@ -343,6 +351,7 @@ export default {
             fileIsValid: false,
             selectedImportOption: "basic",
             processName: null,
+            passwordEnabled: true,
         }
     },
     filters: {
@@ -541,6 +550,15 @@ export default {
                 ProcessMaker.alert(this.$t('Unable to import the process.')  + (error.response.data.message ? ': ' + error.response.data.message : ''), 'danger');
             });
         },
+        checkForPassword() {
+            if (!this.passwordEnabled) {
+                return;
+            }
+            this.showEnterPasswordModal();
+        },
+        showEnterPasswordModal() {
+            this.$refs['enter-password-modal'].show();
+        },
         importReady(response) {
             let message = this.$t("Unable to import the process.");
             if (!response.data.status) {
@@ -685,5 +703,13 @@ export default {
 
     .border-dotted {
         border: 3px dotted #e0e0e0;
+    }
+
+    .fw-medium {
+        font-weight:500;
+    }
+
+    .fw-semibold {
+        font-weight: 600;
     }
 </style>
