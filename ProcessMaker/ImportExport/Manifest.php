@@ -64,23 +64,22 @@ class Manifest
         $modelQuery = $class::where('uuid', $uuid);
 
         if ($modelQuery->exists()) {
-            $model = $modelQuery->first();
+            $model = $modelQuery->firstOrFail();
         } else {
             $mode = 'new';
         }
 
         switch ($mode) {
             case 'update':
-                $model = $modelQuery->first();
                 $model->fill($assetInfo['attributes']);
                 break;
             case 'discard':
-                $model = $modelQuery->first();
                 break;
             case 'new':
                 $model = new $class();
                 $model->fill($assetInfo['attributes']);
                 $model->uuid = $uuid;
+                break;
         }
 
         return [$mode, $model];
@@ -95,5 +94,18 @@ class Manifest
         }
 
         return $sorter->sort();
+    }
+
+    public function modelExists($class, $attribute, $value) : bool
+    {
+        foreach ($this->manifest as $uuid => $exporter) {
+            if (get_class($exporter->model) === $class) {
+                if ($exporter->model->$attribute === $value) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

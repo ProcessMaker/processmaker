@@ -3,6 +3,7 @@
 namespace ProcessMaker\ImportExport\Exporters;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use ProcessMaker\ImportExport\Dependent;
 use ProcessMaker\ImportExport\Manifest;
 
@@ -39,7 +40,7 @@ abstract class ExporterBase implements ExporterInterface
         $this->dependents[] = new Dependent($type, $uuid, $this->manifest);
     }
 
-    public function getExportAttributes()
+    protected function getExportAttributes() : array
     {
         $attrs = $this->model->getAttributes();
         unset($attrs['id']);
@@ -79,8 +80,8 @@ abstract class ExporterBase implements ExporterInterface
             $value = $this->model->$attribute;
             $i = 0;
             while ($this->duplicateExists($class, $attribute, $value)) {
-                if ($i > 5) {
-                    throw new \Exception('Can not fix duplicate attribute');
+                if ($i > 100) {
+                    throw new \Exception('Can not fix duplicate attribute after 100 iterations');
                 }
                 $i++;
                 $value = $handler($value);
@@ -89,9 +90,14 @@ abstract class ExporterBase implements ExporterInterface
         }
     }
 
-    private function duplicateExists($class, $attribute, $value)
+    private function duplicateExists($class, $attribute, $value) : bool
     {
-        return $class::where($attribute, $value)->exists();
+        // Check the databse for duplicates unrelated to the import
+        if ($class::where($attribute, $value)->exists()) {
+            return true;
+        }
+        // Check the manifest to see if any non-saved models exist
+        return $this->manifest->modelExists($class, $attribute, $value);
     }
 
     public function handleDuplicateAttributes() : array
@@ -101,6 +107,13 @@ abstract class ExporterBase implements ExporterInterface
 
     protected function incrementString(string $string)
     {
-        return $string . ' new';
+        if (preg_match('/\s(\d+)$/', $string, $matches)) {
+            $num = (int) $matches[1];
+            $new = $num + 1;
+
+            return preg_replace('/\d+$/', (string) $new, $string);
+        }
+
+        return $string . ' 2';
     }
 }
