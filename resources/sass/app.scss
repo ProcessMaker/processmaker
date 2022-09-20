@@ -360,12 +360,8 @@ button:focus.navbar-toggler {
 
 /*modal style*/
 
-.modal-content {
-  @extend .p-3;
-}
-
 .modal-header {
-  @extend .p-0, .m-0, .mb-3, .border-0;
+  @extend .m-0;
   font-weight: 600;
 
   .close {
@@ -380,11 +376,11 @@ button:focus.navbar-toggler {
 }
 
 .modal-body {
-  @extend .p-0, .m-0;
+  @extend .p-3, .m-0;
 }
 
 .modal-footer {
-  @extend .p-0, .mt-3, .d-flex, .align-items-end, .border-0;
+  @extend .mt-3, .d-flex, .align-items-end;
 }
 
 .modal-footer > :not(:first-child) {
