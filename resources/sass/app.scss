@@ -29,6 +29,14 @@ html {
   overflow-x: hidden;
 }
 
+.fw-medium {
+  font-weight: 500
+}
+
+.fw-semibold {
+  font-weight: 600;
+}
+
 .table-card {
   overflow: auto;
   padding: 0;
@@ -476,7 +484,7 @@ select.pagination-nav-item:focus-visible {
 }
 
 .btn {
-  // border-radius: 0.12rem;
+  border-radius: 4px;
   // padding: 7px 16px;
   // line-height: 1;
   // font-size: 14px;
