@@ -6,12 +6,9 @@ use Illuminate\Support\Arr;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
-use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessNotificationSetting;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\ScreenCategory;
-use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 
@@ -61,10 +58,10 @@ class ProcessExporterTest extends TestCase
         $tree = $exporter->tree();
 
         $this->assertEquals($process->uuid, Arr::get($tree, '0.uuid'));
-        $this->assertEquals($process->category->uuid, Arr::get($tree, '0.dependents.0.uuid'));
-        $this->assertEquals($screen->uuid, Arr::get($tree, '0.dependents.1.uuid'));
-        $this->assertEquals($cancelScreen->uuid, Arr::get($tree, '0.dependents.2.uuid'));
-        $this->assertEquals($requestDetailScreen->uuid, Arr::get($tree, '0.dependents.3.uuid'));
+        $this->assertEquals($process->category->uuid, Arr::get($tree, '0.dependents.1.uuid'));
+        $this->assertEquals($screen->uuid, Arr::get($tree, '0.dependents.2.uuid'));
+        $this->assertEquals($cancelScreen->uuid, Arr::get($tree, '0.dependents.3.uuid'));
+        $this->assertEquals($requestDetailScreen->uuid, Arr::get($tree, '0.dependents.4.uuid'));
     }
 
     public function testImport()

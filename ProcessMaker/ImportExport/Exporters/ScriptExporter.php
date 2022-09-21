@@ -10,9 +10,7 @@ class ScriptExporter extends ExporterBase
 {
     public function export() : void
     {
-        foreach ($this->model->categories as $category) {
-            $this->addDependent(DependentType::CATEGORIES, $category, CategoryExporter::class);
-        }
+        $this->exportCategories();
 
         foreach ($this->getEnvironmentVariables() as $variable) {
             $this->addDependent(DependentType::ENVIRONMENT_VARIABLES, $variable, EnvironmentVariableExporter::class);

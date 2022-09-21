@@ -3,11 +3,9 @@
 namespace ProcessMaker\ImportExport\Exporters;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
 use ProcessMaker\ImportExport\Dependent;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Manifest;
-use ProcessMaker\Models\ScreenCategory;
 
 abstract class ExporterBase implements ExporterInterface
 {
