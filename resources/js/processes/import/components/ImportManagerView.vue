@@ -40,6 +40,7 @@
                                 </b-form-group>
                             </div>
                             <enter-password-modal ref="enter-password-modal" @verified-password="importFile"></enter-password-modal>
+                            <import-process-modal ref="import-process-modal" @></import-process-modal>
                         </div>
                         <div id="during-import" v-if="importing" v-cloak>
                             <h4 class="card-title mt-5 mb-5">
@@ -317,12 +318,13 @@
 const importingCode = window.location.hash.match(/#code=(.+)/);
 import DraggableFileUpload from '../../../components/shared/DraggableFileUpload';
 import EnterPasswordModal from '../components/EnterPasswordModal';
+import ImportProcessModal from '../components/ImportProcessModal';
 import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
     props: [''],
-    components: {DraggableFileUpload, EnterPasswordModal},
+    components: {DraggableFileUpload, EnterPasswordModal, ImportProcessModal},
     mixins: [uniqIdsMixin],
     data() {
         return {
@@ -352,6 +354,7 @@ export default {
             selectedImportOption: "basic",
             processName: null,
             passwordEnabled: true,
+            processExists: true,
         }
     },
     filters: {
@@ -515,7 +518,7 @@ export default {
             window.location = '/processes';
         },
         importFile() {
-            this.importing = true;
+           
             switch (this.selectedImportOption) {
                 case 'basic':
                     this.handleBasicImport();
@@ -527,28 +530,39 @@ export default {
             }
         },
         handleBasicImport() {
-            let formData = new FormData();
-            formData.append('file', this.file);
-      
-            if (this.submitted) {
-                return;
-            }
-            this.submitted = true;
-            ProcessMaker.apiClient.post('/processes/import?queue=1', formData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
+            // TODO: IMPORT/EXPORT check if process already exists. and users have edit permissions
+            console.log('HANDLE BASIC IMPORT', this.processExists)
+            if (this.processExists) {
+                this.$nextTick(() => {    
+                    this.$refs['enter-password-modal'].hide();  
+                    this.$refs['import-process-modal'].show();
+                });
+            } else {
+                this.importing = true;
+                let formData = new FormData();
+                formData.append('file', this.file);
+        
+                if (this.submitted) {
+                    return;
                 }
-            )
-            .then(response => {
-                window.location.hash = `#code=${response.data.code}`;
-                this.importingCode = response.data.code;
-            })
-            .catch(error => {
-                this.submitted = false;
-                ProcessMaker.alert(this.$t('Unable to import the process.')  + (error.response.data.message ? ': ' + error.response.data.message : ''), 'danger');
-            });
+                this.submitted = true;
+                ProcessMaker.apiClient.post('/processes/import?queue=1', formData,
+                    {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    }
+                )
+                .then(response => {
+                    window.location.hash = `#code=${response.data.code}`;
+                    this.importingCode = response.data.code;
+                })
+                .catch(error => {
+                    this.submitted = false;
+                    ProcessMaker.alert(this.$t('Unable to import the process.')  + (error.response.data.message ? ': ' + error.response.data.message : ''), 'danger');
+                });
+            }
+            
         },
         checkForPassword() {
             if (!this.passwordEnabled) {
