@@ -40,7 +40,7 @@
                                 </b-form-group>
                             </div>
                             <enter-password-modal ref="enter-password-modal" @verified-password="importFile"></enter-password-modal>
-                            <import-process-modal ref="import-process-modal" :processName="processName" :userHasEditPermissions="true" @import-as-new="onImportAsNew"></import-process-modal>
+                            <import-process-modal ref="import-process-modal" :processName="processName" :userHasEditPermissions="true" @import-new="onImportAsNew"></import-process-modal>
                         </div>
                         <div id="during-import" v-if="importing" v-cloak>
                             <h4 class="card-title mt-5 mb-5">
@@ -640,8 +640,10 @@ export default {
             this.file = '';
         },
         onImportAsNew() {
-            console.log('file', this.file);
-            console.log('route to new vue');
+            console.log('ROUTER', this.$router);
+            this.$router.push({name: 'import-new-process', params: {file: this.file}})
+            // console.log('file', this.file);
+            // console.log('route to new vue');
         }
     },
     mounted() {

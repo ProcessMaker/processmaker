@@ -5,7 +5,7 @@
       :title="title" 
       @hidden="onClose"
       @update="onUpdate"
-      @importAsNew="importAsNew"
+      @importNew="importNew"
       :setCustomButtons="true"
       :customButtons="customModalButtons"
     >
@@ -39,7 +39,7 @@
         customModalButtons: [
             {'content': 'Cancel', 'action': 'hide()', 'variant': 'outline-secondary', 'disabled': false, 'hidden': false},
             {'content': 'Update', 'action': 'update', 'variant': 'secondary', 'disabled': false, 'hidden': true},
-            {'content': 'Import as New', 'action': 'import', 'variant': 'primary', 'disabled': false, 'hidden': false},
+            {'content': 'Import as New', 'action': 'importNew', 'variant': 'primary', 'disabled': false, 'hidden': false},
         ],
       }
     },
@@ -68,8 +68,8 @@
       onUpdate() {
         console.log('UPDATE PROCESS AS NEW');
       },
-      importAsNew() {
-        this.$emit('import-as-new');
+      importNew() {
+        this.$emit('import-new');
       }
     }
   };
