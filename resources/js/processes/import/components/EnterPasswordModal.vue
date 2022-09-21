@@ -76,6 +76,9 @@
       show() {
         this.$bvModal.show('enterPassword');
       },
+      hide() {
+        this.$bvModal.hide('enterPassword');
+      },
       onClose () {
         this.password = "";
       },
