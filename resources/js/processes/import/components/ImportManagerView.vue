@@ -40,7 +40,7 @@
                                 </b-form-group>
                             </div>
                             <enter-password-modal ref="enter-password-modal" @verified-password="importFile"></enter-password-modal>
-                            <import-process-modal ref="import-process-modal" @></import-process-modal>
+                            <import-process-modal ref="import-process-modal" :userHasEditPermissions="false"></import-process-modal>
                         </div>
                         <div id="during-import" v-if="importing" v-cloak>
                             <h4 class="card-title mt-5 mb-5">
@@ -531,7 +531,6 @@ export default {
         },
         handleBasicImport() {
             // TODO: IMPORT/EXPORT check if process already exists. and users have edit permissions
-            console.log('HANDLE BASIC IMPORT', this.processExists)
             if (this.processExists) {
                 this.$nextTick(() => {    
                     this.$refs['enter-password-modal'].hide();  
