@@ -142,7 +142,7 @@ abstract class ExporterBase implements ExporterInterface
         }
     }
 
-    protected function associateCategories($property, $categoryClass)
+    protected function associateCategories($categoryClass, $property)
     {
         $categories = $this->model->categories;
         foreach ($this->getDependents(DependentType::CATEGORIES) as $dependent) {
