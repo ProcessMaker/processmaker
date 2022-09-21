@@ -19,7 +19,7 @@ class Importer
         $this->manifest = $this->loadManifest();
     }
 
-    public function prviewImport()
+    public function previewImport()
     {
         return $this->manifest->toArray();
     }
