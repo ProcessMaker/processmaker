@@ -17,9 +17,7 @@ class ScreenExporter extends ExporterBase
 
     public function export() : void
     {
-        foreach ($this->model->categories as $category) {
-            $this->addDependent(DependentType::CATEGORIES, $category, ScreenCategoryExporter::class);
-        }
+        $this->exportCategories();
 
         // Script Watchers. Data source watchers are are handled in the data-sources package.
         foreach ((array) $this->model->watchers as $watcher) {
@@ -37,7 +35,6 @@ class ScreenExporter extends ExporterBase
     public function import() : bool
     {
         $screen = $this->model;
-        $categories = $screen->categories;
 
         $screen->config = json_decode($this->model->config, true);
         $screen->watchers = json_decode($this->model->watchers, true);
@@ -46,9 +43,6 @@ class ScreenExporter extends ExporterBase
 
         foreach ($this->dependents as $dependent) {
             switch ($dependent->type) {
-                case DependentType::CATEGORIES:
-                    $categories->push(ScreenCategory::findOrFail($dependent->model->id));
-                    break;
                 case DependentType::SCREENS:
                     $this->associateNestedScreen($dependent, $config);
                     break;
@@ -57,7 +51,8 @@ class ScreenExporter extends ExporterBase
                     break;
             }
         }
-        $screen->screen_category_id = $categories->map(fn ($c) => $c->id)->join(',');
+
+        $this->associateCategories(ScreenCategory::class, 'screen_category_id');
         $screen->config = $config;
         $screen->watchers = $watchers;
 

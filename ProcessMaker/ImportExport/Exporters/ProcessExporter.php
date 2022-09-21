@@ -4,6 +4,7 @@ namespace ProcessMaker\ImportExport\Exporters;
 
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\Managers\ExportManager;
+use ProcessMaker\Models\ProcessNotificationSetting;
 use ProcessMaker\Models\Screen;
 
 class ProcessExporter extends ExporterBase
@@ -12,25 +13,25 @@ class ProcessExporter extends ExporterBase
 
     public function export() : void
     {
+        $process = $this->model;
+
         $this->manager = resolve(ExportManager::class);
 
-        // Process Categories.
-        foreach ($this->model->categories as $category) {
-            $this->addDependent(DependentType::CATEGORIES, $category, ProcessCategoryExporter::class);
-        }
+        $this->addDependent('user', $process->user, UserExporter::class);
 
-        // TODO Notification Settings.
-        // foreach ($this->model->notification_settings as $notificationSetting) {
-        //     $this->addDependent(DependentType::NOTIFICATION_SETTINGS, $notificationSetting, ProcessNotificationSettingExporter::class);
-        // }
+        // Process Categories.
+        $this->exportCategories();
+
+        // Notification Settings.
+        $this->addReference('notification_settings', $process->notification_settings->toArray());
 
         // Screens.
         $screenIds = array_unique(array_merge(
             [
-                $this->model->cancel_screen_id,
-                $this->model->request_detail_screen_id,
+                $process->cancel_screen_id,
+                $process->request_detail_screen_id,
             ],
-            $this->manager->getDependenciesOfType(Screen::class, $this->model, [], false)
+            $this->manager->getDependenciesOfType(Screen::class, $process, [], false)
         ));
         $screens = Screen::findMany($screenIds);
         foreach ($screens as $screen) {
@@ -40,9 +41,22 @@ class ProcessExporter extends ExporterBase
 
     public function import() : bool
     {
-        // Add user
+        $process = $this->model;
+
+        $process->user_id = $this->getDependents('user')[0]->id;
+
+        $this->associateCategories(ScreenCategory::class, 'screen_category_id');
+
+        // TODO
         // Update screenRef
-        // Associate Categories
-        return $this->model->save();
+        $process->save();
+
+        $process->notification_settings()->delete();
+        foreach ($this->getReference('notification_settings') as $setting) {
+            unset($setting['process_id']);
+            $process->notification_settings()->create($setting);
+        }
+
+        return true;
     }
 }

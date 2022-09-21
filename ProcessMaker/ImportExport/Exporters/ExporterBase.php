@@ -5,13 +5,17 @@ namespace ProcessMaker\ImportExport\Exporters;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use ProcessMaker\ImportExport\Dependent;
+use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Manifest;
+use ProcessMaker\Models\ScreenCategory;
 
 abstract class ExporterBase implements ExporterInterface
 {
     public $model = null;
 
     public $dependents = [];
+
+    public $references = [];
 
     public $manifest = null;
 
@@ -42,6 +46,21 @@ abstract class ExporterBase implements ExporterInterface
         $this->dependents[] = new Dependent($type, $uuid, $this->manifest);
     }
 
+    public function getDependents($type)
+    {
+        return array_filter($this->dependents, fn ($d) => $d->type === $type);
+    }
+
+    public function addReference($type, $attributes)
+    {
+        $this->references[$type] = $attributes;
+    }
+
+    public function getReference($type)
+    {
+        return $this->references[$type];
+    }
+
     protected function getExportAttributes() : array
     {
         return $this->model->getAttributes();
@@ -62,6 +81,7 @@ abstract class ExporterBase implements ExporterInterface
             'name' => $name,
             'model' => get_class($this->model),
             'attributes' => $this->getExportAttributes(),
+            'references' => $this->references,
             'dependents' => array_map(fn ($d) => $d->toArray(), $this->dependents),
         ];
     }
@@ -113,5 +133,21 @@ abstract class ExporterBase implements ExporterInterface
         }
 
         return $string . ' 2';
+    }
+
+    protected function exportCategories()
+    {
+        foreach ($this->model->categories as $category) {
+            $this->addDependent(DependentType::CATEGORIES, $category, CategoryExporter::class);
+        }
+    }
+
+    protected function associateCategories($property, $categoryClass)
+    {
+        $categories = $this->model->categories;
+        foreach ($this->getDependents(DependentType::CATEGORIES) as $dependent) {
+            $categories->push($categoryClass::findOrFail($dependent->model->id));
+        }
+        $this->model->$property = $categories->map(fn ($c) => $c->id)->join(',');
     }
 }

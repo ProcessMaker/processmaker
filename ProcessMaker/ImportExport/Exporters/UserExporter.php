@@ -2,7 +2,9 @@
 
 namespace ProcessMaker\ImportExport\Exporters;
 
-class ProcessNotificationSettingExporter extends ExporterBase
+use ProcessMaker\Models\User;
+
+class UserExporter extends ExporterBase
 {
     public function export() : void
     {

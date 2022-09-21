@@ -46,6 +46,7 @@ class Manifest
             $exporter->originalId = Arr::get($assetInfo, 'attributes.id');
             $exporter->updateDuplicateAttributes();
             $exporter->dependents = Dependent::fromArray($assetInfo['dependents'], $manifest);
+            $exporter->references = $assetInfo['references'];
             $manifest->push($uuid, $exporter);
         }
 

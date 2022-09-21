@@ -36,15 +36,19 @@ class ProcessExporterTest extends TestCase
             'bpmn' => $bpmn,
         ]);
 
-        // TODO
         // Notification Settings.
-        // factory(ProcessNotificationSetting::class)->create([
-        //     'process_id' => $process->id,
-        //     'notifiable_type' => 'requester',
-        //     'notification_type' => 'assigned',
-        // ]);
+        $processNotificationSetting1 = factory(ProcessNotificationSetting::class)->create([
+            'process_id' => $process->id,
+            'notifiable_type' => 'requester',
+            'notification_type' => 'assigned',
+        ]);
+        $processNotificationSetting2 = factory(ProcessNotificationSetting::class)->create([
+            'process_id' => $process->id,
+            'notifiable_type' => 'requester',
+            'notification_type' => 'assigned',
+        ]);
 
-        return [$process, $screen, $cancelScreen, $requestDetailScreen, $user];
+        return [$process, $screen, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2];
     }
 
     public function testExport()
@@ -64,7 +68,7 @@ class ProcessExporterTest extends TestCase
 
     public function testImport()
     {
-        list($process, $screen, $cancelScreen, $requestDetailScreen, $user) = $this->fixtures();
+        list($process, $screen, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2) = $this->fixtures();
 
         $exporter = new Exporter();
         $exporter->exportProcess($process);
@@ -73,6 +77,7 @@ class ProcessExporterTest extends TestCase
         $process->delete();
         $screen->delete();
         $user->delete();
+        \DB::delete('delete from process_notification_settings');
 
         $this->assertEquals(0, Process::where('name', 'Process')->count());
         $this->assertEquals(0, Screen::where('title', 'Screen')->count());
@@ -85,5 +90,8 @@ class ProcessExporterTest extends TestCase
         $process = Process::where('name', 'Process')->firstOrFail();
         $this->assertEquals(1, Screen::where('title', 'Screen')->count());
         $this->assertEquals('testuser', $process->user);
+
+        $notificationSettings = $process->notificationSettings;
+        $this->assertCount(2, $notificationSettings);
     }
 }
