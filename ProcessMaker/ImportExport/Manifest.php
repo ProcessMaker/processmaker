@@ -68,12 +68,18 @@ class Manifest
 
         $modelQuery = $class::where('uuid', $uuid);
 
+        // Check if the model has soft deletes
+        if (in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses($class))) {
+            $modelQuery->withTrashed();
+        }
+
         if ($modelQuery->exists()) {
             $model = $modelQuery->firstOrFail();
         } else {
             $mode = 'new';
         }
 
+        $class::unguard();
         switch ($mode) {
             case 'update':
                 $model->fill($attrs);
@@ -86,6 +92,7 @@ class Manifest
                 $model->uuid = $uuid;
                 break;
         }
+        $class::reguard();
 
         return [$mode, $model];
     }

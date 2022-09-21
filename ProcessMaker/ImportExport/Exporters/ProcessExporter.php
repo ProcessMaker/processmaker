@@ -4,6 +4,7 @@ namespace ProcessMaker\ImportExport\Exporters;
 
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\Managers\ExportManager;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessNotificationSetting;
 use ProcessMaker\Models\Screen;
 
@@ -43,9 +44,9 @@ class ProcessExporter extends ExporterBase
     {
         $process = $this->model;
 
-        $process->user_id = $this->getDependents('user')[0]->id;
+        $process->user_id = $this->getDependents('user')[0]->model->id;
 
-        $this->associateCategories(ScreenCategory::class, 'screen_category_id');
+        $this->associateCategories(ProcessCategory::class, 'process_category_id');
 
         // TODO
         // Update screenRef

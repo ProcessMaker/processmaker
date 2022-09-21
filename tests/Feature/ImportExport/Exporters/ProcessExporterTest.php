@@ -23,7 +23,7 @@ class ProcessExporterTest extends TestCase
         $screen = factory(Screen::class)->create(['title' => 'Screen']);
         $cancelScreen = factory(Screen::class)->create();
         $requestDetailScreen = factory(Screen::class)->create();
-        $user = factory(User::class)->create();
+        $user = factory(User::class)->create(['username' => 'testuser']);
 
         // Create Process.
         $bpmn = Process::getProcessTemplate('SingleTaskProcessManager.bpmn');
@@ -46,6 +46,7 @@ class ProcessExporterTest extends TestCase
             'process_id' => $process->id,
             'notifiable_type' => 'requester',
             'notification_type' => 'assigned',
+            'element_id' => 'node_3',
         ]);
 
         return [$process, $screen, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2];
@@ -74,10 +75,10 @@ class ProcessExporterTest extends TestCase
         $exporter->exportProcess($process);
         $payload = $exporter->payload();
 
-        $process->delete();
+        \DB::delete('delete from process_notification_settings');
+        $process->forceDelete();
         $screen->delete();
         $user->delete();
-        \DB::delete('delete from process_notification_settings');
 
         $this->assertEquals(0, Process::where('name', 'Process')->count());
         $this->assertEquals(0, Screen::where('title', 'Screen')->count());
@@ -89,9 +90,11 @@ class ProcessExporterTest extends TestCase
 
         $process = Process::where('name', 'Process')->firstOrFail();
         $this->assertEquals(1, Screen::where('title', 'Screen')->count());
-        $this->assertEquals('testuser', $process->user);
+        $this->assertEquals('testuser', $process->user->username);
 
-        $notificationSettings = $process->notificationSettings;
+        $notificationSettings = $process->notification_settings;
         $this->assertCount(2, $notificationSettings);
+        $this->assertEquals('assigned', $notificationSettings[0]['notification_type']);
+        $this->assertEquals('node_3', $notificationSettings[1]['element_id']);
     }
 }
