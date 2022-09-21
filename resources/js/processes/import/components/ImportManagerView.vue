@@ -351,7 +351,7 @@ export default {
             fileIsValid: false,
             selectedImportOption: "basic",
             processName: null,
-            passwordEnabled: false,
+            passwordEnabled: true,
         }
     },
     filters: {
