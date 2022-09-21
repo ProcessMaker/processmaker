@@ -35,5 +35,8 @@ class Dependent
         if ($property == 'model') {
             return $this->manifest->get($this->uuid)->model;
         }
+        if ($property == 'originalId') {
+            return $this->manifest->get($this->uuid)->originalId;
+        }
     }
 }

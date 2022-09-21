@@ -43,10 +43,13 @@ class ScreenExporterTest extends TestCase
         $payload = $exporter->payload();
 
         $screen->delete();
+        $script->delete();
+        $nestedScreen->delete();
         $screenCategory1->update(['name' => 'category name old']);
         $screenCategory2->delete();
 
         $this->assertEquals(0, Screen::where('title', 'screen')->count());
+        $this->assertEquals(0, Script::where('title', 'script')->count());
         $this->assertEquals(0, ScreenCategory::where('name', 'category 2')->count());
         $this->assertEquals('category name old', $screenCategory1->refresh()->name);
 
@@ -59,10 +62,13 @@ class ScreenExporterTest extends TestCase
         $this->assertEquals('category 1', $screenCategory1->refresh()->name);
 
         $checkScreen = Screen::where('title', 'screen')->first();
+        $checkScript = Script::where('title', 'script')->first();
         $checkNestedScreen = Screen::where('title', 'nested screen')->first();
         $checkNestedNestedScreen = Screen::where('title', 'nested nested screen')->first();
         $this->assertEquals($checkNestedScreen->id, Arr::get($checkScreen->config, '0.items.2.config.screen'));
         $this->assertEquals($checkNestedNestedScreen->id, Arr::get($checkNestedScreen->config, '0.items.2.config.screen'));
+        $this->assertEquals($checkScript->id, Arr::get($checkScreen->watchers, '0.script_id'));
+        $this->assertEquals('script-' . $checkScript->id, Arr::get($checkScreen->watchers, '0.script.id'));
     }
 
     private function importWithNew($screenMode)

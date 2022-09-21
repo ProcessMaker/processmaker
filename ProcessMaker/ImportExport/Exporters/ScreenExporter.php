@@ -40,7 +40,9 @@ class ScreenExporter extends ExporterBase
         $categories = $screen->categories;
 
         $screen->config = json_decode($this->model->config, true);
+        $screen->watchers = json_decode($this->model->watchers, true);
         $config = $this->model->config;
+        $watchers = $this->model->watchers;
 
         foreach ($this->dependents as $dependent) {
             switch ($dependent->type) {
@@ -50,12 +52,18 @@ class ScreenExporter extends ExporterBase
                 case DependentType::SCREENS:
                     $this->associateNestedScreen($dependent, $config);
                     break;
+                case DependentType::SCRIPTS:
+                    $this->associateWatcherScript($dependent, $watchers);
+                    break;
             }
         }
         $screen->screen_category_id = $categories->map(fn ($c) => $c->id)->join(',');
         $screen->config = $config;
+        $screen->watchers = $watchers;
 
-        return $screen->saveOrFail();
+        $success = $screen->saveOrFail();
+
+        return $success;
     }
 
     protected function getExportAttributes() : array
@@ -98,14 +106,28 @@ class ScreenExporter extends ExporterBase
 
     private function associateNestedScreen($dependent, &$config) : void
     {
-        $id = $dependent->model->id;
+        $originalId = $dependent->originalId;
+        $newId = $dependent->model->id;
         foreach ($config as $pageKey => $page) {
             foreach (Arr::get($page, 'items', []) as $itemKey => $item) {
                 if (Arr::get($item, 'component') === 'FormNestedScreen') {
-                    if (Arr::get($item, 'config.screen') === $id) {
-                        Arr::set($config, "$pageKey.items.$itemKey.config.screen", $id);
+                    if (Arr::get($item, 'config.screen') === $originalId) {
+                        Arr::set($config, "$pageKey.items.$itemKey.config.screen", $newId);
                     }
                 }
+            }
+        }
+    }
+
+    private function associateWatcherScript($dependent, &$watchers) : void
+    {
+        $originalId = $dependent->originalId;
+        $newId = $dependent->model->id;
+
+        foreach ($watchers as $key => $watcher) {
+            if (Arr::get($watchers, "$key.script.id") === 'script-' . $originalId) {
+                Arr::set($watchers, "$key.script.id", 'script-' . $newId);
+                Arr::set($watchers, "$key.script_id", $newId);
             }
         }
     }

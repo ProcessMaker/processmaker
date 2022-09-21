@@ -17,6 +17,8 @@ abstract class ExporterBase implements ExporterInterface
 
     public $importMode = null;
 
+    public $originalId = null;
+
     public function __construct(Model $model, Manifest $manifest)
     {
         $this->model = $model;
@@ -42,10 +44,7 @@ abstract class ExporterBase implements ExporterInterface
 
     protected function getExportAttributes() : array
     {
-        $attrs = $this->model->getAttributes();
-        unset($attrs['id']);
-
-        return $attrs;
+        return $this->model->getAttributes();
     }
 
     public function toArray()
@@ -64,7 +63,6 @@ abstract class ExporterBase implements ExporterInterface
             'model' => get_class($this->model),
             'attributes' => $this->getExportAttributes(),
             'dependents' => array_map(fn ($d) => $d->toArray(), $this->dependents),
-            'existing' => $this->model->exists ? $this->model->id : null,
         ];
     }
 
