@@ -5,6 +5,7 @@ namespace ProcessMaker\ImportExport\Exporters;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use ProcessMaker\ImportExport\Dependent;
+use ProcessMaker\ImportExport\Extension;
 use ProcessMaker\ImportExport\Manifest;
 
 abstract class ExporterBase implements ExporterInterface
@@ -35,9 +36,25 @@ abstract class ExporterBase implements ExporterInterface
         if (!$this->manifest->has($uuid)) {
             $exporter = new $exporterClass($dependentModel, $this->manifest);
             $this->manifest->push($uuid, $exporter);
-            $exporter->export();
+            $exporter->runExport();
         }
         $this->dependents[] = new Dependent($type, $uuid, $this->manifest);
+    }
+
+    public function runExport()
+    {
+        $extensions = app()->make(Extension::class);
+        $extensions->runExtensions($this, 'preExport');
+        $this->export();
+        $extensions->runExtensions($this, 'postExport');
+    }
+
+    public function runImport()
+    {
+        $extensions = app()->make(Extension::class);
+        $extensions->runExtensions($this, 'preImport');
+        $this->import();
+        $extensions->runExtensions($this, 'postImport');
     }
 
     protected function getExportAttributes() : array
@@ -115,5 +132,11 @@ abstract class ExporterBase implements ExporterInterface
         }
 
         return $string . ' 2';
+    }
+
+    public static function registerExtension($class)
+    {
+        $exporterClass = static::class;
+        app()->make(Extension::class)->register($exporterClass, $class);
     }
 }

@@ -40,6 +40,7 @@ class ScreenExporter extends ExporterBase
         $categories = $screen->categories;
 
         $screen->config = json_decode($this->model->config, true);
+        $screen->watchers = json_decode($this->model->watchers, true);
         $config = $this->model->config;
 
         foreach ($this->dependents as $dependent) {
@@ -84,7 +85,7 @@ class ScreenExporter extends ExporterBase
         return $screens;
     }
 
-    private function watcherType($watcher) : string
+    protected function watcherType($watcher) : string
     {
         $id = Arr::get($watcher, 'script.id');
         if (substr($id, 0, 11) === self::WATCHER_TYPE_DATA_SOURCE) {
@@ -92,6 +93,7 @@ class ScreenExporter extends ExporterBase
         } elseif (substr($id, 0, 6) === self::WATCHER_TYPE_SCRIPT) {
             return self::WATCHER_TYPE_SCRIPT;
         }
+        throw new \Exception('Bad watcher type');
 
         return null;
     }
