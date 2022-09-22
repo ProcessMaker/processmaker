@@ -47,6 +47,34 @@ class ExportImportTest extends TestCase
 
     public function testImportPreview()
     {
+        [$file] = $this->importFixtures();
+
+        $response = $this->apiCall('POST', route('api.import.preview'), [
+            'file' => $file,
+            // 'password' => null,
+            // 'options' => [],
+        ]);
+
+        $response->assertStatus(200);
+        $data = $response->getData();
+        $this->assertObjectHasAttribute('tree', $data);
+        $this->assertObjectHasAttribute('manifest', $data);
+    }
+
+    public function testImport()
+    {
+        [$file] = $this->importFixtures();
+
+        $response = $this->apiCall('POST', route('api.import.do_import'), [
+            'file' => $file,
+            // 'password' => null,
+            // 'options' => [],
+        ]);
+        $response->assertStatus(200);
+    }
+
+    private function importFixtures()
+    {
         $screen = factory(Screen::class)->create();
         $exporter = new Exporter();
         $exporter->exportScreen($screen);
@@ -57,14 +85,8 @@ class ExportImportTest extends TestCase
         file_put_contents($fileName, $content);
         $file = new UploadedFile($fileName, 'exported.json', null, null, null, true);
 
-        $response = $this->apiCall('POST', route('api.import.preview'), [
-            'file' => $file,
-            // 'password' => null,
-        ]);
-
-        $response->assertStatus(200);
-        $data = $response->getData();
-        $this->assertObjectHasAttribute('tree', $data);
-        $this->assertObjectHasAttribute('manifest', $data);
+        return [
+            $file,
+        ];
     }
 }
