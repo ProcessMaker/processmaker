@@ -39,7 +39,7 @@
             <button type="button" class="btn btn-primary ml-2" v-b-modal.set-password-modal>
               {{ $t("Export") }}
             </button>
-            <set-password-modal></set-password-modal>
+            <set-password-modal :processId="processId"></set-password-modal>
           </div>
         </div>
       </div>
@@ -58,7 +58,7 @@ export default {
   mixins: [],
   data() {
     return {
-      selected: "",
+      selected: "basic"
     };
   },
   methods: {
