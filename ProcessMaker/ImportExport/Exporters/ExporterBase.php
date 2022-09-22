@@ -5,6 +5,7 @@ namespace ProcessMaker\ImportExport\Exporters;
 use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\ImportExport\Dependent;
 use ProcessMaker\ImportExport\DependentType;
+use ProcessMaker\ImportExport\Extension;
 use ProcessMaker\ImportExport\Manifest;
 
 abstract class ExporterBase implements ExporterInterface
@@ -39,7 +40,7 @@ abstract class ExporterBase implements ExporterInterface
         if (!$this->manifest->has($uuid)) {
             $exporter = new $exporterClass($dependentModel, $this->manifest);
             $this->manifest->push($uuid, $exporter);
-            $exporter->export();
+            $exporter->runExport();
         }
         $this->dependents[] = new Dependent($type, $uuid, $this->manifest);
     }
@@ -47,6 +48,22 @@ abstract class ExporterBase implements ExporterInterface
     public function getDependents($type)
     {
         return array_filter($this->dependents, fn ($d) => $d->type === $type);
+    }
+
+    public function runExport()
+    {
+        $extensions = app()->make(Extension::class);
+        $extensions->runExtensions($this, 'preExport');
+        $this->export();
+        $extensions->runExtensions($this, 'postExport');
+    }
+
+    public function runImport()
+    {
+        $extensions = app()->make(Extension::class);
+        $extensions->runExtensions($this, 'preImport');
+        $this->import();
+        $extensions->runExtensions($this, 'postImport');
     }
 
     public function addReference($type, $attributes)
@@ -147,5 +164,11 @@ abstract class ExporterBase implements ExporterInterface
             $categories->push($categoryClass::findOrFail($dependent->model->id));
         }
         $this->model->$property = $categories->map(fn ($c) => $c->id)->join(',');
+    }
+
+    public static function registerExtension($class)
+    {
+        $exporterClass = static::class;
+        app()->make(Extension::class)->register($exporterClass, $class);
     }
 }

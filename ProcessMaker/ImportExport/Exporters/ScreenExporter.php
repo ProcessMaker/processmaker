@@ -87,7 +87,7 @@ class ScreenExporter extends ExporterBase
         return $screens;
     }
 
-    private function watcherType($watcher) : string
+    protected function watcherType($watcher) : string
     {
         $id = Arr::get($watcher, 'script.id');
         if (substr($id, 0, 11) === self::WATCHER_TYPE_DATA_SOURCE) {
@@ -95,6 +95,7 @@ class ScreenExporter extends ExporterBase
         } elseif (substr($id, 0, 6) === self::WATCHER_TYPE_SCRIPT) {
             return self::WATCHER_TYPE_SCRIPT;
         }
+        throw new \Exception('Bad watcher type');
 
         return null;
     }

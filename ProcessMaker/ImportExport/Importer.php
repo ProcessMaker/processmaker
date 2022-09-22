@@ -35,7 +35,7 @@ class Importer
             foreach ($this->manifest->orderForImport() as $uuid) {
                 $exporter = $this->manifest->get($uuid);
                 if ($exporter->importMode !== 'discard') {
-                    $exporter->import();
+                    $exporter->runImport();
                 }
             }
         });

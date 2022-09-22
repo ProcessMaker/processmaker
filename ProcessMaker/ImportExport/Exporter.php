@@ -15,7 +15,7 @@ class Exporter
         $this->manifest = new Manifest();
         $this->rootExporter = new $exporterClass($model, $this->manifest);
         $this->manifest->push($model->uuid, $this->rootExporter);
-        $this->rootExporter->export();
+        $this->rootExporter->runExport();
 
         return $this->rootExporter;
     }
