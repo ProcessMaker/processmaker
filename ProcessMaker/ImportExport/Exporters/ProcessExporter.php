@@ -2,10 +2,11 @@
 
 namespace ProcessMaker\ImportExport\Exporters;
 
+use Illuminate\Support\Collection;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\Managers\ExportManager;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
-use ProcessMaker\Models\ProcessNotificationSetting;
 use ProcessMaker\Models\Screen;
 
 class ProcessExporter extends ExporterBase
@@ -27,16 +28,13 @@ class ProcessExporter extends ExporterBase
         $this->addReference('notification_settings', $process->notification_settings->toArray());
 
         // Screens.
-        $screenIds = array_unique(array_merge(
-            [
-                $process->cancel_screen_id,
-                $process->request_detail_screen_id,
-            ],
-            $this->manager->getDependenciesOfType(Screen::class, $process, [], false)
-        ));
-        $screens = Screen::findMany($screenIds);
-        foreach ($screens as $screen) {
+        foreach ($this->getScreens($process) as $screen) {
             $this->addDependent(DependentType::SCREENS, $screen, ScreenExporter::class);
+        }
+
+        // Subprocesses.
+        foreach ($this->getSubprocesses($process) as $subProcess) {
+            $this->addDependent(DependentType::SUB_PROCESSES, $subProcess, self::class);
         }
     }
 
@@ -59,5 +57,33 @@ class ProcessExporter extends ExporterBase
         }
 
         return true;
+    }
+
+    private function getScreens($process): Collection
+    {
+        $ids = array_merge(
+            [
+                $process->cancel_screen_id,
+                $process->request_detail_screen_id,
+            ],
+            $this->manager->getDependenciesOfType(Screen::class, $process, [], false)
+        );
+
+        return Screen::findMany($ids);
+    }
+
+    private function getSubprocesses($process): Collection
+    {
+        $ids = [];
+        $elements = $process->getDefinitions()->getElementsByTagName('callActivity');
+        foreach ($elements as $element) {
+            $calledElementValue = optional($element->getAttributeNode('calledElement'))->value;
+            $values = explode('-', $calledElementValue);
+            if (count($values) === 2) {
+                $ids[] = $values[1];
+            }
+        }
+
+        return Process::findMany($ids);
     }
 }

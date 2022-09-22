@@ -22,9 +22,22 @@ class ProcessExporterTest extends TestCase
         $requestDetailScreen = factory(Screen::class)->create();
         $user = factory(User::class)->create(['username' => 'testuser']);
 
-        // Create Process.
-        $bpmn = Process::getProcessTemplate('SingleTaskProcessManager.bpmn');
-        $bpmn = str_replace('pm:screenRef="1"', 'pm:screenRef="' . $screen->id . '"', $bpmn);
+        // Create SubProcess.
+        $subProcessBpmn = Process::getProcessTemplate('ScriptTask.bpmn');
+        $subProcess = factory(Process::class)->create([
+            'name' => 'SubProcess',
+            'user_id' => $user->id,
+            'bpmn' => $subProcessBpmn,
+        ]);
+
+        // Create Process with SubProcess.
+        $bpmn = Process::getProcessTemplate('ExportProcess.bpmn');
+        $bpmn = str_replace(
+            ['pm:screenRef="1"', 'calledElement="ProcessId-1"'],
+            ['pm:screenRef="' . $screen->id . '"', 'calledElement="ProcessId-' . $subProcess->id . '"'],
+            $bpmn
+        );
+
         $process = factory(Process::class)->create([
             'name' => 'Process',
             'user_id' => $user->id,
@@ -46,12 +59,12 @@ class ProcessExporterTest extends TestCase
             'element_id' => 'node_3',
         ]);
 
-        return [$process, $screen, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2];
+        return [$process, $screen, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2, $subProcess];
     }
 
     public function testExport()
     {
-        list($process, $screen, $cancelScreen, $requestDetailScreen, $user) = $this->fixtures();
+        list($process, $screen, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2, $subProcess) = $this->fixtures();
 
         $exporter = new Exporter();
         $exporter->exportProcess($process);
@@ -62,6 +75,7 @@ class ProcessExporterTest extends TestCase
         $this->assertEquals($screen->uuid, Arr::get($tree, '0.dependents.2.uuid'));
         $this->assertEquals($cancelScreen->uuid, Arr::get($tree, '0.dependents.3.uuid'));
         $this->assertEquals($requestDetailScreen->uuid, Arr::get($tree, '0.dependents.4.uuid'));
+        $this->assertEquals($subProcess->uuid, Arr::get($tree, '0.dependents.5.uuid'));
     }
 
     public function testImport()

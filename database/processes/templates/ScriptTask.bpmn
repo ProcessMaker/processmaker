@@ -9,36 +9,36 @@
     xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bpmn.io/schema/bpmn" exporter="ProcessMaker Modeler" exporterVersion="1.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
     <bpmn:process id="ProcessId" name="ProcessName" isExecutable="true">
         <bpmn:startEvent id="node_1" name="Start Event" pm:allowInterstitial="false">
-            <bpmn:outgoing>node_5</bpmn:outgoing>
+            <bpmn:outgoing>node_6</bpmn:outgoing>
         </bpmn:startEvent>
         <bpmn:endEvent id="node_2" name="End Event">
-            <bpmn:incoming>node_7</bpmn:incoming>
+            <bpmn:incoming>node_8</bpmn:incoming>
         </bpmn:endEvent>
-        <bpmn:task id="node_3" name="Form Task" pm:screenRef="1" pm:allowInterstitial="false" pm:assignment="requester" pm:assignmentLock="false" pm:allowReassignment="false">
-            <bpmn:incoming>node_5</bpmn:incoming>
-            <bpmn:outgoing>node_7</bpmn:outgoing>
-        </bpmn:task>
-        <bpmn:sequenceFlow id="node_5" sourceRef="node_1" targetRef="node_3" />
-        <bpmn:sequenceFlow id="node_7" sourceRef="node_3" targetRef="node_2" />
+        <bpmn:scriptTask id="node_3" name="Script Task" pm:scriptRef="3">
+            <bpmn:incoming>node_6</bpmn:incoming>
+            <bpmn:outgoing>node_8</bpmn:outgoing>
+        </bpmn:scriptTask>
+        <bpmn:sequenceFlow id="node_6" name="" sourceRef="node_1" targetRef="node_3" />
+        <bpmn:sequenceFlow id="node_8" name="" sourceRef="node_3" targetRef="node_2" />
     </bpmn:process>
     <bpmndi:BPMNDiagram id="BPMNDiagramId">
         <bpmndi:BPMNPlane id="BPMNPlaneId" bpmnElement="ProcessId">
             <bpmndi:BPMNShape id="node_1_di" bpmnElement="node_1">
-                <dc:Bounds x="210" y="140" width="36" height="36" />
+                <dc:Bounds x="180" y="160" width="36" height="36" />
             </bpmndi:BPMNShape>
             <bpmndi:BPMNShape id="node_2_di" bpmnElement="node_2">
-                <dc:Bounds x="530" y="140" width="36" height="36" />
+                <dc:Bounds x="520" y="160" width="36" height="36" />
             </bpmndi:BPMNShape>
             <bpmndi:BPMNShape id="node_3_di" bpmnElement="node_3">
-                <dc:Bounds x="330" y="120" width="116" height="76" />
+                <dc:Bounds x="320" y="140" width="116" height="76" />
             </bpmndi:BPMNShape>
-            <bpmndi:BPMNEdge id="node_5_di" bpmnElement="node_5">
-                <di:waypoint x="228" y="158" />
-                <di:waypoint x="388" y="158" />
+            <bpmndi:BPMNEdge id="node_6_di" bpmnElement="node_6">
+                <di:waypoint x="198" y="178" />
+                <di:waypoint x="378" y="178" />
             </bpmndi:BPMNEdge>
-            <bpmndi:BPMNEdge id="node_7_di" bpmnElement="node_7">
-                <di:waypoint x="388" y="158" />
-                <di:waypoint x="548" y="158" />
+            <bpmndi:BPMNEdge id="node_8_di" bpmnElement="node_8">
+                <di:waypoint x="378" y="178" />
+                <di:waypoint x="538" y="178" />
             </bpmndi:BPMNEdge>
         </bpmndi:BPMNPlane>
     </bpmndi:BPMNDiagram>
