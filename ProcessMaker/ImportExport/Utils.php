@@ -44,4 +44,12 @@ class Utils
         Arr::set($config, $path, $value);
         $element->setAttribute('pm:config', json_encode($config));
     }
+
+    public static function setPmConfigValueAtXPath(Process &$process, string $xmlPath, string $arrayPath, $value)
+    {
+        $definitions = $process->getDefinitions(true);
+        $element = self::getElementByPath($definitions, $xmlPath);
+        self::setPmConfigValue($element, $arrayPath, $value);
+        $process->bpmn = $definitions->saveXml();
+    }
 }
