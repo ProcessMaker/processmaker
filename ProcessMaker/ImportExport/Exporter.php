@@ -3,6 +3,7 @@
 namespace ProcessMaker\ImportExport;
 
 use Illuminate\Database\Eloquent\Model;
+use ProcessMaker\ImportExport\Exporters\ProcessExporter;
 use ProcessMaker\ImportExport\Exporters\ScreenExporter;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;

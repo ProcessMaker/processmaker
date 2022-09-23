@@ -3,6 +3,7 @@
 namespace ProcessMaker\ImportExport;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use MJS\TopSort\Implementations\StringSort;
 use ProcessMaker\ImportExport\Exporters\ExporterInterface;
 
@@ -42,8 +43,10 @@ class Manifest
             list($importMode, $model) = self::getModel($uuid, $assetInfo, $options);
             $exporter = new $assetInfo['exporter']($model, $manifest);
             $exporter->importMode = $importMode;
+            $exporter->originalId = Arr::get($assetInfo, 'attributes.id');
             $exporter->updateDuplicateAttributes();
             $exporter->dependents = Dependent::fromArray($assetInfo['dependents'], $manifest);
+            $exporter->references = $assetInfo['references'];
             $manifest->push($uuid, $exporter);
         }
 
@@ -60,8 +63,15 @@ class Manifest
         $model = null;
         $class = $assetInfo['model'];
         $mode = $options->get('mode', $uuid);
+        $attrs = $assetInfo['attributes'];
+        unset($attrs['id']);
 
         $modelQuery = $class::where('uuid', $uuid);
+
+        // Check if the model has soft deletes
+        if (in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses($class))) {
+            $modelQuery->withTrashed();
+        }
 
         if ($modelQuery->exists()) {
             $model = $modelQuery->firstOrFail();
@@ -69,15 +79,16 @@ class Manifest
             $mode = 'new';
         }
 
+        $class::unguard();
         switch ($mode) {
             case 'update':
-                $model->fill($assetInfo['attributes']);
+                $model->fill($attrs);
                 break;
             case 'discard':
                 break;
             case 'new':
                 $model = new $class();
-                $model->fill($assetInfo['attributes']);
+                $model->fill($attrs);
                 $model->uuid = $uuid;
                 break;
         }

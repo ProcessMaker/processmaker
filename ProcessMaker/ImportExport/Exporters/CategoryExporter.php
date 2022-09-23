@@ -4,7 +4,7 @@ namespace ProcessMaker\ImportExport\Exporters;
 
 use ProcessMaker\Models\Screen;
 
-class ScreenCategoryExporter extends ExporterBase
+class CategoryExporter extends ExporterBase
 {
     public function export() : void
     {

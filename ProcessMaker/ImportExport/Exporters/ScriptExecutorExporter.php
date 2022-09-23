@@ -2,7 +2,7 @@
 
 namespace ProcessMaker\ImportExport\Exporters;
 
-class ScriptCategoryExporter extends ExporterBase
+class ScriptExecutorExporter extends ExporterBase
 {
     public function export() : void
     {
@@ -10,6 +10,6 @@ class ScriptCategoryExporter extends ExporterBase
 
     public function import() : bool
     {
-        return true;
+        return $this->model->save();
     }
 }

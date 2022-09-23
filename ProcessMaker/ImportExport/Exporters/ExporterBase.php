@@ -3,8 +3,8 @@
 namespace ProcessMaker\ImportExport\Exporters;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
 use ProcessMaker\ImportExport\Dependent;
+use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Extension;
 use ProcessMaker\ImportExport\Manifest;
 
@@ -14,9 +14,13 @@ abstract class ExporterBase implements ExporterInterface
 
     public $dependents = [];
 
+    public $references = [];
+
     public $manifest = null;
 
     public $importMode = null;
+
+    public $originalId = null;
 
     public function __construct(Model $model, Manifest $manifest)
     {
@@ -41,6 +45,11 @@ abstract class ExporterBase implements ExporterInterface
         $this->dependents[] = new Dependent($type, $uuid, $this->manifest);
     }
 
+    public function getDependents($type)
+    {
+        return array_filter($this->dependents, fn ($d) => $d->type === $type);
+    }
+
     public function runExport()
     {
         $extensions = app()->make(Extension::class);
@@ -57,12 +66,19 @@ abstract class ExporterBase implements ExporterInterface
         $extensions->runExtensions($this, 'postImport');
     }
 
+    public function addReference($type, $attributes)
+    {
+        $this->references[$type] = $attributes;
+    }
+
+    public function getReference($type)
+    {
+        return $this->references[$type];
+    }
+
     protected function getExportAttributes() : array
     {
-        $attrs = $this->model->getAttributes();
-        unset($attrs['id']);
-
-        return $attrs;
+        return $this->model->getAttributes();
     }
 
     public function toArray()
@@ -80,8 +96,8 @@ abstract class ExporterBase implements ExporterInterface
             'name' => $name,
             'model' => get_class($this->model),
             'attributes' => $this->getExportAttributes(),
+            'references' => $this->references,
             'dependents' => array_map(fn ($d) => $d->toArray(), $this->dependents),
-            'existing' => $this->model->exists ? $this->model->id : null,
         ];
     }
 
@@ -132,6 +148,22 @@ abstract class ExporterBase implements ExporterInterface
         }
 
         return $string . ' 2';
+    }
+
+    protected function exportCategories()
+    {
+        foreach ($this->model->categories as $category) {
+            $this->addDependent(DependentType::CATEGORIES, $category, CategoryExporter::class);
+        }
+    }
+
+    protected function associateCategories($categoryClass, $property)
+    {
+        $categories = $this->model->categories;
+        foreach ($this->getDependents(DependentType::CATEGORIES) as $dependent) {
+            $categories->push($categoryClass::findOrFail($dependent->model->id));
+        }
+        $this->model->$property = $categories->map(fn ($c) => $c->id)->join(',');
     }
 
     public static function registerExtension($class)

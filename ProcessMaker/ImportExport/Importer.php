@@ -34,7 +34,9 @@ class Importer
         DB::transaction(function () {
             foreach ($this->manifest->orderForImport() as $uuid) {
                 $exporter = $this->manifest->get($uuid);
-                $exporter->runImport();
+                if ($exporter->importMode !== 'discard') {
+                    $exporter->runImport();
+                }
             }
         });
     }

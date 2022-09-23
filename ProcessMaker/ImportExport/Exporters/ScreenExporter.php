@@ -17,11 +17,9 @@ class ScreenExporter extends ExporterBase
 
     public function export() : void
     {
-        foreach ($this->model->categories as $category) {
-            $this->addDependent(DependentType::CATEGORIES, $category, ScreenCategoryExporter::class);
-        }
+        $this->exportCategories();
 
-        // Watcher Scripts
+        // Script Watchers. Data source watchers are are handled in the data-sources package.
         foreach ((array) $this->model->watchers as $watcher) {
             if ($this->watcherType($watcher) === self::WATCHER_TYPE_SCRIPT) {
                 $this->addDependent(DependentType::SCRIPTS, Script::find($watcher['script_id']), ScriptExporter::class);
@@ -37,15 +35,12 @@ class ScreenExporter extends ExporterBase
     public function import() : bool
     {
         $screen = $this->model;
-        $categories = $screen->categories;
 
         $config = $this->model->config;
+        $watchers = $this->model->watchers;
 
         foreach ($this->dependents as $dependent) {
             switch ($dependent->type) {
-                case DependentType::CATEGORIES:
-                    $categories->push(ScreenCategory::findOrFail($dependent->model->id));
-                    break;
                 case DependentType::SCREENS:
                     $this->associateNestedScreen($dependent, $config);
                     break;
@@ -54,10 +49,14 @@ class ScreenExporter extends ExporterBase
                     break;
             }
         }
-        $screen->screen_category_id = $categories->map(fn ($c) => $c->id)->join(',');
-        $screen->config = $config;
 
-        return $screen->saveOrFail();
+        $this->associateCategories(ScreenCategory::class, 'screen_category_id');
+        $screen->config = $config;
+        $screen->watchers = $watchers;
+
+        $success = $screen->saveOrFail();
+
+        return $success;
     }
 
     protected function getExportAttributes() : array
@@ -101,12 +100,13 @@ class ScreenExporter extends ExporterBase
 
     private function associateNestedScreen($dependent, &$config) : void
     {
-        $id = $dependent->model->id;
+        $originalId = $dependent->originalId;
+        $newId = $dependent->model->id;
         foreach ($config as $pageKey => $page) {
             foreach (Arr::get($page, 'items', []) as $itemKey => $item) {
                 if (Arr::get($item, 'component') === 'FormNestedScreen') {
-                    if (Arr::get($item, 'config.screen') === $id) {
-                        Arr::set($config, "$pageKey.items.$itemKey.config.screen", $id);
+                    if (Arr::get($item, 'config.screen') === $originalId) {
+                        Arr::set($config, "$pageKey.items.$itemKey.config.screen", $newId);
                     }
                 }
             }
