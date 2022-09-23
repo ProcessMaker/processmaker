@@ -939,8 +939,11 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     {
         foreach ($this->start_events as $startEvent) {
             $webEntryProperties = (isset($startEvent['config']) && isset(json_decode($startEvent['config'])->web_entry) ? json_decode($startEvent['config'])->web_entry : null);
-            
+
             if ($webEntryProperties && isset($webEntryProperties->webentryRouteConfig)) {
+
+                $webEntryProperties->webentryRouteConfig->urlType = $webEntryProperties->webentryRouteConfig->urlType ?? '';
+
                 switch ($webEntryProperties->webentryRouteConfig->urlType) {
                     case 'standard-url':
                         $this->deleteUnusedCustomRoutes(
@@ -949,7 +952,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
                             $webEntryProperties->webentryRouteConfig->nodeId
                         );
                         break;
-                    
+
                     default:
                         if ($webEntryProperties->webentryRouteConfig->firstUrlSegment !== '') {
                             $webentryRouteConfig = $webEntryProperties->webentryRouteConfig;
