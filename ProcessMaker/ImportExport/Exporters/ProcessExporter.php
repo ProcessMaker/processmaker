@@ -5,9 +5,11 @@ namespace ProcessMaker\ImportExport\Exporters;
 use Illuminate\Support\Collection;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\Managers\ExportManager;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\User;
 
 class ProcessExporter extends ExporterBase
 {
@@ -36,6 +38,18 @@ class ProcessExporter extends ExporterBase
         foreach ($this->getSubprocesses($process) as $subProcess) {
             $this->addDependent(DependentType::SUB_PROCESSES, $subProcess, self::class);
         }
+
+        // Task Assignments.
+        $taskAssignments = $process->assignments;
+        $this->addReference('task_assignments', $taskAssignments->toArray());
+        $taskAssignmentUsers = $taskAssignments->filter(fn ($t) => $t->assignment_type === User::class)->map->assigned;
+        foreach ($taskAssignmentUsers as $user) {
+            $this->addDependent('task_assignments_users', $user, UserExporter::class);
+        }
+        $taskAssignmentGroups = $taskAssignments->filter(fn ($t) => $t->assignment_type === Group::class)->map->assigned;
+        foreach ($taskAssignmentGroups as $group) {
+            $this->addDependent('task_assignments_groups', $group, GroupExporter::class);
+        }
     }
 
     public function import() : bool
@@ -55,6 +69,8 @@ class ProcessExporter extends ExporterBase
             unset($setting['process_id']);
             $process->notification_settings()->create($setting);
         }
+
+        $this->associateTaskAssignments($process);
 
         return true;
     }
@@ -85,5 +101,24 @@ class ProcessExporter extends ExporterBase
         }
 
         return Process::findMany($ids);
+    }
+
+    private function associateTaskAssignments($process): void
+    {
+        $process->assignments()->delete();
+        $taskAssignmentDependents = collect($this->getDependents('task_assignments_users'))->merge($this->getDependents('task_assignments_groups'));
+        foreach ($this->getReference('task_assignments') as $taskAssignment) {
+            unset($taskAssignment['process_id']);
+            $taskAssignment['assignment_id'] = $this->associateAssignmentId($taskAssignment, $taskAssignmentDependents);
+            $process->assignments()->create($taskAssignment);
+        }
+    }
+
+    private function associateAssignmentId(array $taskAssignment, Collection $dependents): int
+    {
+        return $dependents->first(function ($dependent) use ($taskAssignment) {
+            return $dependent->originalId === $taskAssignment['assignment_id']
+                && get_class($dependent->model) === $taskAssignment['assignment_type'];
+        })->model->id;
     }
 }

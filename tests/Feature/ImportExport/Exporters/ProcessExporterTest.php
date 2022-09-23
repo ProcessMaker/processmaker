@@ -6,8 +6,10 @@ use Illuminate\Support\Arr;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessNotificationSetting;
+use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
@@ -21,6 +23,7 @@ class ProcessExporterTest extends TestCase
         $cancelScreen = factory(Screen::class)->create();
         $requestDetailScreen = factory(Screen::class)->create();
         $user = factory(User::class)->create(['username' => 'testuser']);
+        $group = factory(Group::class)->create(['name' => 'Administrators']);
 
         // Create SubProcess.
         $subProcessBpmn = Process::getProcessTemplate('ScriptTask.bpmn');
@@ -59,12 +62,26 @@ class ProcessExporterTest extends TestCase
             'element_id' => 'node_3',
         ]);
 
-        return [$process, $screen, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2, $subProcess];
+        // Task Assignments.
+        factory(ProcessTaskAssignment::class)->create([
+            'process_id' => $process->id,
+            'process_task_id' => 'node_3',
+            'assignment_id' => $user->id,
+            'assignment_type' => User::class,
+        ]);
+        factory(ProcessTaskAssignment::class)->create([
+            'process_id' => $process->id,
+            'process_task_id' => 'node_3',
+            'assignment_id' => $group->id,
+            'assignment_type' => Group::class,
+        ]);
+
+        return [$process, $screen, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2, $subProcess, $group];
     }
 
     public function testExport()
     {
-        list($process, $screen, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2, $subProcess) = $this->fixtures();
+        list($process, $screen, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2, $subProcess, $group) = $this->fixtures();
 
         $exporter = new Exporter();
         $exporter->exportProcess($process);
@@ -80,7 +97,7 @@ class ProcessExporterTest extends TestCase
 
     public function testImport()
     {
-        list($process, $screen, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2) = $this->fixtures();
+        list($process, $screen, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2, $subprocess, $group) = $this->fixtures();
 
         $exporter = new Exporter();
         $exporter->exportProcess($process);
@@ -90,22 +107,31 @@ class ProcessExporterTest extends TestCase
         $process->forceDelete();
         $screen->delete();
         $user->delete();
+        $group->delete();
 
         $this->assertEquals(0, Process::where('name', 'Process')->count());
         $this->assertEquals(0, Screen::where('title', 'Screen')->count());
         $this->assertEquals(0, User::where('username', 'testuser')->count());
+        $this->assertEquals(0, Group::where('name', 'Administrators')->count());
 
         $options = new Options([]);
         $importer = new Importer($payload, $options);
         $importer->doImport();
 
         $process = Process::where('name', 'Process')->firstOrFail();
+        $user = $process->user;
         $this->assertEquals(1, Screen::where('title', 'Screen')->count());
-        $this->assertEquals('testuser', $process->user->username);
+        $this->assertEquals('testuser', $user->username);
 
         $notificationSettings = $process->notification_settings;
         $this->assertCount(2, $notificationSettings);
         $this->assertEquals('assigned', $notificationSettings[0]['notification_type']);
         $this->assertEquals('node_3', $notificationSettings[1]['element_id']);
+
+        $taskAssignments = $process->assignments;
+        $group = Group::firstWhere('name', 'Administrators');
+        $this->assertCount(2, $taskAssignments);
+        $this->assertEquals($user->id, $taskAssignments[0]['assignment_id']);
+        $this->assertEquals($group->id, $taskAssignments[1]['assignment_id']);
     }
 }
