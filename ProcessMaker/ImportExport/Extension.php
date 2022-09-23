@@ -23,9 +23,9 @@ class Extension
         }
 
         foreach ($this->extensions[$exporterClass] as $class) {
-            $extension = new $class($exporter->model, $exporter->manifest);
+            $extension = new $class();
             if (method_exists($extension, $method)) {
-                $extension->$method();
+                $extension->$method()->call($exporter);
             }
         }
     }

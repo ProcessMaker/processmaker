@@ -92,9 +92,24 @@ class Manifest
                 $model->uuid = $uuid;
                 break;
         }
+        self::handleCasts($model);
         $class::reguard();
 
         return [$mode, $model];
+    }
+
+    private static function handleCasts(&$model)
+    {
+        foreach ($model->getCasts() as $field => $cast) {
+            switch ($cast) {
+                case 'array':
+                    $model->$field = json_decode($model->$field, true);
+                    break;
+                case 'object':
+                    $model->$field = json_decode($model->$field);
+                    break;
+            }
+        }
     }
 
     public function orderForImport()
