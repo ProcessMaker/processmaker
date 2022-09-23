@@ -112,7 +112,7 @@
                   <monaco-editor
                     :options="monacoOptions"
                     class="editor"
-                    v-model="previewDataStringyfy"
+                    v-model="previewDataStringify"
                     language="json"
                     @editorDidMount="monacoMounted"
                   />
@@ -333,6 +333,7 @@ export default {
     ];
 
     return {
+      previewDataStringify: "",
       numberOfElements: 0,
       preview: {
         config: [
@@ -396,6 +397,12 @@ export default {
     DataLoadingBasic,
   },
   watch: {
+    previewData: {
+      deep: true,
+      handler() {
+        this.updateDataPreview();
+      }
+    },
     config() {
       // Reset the preview data with clean object to start
       this.previewData = {};
@@ -413,16 +420,6 @@ export default {
     },
   },
   computed: {
-    previewDataStringyfy: {
-      get() {
-        if (this.previewInputValid && !isEqual(this.previewData, this.previewDataSaved)) {
-          Object.assign(this.previewDataSaved, this.previewData);
-          this.formatMonaco();
-        }
-        return JSON.stringify(this.previewData);
-      },
-      set() {}
-    },
     previewInputValid() {
       try {
         JSON.parse(this.previewInput);
@@ -477,12 +474,18 @@ export default {
       return warnings;
     },
   },
+  created() {
+    this.updateDataPreview = debounce(this.updateDataPreview, 1000);
+  },
   mounted() {
     this.countElements = debounce(this.countElements, 2000);
     this.mountWhenTranslationAvailable();
     this.countElements();
   },
   methods: {
+    updateDataPreview() {
+      this.previewDataStringify = JSON.stringify(this.previewData, null, 2);
+    },
     monacoMounted(editor) {
       this.editor = editor;
       this.editor.updateOptions({ readOnly:  true });
