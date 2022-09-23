@@ -62,6 +62,9 @@ class ProcessExporter extends ExporterBase
 
         // TODO
         // Update screenRef
+        $this->associateSubProcesses($process);
+
+        $process->bpmn = $process->getDefinitions()->saveXML();
         $process->save();
 
         $process->notification_settings()->delete();
@@ -73,6 +76,23 @@ class ProcessExporter extends ExporterBase
         $this->associateTaskAssignments($process);
 
         return true;
+    }
+
+    private function associateSubProcesses($process): void
+    {
+        $dependents = collect($this->getDependents(DependentType::SUB_PROCESSES));
+        $elements = $process->getDefinitions()->getElementsByTagName('callActivity');
+        foreach ($elements as $element) {
+            $calledElementValue = optional($element->getAttributeNode('calledElement'))->value;
+            $values = explode('-', $calledElementValue);
+            if (count($values) === 2) {
+                $dependent = $dependents->first(function ($dependent) use ($values) {
+                    return $dependent->originalId === (int) $values[1];
+                });
+                $newId = $dependent->model->id;
+                $element->setAttribute('calledElement', "ProcessId-{$newId}");
+            }
+        }
     }
 
     private function getScreens($process): Collection

@@ -97,7 +97,7 @@ class ProcessExporterTest extends TestCase
 
     public function testImport()
     {
-        list($process, $screen, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2, $subprocess, $group) = $this->fixtures();
+        list($process, $screen, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2, $subProcess, $group) = $this->fixtures();
 
         $exporter = new Exporter();
         $exporter->exportProcess($process);
@@ -105,6 +105,7 @@ class ProcessExporterTest extends TestCase
 
         \DB::delete('delete from process_notification_settings');
         $process->forceDelete();
+        $subProcess->forceDelete();
         $screen->delete();
         $user->delete();
         $group->delete();
@@ -133,5 +134,8 @@ class ProcessExporterTest extends TestCase
         $this->assertCount(2, $taskAssignments);
         $this->assertEquals($user->id, $taskAssignments[0]['assignment_id']);
         $this->assertEquals($group->id, $taskAssignments[1]['assignment_id']);
+
+        $subProcess = Process::whereName('SubProcess')->firstOrFail();
+        $this->assertStringContainsString('calledElement="ProcessId-' . $subProcess->id . '"', $process->bpmn);
     }
 }
