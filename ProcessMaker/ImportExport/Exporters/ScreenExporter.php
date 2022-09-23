@@ -39,8 +39,6 @@ class ScreenExporter extends ExporterBase
         $screen = $this->model;
         $categories = $screen->categories;
 
-        $screen->config = json_decode($this->model->config, true);
-        $screen->watchers = json_decode($this->model->watchers, true);
         $config = $this->model->config;
 
         foreach ($this->dependents as $dependent) {
@@ -50,6 +48,9 @@ class ScreenExporter extends ExporterBase
                     break;
                 case DependentType::SCREENS:
                     $this->associateNestedScreen($dependent, $config);
+                    break;
+                case DependentType::SCRIPTS:
+                    $this->associateWatchers(self::WATCHER_TYPE_SCRIPT, $dependent, $watchers);
                     break;
             }
         }
@@ -108,6 +109,19 @@ class ScreenExporter extends ExporterBase
                         Arr::set($config, "$pageKey.items.$itemKey.config.screen", $id);
                     }
                 }
+            }
+        }
+    }
+
+    private function associateWatchers($type, $dependent, &$watchers) : void
+    {
+        $originalId = $dependent->originalId;
+        $newId = $dependent->model->id;
+
+        foreach ($watchers as $key => $watcher) {
+            if (Arr::get($watchers, "$key.script.id") === $type . '-' . $originalId) {
+                Arr::set($watchers, "$key.script.id", $type . '-' . $newId);
+                Arr::set($watchers, "$key.script_id", $newId);
             }
         }
     }
