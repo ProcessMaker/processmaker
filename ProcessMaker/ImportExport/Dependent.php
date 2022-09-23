@@ -8,11 +8,14 @@ class Dependent
 
     public $uuid;
 
-    public function __construct(string $type, string $uuid, Manifest $manifest)
+    public $meta;
+
+    public function __construct(string $type, string $uuid, Manifest $manifest, $meta = null)
     {
         $this->type = $type;
         $this->uuid = $uuid;
         $this->manifest = $manifest;
+        $this->meta = $meta;
     }
 
     public function toArray()
@@ -20,13 +23,14 @@ class Dependent
         return [
             'type' => $this->type,
             'uuid' => $this->uuid,
+            'meta' => $this->meta,
         ];
     }
 
     public static function fromArray(array $array, Manifest $manifest)
     {
         return array_map(function ($dependent) use ($manifest) {
-            return new self($dependent['type'], $dependent['uuid'], $manifest);
+            return new self($dependent['type'], $dependent['uuid'], $manifest, $dependent['meta']);
         }, $array);
     }
 

@@ -33,7 +33,7 @@ abstract class ExporterBase implements ExporterInterface
         return $this->model->uuid;
     }
 
-    public function addDependent(string $type, Model $dependentModel, string $exporterClass)
+    public function addDependent(string $type, Model $dependentModel, string $exporterClass, $meta = null)
     {
         $uuid = $dependentModel->uuid;
 
@@ -42,12 +42,14 @@ abstract class ExporterBase implements ExporterInterface
             $this->manifest->push($uuid, $exporter);
             $exporter->runExport();
         }
-        $this->dependents[] = new Dependent($type, $uuid, $this->manifest);
+        $this->dependents[] = new Dependent($type, $uuid, $this->manifest, $meta);
     }
 
     public function getDependents($type)
     {
-        return array_filter($this->dependents, fn ($d) => $d->type === $type);
+        return array_values(
+            array_filter($this->dependents, fn ($d) => $d->type === $type)
+        );
     }
 
     public function runExport()

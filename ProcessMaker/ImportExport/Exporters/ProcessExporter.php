@@ -75,7 +75,7 @@ class ProcessExporter extends ExporterBase
     private function getSubprocesses($process): Collection
     {
         $ids = [];
-        $elements = $process->getDefinitions()->getElementsByTagName('callActivity');
+        $elements = $process->getDefinitions(true)->getElementsByTagName('callActivity');
         foreach ($elements as $element) {
             $calledElementValue = optional($element->getAttributeNode('calledElement'))->value;
             $values = explode('-', $calledElementValue);
