@@ -39,7 +39,7 @@
             <button type="button" class="btn btn-primary ml-2" v-b-modal.set-password-modal>
               {{ $t("Export") }}
             </button>
-            <set-password-modal :processId="processId"></set-password-modal>
+            <set-password-modal :processId="processId" :processName="processName"></set-password-modal>
           </div>
         </div>
       </div>
@@ -51,7 +51,7 @@
 import SetPasswordModal from './SetPasswordModal.vue';
 
 export default {
-  props: ["processId", 'processName'],
+  props: ["processId", "processName"],
   components: {
     SetPasswordModal
   },

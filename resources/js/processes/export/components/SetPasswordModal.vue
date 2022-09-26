@@ -1,13 +1,13 @@
 <template>
   <div>
-    <modal 
+    <modal
       id="set-password-modal" 
       :title="$t('Set Password')" 
       :subtitle="$t('This password will be required when importing the exported package/process.')"
       :ok-title="$t('Export')"
       :ok-disabled="disabled" 
       @ok.prevent="onExport" 
-      @hidden="onClose" 
+      @hidden="onClose"
     >
       <template>
         <b-form-group>
@@ -94,20 +94,24 @@
         </b-form-group>
       </template>
     </modal>
+    <export-success-modal :processName="processName"></export-success-modal>
   </div>
 </template>
 
 <script>
 import { FormErrorsMixin, Modal } from "SharedComponents";
+import ExportSuccessModal from './ExportSuccessModal.vue';
 
 export default {
-  components: { Modal },
-  props: ["processId"],
+  components: { 
+    Modal,
+    ExportSuccessModal
+    },
+  props: ["processId", "processName"],
   mixins: [ FormErrorsMixin ],
   data() {
       return {
         passwordProtect: true,
-        passwordValidation: '',
         disabled: false,
         password: '',
         confirmPassword: '',
@@ -151,15 +155,18 @@ export default {
       if (!this.validatePassword()) {
           return false;
       }
-
+      else {
       ProcessMaker.apiClient.post('processes/' + this.processId + '/export')
       .then(response => {
           window.location = response.data.url;
-          ProcessMaker.alert(this.$t('The process was exported.'), 'success');
+          this.$bvModal.hide('setPasswordModal');
       })
       .catch(error => {
           ProcessMaker.alert(error.response.data.message, 'danger');
       });
+
+      this.$bvModal.show('exportSuccessModal');
+      }
     },
     togglePassword() {
       if (this.type == 'text') {
@@ -169,8 +176,6 @@ export default {
       }
     },
     validatePassword() {
-      console.log(this.confirmPassword);
-
       if (!this.password && !this.confirmPassword) {
           return false
       }
