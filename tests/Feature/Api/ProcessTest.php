@@ -724,8 +724,6 @@ class ProcessTest extends TestCase
      */
     public function testShowProcess()
     {
-        $this->markTestSkipped('FOUR-6653');
-
         //Create a new process without category
         $process = factory(Process::class)->create([
             'process_category_id' => null,
@@ -736,7 +734,7 @@ class ProcessTest extends TestCase
 
         //Test that is correctly displayed with null category
         $this->assertModelShow($process->id, ['category'])
-            ->assertJsonFragment(['category' => null]);
+            ->assertJsonFragment(['category' => []]);
 
         //Create a new process with category
         $process = factory(Process::class)->create();
