@@ -19,8 +19,10 @@
             <template v-if="passwordProtect === true">
               <div class="pt-3">
                 <label for="set-password">Password</label>
-                <b-input-group :state="errorState('password', errors)" :invalid-feedback="errorMessage('password', errors)">
-                  <b-form-input
+                <b-input-group>
+                  <vue-password v-model="password" :disable-toggle=true :disable-strength=true>
+                    <div slot="password-input" slot-scope="props">
+                  <b-form-input 
                     autofocus
                     ref="input"
                     id="set-password"
@@ -29,8 +31,11 @@
                     autocomplete="off"
                     name="password"
                     class="form-control"
-                    :state="errorState('password', errors)"
+                    :value="props.value"
+                    @input="props.updatePassword"
                   ></b-form-input>
+                  </div>
+                  </vue-password>
                   <b-input-group-append>
                     <b-button :aria-label="$t('Toggle Show Password')" variant="link" @click="togglePassword" class="form-btn" :class="errors.password ? 'invalid' : ''">
                       <i class="fas text-secondary" :class="icon"></i>
@@ -40,7 +45,9 @@
               </div>
               <div class="pt-3">
                 <label for="confirm-set-password">Verify Password</label>
-                <b-input-group :state="errorState('password', errors)" :invalid-feedback="errorMessage('password', errors)">
+                <b-input-group>
+                  <vue-password v-model="confirmPassword" :disable-toggle=true :disable-strength=true>
+                  <div slot="password-input" slot-scope="props">
                   <b-form-input 
                     autofocus
                     id="confirm-set-password" 
@@ -49,12 +56,16 @@
                     autocomplete="off"
                     name="confirm-password"
                     class="form-control"
+                    :value="props.value"
                   ></b-form-input>
+                  </div>
+                  </vue-password>
                   <b-input-group-append>
                     <b-button :aria-label="$t('Toggle Show Password')" variant="link" @click="togglePassword" class="form-btn" :class="errors.password ? 'invalid' : ''">
                       <i class="fas text-secondary" :class="icon"></i>
                     </b-button>
                   </b-input-group-append>
+                  <small v-if="errors && errors.password && errors.password.length" class="text-danger">{{ 'Must match password entered above.' }}</small>
                 </b-input-group>
               </div>
             </template>
@@ -63,7 +74,6 @@
                 <label for="set-password">Password</label>
                 <b-input-group>
                   <b-form-input
-                    id="set-password"
                     name="set-password"
                     class="disabled-form"
                     disabled
@@ -74,7 +84,6 @@
                 <label for="confirm-set-password">Verify Password</label>
                 <b-input-group>
                   <b-form-input
-                    id="confirm-set-password"
                     name="confirm-password"
                     class="disabled-form"
                     disabled
@@ -98,6 +107,7 @@ export default {
   data() {
       return {
         passwordProtect: true,
+        passwordValidation: '',
         disabled: false,
         password: '',
         confirmPassword: '',
@@ -134,25 +144,48 @@ export default {
       });
     },
     onClose() {
-          this.resetFormData();
-          this.resetErrors();
+      this.resetFormData();
+      this.resetErrors();
     },
     onExport() {
-          ProcessMaker.apiClient.post('processes/' + this.processId + '/export')
-          .then(response => {
-              window.location = response.data.url;
-              ProcessMaker.alert(this.$t('The process was exported.'), 'success');
-          })
-          .catch(error => {
-              ProcessMaker.alert(error.response.data.message, 'danger');
-          });
+      if (!this.validatePassword()) {
+          return false;
+      }
+
+      ProcessMaker.apiClient.post('processes/' + this.processId + '/export')
+      .then(response => {
+          window.location = response.data.url;
+          ProcessMaker.alert(this.$t('The process was exported.'), 'success');
+      })
+      .catch(error => {
+          ProcessMaker.alert(error.response.data.message, 'danger');
+      });
     },
     togglePassword() {
-          if (this.type == 'text') {
-            this.type = 'password';
-          } else {
-            this.type = 'text';
-          }
+      if (this.type == 'text') {
+        this.type = 'password';
+      } else {
+        this.type = 'text';
+      }
+    },
+    validatePassword() {
+      console.log(this.confirmPassword);
+
+      if (!this.password && !this.confirmPassword) {
+          return false
+      }
+
+      if (this.password.trim() === '' && this.confirmPassword.trim() === '') {
+          return false
+      }
+
+      if (this.password !== this.confirmPassword) {
+          this.errors.password = ['Passwords must match']
+          return false
+      }
+
+      this.errors.password = null
+      return true
     },
 },     
   mounted() {

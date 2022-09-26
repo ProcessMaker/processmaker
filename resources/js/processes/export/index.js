@@ -1,6 +1,9 @@
 import Vue from 'vue';
+import VuePassword from "vue-password";
 import ExportManager from './components/ExportManager';
 import ExportManagerView from './components/ExportManagerView';
+
+Vue.component("VuePassword", VuePassword);
 
 const processName = document.head.querySelector('meta[name="export-process-name"]').content;
 
