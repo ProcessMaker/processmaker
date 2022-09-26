@@ -352,8 +352,8 @@ class SanitizeHelperTest extends TestCase
             '_request' => [
                 'id' => 1,
             ],
-            'form_text_area_1' => "<p><strong>Do not sanitize</strong></p>",
-            'input_1' => "<p><strong>Sanitize</strong></p>",
+            'form_text_area_1' => '<p><strong>Do not sanitize</strong></p>',
+            'input_1' => '<p><strong>Sanitize</strong></p>',
         ];
     }
 
@@ -368,8 +368,8 @@ class SanitizeHelperTest extends TestCase
             ],
             'loop_1' => [
                 [
-                    'form_text_area_4' => "<p><strong>Do not sanitize</strong></p>",
-                    'form_input_1' => "<p><strong>Sanitize</strong></p>",
+                    'form_text_area_4' => '<p><strong>Do not sanitize</strong></p>',
+                    'form_input_1' => '<p><strong>Sanitize</strong></p>',
                 ],
             ],
         ];
@@ -384,10 +384,10 @@ class SanitizeHelperTest extends TestCase
             '_request' => [
                 'id' => 1,
             ],
-            'form_text_area_1' => "<p><strong>Do not sanitize</strong></p>",
-            'form_text_area_20' => "<p><strong>Do not sanitize</strong></p>",
-            'form_text_area_10' => "<p><strong>Sanitize</strong></p>",
-            'input_1' => "<p><strong>Sanitize</strong></p>",
+            'form_text_area_1' => '<p><strong>Do not sanitize</strong></p>',
+            'form_text_area_20' => '<p><strong>Do not sanitize</strong></p>',
+            'form_text_area_10' => '<p><strong>Sanitize</strong></p>',
+            'input_1' => '<p><strong>Sanitize</strong></p>',
         ];
     }
 
@@ -402,8 +402,8 @@ class SanitizeHelperTest extends TestCase
             ],
             'loop_1' => [
                 [
-                    'form_text_area_3' => "<p><strong>Do not sanitize</strong></p>",
-                    'form_input_1' => "<p><strong>Sanitize</strong></p>",
+                    'form_text_area_3' => '<p><strong>Do not sanitize</strong></p>',
+                    'form_input_1' => '<p><strong>Sanitize</strong></p>',
                 ],
             ],
         ];
@@ -418,9 +418,9 @@ class SanitizeHelperTest extends TestCase
             '_request' => [
                 'id' => 1,
             ],
-            'form_text_area_1' => "<p><strong>Do not sanitize page 2</strong></p>",
-            'form_text_area_2' => "<p><strong>Do not sanitize page 1</strong></p>",
-            'input_1' => "<p><strong>Sanitize</strong></p>",
+            'form_text_area_1' => '<p><strong>Do not sanitize page 2</strong></p>',
+            'form_text_area_2' => '<p><strong>Do not sanitize page 1</strong></p>',
+            'input_1' => '<p><strong>Sanitize</strong></p>',
         ];
     }
 
@@ -435,10 +435,10 @@ class SanitizeHelperTest extends TestCase
             ],
             'foo' => [
                 'bar' => [
-                    'baz' => "<p><strong>Do not sanitize</strong></p>",
+                    'baz' => '<p><strong>Do not sanitize</strong></p>',
                 ],
             ],
-            'input_1' => "<p><strong>Sanitize</strong></p>",
+            'input_1' => '<p><strong>Sanitize</strong></p>',
         ];
     }
 
@@ -453,13 +453,13 @@ class SanitizeHelperTest extends TestCase
             ],
             'loop_1' => [
                 [
-                    'form_text_area_1' => "<p><strong>Do not sanitize</strong></p>",
+                    'form_text_area_1' => '<p><strong>Do not sanitize</strong></p>',
                 ],
                 [
-                    'form_text_area_1' => "<p><strong>Do not sanitize 2</strong></p>",
+                    'form_text_area_1' => '<p><strong>Do not sanitize 2</strong></p>',
                 ],
             ],
-            'form_text_area_1' => "<p><strong>Sanitize</strong></p>",
+            'form_text_area_1' => '<p><strong>Sanitize</strong></p>',
         ];
     }
 
