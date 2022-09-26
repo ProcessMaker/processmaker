@@ -4,6 +4,7 @@ namespace ProcessMaker\ImportExport\Exporters;
 
 use Illuminate\Support\Collection;
 use ProcessMaker\ImportExport\DependentType;
+use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
@@ -78,23 +79,6 @@ class ProcessExporter extends ExporterBase
         return true;
     }
 
-    private function associateSubProcesses($process): void
-    {
-        $dependents = collect($this->getDependents(DependentType::SUB_PROCESSES));
-        $elements = $process->getDefinitions()->getElementsByTagName('callActivity');
-        foreach ($elements as $element) {
-            $calledElementValue = optional($element->getAttributeNode('calledElement'))->value;
-            $values = explode('-', $calledElementValue);
-            if (count($values) === 2) {
-                $dependent = $dependents->first(function ($dependent) use ($values) {
-                    return $dependent->originalId === (int) $values[1];
-                });
-                $newId = $dependent->model->id;
-                $element->setAttribute('calledElement', "ProcessId-{$newId}");
-            }
-        }
-    }
-
     private function getScreens($process): Collection
     {
         $ids = array_merge(
@@ -111,16 +95,32 @@ class ProcessExporter extends ExporterBase
     private function getSubprocesses($process): Collection
     {
         $ids = [];
-        $elements = $process->getDefinitions(true)->getElementsByTagName('callActivity');
+        $elements = Utils::getSubprocesses($process);
         foreach ($elements as $element) {
-            $calledElementValue = optional($element->getAttributeNode('calledElement'))->value;
+            $calledElementValue = $element->getAttributeNode('calledElement')->value;
             $values = explode('-', $calledElementValue);
-            if (count($values) === 2) {
-                $ids[] = $values[1];
-            }
+            $ids[] = $values[1];
         }
 
         return Process::findMany($ids);
+    }
+
+    private function associateSubProcesses($process): void
+    {
+        $dependents = collect($this->getDependents(DependentType::SUB_PROCESSES));
+        $elements = Utils::getSubprocesses($process);
+        foreach ($elements as $element) {
+            $calledElementValue = $element->getAttributeNode('calledElement')->value;
+            $values = explode('-', $calledElementValue);
+            $dependent = $dependents->first(function ($dependent) use ($values) {
+                return $dependent->originalId === (int) $values[1];
+            });
+            $newId = $dependent->model->id;
+            $value = "ProcessId-{$newId}";
+            $element->setAttribute('calledElement', $value);
+            Utils::setPmConfigValue($element, 'calledElement', $value);
+            Utils::setPmConfigValue($element, 'processId', $newId);
+        }
     }
 
     private function associateTaskAssignments($process): void

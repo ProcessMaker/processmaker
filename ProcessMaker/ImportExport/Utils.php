@@ -22,6 +22,17 @@ class Utils
         return $serviceTasks;
     }
 
+    public static function getSubprocesses(Process $process) : Collection
+    {
+        return collect($process->getDefinitions(true)->getElementsByTagName('callActivity'))
+            ->filter(function ($element) {
+                $calledElementValue = optional($element->getAttributeNode('calledElement'))->value;
+                $values = explode('-', $calledElementValue);
+
+                return count($values) === 2;
+            });
+    }
+
     public static function getPmConfig(BpmnElement $element) : array
     {
         return json_decode($element->getAttribute('pm:config'), true);
@@ -40,7 +51,7 @@ class Utils
 
     public static function setPmConfigValue(BpmnElement &$element, string $path, $value) : void
     {
-        $config = json_decode($element->getAttribute('pm:config'), true);
+        $config = self::getPmConfig($element);
         Arr::set($config, $path, $value);
         $element->setAttribute('pm:config', json_encode($config));
     }

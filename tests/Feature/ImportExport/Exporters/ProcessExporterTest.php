@@ -6,6 +6,7 @@ use Illuminate\Support\Arr;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
+use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessNotificationSetting;
@@ -136,6 +137,10 @@ class ProcessExporterTest extends TestCase
         $this->assertEquals($group->id, $taskAssignments[1]['assignment_id']);
 
         $subProcess = Process::whereName('SubProcess')->firstOrFail();
-        $this->assertStringContainsString('calledElement="ProcessId-' . $subProcess->id . '"', $process->bpmn);
+        $calledElement = "ProcessId-{$subProcess->id}";
+        $this->assertStringContainsString('calledElement="' . $calledElement . '"', $process->bpmn);
+        $subProcessElements = Utils::getSubprocesses($process);
+        $config = Utils::getPmConfig($subProcessElements->first());
+        $this->assertEquals($calledElement, $config['calledElement']);
     }
 }
