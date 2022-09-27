@@ -5,6 +5,7 @@
       :title="$t('Process Export Successful')" 
       :ok-title="$t('Close')"
       :ok-disabled="disabled"
+      @ok.prevent="onClose"
     >
     <template>
         <div class="export-successful">
@@ -12,7 +13,7 @@
               <span class="font-weight-bold">{{ processName }}</span>{{ $t(" was successfully exported.") }}
             </h6>
         </div>
-        <div class="exported-assets">
+        <div class="exported-assets pt-2">
             <h5 class="card-title export-type">{{ $t("Exported Assets") }}</h5>
         </div>
         <template v-if="advancedExport">
@@ -35,6 +36,7 @@ export default {
   data() {
       return {
         disabled: false,
+        advancedExport: false
       }
   },
   computed: {
@@ -44,7 +46,9 @@ export default {
   },
 
   methods: { 
-    
+    onClose() {
+        window.location = "/processes";
+    }
   },  
 
   mounted() {
