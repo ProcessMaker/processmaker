@@ -82,10 +82,11 @@
 
                 <b-collapse v-model="showDataInput" id="showDataInput">
                   <monaco-editor
+                    v-model="previewInput"
                     :options="monacoOptions"
                     class="data-collapse"
-                    v-model="previewInput"
                     language="json"
+                    @change="updateDataInput"
                   />
 
                   <div v-if="!previewInputValid" class="pl-3">
@@ -397,24 +398,6 @@ export default {
     DataLoadingBasic,
   },
   watch: {
-    previewData: {
-      deep: true,
-      handler() {
-        this.updateDataPreview();
-      }
-    },
-    config() {
-      // Reset the preview data with clean object to start
-      this.previewData = {};
-    },
-    previewInput() {
-      if (this.previewInputValid) {
-        // Copy data over
-        this.previewData = JSON.parse(this.previewInput);
-      } else {
-        this.previewData = {};
-      }
-    },
     customCSS(newCustomCSS) {
       this.preview.custom_css = newCustomCSS;
     },
@@ -474,18 +457,24 @@ export default {
       return warnings;
     },
   },
-  created() {
-    this.updateDataPreview = debounce(this.updateDataPreview, 1000);
-  },
   mounted() {
     this.countElements = debounce(this.countElements, 2000);
     this.mountWhenTranslationAvailable();
     this.countElements();
   },
   methods: {
-    updateDataPreview() {
+    // eslint-disable-next-line func-names
+    updateDataInput: debounce(function () {
+      if (this.previewInputValid) {
+        // Copy data over
+        this.previewData = JSON.parse(this.previewInput);
+        this.updateDataPreview();
+      }
+    }, 1000),
+    // eslint-disable-next-line func-names
+    updateDataPreview: debounce(function () {
       this.previewDataStringify = JSON.stringify(this.previewData, null, 2);
-    },
+    }, 1000),
     monacoMounted(editor) {
       this.editor = editor;
       this.editor.updateOptions({ readOnly:  true });
@@ -638,6 +627,7 @@ export default {
       }
     },
     onUpdate(data) {
+      this.updateDataPreview();
       ProcessMaker.EventBus.$emit("form-data-updated", data);
     },
     getValidationErrorsForItems(items, page) {
@@ -735,6 +725,8 @@ export default {
     },
     updateConfig(newConfig) {
       this.config = newConfig;
+      // Reset the preview data with clean object to start
+      this.previewData = {};
       this.refreshSession();
       ProcessMaker.EventBus.$emit("new-changes");
       // Recount number of elements
