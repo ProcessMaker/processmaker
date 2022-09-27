@@ -52,4 +52,24 @@ class Utils
         self::setPmConfigValue($element, $arrayPath, $value);
         $process->bpmn = $definitions->saveXml();
     }
+
+    public static function findScreenDependent(array $config, string $component, string $path)
+    {
+        $matches = [];
+        foreach ($config as $page => $config) {
+            foreach ($config['items'] as $i => $item) {
+                if ($item['component'] === $component) {
+                    $value = Arr::get($item, $path);
+                    if ($value) {
+                        $matches[] = [
+                            'value' => $value,
+                            'path' => "${page}.items.${i}.${path}",
+                        ];
+                    }
+                }
+            }
+        }
+
+        return $matches;
+    }
 }
