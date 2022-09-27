@@ -28,7 +28,7 @@
               required
             ></b-form-input>
             <b-input-group-append class="append-group">
-              <b-button autofocus :aria-label="$t('Toggle Show Password')" variant="link" @click="togglePassword" class="form-btn" :class="errors.password ? 'invalid' : ''">
+              <b-button :aria-label="$t('Toggle Show Password')" variant="link" @click="togglePassword" class="form-btn" :class="errors.password ? 'invalid' : ''">
                 <i class="fas text-secondary" :class="icon"></i>
               </b-button>
             </b-input-group-append>
