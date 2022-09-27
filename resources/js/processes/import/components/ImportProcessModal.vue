@@ -8,18 +8,26 @@
       @importNew="importNew"
       :setCustomButtons="true"
       :customButtons="customModalButtons"
+      size="lg"
     >
-      <template> 
-        <h5>
-            <i class="fas fa-exclamation-triangle text-warning"></i> 
-            {{$t('Caution: Process Already Exists')}}
-            <div><small class="helper text-muted">{{ $t('This environment contains a process with the same ID.') }}</small></div>
-        </h5>
-        <p v-if="!userHasEditPermissions">{{ $t('You do not have permissions to update the existing process in this environment') }}</p>
-        <ul>
-            <li>{{ $t('Import As New will create a new process in this environment.') }}</li>
-            <li v-if="userHasEditPermissions">{{ $t('Update will overwrite any assets tied to the current process. This may cause unintended side effects.') }}</li>
-        </ul>
+      <template>
+        <b-row align-v="start">
+          <b-col class="col-1 p-0 pr-1 text-right">
+            <i class="fas fa-exclamation-triangle text-warning"></i>
+          </b-col>
+          <b-col class="p-0 pl-1">
+            <h5 class="mb-3 fw-semibold">
+              {{$t('Caution: Process Already Exists')}}
+              <div><small class="helper text-muted">{{ $t('This environment contains a process with the same ID.') }}</small></div>
+            </h5>
+            <p v-if="!userHasEditPermissions">{{ $t('You do not have permissions to update the existing process in this environment') }}</p>
+            <ul class="pl-3 ml-1">
+              <li class="mb-1"><span class="fw-semibold">{{ $t('Import As New') }}</span>{{ $t(' will create a new process in this environment.') }}</li>
+              <li v-if="userHasEditPermissions" class="mb-1"><span class="fw-semibold">{{$t('Update') }}</span>{{ $t(' will overwrite any assets tied to the current process. This may cause unintended side effects.') }}</li>
+            </ul>
+          </b-col>
+        </b-row>
+        
       </template>
     </modal>
   </div>
