@@ -32,4 +32,9 @@ class TestStatusController extends Controller
 
         return 'Email received.<script>setTimeout("window.close()", 2000);</script>';
     }
+
+    public function csp()
+    {
+        return view('test.csp-meta-tags');
+    }
 }

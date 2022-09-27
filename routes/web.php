@@ -3,7 +3,6 @@
 use ProcessMaker\Http\Controllers\Api\Requests\RequestsController;
 
 Route::group(['middleware' => ['auth', 'sanitize', 'external.connection', 'force_change_password']], function () {
-
     // Routes related to Authentication (password reset, etc)
     // Auth::routes();
     Route::namespace('Admin')->prefix('admin')->group(function () {
@@ -98,6 +97,7 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection', 'force
 
     Route::get('/test_status', 'TestStatusController@test')->name('test.status');
     Route::get('/test_email', 'TestStatusController@email')->name('test.email');
+    Route::get('/test_csp', 'TestStatusController@csp')->name('test.csp');
 });
 
 // Add our broadcasting routes
