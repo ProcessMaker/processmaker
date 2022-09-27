@@ -39,8 +39,8 @@
                                     </b-form-radio>
                                 </b-form-group>
                             </div>
-                            <enter-password-modal ref="enter-password-modal" @verified-password="importFile"></enter-password-modal>
-                            <import-process-modal ref="import-process-modal" :processName="processName" :userHasEditPermissions="true" @import-new="onImportAsNew"></import-process-modal>
+                            <enter-password-modal ref="enter-password-modal" @verified-password="importFile($event)"></enter-password-modal>
+                            <import-process-modal ref="import-process-modal" :processName="processName" :userHasEditPermissions="true" @import-new="onImportAsNew" @update-process="importFile($event)"></import-process-modal>
                         </div>
                         <div id="during-import" v-if="importing" v-cloak>
                             <h4 class="card-title mt-5 mb-5">
@@ -517,7 +517,8 @@ export default {
         onCancel() {
             window.location = '/processes';
         },
-        importFile() {
+        importFile(processExists) {
+            this.processExists = processExists;
             switch (this.selectedImportOption) {
                 case 'basic':
                     this.handleBasicImport();

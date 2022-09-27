@@ -3,7 +3,6 @@
     <modal 
       id="importProccess" 
       :title="title" 
-      @hidden="onClose"
       @update="onUpdate"
       @importNew="importNew"
       :setCustomButtons="true"
@@ -70,14 +69,16 @@
       show() {
         this.$bvModal.show('importProccess');
       },
-      onClose () {
-       console.log('MODAL CLOSED');
+      close() {
+        this.$bvModal.hide('importProccess');
       },
       onUpdate() {
-        console.log('UPDATE PROCESS AS NEW');
+        this.$emit('update-process', false);
+        this.close();
       },
       importNew() {
         this.$emit('import-new');
+        this.close();
       }
     }
   };

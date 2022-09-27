@@ -94,7 +94,7 @@
          // TODO: IMPORT/EXPORT Verify process password
         if (this.password === 'test') {
           this.$bvModal.hide('enterPassword');
-          this.$emit('verified-password');
+          this.$emit('verified-password', true);
         } else {
           this.errors.password = ['Invalid Password'];
         }
