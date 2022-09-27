@@ -20,7 +20,7 @@
               <div class="pt-3">
                 <label for="set-password">Password</label>
                 <b-input-group>
-                  <vue-password v-model="password" :disable-toggle=true :disable-strength=true>
+                  <vue-password v-model="password" :disable-toggle=true :disable-strength=true class="vue-password-container">
                     <div slot="password-input" slot-scope="props">
                   <b-form-input 
                     autofocus
@@ -37,7 +37,7 @@
                   </div>
                   </vue-password>
                   <b-input-group-append>
-                    <b-button :aria-label="$t('Toggle Show Password')" variant="link" @click="togglePassword" class="form-btn" :class="errors.password ? 'invalid' : ''">
+                    <b-button :aria-label="$t('Toggle Show Password')" variant="link" @click="togglePassword" class="form-btn">
                       <i class="fas text-secondary" :class="icon"></i>
                     </b-button>
                   </b-input-group-append>
@@ -46,7 +46,7 @@
               <div class="pt-3">
                 <label for="confirm-set-password">Verify Password</label>
                 <b-input-group>
-                  <vue-password v-model="confirmPassword" :disable-toggle=true :disable-strength=true>
+                  <vue-password v-model="confirmPassword" :disable-toggle=true :disable-strength=true class="vue-password-container">
                   <div slot="password-input" slot-scope="props">
                   <b-form-input
                     id="confirm-set-password" 
@@ -54,6 +54,7 @@
                     v-model="confirmPassword"
                     autocomplete="off"
                     name="confirm-password"
+                    :class="errors.password ? 'invalid' : ''"
                     class="form-control"
                     :value="props.value"
                   ></b-form-input>
@@ -77,6 +78,11 @@
                     class="disabled-form"
                     disabled
                   ></b-form-input>
+                  <b-input-group-append>
+                    <b-button :aria-label="$t('Toggle Show Password')" variant="link" @click="togglePassword" class="form-btn" disabled>
+                      <i class="fas text-secondary fa-disabled" :class="icon"></i>
+                    </b-button>
+                  </b-input-group-append>
                 </b-input-group>
               </div>
               <div class="pt-3">
@@ -87,6 +93,11 @@
                     class="disabled-form"
                     disabled
                   ></b-form-input>
+                  <b-input-group-append>
+                    <b-button :aria-label="$t('Toggle Show Password')" variant="link" @click="togglePassword" class="form-btn" disabled>
+                      <i class="fas text-secondary fa-disabled" :class="icon"></i>
+                    </b-button>
+                  </b-input-group-append>
                 </b-input-group>  
               </div>
             </template>
@@ -150,7 +161,9 @@ export default {
       ProcessMaker.apiClient.post('processes/' + this.processId + '/export')
       .then(response => {
           window.location = response.data.url;
-          this.$bvModal.hide('setPasswordModal');
+          this.$nextTick(() => {      
+            this.$bvModal.hide('set-password-modal')
+          });
       })
       .catch(error => {
           ProcessMaker.alert(error.response.data.message, 'danger');
@@ -191,6 +204,10 @@ export default {
 </script>
 
 <style>
+  .vue-password-container {
+    width: 90%;
+  }
+
   .form-control {
     border-right: 0;
   }
