@@ -15,7 +15,7 @@
           :state="errorState('password', errors)"
           :invalid-feedback="errorMessage('password', errors)"
         >
-         <b-input-group class="form-group">
+         <b-input-group class="form-group form-password">
             <b-form-input
               autofocus
               ref="input"
@@ -120,29 +120,5 @@
 
   .invalid {
     border-color: #E50130;
-  }
-
-  .form-group:focus-within > .form-control {
-    box-shadow: -4px 0px 0 3px rgb(8 114 194 / 50%);
-    border: 1px solid #0872C2 !important;
-    border-right: 0!important;
-  }  
-
-  .form-group:focus-within > .append-group > .form-btn {
-    box-shadow: 3px 0px 0px 3px rgb(8 114 194 / 50%);
-    border: 1px solid #0872C2 !important;
-    border-left: 0!important;
-  }  
-
-  /* .form-control:focus {
-    box-shadow: -4px 0px 0 3px rgb(8 114 194 / 50%);
-    border: 1px solid #0872C2 !important;
-    border-right: 0!important;
-  }
-
-  .form-btn:focus {
-    box-shadow: 3px 0px 0px 3px rgb(8 114 194 / 50%);
-    border: 1px solid #0872C2 !important;
-    border-left: 0!important;
-  } */
+  } 
 </style>
