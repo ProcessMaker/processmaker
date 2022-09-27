@@ -21,10 +21,12 @@ class HideSystemCategoriesTest extends TestCase
     private function categoryFiltered($model)
     {
         $prefix = strtolower(substr(strrchr($model, '\\'), 1));
-        $category = factory($model . 'Category')->create([
+        $model = $model . 'Category';
+        $model::whereNotNull('id')->delete();
+        $category = factory($model)->create([
             'is_system' => false,
         ]);
-        $hiddenCategory = factory($model . 'Category')->create([
+        $hiddenCategory = factory($model)->create([
             'is_system' => true,
         ]);
         $response = $this->apiCall('GET', route('api.' . $prefix . '_categories.index'));
