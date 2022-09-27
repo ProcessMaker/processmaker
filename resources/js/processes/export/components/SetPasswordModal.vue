@@ -48,8 +48,7 @@
                 <b-input-group>
                   <vue-password v-model="confirmPassword" :disable-toggle=true :disable-strength=true>
                   <div slot="password-input" slot-scope="props">
-                  <b-form-input 
-                    autofocus
+                  <b-form-input
                     id="confirm-set-password" 
                     :type="type"
                     v-model="confirmPassword"
@@ -112,7 +111,7 @@ export default {
   data() {
       return {
         passwordProtect: true,
-        disabled: false,
+        disabled: true,
         password: '',
         confirmPassword: '',
         type: 'password',
@@ -133,26 +132,18 @@ export default {
   watch: {
     password() {
       this.disabled = this.password ? false : true;
-      this.resetErrors();
+    },
+    passwordProtect() {
+      this.disabled = this.passwordProtect ? true : false;
     }
   },
   methods: { 
-    resetFormData() {
-      this.formData = Object.assign({}, {
-        password: null,
-      });
-    },
-    resetErrors() {
-      this.errors = Object.assign({}, {
-        password: null,
-      });
-    },
     onClose() {
-      this.resetFormData();
-      this.resetErrors();
+      this.password = "";
+      this.confirmPassword = "";
     },
     onExport() {
-      if (!this.validatePassword()) {
+      if (this.passwordProtect && !this.validatePassword()) {
           return false;
       }
       else {
