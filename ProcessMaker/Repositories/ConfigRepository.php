@@ -7,6 +7,7 @@ use Illuminate\Contracts\Config\Repository as ConfigContract;
 use Illuminate\Database\ConnectionResolverInterface as Resolver;
 use Illuminate\Support\Arr;
 use ProcessMaker\Models\Setting;
+use RuntimeException;
 
 class ConfigRepository implements ArrayAccess, ConfigContract
 {
@@ -56,8 +57,13 @@ class ConfigRepository implements ArrayAccess, ConfigContract
         // Query only what we need from the database and
         // bind the key/config value to the global
         // app config for each
-        foreach (Setting::select('id', 'key', 'config', 'format')->get() as $setting) {
-            $this->set($setting->key, $setting->config);
+        try {
+            foreach (Setting::select('id', 'key', 'config', 'format')->get() as $setting) {
+                $this->set($setting->key, $setting->config);
+            }
+        } catch (RuntimeException $exception) {
+            // Catch an exception being thrown when no
+            // database connection is available
         }
 
         return $this;
