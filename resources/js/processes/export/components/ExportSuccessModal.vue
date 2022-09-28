@@ -6,6 +6,7 @@
       :ok-title="$t('Close')"
       :ok-disabled="disabled"
       @ok.prevent="onClose"
+      :ok-only="true"
     >
     <template>
         <div class="export-successful">
@@ -16,10 +17,20 @@
         <div class="exported-assets pt-2">
             <h5 class="card-title export-type">{{ $t("Exported Assets") }}</h5>
         </div>
+        <ul class="pl-0">
+            <li v-for="(value, key) in exportedAssets" :key="value">
+               <i class="fas fa-check-circle text-success"></i> {{ value }} {{ key }}
+            </li>
+        </ul>
         <template v-if="advancedExport">
             <div class="non-exported-assets">
                 <h5 class="card-title export-type">{{ $t("Not Exported") }}</h5>
             </div>
+            <ul class="pl-0">
+                <li v-for="(value, key) in nonExportedAssets" :key="value">
+                <i class="fas fa-minus-circle"></i> {{ value }} {{ key }}
+                </li>
+            </ul>
         </template>
     </template>
     </modal>
@@ -36,7 +47,17 @@ export default {
   data() {
       return {
         disabled: false,
-        advancedExport: false
+        advancedExport: true,
+        exportedAssets: {
+            screens: '23',
+            signals: '5',
+            dataConnectors: '3'
+        },
+        nonExportedAssets: {
+            scripts: '18', 
+            environmentVariables: '0',
+            vocabularies: '1'
+        }
       }
   },
   computed: {
@@ -58,20 +79,8 @@ export default {
 </script>
 
 <style>
-  .form-control {
-    border-right: 0;
-  }
 
-  .form-btn {
-    border: 1px solid #b6bfc6;
-    border-left:none;
-  }
-
-  .disabled-form {
-    border-right: 1px solid #b6bfc6;
-  }
-
-  .invalid {
-    border-color: #E50130;
+  ul {
+    list-style: none;
   }
 </style>
