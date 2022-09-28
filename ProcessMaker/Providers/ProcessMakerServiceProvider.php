@@ -10,6 +10,7 @@ use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
 use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\ImportExport\Extension;
 use ProcessMaker\Managers;
 use ProcessMaker\Models;
 use ProcessMaker\Observers;
@@ -103,6 +104,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton(PolicyExtension::class, function ($app) {
             return new PolicyExtension();
         });
+
+        // Define the Import/Export Extension object as a singleton
+        $this->app->singleton(Extension::class);
 
         // Register app-level events
         static::registerEvents();

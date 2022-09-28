@@ -1,26 +1,96 @@
 <template>
-    <div>
-        <!-- TODO: IMPORT/EXPORT Create Draggable File Upload component -->
-    </div>
+  <div>
+    <uploader
+      :options="options"
+      ref="uploader"
+      @file-success="fileUploaded"
+      @file-added="addFile"
+    >
+      <uploader-unsupport></uploader-unsupport>
+
+      <uploader-drop id="uploaderMain" class="dotted-border p-4">
+        <i class="fas fa-file-upload fa-3x fa-fw text-secondary"></i>
+        <p>{{ $t('Drag file here') }}</p>
+        <p>- {{ $t('or') }} -</p>
+        <uploader-btn id="submitFile" class="text-primary">{{ $t('Select file from computer') }}</uploader-btn>
+      </uploader-drop>
+
+      <uploader-list v-if="displayUploaderList">
+        <template slot-scope="{ fileList }">
+          <ul>
+            <li v-for="file in fileList" :key="file.id">
+              <uploader-file :file="file" :list="true"></uploader-file>
+            </li>
+          </ul>
+        </template>
+      </uploader-list>
+    </uploader>
+  </div>
 </template>
 
 <script>
-export default {
-    props: [],
-    components: {},
-    mixins: [],
-    data() {
-        return {
+import { createUniqIdsMixin } from "vue-uniq-ids";
+import uploader from "vue-simple-uploader";
 
+// Create the mixin
+const uniqIdsMixin = createUniqIdsMixin();
+
+export default {
+  components: uploader,
+  mixins: [uniqIdsMixin],
+  props: [ "options", "accept", 'displayUploaderList'],
+  computed: {
+    inProgress() {
+      return this.$refs.uploader.fileList.some(file => file._prevProgress < 1);
+    },
+  },
+  data() {
+    return {
+    };
+  },
+  methods: {
+    addFile(file) {
+      if (this.accept) {
+        file.ignored = true;
+        if (this.accept.indexOf(file.fileType) !== -1) {
+          file.ignored = false;
         }
+        if (file.ignored) {
+          ProcessMaker.alert(this.$t("File not allowed."), "danger");
+          return false
+        }
+      }
+      file.ignored = false;
+    
+      return true;
     },
-    methods: {      
+    fileUploaded(rootFile, file, message) {
+        this.$emit('input', file.file);
     },
-    mounted() {
-    }
-}
+  }
+};
 </script>
 
-<style>
+<style scoped>
+.required {
+  color: red;
+  font-size: 0.8em;
+}
 
+.dotted-border {
+    border: 3px dotted #e0e0e0;
+}
+
+#uploaderMain {
+    font-size: 18px;
+}
+
+.uploader-drop {
+    background: none;
+}
+
+#submitFile {
+    border:none;
+    text-decoration:underline;
+}
 </style>

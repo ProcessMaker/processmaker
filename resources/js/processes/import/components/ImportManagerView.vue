@@ -5,31 +5,18 @@
                 <div class="card text-center">
                     <div class="card-header bg-light" align="left">
                         <h5 class="mb-0">{{$t('Import Process')}}</h5>
+                        <small class="text-muted">{{ $t('Import a Process and its associated assets into this ProcessMaker environment') }}</small>
                     </div>
                     <div class="card-body">
                         <div id="pre-import" v-if="! importing && ! imported">
-                            <h5 class="card-title">{{$t('You are about to import a Process.')}}</h5>
-                            <p class="card-text d-flex justify-content-center">{{$t('After importing, you can reassign users and groups to your Process.')}}</p>
-                            <div class="d-flex justify-content-center">
-                                <b-card header-class="d-flex bg-light align-items-center card-size-header border-0"
-                                        class="d-flex flex-row card-border border-0 mb-1" style="width: 40em;">
-                                    <i slot="header" class='fas fa-exclamation-circle fa-4x'></i>
-                                    {{$t('ProcessMaker does not import Environment Variables or Enterprise Packages. You must manually configure these features.')}}
-                                </b-card>
-                            </div>
-
-                            <input id="import-file" type="file" ref="file" class="d-none" @change="handleFile" accept=".spark,.json" :aria-label="$t('Select a file')">
-
-                            <button @click="$refs.file.click()" class="btn btn-secondary">
-                                <i class="fas fa-upload"></i>
-                                {{$t('Browse')}}
-                            </button>
+                            <draggable-file-upload v-if="!file || file && !fileIsValid" ref="file" v-model="file" :options="{singleFile: true}" :displayUploaderList="false" :accept="['.spark', 'application/json']"></draggable-file-upload>
                         </div>
                         <div id="during-import" v-if="importing" v-cloak>
                             <h4 class="card-title mt-5 mb-5">
                                 <i class="fas fa-circle-notch fa-spin"></i> {{ $t('Importing') }}...
                             </h4>
                         </div>
+                        
                         <div id="post-import" class="text-left" v-if="imported" v-cloak>
                             <h5>{{ $t('Status') }}</h5>
                             <ul v-show="options" class="mb-0 fa-ul">
@@ -37,7 +24,7 @@
                                     <span class="fa-li">
                                         <i :class="item.success ? 'fas fa-check text-success' : 'fas fa-times text-danger'"></i>
                                     </span>
-                                    @{{ $t(item.message) }} <strong>@{{ item.label }}</strong>
+                                    {{ $t(item.message) }} <strong>{{ item.label }}</strong>
                                 </li>
                             </ul>
                             <div id="post-import-assignable" v-if="assignable" v-cloak>
@@ -52,7 +39,7 @@
                                         <tbody>
                                         <tr v-for="item in assignable">
                                             <td class="assignable-name text-right">
-                                                @{{ $t(item.prefix) }} <strong>@{{item.name }}</strong> @{{ $t(item.suffix) }}
+                                                {{ $t(item.prefix) }} <strong>{{item.name }}</strong> {{ $t(item.suffix) }}
                                                 <i class="assignable-arrow fas fa-long-arrow-alt-right"></i>
                                             </td>
                                             <td v-if="item.type === 'webentryCustomRoute'" class="assinable-entity">
@@ -274,7 +261,7 @@
                             {{$t('Cancel')}}
                         </button>
                         <button type="button" class="btn btn-secondary ml-2" @click="importFile"
-                                :disabled="uploaded == false">
+                                :disabled="fileIsValid === false">
                             {{$t('Import')}}
                         </button>
                     </div>
@@ -299,10 +286,14 @@
 
 <script>
 const importingCode = window.location.hash.match(/#code=(.+)/);
+import DraggableFileUpload from '../../../components/shared/DraggableFileUpload';
+import { createUniqIdsMixin } from "vue-uniq-ids";
+const uniqIdsMixin = createUniqIdsMixin();
+
 export default {
     props: [''],
-    components: {},
-    mixins: [],
+    components: {DraggableFileUpload},
+    mixins: [uniqIdsMixin],
     data() {
         return {
             file: '',
@@ -322,13 +313,27 @@ export default {
             importingCode: importingCode ? importingCode[1] : null,
             dataSources: [],
             dataSourcesInstalled: true,
-            status: 'ACTIVE'
+            status: 'ACTIVE',
+            importTypeOptions: [
+                {"value": "basic", "content": "Basic", "helper": "Import all assets from the uploaded package."},
+                {"value": "custom", "content": "Custom", "helper": "Select which  types of assets from the uploaded package should be imported to this environment."},
+            ],
+            fileIsValid: false,
         }
     },
     filters: {
         titleCase: function (value) {
             value = value.toString();
             return value.charAt(0).toUpperCase() + value.slice(1);
+        }
+    },
+    watch: {
+        file() {
+            this.fileIsValid = false;
+            if (!this.file) {
+                return
+            }
+            this.validateFile();
         }
     },
     computed: {
@@ -469,11 +474,6 @@ export default {
         onAssignmentCancel() {
             this.onCancel();
         },
-        handleFile(e) {
-            this.file = this.$refs.file.files[0];
-            this.uploaded = true;
-            this.submitted = false;
-        },
         reload() {
             window.location.reload();
         },
@@ -484,26 +484,26 @@ export default {
             this.importing = true;
             let formData = new FormData();
             formData.append('file', this.file);
+      
             if (this.submitted) {
-                return
+                return;
             }
             this.submitted = true;
-            ProcessMaker.apiClient.post('/processes/import?queue=1',
-                formData,
+            ProcessMaker.apiClient.post('/processes/import?queue=1', formData,
                 {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
                 }
             )
-                .then(response => {
+            .then(response => {
                 window.location.hash = `#code=${response.data.code}`;
                 this.importingCode = response.data.code;
-                })
-                .catch(error => {
+            })
+            .catch(error => {
                 this.submitted = false;
                 ProcessMaker.alert(this.$t('Unable to import the process.')  + (error.response.data.message ? ': ' + error.response.data.message : ''), 'danger');
-                });
+            });
         },
         importReady(response) {
             let message = this.$t("Unable to import the process.");
@@ -551,6 +551,25 @@ export default {
                 .catch(error => {
                 item.error = error.response.data.error;
                 });
+        },
+        validateFile() {
+            if (!this.file) {
+                return;
+            }
+            let formData = new FormData();
+            formData.append('file', this.file);
+
+            ProcessMaker.apiClient.post('/processes/import/validation', formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            )
+            .then(response => {
+                this.fileIsValid = true;
+                this.importFile();
+            });
         }
     },
     mounted() {
@@ -624,5 +643,9 @@ export default {
 
     .card-body {
         transition: all 1s;
+    }
+
+    .border-dotted {
+        border: 3px dotted #e0e0e0;
     }
 </style>

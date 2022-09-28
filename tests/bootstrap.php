@@ -13,8 +13,8 @@ use ProcessMaker\Models\ScriptExecutor;
 // Bootstrap laravel
 app()->make(Kernel::class)->bootstrap();
 
-// Clear cache so we don't overwrite our local development database
-Artisan::call('config:clear', ['--env' => 'testing']);
+// Cache with new config so we don't overwrite our local development database
+Artisan::call('config:cache', ['--env' => 'testing']);
 
 //Ensure storage directory is linked
 Artisan::call('storage:link', []);
@@ -94,6 +94,7 @@ if (env('TEST_TOKEN')) {
 } elseif (env('POPULATE_DATABASE')) {
     Artisan::call('db:wipe', ['--database' => \DB::connection()->getName()]);
     Artisan::call('migrate:fresh', []);
+    Artisan::call('db:seed', ['--class' => 'AnonymousUserSeeder']);
 
     ScriptExecutor::firstOrCreate(
         ['language' => 'php'],
