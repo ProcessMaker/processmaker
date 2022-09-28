@@ -36,10 +36,11 @@
             <button type="button" class="btn btn-outline-secondary" @click="onCancel">
               {{ $t("Cancel") }}
             </button>
-            <button type="button" class="btn btn-primary ml-2" v-b-modal.set-password-modal>
+            <button type="button" class="btn btn-primary ml-2" @click="showSetPasswordModal">
               {{ $t("Export") }}
             </button>
-            <set-password-modal :processId="processId" :processName="processName"></set-password-modal>
+            <set-password-modal ref="set-password-modal" :processId="processId" :processName="processName" @verifyPassword="exportProcess"></set-password-modal>
+            <export-success-modal ref="export-success-modal" :processName="processName"></export-success-modal>
           </div>
         </div>
       </div>
@@ -49,11 +50,13 @@
 
 <script>
 import SetPasswordModal from './SetPasswordModal.vue';
+import ExportSuccessModal from './ExportSuccessModal.vue';
 
 export default {
   props: ["processId", "processName"],
   components: {
-    SetPasswordModal
+    SetPasswordModal,
+    ExportSuccessModal
   },
   mixins: [],
   data() {
@@ -66,10 +69,20 @@ export default {
       window.location = "/processes";
     },
     showSetPasswordModal() {
-        this.$bvModal.show('setPasswordModal');
+        this.$refs['set-password-modal'].show();
+    },
+    exportProcess() {
+        ProcessMaker.apiClient.post('processes/' + this.processId + '/export')
+      .then(response => {
+          window.location = response.data.url;
+            this.$refs['export-success-modal'].show();
+      })
+      .catch(error => {
+          ProcessMaker.alert(error.response.data.message, 'danger');
+      });
+      }
     }
-  },
-};
+  };
 </script>
 
 <style lang="scss" scoped>

@@ -69,7 +69,13 @@ export default {
   methods: { 
     onClose() {
         window.location = "/processes";
-    }
+    },
+    show() {
+      this.$bvModal.show('exportSuccessModal');
+    },
+    hide() {
+      this.$bvModal.hide('exportSuccessModal');
+    },
   },  
 
   mounted() {

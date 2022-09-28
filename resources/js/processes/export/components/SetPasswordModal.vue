@@ -6,7 +6,7 @@
       :subtitle="$t('This password will be required when importing the exported package/process.')"
       :ok-title="$t('Export')"
       :ok-disabled="disabled" 
-      @ok.prevent="onExport" 
+      @ok.prevent="verifyPassword" 
       @hidden="onClose"
     >
       <template>
@@ -40,18 +40,15 @@
         </b-form-group>
       </template>
     </modal>
-    <export-success-modal :processName="processName"></export-success-modal>
   </div>
 </template>
 
 <script>
 import { FormErrorsMixin, Modal } from "SharedComponents";
-import ExportSuccessModal from './ExportSuccessModal.vue';
 
 export default {
   components: { 
-    Modal,
-    ExportSuccessModal
+    Modal
     },
   props: ["processId", "processName"],
   mixins: [ FormErrorsMixin ],
@@ -76,28 +73,24 @@ export default {
     }
   },
   methods: { 
+    show() {
+      this.$bvModal.show('set-password-modal');
+    },
+    hide() {
+      this.$bvModal.hide('set-password-modal');
+    },
     onClose() {
       this.password = "";
       this.confirmPassword = "";
       this.errors.password = "";
     },
-    onExport() {
+    verifyPassword() {
       if (this.passwordProtect && !this.validatePassword()) {
           return false;
       }
       else {
-      ProcessMaker.apiClient.post('processes/' + this.processId + '/export')
-      .then(response => {
-          window.location = response.data.url;
-          this.$nextTick(() => {      
-            this.$bvModal.hide('set-password-modal')
-          });
-      })
-      .catch(error => {
-          ProcessMaker.alert(error.response.data.message, 'danger');
-      });
-
-      this.$bvModal.show('exportSuccessModal');
+          this.$emit("verifyPassword");
+          this.hide();
       }
     },
     togglePassword(reference) {
