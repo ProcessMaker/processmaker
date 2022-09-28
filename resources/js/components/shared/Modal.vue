@@ -8,6 +8,7 @@
     ok-variant="secondary"
     :ok-title="okTitle ? okTitle : $t('Save')"
     :ok-disabled="okDisabled"
+    :ok-only="okOnly"
     no-close-on-backdrop
     centered
     @cancel="onEvent('cancel', $event)"
@@ -29,7 +30,7 @@
 
 <script>
   export default {
-    props: ["id", "title", "subtitle", "ok-disabled", 'ok-title'],
+    props: ["id", "title", "subtitle", "ok-disabled", 'ok-title', 'ok-only'],
     methods: {
       onEvent(name, event) {
         this.$emit(name, event);
