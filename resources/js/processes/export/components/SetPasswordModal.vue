@@ -19,86 +19,22 @@
             <template v-if="passwordProtect === true">
               <div class="pt-3">
                 <label for="set-password">Password</label>
-                <b-input-group>
-                  <vue-password v-model="password" :disable-toggle=true :disable-strength=true class="vue-password-container">
-                    <div slot="password-input" slot-scope="props">
-                  <b-form-input 
-                    autofocus
-                    ref="input"
-                    id="set-password"
-                    :type="type"
-                    v-model="password"
-                    autocomplete="off"
-                    name="password"
-                    class="form-control"
-                    :value="props.value"
-                    @input="props.updatePassword"
-                  ></b-form-input>
-                  </div>
-                  </vue-password>
-                  <b-input-group-append>
-                    <b-button :aria-label="$t('Toggle Show Password')" variant="link" @click="togglePassword" class="form-btn">
-                      <i class="fas text-secondary" :class="icon"></i>
-                    </b-button>
-                  </b-input-group-append>
-                </b-input-group>
+                <vue-password v-model="password" id="set-password" :disable-strength=true />
               </div>
               <div class="pt-3">
                 <label for="confirm-set-password">Verify Password</label>
-                <b-input-group>
-                  <vue-password v-model="confirmPassword" :disable-toggle=true :disable-strength=true class="vue-password-container">
-                  <div slot="password-input" slot-scope="props">
-                  <b-form-input
-                    id="confirm-set-password" 
-                    :type="type"
-                    v-model="confirmPassword"
-                    autocomplete="off"
-                    name="confirm-password"
-                    :class="errors.password ? 'invalid' : ''"
-                    class="form-control"
-                    :value="props.value"
-                  ></b-form-input>
-                  </div>
-                  </vue-password>
-                  <b-input-group-append>
-                    <b-button :aria-label="$t('Toggle Show Password')" variant="link" @click="togglePassword" class="form-btn" :class="errors.password ? 'invalid' : ''">
-                      <i class="fas text-secondary" :class="icon"></i>
-                    </b-button>
-                  </b-input-group-append>
-                  <small v-if="errors && errors.password && errors.password.length" class="text-danger">{{ 'Must match password entered above.' }}</small>
-                </b-input-group>
+                <vue-password v-model="confirmPassword" id="confirm-password" :disable-strength=true :class="errors.password ? 'invalid' : ''" />
+                <small v-if="errors && errors.password && errors.password.length" class="text-danger">{{ 'Must match password entered above.' }}</small>
               </div>
             </template>
             <template v-else>
               <div class="pt-3">
                 <label for="set-password">Password</label>
-                <b-input-group>
-                  <b-form-input
-                    name="set-password"
-                    class="disabled-form"
-                    disabled
-                  ></b-form-input>
-                  <b-input-group-append>
-                    <b-button :aria-label="$t('Toggle Show Password')" variant="link" @click="togglePassword" class="form-btn" disabled>
-                      <i class="fas text-secondary fa-disabled" :class="icon"></i>
-                    </b-button>
-                  </b-input-group-append>
-                </b-input-group>
+                <vue-password :disable-strength=true disabled :disable-toggle=true />
               </div>
               <div class="pt-3">
                 <label for="confirm-set-password">Verify Password</label>
-                <b-input-group>
-                  <b-form-input
-                    name="confirm-password"
-                    class="disabled-form"
-                    disabled
-                  ></b-form-input>
-                  <b-input-group-append>
-                    <b-button :aria-label="$t('Toggle Show Password')" variant="link" @click="togglePassword" class="form-btn" disabled>
-                      <i class="fas text-secondary fa-disabled" :class="icon"></i>
-                    </b-button>
-                  </b-input-group-append>
-                </b-input-group>  
+                <vue-password :disable-strength=true disabled :disable-toggle=true />
               </div>
             </template>
         </b-form-group>
@@ -131,15 +67,6 @@ export default {
         }
       }
   },
-  computed: {
-    icon() {
-    if (this.type == 'password') {
-      return 'fa-solid fa-eye';
-    } else {
-      return 'fa-solid fa-eye-slash';
-      }
-    },
-  },
   watch: {
     password() {
       this.disabled = this.password ? false : true;
@@ -152,6 +79,7 @@ export default {
     onClose() {
       this.password = "";
       this.confirmPassword = "";
+      this.errors.password = "";
     },
     onExport() {
       if (this.passwordProtect && !this.validatePassword()) {
@@ -172,11 +100,11 @@ export default {
       this.$bvModal.show('exportSuccessModal');
       }
     },
-    togglePassword() {
-      if (this.type == 'text') {
-        this.type = 'password';
+    togglePassword(reference) {
+      if (this.$refs[reference].type == 'text') {
+        this.$refs[reference].type = 'password';
       } else {
-        this.type = 'text';
+        this.$refs[reference].type = 'text';
       }
     },
     validatePassword() {
@@ -204,21 +132,8 @@ export default {
 </script>
 
 <style>
-  .vue-password-container {
+  vue-password {
     width: 90%;
-  }
-
-  .form-control {
-    border-right: 0;
-  }
-
-  .form-btn {
-    border: 1px solid #b6bfc6;
-    border-left:none;
-  }
-
-  .disabled-form {
-    border-right: 1px solid #b6bfc6;
   }
 
   .invalid {
