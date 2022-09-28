@@ -3,6 +3,7 @@
 namespace ProcessMaker\ImportExport\Exporters;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use ProcessMaker\Assets\ScreensInScreen;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\Models\Screen;
@@ -74,15 +75,15 @@ class ScreenExporter extends ExporterBase
         ];
     }
 
-    private function getNestedScreens() : array
+    private function getNestedScreens() : Collection
     {
         $screens = [];
         $screenFinder = new ScreensInScreen();
         foreach ($screenFinder->referencesToExport($this->model, [], null, false) as $screen) {
-            $screens[] = Screen::findOrFail($screen[1]);
+            $screens[] = $screen[1];
         }
 
-        return $screens;
+        return Screen::findMany($screens);
     }
 
     protected function watcherType($watcher) : string

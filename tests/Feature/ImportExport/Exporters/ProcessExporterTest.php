@@ -104,7 +104,7 @@ class ProcessExporterTest extends TestCase
         $exporter->exportProcess($process);
         $payload = $exporter->payload();
 
-        \DB::delete('delete from process_notification_settings');
+        $process->notification_settings()->delete();
         $process->forceDelete();
         $subProcess->forceDelete();
         $screen->delete();
@@ -122,8 +122,11 @@ class ProcessExporterTest extends TestCase
 
         $process = Process::where('name', 'Process')->firstOrFail();
         $user = $process->user;
-        $this->assertEquals(1, Screen::where('title', 'Screen')->count());
         $this->assertEquals('testuser', $user->username);
+
+        $screen = Screen::where('title', 'Screen')->first();
+        $this->assertNotNull($screen);
+        $this->assertStringContainsString('pm:screenRef="' . $screen->id . '"', $process->bpmn);
 
         $notificationSettings = $process->notification_settings;
         $this->assertCount(2, $notificationSettings);
