@@ -4,10 +4,13 @@ namespace ProcessMaker\ImportExport\Exporters;
 
 use Illuminate\Support\Collection;
 use ProcessMaker\ImportExport\DependentType;
+use ProcessMaker\ImportExport\SignalHelper;
 use ProcessMaker\Managers\ExportManager;
+use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\SignalData;
 
 class ProcessExporter extends ExporterBase
 {
@@ -23,6 +26,8 @@ class ProcessExporter extends ExporterBase
 
         // Process Categories.
         $this->exportCategories();
+
+        $this->exportSignals();
 
         // Notification Settings.
         $this->addReference('notification_settings', $process->notification_settings->toArray());
@@ -45,6 +50,8 @@ class ProcessExporter extends ExporterBase
         $process->user_id = $this->getDependents('user')[0]->model->id;
 
         $this->associateCategories(ProcessCategory::class, 'process_category_id');
+
+        $this->importSignals();
 
         // TODO
         // Update screenRef
@@ -85,5 +92,33 @@ class ProcessExporter extends ExporterBase
         }
 
         return Process::findMany($ids);
+    }
+
+    private function exportSignals()
+    {
+        $globalSignalInfo = [];
+        foreach (SignalHelper::processessReferencedBySignals($this->model) as $dependentInfo) {
+            if ($dependentInfo['type'] === SignalHelper::TYPE_GLOBAL) {
+                $globalSignalInfo[] = $dependentInfo['signalData'];
+            } else {
+                // Do not export dependent processes based on signals yet
+            }
+        }
+        $this->addReference('global-signals', $globalSignalInfo);
+    }
+
+    private function importSignals()
+    {
+        foreach ($this->getReference('global-signals') as $signalData) {
+            $existing = SignalManager::findSignal($signalData['id']);
+            if (!$existing) {
+                $signal = new SignalData($signalData['id'], $signalData['name'], $signalData['detail']);
+                $errors = SignalManager::validateSignal($signal, null);
+                if ($errors) {
+                    throw new \Exception(json_encode($errors));
+                }
+                SignalManager::addSignal($signal);
+            }
+        }
     }
 }

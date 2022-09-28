@@ -6,10 +6,15 @@ use Illuminate\Support\Arr;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
+use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessNotificationSetting;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\SignalData;
+use ProcessMaker\Models\SignalEventDefinition;
 use ProcessMaker\Models\User;
+use SignalSeeder;
 use Tests\TestCase;
 
 class ProcessExporterTest extends TestCase
@@ -107,5 +112,35 @@ class ProcessExporterTest extends TestCase
         $this->assertCount(2, $notificationSettings);
         $this->assertEquals('assigned', $notificationSettings[0]['notification_type']);
         $this->assertEquals('node_3', $notificationSettings[1]['element_id']);
+    }
+
+    public function testSignals()
+    {
+        factory(ProcessCategory::class)->create(['is_system'=> true]);
+        (new SignalSeeder())->run();
+        $signal = new SignalData('test_global_signal', 'test global signal', '');
+        SignalManager::addSignal($signal);
+
+        $process = factory(Process::class)->create([
+            'bpmn' => file_get_contents(__DIR__ . '/../fixtures/process-with-signals.bpmn.xml'),
+            'name' => 'my process',
+        ]);
+
+        $exporter = new Exporter();
+        $exporter->exportProcess($process);
+        $payload = $exporter->payload();
+
+        SignalManager::removeSignal($signal);
+        $this->assertNull(SignalManager::findSignal('test_global_signal'));
+        $process->forceDelete();
+
+        $options = new Options([]);
+        $importer = new Importer($payload, $options);
+        $importer->doImport();
+
+        $this->assertNotNull(SignalManager::findSignal('test_global_signal'));
+
+        $globalSignals = SignalManager::getAllSignals(true, [SignalManager::getGlobalSignalProcess()])->toArray();
+        $this->assertEquals('test_global_signal', $globalSignals[0]['id']);
     }
 }
