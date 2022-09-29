@@ -42,13 +42,13 @@
                             <enter-password-modal ref="enter-password-modal" @verified-password="importFile($event)"></enter-password-modal>
                             <import-process-modal ref="import-process-modal" :processName="processName" :userHasEditPermissions="true" @import-new="onImportAsNew" @update-process="importFile($event)"></import-process-modal>
                         </div>
-                        <div id="during-import" v-if="importing" v-cloak>
+                        <!-- <div id="during-import" v-if="importing" v-cloak>
                             <h4 class="card-title mt-5 mb-5">
                                 <i class="fas fa-circle-notch fa-spin"></i> {{ $t('Importing') }}...
                             </h4>
-                        </div>
+                        </div> -->
                         
-                        <div id="post-import" class="text-left" v-if="imported" v-cloak>
+                        <!-- <div id="post-import" class="text-left" v-if="imported" v-cloak>
                             <h5>{{ $t('Status') }}</h5>
                             <ul v-show="options" class="mb-0 fa-ul">
                                 <li v-for="item in options">
@@ -284,7 +284,7 @@
                                     </table>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                     <div id="card-footer-pre-import" class="card-footer bg-light" align="right"
                          v-if="! importing && ! imported">
@@ -353,8 +353,8 @@ export default {
             fileIsValid: false,
             selectedImportOption: "basic",
             processName: null,
-            passwordEnabled: true,
-            processExists: true,
+            passwordEnabled: false,
+            processExists: false,
         }
     },
     filters: {
@@ -537,7 +537,7 @@ export default {
                     this.$refs['import-process-modal'].show();
                 });
             } else {
-                this.importing = true;
+                // this.importing = true;
                 let formData = new FormData();
                 formData.append('file', this.file);
         
@@ -545,29 +545,42 @@ export default {
                     return;
                 }
                 this.submitted = true;
-                ProcessMaker.apiClient.post('/processes/import?queue=1', formData,
-                    {
-                        headers: {
-                            'Content-Type': 'multipart/form-data'
-                        }
+                ProcessMaker.apiClient.post('/import/do-import', formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
                     }
-                )
-                .then(response => {
-                    window.location.hash = `#code=${response.data.code}`;
-                    this.importingCode = response.data.code;
-                })
-                .catch(error => {
-                    this.submitted = false;
+                }).then(response => {
+                    console.log('RESPONSE', response);
+                }).catch(error => {
                     ProcessMaker.alert(this.$t('Unable to import the process.')  + (error.response.data.message ? ': ' + error.response.data.message : ''), 'danger');
+                    this.submitted = false;
                 });
+
+                // ProcessMaker.apiClient.post('/processes/import?queue=1', formData,
+                //     {
+                //         headers: {
+                //             'Content-Type': 'multipart/form-data'
+                //         }
+                //     }
+                // )
+                // .then(response => {
+                //     window.location.hash = `#code=${response.data.code}`;
+                //     this.importingCode = response.data.code;
+                // })
+                // .catch(error => {
+                //     this.submitted = false;
+                //     ProcessMaker.alert(this.$t('Unable to import the process.')  + (error.response.data.message ? ': ' + error.response.data.message : ''), 'danger');
+                // });
             }
             
         },
         checkForPassword() {
             if (!this.passwordEnabled) {
-               this.importFile();
+               this.importFile(false);
+            } else {
+                this.showEnterPasswordModal();
             }
-            this.showEnterPasswordModal();
         },
         showEnterPasswordModal() {
             this.$refs['enter-password-modal'].show();
