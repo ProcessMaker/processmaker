@@ -125,7 +125,7 @@ class ScreenExporterTest extends TestCase
 
         $nestedScreen = $this->createScreen('nested screen', false);
         $nestedScreen->screen_category_id = $screenCategory1->id;
-        $nestedNestedScreen = factory(Screen::class)->create(['title' => 'nested nested screen']);
+        $nestedNestedScreen = factory(Screen::class)->create(['title' => 'nested nested screen', 'config' => []]);
         $nestedNestedScreen->screen_category_id = $screenCategory2->id;
         $this->associateNestedScreen($nestedScreen, $nestedNestedScreen);
         $this->associateNestedScreen($screen, $nestedScreen);

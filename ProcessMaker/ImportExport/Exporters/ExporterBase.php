@@ -83,19 +83,23 @@ abstract class ExporterBase implements ExporterInterface
         return $this->model->getAttributes();
     }
 
-    public function toArray()
+    protected function getName()
     {
-        // Mostly for debugging purposes
-        $name = null;
+        $name = 'unknown';
         if (isset($this->model->name)) {
             $name = $this->model->name;
         } elseif (isset($this->model->title)) {
             $name = $this->model->title;
         }
 
+        return $name;
+    }
+
+    public function toArray()
+    {
         return [
             'exporter' => get_class($this),
-            'name' => $name,
+            'name' => $this->getName(),
             'model' => get_class($this->model),
             'attributes' => $this->getExportAttributes(),
             'references' => $this->references,
