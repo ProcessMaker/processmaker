@@ -42,14 +42,32 @@ class Exporter
         ];
 
         if ($password) {
-            $payload = (new ExportEncrypted($password))->call($payload);
+            $payload = $this->encrypt($password, $payload);
         }
 
         return $payload;
     }
 
-    public function tree()
+    public function encrypt($password, $payload)
+    {
+        return (new ExportEncrypted($password))->call($payload);
+    }
+
+    public function tree(): array
     {
         return (new Tree($this->manifest))->tree($this->rootExporter);
+    }
+
+    public function exportInfo(array $manifest): string
+    {
+        $exported = collect($manifest['export'])
+            ->groupBy('model')
+            ->map(function ($group) {
+                return $group->pluck('attributes.id');
+            });
+
+        return json_encode([
+            'exported' => $exported,
+        ]);
     }
 }

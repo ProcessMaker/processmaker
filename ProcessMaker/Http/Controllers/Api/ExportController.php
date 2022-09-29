@@ -28,7 +28,7 @@ class ExportController extends Controller
         $model = $this->getModel($type)->findOrFail($id);
 
         $exporter = new Exporter();
-        $exporter->export($model, last($this->types[$type]));
+        $exporter->export($model, $this->types[$type][1]);
 
         return response()->json([
             'tree' => $exporter->tree(),
@@ -44,18 +44,25 @@ class ExportController extends Controller
         $model = $this->getModel($type)->findOrFail($id);
 
         $exporter = new Exporter();
-        $exporter->export($model, last($this->types[$type]));
+        $exporter->export($model, $this->types[$type][1]);
 
-        $export = $exporter->payload($request->input('password'));
+        $manifest = $exporter->payload();
+        $exported = $exporter->exportInfo($manifest);
+
+        if ($request->password) {
+            $manifest = $exporter->encrypt($request->password, $manifest);
+        }
+
         $fileName = "{$this->getFileName($model)}.json";
 
         return response()->streamDownload(
-            function () use ($export) {
-                echo json_encode($export);
+            function () use ($manifest) {
+                echo json_encode($manifest);
             },
             $fileName,
             [
                 'Content-type' => 'application/json',
+                'export-info' => $exported,
             ]
         );
     }
