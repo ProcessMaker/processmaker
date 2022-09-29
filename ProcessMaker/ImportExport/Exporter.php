@@ -30,7 +30,7 @@ class Exporter
         return $this->export($process, ProcessExporter::class);
     }
 
-    public function payload($password = null)
+    public function payload($password = null): array
     {
         $export = $this->manifest->toArray();
 

@@ -28,21 +28,30 @@ class ExportImportTest extends TestCase
         $this->assertObjectHasAttribute('manifest', $data);
     }
 
-    public function testDownloadFile()
+    public function testDownloadExportFile()
     {
-        $screen = factory(Screen::class)->create();
+        $screen = factory(Screen::class)->create(['title' => 'Screen']);
 
-        $route = route('api.export.download', [
-            'type' => 'screen',
-            'id' => $screen->id,
-        ], [
-            'password' => null,
-        ]);
-        $response = $this->apiCall('GET', $route);
+        $response = $this->apiCall(
+            'POST',
+            route('api.export.download', [
+                'type' => 'screen',
+                'id' => $screen->id,
+            ]),
+            [
+                'password' => 'foobar',
+                'options' => [],
+            ]
+        );
 
         // Ensure we can download the exported file.
+        $fileName = "{$screen->title}.json";
         $response->assertStatus(200);
-        $response->assertHeader('content-disposition', 'attachment; filename=export.json');
+        $response->assertHeader('content-disposition', "attachment; filename={$fileName}");
+
+        // Ensure it's encrypted.
+        $data = json_decode($response->streamedContent(), true);
+        $this->assertEquals(true, $data['encrypted']);
     }
 
     public function testImportPreview()
