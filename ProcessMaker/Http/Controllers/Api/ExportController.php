@@ -10,14 +10,17 @@ use ProcessMaker\Http\Requests\ImportExport\ExportRequest;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ProcessExporter;
 use ProcessMaker\ImportExport\Exporters\ScreenExporter;
+use ProcessMaker\ImportExport\Exporters\ScriptExporter;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\Script;
 
 class ExportController extends Controller
 {
     protected array $types = [
         'screen' => [Screen::class, ScreenExporter::class],
         'process' => [Process::class, ProcessExporter::class],
+        'script' => [Script::class, ScriptExporter::class],
     ];
 
     /**
