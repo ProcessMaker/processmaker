@@ -195,6 +195,12 @@ Route::group(
         Route::get('settings/group/{group}/buttons', 'SettingController@buttons')->name('settings.buttons')->middleware('can:view-settings')->where('group', '[A-Za-z0-9 -_]+');
         Route::post('settings/upload-file', 'SettingController@upload')->name('settings.upload-file')->middleware('can:update-settings');
 
+        // Import & Export
+        Route::get('export/{type}/tree/{id}', 'ExportController@tree')->name('export.tree')->middleware('can:export-processes');
+        Route::get('export/{type}/download/{id}', 'ExportController@download')->name('export.download')->middleware('can:export-processes');
+        Route::post('import/preview', 'ImportController@preview')->name('import.preview')->middleware('can:export-processes');
+        Route::post('import/do-import', 'ImportController@import')->name('import.do_import')->middleware('can:export-processes');
+
         // debugging javascript errors
         Route::post('debug', 'DebugController@store')->name('debug.store')->middleware('throttle');
 
