@@ -10,30 +10,10 @@
       @hidden="onClose"
     >
       <template> 
-        <b-form-group
-          :label="$t('Password')"
-          :state="errorState('password', errors)"
-          :invalid-feedback="errorMessage('password', errors)"
-        >
-         <b-input-group class="form-group form-password">
-            <b-form-input
-              autofocus
-              ref="input"
-              v-model="password"
-              :type="type"
-              autocomplete="off"
-              name="password"
-              class="form-control"
-              :state="errorState('password', errors)"
-              required
-            ></b-form-input>
-            <b-input-group-append class="append-group">
-              <b-button :aria-label="$t('Toggle Show Password')" variant="link" @click="togglePassword" class="form-btn" :class="errors.password ? 'invalid' : ''">
-                <i class="fas text-secondary" :class="icon"></i>
-              </b-button>
-            </b-input-group-append>
-         </b-input-group>
-        </b-form-group>
+        <vue-password v-model="password" id="password" :disable-strength="true" :classes="error ? ['invalid', 'form-control'] : 'form-control'" />
+        <small class="form-text text-danger" v-if="error">
+          {{ error }}
+        </small>
       </template>
     </modal>
   </div>
@@ -41,9 +21,10 @@
 
 <script>
   import { FormErrorsMixin, Modal } from "SharedComponents";
+  import VuePassword from "vue-password";
 
   export default {
-    components: { Modal },
+    components: { Modal , VuePassword},
     mixins: [ FormErrorsMixin ],
     props: [''],
     data: function() {
@@ -52,9 +33,7 @@
         password: '',
         disabled: true,
         type: 'password',
-        errors: {
-          'password': null,
-        }
+        error: null
       }
     },
     computed: {
@@ -69,7 +48,7 @@
     watch: {
       password() {
         this.disabled = this.password ? false : true;
-        this.resetErrors();
+        this.resetError();
       }
     },
     methods: {
@@ -81,6 +60,7 @@
       },
       onClose () {
         this.password = "";
+        this.resetError();
       },
       togglePassword() {
         if (this.type == 'text') {
@@ -96,28 +76,17 @@
           this.$bvModal.hide('enterPassword');
           this.$emit('verified-password', true);
         } else {
-          this.errors.password = ['Invalid Password'];
+          this.error = this.$t('Invalid Password');
         }
       },
-      resetErrors() {
-        this.errors = Object.assign({}, {
-          password: null,
-        });
+      resetError() {
+        this.error = null;
       },
     }
   };
 </script>
 
-<style scoped scss>
-  .form-control {
-    border-right: 0;
-  }
-
-  .form-btn {
-    border: 1px solid #b6bfc6;
-    border-left:none;
-  }
-
+<style scoped>
   .invalid {
     border-color: #E50130;
   } 
