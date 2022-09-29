@@ -50,8 +50,8 @@ class ExportImportTest extends TestCase
         $response->assertHeader('content-disposition', "attachment; filename={$fileName}");
 
         // Ensure it's encrypted.
-        $manifest = json_decode($response->streamedContent(), true);
-        $this->assertEquals(true, $manifest['encrypted']);
+        $payload = json_decode($response->streamedContent(), true);
+        $this->assertEquals(true, $payload['encrypted']);
 
         $headers = $response->headers;
         $this->assertNotEmpty($headers->get('export-info'));

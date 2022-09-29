@@ -49,18 +49,18 @@ class ExportController extends Controller
         $exporter = new Exporter();
         $exporter->export($model, $this->types[$type][1]);
 
-        $manifest = $exporter->payload();
-        $exported = $exporter->exportInfo($manifest);
+        $payload = $exporter->payload();
+        $exported = $exporter->exportInfo($payload);
 
         if ($request->password) {
-            $manifest = $exporter->encrypt($request->password, $manifest);
+            $payload = $exporter->encrypt($request->password, $payload);
         }
 
         $fileName = "{$this->getFileName($model)}.json";
 
         return response()->streamDownload(
-            function () use ($manifest) {
-                echo json_encode($manifest);
+            function () use ($payload) {
+                echo json_encode($payload);
             },
             $fileName,
             [
