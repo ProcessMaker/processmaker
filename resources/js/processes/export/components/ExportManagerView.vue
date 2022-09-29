@@ -72,17 +72,31 @@ export default {
         this.$refs['set-password-modal'].show();
     },
     exportProcess() {
-        ProcessMaker.apiClient.post('processes/' + this.processId + '/export')
-      .then(response => {
-          window.location = response.data.url;
+        const params = {
+            password: null,
+            options: [],
+        };
+        ProcessMaker.apiClient({
+            url: `export/process/download/${this.processId}`,
+            data: params,
+            method: "POST",
+            responseType: "blob",
+        })
+        .then((response) => {
             this.$refs['export-success-modal'].show();
-      })
-      .catch(error => {
-          ProcessMaker.alert(error.response.data.message, 'danger');
-      });
-      }
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", "export.json");
+            document.body.appendChild(link);
+            link.click();
+        })
+        .catch((error) => {
+            ProcessMaker.alert(error.response.data.message, "danger");
+        })
     }
-  };
+  }
+}   
 </script>
 
 <style lang="scss" scoped>
