@@ -49,11 +49,10 @@
                         ></category-select>
                     </div>
                     <div class="card-footer bg-light" align="right">
-                        
-                        <button type="button" class="btn btn-outline-secondary">
+                        <button type="button" class="btn btn-outline-secondary" @click="onCancel">
                             {{$t('Cancel')}}
                         </button>
-                        <button type="button" class="btn btn-primary ml-2">
+                        <button type="button" class="btn btn-primary ml-2" @click="onImport">
                             {{$t('Import')}}
                         </button>
                     </div>
@@ -78,7 +77,32 @@ export default {
         }
     },
     methods:{
+        onCancel() {
+            window.location = '/processes';
+        },
+        onImport() {
+            // TODO: UPDATE AND IMPORT FILE
+            // let formData = new FormData();
+            // formData.append('name', this.name);
+            // formData.append('description', this.description);
+            // formData.append('process_category_id', this.process_category_id);
 
+            // ProcessMaker.apiClient
+            // .post('update-process', formData)
+            // .then(response => {
+            //     this.processes = [];
+            //     response.data.data.forEach(item => {
+            //     item.events.forEach(start => {
+            //         this.processes.push({
+            //         'id': `${start.ownerProcessId}-${item.id}`,
+            //         'name': item.events.length > 1 ? `${item.name} (${start.ownerProcessId})` : item.name,
+            //         });
+            //     });
+            //     });
+            // });
+            console.log('IMPORT FILE', this.name, this.description, this.process_category_id, this.file);
+          
+        }
     },
     mounted() {
         console.log('MOUNT file', this.file);
