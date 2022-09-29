@@ -86,7 +86,7 @@
   };
 </script>
 
-<style scoped>
+<style>
   .invalid {
     border-color: #E50130;
   } 
