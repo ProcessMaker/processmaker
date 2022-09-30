@@ -39,6 +39,7 @@ class Exporter
             'type' => 'screen_package',
             'version' => '2',
             'root' => $this->rootExporter->uuid(),
+            'name' => $this->rootExporter->getName(),
             'export' => $export,
         ];
 

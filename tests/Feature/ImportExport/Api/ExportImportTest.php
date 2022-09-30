@@ -95,10 +95,11 @@ class ExportImportTest extends TestCase
         $exporter->exportScreen($screen);
 
         // Create fake file upload.
-        $content = json_encode($exporter->payload());
-        $fileName = tempnam(sys_get_temp_dir(), 'exported');
+        $payload = $exporter->payload();
+        $content = json_encode($payload);
+        $fileName = tempnam(sys_get_temp_dir(), $payload['name']);
         file_put_contents($fileName, $content);
-        $file = new UploadedFile($fileName, 'exported.json', null, null, null, true);
+        $file = new UploadedFile($fileName, $payload['name'] . '.json', null, null, null, true);
 
         return [
             $file,

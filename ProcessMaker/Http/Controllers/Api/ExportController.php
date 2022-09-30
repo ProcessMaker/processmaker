@@ -56,13 +56,11 @@ class ExportController extends Controller
             $payload = $exporter->encrypt($request->password, $payload);
         }
 
-        $fileName = "{$this->getFileName($model)}.json";
-
         return response()->streamDownload(
             function () use ($payload) {
                 echo json_encode($payload);
             },
-            $fileName,
+            $payload['name'] . '.json',
             [
                 'Content-type' => 'application/json',
                 'export-info' => $exported,
@@ -78,29 +76,5 @@ class ExportController extends Controller
             return new $modelClass;
         }
         throw new Exception("Type {$type} not found", 404);
-    }
-
-    /**
-     * ! This should probably be part of the Exporter payload.
-     *
-     * @param Model $model
-     */
-    private function getFileName($model): string
-    {
-        switch (get_class($model)) {
-            case Process::class:
-                $name = $model->name;
-                break;
-
-            case Screen::class:
-                $name = $model->title;
-                break;
-
-            default:
-                $name = '';
-                break;
-        }
-
-        return $name;
     }
 }

@@ -83,7 +83,7 @@ abstract class ExporterBase implements ExporterInterface
         return $this->model->getAttributes();
     }
 
-    protected function getName()
+    public function getName(): string
     {
         $name = 'unknown';
         if (isset($this->model->name)) {
