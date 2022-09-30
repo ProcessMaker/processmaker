@@ -39,8 +39,6 @@ class SanitizeHelperTest extends TestCase
 
     public function testSingleRichTextSanitization()
     {
-        $this->markTestSkipped('FOUR-6653');
-
         // Prepare scenario ..
         $this->createScreen('tests/Fixtures/sanitize_single_rich_text_screen.json');
         $this->createProcess('tests/Fixtures/sanitize_single_task.bpmn');
@@ -60,14 +58,12 @@ class SanitizeHelperTest extends TestCase
 
         // Assert data was sanitized or not if rich text ..
         $processRequestData = ProcessRequest::findOrFail($this->processRequest->id)->data;
-        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequestData['form_text_area_1']);
+        $this->assertEquals('<p><strong>Do not sanitize</strong></p>', $processRequestData['form_text_area_1']);
         $this->assertEquals('Sanitize', $processRequestData['input_1']);
     }
 
     public function testRichTextSanitizationInsideNestedScreen()
     {
-        $this->markTestSkipped('FOUR-6653');
-
         // Prepare scenario ..
         $this->createScreen('tests/Fixtures/sanitize_single_rich_text_screen.json');
         $childScreen = $this->screen;
@@ -94,14 +90,12 @@ class SanitizeHelperTest extends TestCase
         // Assert data was sanitized or not if rich text ..
         $processRequestData = ProcessRequest::findOrFail($this->processRequest->id)->data;
 
-        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequestData['form_text_area_1']);
+        $this->assertEquals('<p><strong>Do not sanitize</strong></p>', $processRequestData['form_text_area_1']);
         $this->assertEquals('Sanitize', $processRequestData['input_1']);
     }
 
     public function testSingleRichTextSanitizationInsideLoop()
     {
-        $this->markTestSkipped('FOUR-6653');
-
         // Prepare scenario ..
         $this->createScreen('tests/Fixtures/sanitize_single_rich_text_inside_loop_screen.json');
         $this->createProcess('tests/Fixtures/sanitize_single_task_loop.bpmn');
@@ -122,14 +116,12 @@ class SanitizeHelperTest extends TestCase
         // Assert data was sanitized or not if rich text ..
         $processRequestData = ProcessRequest::findOrFail($this->processRequest->id)->data;
 
-        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequestData['loop_1'][0]['form_text_area_3']);
+        $this->assertEquals('<p><strong>Do not sanitize</strong></p>', $processRequestData['loop_1'][0]['form_text_area_3']);
         $this->assertEquals('Sanitize', $processRequestData['loop_1'][0]['form_input_1']);
     }
 
     public function testRichTextSanitizationInsideLoopInsideNestedScreen()
     {
-        $this->markTestSkipped('FOUR-6653');
-
         // Prepare scenario ..
         $this->createScreen('tests/Fixtures/sanitize_single_rich_text_nested_loop_child_screen.json');
         $childScreen = $this->screen;
@@ -156,14 +148,12 @@ class SanitizeHelperTest extends TestCase
         // Assert data was sanitized or not if rich text ..
         $processRequestData = ProcessRequest::findOrFail($this->processRequest->id)->data;
 
-        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequestData['loop_1'][0]['form_text_area_4']);
+        $this->assertEquals('<p><strong>Do not sanitize</strong></p>', $processRequestData['loop_1'][0]['form_text_area_4']);
         $this->assertEquals('Sanitize', $processRequestData['loop_1'][0]['form_input_1']);
     }
 
     public function testPreloadExceptionForDifferentScreenSanitization()
     {
-        $this->markTestSkipped('FOUR-6653');
-
         // Prepare scenario ..
         $this->createScreen('tests/Fixtures/sanitize_single_rich_text_screen.json');
         $this->createProcess('tests/Fixtures/sanitize_single_task.bpmn');
@@ -187,16 +177,14 @@ class SanitizeHelperTest extends TestCase
         // Assert data was sanitized or not if rich text ..
         $processRequestData = ProcessRequest::findOrFail($this->processRequest->id)->data;
 
-        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequestData['form_text_area_1']);
-        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequestData['form_text_area_20']);
+        $this->assertEquals('<p><strong>Do not sanitize</strong></p>', $processRequestData['form_text_area_1']);
+        $this->assertEquals('<p><strong>Do not sanitize</strong></p>', $processRequestData['form_text_area_20']);
         $this->assertEquals('Sanitize', $processRequestData['form_text_area_10']);
         $this->assertEquals('Sanitize', $processRequestData['input_1']);
     }
 
     public function testSingleRichTextTwoPagesSanitization()
     {
-        $this->markTestSkipped('FOUR-6653');
-
         // Prepare scenario ..
         $this->createScreen('tests/Fixtures/sanitize_single_rich_text_two_pages_screen.json');
         $this->createProcess('tests/Fixtures/sanitize_single_task_two_pages.bpmn');
@@ -217,15 +205,13 @@ class SanitizeHelperTest extends TestCase
         // Assert data was sanitized or not if rich text ..
         $processRequestData = ProcessRequest::findOrFail($this->processRequest->id)->data;
 
-        $this->assertEquals('<p><strong>Do not sanitize page 2<\/strong><\/p>', $processRequestData['form_text_area_1']);
-        $this->assertEquals('<p><strong>Do not sanitize page 1<\/strong><\/p>', $processRequestData['form_text_area_2']);
+        $this->assertEquals('<p><strong>Do not sanitize page 2</strong></p>', $processRequestData['form_text_area_1']);
+        $this->assertEquals('<p><strong>Do not sanitize page 1</strong></p>', $processRequestData['form_text_area_2']);
         $this->assertEquals('Sanitize', $processRequestData['input_1']);
     }
 
     public function testSingleRichTextSanitizationWithNestedVariableName()
     {
-        $this->markTestSkipped('FOUR-6653');
-
         // Prepare scenario ..
         $this->createScreen('tests/Fixtures/sanitize_single_rich_text_nested_variable_name_screen.json');
         $this->createProcess('tests/Fixtures/sanitize_single_task.bpmn');
@@ -245,14 +231,12 @@ class SanitizeHelperTest extends TestCase
 
         // Assert data was sanitized or not if rich text ..
         $processRequestData = ProcessRequest::findOrFail($this->processRequest->id)->data;
-        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequestData['foo']['bar']['baz']);
+        $this->assertEquals('<p><strong>Do not sanitize</strong></p>', $processRequestData['foo']['bar']['baz']);
         $this->assertEquals('Sanitize', $processRequestData['input_1']);
     }
 
     public function testSingleRichTextSanitizationSameNameDifferentScope()
     {
-        $this->markTestSkipped('FOUR-6653');
-
         // Prepare scenario ..
         $this->createScreen('tests/Fixtures/sanitize_single_rich_text_same_name_different_scope_screen.json');
         $this->createProcess('tests/Fixtures/sanitize_single_task_loop.bpmn');
@@ -273,8 +257,8 @@ class SanitizeHelperTest extends TestCase
         // Assert data was sanitized or not if rich text ..
         $processRequestData = ProcessRequest::findOrFail($this->processRequest->id)->data;
 
-        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequestData['loop_1'][0]['form_text_area_1']);
-        $this->assertEquals('<p><strong>Do not sanitize 2<\/strong><\/p>', $processRequestData['loop_1'][1]['form_text_area_1']);
+        $this->assertEquals('<p><strong>Do not sanitize</strong></p>', $processRequestData['loop_1'][0]['form_text_area_1']);
+        $this->assertEquals('<p><strong>Do not sanitize 2</strong></p>', $processRequestData['loop_1'][1]['form_text_area_1']);
         $this->assertEquals('Sanitize', $processRequestData['form_text_area_1']);
     }
 
@@ -368,8 +352,8 @@ class SanitizeHelperTest extends TestCase
             '_request' => [
                 'id' => 1,
             ],
-            'form_text_area_1' => "<p><strong>Do not sanitize<\/strong><\/p>",
-            'input_1' => "<p><strong>Sanitize<\/strong><\/p>",
+            'form_text_area_1' => '<p><strong>Do not sanitize</strong></p>',
+            'input_1' => '<p><strong>Sanitize</strong></p>',
         ];
     }
 
@@ -384,8 +368,8 @@ class SanitizeHelperTest extends TestCase
             ],
             'loop_1' => [
                 [
-                    'form_text_area_4' => "<p><strong>Do not sanitize<\/strong><\/p>",
-                    'form_input_1' => "<p><strong>Sanitize<\/strong><\/p>",
+                    'form_text_area_4' => '<p><strong>Do not sanitize</strong></p>',
+                    'form_input_1' => '<p><strong>Sanitize</strong></p>',
                 ],
             ],
         ];
@@ -400,10 +384,10 @@ class SanitizeHelperTest extends TestCase
             '_request' => [
                 'id' => 1,
             ],
-            'form_text_area_1' => "<p><strong>Do not sanitize<\/strong><\/p>",
-            'form_text_area_20' => "<p><strong>Do not sanitize<\/strong><\/p>",
-            'form_text_area_10' => "<p><strong>Sanitize<\/strong><\/p>",
-            'input_1' => "<p><strong>Sanitize<\/strong><\/p>",
+            'form_text_area_1' => '<p><strong>Do not sanitize</strong></p>',
+            'form_text_area_20' => '<p><strong>Do not sanitize</strong></p>',
+            'form_text_area_10' => '<p><strong>Sanitize</strong></p>',
+            'input_1' => '<p><strong>Sanitize</strong></p>',
         ];
     }
 
@@ -418,8 +402,8 @@ class SanitizeHelperTest extends TestCase
             ],
             'loop_1' => [
                 [
-                    'form_text_area_3' => "<p><strong>Do not sanitize<\/strong><\/p>",
-                    'form_input_1' => "<p><strong>Sanitize<\/strong><\/p>",
+                    'form_text_area_3' => '<p><strong>Do not sanitize</strong></p>',
+                    'form_input_1' => '<p><strong>Sanitize</strong></p>',
                 ],
             ],
         ];
@@ -434,9 +418,9 @@ class SanitizeHelperTest extends TestCase
             '_request' => [
                 'id' => 1,
             ],
-            'form_text_area_1' => "<p><strong>Do not sanitize page 2<\/strong><\/p>",
-            'form_text_area_2' => "<p><strong>Do not sanitize page 1<\/strong><\/p>",
-            'input_1' => "<p><strong>Sanitize<\/strong><\/p>",
+            'form_text_area_1' => '<p><strong>Do not sanitize page 2</strong></p>',
+            'form_text_area_2' => '<p><strong>Do not sanitize page 1</strong></p>',
+            'input_1' => '<p><strong>Sanitize</strong></p>',
         ];
     }
 
@@ -451,10 +435,10 @@ class SanitizeHelperTest extends TestCase
             ],
             'foo' => [
                 'bar' => [
-                    'baz' => "<p><strong>Do not sanitize<\/strong><\/p>",
+                    'baz' => '<p><strong>Do not sanitize</strong></p>',
                 ],
             ],
-            'input_1' => "<p><strong>Sanitize<\/strong><\/p>",
+            'input_1' => '<p><strong>Sanitize</strong></p>',
         ];
     }
 
@@ -469,13 +453,13 @@ class SanitizeHelperTest extends TestCase
             ],
             'loop_1' => [
                 [
-                    'form_text_area_1' => "<p><strong>Do not sanitize<\/strong><\/p>",
+                    'form_text_area_1' => '<p><strong>Do not sanitize</strong></p>',
                 ],
                 [
-                    'form_text_area_1' => "<p><strong>Do not sanitize 2<\/strong><\/p>",
+                    'form_text_area_1' => '<p><strong>Do not sanitize 2</strong></p>',
                 ],
             ],
-            'form_text_area_1' => "<p><strong>Sanitize<\/strong><\/p>",
+            'form_text_area_1' => '<p><strong>Sanitize</strong></p>',
         ];
     }
 

@@ -3,10 +3,12 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Event;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityCompleted;
 use ProcessMaker\Events\BuildScriptExecutor;
 use ProcessMaker\Events\ImportedScreenSaved;
+use ProcessMaker\Events\MarkArtisanCachesAsInvalid;
 use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Events\ProcessCompleted;
 use ProcessMaker\Events\ProcessUpdated;
@@ -35,8 +37,6 @@ class BroadcastTest extends TestCase
 
     public function testBroadcastEventsHaveTesting()
     {
-        $this->markTestSkipped('FOUR-6653');
-
         foreach (scandir(app_path('Events')) as $file) {
             if (!preg_match('/(?<name>.+).php/', $file, $matches)) {
                 continue;
@@ -44,19 +44,25 @@ class BroadcastTest extends TestCase
 
             $name = $matches['name'];
             $methodName = "test{$name}Broadcast";
-
             $this->assertTrue(method_exists($this, $methodName), "Failed asserting that broadcast event {$name} has a test.");
         }
     }
 
     /**
-     * Test that the SettingsLoaded event was fired during the Application boot up.
+     * Test that the MarkSettingsCacheAsInvalid event was fired after a setting change.
      */
-    public function testSettingsLoadedBroadcast()
+    public function testMarkArtisanCachesAsInvalidBroadcast()
     {
-        $this->markTestSkipped('FOUR-6653');
+        // Fake event MarkArtisanCachesAsInvalid
+        Event::fake([
+            MarkArtisanCachesAsInvalid::class
+        ]);
 
-        $this->assertTrue(config('app.settings.loaded'));
+        // Call refresh artisan caches taht triggers the event 'MarkArtisanCachesAsInvalid'
+        refresh_artisan_caches();
+
+        // Assert event was dispatched
+        Event::assertDispatched(MarkArtisanCachesAsInvalid::class);
     }
 
     /**
