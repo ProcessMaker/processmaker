@@ -3,6 +3,7 @@
 namespace ProcessMaker\ImportExport\Exporters;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use ProcessMaker\ImportExport\Dependent;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Extension;
@@ -93,6 +94,13 @@ abstract class ExporterBase implements ExporterInterface
         }
 
         return $name;
+    }
+
+    public function getType(): string
+    {
+        $basename = class_basename($this->model);
+
+        return Str::snake("{$basename}_package");
     }
 
     public function toArray()

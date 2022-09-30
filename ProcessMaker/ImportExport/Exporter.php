@@ -36,7 +36,7 @@ class Exporter
         $export = $this->manifest->toArray();
 
         $payload = [
-            'type' => 'screen_package',
+            'type' => $this->rootExporter->getType(),
             'version' => '2',
             'root' => $this->rootExporter->uuid(),
             'name' => $this->rootExporter->getName(),
