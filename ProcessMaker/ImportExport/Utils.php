@@ -32,6 +32,7 @@ class Utils
         $xpath = new DOMXPath($document);
         $elements = $xpath->query($path);
         if ($elements->count() !== 1) {
+            eval(\Psy\sh());
             throw new \Exception('Invalid xpath');
         }
 
@@ -43,6 +44,14 @@ class Utils
         $config = json_decode($element->getAttribute('pm:config'), true);
         Arr::set($config, $path, $value);
         $element->setAttribute('pm:config', json_encode($config));
+    }
+
+    public static function setAttributeAtXPath(Process &$process, string $xmlPath, string $attrName, $value) : void
+    {
+        $definitions = $process->getDefinitions(true);
+        $element = self::getElementByPath($definitions, $xmlPath);
+        $element->setAttribute($attrName, $value);
+        $process->bpmn = $definitions->saveXml();
     }
 
     public static function setPmConfigValueAtXPath(Process &$process, string $xmlPath, string $arrayPath, $value)
