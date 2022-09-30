@@ -13,6 +13,8 @@ use SignalSeeder;
 
 trait HelperTrait
 {
+    public $globalSignal = null;
+
     public function createProcess($bpmnPath, $attrs = [])
     {
         $bpmn = file_get_contents(__DIR__ . '/fixtures/' . $bpmnPath . '.bpmn.xml');
@@ -27,12 +29,17 @@ trait HelperTrait
         );
     }
 
-    public function runExportAndImport($name, $model, $between)
+    public function addGlobalSignalProcess()
     {
         factory(ProcessCategory::class)->create(['is_system'=> true]);
         (new SignalSeeder())->run();
-        $signal = new SignalData('test_global_signal', 'test global signal', '');
-        SignalManager::addSignal($signal);
+        $this->globalSignal = new SignalData('test_global_signal', 'test global signal', '');
+        SignalManager::addSignal($this->globalSignal);
+    }
+
+    public function runExportAndImport($name, $model, $between)
+    {
+        $this->addGlobalSignalProcess();
 
         $exporter = new Exporter();
         $exporter->$name($model);

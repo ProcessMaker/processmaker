@@ -177,7 +177,10 @@ abstract class ExporterBase implements ExporterInterface
         foreach ($this->getDependents(DependentType::CATEGORIES) as $dependent) {
             $categories->push($categoryClass::findOrFail($dependent->model->id));
         }
-        $this->model->$property = $categories->map(fn ($c) => $c->id)->join(',');
+        $categoriesString = $categories->map(fn ($c) => $c->id)->unique()->join(',');
+        if (!empty($categoriesString)) {
+            $this->model->$property = $categoriesString;
+        }
     }
 
     public static function registerExtension($class)
