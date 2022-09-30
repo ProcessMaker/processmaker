@@ -45,16 +45,19 @@ class ExportImportTest extends TestCase
         );
 
         // Ensure we can download the exported file.
-        $fileName = "{$screen->title}.json";
         $response->assertStatus(200);
-        $response->assertHeader('content-disposition', "attachment; filename={$fileName}");
+        $response->assertHeader('content-disposition', "attachment; filename={$screen->title}.json");
 
         // Ensure it's encrypted.
         $payload = json_decode($response->streamedContent(), true);
         $this->assertEquals(true, $payload['encrypted']);
 
         $headers = $response->headers;
-        $this->assertNotEmpty($headers->get('export-info'));
+        $exportInfo = json_decode($headers->get('export-info'), true)['exported'];
+        $this->assertCount(1, $exportInfo['screens']);
+        $this->assertEquals($screen->id, $exportInfo['screens'][0]);
+        $this->assertCount(1, $exportInfo['screen_categories']);
+        $this->assertEquals($screen->categories[0]->id, $exportInfo['screen_categories'][0]);
     }
 
     public function testImportPreview()
