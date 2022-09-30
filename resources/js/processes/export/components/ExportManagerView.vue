@@ -40,7 +40,7 @@
               {{ $t("Export") }}
             </button>
             <set-password-modal ref="set-password-modal" :processId="processId" :processName="processName" @verifyPassword="exportProcess"></set-password-modal>
-            <export-success-modal ref="export-success-modal" :processName="processName"></export-success-modal>
+            <export-success-modal ref="export-success-modal" :processName="processName" :processId="processId"></export-success-modal>
           </div>
         </div>
       </div>
@@ -83,6 +83,8 @@ export default {
             responseType: "blob",
         })
         .then((response) => {
+            let header = response.header['export-info'];
+            let info = json.decode(header);
             this.$refs['export-success-modal'].show();
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement("a");
