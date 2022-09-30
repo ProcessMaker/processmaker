@@ -76,8 +76,18 @@ export default {
     hide() {
       this.$bvModal.hide('exportSuccessModal');
     },
-  },  
+  },
 
+  beforeMount() {
+       ProcessMaker.apiClient.get('export/process/tree/' + this.processId)
+      .then(response => {
+        console.log(response);
+      })
+      .catch(error => {
+          ProcessMaker.alert(error.response.data.message, 'danger');
+      });
+    },
+ 
   mounted() {
   }
 
