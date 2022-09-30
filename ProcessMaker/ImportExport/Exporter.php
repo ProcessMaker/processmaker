@@ -3,6 +3,7 @@
 namespace ProcessMaker\ImportExport;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use ProcessMaker\ImportExport\Exporters\ProcessExporter;
 use ProcessMaker\ImportExport\Exporters\ScreenExporter;
 use ProcessMaker\Models\Process;
@@ -61,7 +62,11 @@ class Exporter
     public function exportInfo(array $manifest): string
     {
         $exported = collect($manifest['export'])
-            ->groupBy('model')
+            ->groupBy(function ($item) {
+                $model = Str::afterLast($item['model'], '\\');
+
+                return Str::snake(Str::pluralStudly($model));
+            })
             ->map(function ($group) {
                 return $group->pluck('attributes.id');
             });
