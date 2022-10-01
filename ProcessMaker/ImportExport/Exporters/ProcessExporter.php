@@ -25,7 +25,7 @@ class ProcessExporter extends ExporterBase
 
         $this->addDependent('user', $process->user, UserExporter::class);
 
-        // Process Categories.
+        $this->exportCategories();
 
         $this->exportSignals();
 
@@ -34,9 +34,14 @@ class ProcessExporter extends ExporterBase
         // Notification Settings.
         $this->addReference('notification_settings', $process->notification_settings->toArray());
 
-        // Screens.
-        foreach ($this->getScreens($process) as $screen) {
-            $this->addDependent(DependentType::SCREENS, $screen, ScreenExporter::class);
+        // Screens
+        if ($process->cancel_screen_id) {
+            $screen = Screen::findOrFail($process->cancel_screen_id);
+            $this->addDependent('cancel-screen', $screen, ScreenExporter::class);
+        }
+        if ($process->request_detail_screen_id) {
+            $screen = Screen::findOrFail($process->request_detail_screen_id);
+            $this->addDependent('request-detail-screen', $screen, ScreenExporter::class);
         }
 
         $this->exportSubprocesses();
@@ -51,6 +56,14 @@ class ProcessExporter extends ExporterBase
         $this->associateCategories(ProcessCategory::class, 'process_category_id');
 
         $this->importSignals();
+
+        foreach ($this->getDependents('cancel-screen') as $dependent) {
+            $process->cancel_screen_id = $dependent->model->id;
+        }
+
+        foreach ($this->getDependents('request-detail-screen') as $dependent) {
+            $process->request_detail_screen_id = $dependent->model->id;
+        }
 
         $this->importSubprocesses();
 
@@ -67,18 +80,18 @@ class ProcessExporter extends ExporterBase
         return true;
     }
 
-    private function getScreens($process): Collection
-    {
-        $ids = array_merge(
-            [
-                $process->cancel_screen_id,
-                $process->request_detail_screen_id,
-            ],
-            $this->manager->getDependenciesOfType(Screen::class, $process, [], false)
-        );
+    // private function getScreens($process): Collection
+    // {
+    //     $ids = array_merge(
+    //         [
+    //             $process->cancel_screen_id,
+    //             $process->request_detail_screen_id,
+    //         ],
+    //         $this->manager->getDependenciesOfType(Screen::class, $process, [], false)
+    //     );
 
-        return Screen::findMany($ids);
-    }
+    //     return Screen::findMany($ids);
+    // }
 
     private function exportSubprocesses()
     {
@@ -90,7 +103,9 @@ class ProcessExporter extends ExporterBase
     private function importSubprocesses()
     {
         foreach ($this->getDependents(DependentType::SUB_PROCESSES) as $dependent) {
-            Utils::setAttributeAtXPath($this->model, $dependent->meta, 'callActivity', 'calledElement');
+            Utils::setAttributeAtXPath($this->model, $dependent->meta, 'calledElement', 'ProcessId-' . $dependent->model->id);
+            Utils::setPmConfigValueAtXPath($this->model, $dependent->meta, 'calledElement', 'ProcessId-' . $dependent->model->id);
+            Utils::setPmConfigValueAtXPath($this->model, $dependent->meta, 'processId', $dependent->model->id);
         }
     }
 
@@ -111,9 +126,6 @@ class ProcessExporter extends ExporterBase
             }
 
             $process = Process::find($values[1]);
-            if (!$process) {
-                eval(\Psy\sh());
-            }
             if ($process->package_key !== null) {
                 continue; // not a subprocess
             }

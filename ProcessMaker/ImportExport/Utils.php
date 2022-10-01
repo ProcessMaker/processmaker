@@ -32,7 +32,6 @@ class Utils
         $xpath = new DOMXPath($document);
         $elements = $xpath->query($path);
         if ($elements->count() !== 1) {
-            eval(\Psy\sh());
             throw new \Exception('Invalid xpath');
         }
 

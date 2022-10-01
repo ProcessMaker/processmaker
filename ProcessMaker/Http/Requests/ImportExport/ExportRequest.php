@@ -25,6 +25,7 @@ class ExportRequest extends FormRequest
     {
         return [
             'password' => 'sometimes|max:32',
+            'options' => 'sometimes|array',
         ];
     }
 }

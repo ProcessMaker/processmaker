@@ -3,6 +3,7 @@
 namespace ProcessMaker\ImportExport\Exporters;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use ProcessMaker\ImportExport\Dependent;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Extension;
@@ -83,7 +84,7 @@ abstract class ExporterBase implements ExporterInterface
         return $this->model->getAttributes();
     }
 
-    protected function getName()
+    public function getName(): string
     {
         $name = 'unknown';
         if (isset($this->model->name)) {
@@ -93,6 +94,13 @@ abstract class ExporterBase implements ExporterInterface
         }
 
         return $name;
+    }
+
+    public function getType(): string
+    {
+        $basename = class_basename($this->model);
+
+        return Str::snake("{$basename}_package");
     }
 
     public function toArray()
@@ -169,7 +177,10 @@ abstract class ExporterBase implements ExporterInterface
         foreach ($this->getDependents(DependentType::CATEGORIES) as $dependent) {
             $categories->push($categoryClass::findOrFail($dependent->model->id));
         }
-        $this->model->$property = $categories->map(fn ($c) => $c->id)->join(',');
+        $categoriesString = $categories->map(fn ($c) => $c->id)->unique()->join(',');
+        if (!empty($categoriesString)) {
+            $this->model->$property = $categoriesString;
+        }
     }
 
     public static function registerExtension($class)

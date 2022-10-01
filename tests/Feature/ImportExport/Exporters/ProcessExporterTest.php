@@ -26,9 +26,8 @@ class ProcessExporterTest extends TestCase
     private function fixtures()
     {
         // Create simple screens. Extensive screen tests are in ScreenExporterTest.php
-        $screen = factory(Screen::class)->create(['title' => 'Screen']);
-        $cancelScreen = factory(Screen::class)->create();
-        $requestDetailScreen = factory(Screen::class)->create();
+        $cancelScreen = factory(Screen::class)->create(['title' => 'Cancel Screen']);
+        $requestDetailScreen = factory(Screen::class)->create(['title' => 'Request Detail Screen']);
         $user = factory(User::class)->create(['username' => 'testuser']);
 
         $process = $this->createProcess('basic-process', [
@@ -51,12 +50,14 @@ class ProcessExporterTest extends TestCase
             'element_id' => 'node_3',
         ]);
 
-        return [$process, $screen, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2];
+        return [$process, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2];
     }
 
     public function testExport()
     {
-        list($process, $screen, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2) = $this->fixtures();
+        $this->addGlobalSignalProcess();
+
+        list($process, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2) = $this->fixtures();
 
         $exporter = new Exporter();
         $exporter->exportProcess($process);
@@ -64,34 +65,30 @@ class ProcessExporterTest extends TestCase
 
         $this->assertEquals($process->uuid, Arr::get($tree, '0.uuid'));
         $this->assertEquals($process->category->uuid, Arr::get($tree, '0.dependents.1.uuid'));
-        $this->assertEquals($screen->uuid, Arr::get($tree, '0.dependents.2.uuid'));
-        $this->assertEquals($cancelScreen->uuid, Arr::get($tree, '0.dependents.3.uuid'));
-        $this->assertEquals($requestDetailScreen->uuid, Arr::get($tree, '0.dependents.4.uuid'));
+        $this->assertEquals($cancelScreen->uuid, Arr::get($tree, '0.dependents.2.uuid'));
+        $this->assertEquals($requestDetailScreen->uuid, Arr::get($tree, '0.dependents.3.uuid'));
     }
 
     public function testImport()
     {
-        list($process, $screen, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2) = $this->fixtures();
+        list($process, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2) = $this->fixtures();
 
-        $exporter = new Exporter();
-        $exporter->exportProcess($process);
-        $payload = $exporter->payload();
+        $this->runExportAndImport('exportProcess', $process, function () use ($process, $cancelScreen, $requestDetailScreen, $user) {
+            \DB::delete('delete from process_notification_settings');
+            $process->forceDelete();
+            $cancelScreen->delete();
+            $requestDetailScreen->delete();
+            $user->delete();
 
-        \DB::delete('delete from process_notification_settings');
-        $process->forceDelete();
-        $screen->delete();
-        $user->delete();
-
-        $this->assertEquals(0, Process::where('name', 'Process')->count());
-        $this->assertEquals(0, Screen::where('title', 'Screen')->count());
-        $this->assertEquals(0, User::where('username', 'testuser')->count());
-
-        $options = new Options([]);
-        $importer = new Importer($payload, $options);
-        $importer->doImport();
+            $this->assertEquals(0, Process::where('name', 'Process')->count());
+            $this->assertEquals(0, Screen::where('title', 'Request Detail Screen')->count());
+            $this->assertEquals(0, Screen::where('title', 'Cancel Screen')->count());
+            $this->assertEquals(0, User::where('username', 'testuser')->count());
+        });
 
         $process = Process::where('name', 'Process')->firstOrFail();
-        $this->assertEquals(1, Screen::where('title', 'Screen')->count());
+        $this->assertEquals(1, Screen::where('title', 'Request Detail Screen')->count());
+        $this->assertEquals(1, Screen::where('title', 'Cancel Screen')->count());
         $this->assertEquals('testuser', $process->user->username);
 
         $notificationSettings = $process->notification_settings;
@@ -102,12 +99,12 @@ class ProcessExporterTest extends TestCase
 
     public function testSignals()
     {
-        $process = $this->createProcess('process-with-signals.bpmn.xml', [
+        $process = $this->createProcess('process-with-signals', [
             'name' => 'my process',
         ]);
 
-        $this->runExportAndImport('exportProcess', $process, function () use ($signal, $process) {
-            SignalManager::removeSignal($signal);
+        $this->runExportAndImport('exportProcess', $process, function () use ($process) {
+            SignalManager::removeSignal($this->globalSignal);
             $this->assertNull(SignalManager::findSignal('test_global_signal'));
             $process->forceDelete();
         });
@@ -134,12 +131,14 @@ class ProcessExporterTest extends TestCase
             $packageProcess->forceDelete();
         });
 
-        $parentProcess = Process::where('name', 'parent')->findOrFail();
-        $subProcess = Process::where('name', 'sub')->findOrFail();
+        $parentProcess = Process::where('name', 'parent')->firstOrFail();
+        $subProcess = Process::where('name', 'sub')->firstOrFail();
         $definitions = $parentProcess->getDefinitions(true);
         $element = Utils::getElementByPath($definitions, '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]');
+
         $this->assertEquals('ProcessId-' . $subProcess->id, $element->getAttribute('calledElement'));
-        $this->assertEquals($subProcess->id, Utils::getPmConfig($element)['calledElement']);
+        $this->assertEquals('ProcessId-' . $subProcess->id, Utils::getPmConfig($element)['calledElement']);
+        $this->assertEquals($subProcess->id, Utils::getPmConfig($element)['processId']);
         $this->assertEquals(0, Process::where('name', 'package')->count());
     }
 }
