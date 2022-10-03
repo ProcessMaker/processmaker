@@ -31,24 +31,18 @@ class OauthTransportManager extends TransportManager
     {
         $transport = parent::createSmtpDriver();
 
-        $authIndex = $this->config->get('mail.auth_method');
-        if (isset($authIndex)) {
-            $authMethod = EmailConfig::authentication_methods[$authIndex];
-            switch ($authMethod) {
-                case 'google':
-                    $serverIndex = $this->config->get('mail.server_index');
-                    $accessToken = $this->checkForExpiredAccessToken($serverIndex);
-                    $fromAddress = $this->config->get('mail.from.address');
-                    // Update Authencation Mode
-                    $transport->setAuthMode('XOAUTH2')
-                    ->setUsername($fromAddress)
-                    ->setPassword($accessToken);
-                    break;
+        $authMethod = $this->config->get('mail.auth_method');
 
-                default:
-                    // code...
-                    break;
-            }
+        switch ($authMethod) {
+            case 'google':
+                $serverIndex = $this->config->get('mail.server_index');
+                $accessToken = $this->checkForExpiredAccessToken($serverIndex);
+                $fromAddress = $this->config->get('mail.from.address');
+                // Update Authencation Mode
+                $transport->setAuthMode('XOAUTH2')
+                ->setUsername($fromAddress)
+                ->setPassword($accessToken);
+                break;
         }
 
         return $transport;
