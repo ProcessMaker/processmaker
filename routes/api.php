@@ -197,7 +197,7 @@ Route::group(
 
         // Import & Export
         Route::get('export/{type}/tree/{id}', 'ExportController@tree')->name('export.tree')->middleware('can:export-processes');
-        Route::get('export/{type}/download/{id}', 'ExportController@download')->name('export.download')->middleware('can:export-processes');
+        Route::post('export/{type}/download/{id}', 'ExportController@download')->name('export.download')->middleware('can:export-processes');
         Route::post('import/preview', 'ImportController@preview')->name('import.preview')->middleware('can:export-processes');
         Route::post('import/do-import', 'ImportController@import')->name('import.do_import')->middleware('can:export-processes');
 

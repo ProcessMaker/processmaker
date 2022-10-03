@@ -3,6 +3,7 @@
 namespace ProcessMaker\ImportExport\Exporters;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use ProcessMaker\ImportExport\Dependent;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Extension;
@@ -83,19 +84,30 @@ abstract class ExporterBase implements ExporterInterface
         return $this->model->getAttributes();
     }
 
-    public function toArray()
+    public function getName(): string
     {
-        // Mostly for debugging purposes
-        $name = null;
+        $name = 'unknown';
         if (isset($this->model->name)) {
             $name = $this->model->name;
         } elseif (isset($this->model->title)) {
             $name = $this->model->title;
         }
 
+        return $name;
+    }
+
+    public function getType(): string
+    {
+        $basename = class_basename($this->model);
+
+        return Str::snake("{$basename}_package");
+    }
+
+    public function toArray()
+    {
         return [
             'exporter' => get_class($this),
-            'name' => $name,
+            'name' => $this->getName(),
             'model' => get_class($this->model),
             'attributes' => $this->getExportAttributes(),
             'references' => $this->references,
@@ -165,7 +177,10 @@ abstract class ExporterBase implements ExporterInterface
         foreach ($this->getDependents(DependentType::CATEGORIES) as $dependent) {
             $categories->push($categoryClass::findOrFail($dependent->model->id));
         }
-        $this->model->$property = $categories->map(fn ($c) => $c->id)->join(',');
+        $categoriesString = $categories->map(fn ($c) => $c->id)->unique()->join(',');
+        if (!empty($categoriesString)) {
+            $this->model->$property = $categoriesString;
+        }
     }
 
     public static function registerExtension($class)
