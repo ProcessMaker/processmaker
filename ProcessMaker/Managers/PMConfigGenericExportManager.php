@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Managers;
 
 use DOMXPath;
@@ -13,9 +14,11 @@ use ProcessMaker\Providers\WorkflowServiceProvider;
 class PMConfigGenericExportManager
 {
     public $owner = Process::class;
+
     public $type;
 
     private $tag;
+
     private $keys;
 
     public function __construct(string $tag, string $type, array $keys)

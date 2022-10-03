@@ -1,6 +1,6 @@
-import ScriptExecutors from './ScriptExecutors';
+import ScriptExecutors from "./ScriptExecutors";
 
 new Vue({
-    el: '#script-executors',
-    components: { ScriptExecutors },
+  el: "#script-executors",
+  components: { ScriptExecutors },
 });

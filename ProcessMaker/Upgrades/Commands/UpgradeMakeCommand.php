@@ -2,8 +2,8 @@
 
 namespace ProcessMaker\Upgrades\Commands;
 
-use Illuminate\Support\Str;
 use Illuminate\Support\Composer;
+use Illuminate\Support\Str;
 use ProcessMaker\Upgrades\UpgradeCreator;
 
 class UpgradeMakeCommand extends BaseCommand
@@ -81,7 +81,7 @@ class UpgradeMakeCommand extends BaseCommand
         // Once we've written the migration out, we will dump-autoload
         // for the entire framework to make sure that the migrations
         // are registered by the class loaders.
-        $this->line("<info>Dumping/optimizing the composer autoload file...:</info>");
+        $this->line('<info>Dumping/optimizing the composer autoload file...:</info>');
         $this->composer->dumpOptimized();
 
         $this->line("<info>Created Upgrade File:</info> {$file}");

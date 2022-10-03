@@ -14,7 +14,7 @@ class BPMNValidation implements Rule
         AssignPreviousUser::class,
     ];
 
-    /** @var \Illuminate\Support\MessageBag $errors */
+    /** @var \Illuminate\Support\MessageBag */
     protected $errors = [];
 
     /**
@@ -49,6 +49,7 @@ class BPMNValidation implements Rule
         $validator = Validator::make($nodes, $rules);
         $passes = $validator->passes();
         $this->errors = $validator->errors();
+
         return $passes;
     }
 
@@ -67,8 +68,6 @@ class BPMNValidation implements Rule
         return $this->errors;
     }
 
-
-
     /**
      * Add rule for BPMN element $node
      *
@@ -84,6 +83,7 @@ class BPMNValidation implements Rule
                 $rules[$node->getAttribute('id')][] = new $rule;
             }
         }
+
         return $rules;
     }
 }

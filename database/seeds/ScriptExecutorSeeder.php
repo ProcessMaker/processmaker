@@ -19,7 +19,7 @@ class ScriptExecutorSeeder extends Seeder
                     $this->command->line("Running docker-executor-{$key}:install");
                 }
                 \Artisan::call("docker-executor-{$key}:install");
-            } catch(\Predis\Connection\ConnectionException $e) {
+            } catch (\Predis\Connection\ConnectionException $e) {
                 // horizon:terminate command when redis is not configured
                 // this happens in CircleCI
             }

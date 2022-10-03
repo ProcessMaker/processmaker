@@ -1,9 +1,9 @@
 import Vue from "vue";
-import ScriptEditor from './components/ScriptEditor'
+import ScriptEditor from "./components/ScriptEditor";
 
 new Vue({
-    el: '#script-container',
-    components: {
-        ScriptEditor
-    }
-})
+  el: "#script-container",
+  components: {
+    ScriptEditor,
+  },
+});

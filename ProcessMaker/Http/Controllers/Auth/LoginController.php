@@ -1,15 +1,16 @@
 <?php
+
 namespace ProcessMaker\Http\Controllers\Auth;
 
 use App;
-use Illuminate\Http\Request;
-use ProcessMaker\Models\User;
-use ProcessMaker\Managers\LoginManager;
-use ProcessMaker\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use ProcessMaker\Traits\HasControllerAddons;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Managers\LoginManager;
+use ProcessMaker\Models\User;
+use ProcessMaker\Traits\HasControllerAddons;
 
 class LoginController extends Controller
 {
@@ -57,17 +58,19 @@ class LoginController extends Controller
         // clear cookie to avoid an issue when logout SLO and then try to login with simple PM login form
         \Cookie::queue(\Cookie::forget('processmaker_session'));
         // cookie required here because SSO redirect resets the session
-        $cookie = cookie("processmaker_intended", redirect()->intended()->getTargetUrl(), 10, '/');
+        $cookie = cookie('processmaker_intended', redirect()->intended()->getTargetUrl(), 10, '/');
         $response = response(view('auth.login', compact('addons', 'block')));
         $response->withCookie($cookie);
+
         return $response;
     }
 
-    public function loginWithIntendedCheck(Request $request) {
+    public function loginWithIntendedCheck(Request $request)
+    {
         $intended = Cookie::get('processmaker_intended');
         if ($intended) {
             // Check if the route is a fallback, meaning it's invalid (like favicon.ico)
-            $route = app('router')->getRoutes() ->match(
+            $route = app('router')->getRoutes()->match(
                 app('request')->create($intended)
             );
             if ($route->isFallback) {
@@ -85,8 +88,8 @@ class LoginController extends Controller
         }
 
         $addons = $this->getPluginAddons('command', []);
-        foreach($addons as $addon) {
-            if(array_key_exists('command', $addon)) {
+        foreach ($addons as $addon) {
+            if (array_key_exists('command', $addon)) {
                 $command = $addon['command'];
                 $command->execute($request, $request->input('username'));
             }
@@ -123,6 +126,7 @@ class LoginController extends Controller
         if ($request->has('timeout')) {
             $response->with('timeout', true);
         }
+
         return $response;
     }
 }

@@ -42,15 +42,15 @@ class IndexedSearchDisable extends Command
     public function handle()
     {
         if ($this->interactive()) {
-            $confirmed = $this->confirm("Are you sure you wish to disable indexed search?");
+            $confirmed = $this->confirm('Are you sure you wish to disable indexed search?');
         } else {
             $confirmed = true;
         }
 
         if ($confirmed) {
             $setting = Setting::updateOrCreate(
-                [ 'key' => 'indexed-search' ],
-                [ 'config' => [ 'enabled' => false ], ]
+                ['key' => 'indexed-search'],
+                ['config' => ['enabled' => false]]
             );
 
             if ($setting->config['enabled'] === false) {

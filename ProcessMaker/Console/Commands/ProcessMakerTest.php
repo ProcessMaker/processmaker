@@ -46,11 +46,11 @@ class ProcessMakerTest extends Command
      */
     public function handle()
     {
-        $this->test("DBConnection", [$this, 'testDBConnection']);
-        $this->test("Horizon", [$this, 'testHorizonService']);
-        $this->test("Broadcast", [$this, 'testBroadcastService']);
-        $this->test("Docker", [$this, 'testDockerService']);
-        $this->test("Email", [$this, 'testEmailService']);
+        $this->test('DBConnection', [$this, 'testDBConnection']);
+        $this->test('Horizon', [$this, 'testHorizonService']);
+        $this->test('Broadcast', [$this, 'testBroadcastService']);
+        $this->test('Docker', [$this, 'testDockerService']);
+        $this->test('Email', [$this, 'testEmailService']);
     }
 
     private function test($name, callable $callback)
@@ -59,6 +59,7 @@ class ProcessMakerTest extends Command
             $callback();
         } catch (Throwable $error) {
             $this->error("[{$name}] " . $error->getMessage());
+
             return false;
         }
         $this->info("[{$name}] OK");
@@ -86,7 +87,7 @@ class ProcessMakerTest extends Command
         }
         $missingMigrations = 0;
         foreach ($out as $line) {
-            if (strpos($line, '| No')!==false) {
+            if (strpos($line, '| No') !== false) {
                 $missingMigrations++;
             }
         }
@@ -120,7 +121,7 @@ class ProcessMakerTest extends Command
 
     private function waitTestPassed($name, $timeout = 120)
     {
-        for ($i = 0; $i<$timeout; $i++) {
+        for ($i = 0; $i < $timeout; $i++) {
             $count = DB::table('test_status')->where('name', $name)->count();
             if ($count > 0) {
                 return true;
@@ -145,7 +146,7 @@ class ProcessMakerTest extends Command
         $executor = ScriptExecutor::where('language', $language)->firstOrFail();
         $script->script_executor_id = $executor->id;
         $script->code = $code;
-        $res = $script->runScript(["foo" => "bar"], ["conf"=>"val"]);
+        $res = $script->runScript(['foo' => 'bar'], ['conf'=>'val']);
         if (!is_array($res) || empty($res['output'])) {
             throw new Exception("Failed execution of `{$language}` script.");
         }

@@ -57,26 +57,25 @@ class RegenerateCss extends Command
             'tag' => 'sidebar',
             'origin' => 'resources/sass/sidebar/sidebar.scss',
             'target' => 'public/css/sidebar.css',
-            'user' => null
+            'user' => null,
         ]);
 
         CompileSass::dispatch([
             'tag' => 'app',
             'origin' => 'resources/sass/app.scss',
             'target' => 'public/css/app.css',
-            'user' => null
+            'user' => null,
         ]);
 
         CompileSass::dispatch([
             'tag' => 'queues',
             'origin' => 'resources/sass/admin/queues.scss',
             'target' => 'public/css/admin/queues.css',
-            'user' => null
+            'user' => null,
         ]);
 
         $this->info("\nCSS files have been generated.");
     }
-
 
     /**
      * Write variables in file
@@ -91,7 +90,6 @@ class RegenerateCss extends Command
             $contents .= $value['id'] . ': ' . $value['value'] . ";\n";
         }
         File::put(app()->resourcePath('sass') . '/_colors.scss', $contents);
-
     }
 
     /**
@@ -109,13 +107,12 @@ class RegenerateCss extends Command
         File::put(app()->resourcePath('sass') . '/_fonts.scss', $contents);
     }
 
-
     private function sansSerifFontDefault()
     {
         $data = new \stdClass();
         $data->id = "'Open Sans'";
         $data->title = "'Open Sans'";
+
         return $data;
     }
-
 }

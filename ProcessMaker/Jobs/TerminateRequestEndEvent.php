@@ -10,8 +10,11 @@ use ProcessMaker\Repositories\TokenRepository;
 class TerminateRequestEndEvent extends BpmnAction implements ShouldQueue
 {
     public $definitionsId;
+
     public $instanceId;
+
     public $tokenId;
+
     public $data;
 
     /**

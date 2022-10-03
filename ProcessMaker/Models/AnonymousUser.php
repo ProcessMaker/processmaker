@@ -14,8 +14,10 @@ class AnonymousUser extends User
 
     public $isAnonymous = true;
 
-    public function receivesBroadcastNotificationsOn($notification) {
+    public function receivesBroadcastNotificationsOn($notification)
+    {
         $class = str_replace('\\', '.', get_parent_class());
-        return $class.'.'.$this->getKey();
+
+        return $class . '.' . $this->getKey();
     }
 }

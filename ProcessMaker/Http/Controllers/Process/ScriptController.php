@@ -18,7 +18,7 @@ class ScriptController extends Controller
 {
     use HasControllerAddons;
 
-     /**
+    /**
      * Get the list of environment variables
      *
      * @return \Illuminate\View\View|\Illuminate\Contracts\View
@@ -46,10 +46,10 @@ class ScriptController extends Controller
 
         $listConfig = (object) [
             'scriptExecutors' => ScriptExecutor::list(),
-            'countCategories' => ScriptCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count()
+            'countCategories' => ScriptCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count(),
         ];
 
-        return view('processes.scripts.index', compact ('listConfig', 'catConfig'));
+        return view('processes.scripts.index', compact('listConfig', 'catConfig'));
     }
 
     public function edit(Script $script, User $users)
@@ -65,13 +65,13 @@ class ScriptController extends Controller
     {
         $processRequestAttributes = $this->getProcessRequestAttributes();
         $processRequestAttributes['user_id'] = $request->user()->id;
-        
+
         $testData = [
-            '_request' => $processRequestAttributes
+            '_request' => $processRequestAttributes,
         ];
 
         /**
-         * Emit the ScriptBuilderStarting event, passing in our ScriptBuilderManager instance. This will 
+         * Emit the ScriptBuilderStarting event, passing in our ScriptBuilderManager instance. This will
          * allow packages to add additional javascript for Script Builder initialization which
          * can customize the Script Builder controls list.
          */
@@ -91,7 +91,7 @@ class ScriptController extends Controller
 
         $attributes = [];
 
-        foreach($columns as $column) {
+        foreach ($columns as $column) {
             $attributes[$column] = null;
         }
 

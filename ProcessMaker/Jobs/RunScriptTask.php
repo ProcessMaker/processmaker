@@ -18,11 +18,15 @@ use Throwable;
 class RunScriptTask extends BpmnAction implements ShouldQueue
 {
     public $definitionsId;
+
     public $instanceId;
+
     public $tokenId;
+
     public $data;
 
     public $tries = 3;
+
     public $retryAfter = 60;
 
     /**
@@ -118,6 +122,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
     {
         if (!$this->tokenId) {
             Log::error('Script failed: ' . $exception->getMessage());
+
             return;
         }
         Log::error('Script (#' . $this->tokenId . ') failed: ' . $exception->getMessage());

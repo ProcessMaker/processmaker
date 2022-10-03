@@ -39,8 +39,4 @@
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
-<<<<<<< HEAD
 </bpmn:definitions>
-=======
-</bpmn:definitions> 
->>>>>>> develop

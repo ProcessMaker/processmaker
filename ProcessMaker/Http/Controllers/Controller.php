@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Http\Controllers;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -9,7 +10,6 @@ use ProcessMaker\Traits\HasControllerAddons;
 
 /**
  * Our base controller.  Any shared functionality across all web controllers can go here
- * @package ProcessMaker\Http\Controllers
  */
 class Controller extends BaseController
 {

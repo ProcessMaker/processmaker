@@ -7,7 +7,6 @@ use ProcessMaker\Nayra\Bpmn\Models\Process as ModelsProcess;
 
 class Process extends ModelsProcess
 {
-
     /**
      * Get a property.
      *
@@ -21,6 +20,7 @@ class Process extends ModelsProcess
         if ($name === 'conditionals') {
             $key = '_process_' . $this->getOwnerDocument()->getModel()->getKey();
             $properties = Cache::store('global_variables')->get($key, []);
+
             return $properties[$name] ?? $default;
         } else {
             return parent::getProperty($name, $default);
@@ -41,7 +41,6 @@ class Process extends ModelsProcess
             $key = '_process_' . $this->getOwnerDocument()->getModel()->getKey();
             $properties = Cache::store('global_variables')->get($key, []);
             $properties[$name] = $value;
-            \Log::info(['global_variables', $key, $properties]);
             try {
                 Cache::store('global_variables')->forever($key, $properties);
             } catch (\Throwable $e) {
@@ -50,6 +49,7 @@ class Process extends ModelsProcess
                     Cache::store('global_variables')->forget($key);
                 }
             }
+
             return $this;
         } else {
             return parent::setProperty($name, $value);
@@ -59,7 +59,7 @@ class Process extends ModelsProcess
     /**
      * Return true if the process is not persistent
      *
-     * @return boolean
+     * @return bool
      */
     public function isNonPersistent()
     {

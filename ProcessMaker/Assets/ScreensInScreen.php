@@ -5,18 +5,21 @@ namespace ProcessMaker\Assets;
 use DOMXPath;
 use Illuminate\Support\Arr;
 use ProcessMaker\Contracts\ScreenInterface;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Providers\WorkflowServiceProvider;
 use ProcessMaker\Exception\MaximumRecursionException;
 use ProcessMaker\Managers\ExportManager;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Providers\WorkflowServiceProvider;
 
 class ScreensInScreen
 {
     public $type = Screen::class;
+
     public $owner = Screen::class;
+
     private $processRequest = null;
+
     private $recursion = 0;
 
     /**
@@ -31,7 +34,7 @@ class ScreensInScreen
     {
         if ($this->recursion > 10) {
             throw new MaximumRecursionException(
-                "Max screen recursion depth of 10 exceeded. Is a child screen referencing its parent?"
+                'Max screen recursion depth of 10 exceeded. Is a child screen referencing its parent?'
             );
         }
 
@@ -49,6 +52,7 @@ class ScreensInScreen
                 }
             });
         }
+
         return $screens;
     }
 

@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateGroupMembersTable extends Migration
 {
@@ -20,7 +20,7 @@ class CreateGroupMembersTable extends Migration
             $table->timestamps();
 
             $table->index('group_id');
-            $table->index(['member_id','member_type']);
+            $table->index(['member_id', 'member_type']);
 
             $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
         });

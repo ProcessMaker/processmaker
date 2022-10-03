@@ -15,7 +15,6 @@ use Tests\TestCase;
 
 /**
  * Tests routes related to processes / CRUD related methods
- *
  */
 class PerformanceModelsTest extends TestCase
 {
@@ -56,13 +55,14 @@ class PerformanceModelsTest extends TestCase
         foreach ($definitions as $model => $definition) {
             $models[] = [$model, $baseTime];
         }
+
         return $models;
     }
 
     /**
      * Time unit base for the performce tests
      *
-     * @param integer $times
+     * @param int $times
      *
      * @return float
      */
@@ -73,12 +73,11 @@ class PerformanceModelsTest extends TestCase
         factory($model, $times)->create();
         $baseTime = microtime(true) - $t;
         $model::getQuery()->delete();
+
         return $baseTime;
     }
 
     /**
-     *
-     *
      * @param [type] $model
      * @param [type] $baseCount
      * @param [type] $baseTime
@@ -126,6 +125,7 @@ class PerformanceModelsTest extends TestCase
                 }
             }
         }
+
         return array_sum($tables);
     }
 }

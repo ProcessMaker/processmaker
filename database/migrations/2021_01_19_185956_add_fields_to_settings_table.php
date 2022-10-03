@@ -23,16 +23,16 @@ class AddFieldsToSettingsTable extends Migration
             $table->boolean('readonly')->after('hidden')->default(0);
             $table->json('ui')->after('readonly')->nullable();
         });
-        
-        if (! Permission::where('name', 'view-settings')->first()) {
+
+        if (!Permission::where('name', 'view-settings')->first()) {
             factory(Permission::class)->create([
                 'title' => 'View Settings',
                 'name' => 'view-settings',
                 'group' => 'Settings',
             ]);
         }
-        
-        if (! Permission::where('name', 'update-settings')->first()) {
+
+        if (!Permission::where('name', 'update-settings')->first()) {
             factory(Permission::class)->create([
                 'title' => 'Update Settings',
                 'name' => 'update-settings',
@@ -49,13 +49,13 @@ class AddFieldsToSettingsTable extends Migration
     public function down()
     {
         Schema::table('settings', function (Blueprint $table) {
-            $table->dropColumn(['name','helper','group','format','hidden','readonly','ui']);
+            $table->dropColumn(['name', 'helper', 'group', 'format', 'hidden', 'readonly', 'ui']);
         });
-        
+
         if ($permission = Permission::where('name', 'view-settings')->first()) {
             $permission->delete();
         }
-        
+
         if ($permission = Permission::where('name', 'update-settings')->first()) {
             $permission->delete();
         }

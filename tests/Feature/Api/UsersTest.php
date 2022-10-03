@@ -3,16 +3,15 @@
 namespace Tests\Feature\Api;
 
 use Faker\Factory as Faker;
-use ProcessMaker\Models\User;
-use Tests\TestCase;
-use Tests\Feature\Shared\RequestHelper;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Models\User;
+use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class UsersTest extends TestCase
 {
-
     use RequestHelper;
 
     const API_TEST_URL = '/users';
@@ -39,7 +38,7 @@ class UsersTest extends TestCase
         'language',
         'expires_at',
         'updated_at',
-        'created_at'
+        'created_at',
     ];
 
     /**
@@ -69,7 +68,7 @@ class UsersTest extends TestCase
             'lastname' => 'name',
             'email' => $faker->email,
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->sentence(10)
+            'password' => $faker->sentence(10),
         ]);
 
         //Validate the header status code
@@ -80,10 +79,13 @@ class UsersTest extends TestCase
     {
         $url = self::API_TEST_URL;
 
-        $deletedUser = factory(User::class)->create([
-            'deleted_at' => '2019-01-01',
-            'status' => 'ACTIVE'
-        ]);
+        $deletedUser = (object) [];
+        User::withoutEvents(function () use (&$deletedUser) {
+            $deletedUser = factory(User::class)->create([
+                'deleted_at' => '2019-01-01',
+                'status' => 'ACTIVE',
+            ]);
+        });
 
         $params = [
             'username' => $deletedUser->username,
@@ -91,7 +93,7 @@ class UsersTest extends TestCase
             'lastname' => 'bar',
             'email' => $deletedUser->email,
             'status' => 'ACTIVE',
-            'password' => 'password123'
+            'password' => 'password123',
         ];
 
         $response = $this->apiCall('POST', $url, $params);
@@ -118,7 +120,7 @@ class UsersTest extends TestCase
             'lastname' => 'name',
             'email' => $faker->email,
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->sentence(10)
+            'password' => $faker->sentence(10),
         ]);
 
         $response->assertStatus(201);
@@ -128,7 +130,6 @@ class UsersTest extends TestCase
         $this->assertEquals(getenv('APP_TIMEZONE'), $createdUser['timezone']);
         $this->assertEquals(getenv('DATE_FORMAT'), $createdUser['datetime_format']);
         $this->assertEquals(getenv('APP_LANG'), $createdUser['language']);
-
 
         // Create a user setting fields that have default
         $timeZone = 'Test/Test';
@@ -143,7 +144,7 @@ class UsersTest extends TestCase
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
             'password' => $faker->sentence(10),
             'timezone' => $timeZone,
-            'datetime_format' => $dateFormat
+            'datetime_format' => $dateFormat,
         ]);
 
         $response->assertStatus(201);
@@ -152,7 +153,6 @@ class UsersTest extends TestCase
         $createdUser = $response->json();
         $this->assertEquals($createdUser['timezone'], $timeZone);
         $this->assertEquals($createdUser['datetime_format'], $dateFormat);
-
     }
 
     /**
@@ -169,7 +169,7 @@ class UsersTest extends TestCase
         $response = $this->apiCall('POST', self::API_TEST_URL, [
             'username' => 'mytestusername',
             'email' => $faker->email,
-            'deuserion' => $faker->sentence(10)
+            'deuserion' => $faker->sentence(10),
         ]);
 
         //Validate the header status code
@@ -182,7 +182,6 @@ class UsersTest extends TestCase
      */
     public function testListUser()
     {
-
         User::query()->delete();
 
         $faker = Faker::create();
@@ -202,7 +201,6 @@ class UsersTest extends TestCase
 
         // Verify count
         $this->assertEquals(10, $response->json()['meta']['total']);
-
     }
 
     /**
@@ -264,7 +262,7 @@ class UsersTest extends TestCase
     public function testFetchUserByEmailAddressFilter()
     {
         factory(User::class)->create([
-            'email' => 'test@example.com'
+            'email' => 'test@example.com',
         ]);
 
         $query = '?filter=' . urlencode('test@example.com');
@@ -329,7 +327,7 @@ class UsersTest extends TestCase
         $url = self::API_TEST_URL . '/' . factory(User::class)->create()->id;
 
         $response = $this->apiCall('PUT', $url, [
-            'username' => ''
+            'username' => '',
         ]);
 
         //Validate the header status code
@@ -365,7 +363,7 @@ class UsersTest extends TestCase
             'timezone' => $faker->timezone,
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
             'birthdate' => $faker->dateTimeThisCentury->format('Y-m-d'),
-            'password' => $faker->password(8).'A'.'1',
+            'password' => $faker->password(8) . 'A' . '1',
             'force_change_password' => $faker->boolean,
         ]);
 
@@ -377,7 +375,6 @@ class UsersTest extends TestCase
 
         //Check that it has changed
         $this->assertNotEquals($verify, $verify_new);
-
     }
 
     /**
@@ -396,7 +393,7 @@ class UsersTest extends TestCase
             'firstname' => $faker->firstName,
             'lastname' => $faker->lastName,
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->password(8).'A'.'1',
+            'password' => $faker->password(8) . 'A' . '1',
             'force_change_password' => 0,
         ]);
 
@@ -405,9 +402,8 @@ class UsersTest extends TestCase
 
         //Validate Flag force_change_password was changed
         $this->assertDatabaseHas('users', [
-            'force_change_password' => 0
+            'force_change_password' => 0,
         ]);
-
     }
 
     /**
@@ -506,15 +502,15 @@ class UsersTest extends TestCase
     }
 
     /**
-    * Tests the archiving and restoration of a process
-    * @group agustin
-    */
+     * Tests the archiving and restoration of a process
+     * @group agustin
+     */
     public function testRestoreSoftDeletedUser()
     {
         // create an user
         $user = factory(User::class)->create([
             'email' => 'test@email.com',
-            'username' => 'mytestusername'
+            'username' => 'mytestusername',
         ]);
         $id = $user->id;
 
@@ -523,7 +519,7 @@ class UsersTest extends TestCase
         $response->assertJsonFragment(['id' => $id]);
 
         // Soft delete the user
-        $response = $this->apiCall('DELETE', self::API_TEST_URL . '/'. $id);
+        $response = $this->apiCall('DELETE', self::API_TEST_URL . '/' . $id);
         $response->assertStatus(204);
 
         // Assert that the user is not listed on the main index
@@ -531,8 +527,8 @@ class UsersTest extends TestCase
         $response->assertJsonMissing(['id' => $id]);
 
         // Restore the user by email
-        $response = $this->apiCall('PUT', self::API_TEST_URL .'/restore', [
-            'email' => $user->email
+        $response = $this->apiCall('PUT', self::API_TEST_URL . '/restore', [
+            'email' => $user->email,
         ]);
         $response->assertStatus(200);
 
@@ -541,7 +537,7 @@ class UsersTest extends TestCase
         $response->assertJsonFragment(['id' => $id]);
 
         // Soft delete the user
-        $response = $this->apiCall('DELETE', self::API_TEST_URL . '/'. $id);
+        $response = $this->apiCall('DELETE', self::API_TEST_URL . '/' . $id);
         $response->assertStatus(204);
 
         // Assert that the user is not listed on the main index
@@ -549,8 +545,8 @@ class UsersTest extends TestCase
         $response->assertJsonMissing(['id' => $id]);
 
         // Restore the user by username
-        $response = $this->apiCall('PUT', self::API_TEST_URL .'/restore', [
-            'username' => $user->username
+        $response = $this->apiCall('PUT', self::API_TEST_URL . '/restore', [
+            'username' => $user->username,
         ]);
         $response->assertStatus(200);
 
@@ -559,7 +555,7 @@ class UsersTest extends TestCase
         $response->assertJsonFragment(['id' => $id]);
 
         // Soft delete the user
-        $response = $this->apiCall('DELETE', self::API_TEST_URL . '/'. $id);
+        $response = $this->apiCall('DELETE', self::API_TEST_URL . '/' . $id);
         $response->assertStatus(204);
 
         // Assert that the user is not listed on the main index
@@ -567,9 +563,9 @@ class UsersTest extends TestCase
         $response->assertJsonMissing(['id' => $id]);
 
         // Restore the user by username and different email
-        $response = $this->apiCall('PUT', self::API_TEST_URL .'/restore', [
+        $response = $this->apiCall('PUT', self::API_TEST_URL . '/restore', [
             'email' => 'changed' . $user->email,
-            'username' => $user->username
+            'username' => $user->username,
         ]);
         $response->assertStatus(200);
 
@@ -581,11 +577,11 @@ class UsersTest extends TestCase
     public function testCreateWithoutPassword()
     {
         $payload = [
-            "firstname" => "foo",
-            "lastname" => "bar",
-            "email" => "foobar@test.com",
-            "username" => "foobar",
-            "status" => "ACTIVE"
+            'firstname' => 'foo',
+            'lastname' => 'bar',
+            'email' => 'foobar@test.com',
+            'username' => 'foobar',
+            'status' => 'ACTIVE',
         ];
         $response = $this->apiCall('POST', self::API_TEST_URL, $payload);
         $response->assertStatus(422);
@@ -629,26 +625,26 @@ class UsersTest extends TestCase
     {
         // Valid cases
         $usernames = [
-            "admin",
-            "john.doe",
-            "heaney-esperanza",
-            "jackeline53@rowe.com",
-            "antonette06@yahoo.com",
-            "metz.tierra@quigley.com",
-            "roberts-kaitlin@gmail.com",
-            "elise~reichert+1@gmail.com",
-            "oleta#runolfsdottir@mertz.net",
-            "simple@example.com",
-            "very.common@example.com",
-            "disposable.style.email.with+symbol@example.com",
-            "other.email-with-hyphen@example.com",
-            "fully-qualified-domain@example.com",
+            'admin',
+            'john.doe',
+            'heaney-esperanza',
+            'jackeline53@rowe.com',
+            'antonette06@yahoo.com',
+            'metz.tierra@quigley.com',
+            'roberts-kaitlin@gmail.com',
+            'elise~reichert+1@gmail.com',
+            'oleta#runolfsdottir@mertz.net',
+            'simple@example.com',
+            'very.common@example.com',
+            'disposable.style.email.with+symbol@example.com',
+            'other.email-with-hyphen@example.com',
+            'fully-qualified-domain@example.com',
             // may go to user.name@example.com inbox depending on mail server
-            "user.name+tag+sorting@example.com",
+            'user.name+tag+sorting@example.com',
             // (one-letter local-part)
-            "x@example.com",
-            "example-indeed@strange-example.com",
-            "example@s.example",
+            'x@example.com',
+            'example-indeed@strange-example.com',
+            'example@s.example',
             // (space between the quotes)
             // (bangified host route used for uucp mailers)
             'mailhost!username@example.org',
@@ -660,14 +656,14 @@ class UsersTest extends TestCase
 
         $faker = Faker::create();
         $url = self::API_TEST_URL;
-        foreach($usernames as $username) {
-            $response = $this->apiCall('POST', $url, $data =[
+        foreach ($usernames as $username) {
+            $response = $this->apiCall('POST', $url, $data = [
                 'username' => $username,
                 'firstname' => $faker->firstName(),
                 'lastname' => $faker->lastName(),
                 'email' => $faker->email,
                 'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-                'password' => $faker->sentence(10)
+                'password' => $faker->sentence(10),
             ]);
             //Validate the header status code
             $response->assertStatus(201);
@@ -675,9 +671,9 @@ class UsersTest extends TestCase
 
         // Invalid cases
         $usernames = [
-            "12",
-            "ab",
-            "test/test@test.com",
+            '12',
+            'ab',
+            'test/test@test.com',
             // (space between the quotes)
             '" "@example.org',
             // (quoted double dot)
@@ -690,14 +686,14 @@ class UsersTest extends TestCase
 
         $faker = Faker::create();
         $url = self::API_TEST_URL;
-        foreach($usernames as $username) {
-            $response = $this->apiCall('POST', $url, $data =[
+        foreach ($usernames as $username) {
+            $response = $this->apiCall('POST', $url, $data = [
                 'username' => $username,
                 'firstname' => $faker->firstName(),
                 'lastname' => $faker->lastName(),
                 'email' => $faker->email,
                 'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-                'password' => $faker->sentence(10)
+                'password' => $faker->sentence(10),
             ]);
             //Validate the header status code
             $response->assertStatus(422);

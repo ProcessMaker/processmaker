@@ -35,6 +35,7 @@ trait ProcessTrait
                 $this->bpmnDefinitions->loadXML($this->bpmn);
             }
         }
+
         return $this->bpmnDefinitions;
     }
 
@@ -47,6 +48,7 @@ trait ProcessTrait
     {
         $document = new BpmnDocument($this);
         $document->loadXML($this->bpmn);
+
         return $document;
     }
 
@@ -72,7 +74,7 @@ trait ProcessTrait
      */
     public function getProperty($name)
     {
-       return isset($this->properties[$name]) ? $this->properties[$name] : null;
+        return isset($this->properties[$name]) ? $this->properties[$name] : null;
     }
 
     /**
@@ -110,7 +112,6 @@ trait ProcessTrait
 
     /**
      * Get the users who can start this process
-     *
      */
     public function usersCanCancel()
     {
@@ -124,7 +125,6 @@ trait ProcessTrait
 
     /**
      * Get the groups who can start this process
-     *
      */
     public function groupsCanCancel()
     {
@@ -138,7 +138,6 @@ trait ProcessTrait
 
     /**
      * Get the users who can start this process
-     *
      */
     public function usersCanEditData()
     {
@@ -152,7 +151,6 @@ trait ProcessTrait
 
     /**
      * Get the groups who can start this process
-     *
      */
     public function groupsCanEditData()
     {

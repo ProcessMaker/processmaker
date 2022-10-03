@@ -1,13 +1,13 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\QueryException;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
-use Illuminate\Database\QueryException;
 
 class AddVersionByRequestToken extends Migration
 {
@@ -30,16 +30,16 @@ class AddVersionByRequestToken extends Migration
             Schema::table('script_versions', function (Blueprint $table) {
                 $table->dropUnique('script_versions_key_unique');
             });
-        } catch(QueryException $e) {
+        } catch (QueryException $e) {
             // Skip drop script_versions_key_unique in script_versions table if it does not exists
         }
-        foreach(Screen::all() as $screen) {
+        foreach (Screen::all() as $screen) {
             $screen->saveVersion();
         }
-        foreach(Script::all() as $script) {
+        foreach (Script::all() as $script) {
             $script->saveVersion();
         }
-        foreach(ProcessRequestToken::all() as $token) {
+        foreach (ProcessRequestToken::all() as $token) {
             $token->saveVersion();
         }
     }
@@ -62,7 +62,7 @@ class AddVersionByRequestToken extends Migration
             Schema::table('script_versions', function (Blueprint $table) {
                 $table->unique(['key']);
             });
-        } catch(QueryException $e) {
+        } catch (QueryException $e) {
             // Skip unique for key column in script_versions table if it cause problems
         }
     }

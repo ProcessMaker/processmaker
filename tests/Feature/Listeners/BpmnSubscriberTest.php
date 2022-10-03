@@ -14,7 +14,6 @@ class BpmnSubscriberTest extends TestCase
     {
         $subscriber = new BpmnSubscriber();
         $this->assertNull($subscriber->registerErrorHandler(null, null));
-
     }
 
     public function testErrorHandler()

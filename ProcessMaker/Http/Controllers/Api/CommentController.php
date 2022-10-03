@@ -32,7 +32,6 @@ class CommentController extends Controller
      * @return \ProcessMaker\Http\Resources\ApiCollection
      *
      * @return \Illuminate\Http\Response
-     * 
      */
     public function index(Request $request)
     {
@@ -49,19 +48,18 @@ class CommentController extends Controller
         $commentable_id = $request->input('commentable_id', null);
         $commentable_type = $request->input('commentable_type', null);
 
-        // from a request return comments for the request and their taks 
+        // from a request return comments for the request and their taks
         if ($commentable_type === ProcessRequest::class && $commentable_id) {
             $requestTokens = ProcessRequestToken::where('process_request_id', $commentable_id)->get();
             $tokenIds = $requestTokens->pluck('id');
-            $query->where(function ($query) use($commentable_id) {
+            $query->where(function ($query) use ($commentable_id) {
                 $query->where('commentable_type', ProcessRequest::class)
                         ->where('commentable_id', $commentable_id);
-            })->orWhere(function ($query) use($tokenIds) {
+            })->orWhere(function ($query) use ($tokenIds) {
                 $query->where('commentable_type', ProcessRequestToken::class)
                         ->whereIn('commentable_id', $tokenIds);
             });
-        }
-        else {
+        } else {
             if ($commentable_type) {
                 $query->where('commentable_type', $commentable_type);
             }
@@ -88,7 +86,6 @@ class CommentController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      *
      * @throws \Throwable
-     *
      */
     public function store(Request $request)
     {
@@ -109,7 +106,6 @@ class CommentController extends Controller
      * @param Comment $comment
      *
      * @return CommentResource
-     *
      */
     public function show(Comment $comment)
     {
@@ -124,7 +120,6 @@ class CommentController extends Controller
      *
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      * @throws \Throwable
-     *
      */
     public function update(Comment $comment, Request $request)
     {
@@ -137,6 +132,7 @@ class CommentController extends Controller
 
         $comment->fill($request->input());
         $comment->saveOrFail();
+
         return response([], 204);
     }
 
@@ -148,7 +144,6 @@ class CommentController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      *
      * @throws \Exception
-     *
      */
     public function destroy(Comment $comment)
     {
@@ -162,6 +157,7 @@ class CommentController extends Controller
             ->delete();
 
         $comment->delete();
+
         return response([], 204);
     }
 }
