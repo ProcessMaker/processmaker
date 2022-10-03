@@ -2,11 +2,10 @@
 
 namespace ProcessMaker\Providers;
 
-use SmtpTransport;
-use Illuminate\Mail\TransportManager;
 use Illuminate\Mail\MailServiceProvider;
+use Illuminate\Mail\TransportManager;
 use ProcessMaker\Managers\OauthTransportManager;
-
+use SmtpTransport;
 
 class OauthMailServiceProvider extends MailServiceProvider
 {
@@ -17,7 +16,7 @@ class OauthMailServiceProvider extends MailServiceProvider
      */
     protected function registerSwiftTransport()
     {
-        parent::registerSwiftTransport(); 
+        parent::registerSwiftTransport();
 
         $this->app->singleton('swift.transport', function ($app) {
             return new OauthTransportManager($app->config);

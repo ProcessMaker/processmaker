@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use ProcessMaker\Models\User;
-use ProcessMaker\Models\AnonymousUser;
 use Illuminate\Support\Facades\Hash;
+use ProcessMaker\Models\AnonymousUser;
+use ProcessMaker\Models\User;
 
 class AnonymousUserSeeder extends Seeder
 {

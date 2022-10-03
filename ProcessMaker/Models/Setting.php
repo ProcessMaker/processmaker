@@ -89,7 +89,7 @@ class Setting extends Model implements HasMedia
         'name',
         'helper',
         'ui',
-        'group'
+        'group',
     ];
 
     /**

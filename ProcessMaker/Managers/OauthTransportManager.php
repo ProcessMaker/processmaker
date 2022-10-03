@@ -1,32 +1,32 @@
-<?php 
+<?php
 
 namespace ProcessMaker\Managers;
 
-use Swift_Mime_SimpleMessage;
+use Google\Client;
 use Illuminate\Mail\TransportManager;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Packages\Connectors\Email\EmailConfig;
-use Google\Client;
+use Swift_Mime_SimpleMessage;
 
 class OauthTransportManager extends TransportManager
 {
     protected $config = null;
-    
+
     private $token = null;
 
     public function __construct($config)
-    {   
+    {
         $this->config = (object) $config;
         $this->token = [
-            "client_id" => $config->get('services.gmail.key'),
-            "client_secret" => $config->get('services.gmail.secret'),
-            "access_token" => $config->get('services.gmail.access_token'),
-            "refresh_token" => $config->get('services.gmail.refresh_token'),
-            "expires_in" => $config->get('services.gmail.expires_in'),
-            "created" => $config->get('services.gmail.created'),
+            'client_id' => $config->get('services.gmail.key'),
+            'client_secret' => $config->get('services.gmail.secret'),
+            'access_token' => $config->get('services.gmail.access_token'),
+            'refresh_token' => $config->get('services.gmail.refresh_token'),
+            'expires_in' => $config->get('services.gmail.expires_in'),
+            'created' => $config->get('services.gmail.created'),
         ];
     }
-    
+
     protected function createSmtpDriver()
     {
         $transport = parent::createSmtpDriver();
@@ -44,26 +44,27 @@ class OauthTransportManager extends TransportManager
                     ->setUsername($fromAddress)
                     ->setPassword($accessToken);
                     break;
-                
+
                 default:
-                    # code...
+                    // code...
                     break;
             }
         }
+
         return $transport;
     }
 
-    public function checkForExpiredAccessToken($index) 
+    public function checkForExpiredAccessToken($index)
     {
-        $index = $index ?  "_{$index}" : '';
+        $index = $index ? "_{$index}" : '';
 
         $client = new Client();
-        $authConfig = array(
-            "web" => array(
-                'client_id' => $this->token['client_id'], 
-                'client_secret' => $this->token['client_secret']
-            )
-        );
+        $authConfig = [
+            'web' => [
+                'client_id' => $this->token['client_id'],
+                'client_secret' => $this->token['client_secret'],
+            ],
+        ];
         $client->setAuthConfig($authConfig);
         $client->setAccessToken($this->token);
         $accessToken = $this->token['access_token'];
@@ -78,7 +79,7 @@ class OauthTransportManager extends TransportManager
             $this->updateEnvVar("EMAIL_CONNECTOR_GMAIL_API_EXPIRES_IN{$index}", $newToken['expires_in']);
             $this->updateEnvVar("EMAIL_CONNECTOR_GMAIL_API_TOKEN_CREATED{$index}", $newToken['created']);
         }
-        
+
         return $accessToken;
     }
 
@@ -95,4 +96,3 @@ class OauthTransportManager extends TransportManager
         );
     }
 }
-

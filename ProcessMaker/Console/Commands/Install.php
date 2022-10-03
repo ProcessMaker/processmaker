@@ -4,9 +4,9 @@ namespace ProcessMaker\Console\Commands;
 
 use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Database\Query\Grammars\SqlServerGrammar;
 use Illuminate\Encryption\Encrypter;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
