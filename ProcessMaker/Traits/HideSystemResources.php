@@ -52,7 +52,7 @@ trait HideSystemResources
         } elseif (static::class == ProcessRequest::class) {
             // ProcessRequests must be filtered this way since
             // they could be in a separate database
-            $systemProcessIds = Process::system()->pluck('id');
+            $systemProcessIds = Process::withTrashed()->system()->pluck('id');
             $query->whereNotIn('process_id', $systemProcessIds);
         } elseif (static::class == User::class) {
             return $query->where('is_system', false);

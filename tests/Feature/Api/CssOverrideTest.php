@@ -49,6 +49,8 @@ class CssOverrideTest extends TestCase
      */
     public function testResetCss()
     {
+        $this->markTestSkipped('FOUR-6653');
+
         $data = $this->cssValues('#ff0000');
         $data['reset'] = true;
         $response = $this->actingAs($this->user, 'api')->call('POST', '/api/1.0/customize-ui', $data);

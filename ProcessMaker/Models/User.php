@@ -14,6 +14,7 @@ use ProcessMaker\Models\RequestUserPermission;
 use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Rules\StringHasAtLeastOneUpperCaseCharacter;
 use ProcessMaker\Rules\StringHasNumberOrSpecialCharacter;
+use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HasAuthorization;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
@@ -31,6 +32,7 @@ class User extends Authenticatable implements HasMedia
     use SoftDeletes;
     use HideSystemResources;
     use HasFactory;
+    use Exportable;
 
     protected $connection = 'processmaker';
 

@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Assets\ScreensInScreen;
 use ProcessMaker\Contracts\ScreenInterface;
+use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasScreenFields;
@@ -67,6 +68,7 @@ class Screen extends ProcessMakerModel implements ScreenInterface
     use HasScreenFields;
     use HasVersioning;
     use ExtendedPMQL;
+    use Exportable;
 
     const categoryClass = ScreenCategory::class;
 

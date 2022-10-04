@@ -9,6 +9,7 @@ use ProcessMaker\GenerateAccessToken;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
 use ProcessMaker\ScriptRunners\ScriptRunner;
+use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\HideSystemResources;
@@ -62,6 +63,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
     use HideSystemResources;
     use HasCategories;
     use HasVersioning;
+    use Exportable;
 
     const categoryClass = ScriptCategory::class;
 

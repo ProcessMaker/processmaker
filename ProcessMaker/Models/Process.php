@@ -31,6 +31,7 @@ use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Rules\BPMNValidation;
+use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasSelfServiceTasks;
 use ProcessMaker\Traits\HasVersioning;
@@ -42,6 +43,7 @@ use ProcessMaker\Traits\ProcessTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
 use Throwable;
 
 /**
@@ -147,6 +149,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     use HasCategories;
     use HasSelfServiceTasks;
     use ProcessTrait;
+    use Exportable;
 
     const categoryClass = ProcessCategory::class;
 
@@ -907,6 +910,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             $properties['ownerProcessId'] = $startEvent->parentNode->getAttribute('id');
             $properties['ownerProcessName'] = $startEvent->parentNode->getAttribute('name');
             $startEvent->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'timerEventDefinition');
+
             $properties['eventDefinitions'] = [];
             foreach ($startEvent->childNodes as $node) {
                 if (substr($node->localName, -15) === 'EventDefinition') {
@@ -919,6 +923,50 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         }
 
         return $response;
+    }
+
+    /**
+     * Create or update custom routes for webentry
+     *
+     * @return void
+     */
+    public function manageCustomRoutes()
+    {
+        foreach ($this->start_events as $startEvent) {
+            $webEntryProperties = (isset($startEvent['config']) && isset(json_decode($startEvent['config'])->web_entry) ? json_decode($startEvent['config'])->web_entry : null);
+            
+            if ($webEntryProperties && isset($webEntryProperties->webentryRouteConfig)) {
+                switch ($webEntryProperties->webentryRouteConfig->urlType) {
+                    case 'standard-url':
+                        $this->deleteUnusedCustomRoutes(
+                            $webEntryProperties->webentryRouteConfig->firstUrlSegment,
+                            $webEntryProperties->webentryRouteConfig->processId, 
+                            $webEntryProperties->webentryRouteConfig->nodeId
+                        );
+                        break;
+                    
+                    default:
+                        if ($webEntryProperties->webentryRouteConfig->firstUrlSegment !== '') {
+                            $webentryRouteConfig = $webEntryProperties->webentryRouteConfig;
+                            try {
+                                WebentryRoute::updateOrCreate(
+                                [
+                                    'process_id' => $this->id,
+                                    'node_id' => $webentryRouteConfig->nodeId,
+                                ],
+                                [
+                                    'first_segment' => $webentryRouteConfig->firstUrlSegment,
+                                    'params' => $webentryRouteConfig->parameters,
+                                ]
+                            );
+                            } catch (\Exception $e) {
+                                \Log::info('*** Error: '. $e->getMessage());
+                            } 
+                        }
+                        break;
+                }
+            }
+        }
     }
 
     /**
@@ -1002,6 +1050,14 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     public function versions()
     {
         return $this->hasMany(ProcessVersion::class);
+    }
+
+    /**
+     * Get the associated webEntryRoute
+     */
+    public function webentryRoute()
+    {
+        return $this->hasOne(WebentryRoute::class);
     }
 
     /**
@@ -1338,5 +1394,13 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         }
 
         return $schemaErrors;
+    }
+
+    private function deleteUnusedCustomRoutes($url, $processId, $nodeId) {
+        // Delete unused custom routes
+        $customRoute = webentryRoute::where('process_id', $processId)->where('node_id', $nodeId)->first();
+        if ($customRoute) {
+            $customRoute->delete();
+        }
     }
 }

@@ -40,6 +40,8 @@ class HideSystemCategoriesTest extends TestCase
 
     public function testCategoryFiltered()
     {
+        $this->markTestSkipped('FOUR-6653');
+
         $this->categoryFiltered(Process::class);
         // $this->categoryFiltered(Script::class); // No api endpoint yet for script categories
         $this->categoryFiltered(Screen::class);

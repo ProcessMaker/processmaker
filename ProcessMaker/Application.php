@@ -4,42 +4,51 @@ namespace ProcessMaker;
 
 use Igaster\LaravelTheme\Facades\Theme;
 use Illuminate\Foundation\Application as IlluminateApplication;
+use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Models\Setting;
+use ProcessMaker\Providers\SettingServiceProvider;
 
 /**
- * Class Application
+ * Class Application.
  */
 class Application extends IlluminateApplication
 {
-    // Our ProcessMaker Version
-    const VERSION = '4.0.0';
+    // ProcessMaker Version
+    public const VERSION = '4.0.0';
 
     /**
-     * Sets the timezone for the application and for php with the specified timezone
-     * @param $tz string The timezone to set to
+     * Sets the timezone for the application and for php with the specified timezone.
+     *
+     * @param $timezone string
      */
-    public function setTimezone($tz)
+    public function setTimezone(string $timezone): void
     {
-        config(['app.timezone' => $tz]);
+        if (!$this->configurationIsCached()) {
+            config(['app.timezone' => $timezone]);
+        }
+
         date_default_timezone_set(config('app.timezone'));
     }
 
     /**
-     * Retrieves the currently set timezone
-     * @return string The timezone for the system
+     * Retrieves the currently set timezone.
      */
-    public function getTimezone()
+    public function getTimezone(): string
     {
         return config('app.timezone');
     }
 
     /**
+     * TODO Is this method, getSystemConstants() still necessary?
+     *
      * Return the System defined constants and Application variables
      *   Constants: SYS_*
      *   Sessions : USER_* , URS_*
      *
      * @note: This is ported from Gulliver System. This will most likely need to be refactored/removed
-     * @return array Contents of system contents.
+     *
+     * @return array contents of system contents
      */
     public function getSystemConstants()
     {
@@ -65,7 +74,9 @@ class Application extends IlluminateApplication
      * Get the path to the application "app" directory.
      *
      * @note This extends the base Application to specify ProcessMaker instead of app as the main directory
-     * @param  string  $path Optionally, a path to append to the app path
+     *
+     * @param string $path Optionally, a path to append to the app path
+     *
      * @return string
      */
     public function path($path = '')

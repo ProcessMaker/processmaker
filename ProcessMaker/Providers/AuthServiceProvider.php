@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Providers;
 
-use Illuminate\Auth\RequestGuard;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -16,7 +15,6 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessVersion;
-use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use ProcessMaker\Policies\MediaPolicy;
@@ -25,7 +23,6 @@ use ProcessMaker\Policies\ProcessPolicy;
 use ProcessMaker\Policies\ProcessRequestPolicy;
 use ProcessMaker\Policies\ProcessRequestTokenPolicy;
 use ProcessMaker\Policies\ProcessVersionPolicy;
-use ProcessMaker\Policies\ScreenPolicy;
 use ProcessMaker\Policies\ScriptPolicy;
 use ProcessMaker\Policies\UserPolicy;
 
@@ -48,7 +45,6 @@ class AuthServiceProvider extends ServiceProvider
         ProcessRequest::class => ProcessRequestPolicy::class,
         ProcessRequestToken::class => ProcessRequestTokenPolicy::class,
         User::class => UserPolicy::class,
-        User::class => UserPolicy::class,
         Script::class => ScriptPolicy::class,
     ];
 
@@ -60,6 +56,7 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
+
         Passport::routes(function ($router) {
             $router->forAuthorization();
             $router->forAccessTokens();
@@ -76,8 +73,8 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         try {
-            Permission::all()->each(function ($permission) {
-                Gate::define($permission->name, function ($user, $model = false) use ($permission) {
+            Permission::select('name')->get()->each(function ($permission) {
+                Gate::define($permission->name, function ($user) use ($permission) {
                     return $user->hasPermission($permission->name);
                 });
             });

@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
 
@@ -37,6 +38,7 @@ class ScreenCategory extends ProcessMakerModel
 {
     use SerializeToIso8601;
     use HideSystemResources;
+    use Exportable;
 
     protected $connection = 'processmaker';
 

@@ -90,7 +90,7 @@ class TaskTest extends TestCase
         $this->assertEquals($r->single[0]['token'], md5('single' . $media1->id . $media1->created_at));
     }
 
-    protected function tearDown() : void
+    public function tearDownCarbon()
     {
         Carbon::setTestNow(); // reset
     }

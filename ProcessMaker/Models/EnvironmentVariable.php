@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Validation\Rule;
+use ProcessMaker\Traits\Exportable;
 
 /**
  * @OA\Schema(
@@ -25,6 +26,8 @@ use Illuminate\Validation\Rule;
  */
 class EnvironmentVariable extends ProcessMakerModel
 {
+    use Exportable;
+
     protected $connection = 'processmaker';
 
     protected $fillable = [

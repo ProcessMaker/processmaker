@@ -135,14 +135,14 @@ class IndexedSearchEnable extends Command
 
         Storage::disk('install')->put('.env', $env);
 
-        $this->callSilent('config:cache');
-
         config([
             'scout.driver' => $driver,
             'scout.prefix' => $prefix,
             'scout.queue' => false,
             'elastic.client.hosts' => [$url],
         ]);
+
+        refresh_artisan_caches();
     }
 
     private function retrieveOptions()
