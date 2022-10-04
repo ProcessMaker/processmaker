@@ -3,11 +3,11 @@
 namespace ProcessMaker\Providers;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Support\Facades;
+use Illuminate\Support\Str;
 use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;

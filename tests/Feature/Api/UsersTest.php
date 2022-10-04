@@ -458,7 +458,6 @@ class UsersTest extends TestCase
      */
     public function testUpdateUserAvatar()
     {
-
         //Create a new user
         $user = User::factory()->create([
             'username' => 'AvatarUser',

@@ -25,9 +25,9 @@ use ProcessMaker\Nayra\Bpmn\Models\TimerEventDefinition;
 use ProcessMaker\Nayra\Exceptions\ElementNotFoundException;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Nayra\Storage\BpmnElement;
-use ProcessMaker\Rules\BPMNValidation;
-use ProcessMaker\Providers\WorkflowServiceProvider;
 use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
+use ProcessMaker\Providers\WorkflowServiceProvider;
+use ProcessMaker\Rules\BPMNValidation;
 use Throwable;
 
 class ProcessController extends Controller
@@ -1176,21 +1176,21 @@ class ProcessController extends Controller
         return $isDecoded && $validType && $validVersion;
     }
 
-    private function checkForExistingRoute($processId, $route) 
-    {   
-        $existingRoute = WebentryRoute::where('first_segment', $route)->where('process_id','!=', $processId)->first();
+    private function checkForExistingRoute($processId, $route)
+    {
+        $existingRoute = WebentryRoute::where('first_segment', $route)->where('process_id', '!=', $processId)->first();
         if ($existingRoute) {
             throw new \Exception('Segment should be unique. Used in process ' . $existingRoute->process_id . 'node ID: "' . $existingRoute->node_id . '"');
         }
     }
 
-    private function updateRoute($node, $route) 
+    private function updateRoute($node, $route)
     {
         $config = json_decode($node->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'config'), true);
         if ($config['web_entry']['webentryRouteConfig']['firstUrlSegment'] !== $route) {
             // update firstUrlSegment to new route
             $config['web_entry']['webentryRouteConfig']['firstUrlSegment'] = $route;
-            
+
             // update entryUrl to new route
             $path = parse_url($config['web_entry']['webentryRouteConfig']['entryUrl'], PHP_URL_PATH);
             $newEntryUrl = str_replace($config['web_entry']['webentryRouteConfig']['firstUrlSegment'], $route, $path);
