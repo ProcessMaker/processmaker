@@ -16,9 +16,9 @@ class SoapRequestBuilder implements WebServiceRequestBuilderInterface
     public function build(array $config, array $data): array
     {
         switch ($config['authentication_method']) {
-            case 'password':
+            case 'PASSWORD':
                 $parameters = [
-                    'wsdl' => Storage::disk('web_services')->path($config['wsdl']),
+                    'wsdl' => $config['wsdl'],
                     'options' => array_merge(self::base_options, [
                         'authentication_method' => $config['authentication_method'],
                         'login' => $config['username'],
@@ -30,7 +30,21 @@ class SoapRequestBuilder implements WebServiceRequestBuilderInterface
                     'parameters' => $config['parameters'],
                 ];
                 break;
-            case 'certificate':
+            case 'WSDL_FILE':
+                $parameters = [
+                    'wsdl' => $config['wsdl'],
+                    'options' => array_merge(self::base_options, [
+                        'authentication_method' => $config['authentication_method'],
+                        'login' => $config['username'],
+                        'password' => $config['password'],
+                        'location' => $config['location'],
+                        'debug_mode' => $config['debug_mode'],
+                    ]),
+                    'operation' => $config['operation'],
+                    'parameters' => $config['parameters'],
+                ];
+                break;
+            case 'LOCAL_CERTIFICATE':
                 break;
             default:
                 throw new Exception('Invalid authentication method: ' . $config['authentication_method']);
