@@ -7,6 +7,7 @@
       :ok-disabled="disabled"
       @ok.prevent="onClose"
       :ok-only="true"
+      @close="onClose"
     >
     <template>
         <div class="export-successful">
@@ -18,8 +19,8 @@
             <h5 class="card-title export-type">{{ $t("Exported Assets") }}</h5>
         </div>
         <ul class="pl-0">
-            <li v-for="(value, key) in exportedAssets" :key="value">
-               <i class="fas fa-check-circle text-success"></i> {{ value }} {{ key }}
+            <li v-for="(value, key) in this.exportInfo.exported" :key="key">
+               <i class="fas fa-check-circle text-success"></i>{{formatAssetValue(value) }} {{ formatAssetName(key) }}
             </li>
         </ul>
         <template v-if="advancedExport">
@@ -42,28 +43,24 @@ import { Modal } from "SharedComponents";
 
 export default {
   components: { Modal },
-  props: ["processId", "processName"],
+  props: ["processId", "processName", "exportInfo"],
   mixins: [],
   data() {
       return {
         disabled: false,
         advancedExport: true,
-        exportedAssets: {
-            screens: '23',
-            signals: '5',
-            dataConnectors: '3'
-        },
-        nonExportedAssets: {
-            scripts: '18', 
-            environmentVariables: '0',
-            vocabularies: '1'
-        }
+        nonExportedAssets: {},
       }
   },
   computed: {
   },
 
   watch: {
+    exportInfo() {
+        if (!this.exportInfo) {
+            return;
+        }
+    }
   },
 
   methods: { 
@@ -76,20 +73,18 @@ export default {
     hide() {
       this.$bvModal.hide('exportSuccessModal');
     },
-  },
-
-  beforeMount() {
-       ProcessMaker.apiClient.get('export/process/tree/' + this.processId)
-      .then(response => {
-        console.log(response);
-      })
-      .catch(error => {
-          ProcessMaker.alert(error.response.data.message, 'danger');
-      });
+    formatAssetName(string) {
+        let newString = string.replaceAll('_', ' ');
+        let assetString = newString.split(' ');
+        for (let i = 0; i < assetString.length; i++) {
+            assetString[i] = assetString[i].charAt(0).toUpperCase() + assetString[i].slice(1);
+        }
+        return assetString.join(' ');
     },
- 
-  mounted() {
-  }
+    formatAssetValue(value) {
+        return value.toString();
+    }
+  },
 
 }
 </script>
@@ -98,5 +93,9 @@ export default {
 
   ul {
     list-style: none;
+  }
+
+  i {
+    padding-right: 5px;
   }
 </style>
