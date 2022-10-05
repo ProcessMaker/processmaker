@@ -51,7 +51,7 @@ class UserTest extends TestCase
      */
     public function testCanSeeAditionalInformationInEditRoute()
     {
-        $user_id = factory(User::class)->create()->id;
+        $user_id = User::factory()->create()->id;
         config(['users.properties' => ['MyVar' => 'Test Var']]);
 
         // get the URL
@@ -68,7 +68,6 @@ class UserTest extends TestCase
      */
     public function testCannotSeeAditionalInformationInProfileRoute()
     {
-        factory(User::class)->create()->id;
         config(['users.properties' => ['MyVar' => 'Test Var']]);
         // get the URL
         $response = $this->webCall('GET', '/profile/edit');

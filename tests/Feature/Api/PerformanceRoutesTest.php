@@ -32,7 +32,7 @@ class PerformanceRoutesTest extends TestCase
     {
         $model = Group::class;
         $t = microtime(true);
-        factory($model, $times)->create();
+        $model::factory()->count($times)->create();
         $baseTime = microtime(true) - $t;
         $model::getQuery()->delete();
 

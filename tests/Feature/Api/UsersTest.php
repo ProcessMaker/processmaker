@@ -81,7 +81,7 @@ class UsersTest extends TestCase
 
         $deletedUser = (object) [];
         User::withoutEvents(function () use (&$deletedUser) {
-            $deletedUser = factory(User::class)->create([
+            $deletedUser = User::factory()->create([
                 'deleted_at' => '2019-01-01',
                 'status' => 'ACTIVE',
             ]);

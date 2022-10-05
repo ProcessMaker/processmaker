@@ -29,7 +29,7 @@ class CommentFactory extends Factory
             'user_id' => function () {
                 return User::factory()->create()->getKey();
             },
-            'commentable_id' => factory($model),
+            'commentable_id' => $model::factory(),
             'commentable_type' => $model,
             'subject' => $this->faker->sentence,
             'body' => $this->faker->sentence,

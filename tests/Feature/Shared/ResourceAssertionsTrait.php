@@ -61,7 +61,7 @@ trait ResourceAssertionsTrait
     protected function assertCorrectModelCreation($modelClass, array $attributes = [])
     {
         $route = route('api.' . $this->resource . '.store');
-        $base = factory($modelClass)->make($attributes);
+        $base = $modelClass::factory()->make($attributes);
         $array = $base->toArray();
         foreach ($attributes as $key => $value) {
             if ($value === static::$DO_NOT_SEND) {
@@ -89,7 +89,7 @@ trait ResourceAssertionsTrait
     protected function assertModelCreationFails($modelClass, array $attributes = [], array $errors = [])
     {
         $route = route('api.' . $this->resource . '.store');
-        $base = factory($modelClass)->make($attributes);
+        $base = $modelClass::factory()->make($attributes);
         $array = array_diff($base->toArray(), [static::$DO_NOT_SEND]);
         $response = $this->apiCall('POST', $route, $array);
         $response->assertStatus(422);
@@ -166,7 +166,7 @@ trait ResourceAssertionsTrait
     protected function assertModelUpdate($modelClass, array $attributes = [])
     {
         $yesterday = \Carbon\Carbon::now()->subDay();
-        $base = factory($modelClass)->create([
+        $base = $modelClass::factory()->create([
             'created_at' => $yesterday,
         ]);
         $original_attributes = $base->getAttributes();
@@ -197,7 +197,7 @@ trait ResourceAssertionsTrait
      */
     protected function assertModelUpdateFails($modelClass, array $attributes = [], array $errors = [])
     {
-        $base = factory($modelClass)->create();
+        $base = $modelClass::factory()->create();
 
         $route = route('api.' . $this->resource . '.update', [$base->id]);
         $fields = array_diff($attributes, [static::$DO_NOT_SEND]);

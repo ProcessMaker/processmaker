@@ -52,10 +52,7 @@ class CommentTest extends TestCase
 
         $faker = Faker::create();
 
-        $model = factory($faker->randomElement([
-            ProcessRequestToken::class,
-            ProcessRequest::class,
-        ]))->create();
+        $model = ProcessRequestToken::factory()->create();
 
         Comment::factory()->count(10)->create([
             'commentable_id' => $model->getKey(),
@@ -80,10 +77,7 @@ class CommentTest extends TestCase
 
         $faker = Faker::create();
 
-        $model = factory($faker->randomElement([
-            ProcessRequestToken::class,
-            ProcessRequest::class,
-        ]))->create();
+        $model = ProcessRequest::factory()->create();
 
         Comment::factory()->count(10)->create([
             'commentable_id' => $model->getKey(),

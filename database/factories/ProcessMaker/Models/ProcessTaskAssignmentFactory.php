@@ -31,7 +31,7 @@ class ProcessTaskAssignmentFactory extends Factory
             },
             'process_task_id' => $this->faker->randomDigit,
             'assignment_id' => function () use ($model) {
-                return factory($model)->create()->getKey();
+                return $model::factory($model)->create()->getKey();
             },
             'assignment_type' => $model,
         ];
