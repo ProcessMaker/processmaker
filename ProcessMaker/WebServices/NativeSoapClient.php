@@ -20,6 +20,7 @@ class NativeSoapClient implements SoapClientInterface
 
     public function __construct(string $wsdl, array $options)
     {
+
         $this->soapClient = new SoapClient($wsdl, $options);
         // Parse WSDL
         $dom = new DOMDocument();
@@ -106,7 +107,41 @@ class NativeSoapClient implements SoapClientInterface
     private function addSoapAuthHeaders(array $options)
     {
         switch ($options['authentication_method']) {
-            case 'password':
+            case 'PASSWORD':
+                $this->soapClient->__setSoapHeaders([
+                    new SoapHeader(
+                        'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd',
+                        'Security',
+                        new SoapVar(
+                            '<wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+                                <wsse:UsernameToken>
+                                    <wsse:Username>' . $options['login'] . '</wsse:Username>
+                                    <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">' . $options['password'] . '</wsse:Password>
+                                </wsse:UsernameToken>
+                            </wsse:Security>',
+                            XSD_ANYXML
+                        )
+                    ),
+                ]);
+                break;
+            case 'WSDL_FILE':
+                $this->soapClient->__setSoapHeaders([
+                    new SoapHeader(
+                        'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd',
+                        'Security',
+                        new SoapVar(
+                            '<wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+                                <wsse:UsernameToken>
+                                    <wsse:Username>' . $options['login'] . '</wsse:Username>
+                                    <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">' . $options['password'] . '</wsse:Password>
+                                </wsse:UsernameToken>
+                            </wsse:Security>',
+                            XSD_ANYXML
+                        )
+                    ),
+                ]);
+                break;
+            case 'LOCAL_CERTIFICATE':
                 $this->soapClient->__setSoapHeaders([
                     new SoapHeader(
                         'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd',
