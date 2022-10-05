@@ -3,6 +3,7 @@
 namespace ProcessMaker\WebServices;
 
 use Exception;
+use Illuminate\Support\Facades\Storage;
 use ProcessMaker\WebServices\Contracts\WebServiceConfigBuilderInterface;
 
 class SoapConfigBuilder implements WebServiceConfigBuilderInterface
@@ -13,16 +14,29 @@ class SoapConfigBuilder implements WebServiceConfigBuilderInterface
     {
         $config = $serviceTaskConfig;
         $credentials = $dataSourceConfig['credentials'];
+
         if (!$credentials) {
             throw new Exception('Credentials are required');
         }
-        $config['wsdl'] = $credentials['wsdl'] ?? $dataSourceConfig['wsdlFile']['path'];
+
+        switch ($dataSourceConfig['authtype']) {
+            case 'PASSWORD':
+                $config['wsdl'] = $credentials['service_url'];
+                break;
+            case 'WSDL_FILE':
+                $config['wsdl'] = Storage::disk('web_services')->path($dataSourceConfig['wsdlFile']['path']) ?? null;
+                break;
+            default:
+                // code...
+                break;
+        }
+
         $config['username'] = $credentials['user'];
         $config['password'] = $credentials['password'];
-        // @todo add the authentication_method in datasource settings
-        $config['authentication_method'] = $credentials['authentication_method'] ?? 'password';
+        $config['authentication_method'] = $dataSourceConfig['authtype'] ?? 'PASSWORD';
         $config['debug_mode'] = $dataSourceConfig['debug_mode'];
         $config['location'] = $credentials['location'] ?? '';
+        $config['service_url'] = $credentials['service_url'] ?? '';
         // Prepare endpoint params and dataMapping
         if (!empty($serviceTaskConfig['endpoint'])) {
             $endpoint = $serviceTaskConfig['endpoint'];
