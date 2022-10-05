@@ -29,7 +29,7 @@
         "laravelcollective/html": "^6.1.2",
         "lavary/laravel-menu": "^1.7",
         "lcobucci/jwt": "^3.3",
-        "microsoft/microsoft-graph": "^1.74",
+        "microsoft/microsoft-graph": "^1.77",
         "moontoast/math": "^1.1",
         "mustache/mustache": "^2.12",
         "phing/phing": "^2.16",
@@ -90,7 +90,7 @@
             ]
         },
         "google/apiclient-services": [
-          "Gmail"
+            "Gmail"
         ],
         "processmaker": {
             "build": "9d769ff1",
