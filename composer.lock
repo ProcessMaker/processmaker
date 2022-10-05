@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bcdf3664bf4ef83bcccc734ecef91bec",
+    "content-hash": "1eb9930ade3192fd332606d5394fa901",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1390,16 +1390,16 @@
         },
         {
             "name": "elasticsearch/elasticsearch",
-            "version": "v8.4.2",
+            "version": "v8.4.3",
             "source": {
                 "type": "git",
                 "url": "git@github.com:elastic/elasticsearch-php.git",
-                "reference": "5d792069f227799885c349d76cc4b6eb33cdd178"
+                "reference": "078ac89240b4c02524a4881de33b0dd8d36e60d6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elastic/elasticsearch-php/zipball/5d792069f227799885c349d76cc4b6eb33cdd178",
-                "reference": "5d792069f227799885c349d76cc4b6eb33cdd178",
+                "url": "https://api.github.com/repos/elastic/elasticsearch-php/zipball/078ac89240b4c02524a4881de33b0dd8d36e60d6",
+                "reference": "078ac89240b4c02524a4881de33b0dd8d36e60d6",
                 "shasum": ""
             },
             "require": {
@@ -1438,7 +1438,7 @@
                 "elasticsearch",
                 "search"
             ],
-            "time": "2022-08-24T15:31:59+00:00"
+            "time": "2022-09-27T07:48:48+00:00"
         },
         {
             "name": "fakerphp/faker",
@@ -5630,10 +5630,16 @@
         {
             "name": "processmaker/docker-executor-lua",
             "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/docker-executor-lua.git",
+                "reference": "2278b68b63bbce34ce37cf538b43a724304f9562"
+            },
             "dist": {
-                "type": "path",
-                "url": "/Users/nolan/src/pm-packages/ProcessMaker/docker-executor-lua",
-                "reference": "4bfc42385be13ea559a39393a7e87c52c13e5998"
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-lua/zipball/2278b68b63bbce34ce37cf538b43a724304f9562",
+                "reference": "2278b68b63bbce34ce37cf538b43a724304f9562",
+                "shasum": ""
             },
             "type": "library",
             "extra": {
@@ -5645,26 +5651,31 @@
             },
             "autoload": {
                 "psr-4": {
-                    "ProcessMaker\\Package\\DockerExecutorLua\\": "src",
-                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
+                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners",
+                    "ProcessMaker\\Package\\DockerExecutorLua\\": "src"
                 }
             },
-            "license": [
-                "GAGPL-3.0-or-later"
-            ],
+            "notification-url": "https://packagist.org/downloads/",
             "description": "Lua script executor for processmaker 4",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "issues": "https://github.com/ProcessMaker/docker-executor-lua/issues",
+                "source": "https://github.com/ProcessMaker/docker-executor-lua/tree/v1.0.0"
+            },
+            "time": "2020-03-31T21:45:44+00:00"
         },
         {
             "name": "processmaker/docker-executor-node",
-            "version": "1.0.2",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/docker-executor-node.git",
+                "reference": "e61f24090422f890cb227bc94a4461438f3ec9a6"
+            },
             "dist": {
-                "type": "path",
-                "url": "/Users/nolan/src/pm-packages/ProcessMaker/docker-executor-node",
-                "reference": "db5d75aa52ad22b8b9848d9ec12a78e011925fbd"
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-node/zipball/e61f24090422f890cb227bc94a4461438f3ec9a6",
+                "reference": "e61f24090422f890cb227bc94a4461438f3ec9a6",
+                "shasum": ""
             },
             "type": "library",
             "extra": {
@@ -5676,26 +5687,34 @@
             },
             "autoload": {
                 "psr-4": {
-                    "ProcessMaker\\Package\\DockerExecutorNode\\": "src",
-                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
+                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners",
+                    "ProcessMaker\\Package\\DockerExecutorNode\\": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GAGPL-3.0-or-later"
             ],
             "description": "Javascript script executor for processmaker 4",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "issues": "https://github.com/ProcessMaker/docker-executor-node/issues",
+                "source": "https://github.com/ProcessMaker/docker-executor-node/tree/v1.0.1"
+            },
+            "time": "2020-07-02T22:53:17+00:00"
         },
         {
             "name": "processmaker/docker-executor-php",
             "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/docker-executor-php.git",
+                "reference": "fa170f095279f6f0a55361d33ac177a6e0331310"
+            },
             "dist": {
-                "type": "path",
-                "url": "/Users/nolan/src/pm-packages/ProcessMaker/docker-executor-php",
-                "reference": "d2856f1fd95ce0e1920440f979bfd7894a049bab"
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-php/zipball/fa170f095279f6f0a55361d33ac177a6e0331310",
+                "reference": "fa170f095279f6f0a55361d33ac177a6e0331310",
+                "shasum": ""
             },
             "type": "library",
             "extra": {
@@ -5707,30 +5726,39 @@
             },
             "autoload": {
                 "psr-4": {
-                    "ProcessMaker\\Package\\DockerExecutorPhp\\": "src",
-                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
+                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners",
+                    "ProcessMaker\\Package\\DockerExecutorPhp\\": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GAGPL-3.0-or-later"
             ],
             "description": "PHP script executor for processmaker 4",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "issues": "https://github.com/ProcessMaker/docker-executor-php/issues",
+                "source": "https://github.com/ProcessMaker/docker-executor-php/tree/v1.0.1"
+            },
+            "time": "2022-07-05T20:26:35+00:00"
         },
         {
             "name": "processmaker/laravel-i18next",
             "version": "dev-master",
-            "dist": {
-                "type": "path",
-                "url": "/Users/nolan/src/pm-packages/ProcessMaker/laravel-i18next",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/laravel-i18next.git",
                 "reference": "f950a439a75cd69c06235213ef9b776f29a78573"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/laravel-i18next/zipball/f950a439a75cd69c06235213ef9b776f29a78573",
+                "reference": "f950a439a75cd69c06235213ef9b776f29a78573",
+                "shasum": ""
             },
             "require-dev": {
                 "phpunit/phpunit": "^7.2"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -5740,19 +5768,15 @@
                 }
             },
             "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
                 "psr-4": {
                     "ProcessMaker\\i18next\\": "src",
                     "ProcessMaker\\i18next\\Tests\\": "tests"
-                },
-                "files": [
-                    "src/helpers.php"
-                ]
+                }
             },
-            "scripts": {
-                "test": [
-                    "vendor/bin/phpunit --configuration phpunit.xml"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -5767,18 +5791,25 @@
                 }
             ],
             "description": "Transform Laravel localization files into i18next compatible format. Provides routes for i18next-xhr-backend.",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "issues": "https://github.com/ProcessMaker/laravel-i18next/issues",
+                "source": "https://github.com/ProcessMaker/laravel-i18next/tree/master"
+            },
+            "time": "2020-11-26T14:26:47+00:00"
         },
         {
             "name": "processmaker/nayra",
             "version": "1.9.4",
-            "dist": {
-                "type": "path",
-                "url": "/Users/nolan/src/pm-packages/ProcessMaker/nayra",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/nayra.git",
                 "reference": "e83d67072632fd178018905eba311e7a85e70622"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/e83d67072632fd178018905eba311e7a85e70622",
+                "reference": "e83d67072632fd178018905eba311e7a85e70622",
+                "shasum": ""
             },
             "require-dev": {
                 "phpunit/phpunit": "^7.5"
@@ -5789,40 +5820,30 @@
                     "ProcessMaker\\": "src/ProcessMaker/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Tests\\Feature\\": "tests/Feature/",
-                    "ProcessMaker\\": [
-                        "src/ProcessMaker/",
-                        "tests/unit/ProcessMaker/",
-                        "tests/ProcessMaker/"
-                    ]
-                }
-            },
-            "scripts": {
-                "test": [
-                    "phpunit"
-                ],
-                "coverage": [
-                    "phpunit -d memory_limit=-1 --coverage-html coverage"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "Apache-2.0"
             ],
             "description": "BPMN compliant engine",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "issues": "https://github.com/ProcessMaker/nayra/issues",
+                "source": "https://github.com/ProcessMaker/nayra/tree/v1.9.4"
+            },
+            "time": "2022-09-03T00:32:24+00:00"
         },
         {
             "name": "processmaker/pmql",
-            "version": "1.6.1",
-            "dist": {
-                "type": "path",
-                "url": "/Users/nolan/src/pm-packages/ProcessMaker/pmql",
+            "version": "dev-feature/FOUR-6565",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/pmql.git",
                 "reference": "ed12a0577c104913a08743e2b99f214140dc50e9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/ed12a0577c104913a08743e2b99f214140dc50e9",
+                "reference": "ed12a0577c104913a08743e2b99f214140dc50e9",
+                "shasum": ""
             },
             "require": {
                 "laravel/framework": "^5.7|^6|^7|^8|^9"
@@ -5842,11 +5863,7 @@
                     "ProcessMaker\\Query\\": "src"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "ProcessMaker\\Query\\Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "authors": [
                 {
                     "name": "Taylor Dondich",
@@ -5854,10 +5871,11 @@
                 }
             ],
             "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "issues": "https://github.com/ProcessMaker/pmql/issues",
+                "source": "https://github.com/ProcessMaker/pmql/tree/feature/FOUR-6565"
+            },
+            "time": "2022-10-04T18:16:32+00:00"
         },
         {
             "name": "psr/cache",
@@ -13200,12 +13218,13 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "processmaker/laravel-i18next": 20
+        "processmaker/laravel-i18next": 20,
+        "processmaker/pmql": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.3|^8.0"
+        "php": "^8.1"
     },
     "platform-dev": [],
     "plugin-api-version": "2.1.0"
