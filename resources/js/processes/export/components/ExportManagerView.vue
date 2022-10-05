@@ -40,7 +40,7 @@
               {{ $t("Export") }}
             </button>
             <set-password-modal ref="set-password-modal" :processId="processId" :processName="processName" @verifyPassword="exportProcess"></set-password-modal>
-            <export-success-modal ref="export-success-modal" :processName="processName" :processId="processId"></export-success-modal>
+            <export-success-modal ref="export-success-modal" :processName="processName" :processId="processId" :exportInfo="exportInfo"></export-success-modal>
           </div>
         </div>
       </div>
@@ -61,7 +61,8 @@ export default {
   mixins: [],
   data() {
     return {
-      selected: "basic"
+      selected: "basic",
+      exportInfo: {},
     };
   },
   methods: {
@@ -83,9 +84,10 @@ export default {
             responseType: "blob",
         })
         .then((response) => {
-            let header = response.header['export-info'];
-            let info = json.decode(header);
+            let header = response.headers['export-info'];
+            this.exportInfo = JSON.parse(header);
             this.$refs['export-success-modal'].show();
+            this.$refs['set-password-modal'].hide();
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement("a");
             link.href = url;
@@ -100,7 +102,7 @@ export default {
   }
 }   
 </script>
-
+    
 <style lang="scss" scoped>
 .medium-font {
   font-weight: 500;
