@@ -18,8 +18,6 @@ class OauthTransportManager extends TransportManager
 
     private $token = null;
 
-    private $authMethodIndex = null;
-
     private $authMethod = null;
 
     private $emailServerIndex = null;
@@ -29,8 +27,7 @@ class OauthTransportManager extends TransportManager
     public function __construct($config)
     {
         $this->config = (object) $config;
-        $this->authMethodIndex = $config->get('mail.auth_method');
-        $this->authMethod = EmailConfig::authentication_methods[$this->authMethodIndex];
+        $this->authMethod = $config->get('mail.auth_method');
         $this->emailServerIndex = $this->config->get('mail.server_index');
         $this->fromAddress = $this->config->get('mail.from.address');
 
@@ -63,24 +60,22 @@ class OauthTransportManager extends TransportManager
     {
         $transport = parent::createSmtpDriver();
 
-        if (isset($this->authMethodIndex)) {
-            switch ($this->authMethod) {
-                case 'google':
-                    $accessToken = $this->checkForExpiredGoogleAccessToken($this->emailServerIndex);
-                    $fromAddress = $this->config->get('mail.from.address');
-                    // Update Authencation Mode
-                    $transport->setAuthMode('XOAUTH2')
-                    ->setUsername($this->fromAddress)
-                    ->setPassword($accessToken);
-                    break;
-                case 'office365':
-                    $accessToken = $this->checkForExpiredOffice365AccessToken($this->emailServerIndex);
-                    // Update Authencation Mode
-                    $transport->setAuthMode('XOAUTH2')
-                    ->setUsername($this->fromAddress)
-                    ->setPassword($accessToken);
-                    break;
-            }
+        switch ($this->authMethod) {
+            case 'google':
+                $accessToken = $this->checkForExpiredGoogleAccessToken($this->emailServerIndex);
+                $fromAddress = $this->config->get('mail.from.address');
+                // Update Authencation Mode
+                $transport->setAuthMode('XOAUTH2')
+                ->setUsername($this->fromAddress)
+                ->setPassword($accessToken);
+                break;
+            case 'office365':
+                $accessToken = $this->checkForExpiredOffice365AccessToken($this->emailServerIndex);
+                // Update Authencation Mode
+                $transport->setAuthMode('XOAUTH2')
+                ->setUsername($this->fromAddress)
+                ->setPassword($accessToken);
+                break;
         }
 
         return $transport;
