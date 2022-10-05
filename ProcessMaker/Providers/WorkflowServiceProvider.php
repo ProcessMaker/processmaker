@@ -199,5 +199,7 @@ class WorkflowServiceProvider extends ServiceProvider
         $this->app->bind('workflow.FormalExpression', function ($app) {
             return new FormalExpression();
         });
+
+        parent::register();
     }
 }
