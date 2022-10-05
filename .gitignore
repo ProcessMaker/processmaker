@@ -38,3 +38,4 @@ cypress/screenshots
 cypress/videos
 cypress/downloads
 .php-cs-fixer.cache
+.phpunit.result.cache
