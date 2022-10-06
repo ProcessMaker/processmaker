@@ -45,7 +45,6 @@ class WebServiceRequest
         $request = $this->request->build($config, $data);
         $response = $this->requestCaller->call($request, $config);
         $result = $this->responseMapper->map($response, $config, $data);
-
         return $result;
     }
 
@@ -57,16 +56,7 @@ class WebServiceRequest
 
         switch ($this->dataSource->authtype) {
             case 'PASSWORD':
-                // Si se creó el datasource como wsdl y despues se modifico a Password, es posible que tenga
-                // un WSDL file por lo que deberiamos:
-                // A- Obtener siempre el wsdlFileFromUrl()
-                // ó
-                // B- Cuando se guarda un datasource si es de tipo soap, y cambió el auth type a password, eliminar 
-                // el wsdl si es que hubiera alguno de una configuracioon anterior (lo malo de esto es que si el usuario
-                // quiere volver a auth type wsdl_file deberá volver a cargar el wsdl, por lo que creo que la opcion 1 es mas 
-                // adecuada ya que el get wsdlFileFromUrl solo se ejecutaria al guardar un datasource debido a la variable input('calculate_operations')
-                // que se encuentra en el packaga datasource en el controller datasource controller method update)
-                $wsdlFile = $this->getWsdlFileFromUrl();
+                $wsdlFile = $this->dataSource->credentials['service_url'];
                 break;
             case 'WSDL_FILE':
                 if (isset($this->dataSource->wsdlFile)) {
@@ -74,12 +64,8 @@ class WebServiceRequest
                 }
                 break;
             default:
-                # code...
+                // code...
                 break;
-        }
-
-        if (!$wsdlFile) {
-            return [];
         }
 
         $dataSourceConfig = [
@@ -99,9 +85,8 @@ class WebServiceRequest
 
         $config = $this->config->build([], $dataSourceConfig, []);
         $request = $this->request->build($config, []);
-        // Request tiene request['wsdl'] se pasa en workflowServiceProvider y lo utiliza para 
-        // obtener las getFunctions en getOperations;
         $client = app(SoapClientInterface::class, $request);
+
         return $client->getOperations();
     }
 
@@ -159,11 +144,5 @@ class WebServiceRequest
         $client = app(SoapClientInterface::class, $request);
 
         return $client->getTypes();
-    }
-
-    public function getWsdlFileFromUrl() 
-    {
-        // Cambiar esto por el verdadero wsdl obtenido desde la url, solo esta para probar
-        return "/Users/agustin/Sites/processmaker/storage/app/private/web_services/1/TPG_Customer.wsdl";
     }
 }
