@@ -82,8 +82,6 @@ class Task extends ApiResource
                                                 || count($array['assignable_users']) < 1;
         if (in_array('assignableUsers', $include) && $needToRecalculateAssignableUsers) {
             $nivel = array_search('request', array_column(debug_backtrace(), 'function'));
-            \Illuminate\Support\Facades\Log::Critical(str_repeat("        ", $nivel) . __LINE__ ."  => Entrando a Assignable");
-
             $definition = $this->getDefinition();
             if (isset($definition['assignment']) && $definition['assignment'] == 'self_service') {
                 $users = [];
