@@ -52,8 +52,10 @@ class ImportScreen extends ImportProcess
             //determine if the screen has watchers
             if (property_exists($screen, 'watchers')) {
                 $names = [];
-                foreach ($screen->watchers as $watcher) {
-                    $names[] = $watcher->name;
+                if ($screen->watchers) {
+                    foreach ($screen->watchers as $watcher) {
+                        $names[] = $watcher->name;
+                    }
                 }
                 $this->status['screens']['info'] = __('Please assign a run script user to: ') . implode(', ', $names);
             }

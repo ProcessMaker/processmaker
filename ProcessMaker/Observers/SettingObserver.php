@@ -66,36 +66,4 @@ class SettingObserver
                 break;
         }
     }
-
-    public function saved(Setting $setting)
-    {
-        try {
-            refresh_artisan_caches();
-        } catch (Exception $exception) {
-            Log::error('Could not cache configuration.', [
-                'message' => $exception->getMessage(),
-                'file' =>$exception->getFile(),
-                'line' => $exception->getLine(),
-            ]);
-        }
-    }
-
-    /**
-     * Handle the setting "deleted" event.
-     *
-     * @param  \ProcessMaker\Models\Setting  $setting
-     * @return void
-     */
-    public function deleted(Setting $setting)
-    {
-        try {
-            refresh_artisan_caches();
-        } catch (Exception $exception) {
-            Log::error('Could not cache configuration.', [
-                'message' => $exception->getMessage(),
-                'file' =>$exception->getFile(),
-                'line' => $exception->getLine(),
-            ]);
-        }
-    }
 }
