@@ -28,17 +28,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         static::extendValidators();
 
-        Factory::guessFactoryNamesUsing(function (string $modelName) {
-            $modelName = Str::afterLast($modelName, '\\');
-
-            return 'Database\\Factories\\ProcessMaker\\Models\\' . $modelName . 'Factory';
-        });
-
-        Factory::guessModelNamesUsing(function ($factory) {
-            preg_match('/Database\\\\Factories\\\\(.*)Factory/', get_class($factory), $match);
-
-            return $match[1];
-        });
+        $this->setupFactories();
 
         parent::boot();
     }
@@ -224,5 +214,35 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         // we are using custom passport migrations
         Passport::ignoreMigrations();
+    }
+
+    private function setupFactories(): void
+    {
+        Factory::guessFactoryNamesUsing(function (string $modelName) {
+            // Package Factories
+            if (preg_match('/ProcessMaker\\\\Plugins\\\\(.*?)\\\\Models\\\\(.*)/', $modelName, $match)) {
+                $package = $match[1];
+                $baseName = $match[2];
+
+                return 'Database\\Factories\\ProcessMaker\\Plugins\\' . $package . '\\' . $baseName . 'Factory';
+            }
+
+            $modelName = Str::afterLast($modelName, '\\');
+
+            return 'Database\\Factories\\ProcessMaker\\Models\\' . $modelName . 'Factory';
+        });
+
+        Factory::guessModelNamesUsing(function ($factory) {
+            // Package Factories
+            if (preg_match('/Database\\\\Factories\\\\ProcessMaker\\\\Plugins\\\\(.*?)\\\\(.*)Factory/', get_class($factory), $match)) {
+                $model = 'ProcessMaker\\Plugins\\' . $match[1] . '\\Models\\' . $match[2];
+
+                return $model;
+            }
+
+            preg_match('/Database\\\\Factories\\\\(.*)Factory/', get_class($factory), $match);
+
+            return $match[1];
+        });
     }
 }
