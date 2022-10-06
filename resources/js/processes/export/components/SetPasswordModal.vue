@@ -70,6 +70,9 @@ export default {
     },
     passwordProtect() {
       this.disabled = this.passwordProtect ? true : false;
+      this.password = "";
+      this.confirmPassword = "";
+      this.errors.password = "";
     }
   },
   methods: { 
