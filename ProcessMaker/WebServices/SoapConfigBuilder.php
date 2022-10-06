@@ -21,7 +21,7 @@ class SoapConfigBuilder implements WebServiceConfigBuilderInterface
 
         switch ($dataSourceConfig['authtype']) {
             case 'PASSWORD':
-                $config['wsdl'] = $credentials['service_url'];
+                $config['wsdl'] = $dataSourceConfig['credentials']['service_url'];
                 break;
             case 'WSDL_FILE':
                 $config['wsdl'] = Storage::disk('web_services')->path($dataSourceConfig['wsdlFile']['path']) ?? null;
