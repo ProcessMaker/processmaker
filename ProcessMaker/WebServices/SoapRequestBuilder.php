@@ -23,7 +23,7 @@ class SoapRequestBuilder implements WebServiceRequestBuilderInterface
                         'authentication_method' => $config['authentication_method'],
                         'login' => $config['username'],
                         'password' => $config['password'],
-                        'location' => $config['location'],
+                        'location' => null ,
                         'debug_mode' => $config['debug_mode'],
                     ]),
                     'operation' => $config['operation'],
