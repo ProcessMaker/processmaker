@@ -227,6 +227,14 @@ class ProcessMakerServiceProvider extends ServiceProvider
                 return 'Database\\Factories\\ProcessMaker\\Plugins\\' . $package . '\\' . $baseName . 'Factory';
             }
 
+            // Some packages models are namespaced like this:
+            if (preg_match('/ProcessMaker\\\\Packages\\\\Connectors\\\\(.*?)\\\\Models\\\\(.*)/', $modelName, $match)) {
+                $package = $match[1];
+                $baseName = $match[2];
+
+                return 'Database\\Factories\\ProcessMaker\\Plugins\\' . $package . '\\' . $baseName . 'Factory';
+            }
+
             $modelName = Str::afterLast($modelName, '\\');
 
             return 'Database\\Factories\\ProcessMaker\\Models\\' . $modelName . 'Factory';
@@ -236,6 +244,12 @@ class ProcessMakerServiceProvider extends ServiceProvider
             // Package Factories
             if (preg_match('/Database\\\\Factories\\\\ProcessMaker\\\\Plugins\\\\(.*?)\\\\(.*)Factory/', get_class($factory), $match)) {
                 $model = 'ProcessMaker\\Plugins\\' . $match[1] . '\\Models\\' . $match[2];
+                if (class_exists($model)) {
+                    return $model;
+                }
+
+                // Some packages models are namespaced like this:
+                $model = 'ProcessMaker\\Packages\\Connectors\\' . $match[1] . '\\Models\\' . $match[2];
 
                 return $model;
             }
