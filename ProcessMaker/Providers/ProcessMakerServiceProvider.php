@@ -219,44 +219,68 @@ class ProcessMakerServiceProvider extends ServiceProvider
     private function setupFactories(): void
     {
         Factory::guessFactoryNamesUsing(function (string $modelName) {
-            // Package Factories
-            if (preg_match('/ProcessMaker\\\\Plugins\\\\(.*?)\\\\Models\\\\(.*)/', $modelName, $match)) {
-                $package = $match[1];
-                $baseName = $match[2];
+            $factoryFinder = [
+                [
+                    '/ProcessMaker\\\\Plugins\\\\(.*?)\\\\Models\\\\(.*)/',
+                    fn ($package, $baseName) => 'Database\\Factories\\ProcessMaker\\Plugins\\' . $package . '\\' . $baseName . 'Factory',
+                ],
+                [
+                    '/ProcessMaker\\\\Packages\\\\Connectors\\\\(.*?)\\\\Models\\\\(.*)/',
+                    fn ($package, $baseName) => 'Database\\Factories\\ProcessMaker\\Plugins\\' . $package . '\\' . $baseName . 'Factory',
+                ],
+                [
+                    '/ProcessMaker\\\\Package\\\\(.*?)\\\\Models\\\\(.*)/',
+                    fn ($package, $baseName) => 'Database\\Factories\\ProcessMaker\\Package\\' . $package . '\\' . $baseName . 'Factory',
+                ],
+                [
+                    '/ProcessMaker\\\\Models\\\\(.*)/',
+                    fn ($baseName) => 'Database\\Factories\\ProcessMaker\\Models\\' . $baseName . 'Factory',
+                ],
+            ];
 
-                return 'Database\\Factories\\ProcessMaker\\Plugins\\' . $package . '\\' . $baseName . 'Factory';
+            $factory = null;
+            foreach ($factoryFinder as $matcher) {
+                if (preg_match($matcher[0], $modelName, $match)) {
+                    $factory = $matcher[1]($match[1], $match[2] ?? null);
+                    break;
+                }
             }
 
-            // Some packages models are namespaced like this:
-            if (preg_match('/ProcessMaker\\\\Packages\\\\Connectors\\\\(.*?)\\\\Models\\\\(.*)/', $modelName, $match)) {
-                $package = $match[1];
-                $baseName = $match[2];
-
-                return 'Database\\Factories\\ProcessMaker\\Plugins\\' . $package . '\\' . $baseName . 'Factory';
-            }
-
-            $modelName = Str::afterLast($modelName, '\\');
-
-            return 'Database\\Factories\\ProcessMaker\\Models\\' . $modelName . 'Factory';
+            return $factory;
         });
 
         Factory::guessModelNamesUsing(function ($factory) {
-            // Package Factories
-            if (preg_match('/Database\\\\Factories\\\\ProcessMaker\\\\Plugins\\\\(.*?)\\\\(.*)Factory/', get_class($factory), $match)) {
-                $model = 'ProcessMaker\\Plugins\\' . $match[1] . '\\Models\\' . $match[2];
-                if (class_exists($model)) {
-                    return $model;
+            $modelFinder = [
+                [
+                    '/Database\\\\Factories\\\\ProcessMaker\\\\Plugins\\\\(.*?)\\\\(.*)Factory/',
+                    function ($package, $baseName) {
+                        $model = 'ProcessMaker\\Plugins\\' . $package . '\\Models\\' . $baseName;
+                        if (class_exists($model)) {
+                            return $model;
+                        } else {
+                            return 'ProcessMaker\\Packages\\Connectors\\' . $package . '\\Models\\' . $baseName;
+                        }
+                    },
+                ],
+                [
+                    '/Database\\\\Factories\\\\ProcessMaker\\\\Package\\\\(.*?)\\\\(.*)Factory/',
+                    fn ($package, $baseName) => 'ProcessMaker\\Package\\' . $package . '\\Models\\' . $baseName,
+                ],
+                [
+                    '/Database\\\\Factories\\\\(.*)Factory/',
+                    fn ($match) => $match,
+                ],
+            ];
+
+            $model = null;
+            foreach ($modelFinder as $matcher) {
+                if (preg_match($matcher[0], get_class($factory), $match)) {
+                    $model = $matcher[1]($match[1], $match[2] ?? null);
+                    break;
                 }
-
-                // Some packages models are namespaced like this:
-                $model = 'ProcessMaker\\Packages\\Connectors\\' . $match[1] . '\\Models\\' . $match[2];
-
-                return $model;
             }
 
-            preg_match('/Database\\\\Factories\\\\(.*)Factory/', get_class($factory), $match);
-
-            return $match[1];
+            return $model;
         });
     }
 }
