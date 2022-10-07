@@ -57,7 +57,7 @@ class UserTest extends TestCase
         $this->assertFalse($mom_user->hasPermission('launch.nukes'));
     }
 
-    public function testCanAny()
+    public function testCanAnyFirst()
     {
         $user = User::factory()->create();
 
@@ -68,15 +68,15 @@ class UserTest extends TestCase
         (new AuthServiceProvider(app()))->boot();
 
         $this->assertFalse($user->can('bar'));
-        $this->assertFalse($user->canAny('foo|bar'));
+        $this->assertFalse($user->canAnyFirst('foo|bar'));
 
         $user->permissions()->attach($p2);
         $user->permissions()->attach($p3);
         $user->refresh();
 
         $this->assertTrue($user->can('bar'));
-        $this->assertEquals('bar', $user->canAny('foo|bar'));
-        $this->assertEquals('baz', $user->canAny('foo|baz'));
+        $this->assertEquals('bar', $user->canAnyFirst('foo|bar'));
+        $this->assertEquals('baz', $user->canAnyFirst('foo|baz'));
     }
 
     public function testAddCategoryViewPermissions()
