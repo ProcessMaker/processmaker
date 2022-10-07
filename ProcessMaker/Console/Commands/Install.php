@@ -317,7 +317,7 @@ class Install extends Command
             $this->info(__('Installer completed. Consult ProcessMaker documentation on how to configure email, jobs and notifications.'));
         }
 
-        return true;
+        return 0;
     }
 
     /**
