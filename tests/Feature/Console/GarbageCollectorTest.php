@@ -95,7 +95,7 @@ class GarbageCollectorTest extends TestCase
         ]);
 
         // Assert that the table was correcly created
-        $this->assertNotNull(ProcessRequestToken::find($token1));
+        $this->assertNotNull(ProcessRequestToken::find($token1->id));
         $this->assertTrue(ScheduledTask::all()->count() === 2);
 
         // Run the garbage collector

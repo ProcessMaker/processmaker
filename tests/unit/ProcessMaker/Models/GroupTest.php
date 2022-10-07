@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use ProcessMaker\Models\Group;
 use Tests\TestCase;
 
 class GroupTest extends TestCase
@@ -27,7 +28,7 @@ class GroupTest extends TestCase
      */
     public function testGroupWithoutManager()
     {
-        $group = \Group::factory()->make([
+        $group = Group::factory()->make([
             'manager_id' => null,
         ]);
         $this->assertInstanceOf(Group::class, $group);
