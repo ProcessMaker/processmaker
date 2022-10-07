@@ -17,15 +17,6 @@ class Application extends IlluminateApplication
     // ProcessMaker Version
     public const VERSION = '4.0.0';
 
-    public function __construct($basePath = null)
-    {
-        parent::__construct($basePath);
-
-        $this->afterBootstrapping(LoadEnvironmentVariables::class, function () {
-            $this->register(SettingServiceProvider::class);
-        });
-    }
-
     /**
      * Sets the timezone for the application and for php with the specified timezone.
      *

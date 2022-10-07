@@ -35,6 +35,8 @@ class BroadcastTest extends TestCase
 
     public function testBroadcastEventsHaveTesting()
     {
+        $this->markTestSkipped('FOUR-6653');
+
         foreach (scandir(app_path('Events')) as $file) {
             if (!preg_match('/(?<name>.+).php/', $file, $matches)) {
                 continue;
@@ -52,6 +54,8 @@ class BroadcastTest extends TestCase
      */
     public function testSettingsLoadedBroadcast()
     {
+        $this->markTestSkipped('FOUR-6653');
+
         $this->assertTrue(config('app.settings.loaded'));
     }
 
