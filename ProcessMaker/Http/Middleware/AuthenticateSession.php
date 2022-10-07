@@ -2,8 +2,8 @@
 
 namespace ProcessMaker\Http\Middleware;
 
-use Closure;
 use BadMethodCallException;
+use Closure;
 use Illuminate\Session\Middleware\AuthenticateSession as BaseAuthenticateSession;
 
 class AuthenticateSession extends BaseAuthenticateSession
@@ -19,7 +19,7 @@ class AuthenticateSession extends BaseAuthenticateSession
      */
     public function handle($request, Closure $next)
     {
-        if (! $request->hasSession() || ! $request->user()) {
+        if (!$request->hasSession() || !$request->user()) {
             return $next($request);
         }
 
@@ -30,7 +30,7 @@ class AuthenticateSession extends BaseAuthenticateSession
             if ($this->auth->viaRemember()) {
                 $passwordHash = explode('|', $request->cookies->get($this->auth->getRecallerName()))[2] ?? null;
 
-                if (! $passwordHash || $passwordHash != $request->user()->getAuthPassword()) {
+                if (!$passwordHash || $passwordHash != $request->user()->getAuthPassword()) {
                     $this->logout($request);
                 }
             }
@@ -38,7 +38,7 @@ class AuthenticateSession extends BaseAuthenticateSession
             return $next($request);
         }
 
-        if (! $request->session()->has('password_hash')) {
+        if (!$request->session()->has('password_hash')) {
             $this->storePasswordHashInSession($request);
         }
 
