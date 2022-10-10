@@ -17,6 +17,7 @@
           ref="builder"
           @change="updateConfig"
           :screen="screen"
+          :render-controls="displayBuilder"
         >
           <data-loading-basic
             :is-loaded="false"
