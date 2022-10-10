@@ -124,7 +124,7 @@
         "coverageDirectory": "<rootDir>/tests/js/coverage"
     },
     "engines": {
-        "npm": ">=8",
-        "node": ">=16 <18"
+        "npm": "~8.5",
+        "node": "~16.15"
     }
 }
