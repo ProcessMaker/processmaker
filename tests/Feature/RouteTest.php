@@ -10,13 +10,6 @@ class RouteTest extends TestCase
 {
     use RequestHelper;
 
-    private $apiExceptions = [
-        'ProcessMaker\Http\Controllers\TestStatusController@testAcknowledgement',
-    ];
-
-    private $webExceptions = [
-    ];
-
     /**
      * This this does some basic checks to make sure we converted routes
      * to the correct class-based routes as part of the Laravel 8 upgrade
@@ -28,7 +21,7 @@ class RouteTest extends TestCase
         $routes = collect($router->getRoutes())->map(function ($route) use ($router) {
             return [
                 'action' => $route->getActionName(),
-                'type' => in_array('api', $router->gatherRouteMiddleware($route)) ? 'api' : 'web',
+                'type' => in_array('auth:api', $router->gatherRouteMiddleware($route)) ? 'api' : 'web',
             ];
         });
 
@@ -41,19 +34,12 @@ class RouteTest extends TestCase
 
             $method = explode('@', $action);
 
+            if (count($method) === 1) {
+                $method[1] = '__invoke';
+            }
+
             // Make sure the method exists in the class
             $this->assertTrue(method_exists($method[0], $method[1]), $method[0] . ' does not have method ' . $method[1]);
-
-            // Make sure we are referencing the correct api or web version of a class, since they often have the same name
-            if ($route['type'] == 'api') {
-                if (!in_array($action, $this->apiExceptions)) {
-                    $this->assertStringContainsString('\\Api\\', $method[0]);
-                }
-            } else {
-                if (!in_array($action, $this->webExceptions)) {
-                    $this->assertStringNotContainsString('\\Api\\', $method[0]);
-                }
-            }
         }
     }
 }
