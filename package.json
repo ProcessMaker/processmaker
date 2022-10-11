@@ -52,6 +52,7 @@
         "@processmaker/screen-builder": "2.50.0",
         "@processmaker/vue-form-elements": "0.40.0",
         "@processmaker/vue-multiselect": "2.2.0",
+        "autoprefixer": "10.4.5",
         "axios": "^0.27.2",
         "bootstrap": "^4.5.3",
         "bootstrap-vue": "^2.18.1",
