@@ -36,34 +36,4 @@ class ProcessTaskAssignmentFactory extends Factory
             'assignment_type' => $model,
         ];
     }
-
-    public function user()
-    {
-        return $this->state(function () {
-            $follow = $factory->raw(ProcessTaskAssignment::class);
-            $extras = [
-                'assignment_id' => function () {
-                    return User::factory()->create()->getKey();
-                },
-                'assignment_type' => User::class,
-            ];
-
-            return array_merge($follow, $extras);
-        });
-    }
-
-    public function group()
-    {
-        return $this->state(function () {
-            $follow = $factory->raw(ProcessTaskAssignment::class);
-            $extras = [
-                'assignment_id' => function () {
-                    return Group::factory()->create()->getKey();
-                },
-                'assignment_type' => Group::class,
-            ];
-
-            return array_merge($follow, $extras);
-        });
-    }
 }
