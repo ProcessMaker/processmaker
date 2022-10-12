@@ -92,10 +92,24 @@ class NativeSoapClient implements SoapClientInterface
             if ($credentials->length) {
                 $doc->getElementsByTagName('Username')->item(0)->nodeValue = '************';
                 $doc->getElementsByTagName('Password')->item(0)->nodeValue = '************';
+
+                if ($doc->getElementsByTagName('Nonce')->item(0) && $doc->getElementsByTagName('Nonce')->item(0)->nodeValue) {
+                    $doc->getElementsByTagName('Nonce')->item(0)->nodeValue = '************';
+                }
             }
 
             Log::channel('data-source')->info($label . $doc->saveXML());
         } catch (\Throwable $th) {
+            if ($label === 'Request Headers: ') {
+                $newLog = '';
+                foreach (preg_split("/((\r?\n)|(\r\n?))/", $log) as $line) {
+                    if (str_contains($line, 'Authorization:')) {
+                        $line = 'Authorization: ************';
+                    }
+                    $newLog .= $line . PHP_EOL;
+                }
+                $log = $newLog;
+            }
             Log::channel('data-source')->info($label . $log);
         }
     }
