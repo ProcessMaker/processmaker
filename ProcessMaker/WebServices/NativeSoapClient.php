@@ -6,6 +6,7 @@ use DOMDocument;
 use DOMXPath;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\WebServices\Contracts\SoapClientInterface;
+use SimpleXMLElement;
 use SoapClient;
 use SoapHeader;
 use SoapVar;
@@ -20,8 +21,8 @@ class NativeSoapClient implements SoapClientInterface
 
     public function __construct(string $wsdl, array $options)
     {
-
         $this->soapClient = new SoapClient($wsdl, $options);
+
         // Parse WSDL
         $dom = new DOMDocument();
         $dom->load($wsdl);
@@ -87,8 +88,8 @@ class NativeSoapClient implements SoapClientInterface
             $doc->formatOutput = true;
             $doc->loadXML($log);
 
-            $creddentials = $doc->getElementsByTagName('UsernameToken');
-            if ($creddentials->length) {
+            $credentials = $doc->getElementsByTagName('UsernameToken');
+            if ($credentials->length) {
                 $doc->getElementsByTagName('Username')->item(0)->nodeValue = '************';
                 $doc->getElementsByTagName('Password')->item(0)->nodeValue = '************';
             }
@@ -108,21 +109,9 @@ class NativeSoapClient implements SoapClientInterface
     {
         switch ($options['authentication_method']) {
             case 'PASSWORD':
-                $this->soapClient->__setSoapHeaders([
-                    new SoapHeader(
-                        'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd',
-                        'Security',
-                        new SoapVar(
-                            '<wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
-                                <wsse:UsernameToken>
-                                    <wsse:Username>' . $options['login'] . '</wsse:Username>
-                                    <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">' . $options['password'] . '</wsse:Password>
-                                </wsse:UsernameToken>
-                            </wsse:Security>',
-                            XSD_ANYXML
-                        )
-                    ),
-                ]);
+                $this->soapClient->__setSoapHeaders(
+                    $this->soapClientWSSecurityHeader($options)
+                );
                 break;
             case 'WSDL_FILE':
                 $this->soapClient->__setSoapHeaders([
@@ -159,6 +148,70 @@ class NativeSoapClient implements SoapClientInterface
                 ]);
                 break;
         }
+    }
+
+    /**
+     * This function implements a WS-Security digest authentification for PHP.
+     *
+     * @access private
+     * @param array $options
+     * @return SoapHeader
+     */
+    private function soapClientWSSecurityHeader($options)
+    {
+
+        if ($options['password_type'] === 'None') {
+            return;
+        }
+
+        // Creating date using yyyy-mm-ddThh:mm:ssZ format
+        $tmCreated = gmdate('Y-m-d\TH:i:s\Z');
+        $tmExpires = gmdate('Y-m-d\TH:i:s\Z', gmdate('U') + 180); //only necessary if using the timestamp element
+
+        // Generating and encoding a random number
+        $simpleNonce = mt_rand();
+        $encodedNonce = base64_encode($simpleNonce);
+
+        // Compiling WSS string
+        $password = $options['password'];
+        $passwordDigest = base64_encode(sha1($simpleNonce . $tmCreated . $password, true));
+
+        // Initializing namespaces
+        $nsWsse = 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd';
+        $nsWsu = 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd';
+
+        $passwordType = 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText';
+
+        if ($options['password_type'] === 'PasswordDigest') {
+            $passwordType = 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest';
+            $password = $passwordDigest;
+        }
+
+        $encodingType = 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary';
+
+        // Creating WSS identification header using SimpleXML
+        $root = new SimpleXMLElement('<root/>');
+
+        $security = $root->addChild('wsse:Security', null, $nsWsse);
+
+        //the timestamp element is not required by all servers
+        $timestamp = $security->addChild('wsu:Timestamp', null, $nsWsu);
+        $timestamp->addAttribute('wsu:Id', 'Timestamp-28');
+        $timestamp->addChild('wsu:Created', $tmCreated, $nsWsu);
+        $timestamp->addChild('wsu:Expires', $tmExpires, $nsWsu);
+
+        $usernameToken = $security->addChild('wsse:UsernameToken', null, $nsWsse);
+        $usernameToken->addChild('wsse:Username', $options['login'], $nsWsse);
+        $usernameToken->addChild('wsse:Password', $password, $nsWsse)->addAttribute('Type', $passwordType);
+        $usernameToken->addChild('wsse:Nonce', $encodedNonce, $nsWsse)->addAttribute('EncodingType', $encodingType);
+        $usernameToken->addChild('wsu:Created', $tmCreated, $nsWsu);
+
+        // Recovering XML value from that object
+        $root->registerXPathNamespace('wsse', $nsWsse);
+        $full = $root->xpath('/root/wsse:Security');
+        $auth = $full[0]->asXML();
+
+        return new SoapHeader($nsWsse, 'Security', new SoapVar($auth, XSD_ANYXML), true);
     }
 
     public function getOperations(string $serviceName = ''): array
