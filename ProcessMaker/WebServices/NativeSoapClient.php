@@ -153,13 +153,11 @@ class NativeSoapClient implements SoapClientInterface
     /**
      * This function implements a WS-Security digest authentification for PHP.
      *
-     * @access private
      * @param array $options
      * @return SoapHeader
      */
     private function soapClientWSSecurityHeader($options)
     {
-
         if ($options['password_type'] === 'None') {
             return;
         }
