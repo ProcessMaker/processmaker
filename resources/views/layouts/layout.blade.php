@@ -9,6 +9,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="app-url" content="{{ config('app.url') }}">
     <meta name="i18n-mdate" content='{!! json_encode(ProcessMaker\i18nHelper::mdates()) !!}'>
+    <meta name="screen-cache-enabled" content="{{ config('app.screen.cache_enabled') ? 'true' : 'false' }}">
+    <meta name="screen-cache-timeout" content="{{ config('app.screen.cache_timeout') }}">
     @if(Auth::user())
     <meta name="user-id" content="{{ Auth::user()->id }}">
     <meta name="datetime-format" content="{{ Auth::user()->datetime_format ?: config('app.dateformat') }}">
