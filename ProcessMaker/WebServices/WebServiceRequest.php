@@ -63,6 +63,9 @@ class WebServiceRequest
                     $wsdlFile = $this->dataSource->wsdlFile;
                 }
                 break;
+            case 'LOCAL_CERTIFICATE':
+                $wsdlFile = $this->dataSource->credentials['service_url'];
+                break;
             default:
                 // code...
                 break;

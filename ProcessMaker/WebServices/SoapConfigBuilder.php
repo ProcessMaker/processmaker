@@ -26,17 +26,22 @@ class SoapConfigBuilder implements WebServiceConfigBuilderInterface
             case 'WSDL_FILE':
                 $config['wsdl'] = Storage::disk('web_services')->path($dataSourceConfig['wsdlFile']['path']) ?? null;
                 break;
+            case 'LOCAL_CERTIFICATE':
+                $config['wsdl'] = $dataSourceConfig['credentials']['service_url'];
+                $config['local_cert'] = $this->getCertificatePath($dataSourceConfig);
+                break;
             default:
                 // code...
                 break;
         }
 
-        $config['username'] = $credentials['user'];
-        $config['password'] = $credentials['password'];
+        $config['username'] = $credentials['user'] ?? '';
+        $config['password'] = $credentials['password'] ?? '';
         $config['authentication_method'] = $dataSourceConfig['authtype'] ?? 'PASSWORD';
         $config['debug_mode'] = $dataSourceConfig['debug_mode'];
-        $config['location'] = $credentials['location'] ?? '';
+        $config['location'] = $this->getLocation($dataSourceConfig, $credentials);
         $config['service_url'] = $credentials['service_url'] ?? '';
+        $config['passphrase'] = $credentials['passphrase'] ?? '';
         $config['password_type'] = $credentials['password_type'] ?? 'None';
         // Prepare endpoint params and dataMapping
         if (!empty($serviceTaskConfig['endpoint'])) {
@@ -70,5 +75,25 @@ class SoapConfigBuilder implements WebServiceConfigBuilderInterface
         }
 
         return $config;
+    }
+
+    private function getLocation($dataSourceConfig, $credentials)
+    {
+        if ($dataSourceConfig['authtype'] === 'LOCAL_CERTIFICATE') {
+            $wsdlUrl = $credentials['service_url'] ?? '';
+            $lastSlash = strrpos($wsdlUrl, "/") ?: PHP_INT_MAX;
+            $lastQuestion = strrpos($wsdlUrl, "?") ?: PHP_INT_MAX;
+            return substr($wsdlUrl,0, min ($lastSlash, $lastQuestion));
+        }
+
+        return $credentials['location'] ?? '';
+    }
+
+    private function getCertificatePath($dataSourceConfig)
+    {
+        if ($dataSourceConfig['credentials'] && $dataSourceConfig['credentials']['files'] && count ($dataSourceConfig['credentials']['files']) > 0) {
+            return Storage::disk('web_services')->path($dataSourceConfig['credentials']['files'][0]['path']);
+        }
+        return '';
     }
 }

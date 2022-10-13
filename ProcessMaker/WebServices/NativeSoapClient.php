@@ -25,7 +25,7 @@ class NativeSoapClient implements SoapClientInterface
 
         // Parse WSDL
         $dom = new DOMDocument();
-        $dom->load($wsdl);
+        $this->loadWsdl($dom, $wsdl, $options);
         $xpath = new DOMXPath($dom);
         $xpath->registerNamespace('soap', 'http://schemas.xmlsoap.org/wsdl/soap/');
         $xpath->registerNamespace('wsdl', 'http://schemas.xmlsoap.org/wsdl/');
@@ -152,8 +152,8 @@ class NativeSoapClient implements SoapClientInterface
                         new SoapVar(
                             '<wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
                                 <wsse:UsernameToken>
-                                    <wsse:Username>' . $options['login'] . '</wsse:Username>
-                                    <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">' . $options['password'] . '</wsse:Password>
+                                    <wsse:Username>test</wsse:Username>
+                                    <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">test</wsse:Password>
                                 </wsse:UsernameToken>
                             </wsse:Security>',
                             XSD_ANYXML
@@ -300,5 +300,32 @@ class NativeSoapClient implements SoapClientInterface
         }
 
         return $parameters;
+    }
+
+    private function loadWsdl(DOMDocument $dom, $wsdl, array $options)
+    {
+        if ($options['authentication_method'] === 'LOCAL_CERTIFICATE') {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $wsdl);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "grant_type=client_cert");
+            curl_setopt($ch, CURLOPT_SSLCERT, $options['local_cert']);
+            curl_setopt($ch, CURLOPT_SSLCERTTYPE, "PEM");
+            curl_setopt($ch, CURLOPT_SSLKEYPASSWD, $options['passphrase']);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: text/xml']);
+            curl_setopt( $ch, CURLOPT_CUSTOMREQUEST, 'GET' );
+
+            $wsdlContent = curl_exec($ch);
+            if (curl_errno($ch)) {
+                return false;
+            }
+            curl_close($ch);
+            $dom->loadXML($wsdlContent);
+        }
+        else {
+            $dom->load($wsdl);
+        }
     }
 }
