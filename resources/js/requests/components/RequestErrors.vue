@@ -65,7 +65,7 @@
       overflow-x: scroll;
       font-size: 87.5%;
       box-shadow: inset -8px -24px 6px -8px rgba(0,0,0.5);
-      max-width: 1200px; // Not a fan of hard-coding this value, but it's equivalent to $screen-md-max
+      max-width: 992px; // Not a fan of hard-coding this value, but it's equivalent to $screen-md-max
     }
 
     .error-element {
