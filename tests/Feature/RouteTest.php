@@ -16,6 +16,12 @@ class RouteTest extends TestCase
      */
     public function testIndexRoute()
     {
+        $ethosRoutePath = base_path('vendor/processmaker/package-ellucian-ethos/routes/');
+        if (file_exists($ethosRoutePath . 'api.php')) {
+            require_once $ethosRoutePath . 'api.php';
+            require_once $ethosRoutePath . 'web.php';
+        }
+
         $router = app()->make(Router::class);
 
         $routes = collect($router->getRoutes())->map(function ($route) use ($router) {
