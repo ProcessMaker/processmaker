@@ -7,8 +7,8 @@
                       :data="errors"
                       data-path="data">
                 <template slot="message" slot-scope="props">
-                    <h5>{{props.rowData.message}}</h5>
-                    <p class="error-body">{{props.rowData.body}}</p>
+                    <h6>{{props.rowData.message}}</h6>
+                    <pre class="error-body">{{props.rowData.body}}</pre>
                 </template>
                 <template slot="datetime" slot-scope="props">
                     {{formatDate(props.rowData.created_at)}}
@@ -54,18 +54,21 @@
             formatDate(date) {
                 return moment(date).fromNow();
             },
-            fetch() {
-
-            }
+            fetch() {}
         }
     };
 </script>
 
 <style lang="scss" scoped>
-    p.error-body {
-        white-space: pre;
+    .error-body {
+      word-break: break-word;
+      overflow-x: scroll;
+      font-size: 87.5%;
+      box-shadow: inset -8px -24px 6px -8px rgba(0,0,0.5);
+      max-width: 1200px; // Not a fan of hard-coding this value, but it's equivalent to $screen-md-max
     }
+
     .error-element {
-        white-space: pre;
+      white-space: pre;
     }
 </style>

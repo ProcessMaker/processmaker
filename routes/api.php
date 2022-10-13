@@ -9,7 +9,6 @@ Route::group(
         'namespace' => 'ProcessMaker\Http\Controllers\Api',
         'as' => 'api.',
     ], function () {
-
     // Users
         Route::get('users', 'UserController@index')->name('users.index'); //Permissions handled in the controller
         Route::get('users/{user}', 'UserController@show')->name('users.show'); //Permissions handled in the controller
@@ -123,6 +122,7 @@ Route::group(
         Route::get('requests', 'ProcessRequestController@index')->name('requests.index'); //Already filtered in controller
         Route::get('requests/{request}', 'ProcessRequestController@show')->name('requests.show')->middleware('can:view,request');
         Route::put('requests/{request}', 'ProcessRequestController@update')->name('requests.update')->middleware('can:update,request');
+        Route::put('requests/{request}/retry', 'ProcessRequestController@retry')->name('requests.retry')->middleware('can:update,request');
         Route::delete('requests/{request}', 'ProcessRequestController@destroy')->name('requests.destroy')->middleware('can:destroy,request');
         Route::post('requests/{request}/events/{event}', 'ProcessRequestController@activateIntermediateEvent')->name('requests.update,request');
 
