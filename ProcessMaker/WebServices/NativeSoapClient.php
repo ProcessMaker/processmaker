@@ -6,6 +6,7 @@ use DOMDocument;
 use DOMXPath;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\WebServices\Contracts\SoapClientInterface;
+use SimpleXMLElement;
 use SoapClient;
 use SoapHeader;
 use SoapVar;
@@ -21,9 +22,10 @@ class NativeSoapClient implements SoapClientInterface
     public function __construct(string $wsdl, array $options)
     {
         $this->soapClient = new SoapClient($wsdl, $options);
+
         // Parse WSDL
         $dom = new DOMDocument();
-        $dom->load($wsdl);
+        $this->loadWsdl($dom, $wsdl, $options);
         $xpath = new DOMXPath($dom);
         $xpath->registerNamespace('soap', 'http://schemas.xmlsoap.org/wsdl/soap/');
         $xpath->registerNamespace('wsdl', 'http://schemas.xmlsoap.org/wsdl/');
@@ -86,14 +88,28 @@ class NativeSoapClient implements SoapClientInterface
             $doc->formatOutput = true;
             $doc->loadXML($log);
 
-            $creddentials = $doc->getElementsByTagName('UsernameToken');
-            if ($creddentials->length) {
+            $credentials = $doc->getElementsByTagName('UsernameToken');
+            if ($credentials->length) {
                 $doc->getElementsByTagName('Username')->item(0)->nodeValue = '************';
                 $doc->getElementsByTagName('Password')->item(0)->nodeValue = '************';
+
+                if ($doc->getElementsByTagName('Nonce')->item(0) && $doc->getElementsByTagName('Nonce')->item(0)->nodeValue) {
+                    $doc->getElementsByTagName('Nonce')->item(0)->nodeValue = '************';
+                }
             }
 
             Log::channel('data-source')->info($label . $doc->saveXML());
         } catch (\Throwable $th) {
+            if ($label === 'Request Headers: ') {
+                $newLog = '';
+                foreach (preg_split("/((\r?\n)|(\r\n?))/", $log) as $line) {
+                    if (str_contains($line, 'Authorization:')) {
+                        $line = 'Authorization: ************';
+                    }
+                    $newLog .= $line . PHP_EOL;
+                }
+                $log = $newLog;
+            }
             Log::channel('data-source')->info($label . $log);
         }
     }
@@ -106,7 +122,12 @@ class NativeSoapClient implements SoapClientInterface
     private function addSoapAuthHeaders(array $options)
     {
         switch ($options['authentication_method']) {
-            case 'password':
+            case 'PASSWORD':
+                $this->soapClient->__setSoapHeaders(
+                    $this->soapClientWSSecurityHeader($options)
+                );
+                break;
+            case 'WSDL_FILE':
                 $this->soapClient->__setSoapHeaders([
                     new SoapHeader(
                         'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd',
@@ -123,7 +144,86 @@ class NativeSoapClient implements SoapClientInterface
                     ),
                 ]);
                 break;
+            case 'LOCAL_CERTIFICATE':
+                $this->soapClient->__setSoapHeaders([
+                    new SoapHeader(
+                        'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd',
+                        'Security',
+                        new SoapVar(
+                            '<wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+                                <wsse:UsernameToken>
+                                    <wsse:Username>test</wsse:Username>
+                                    <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">test</wsse:Password>
+                                </wsse:UsernameToken>
+                            </wsse:Security>',
+                            XSD_ANYXML
+                        )
+                    ),
+                ]);
+                break;
         }
+    }
+
+    /**
+     * This function implements a WS-Security digest authentification for PHP.
+     *
+     * @param array $options
+     * @return SoapHeader
+     */
+    private function soapClientWSSecurityHeader($options)
+    {
+        if ($options['password_type'] === 'None') {
+            return;
+        }
+
+        // Creating date using yyyy-mm-ddThh:mm:ssZ format
+        $tmCreated = gmdate('Y-m-d\TH:i:s\Z');
+        $tmExpires = gmdate('Y-m-d\TH:i:s\Z', gmdate('U') + 180); //only necessary if using the timestamp element
+
+        // Generating and encoding a random number
+        $simpleNonce = mt_rand();
+        $encodedNonce = base64_encode($simpleNonce);
+
+        // Compiling WSS string
+        $password = $options['password'];
+        $passwordDigest = base64_encode(sha1($simpleNonce . $tmCreated . $password, true));
+
+        // Initializing namespaces
+        $nsWsse = 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd';
+        $nsWsu = 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd';
+
+        $passwordType = 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText';
+
+        if ($options['password_type'] === 'PasswordDigest') {
+            $passwordType = 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest';
+            $password = $passwordDigest;
+        }
+
+        $encodingType = 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary';
+
+        // Creating WSS identification header using SimpleXML
+        $root = new SimpleXMLElement('<root/>');
+
+        $security = $root->addChild('wsse:Security', null, $nsWsse);
+
+        //the timestamp element is not required by all servers
+        $timestamp = $security->addChild('wsu:Timestamp', null, $nsWsu);
+        $timestamp->addAttribute('wsu:Id', 'Timestamp-28');
+        $timestamp->addChild('wsu:Created', $tmCreated, $nsWsu);
+        $timestamp->addChild('wsu:Expires', $tmExpires, $nsWsu);
+
+        $usernameToken = $security->addChild('wsse:UsernameToken', null, $nsWsse);
+        $usernameToken->addChild('wsse:Username', $options['login'], $nsWsse);
+        $usernameToken->addChild('wsse:Password', $password, $nsWsse)->addAttribute('Type', $passwordType);
+        $usernameToken->addChild('wsse:Nonce', $encodedNonce, $nsWsse)->addAttribute('EncodingType', $encodingType);
+        $usernameToken->addChild('wsu:Created', $tmCreated, $nsWsu);
+
+        // Recovering XML value from that object
+        $root->registerXPathNamespace('wsse', $nsWsse);
+        $full = $root->xpath('/root/wsse:Security');
+        $auth = $full[0]->asXML();
+
+        return new SoapHeader($nsWsse, 'Security', new SoapVar($auth, XSD_ANYXML), true);
     }
 
     public function getOperations(string $serviceName = ''): array
@@ -200,5 +300,32 @@ class NativeSoapClient implements SoapClientInterface
         }
 
         return $parameters;
+    }
+
+    private function loadWsdl(DOMDocument $dom, $wsdl, array $options)
+    {
+        if ($options['authentication_method'] === 'LOCAL_CERTIFICATE') {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $wsdl);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "grant_type=client_cert");
+            curl_setopt($ch, CURLOPT_SSLCERT, $options['local_cert']);
+            curl_setopt($ch, CURLOPT_SSLCERTTYPE, "PEM");
+            curl_setopt($ch, CURLOPT_SSLKEYPASSWD, $options['passphrase']);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: text/xml']);
+            curl_setopt( $ch, CURLOPT_CUSTOMREQUEST, 'GET' );
+
+            $wsdlContent = curl_exec($ch);
+            if (curl_errno($ch)) {
+                return false;
+            }
+            curl_close($ch);
+            $dom->loadXML($wsdlContent);
+        }
+        else {
+            $dom->load($wsdl);
+        }
     }
 }

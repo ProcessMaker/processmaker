@@ -16,9 +16,24 @@ class SoapRequestBuilder implements WebServiceRequestBuilderInterface
     public function build(array $config, array $data): array
     {
         switch ($config['authentication_method']) {
-            case 'password':
+            case 'PASSWORD':
                 $parameters = [
-                    'wsdl' => Storage::disk('web_services')->path($config['wsdl']),
+                    'wsdl' => $config['wsdl'],
+                    'options' => array_merge(self::base_options, [
+                        'authentication_method' => $config['authentication_method'],
+                        'login' => $config['username'],
+                        'password' => $config['password'],
+                        'location' => null,
+                        'debug_mode' => $config['debug_mode'],
+                        'password_type' => $config['password_type'],
+                    ]),
+                    'operation' => $config['operation'],
+                    'parameters' => $config['parameters'],
+                ];
+                break;
+            case 'WSDL_FILE':
+                $parameters = [
+                    'wsdl' => $config['wsdl'],
                     'options' => array_merge(self::base_options, [
                         'authentication_method' => $config['authentication_method'],
                         'login' => $config['username'],
@@ -30,7 +45,29 @@ class SoapRequestBuilder implements WebServiceRequestBuilderInterface
                     'parameters' => $config['parameters'],
                 ];
                 break;
-            case 'certificate':
+            case 'LOCAL_CERTIFICATE':
+                $parameters = [
+                    'wsdl' => $config['wsdl'],
+                    'options' => array_merge(self::base_options, [
+                        'authentication_method' => $config['authentication_method'],
+                        'keep_alive'    => true,
+                        'trace'         => true,
+                        'location'      => $config['location'],
+                        'local_cert'    => $config['local_cert'],
+                        'passphrase'    => $config['passphrase'],
+                        'cache_wsdl'    => WSDL_CACHE_NONE,
+                        'exceptions'    => true,
+                        'stream_context' => stream_context_create(array(
+                            'ssl' => array(
+                                'verify_peer' => false,
+                                'verify_peer_name' => false,
+                                'allow_self_signed' => true
+                            )))
+                    ]),
+                    'operation' => $config['operation'],
+                    'parameters' => $config['parameters'],
+                ];
+
                 break;
             default:
                 throw new Exception('Invalid authentication method: ' . $config['authentication_method']);

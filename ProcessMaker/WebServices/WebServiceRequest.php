@@ -45,7 +45,6 @@ class WebServiceRequest
         $request = $this->request->build($config, $data);
         $response = $this->requestCaller->call($request, $config);
         $result = $this->responseMapper->map($response, $config, $data);
-
         return $result;
     }
 
@@ -55,8 +54,21 @@ class WebServiceRequest
             return [];
         }
 
-        if (!isset($this->dataSource->wsdlFile)) {
-            return [];
+        switch ($this->dataSource->authtype) {
+            case 'PASSWORD':
+                $wsdlFile = $this->dataSource->credentials['service_url'];
+                break;
+            case 'WSDL_FILE':
+                if (isset($this->dataSource->wsdlFile)) {
+                    $wsdlFile = $this->dataSource->wsdlFile;
+                }
+                break;
+            case 'LOCAL_CERTIFICATE':
+                $wsdlFile = $this->dataSource->credentials['service_url'];
+                break;
+            default:
+                // code...
+                break;
         }
 
         $dataSourceConfig = [
@@ -71,7 +83,7 @@ class WebServiceRequest
             'credentials' => $this->dataSource->credentials,
             'status' => $this->dataSource->status,
             'data_source_category_id' => $this->dataSource->data_source_category_id,
-            'wsdlFile' => $this->dataSource->wsdlFile,
+            'wsdlFile' => $wsdlFile,
         ];
 
         $config = $this->config->build([], $dataSourceConfig, []);

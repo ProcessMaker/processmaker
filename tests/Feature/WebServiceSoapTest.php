@@ -36,7 +36,7 @@ class WebServiceSoapTest extends TestCase
                 'user'=>'test',
                 'password'=>'password',
                 'location'=>'https://jxtest.processmaker.local/jxchange/2008/ServiceGateway/Customer.svc',
-                'authentication_method'=>'password',
+                'authentication_method'=>'WSDL_FILE',
             ]);
             $mock->shouldReceive('toArray')->andReturn([
                 'id' => 1,

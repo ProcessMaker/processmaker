@@ -27,6 +27,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('bpmn:timer')
             ->everyMinute()
             ->onOneServer();
+
+        $schedule->command('package-data-sources:delete-logs')
+            ->weekly();
     }
 
     /**
