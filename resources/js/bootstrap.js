@@ -22,6 +22,7 @@ import datetime_format from "./data/datetime_formats.json";
 import RequestChannel from "./tasks/components/ProcessRequestChannel";
 import Modal from "./components/shared/Modal";
 import AccessibilityMixin from "./components/common/mixins/accessibility";
+import { initializeScreenCache } from "@processmaker/screen-builder";
 
 window.__ = translator;
 window._ = require("lodash");
@@ -306,6 +307,8 @@ window.ProcessMaker.screen = {
   cacheEnabled: screenCacheEnabled === "true",
   cacheTimeout: Number(screenCacheTimeout),
 };
+// Initialize screen-builder cache
+initializeScreenCache(window.ProcessMaker.apiClient, window.ProcessMaker.screen);
 
 const clickTab = () => {
   const { hash } = window.location;
