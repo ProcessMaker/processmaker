@@ -53,8 +53,7 @@
         methods: {
             formatDate(date) {
                 return moment(date).fromNow();
-            },
-            fetch() {}
+            }
         }
     };
 </script>
