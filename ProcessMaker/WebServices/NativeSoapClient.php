@@ -144,23 +144,6 @@ class NativeSoapClient implements SoapClientInterface
                     ),
                 ]);
                 break;
-            case 'LOCAL_CERTIFICATE':
-                $this->soapClient->__setSoapHeaders([
-                    new SoapHeader(
-                        'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd',
-                        'Security',
-                        new SoapVar(
-                            '<wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
-                                <wsse:UsernameToken>
-                                    <wsse:Username>test</wsse:Username>
-                                    <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">test</wsse:Password>
-                                </wsse:UsernameToken>
-                            </wsse:Security>',
-                            XSD_ANYXML
-                        )
-                    ),
-                ]);
-                break;
         }
     }
 
