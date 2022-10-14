@@ -11,6 +11,8 @@ class ScreenConsolidatorTest extends TestCase
 {
     public function test()
     {
+        $this->markTestSkipped('FOUR-6653');
+
         $this->be(factory(User::class)->create());
 
         $content = file_get_contents(

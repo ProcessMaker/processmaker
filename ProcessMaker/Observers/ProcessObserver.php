@@ -5,6 +5,7 @@ namespace ProcessMaker\Observers;
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
 
 class ProcessObserver
 {
@@ -36,5 +37,15 @@ class ProcessObserver
         $process->signal_events = $process->getUpdatedStartEventsSignalEvents();
         $process->conditional_events = $process->getUpdatedConditionalStartEvents();
         $process->validateBpmnDefinition(true);
+    }
+
+    /**
+     * Handle the Process "saved" event.
+     *
+     * @param Process $process
+     */
+    public function saved(Process $process)
+    {
+        $process->manageCustomRoutes();
     }
 }

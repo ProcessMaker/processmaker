@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Database\Query\Grammars\SqlServerGrammar;
 use Illuminate\Encryption\Encrypter;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -265,9 +266,20 @@ class Install extends Command
             // Now store the env file
             Storage::disk('install')->put('.env', $contents);
 
-            $this->call('config:cache');
-            $this->call('config:clear');
-            $this->call('cache:clear');
+            $this->call('config:cache', [
+                '--no-interaction' => true,
+                '--quiet' => true,
+            ]);
+
+            $this->call('config:clear', [
+                '--no-interaction' => true,
+                '--quiet' => true,
+            ]);
+
+            $this->call('cache:clear', [
+                '--no-interaction' => true,
+                '--quiet' => true,
+            ]);
 
             // Set username, email, password
             $this->fetchUserInformation();

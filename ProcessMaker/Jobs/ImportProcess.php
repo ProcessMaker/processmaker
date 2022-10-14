@@ -22,6 +22,7 @@ use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\ImportReady;
+use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 use ProcessMaker\Traits\PluginServiceProviderTrait;
 
@@ -111,6 +112,8 @@ class ImportProcess implements ShouldQueue
     private $backwardCompatiblePackageMap = [
         'processmaker-communication-email-send' => 'processmaker-connector-send-email',
     ];
+
+    public $newProcessId = null;
 
     /**
      * Create a new job instance and set the file contents.
@@ -244,6 +247,7 @@ class ImportProcess implements ShouldQueue
         $this->assignable = collect([]);
 
         $this->parseAssignableStartEvent();
+        $this->parseWebEntryCustomRoutes();
         $this->parseAssignableTasks();
         $this->parseAssignableCallActivity();
         $this->parseAssignableScripts();
@@ -273,6 +277,36 @@ class ImportProcess implements ShouldQueue
                     'prefix' => __('Assign Start Event'),
                     'suffix' => __('to'),
                 ]);
+            }
+        }
+    }
+
+    private function parseWebEntryCustomRoutes()
+    {
+        $tasks = $this->definitions->getElementsByTagName('startEvent');
+        $importedProcessId = $this->newProcessId;
+        foreach ($tasks as $task) {
+            $config = json_decode($task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'config'), true);
+            if (isset($config['web_entry']) && isset($config['web_entry']['webentryRouteConfig'])) {
+                $webEntryRouteConfig = $config['web_entry']['webentryRouteConfig'];
+                if ($webEntryRouteConfig['firstUrlSegment'] != '') {
+                    $error = null;
+                    $existingRoute = WebentryRoute::where('first_segment', $webEntryRouteConfig['firstUrlSegment'])->where('process_id', '!=', $importedProcessId)->first();
+                    if ($existingRoute) {
+                        $existingProcess = Process::select('name')->where('id', $existingRoute->process_id)->first();
+                        $error = __('Route should be unique. Used in process: :process_name in node ID: :node_id', ['process_name' => $existingProcess->name, 'node_id' => $existingRoute->node_id]);
+                    }
+
+                    $this->assignable->push((object) [
+                        'type' => 'webentryCustomRoute',
+                        'id' => $task->getAttribute('id'),
+                        'name' => $task->getAttribute('name'),
+                        'prefix' => __('Assign'),
+                        'suffix' => __('Custom Web Entry Route to'),
+                        'error' => $error,
+                        'value' => $webEntryRouteConfig['firstUrlSegment'],
+                    ]);
+                }
             }
         }
     }
@@ -636,6 +670,7 @@ class ImportProcess implements ShouldQueue
             $new->deleted_at = $this->formatDate($process->deleted_at);
             $new->properties = isset($process->properties) ? (array) $process->properties : null;
             $new->save();
+            $this->newProcessId = $new->id;
 
             $new->categories()->saveMany($this->new['process_categories']);
 

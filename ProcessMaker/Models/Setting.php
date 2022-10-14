@@ -3,9 +3,8 @@
 namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
-use DB;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\SerializeToIso8601;
@@ -53,12 +52,12 @@ class Setting extends Model implements HasMedia
     use InteractsWithMedia;
     use SerializeToIso8601;
 
+    protected $table = 'settings';
+
     protected $connection = 'processmaker';
 
-    //Disk
     public const DISK_CSS = 'settings';
 
-    //collection media library
     public const COLLECTION_CSS_LOGIN = 'login';
 
     public const COLLECTION_CSS_LOGO = 'logo';
@@ -103,7 +102,8 @@ class Setting extends Model implements HasMedia
     /**
      * Validation rules
      *
-     * @param $existing
+     * @param  null  $existing
+     * @param  bool  $validateConfig
      *
      * @return array
      */
@@ -117,6 +117,9 @@ class Setting extends Model implements HasMedia
         ];
     }
 
+    /**
+     * @return array
+     */
     public static function messages()
     {
         return [
@@ -134,39 +137,7 @@ class Setting extends Model implements HasMedia
      */
     public static function byKey(string $key)
     {
-        $cache = Cache::driver('array')->tags('setting');
-
-        if ($cache->has($key)) {
-            return $cache->get($key);
-        }
-
-        $setting = (new self)->where('key', $key)
-                             ->first();
-
-        if (!$setting instanceof self) {
-            return null;
-        }
-
-        // Check the global config for the
-        // setting key and value. Add it in
-        // if it's not present.
-        $setting->addToConfig();
-
-        // Cache the found Settings model for 7 days
-        $cache->put($setting->key, $setting, 60 * 60 * 24 * 7);
-
-        return $setting;
-    }
-
-    public function addToConfig()
-    {
-        if (!$this->exists) {
-            return;
-        }
-
-        if (!config()->has($this->key)) {
-            config([$this->key => $this->config]);
-        }
+        return (new self)->where('key', $key)->first();
     }
 
     /**
@@ -198,9 +169,9 @@ class Setting extends Model implements HasMedia
     {
         if ($this->attributes['group'] === null) {
             return $this->attributes['group'] = 'System';
-        } else {
-            return $this->attributes['group'] = $this->attributes['group'];
         }
+
+        return $this->attributes['group'] = $this->attributes['group'];
     }
 
     public function getConfigAttribute()
@@ -241,6 +212,7 @@ class Setting extends Model implements HasMedia
     public function scopeFilter($query, $filter)
     {
         $filter = '%' . mb_strtolower($filter) . '%';
+
         $query->where(function ($query) use ($filter) {
             $query->where(DB::raw('LOWER(`key`)'), 'like', $filter)
                 ->orWhere(DB::raw('LOWER(`name`)'), 'like', $filter)
@@ -261,6 +233,7 @@ class Setting extends Model implements HasMedia
     public function scopeFilterGroups($query, $filter)
     {
         $filter = '%' . mb_strtolower($filter) . '%';
+
         $query->where(function ($query) use ($filter) {
             $query->where(DB::raw('LOWER(`group`)'), 'like', $filter);
         });
@@ -268,21 +241,27 @@ class Setting extends Model implements HasMedia
         return $query;
     }
 
+    /**
+     * @return bool
+     * @throws \Exception
+     */
     public static function loginIsDefault()
     {
-        if (stripos(self::getLogin(), 'processmaker-login') !== false) {
-            return true;
-        } else {
-            return false;
-        }
+        return stripos(self::getLogin(), 'processmaker-login') !== false;
     }
 
+    /**
+     * @return string
+     * @throws \Exception
+     */
     public static function getLogin()
     {
-        //default login
-        $url = asset(env('LOGIN_LOGO_PATH', '/img/processmaker-login.svg'));
+        // default login
+        $url = asset(config('app.settings.login_logo_path'));
+
         //custom login
         $setting = self::byKey('css-override');
+
         if ($setting) {
             $mediaFile = $setting->getMedia(self::COLLECTION_CSS_LOGIN);
 
@@ -294,51 +273,75 @@ class Setting extends Model implements HasMedia
         return $url . '?id=' . bin2hex(random_bytes(16));
     }
 
+    /**
+     * @return string
+     * @throws \Exception
+     */
     public static function getLogo()
     {
-        //default logo
-        $url = asset(env('MAIN_LOGO_PATH', '/img/processmaker-logo.svg'));
-        //custom logo
-        $setting = self::byKey('css-override');
-        if ($setting) {
-            $mediaFile = $setting->getMedia(self::COLLECTION_CSS_LOGO);
+        // default logo
+        $url = asset(config('app.settings.main_logo_path'));
 
-            foreach ($mediaFile as $media) {
-                $url = $media->getFullUrl();
+        // custom logo
+        if (config()->has($key = 'css-override')) {
+            $setting = self::byKey($key);
+
+            if ($setting instanceof self) {
+                $mediaFile = $setting->getMedia(self::COLLECTION_CSS_LOGO);
+
+                foreach ($mediaFile as $media) {
+                    $url = $media->getFullUrl();
+                }
             }
         }
 
         return $url;
     }
 
+    /**
+     * @return string
+     * @throws \Exception
+     */
     public static function getIcon()
     {
-        //default icon
-        $url = asset(env('ICON_PATH_PATH', '/img/processmaker-icon.svg'));
-        //custom icon
-        $setting = self::byKey('css-override');
-        if ($setting) {
-            $mediaFile = $setting->getMedia(self::COLLECTION_CSS_ICON);
+        // default icon
+        $url = asset(config('app.settings.icon_path'));
 
-            foreach ($mediaFile as $media) {
-                $url = $media->getFullUrl();
+        // custom icon
+        if (config()->has($key = 'css-override')) {
+            $setting = self::byKey($key);
+
+            if ($setting instanceof self) {
+                $mediaFile = $setting->getMedia(self::COLLECTION_CSS_ICON);
+
+                foreach ($mediaFile as $media) {
+                    $url = $media->getFullUrl();
+                }
             }
         }
 
         return $url . '?id=' . bin2hex(random_bytes(16));
     }
 
+    /**
+     * @return string
+     * @throws \Exception
+     */
     public static function getFavicon()
     {
-        //default icon
-        $url = asset(env('FAVICON_PATH', '/favicon.png'));
-        //custom icon
-        $setting = self::byKey('css-override');
-        if ($setting) {
-            $mediaFile = $setting->getMedia(self::COLLECTION_CSS_FAVICON);
+        // default icon
+        $url = asset(config('app.settings.favicon_path'));
 
-            foreach ($mediaFile as $media) {
-                $url = $media->getFullUrl();
+        // custom icon
+        if (config()->has($key = 'css-override')) {
+            $setting = self::byKey($key);
+
+            if ($setting instanceof self) {
+                $mediaFile = $setting->getMedia(self::COLLECTION_CSS_FAVICON);
+
+                foreach ($mediaFile as $media) {
+                    $url = $media->getFullUrl();
+                }
             }
         }
 

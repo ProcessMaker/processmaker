@@ -79,10 +79,13 @@ class UsersTest extends TestCase
     {
         $url = self::API_TEST_URL;
 
-        $deletedUser = factory(User::class)->create([
-            'deleted_at' => '2019-01-01',
-            'status' => 'ACTIVE',
-        ]);
+        $deletedUser = (object) [];
+        User::withoutEvents(function () use (&$deletedUser) {
+            $deletedUser = factory(User::class)->create([
+                'deleted_at' => '2019-01-01',
+                'status' => 'ACTIVE',
+            ]);
+        });
 
         $params = [
             'username' => $deletedUser->username,
@@ -455,7 +458,6 @@ class UsersTest extends TestCase
      */
     public function testUpdateUserAvatar()
     {
-
         //Create a new user
         $user = factory(User::class)->create([
             'username' => 'AvatarUser',

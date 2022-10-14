@@ -40,7 +40,7 @@ class SanitizeHelper
     {
         if (is_string($value) && $strip_tags) {
             // Remove most injectable code
-            $value = strip_tags($value);
+            $value = self::strip_tags($value);
             $value = self::sanitizeVueExp($value);
 
             // Return the sanitized string
@@ -57,6 +57,27 @@ class SanitizeHelper
 
         // Return the original value.
         return $value;
+    }
+
+    /**
+     * Strip php and html tags
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    public static function strip_tags($string)
+    {
+        // strip server side tags
+        $string = preg_replace('/(<\?((?!\?>)[\w\W])+\?>)/', '', $string);
+        // strip html comments
+        $string = preg_replace('/(<!--((?!-->)[\w\W])+-->)/', '', $string);
+        // strip html tags
+        $string = preg_replace('/<[a-zA-Z0-9]+[^>]*>/', '', $string);
+        $string = preg_replace('/<\/[a-zA-Z0-9]+[^>]*>/', '', $string);
+        $string = preg_replace('/<[a-zA-Z0-9]+[^>]*\/>/', '', $string);
+
+        return $string;
     }
 
     /**
