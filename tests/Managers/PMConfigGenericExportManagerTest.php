@@ -13,7 +13,6 @@ class PMConfigGenericExportManagerTest extends TestCase
 {
     public function test()
     {
-
         //
         //
         //

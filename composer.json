@@ -15,6 +15,8 @@
         "composer/semver": "^3.3",
         "darkaonline/l5-swagger": "^8.3",
         "doctrine/dbal": "^3.3",
+        "fakerphp/faker": "^1.9.1",
+        "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.4",
         "igaster/laravel-theme": "2.0.*",
         "laravel/framework": "^8.83",
@@ -23,6 +25,7 @@
         "laravel/scout": "^9.4",
         "laravel/telescope": "^4.9",
         "laravel/tinker": "^2.5",
+        "laravel/ui": "^3.4",
         "laravelcollective/html": "^6.3",
         "lavary/laravel-menu": "^1.8",
         "lcobucci/jwt": "^4.2",
@@ -44,10 +47,7 @@
         "symfony/expression-language": "^5.4",
         "teamtnt/laravel-scout-tntsearch-driver": "^11.6",
         "typo3/class-alias-loader": "^1.0",
-        "whichbrowser/parser": "^2.1",
-        "laravel/ui": "^3.4",
-        "fakerphp/faker": "^1.9.1",
-        "fruitcake/laravel-cors": "^2.0"
+        "whichbrowser/parser": "^2.1"
     },
     "require-dev": {
         "brianium/paratest": "^6.6",
