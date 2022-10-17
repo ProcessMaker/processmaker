@@ -22,7 +22,7 @@ trait TestProcessExecutionTrait
     private function loadTestProcess($bpmn, array $users = [])
     {
         // Create a new process
-        $this->process = factory(Process::class)->create([
+        $this->process = Process::factory()->create([
             'bpmn' => $bpmn,
         ]);
 
@@ -33,7 +33,7 @@ trait TestProcessExecutionTrait
                 if (isset($users[$userId])) {
                     $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedUsers', $users[$userId]->id);
                 } elseif (!User::find($userId)) {
-                    $users[$userId] = factory(User::class)->create([
+                    $users[$userId] = User::factory()->create([
                         'id' => $userId,
                         'status' => 'ACTIVE',
                     ]);

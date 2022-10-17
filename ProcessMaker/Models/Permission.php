@@ -2,10 +2,9 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class Permission extends Model
+class Permission extends ProcessMakerModel
 {
     protected $connection = 'processmaker';
 

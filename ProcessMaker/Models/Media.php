@@ -2,9 +2,10 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Validation\ValidationException;
 use ProcessMaker\Models\ProcessRequest;
-use Spatie\MediaLibrary\Models\Media as Model;
+use Spatie\MediaLibrary\MediaCollections\Models\Media as MediaLibraryModel;
 
 /**
  * Represents media files stored in the database
@@ -52,8 +53,10 @@ use Spatie\MediaLibrary\Models\Media as Model;
  *   @OA\Property(property="url", type="string"),
  * )
  */
-class Media extends Model
+class Media extends MediaLibraryModel
 {
+    use HasFactory;
+
     protected $connection = 'processmaker';
 
     protected $table = 'media';

@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\SqlsrvSupportTrait;
@@ -43,7 +42,7 @@ use ProcessMaker\Traits\SqlsrvSupportTrait;
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
  */
-class Comment extends Model
+class Comment extends ProcessMakerModel
 {
     use SerializeToIso8601;
     use SqlsrvSupportTrait;

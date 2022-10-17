@@ -2,8 +2,6 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
 /**
  * Represents a group Members definition.
  *
@@ -77,7 +75,7 @@ use Illuminate\Database\Eloquent\Model;
  *      },
  * ),
  */
-class GroupMember extends Model
+class GroupMember extends ProcessMakerModel
 {
     protected $connection = 'processmaker';
 

@@ -3,11 +3,11 @@
 namespace ProcessMaker\Exception;
 
 use Exception;
-use Illuminate\Database\Eloquent\Model;
+use ProcessMaker\Models\ProcessMakerModel;
 
 class ReferentialIntegrityException extends Exception
 {
-    public function __construct(Model $source, Model $parent)
+    public function __construct(Model $source, ProcessMakerModel $parent)
     {
         $source = class_basename($source) . ':' . $source->getKey();
         $parent = class_basename($parent) . ':' . $parent->getKey();

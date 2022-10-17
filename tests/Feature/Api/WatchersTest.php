@@ -36,7 +36,7 @@ class WatchersTest extends TestCase
         Event::fake([
             ScriptResponseEvent::class,
         ]);
-        $script = factory(Script::class)->create([
+        $script = Script::factory()->create([
             'language' => 'PHP',
             'code' => '<?php return ["language"=>"PHP","data"=>$data,"config"=>$config];',
             'run_as_user_id' => $this->user->id,

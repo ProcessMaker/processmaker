@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
+use Database\Seeders\PermissionSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use PermissionSeeder;
 use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
@@ -22,7 +22,7 @@ class SecurityLoggerTest extends TestCase
         config(['auth.log_auth_events' => true]);
 
         // Build a user with a specified password
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'username' =>'newuser',
             'password' => Hash::make('password'),
         ]);

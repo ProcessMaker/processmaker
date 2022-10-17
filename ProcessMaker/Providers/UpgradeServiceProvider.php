@@ -59,16 +59,13 @@ class UpgradeServiceProvider extends ServiceProvider implements DeferrableProvid
     public function registerListeners(): void
     {
         $this->app['events']->listen(CommandFinished::class, function (CommandFinished $event) {
-
             // We only want to refresh the artisan caches and
             // restart horizon if any upgrade migrations were
             // run, rolled back, or reset
             if (in_array($event->command, ['upgrade', 'upgrade:reset', 'upgrade:rollback'])) {
-
                 // No need to flush the cache(s) and restart
                 // horizon if we're just pretending
                 if (!$event->input->hasParameterOption('--pretend')) {
-
                     // Clear the compiled bootstrap files and will
                     // clear the cached config, cached routes, and
                     // cached events and re-cache them
@@ -129,7 +126,7 @@ class UpgradeServiceProvider extends ServiceProvider implements DeferrableProvid
     protected function registerCreator()
     {
         $this->app->singleton('upgrade.creator', function ($app) {
-            return new UpgradeCreator($app['files']);
+            return new UpgradeCreator($app['files'], $app->basePath('stubs'));
         });
     }
 

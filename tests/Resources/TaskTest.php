@@ -70,7 +70,7 @@ class TaskTest extends TestCase
 
     public function testRequestFiles()
     {
-        $processRequest = factory(ProcessRequest::class)->create();
+        $processRequest = ProcessRequest::factory()->create();
         $file1 = UploadedFile::fake()->create('file1.txt', 1);
         $file2 = UploadedFile::fake()->create('file2.txt', 1);
         $file3 = UploadedFile::fake()->create('file3.txt', 1);

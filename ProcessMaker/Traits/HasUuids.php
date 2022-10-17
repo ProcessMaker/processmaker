@@ -26,5 +26,4 @@ trait HasUuids
     {
         return (string) Str::orderedUuid();
     }
-
 }

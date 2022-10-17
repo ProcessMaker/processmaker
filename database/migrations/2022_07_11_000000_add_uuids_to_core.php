@@ -1,13 +1,12 @@
 <?php
 
+use Facades\ProcessMaker\ImportExport\MigrationHelper;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Facades\ProcessMaker\ImportExport\MigrationHelper;
 
 class AddUuidsToCore extends Migration
 {
-
     const TABLES = [
         'environment_variables',
         'groups',
