@@ -1,16 +1,9 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import ScreenBuilder from "./screen";
-import globalErrorsModule from "@processmaker/screen-builder/src/store/modules/globalErrorsModule";
-import undoRedoModule from "@processmaker/screen-builder/src/store/modules/undoRedoModule";
 
 Vue.use(Vuex);
-const store = new Vuex.Store({
-  modules: {
-    globalErrorsModule,
-    undoRedoModule,
-  },
-});
+const store = new Vuex.Store({});
 
 // Bootstrap our Designer application
 new Vue({
