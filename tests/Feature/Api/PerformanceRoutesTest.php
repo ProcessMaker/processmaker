@@ -32,7 +32,7 @@ class PerformanceRoutesTest extends TestCase
     {
         $model = Group::class;
         $t = microtime(true);
-        factory($model, $times)->create();
+        $model::factory()->count($times)->create();
         $baseTime = microtime(true) - $t;
         $model::getQuery()->delete();
 
@@ -93,8 +93,8 @@ class PerformanceRoutesTest extends TestCase
      */
     public function testRoutesSpeed($route, $params)
     {
-        $this->user = factory(User::class)->create(['is_administrator' => true]);
-        factory(Comment::class, $this->dbSize)->create();
+        $this->user = User::factory()->create(['is_administrator' => true]);
+        Comment::factory()->count($this->dbSize)->create();
         $this->actingAs($this->user);
         $this->withoutExceptionHandling();
 

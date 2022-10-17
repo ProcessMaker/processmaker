@@ -11,7 +11,7 @@ If you are new to ProcessMaker 4 and would like to load the software locally, we
 ## System Requirements
 
 * [Composer 2](https://getcomposer.org/)
-* [Node.js 14.4.0](https://nodejs.org/en/)
+* [Node.js 16.15.0](https://nodejs.org/en/)
 * [NPM 6.14](https://www.npmjs.com/package/npm)
 * [PHP 7.4](https://php.net)
 * [PHP-FPM](https://www.php.net/manual/en/install.fpm.php)
@@ -253,7 +253,7 @@ To keep things dry, you can define 2 schemas. One that inherits the other.
  *
  * )
  */
-class Process extends Model implements HasMedia
+class Process extends ProcessMakerModel implements HasMedia
 {
 ...
 ```

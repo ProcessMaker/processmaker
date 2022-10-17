@@ -17,7 +17,6 @@ class ScriptsTest extends TestCase
      */
     public function testIndexRoute()
     {
-
         // get the URL
         $response = $this->webCall('GET', '/designer/scripts');
         $response->assertStatus(200);

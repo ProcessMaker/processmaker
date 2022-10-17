@@ -2,13 +2,12 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
  * Represents a task that will be scheduled to run
  */
-class ScheduledTask extends Model
+class ScheduledTask extends ProcessMakerModel
 {
     use SerializeToIso8601;
 

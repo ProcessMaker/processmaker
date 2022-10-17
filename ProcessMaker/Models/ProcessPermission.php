@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
@@ -31,7 +30,7 @@ use ProcessMaker\Traits\SerializeToIso8601;
  *    @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
  */
-class ProcessPermission extends Model
+class ProcessPermission extends ProcessMakerModel
 {
     use SerializeToIso8601;
 

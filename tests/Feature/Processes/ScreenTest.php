@@ -34,7 +34,7 @@ class ScreenTest extends TestCase
     {
         // get the URL
         $response = $this->webCall('GET', '/designer/screens/' .
-            factory(Screen::class)->create()->id . '/edit');
+            Screen::factory()->create()->id . '/edit');
 
         $response->assertStatus(200);
         // check the correct view is called

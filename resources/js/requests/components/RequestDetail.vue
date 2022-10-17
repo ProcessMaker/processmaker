@@ -177,7 +177,7 @@
 </script>
 
 <style lang="scss" scoped>
-    >>> tr td:nth-child(3) {
+    :deep(tr td:nth-child(3)) {
         padding: 6px 10px;
     }
 </style>

@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Traits\Exportable;
 
@@ -25,7 +24,7 @@ use ProcessMaker\Traits\Exportable;
  *   },
  * )
  */
-class EnvironmentVariable extends Model
+class EnvironmentVariable extends ProcessMakerModel
 {
     use Exportable;
 

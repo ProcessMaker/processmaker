@@ -27,7 +27,7 @@ class AboutTest extends TestCase
     public function testIndexRoute()
     {
         // user without any permissions
-        $this->user = factory(User::class)->create();
+        $this->user = User::factory()->create();
 
         // get the URL
         $response = $this->webCall('GET', '/about');

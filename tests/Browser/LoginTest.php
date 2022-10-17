@@ -21,7 +21,7 @@ class LoginTest extends DuskTestCase
 
     public function test_login_page_works()
     {
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'username' => 'testuser',
             'password' => Hash::make('secret'),
             'status' => 'ACTIVE',
@@ -39,7 +39,7 @@ class LoginTest extends DuskTestCase
 
     public function test_inactive_user_login_fails()
     {
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'username' => 'testuser',
             'password' => Hash::make('secret'),
             'status' => 'INACTIVE',

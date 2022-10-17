@@ -50,7 +50,7 @@ class IntermediateTimerEventTest extends TestCase
     private function createTestProcess(array $data = [])
     {
         $data['bpmn'] = Process::getProcessTemplate('IntermediateTimerEvent.bpmn');
-        $process = factory(Process::class)->create($data);
+        $process = Process::factory()->create($data);
 
         return $process;
     }
@@ -63,7 +63,7 @@ class IntermediateTimerEventTest extends TestCase
 
         $data = [];
         $data['bpmn'] = Process::getProcessTemplate('IntermediateTimerEvent.bpmn');
-        $process = factory(Process::class)->create($data);
+        $process = Process::factory()->create($data);
         $definitions = $process->getDefinitions();
         $startEvent = $definitions->getEvent('_2');
         $request = WorkflowManager::triggerStartEvent($process, $startEvent, []);
@@ -84,7 +84,7 @@ class IntermediateTimerEventTest extends TestCase
         $this->be($this->user);
         $data = [];
         $data['bpmn'] = Process::getProcessTemplate('IntermediateTimerEvent.bpmn');
-        $process = factory(Process::class)->create($data);
+        $process = Process::factory()->create($data);
         $definitions = $process->getDefinitions();
         $startEvent = $definitions->getEvent('_2');
         $request = WorkflowManager::triggerStartEvent($process, $startEvent, []);
@@ -178,7 +178,7 @@ class IntermediateTimerEventTest extends TestCase
         $this->be($this->user);
         $data = [];
         $data['bpmn'] = Process::getProcessTemplate('IntermediateTimerEventMustache.bpmn');
-        $process = factory(Process::class)->create($data);
+        $process = Process::factory()->create($data);
         $definitions = $process->getDefinitions();
         $startEvent = $definitions->getEvent('_2');
         $request = WorkflowManager::triggerStartEvent($process, $startEvent, ['interval' => 'PT8M']);

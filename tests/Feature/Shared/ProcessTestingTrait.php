@@ -25,7 +25,7 @@ trait ProcessTestingTrait
     {
         $attributes = is_string($attributes) ? ['bpmn' => $attributes] : $attributes;
         // Create a new process
-        $process = factory(Process::class)->create($attributes);
+        $process = Process::factory()->create($attributes);
 
         $definitions = $process->getDefinitions();
         foreach ($definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'task') as $task) {
@@ -61,7 +61,7 @@ trait ProcessTestingTrait
             if (isset($users[$userId])) {
                 $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedUsers', $users[$userId]->id);
             } elseif (!User::find($userId)) {
-                $users[$userId] = factory(User::class)->create([
+                $users[$userId] = User::factory()->create([
                     'id' => $userId,
                     'status' => 'ACTIVE',
                 ]);

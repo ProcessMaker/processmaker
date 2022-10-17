@@ -53,7 +53,7 @@ class TimerStartEventTest extends TestCase
     private function createTestProcess(array $data = [])
     {
         $data['bpmn'] = Process::getProcessTemplate('TimerStartEvent.bpmn');
-        $process = factory(Process::class)->create($data);
+        $process = Process::factory()->create($data);
 
         return $process;
     }
@@ -69,7 +69,7 @@ class TimerStartEventTest extends TestCase
 
         $data = [];
         $data['bpmn'] = Process::getProcessTemplate('TimerStartEvent.bpmn');
-        $process = factory(Process::class)->create($data);
+        $process = Process::factory()->create($data);
 
         // at this point the save method should have created 4 rows in the
         // scheduled tasks table
@@ -194,7 +194,7 @@ class TimerStartEventTest extends TestCase
         $data['bpmn'] = Process::getProcessTemplate('TimerStartEvent.bpmn');
 
         //Create process
-        $process = factory(Process::class)->create($data);
+        $process = Process::factory()->create($data);
 
         $manager = new TaskSchedulerManager();
         $task = new ScheduledTask();
@@ -219,7 +219,7 @@ class TimerStartEventTest extends TestCase
         $data['status'] = 'INACTIVE';
 
         //Create process
-        $process = factory(Process::class)->create($data);
+        $process = Process::factory()->create($data);
 
         $manager = new TaskSchedulerManager();
         $task = new ScheduledTask();
