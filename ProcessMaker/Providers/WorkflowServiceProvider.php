@@ -212,7 +212,6 @@ class WorkflowServiceProvider extends ServiceProvider
             return new NativeSoapClient($request_config['wsdl'], $request_config['options']);
         });
 
-        // @todo Complete the WebServiceRequest Factory
         $this->app->bind('WebServiceRequest', function ($app, $params) {
             $dataSource = $params['dataSource'];
 
@@ -224,5 +223,7 @@ class WorkflowServiceProvider extends ServiceProvider
                 $dataSource
             );
         });
+
+        parent::register();
     }
 }

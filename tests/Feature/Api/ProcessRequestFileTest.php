@@ -23,7 +23,7 @@ class ProcessRequestFileTest extends TestCase
     public function testIndex()
     {
         //create a request
-        $process_request = factory(ProcessRequest::class)->create();
+        $process_request = ProcessRequest::factory()->create();
 
         //upload a fake document with id of the request
         $fileUpload = File::image('photo.jpg');
@@ -45,7 +45,7 @@ class ProcessRequestFileTest extends TestCase
     public function testFileUploadWithProcessRequestID()
     {
         //create a request
-        $process_request = factory(ProcessRequest::class)->create();
+        $process_request = ProcessRequest::factory()->create();
 
         //post photo id with the request
         $response = $this->apiCall('POST', '/requests/' . $process_request->id . '/files', [
@@ -62,7 +62,7 @@ class ProcessRequestFileTest extends TestCase
     public function testDeleteFile()
     {
         //create a request
-        $process_request = factory(ProcessRequest::class)->create();
+        $process_request = ProcessRequest::factory()->create();
         // upload file
         $fileUpload = File::image('HEEEEy.jpg');
         $process_request
@@ -83,7 +83,7 @@ class ProcessRequestFileTest extends TestCase
     public function testShow()
     {
         //create a request
-        $process_request = factory(ProcessRequest::class)->create();
+        $process_request = ProcessRequest::factory()->create();
 
         //upload a fake document with id of the request
         $fileUpload1 = File::image('photo1.jpg');

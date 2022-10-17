@@ -40,7 +40,7 @@ class SettingsTest extends TestCase
     {
         $this->markTestSkipped('Not using validation in backend yet, because there are some config data that should not be validated as LDAP config...');
 
-        $setting = factory(Setting::class)->create(['key' => 'users.properties']);
+        $setting = Setting::factory()->create(['key' => 'users.properties']);
         $params = [
             // Test data different valid variable names
             'config' => [
@@ -68,7 +68,7 @@ class SettingsTest extends TestCase
     {
         $this->markTestSkipped('Not using validation in backend yet, because there are some config data that should not be validated as LDAP config...');
 
-        $setting = factory(Setting::class)->create(['key' => 'users.properties']);
+        $setting = Setting::factory()->create(['key' => 'users.properties']);
         $params = [
             // Test data different valid variable names
             'config' => [

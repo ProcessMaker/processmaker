@@ -44,7 +44,7 @@ class ServiceTaskExecutionTest extends TestCase
      */
     protected function withUserSetUp()
     {
-        factory(Script::class)->create([
+        Script::factory()->create([
             'key' => 'EchoConnector',
             'language' => 'php',
             'code' => '<?php return ["pong" => $data["ping"]];',
@@ -67,7 +67,7 @@ class ServiceTaskExecutionTest extends TestCase
     private function createTestProcess(array $data = [])
     {
         $data['bpmn'] = Process::getProcessTemplate('ServiceTaskProcess.bpmn');
-        $process = factory(Process::class)->create($data);
+        $process = Process::factory()->create($data);
 
         return $process;
     }
@@ -110,7 +110,7 @@ class ServiceTaskExecutionTest extends TestCase
         ];
 
         //The call is done without an authenticated user so it should return 401
-        $response = $this->actingAs(factory(User::class)->create())
+        $response = $this->actingAs(User::factory()->create())
             ->json('GET', $url, []);
         $response->assertStatus(401);
     }

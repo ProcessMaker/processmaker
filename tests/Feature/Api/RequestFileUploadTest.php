@@ -41,7 +41,7 @@ class RequestFileUploadTest extends TestCase
         $this->loadTestProcess(
             file_get_contents(__DIR__ . '/processes/FileUpload.bpmn'),
             [
-                '2' => factory(User::class)->create([
+                '2' => User::factory()->create([
                     'status' => 'ACTIVE',
                     'is_administrator' => false,
                 ]),
@@ -79,7 +79,7 @@ class RequestFileUploadTest extends TestCase
         $this->loadTestProcess(
             file_get_contents(__DIR__ . '/processes/FileUpload.bpmn'),
             [
-                '2' => factory(User::class)->create([
+                '2' => User::factory()->create([
                     'status' => 'ACTIVE',
                     'is_administrator' => false,
                 ]),
@@ -87,7 +87,7 @@ class RequestFileUploadTest extends TestCase
         );
 
         // Create an external user
-        $doesNotParticipateUser = factory(User::class)->create([
+        $doesNotParticipateUser = User::factory()->create([
             'status' => 'ACTIVE',
             'is_administrator' => false,
         ]);
@@ -119,19 +119,19 @@ class RequestFileUploadTest extends TestCase
         $this->loadTestProcess(
             file_get_contents(__DIR__ . '/processes/ViewFileUpload.bpmn'),
             [
-                '2' => factory(User::class)->create([
+                '2' => User::factory()->create([
                     'status' => 'ACTIVE',
                     'is_administrator' => false,
                 ]),
             ]
         );
         // Create the user assigned to the task (as self service)
-        $selfServiceUser = factory(User::class)->create([
+        $selfServiceUser = User::factory()->create([
             'id' => 15,
             'status' => 'ACTIVE',
             'is_administrator' => false,
         ]);
-        $anotherUser = factory(User::class)->create([
+        $anotherUser = User::factory()->create([
             'status' => 'ACTIVE',
             'is_administrator' => false,
         ]);

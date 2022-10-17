@@ -38,7 +38,7 @@ class ScriptCategoriesTest extends TestCase
     {
         //Create a script category
         $route = route($this->resource . '.store');
-        $base = factory(ScriptCategory::class)->make();
+        $base = ScriptCategory::factory()->make();
         $response = $this->apiCall('POST', $route, $base->toArray());
         //validate status create
         $response->assertStatus(201);
@@ -54,7 +54,7 @@ class ScriptCategoriesTest extends TestCase
     public function testCreateNameRequired()
     {
         $route = route($this->resource . '.store');
-        $base = factory(ScriptCategory::class)->make(['name' => null]);
+        $base = ScriptCategory::factory()->make(['name' => null]);
         $response = $this->apiCall('POST', $route, $base->toArray());
         //validate status of error model
         $response->assertStatus(422);
@@ -73,9 +73,9 @@ class ScriptCategoriesTest extends TestCase
 
         //create script category
         $name = 'Some name';
-        factory(ScriptCategory::class)->create(['name' => $name]);
+        ScriptCategory::factory()->create(['name' => $name]);
 
-        $base = factory(ScriptCategory::class)->make(['name' => $name]);
+        $base = ScriptCategory::factory()->make(['name' => $name]);
         $response = $this->apiCall('POST', $route, $base->toArray());
         $response->assertStatus(422);
         $response->assertJsonStructure($this->errorStructure);
@@ -90,7 +90,7 @@ class ScriptCategoriesTest extends TestCase
         $initialCount = ScriptCategory::count();
         // Create some script
         $countScripts = 20;
-        factory(ScriptCategory::class, $countScripts)->create();
+        ScriptCategory::factory()->count($countScripts)->create();
         //Get a page of script
         $page = 2;
         $perPage = 10;
@@ -123,7 +123,7 @@ class ScriptCategoriesTest extends TestCase
         $perPage = 10;
         $initialInactiveCount = ScriptCategory::where('status', 'INACTIVE')->count();
 
-        factory(ScriptCategory::class, 3)->create(['is_system' => true, 'status' => 'ACTIVE']);
+        ScriptCategory::factory()->count(3)->create(['is_system' => true, 'status' => 'ACTIVE']);
         // Create some script
         $scriptActive = [
             'num' => 10,
@@ -133,11 +133,11 @@ class ScriptCategoriesTest extends TestCase
             'num' => 15,
             'status' => 'INACTIVE',
         ];
-        factory(ScriptCategory::class, $scriptActive['num'])->create(['status' => $scriptActive['status']]);
-        factory(ScriptCategory::class, $scriptInactive['num'])->create(['status' => $scriptInactive['status']]);
+        ScriptCategory::factory()->count($scriptActive['num'])->create(['status' => $scriptActive['status']]);
+        ScriptCategory::factory()->count($scriptInactive['num'])->create(['status' => $scriptInactive['status']]);
 
         $name = 'Script search';
-        factory(ScriptCategory::class)->create(['status' => 'ACTIVE', 'name' => $name]);
+        ScriptCategory::factory()->create(['status' => 'ACTIVE', 'name' => $name]);
 
         //Get active script
         $route = route($this->resource . '.index');
@@ -194,8 +194,8 @@ class ScriptCategoriesTest extends TestCase
             'status' => 'INACTIVE',
         ];
 
-        factory(ScriptCategory::class, $scriptActive['num'])->create(['status' => $scriptActive['status']]);
-        factory(ScriptCategory::class, $scriptInactive['num'])->create(['status' => $scriptInactive['status']]);
+        ScriptCategory::factory()->count($scriptActive['num'])->create(['status' => $scriptActive['status']]);
+        ScriptCategory::factory()->count($scriptInactive['num'])->create(['status' => $scriptInactive['status']]);
 
         //Get active script
         $route = route($this->resource . '.index');
@@ -222,10 +222,10 @@ class ScriptCategoriesTest extends TestCase
     public function testSorting()
     {
         // Create some script
-        factory(ScriptCategory::class)->create([
+        ScriptCategory::factory()->create([
             'name' => 'aaaaaa',
         ]);
-        factory(ScriptCategory::class)->create([
+        ScriptCategory::factory()->create([
             'name' => 'zzzzz',
         ]);
 
@@ -277,7 +277,7 @@ class ScriptCategoriesTest extends TestCase
         $rowsToAdd = 7;
 
         // Now we create the specified number of script
-        factory(ScriptCategory::class, $rowsToAdd)->create();
+        ScriptCategory::factory()->count($rowsToAdd)->create();
 
         // The first page should have 5 items;
         $response = $this->apiCall('GET', route($this->resource . '.index', ['per_page' => 5, 'page' => 1]));
@@ -294,7 +294,7 @@ class ScriptCategoriesTest extends TestCase
     public function testShowScriptCategory()
     {
         //Create a new script category
-        $category = factory(ScriptCategory::class)->create();
+        $category = ScriptCategory::factory()->create();
 
         //Test that is correctly displayed
         $route = route($this->resource . '.show', [$category->id]);
@@ -308,7 +308,7 @@ class ScriptCategoriesTest extends TestCase
      */
     public function testUpdateScript()
     {
-        $item = factory(ScriptCategory::class)->create();
+        $item = ScriptCategory::factory()->create();
 
         $route = route($this->resource . '.update', [$item->id]);
         $fields = [
@@ -329,7 +329,7 @@ class ScriptCategoriesTest extends TestCase
      */
     public function testChangeStatus()
     {
-        $item = factory(ScriptCategory::class)->create(['status' => 'ACTIVE']);
+        $item = ScriptCategory::factory()->create(['status' => 'ACTIVE']);
 
         $route = route($this->resource . '.update', [$item->id]);
         $fields = [
@@ -350,7 +350,7 @@ class ScriptCategoriesTest extends TestCase
      */
     public function testValidateNameNotNull()
     {
-        $item = factory(ScriptCategory::class)->create();
+        $item = ScriptCategory::factory()->create();
 
         $route = route($this->resource . '.update', [$item->id]);
         $fields = [
@@ -370,8 +370,8 @@ class ScriptCategoriesTest extends TestCase
     public function testValidateNameUnique()
     {
         $name = 'Some name';
-        factory(ScriptCategory::class)->create(['name' => $name]);
-        $item = factory(ScriptCategory::class)->create();
+        ScriptCategory::factory()->create(['name' => $name]);
+        $item = ScriptCategory::factory()->create();
 
         $route = route($this->resource . '.update', [$item->id]);
         $fields = [
@@ -390,7 +390,7 @@ class ScriptCategoriesTest extends TestCase
      */
     public function testValidateStatus()
     {
-        $item = factory(ScriptCategory::class)->create();
+        $item = ScriptCategory::factory()->create();
 
         $route = route($this->resource . '.update', [$item->id]);
         $fields = [
@@ -408,7 +408,7 @@ class ScriptCategoriesTest extends TestCase
      */
     public function testDeleteScriptCategory()
     {
-        $scriptCategory = factory(ScriptCategory::class)->create();
+        $scriptCategory = ScriptCategory::factory()->create();
         $route = route($this->resource . '.destroy', [$scriptCategory->id]);
         $response = $this->apiCall('DELETE', $route);
         //validate status
@@ -421,7 +421,7 @@ class ScriptCategoriesTest extends TestCase
      */
     public function testDeleteFailScriptCategory()
     {
-        $script = factory(Script::class)->create(['language'=>'lua']);
+        $script = Script::factory()->create(['language'=>'lua']);
         $route = route($this->resource . '.destroy', [$script->script_category_id]);
         $response = $this->apiCall('DELETE', $route);
         $response->assertStatus(422);

@@ -1,0 +1,11 @@
+<?php
+
+namespace {{ namespace }};
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use ProcessMaker\Models\ProcessMakerModel;
+
+class {{ class }} extends ProcessMakerModel
+{
+    use HasFactory;
+}

@@ -52,10 +52,10 @@ class ProcessManualTaskTest extends TestCase
     private function createTestProcess(array $data = [])
     {
         $data['bpmn'] = file_get_contents(__DIR__ . '/processes/ManualTask.bpmn');
-        $process = factory(Process::class)->create($data);
+        $process = Process::factory()->create($data);
         //Assign the task to $this->user
         $taskId = 'TaskUID';
-        factory(ProcessTaskAssignment::class)->create([
+        ProcessTaskAssignment::factory()->create([
             'process_id' => $process->id,
             'process_task_id' => $taskId,
             'assignment_id' => $this->user->id,
@@ -206,30 +206,30 @@ class ProcessManualTaskTest extends TestCase
      */
     public function testTaskAssignedToGroup()
     {
-        $foo = factory(User::class)->create(
+        $foo = User::factory()->create(
             ['firstname' => 'Foo', 'status' => 'ACTIVE']
         );
-        $bar = factory(User::class)->create(
+        $bar = User::factory()->create(
             ['firstname' => 'Bar', 'status' => 'ACTIVE']
         );
-        $group = factory(Group::class)->create(
+        $group = Group::factory()->create(
             ['id' => 999, 'status' => 'ACTIVE']
         );
 
         foreach ([$foo, $bar] as $user) {
-            factory(GroupMember::class)->create([
+            GroupMember::factory()->create([
                 'member_id' => $user->id,
                 'member_type' => User::class,
                 'group_id' => $group->id,
             ]);
         }
 
-        $group_process = factory(Process::class)->create(['status' => 'ACTIVE']);
+        $group_process = Process::factory()->create(['status' => 'ACTIVE']);
         $data['bpmn'] = Process::getProcessTemplate('SingleTaskAssignedToGroup.bpmn');
         $group_process->update($data);
 
         $taskId = 'node_3';
-        factory(ProcessTaskAssignment::class)->create([
+        ProcessTaskAssignment::factory()->create([
             'process_id' => $group_process->id,
             'process_task_id' => $taskId,
             'assignment_id' => $group->id,

@@ -18,7 +18,7 @@ class AuthTest extends TestCase
      */
     public function testAuthLoginAndLogout()
     {
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
         Auth::login($user);
         $this->assertEquals($user->id, Auth::id());
         Auth::logout();
@@ -32,7 +32,7 @@ class AuthTest extends TestCase
     public function testAuthManualLogin()
     {
         // Build a user with a specified password
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'username' =>'newuser',
             'password' => Hash::make('password'),
         ]);
@@ -58,7 +58,7 @@ class AuthTest extends TestCase
         $response->assertRedirect('/');
         $response->assertSessionHasErrors();
 
-        factory(User::class)->create([
+        User::factory()->create([
             'username' => 'foobar',
             'password' => Hash::make('abc123'),
             'status' => 'ACTIVE',

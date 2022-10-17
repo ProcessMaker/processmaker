@@ -22,6 +22,7 @@ import datetime_format from "./data/datetime_formats.json";
 import RequestChannel from "./tasks/components/ProcessRequestChannel";
 import Modal from "./components/shared/Modal";
 import AccessibilityMixin from "./components/common/mixins/accessibility";
+import Vue from 'vue'
 
 window.__ = translator;
 window._ = require("lodash");
@@ -51,7 +52,7 @@ window.$ = window.jQuery = require("jquery");
  * and simple, leaving you to focus on building your next great project.
  */
 
-window.Vue = require("vue");
+window.Vue = Vue;
 
 window.Vue.use(BootstrapVue);
 window.Vue.use(ScreenBuilder);
