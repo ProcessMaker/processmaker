@@ -146,7 +146,7 @@
           .get(
             "tasks?page=" +
             this.page +
-            "&include=user,assignableUsers" +
+            "&include=user" +
             "&process_request_id=" +
             this.processRequestId +
             "&status=" +
