@@ -31,7 +31,7 @@ class GroupTest extends TestCase
      */
     public function testEditRoute()
     {
-        $groupId = factory(Group::class)->create()->getKey();
+        $groupId = Group::factory()->create()->getKey();
         // get the URL
         $response = $this->webCall('GET', '/admin/groups/' . $groupId . '/edit');
 

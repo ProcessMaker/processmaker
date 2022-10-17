@@ -16,7 +16,7 @@ class AdminController extends Controller
 {
     public function index()
     {
-        switch (\Auth::user()->canAny('view-users|view-groups|view-auth_clients|manage-public-files|view-settings')) {
+        switch (\Auth::user()->canAnyFirst('view-users|view-groups|view-auth_clients|manage-public-files|view-settings')) {
             case 'view-users':
                 return redirect()->route('users.index');
             case 'view-groups':

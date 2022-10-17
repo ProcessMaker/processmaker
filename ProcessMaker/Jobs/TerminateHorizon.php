@@ -2,12 +2,12 @@
 
 namespace ProcessMaker\Jobs;
 
-use Illuminate\Support\Facades\Log;
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
 
 class TerminateHorizon implements ShouldQueue
 {
@@ -42,4 +42,3 @@ class TerminateHorizon implements ShouldQueue
         ]);
     }
 }
-

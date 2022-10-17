@@ -4,7 +4,6 @@ namespace ProcessMaker\Models;
 
 use DOMElement;
 use Exception;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -30,6 +29,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
+use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
 use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Rules\BPMNValidation;
 use ProcessMaker\Traits\Exportable;
@@ -42,9 +42,8 @@ use ProcessMaker\Traits\ProcessTaskAssignmentsTrait;
 use ProcessMaker\Traits\ProcessTimerEventsTrait;
 use ProcessMaker\Traits\ProcessTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
-use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
-use Spatie\MediaLibrary\HasMedia\HasMedia;
-use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Throwable;
 
 /**
@@ -136,9 +135,9 @@ use Throwable;
  *     @OA\Property(property="edit_data", type="object"),
  * )
  */
-class Process extends Model implements HasMedia, ProcessModelInterface
+class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterface
 {
-    use HasMediaTrait;
+    use InteractsWithMedia;
     use SerializeToIso8601;
     use SoftDeletes;
     use ProcessTaskAssignmentsTrait;
@@ -177,10 +176,6 @@ class Process extends Model implements HasMedia, ProcessModelInterface
      *
      * @var array
      */
-    protected $dates = [
-        'deleted_at',
-    ];
-
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -939,34 +934,34 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     {
         foreach ($this->start_events as $startEvent) {
             $webEntryProperties = (isset($startEvent['config']) && isset(json_decode($startEvent['config'])->web_entry) ? json_decode($startEvent['config'])->web_entry : null);
-            
+
             if ($webEntryProperties && isset($webEntryProperties->webentryRouteConfig)) {
                 switch ($webEntryProperties->webentryRouteConfig->urlType) {
                     case 'standard-url':
                         $this->deleteUnusedCustomRoutes(
                             $webEntryProperties->webentryRouteConfig->firstUrlSegment,
-                            $webEntryProperties->webentryRouteConfig->processId, 
+                            $webEntryProperties->webentryRouteConfig->processId,
                             $webEntryProperties->webentryRouteConfig->nodeId
                         );
                         break;
-                    
+
                     default:
                         if ($webEntryProperties->webentryRouteConfig->firstUrlSegment !== '') {
                             $webentryRouteConfig = $webEntryProperties->webentryRouteConfig;
                             try {
                                 WebentryRoute::updateOrCreate(
-                                [
-                                    'process_id' => $this->id,
-                                    'node_id' => $webentryRouteConfig->nodeId,
-                                ],
-                                [
-                                    'first_segment' => $webentryRouteConfig->firstUrlSegment,
-                                    'params' => $webentryRouteConfig->parameters,
-                                ]
-                            );
+                                    [
+                                        'process_id' => $this->id,
+                                        'node_id' => $webentryRouteConfig->nodeId,
+                                    ],
+                                    [
+                                        'first_segment' => $webentryRouteConfig->firstUrlSegment,
+                                        'params' => $webentryRouteConfig->parameters,
+                                    ]
+                                );
                             } catch (\Exception $e) {
-                                \Log::info('*** Error: '. $e->getMessage());
-                            } 
+                                \Log::info('*** Error: ' . $e->getMessage());
+                            }
                         }
                         break;
                 }
@@ -1401,7 +1396,8 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         return $schemaErrors;
     }
 
-    private function deleteUnusedCustomRoutes($url, $processId, $nodeId) {
+    private function deleteUnusedCustomRoutes($url, $processId, $nodeId)
+    {
         // Delete unused custom routes
         $customRoute = webentryRoute::where('process_id', $processId)->where('node_id', $nodeId)->first();
         if ($customRoute) {

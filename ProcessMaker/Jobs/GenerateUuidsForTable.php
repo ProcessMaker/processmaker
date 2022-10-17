@@ -15,9 +15,9 @@ class GenerateUuidsForTable implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private $table;
-    
+
     private $field;
-    
+
     private $primary;
 
     /**
@@ -41,16 +41,16 @@ class GenerateUuidsForTable implements ShouldQueue
     {
         $query = DB::table($this->table)
             ->select($this->primary, $this->field)
-            ->orderBy($this->primary)->chunk(1000, function($records) {
+            ->orderBy($this->primary)->chunk(1000, function ($records) {
                 // Assign UUIDs if needed
                 foreach ($records as &$record) {
-                    if (! $record->{$this->field} || trim($record->{$this->field}) === '') {
+                    if (!$record->{$this->field} || trim($record->{$this->field}) === '') {
                         $record->{$this->field} = (string) Str::orderedUuid();
                     }
                 }
-                
+
                 // Set UUIDs in transaction for performance reasons
-                DB::transaction(function() use($records) {
+                DB::transaction(function () use ($records) {
                     foreach ($records as &$record) {
                         DB::table($this->table)
                             ->where($this->primary, $record->{$this->primary})

@@ -207,7 +207,7 @@
 </script>
 
 <style lang="scss" scoped>
-    >>> i.fa-circle {
+    :deep(i.fa-circle) {
     &.active {
          color: green;
      }

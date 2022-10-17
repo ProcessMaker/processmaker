@@ -92,7 +92,7 @@
             "updated_at": "2020-12-09T07:11:02-08:00",
             "status": "ACTIVE",
             "key": null,
-            "watchers": null,
+            "watchers": [],
             "categories": [
                 {
                     "id": 3,

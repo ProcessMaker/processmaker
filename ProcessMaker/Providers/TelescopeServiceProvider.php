@@ -40,7 +40,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
 
             return [
                 // PHP process ID
-                'Pid::'.getmypid(),
+                'Pid::' . getmypid(),
 
                 // PHP OPCache enabled
                 $opcache ? 'OPCache::Enabled' : 'OPCache::Disabled',

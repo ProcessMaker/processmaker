@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Api;
 
+use Database\Seeders\PermissionSeeder;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
-use PermissionSeeder;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Models\User;
@@ -59,7 +59,7 @@ class SecurityLogsTest extends TestCase
         $this->user->refresh();
 
         // Create security logs for two users.
-        factory(SecurityLog::class)->create([
+        SecurityLog::factory()->create([
             'event' => 'login',
             'user_id' => $this->user->id,
             'meta' => [
@@ -71,7 +71,7 @@ class SecurityLogsTest extends TestCase
                 ],
             ],
         ]);
-        factory(SecurityLog::class)->create([
+        SecurityLog::factory()->create([
             'event' => 'login',
             'user_id' => $this->user->id,
             'meta' => [
@@ -83,8 +83,8 @@ class SecurityLogsTest extends TestCase
                 ],
             ],
         ]);
-        $anotherUser = factory(User::class)->create();
-        factory(SecurityLog::class)->create([
+        $anotherUser = User::factory()->create();
+        SecurityLog::factory()->create([
             'event' => 'login',
             'user_id' => $anotherUser->id,
             'meta' => [
