@@ -246,4 +246,9 @@ return [
 
     ],
 
+    // Screen builder options
+    'screen' => [
+        'cache_enabled' => env('SCREEN_CACHE_ENABLED', false),
+        'cache_timeout' => env('SCREEN_CACHE_TIMEOUT', 5000), // timeout in milliseconds
+    ],
 ];

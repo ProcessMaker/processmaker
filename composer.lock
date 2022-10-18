@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "376b3ccbdfd126efd84b163a40010dda",
+    "content-hash": "269e1ed59a0b2b30150698f27332129d",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -5834,16 +5834,16 @@
         },
         {
             "name": "processmaker/pmql",
-            "version": "dev-feature/FOUR-6565",
+            "version": "1.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/pmql.git",
-                "reference": "ed12a0577c104913a08743e2b99f214140dc50e9"
+                "reference": "0b0366cbc01cc0c9812ce628bc1105597139871a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/ed12a0577c104913a08743e2b99f214140dc50e9",
-                "reference": "ed12a0577c104913a08743e2b99f214140dc50e9",
+                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/0b0366cbc01cc0c9812ce628bc1105597139871a",
+                "reference": "0b0366cbc01cc0c9812ce628bc1105597139871a",
                 "shasum": ""
             },
             "require": {
@@ -5874,9 +5874,9 @@
             "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent",
             "support": {
                 "issues": "https://github.com/ProcessMaker/pmql/issues",
-                "source": "https://github.com/ProcessMaker/pmql/tree/feature/FOUR-6565"
+                "source": "https://github.com/ProcessMaker/pmql/tree/v1.7.0"
             },
-            "time": "2022-10-04T18:16:32+00:00"
+            "time": "2022-10-17T20:35:58+00:00"
         },
         {
             "name": "psr/cache",
@@ -13220,8 +13220,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "processmaker/laravel-i18next": 20,
-        "processmaker/pmql": 20
+        "processmaker/laravel-i18next": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
@@ -13229,5 +13228,5 @@
         "php": "^8.1"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.3.0"
 }
