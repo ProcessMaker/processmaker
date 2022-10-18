@@ -118,6 +118,12 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+        'data-source' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/data-source.log'),
+            'level' => 'debug',
+            'days' => env('DATA_SOURCE_CLEAR_LOG', 7),
+        ],
     ],
 
 ];
