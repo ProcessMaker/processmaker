@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
+use Database\Seeders\PermissionSeeder;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
-use PermissionSeeder;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
@@ -34,7 +34,7 @@ class PermissionsTest extends TestCase
 
     public function testSetPermissionsForUser()
     {
-        $this->user = factory(User::class)->create([
+        $this->user = User::factory()->create([
             'is_administrator' => false,
         ]);
         // Set the URL & permission to test.
@@ -56,16 +56,16 @@ class PermissionsTest extends TestCase
 
     public function testSetPermissionsForGroup()
     {
-        $this->user = factory(User::class)->create([
+        $this->user = User::factory()->create([
             'is_administrator' => false,
         ]);
         // Create a group.
-        $group = factory(Group::class)->create([
+        $group = Group::factory()->create([
             'name' => 'Test Permissions',
         ]);
 
         // Assign our user to the group.
-        factory(GroupMember::class)->create([
+        GroupMember::factory()->create([
             'group_id' => $group->id,
             'member_type' => User::class,
             'member_id' => $this->user->id,
@@ -90,7 +90,7 @@ class PermissionsTest extends TestCase
 
     public function testAdminPermissions()
     {
-        $this->user = factory(User::class)->create([
+        $this->user = User::factory()->create([
             'is_administrator' => false,
         ]);
         // Set the URL & permission to test.
@@ -119,7 +119,7 @@ class PermissionsTest extends TestCase
 
         $this->assertDatabaseMissing('permissions', $attributes);
 
-        factory(Permission::class)->create($attributes);
+        Permission::factory()->create($attributes);
 
         $this->assertDatabaseHas('permissions', $attributes);
     }

@@ -48,9 +48,9 @@ abstract class DuskTestCase extends BaseTestCase
                     ->setCapability('acceptInsecureCerts', true)
             );
 
-            /**
-             * Run in Saucelabs. This is only use for CircleCI
-             */
+        /**
+         * Run in Saucelabs. This is only use for CircleCI
+         */
         } elseif (env('SAUCELABS_BROWSER_TESTING')) {
             return RemoteWebDriver::create(
                 'https://' . env('SAUCELABS_USERNAME') . ':' . env('SAUCELABS_ACCESS_KEY') . '@ondemand.saucelabs.com:443/wd/hub',
@@ -61,9 +61,9 @@ abstract class DuskTestCase extends BaseTestCase
                 ]
             );
 
-            /**
-             * Run with default headless mode in the vagrant machine
-             */
+        /**
+         * Run with default headless mode in the vagrant machine
+         */
         } else {
             $options = (new ChromeOptions)->addArguments([
                 '--disable-gpu',

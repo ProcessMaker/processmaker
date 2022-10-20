@@ -389,11 +389,11 @@
 </script>
 
 <style lang="scss" scoped>
-  >>> th#_updated_at {
+  :deep(th#_updated_at) {
     width: 14%;
   }
 
-  >>> th#_created_at {
+  :deep(th#_created_at) {
     width: 14%;
   }
 </style>

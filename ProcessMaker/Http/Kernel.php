@@ -14,7 +14,7 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
-        \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
+        \Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \ProcessMaker\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
@@ -68,5 +68,20 @@ class Kernel extends HttpKernel
         'setskin' => \ProcessMaker\Http\Middleware\SetSkin::class,
         'external.connection' => \ProcessMaker\Http\Middleware\ValidateExternalConnection::class,
         'client' => \Laravel\Passport\Http\Middleware\CheckClientCredentials::class,
+    ];
+
+    /**
+     * The auth:anon middleware must run after a session is set up to
+     * check if there is a user logged in before implying the user is
+     * anonymous.
+     *
+     * The auth:anon middleware is only used for the laravel echo
+     * server route: broadcasting/auth
+     *
+     * @var array
+     */
+    protected $middlewarePriority = [
+        \Illuminate\Session\Middleware\AuthenticateSession::class,
+        \ProcessMaker\Http\Middleware\ProcessMakerAuthenticate::class,
     ];
 }

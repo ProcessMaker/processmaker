@@ -2,12 +2,10 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
 /**
  * Application Data
  */
-class JsonData extends Model
+class JsonData extends ProcessMakerModel
 {
     public static function timezones()
     {

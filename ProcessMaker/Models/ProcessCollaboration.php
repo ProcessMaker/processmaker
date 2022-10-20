@@ -2,8 +2,6 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
 /**
  * Represents an Eloquent model of a Request which is an instance of a Process.
  *
@@ -12,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  */
-class ProcessCollaboration extends Model
+class ProcessCollaboration extends ProcessMakerModel
 {
     protected $connection = 'processmaker';
 

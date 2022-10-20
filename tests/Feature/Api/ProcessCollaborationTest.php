@@ -40,23 +40,23 @@ class ProcessCollaborationTest extends TestCase
      */
     private function createTestCollaborationProcess()
     {
-        $process = factory(Process::class)->create([
+        $process = Process::factory()->create([
             'bpmn' => Process::getProcessTemplate('Collaboration.bpmn'),
         ]);
         //Assign the task to $this->user
-        factory(ProcessTaskAssignment::class)->create([
+        ProcessTaskAssignment::factory()->create([
             'process_id' => $process->id,
             'process_task_id' => '_5',
             'assignment_id' => $this->user->id,
             'assignment_type' => 'user',
         ]);
-        factory(ProcessTaskAssignment::class)->create([
+        ProcessTaskAssignment::factory()->create([
             'process_id' => $process->id,
             'process_task_id' => '_10',
             'assignment_id' => $this->user->id,
             'assignment_type' => 'user',
         ]);
-        factory(ProcessTaskAssignment::class)->create([
+        ProcessTaskAssignment::factory()->create([
             'process_id' => $process->id,
             'process_task_id' => '_24',
             'assignment_id' => $this->user->id,

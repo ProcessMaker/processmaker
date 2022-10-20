@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Database\Seeders\ProcessSeeder;
 use Illuminate\Database\Seeder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
@@ -33,7 +34,7 @@ class NotificationControlsTest extends TestCase
     public function testRequestWithNotifications()
     {
         // Create a user
-        $adminUser = factory(User::class)->create([
+        $adminUser = User::factory()->create([
             'username' => 'admin',
             'is_administrator' => true,
         ]);
@@ -52,7 +53,7 @@ class NotificationControlsTest extends TestCase
         $process->save();
 
         // Allow the process manager to receive canceled notificaitons
-        factory(ProcessNotificationSetting::class)->create([
+        ProcessNotificationSetting::factory()->create([
             'process_id' => $process->getKey(),
             'notifiable_type' => 'manager',
             'notification_type' => 'canceled',
@@ -107,7 +108,7 @@ class NotificationControlsTest extends TestCase
     public function testRequestWithoutNotifications()
     {
         // Create a user
-        $adminUser = factory(User::class)->create([
+        $adminUser = User::factory()->create([
             'username' => 'admin',
             'is_administrator' => true,
         ]);
@@ -154,7 +155,7 @@ class NotificationControlsTest extends TestCase
     public function testNotificationMarkedAsReadWhenTaskIsVisited()
     {
         // Create a request token to simulate that a new task is created for the user
-        $token = factory(ProcessRequestToken::class)->create();
+        $token = ProcessRequestToken::factory()->create();
 
         //url to edit the task
         $taskUrl = route('tasks.edit', [$token], false);
