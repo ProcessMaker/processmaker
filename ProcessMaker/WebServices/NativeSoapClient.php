@@ -291,14 +291,14 @@ class NativeSoapClient implements SoapClientInterface
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $wsdl);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, "grant_type=client_cert");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, 'grant_type=client_cert');
             curl_setopt($ch, CURLOPT_SSLCERT, $options['local_cert']);
-            curl_setopt($ch, CURLOPT_SSLCERTTYPE, "PEM");
+            curl_setopt($ch, CURLOPT_SSLCERTTYPE, 'PEM');
             curl_setopt($ch, CURLOPT_SSLKEYPASSWD, $options['passphrase']);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
             curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: text/xml']);
-            curl_setopt( $ch, CURLOPT_CUSTOMREQUEST, 'GET' );
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
             $wsdlContent = curl_exec($ch);
             if (curl_errno($ch)) {
@@ -306,8 +306,7 @@ class NativeSoapClient implements SoapClientInterface
             }
             curl_close($ch);
             $dom->loadXML($wsdlContent);
-        }
-        else {
+        } else {
             $dom->load($wsdl);
         }
     }

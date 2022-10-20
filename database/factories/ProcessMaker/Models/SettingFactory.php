@@ -24,19 +24,19 @@ class SettingFactory extends Factory
         ]);
 
         switch ($format) {
-        case 'text':
-            $config = $this->faker->sentence();
-            break;
-        case 'array':
-        case 'object':
-            $config = json_encode(
-                ['test' => $this->faker->sentence(1)]
-            );
-            break;
-        case 'boolean':
-            $config = $this->faker->randomElement([0, 1]);
-            break;
-    }
+            case 'text':
+                $config = $this->faker->sentence();
+                break;
+            case 'array':
+            case 'object':
+                $config = json_encode(
+                    ['test' => $this->faker->sentence(1)]
+                );
+                break;
+            case 'boolean':
+                $config = $this->faker->randomElement([0, 1]);
+                break;
+        }
 
         return [
             'key' => $this->faker->word(),
