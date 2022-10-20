@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use Database\Seeders\PermissionSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
@@ -38,18 +39,18 @@ class GroupMembersTest extends TestCase
         $response = $this->apiCall('GET', self::API_TEST_URL);
         $response->assertStatus(200);
 
-        $group1 = factory(Group::class)->create(['name' => 'Group that admin belongs to']);
-        $group2 = factory(Group::class)->create(['name' => 'Group that other user belongs to']);
+        $group1 = Group::factory()->create(['name' => 'Group that admin belongs to']);
+        $group2 = Group::factory()->create(['name' => 'Group that other user belongs to']);
 
-        $other_user = factory(User::class)->create(['status' => 'ACTIVE']);
+        $other_user = User::factory()->create(['status' => 'ACTIVE']);
 
-        factory(GroupMember::class)->create([
+        GroupMember::factory()->create([
             'member_type' => User::class,
             'member_id' => $this->user->id,
             'group_id' => $group1->id,
         ]);
 
-        factory(GroupMember::class)->create([
+        GroupMember::factory()->create([
             'member_type' => User::class,
             'member_id' => $other_user->id,
             'group_id' => $group2->id,
@@ -85,8 +86,8 @@ class GroupMembersTest extends TestCase
      */
     public function testCreateGroupMembershipForUser()
     {
-        $user = factory(User::class)->create();
-        $group = factory(Group::class)->create();
+        $user = User::factory()->create();
+        $group = Group::factory()->create();
 
         $response = $this->apiCall('POST', self::API_TEST_URL, [
             'group_id' => $group->id,
@@ -108,8 +109,8 @@ class GroupMembersTest extends TestCase
     public function testCreateGroupMembershipForGroup()
     {
         $this->withoutExceptionHandling();
-        $group1 = factory(Group::class)->create();
-        $group2 = factory(Group::class)->create();
+        $group1 = Group::factory()->create();
+        $group2 = Group::factory()->create();
 
         $response = $this->apiCall('POST', self::API_TEST_URL, [
             'group_id' => $group1->id,
@@ -134,7 +135,7 @@ class GroupMembersTest extends TestCase
     public function testGetGroupMember()
     {
         //get the id from the factory
-        $group = factory(GroupMember::class)->create()->id;
+        $group = GroupMember::factory()->create()->id;
 
         //load api
         $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $group);
@@ -152,7 +153,7 @@ class GroupMembersTest extends TestCase
     public function testDeleteGroupMember()
     {
         //Remove group
-        $url = self::API_TEST_URL . '/' . factory(GroupMember::class)->create()->id;
+        $url = self::API_TEST_URL . '/' . GroupMember::factory()->create()->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code
@@ -165,7 +166,7 @@ class GroupMembersTest extends TestCase
     public function testDeleteGroupMemberNotExist()
     {
         //GroupMember not exist
-        $url = self::API_TEST_URL . '/' . factory(GroupMember::class)->make()->id;
+        $url = self::API_TEST_URL . '/' . GroupMember::factory()->make()->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code
@@ -178,8 +179,8 @@ class GroupMembersTest extends TestCase
     public function testMembersAllGroupAvailable()
     {
         //The new user does not have groups assigned.
-        factory(Group::class, 15)->create(['status' => 'ACTIVE']);
-        $user = factory(User::class)->create(['status' => 'ACTIVE']);
+        Group::factory()->count(15)->create(['status' => 'ACTIVE']);
+        $user = User::factory()->create(['status' => 'ACTIVE']);
         $response = $this->apiCall('GET', '/group_members_available', [
             'member_id' => $user->id,
             'member_type' => User::class,
@@ -193,9 +194,9 @@ class GroupMembersTest extends TestCase
      */
     public function testMembersOnlyGroupAvailable()
     {
-        $user = factory(User::class)->create(['status' => 'ACTIVE']);
-        factory(GroupMember::class, 10)->create(['member_id' => $user->id, 'member_type' => User::class]);
-        factory(Group::class, 15)->create(['status' => 'ACTIVE']);
+        $user = User::factory()->create(['status' => 'ACTIVE']);
+        GroupMember::factory()->count(10)->create(['member_id' => $user->id, 'member_type' => User::class]);
+        Group::factory()->count(15)->create(['status' => 'ACTIVE']);
         $response = $this->apiCall('GET', '/group_members_available', [
             'member_id' => $user->id,
             'member_type' => User::class,
@@ -210,8 +211,8 @@ class GroupMembersTest extends TestCase
     public function testMembersAllUsersAvailable()
     {
         //The new group does not have groups assigned.
-        factory(User::class, 15)->create(['status' => 'ACTIVE']);
-        $group = factory(Group::class)->create(['status' => 'ACTIVE']);
+        User::factory()->count(15)->create(['status' => 'ACTIVE']);
+        $group = Group::factory()->create(['status' => 'ACTIVE']);
         $count = User::nonSystem()->where('status', 'ACTIVE')->count();
         $response = $this->apiCall('GET', '/user_members_available', [
             'group_id' => $group->id,
@@ -226,13 +227,13 @@ class GroupMembersTest extends TestCase
     public function testMembersOnlyUsersAvailable()
     {
         //The new group does not have groups assigned.
-        $group = factory(Group::class)->create(['status' => 'ACTIVE']);
-        factory(GroupMember::class)->create([
+        $group = Group::factory()->create(['status' => 'ACTIVE']);
+        GroupMember::factory()->create([
             'group_id' => $group->id,
-            'member_id' => factory(User::class)->create(['status' => 'ACTIVE'])->getKey(),
+            'member_id' => User::factory()->create(['status' => 'ACTIVE'])->getKey(),
             'member_type' => User::class,
         ]);
-        factory(User::class, 15)->create(['status' => 'ACTIVE']);
+        User::factory()->count(15)->create(['status' => 'ACTIVE']);
 
         $count = User::nonSystem()->where('status', 'ACTIVE')->count() - 1;
         $response = $this->apiCall('GET', '/user_members_available', [

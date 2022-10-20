@@ -4,7 +4,6 @@ namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
 use DB;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
 use Laravel\Scout\Searchable;
@@ -24,8 +23,8 @@ use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\SqlsrvSupportTrait;
-use Spatie\MediaLibrary\HasMedia\HasMedia;
-use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Throwable;
 
 /**
@@ -78,11 +77,11 @@ use Throwable;
  *   },
  * )
  */
-class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMedia
+class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInterface, HasMedia
 {
     use ExecutionInstanceTrait;
     use SerializeToIso8601;
-    use HasMediaTrait;
+    use InteractsWithMedia;
     use ExtendedPMQL;
     use SqlsrvSupportTrait;
     use HideSystemResources;

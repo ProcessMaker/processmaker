@@ -17,7 +17,7 @@ class RequestsTest extends DuskTestCase
         $user = User::where('username', 'testuser')->first();
 
         if (!$user) {
-            $user = factory(User::class)->create([
+            $user = User::factory()->create([
                 'username' => 'testuser',
                 'password' => Hash::make('secret'),
                 'status' => 'ACTIVE',

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
+use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\Permission;
@@ -27,7 +28,7 @@ class DashboardTest extends TestCase
 
     public function testIndexRoute()
     {
-        $this->user = factory(User::class)->create();
+        $this->user = User::factory()->create();
         $response = $this->webCall('GET', '/admin');
         $response->assertStatus(403);
 

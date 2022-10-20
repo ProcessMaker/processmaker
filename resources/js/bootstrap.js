@@ -22,6 +22,8 @@ import datetime_format from "./data/datetime_formats.json";
 import RequestChannel from "./tasks/components/ProcessRequestChannel";
 import Modal from "./components/shared/Modal";
 import AccessibilityMixin from "./components/common/mixins/accessibility";
+import { initializeScreenCache } from "@processmaker/screen-builder";
+import Vue from 'vue'
 
 window.__ = translator;
 window._ = require("lodash");
@@ -51,7 +53,7 @@ window.$ = window.jQuery = require("jquery");
  * and simple, leaving you to focus on building your next great project.
  */
 
-window.Vue = require("vue");
+window.Vue = Vue;
 
 window.Vue.use(BootstrapVue);
 window.Vue.use(ScreenBuilder);
@@ -297,6 +299,17 @@ if (userID) {
       window.ProcessMaker.closeSessionModal();
     });
 }
+
+// Configuration Global object used by ScreenBuilder
+// @link https://processmaker.atlassian.net/browse/FOUR-6833 Cache configuration
+const screenCacheEnabled = document.head.querySelector("meta[name=\"screen-cache-enabled\"]")?.content ?? "false";
+const screenCacheTimeout = document.head.querySelector("meta[name=\"screen-cache-timeout\"]")?.content ?? "5000";
+window.ProcessMaker.screen = {
+  cacheEnabled: screenCacheEnabled === "true",
+  cacheTimeout: Number(screenCacheTimeout),
+};
+// Initialize screen-builder cache
+initializeScreenCache(window.ProcessMaker.apiClient, window.ProcessMaker.screen);
 
 const clickTab = () => {
   const { hash } = window.location;

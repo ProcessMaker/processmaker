@@ -288,7 +288,7 @@ class ImportProcess implements ShouldQueue
         foreach ($tasks as $task) {
             $config = json_decode($task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'config'), true);
             if (isset($config['web_entry']) && isset($config['web_entry']['webentryRouteConfig'])) {
-                $webEntryRouteConfig= $config['web_entry']['webentryRouteConfig'];
+                $webEntryRouteConfig = $config['web_entry']['webentryRouteConfig'];
                 if ($webEntryRouteConfig['firstUrlSegment'] != '') {
                     $error = null;
                     $existingRoute = WebentryRoute::where('first_segment', $webEntryRouteConfig['firstUrlSegment'])->where('process_id', '!=', $importedProcessId)->first();

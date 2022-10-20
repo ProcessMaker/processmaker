@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Shared;
 
+use Database\Seeders\PermissionSeeder;
 use Illuminate\Support\Facades\Hash;
-use PermissionSeeder;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\User;
 use ProcessMaker\Providers\AuthServiceProvider;
@@ -20,7 +20,7 @@ trait RequestHelper
     {
         parent::setUp();
 
-        $this->user = factory(User::class)->create([
+        $this->user = User::factory()->create([
             'password' => Hash::make('password'),
             'is_administrator' => true,
         ]);
@@ -67,7 +67,7 @@ trait RequestHelper
         return $this->webCall('GET', $url, $params);
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         parent::tearDown();
         if (!$this->debug) {

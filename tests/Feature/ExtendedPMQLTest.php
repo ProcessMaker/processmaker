@@ -24,7 +24,7 @@ class ExtendedPMQLTest extends TestCase
         $date = $faker->dateTime();
 
         // Create a process request with our fake created_at date
-        $processRequest = factory(ProcessRequest::class)->create([
+        $processRequest = ProcessRequest::factory()->create([
             'created_at' => $date,
         ]);
 
@@ -39,7 +39,7 @@ class ExtendedPMQLTest extends TestCase
     public function testHandleValueAlias()
     {
         // Create a process request
-        $processRequest = factory(ProcessRequest::class)->create([
+        $processRequest = ProcessRequest::factory()->create([
             'status' => 'ACTIVE',
         ]);
 
@@ -66,12 +66,12 @@ class ExtendedPMQLTest extends TestCase
         ];
 
         // Create a process request
-        $processRequest = factory(ProcessRequest::class)->create([
+        $processRequest = ProcessRequest::factory()->create([
             'data' => $data,
         ]);
 
         // Create a process request token tied to the above request
-        $processRequestToken = factory(ProcessRequestToken::class)->create([
+        $processRequestToken = ProcessRequestToken::factory()->create([
             'process_request_id' => $processRequest->id,
         ]);
 
@@ -94,10 +94,10 @@ class ExtendedPMQLTest extends TestCase
         $this->user->timezone = 'America/Los_Angeles';
         $this->user->save();
 
-        $processRequest1 = factory(ProcessRequest::class)->create([
+        $processRequest1 = ProcessRequest::factory()->create([
             'completed_at' => '2021-10-05 16:00:00', // UTC
         ]);
-        $processRequest2 = factory(ProcessRequest::class)->create([
+        $processRequest2 = ProcessRequest::factory()->create([
             'completed_at' => '2021-10-05 18:00:00', // UTC
         ]);
 
@@ -109,10 +109,10 @@ class ExtendedPMQLTest extends TestCase
 
     public function testRelativeDate()
     {
-        $processRequest1 = factory(ProcessRequest::class)->create([
+        $processRequest1 = ProcessRequest::factory()->create([
             'data' => ['date' => Carbon::parse('-10 minutes')->toDateTimeString()],
         ]);
-        $processRequest2 = factory(ProcessRequest::class)->create([
+        $processRequest2 = ProcessRequest::factory()->create([
             'data' => ['date' => Carbon::parse('-2 hours')->toDateTimeString()],
         ]);
 
@@ -124,11 +124,11 @@ class ExtendedPMQLTest extends TestCase
 
     public function testCharComparison()
     {
-        $processRequest1 = factory(ProcessRequest::class)->create([
+        $processRequest1 = ProcessRequest::factory()->create([
             'data' => ['gender' => 'F'],
         ]);
 
-        $processRequest2 = factory(ProcessRequest::class)->create([
+        $processRequest2 = ProcessRequest::factory()->create([
             'data' => ['gender' => 'M'],
         ]);
 
@@ -140,10 +140,10 @@ class ExtendedPMQLTest extends TestCase
 
     public function testFilterUsernameWithNumbers()
     {
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'username' => 'W0584',
         ]);
-        $processRequest = factory(ProcessRequest::class)->create([
+        $processRequest = ProcessRequest::factory()->create([
             'user_id' => $user->id,
         ]);
 

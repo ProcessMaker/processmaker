@@ -44,7 +44,8 @@ class ProcessObserver
      *
      * @param Process $process
      */
-    public function saved(Process $process) {
+    public function saved(Process $process)
+    {
         $process->manageCustomRoutes();
     }
 }

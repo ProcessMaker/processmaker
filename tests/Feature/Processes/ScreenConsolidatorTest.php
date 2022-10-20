@@ -24,14 +24,14 @@ class ScreenConsolidatorTest extends TestCase
     public function testExportImportProcess()
     {
         // Create an admin user
-        $adminUser = factory(User::class)->create([
+        $adminUser = User::factory()->create([
             'username' => 'admin',
             'is_administrator' => true,
         ]);
 
         // Save the file contents and convert them to an UploadedFile
         $fileName = realpath(__DIR__ . '/../../Fixtures/test_nested_record_list.json');
-        $file = new UploadedFile($fileName, 'test_nested_record_list.json', null, null, null, true);
+        $file = new UploadedFile($fileName, 'test_nested_record_list.json', null, null, true);
 
         // Test to ensure our standard user cannot import a screen
         $this->user = $adminUser;
@@ -261,14 +261,14 @@ class ScreenConsolidatorTest extends TestCase
     public function testNestedNavButtons()
     {
         // Create an admin user
-        $adminUser = factory(User::class)->create([
+        $adminUser = User::factory()->create([
             'username' => 'admin',
             'is_administrator' => true,
         ]);
 
         // Save the file contents and convert them to an UploadedFile
         $fileName = realpath(__DIR__ . '/../../Fixtures/nested_with_navbar.json');
-        $file = new UploadedFile($fileName, 'nested_with_navbar.json', null, null, null, true);
+        $file = new UploadedFile($fileName, 'nested_with_navbar.json', null, null, true);
 
         // Test to ensure our standard user cannot import a screen
         $this->user = $adminUser;
@@ -328,14 +328,14 @@ class ScreenConsolidatorTest extends TestCase
     public function testRecordListWithoutRecordForm()
     {
         // Create an admin user
-        $adminUser = factory(User::class)->create([
+        $adminUser = User::factory()->create([
             'username' => 'admin',
             'is_administrator' => true,
         ]);
 
         // Save the file contents and convert them to an UploadedFile
         $fileName = realpath(__DIR__ . '/../../Fixtures/record_without_record_form.json');
-        $file = new UploadedFile($fileName, 'record_without_record_form.json', null, null, null, true);
+        $file = new UploadedFile($fileName, 'record_without_record_form.json', null, null, true);
 
         // Test to ensure our standard user cannot import a screen
         $this->user = $adminUser;
