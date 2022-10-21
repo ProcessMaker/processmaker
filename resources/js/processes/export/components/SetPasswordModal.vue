@@ -30,11 +30,11 @@
             <template v-else>
               <div class="pt-3">
                 <label for="set-password">Password</label>
-                <vue-password :disable-strength=true disabled :disable-toggle=true />
+                <vue-password :disable-strength=true disabled />
               </div>
               <div class="pt-3">
                 <label for="confirm-set-password">Verify Password</label>
-                <vue-password :disable-strength=true disabled :disable-toggle=true />
+                <vue-password :disable-strength=true disabled />
               </div>
             </template>
         </b-form-group>
@@ -66,13 +66,19 @@ export default {
   },
   watch: {
     password() {
-      this.disabled = this.password ? false : true;
+      if (this.passwordProtect === true) {
+        this.disabled = this.password ? false : true;
+      };
     },
     passwordProtect() {
-      this.disabled = this.passwordProtect ? true : false;
-      this.password = "";
-      this.confirmPassword = "";
-      this.errors.password = "";
+      if (this.passwordProtect === false) {
+        this.disabled = false;
+        this.password = "";
+        this.confirmPassword = "";
+        this.errors.password = "";
+      } else {
+        this.disabled = this.password ? false : true;
+      }
     }
   },
   methods: { 
