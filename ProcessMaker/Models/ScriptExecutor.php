@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Traits\Exportable;
@@ -169,12 +170,11 @@ class ScriptExecutor extends ProcessMakerModel
     public function imageTag()
     {
         $config = self::config($this->language);
-        $tag = 'v';
-        if (isset($config['package_version'])) {
-            $tag .= $config['package_version'];
-        }
+        $composerPath = $config['package_path'];
+        $composer = json_decode(file_get_contents($composerPath . '/composer.json'), true);
+        $version = Arr::get($composer, 'version', '0');
 
-        return $tag;
+        return 'v' . $version;
     }
 
     public function scripts()
