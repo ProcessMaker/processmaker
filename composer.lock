@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "79fb5dd8a44f6a1744b0ad4438fb1d63",
+    "content-hash": "94d8bcd13e1b847aea06138fdd45456d",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1044,23 +1044,23 @@
         },
         {
             "name": "doctrine/inflector",
-            "version": "2.0.6",
+            "version": "2.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/inflector.git",
-                "reference": "d9d313a36c872fd6ee06d9a6cbcf713eaa40f024"
+                "reference": "ade2b3bbfb776f27f0558e26eed43b5d9fe1b392"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/inflector/zipball/d9d313a36c872fd6ee06d9a6cbcf713eaa40f024",
-                "reference": "d9d313a36c872fd6ee06d9a6cbcf713eaa40f024",
+                "url": "https://api.github.com/repos/doctrine/inflector/zipball/ade2b3bbfb776f27f0558e26eed43b5d9fe1b392",
+                "reference": "ade2b3bbfb776f27f0558e26eed43b5d9fe1b392",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.2 || ^8.0"
             },
             "require-dev": {
-                "doctrine/coding-standard": "^10",
+                "doctrine/coding-standard": "^9",
                 "phpstan/phpstan": "^1.8",
                 "phpstan/phpstan-phpunit": "^1.1",
                 "phpstan/phpstan-strict-rules": "^1.3",
@@ -1115,7 +1115,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/inflector/issues",
-                "source": "https://github.com/doctrine/inflector/tree/2.0.6"
+                "source": "https://github.com/doctrine/inflector/tree/2.0.5"
             },
             "funding": [
                 {
@@ -1131,7 +1131,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-10-20T09:10:12+00:00"
+            "time": "2022-09-07T09:01:28+00:00"
         },
         {
             "name": "doctrine/lexer",
@@ -5803,10 +5803,16 @@
         {
             "name": "processmaker/docker-executor-lua",
             "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/docker-executor-lua.git",
+                "reference": "2278b68b63bbce34ce37cf538b43a724304f9562"
+            },
             "dist": {
-                "type": "path",
-                "url": "/Users/sanjacornelius/Documents/processmaker-plugins/docker-executor-lua",
-                "reference": "fecc182ae486f4a077a7e4ab9054371c4236b171"
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-lua/zipball/2278b68b63bbce34ce37cf538b43a724304f9562",
+                "reference": "2278b68b63bbce34ce37cf538b43a724304f9562",
+                "shasum": ""
             },
             "type": "library",
             "extra": {
@@ -5818,26 +5824,31 @@
             },
             "autoload": {
                 "psr-4": {
-                    "ProcessMaker\\Package\\DockerExecutorLua\\": "src",
-                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
+                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners",
+                    "ProcessMaker\\Package\\DockerExecutorLua\\": "src"
                 }
             },
-            "license": [
-                "GAGPL-3.0-or-later"
-            ],
+            "notification-url": "https://packagist.org/downloads/",
             "description": "Lua script executor for processmaker 4",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "issues": "https://github.com/ProcessMaker/docker-executor-lua/issues",
+                "source": "https://github.com/ProcessMaker/docker-executor-lua/tree/v1.0.0"
+            },
+            "time": "2020-03-31T21:45:44+00:00"
         },
         {
             "name": "processmaker/docker-executor-node",
-            "version": "1.0.2",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/docker-executor-node.git",
+                "reference": "e61f24090422f890cb227bc94a4461438f3ec9a6"
+            },
             "dist": {
-                "type": "path",
-                "url": "/Users/sanjacornelius/Documents/processmaker-plugins/docker-executor-node",
-                "reference": "81f404c9742e4b038f2304f68e63b1143250f311"
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-node/zipball/e61f24090422f890cb227bc94a4461438f3ec9a6",
+                "reference": "e61f24090422f890cb227bc94a4461438f3ec9a6",
+                "shasum": ""
             },
             "type": "library",
             "extra": {
@@ -5849,26 +5860,34 @@
             },
             "autoload": {
                 "psr-4": {
-                    "ProcessMaker\\Package\\DockerExecutorNode\\": "src",
-                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
+                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners",
+                    "ProcessMaker\\Package\\DockerExecutorNode\\": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GAGPL-3.0-or-later"
             ],
             "description": "Javascript script executor for processmaker 4",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "issues": "https://github.com/ProcessMaker/docker-executor-node/issues",
+                "source": "https://github.com/ProcessMaker/docker-executor-node/tree/v1.0.1"
+            },
+            "time": "2020-07-02T22:53:17+00:00"
         },
         {
             "name": "processmaker/docker-executor-php",
             "version": "1.0.1",
-            "dist": {
-                "type": "path",
-                "url": "/Users/sanjacornelius/Documents/processmaker-plugins/docker-executor-php",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/docker-executor-php.git",
                 "reference": "fa170f095279f6f0a55361d33ac177a6e0331310"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-php/zipball/fa170f095279f6f0a55361d33ac177a6e0331310",
+                "reference": "fa170f095279f6f0a55361d33ac177a6e0331310",
+                "shasum": ""
             },
             "type": "library",
             "extra": {
@@ -5880,30 +5899,39 @@
             },
             "autoload": {
                 "psr-4": {
-                    "ProcessMaker\\Package\\DockerExecutorPhp\\": "src",
-                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
+                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners",
+                    "ProcessMaker\\Package\\DockerExecutorPhp\\": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GAGPL-3.0-or-later"
             ],
             "description": "PHP script executor for processmaker 4",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "issues": "https://github.com/ProcessMaker/docker-executor-php/issues",
+                "source": "https://github.com/ProcessMaker/docker-executor-php/tree/v1.0.1"
+            },
+            "time": "2022-07-05T20:26:35+00:00"
         },
         {
             "name": "processmaker/laravel-i18next",
             "version": "dev-master",
-            "dist": {
-                "type": "path",
-                "url": "/Users/sanjacornelius/Documents/processmaker-plugins/laravel-i18next",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/laravel-i18next.git",
                 "reference": "f950a439a75cd69c06235213ef9b776f29a78573"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/laravel-i18next/zipball/f950a439a75cd69c06235213ef9b776f29a78573",
+                "reference": "f950a439a75cd69c06235213ef9b776f29a78573",
+                "shasum": ""
             },
             "require-dev": {
                 "phpunit/phpunit": "^7.2"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -5913,19 +5941,15 @@
                 }
             },
             "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
                 "psr-4": {
                     "ProcessMaker\\i18next\\": "src",
                     "ProcessMaker\\i18next\\Tests\\": "tests"
-                },
-                "files": [
-                    "src/helpers.php"
-                ]
+                }
             },
-            "scripts": {
-                "test": [
-                    "vendor/bin/phpunit --configuration phpunit.xml"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -5940,18 +5964,25 @@
                 }
             ],
             "description": "Transform Laravel localization files into i18next compatible format. Provides routes for i18next-xhr-backend.",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "issues": "https://github.com/ProcessMaker/laravel-i18next/issues",
+                "source": "https://github.com/ProcessMaker/laravel-i18next/tree/master"
+            },
+            "time": "2020-11-26T14:26:47+00:00"
         },
         {
             "name": "processmaker/nayra",
             "version": "1.9.4",
-            "dist": {
-                "type": "path",
-                "url": "/Users/sanjacornelius/Documents/processmaker-plugins/nayra",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/nayra.git",
                 "reference": "e83d67072632fd178018905eba311e7a85e70622"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/e83d67072632fd178018905eba311e7a85e70622",
+                "reference": "e83d67072632fd178018905eba311e7a85e70622",
+                "shasum": ""
             },
             "require-dev": {
                 "phpunit/phpunit": "^7.5"
@@ -5962,40 +5993,30 @@
                     "ProcessMaker\\": "src/ProcessMaker/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Tests\\Feature\\": "tests/Feature/",
-                    "ProcessMaker\\": [
-                        "src/ProcessMaker/",
-                        "tests/unit/ProcessMaker/",
-                        "tests/ProcessMaker/"
-                    ]
-                }
-            },
-            "scripts": {
-                "test": [
-                    "phpunit"
-                ],
-                "coverage": [
-                    "phpunit -d memory_limit=-1 --coverage-html coverage"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "Apache-2.0"
             ],
             "description": "BPMN compliant engine",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "issues": "https://github.com/ProcessMaker/nayra/issues",
+                "source": "https://github.com/ProcessMaker/nayra/tree/v1.9.4"
+            },
+            "time": "2022-09-03T00:32:24+00:00"
         },
         {
             "name": "processmaker/pmql",
             "version": "1.8.0",
-            "dist": {
-                "type": "path",
-                "url": "/Users/sanjacornelius/Documents/processmaker-plugins/pmql",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/pmql.git",
                 "reference": "0975a286ff1a49cfb0472fa91d2e3ec3d8e66f49"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/0975a286ff1a49cfb0472fa91d2e3ec3d8e66f49",
+                "reference": "0975a286ff1a49cfb0472fa91d2e3ec3d8e66f49",
+                "shasum": ""
             },
             "require": {
                 "laravel/framework": "^5.7|^6|^7|^8|^9"
@@ -6015,11 +6036,7 @@
                     "ProcessMaker\\Query\\": "src"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "ProcessMaker\\Query\\Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "authors": [
                 {
                     "name": "Taylor Dondich",
@@ -6027,10 +6044,11 @@
                 }
             ],
             "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "issues": "https://github.com/ProcessMaker/pmql/issues",
+                "source": "https://github.com/ProcessMaker/pmql/tree/v1.8.0"
+            },
+            "time": "2022-10-18T21:33:41+00:00"
         },
         {
             "name": "psr/cache",
@@ -6518,16 +6536,16 @@
         },
         {
             "name": "pusher/pusher-php-server",
-            "version": "7.2.1",
+            "version": "7.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pusher/pusher-http-php.git",
-                "reference": "5d708d43d774218e1068037c56a887658a4930ac"
+                "reference": "7ed4a62956c7426814c7dc67b2bb764cd0e1a603"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pusher/pusher-http-php/zipball/5d708d43d774218e1068037c56a887658a4930ac",
-                "reference": "5d708d43d774218e1068037c56a887658a4930ac",
+                "url": "https://api.github.com/repos/pusher/pusher-http-php/zipball/7ed4a62956c7426814c7dc67b2bb764cd0e1a603",
+                "reference": "7ed4a62956c7426814c7dc67b2bb764cd0e1a603",
                 "shasum": ""
             },
             "require": {
@@ -6540,7 +6558,7 @@
             },
             "require-dev": {
                 "overtrue/phplint": "^2.3",
-                "phpunit/phpunit": "^9.3"
+                "phpunit/phpunit": "^8.5|^9.3"
             },
             "type": "library",
             "extra": {
@@ -6573,9 +6591,9 @@
             ],
             "support": {
                 "issues": "https://github.com/pusher/pusher-http-php/issues",
-                "source": "https://github.com/pusher/pusher-http-php/tree/7.2.1"
+                "source": "https://github.com/pusher/pusher-http-php/tree/7.2.0"
             },
-            "time": "2022-10-17T08:33:16+00:00"
+            "time": "2022-10-03T14:28:42+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
@@ -7273,16 +7291,16 @@
         },
         {
             "name": "swagger-api/swagger-ui",
-            "version": "v4.15.0",
+            "version": "v4.14.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swagger-api/swagger-ui.git",
-                "reference": "2005a0c996f295dc0d2e3eca06de4de630d993be"
+                "reference": "278dc05c886ce9d5d91860d56d9b57f3ab53ad5b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/2005a0c996f295dc0d2e3eca06de4de630d993be",
-                "reference": "2005a0c996f295dc0d2e3eca06de4de630d993be",
+                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/278dc05c886ce9d5d91860d56d9b57f3ab53ad5b",
+                "reference": "278dc05c886ce9d5d91860d56d9b57f3ab53ad5b",
                 "shasum": ""
             },
             "type": "library",
@@ -7328,9 +7346,9 @@
             ],
             "support": {
                 "issues": "https://github.com/swagger-api/swagger-ui/issues",
-                "source": "https://github.com/swagger-api/swagger-ui/tree/v4.15.0"
+                "source": "https://github.com/swagger-api/swagger-ui/tree/v4.14.3"
             },
-            "time": "2022-10-20T20:57:58+00:00"
+            "time": "2022-10-11T09:13:18+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -10347,16 +10365,16 @@
         },
         {
             "name": "vlucas/phpdotenv",
-            "version": "v5.5.0",
+            "version": "v5.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vlucas/phpdotenv.git",
-                "reference": "1a7ea2afc49c3ee6d87061f5a233e3a035d0eae7"
+                "reference": "264dce589e7ce37a7ba99cb901eed8249fbec92f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/1a7ea2afc49c3ee6d87061f5a233e3a035d0eae7",
-                "reference": "1a7ea2afc49c3ee6d87061f5a233e3a035d0eae7",
+                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/264dce589e7ce37a7ba99cb901eed8249fbec92f",
+                "reference": "264dce589e7ce37a7ba99cb901eed8249fbec92f",
                 "shasum": ""
             },
             "require": {
@@ -10371,19 +10389,15 @@
             "require-dev": {
                 "bamarni/composer-bin-plugin": "^1.4.1",
                 "ext-filter": "*",
-                "phpunit/phpunit": "^7.5.20 || ^8.5.30 || ^9.5.25"
+                "phpunit/phpunit": "^7.5.20 || ^8.5.21 || ^9.5.10"
             },
             "suggest": {
                 "ext-filter": "Required to use the boolean validator."
             },
             "type": "library",
             "extra": {
-                "bamarni-bin": {
-                    "bin-links": true,
-                    "forward-command": true
-                },
                 "branch-alias": {
-                    "dev-master": "5.5-dev"
+                    "dev-master": "5.4-dev"
                 }
             },
             "autoload": {
@@ -10415,7 +10429,7 @@
             ],
             "support": {
                 "issues": "https://github.com/vlucas/phpdotenv/issues",
-                "source": "https://github.com/vlucas/phpdotenv/tree/v5.5.0"
+                "source": "https://github.com/vlucas/phpdotenv/tree/v5.4.1"
             },
             "funding": [
                 {
@@ -10427,7 +10441,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-10-16T01:01:54+00:00"
+            "time": "2021-12-12T23:22:04+00:00"
         },
         {
             "name": "voku/portable-ascii",
@@ -10627,16 +10641,16 @@
         },
         {
             "name": "zircote/swagger-php",
-            "version": "4.4.10",
+            "version": "4.4.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zircote/swagger-php.git",
-                "reference": "795be27b3b3bacc8353350cacc663ac5cbcd05cc"
+                "reference": "0c1cdd31e8cfeb7116c54696aafdab9c778070fd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zircote/swagger-php/zipball/795be27b3b3bacc8353350cacc663ac5cbcd05cc",
-                "reference": "795be27b3b3bacc8353350cacc663ac5cbcd05cc",
+                "url": "https://api.github.com/repos/zircote/swagger-php/zipball/0c1cdd31e8cfeb7116c54696aafdab9c778070fd",
+                "reference": "0c1cdd31e8cfeb7116c54696aafdab9c778070fd",
                 "shasum": ""
             },
             "require": {
@@ -10698,9 +10712,9 @@
             ],
             "support": {
                 "issues": "https://github.com/zircote/swagger-php/issues",
-                "source": "https://github.com/zircote/swagger-php/tree/4.4.10"
+                "source": "https://github.com/zircote/swagger-php/tree/4.4.9"
             },
-            "time": "2022-10-19T02:28:50+00:00"
+            "time": "2022-09-11T20:51:43+00:00"
         }
     ],
     "packages-dev": [
