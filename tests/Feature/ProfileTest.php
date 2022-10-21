@@ -17,7 +17,7 @@ class ProfileTest extends TestCase
      */
     public function testEditRoute()
     {
-        $user_id = factory(User::class)->create()->id;
+        $user_id = User::factory()->create()->id;
         // get the URL
         $response = $this->webCall('GET', '/profile/edit');
 
@@ -33,7 +33,7 @@ class ProfileTest extends TestCase
      */
     public function testShowRoute()
     {
-        $user_id = factory(User::class)->create()->id;
+        $user_id = User::factory()->create()->id;
         // get the URL
         $response = $this->webCall('GET', '/profile/' . $user_id);
 

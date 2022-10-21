@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Traits\SqlsrvSupportTrait;
 
 /**
@@ -16,7 +15,7 @@ use ProcessMaker\Traits\SqlsrvSupportTrait;
  * @property ProcessRequest $processRequest
  * @method static \Illuminate\Database\Eloquent\Builder|\ProcessMaker\Models\ProcessRequestLock whereNotDue()
  */
-class ProcessRequestLock extends Model
+class ProcessRequestLock extends ProcessMakerModel
 {
     use SqlsrvSupportTrait;
 

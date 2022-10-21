@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
+use Database\Seeders\PermissionSeeder;
 use Illuminate\Http\Testing\File;
-use PermissionSeeder;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\PermissionAssignment;
 use ProcessMaker\Models\Process;
@@ -58,8 +58,8 @@ class RequestTest extends TestCase
      */
     public function testRequestAllRouteAsAdmin()
     {
-        $this->user = factory(User::class)->create();
-        $request = factory(ProcessRequest::class)->create();
+        $this->user = User::factory()->create();
+        $request = ProcessRequest::factory()->create();
 
         $response = $this->webCall('GET', '/requests/' . $request->id);
         $response->assertStatus(403);
@@ -81,8 +81,8 @@ class RequestTest extends TestCase
      */
     public function testShowRouteForUser()
     {
-        $this->user = factory(User::class)->create();
-        $request = factory(ProcessRequest::class)->create();
+        $this->user = User::factory()->create();
+        $request = ProcessRequest::factory()->create();
 
         $response = $this->webCall('GET', '/requests/' . $request->id);
         $response->assertStatus(403);
@@ -104,7 +104,7 @@ class RequestTest extends TestCase
      */
     public function testShowCancelRoute()
     {
-        $Request_id = factory(ProcessRequest::class)->create()->id;
+        $Request_id = ProcessRequest::factory()->create()->id;
         // get the URL
         $response = $this->webCall('GET', '/requests/' . $Request_id);
         $response->assertStatus(200);
@@ -115,9 +115,9 @@ class RequestTest extends TestCase
 
     public function testShowRouteWithAssignedUser()
     {
-        $this->user = factory(User::class)->create();
+        $this->user = User::factory()->create();
 
-        $request_id = factory(ProcessRequest::class)->create([
+        $request_id = ProcessRequest::factory()->create([
             'user_id' => $this->user->id,
         ])->id;
 
@@ -127,11 +127,11 @@ class RequestTest extends TestCase
 
     public function testShowRouteWithAdministrator()
     {
-        $this->user = factory(User::class)->create([
+        $this->user = User::factory()->create([
             'is_administrator' => true,
         ]);
 
-        $request_id = factory(ProcessRequest::class)->create()->id;
+        $request_id = ProcessRequest::factory()->create()->id;
 
         $response = $this->webCall('GET', '/requests/' . $request_id);
         $response->assertStatus(200);
@@ -139,7 +139,7 @@ class RequestTest extends TestCase
 
     public function testShowMediaFiles()
     {
-        $process_request = factory(ProcessRequest::class)->create();
+        $process_request = ProcessRequest::factory()->create();
         $file_1 = $process_request
             ->addMedia(File::image('photo1.jpg'))
             ->withCustomProperties(['data_name' => 'test'])
@@ -155,20 +155,20 @@ class RequestTest extends TestCase
 
         $response = $this->webCall('GET', '/requests/' . $process_request->id);
         // Full request->getMedia payload is sent for Vue, so assert some HTML also
-        $response->assertSee('photo2.jpg</a>');
-        $response->assertSee('photo3.jpg</a>');
-        $response->assertSee('photo1.jpg</a>');
+        $response->assertSee('photo2.jpg</a>', false);
+        $response->assertSee('photo3.jpg</a>', false);
+        $response->assertSee('photo1.jpg</a>', false);
     }
 
     public function testCompletedCount()
     {
-        $completed1 = factory(ProcessRequest::class)->create([
+        $completed1 = ProcessRequest::factory()->create([
             'status' => 'COMPLETED',
         ]);
-        $completed2 = factory(ProcessRequest::class)->create([
+        $completed2 = ProcessRequest::factory()->create([
             'status' => 'COMPLETED',
         ]);
-        $canceled = factory(ProcessRequest::class)->create([
+        $canceled = ProcessRequest::factory()->create([
             'status' => 'CANCELED',
         ]);
 
@@ -182,8 +182,8 @@ class RequestTest extends TestCase
      */
     public function testShowDefaultSummaryTab()
     {
-        $process = factory(Process::class)->create();
-        $process_request = factory(ProcessRequest::class)->create([
+        $process = Process::factory()->create();
+        $process_request = ProcessRequest::factory()->create([
             'name' => $process->name,
             'process_id' => $process->id,
             'data' => ['form_input_1' => 'TEST DATA'],
@@ -204,14 +204,14 @@ class RequestTest extends TestCase
      */
     public function testShowCustomRequestDetailScreenSummaryTab()
     {
-        $screen = factory(Screen::class)->create([
+        $screen = Screen::factory()->create([
             'type' => 'DISPLAY',
             'config' => $this->screen,
         ]);
-        $process = factory(Process::class)->create([
+        $process = Process::factory()->create([
             'request_detail_screen_id' => $screen->id,
         ]);
-        $process_request = factory(ProcessRequest::class)->create([
+        $process_request = ProcessRequest::factory()->create([
             'name' => $process->name,
             'process_id' => $process->id,
             'data' => ['form_input_1' => 'TEST DATA'],

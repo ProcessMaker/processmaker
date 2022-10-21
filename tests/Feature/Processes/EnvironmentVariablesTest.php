@@ -36,7 +36,7 @@ class EnvironmentVariablesTest extends TestCase
     {
         // get the URL
         $response = $this->webCall('GET', '/designer/environment-variables/' .
-            factory(EnvironmentVariable::class)->create()->id . '/edit');
+            EnvironmentVariable::factory()->create()->id . '/edit');
 
         $response->assertStatus(200);
         // check the correct view is called

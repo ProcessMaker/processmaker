@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Shared;
 
-use Illuminate\Foundation\Testing\TestResponse;
+use Illuminate\Testing\TestResponse;
 
 /**
  * This trait add assertions to test a Resource Controller
@@ -22,7 +22,7 @@ trait ResourceAssertionsTrait
      * @param type $query
      * @param type $expectedMeta
      *
-     * @return \Illuminate\Foundation\Testing\TestResponse
+     * @return \Illuminate\Testing\TestResponse
      */
     protected function assertCorrectModelListing($query, $expectedMeta = [])
     {
@@ -56,12 +56,12 @@ trait ResourceAssertionsTrait
      * @param string $modelClass
      * @param array $attributes
      *
-     * @return \Illuminate\Foundation\Testing\TestResponse
+     * @return \Illuminate\Testing\TestResponse
      */
     protected function assertCorrectModelCreation($modelClass, array $attributes = [])
     {
         $route = route('api.' . $this->resource . '.store');
-        $base = factory($modelClass)->make($attributes);
+        $base = $modelClass::factory()->make($attributes);
         $array = $base->toArray();
         foreach ($attributes as $key => $value) {
             if ($value === static::$DO_NOT_SEND) {
@@ -84,12 +84,12 @@ trait ResourceAssertionsTrait
      * @param array $attributes
      * @param array $errors
      *
-     * @return \Illuminate\Foundation\Testing\TestResponse
+     * @return \Illuminate\Testing\TestResponse
      */
     protected function assertModelCreationFails($modelClass, array $attributes = [], array $errors = [])
     {
         $route = route('api.' . $this->resource . '.store');
-        $base = factory($modelClass)->make($attributes);
+        $base = $modelClass::factory()->make($attributes);
         $array = array_diff($base->toArray(), [static::$DO_NOT_SEND]);
         $response = $this->apiCall('POST', $route, $array);
         $response->assertStatus(422);
@@ -105,7 +105,7 @@ trait ResourceAssertionsTrait
      * @param string $id
      * @param array $includes
      *
-     * @return \Illuminate\Foundation\Testing\TestResponse
+     * @return \Illuminate\Testing\TestResponse
      */
     protected function assertModelShow($id, array $includes = [])
     {
@@ -127,7 +127,7 @@ trait ResourceAssertionsTrait
      *
      * @param type $id
      *
-     * @return \Illuminate\Foundation\Testing\TestResponse
+     * @return \Illuminate\Testing\TestResponse
      */
     protected function assertCorrectModelDeletion($id)
     {
@@ -144,7 +144,7 @@ trait ResourceAssertionsTrait
      *
      * @param type $id
      *
-     * @return \Illuminate\Foundation\Testing\TestResponse
+     * @return \Illuminate\Testing\TestResponse
      */
     protected function assertModelDeletionFails($id, array $errors = [])
     {
@@ -166,7 +166,7 @@ trait ResourceAssertionsTrait
     protected function assertModelUpdate($modelClass, array $attributes = [])
     {
         $yesterday = \Carbon\Carbon::now()->subDay();
-        $base = factory($modelClass)->create([
+        $base = $modelClass::factory()->create([
             'created_at' => $yesterday,
         ]);
         $original_attributes = $base->getAttributes();
@@ -197,7 +197,7 @@ trait ResourceAssertionsTrait
      */
     protected function assertModelUpdateFails($modelClass, array $attributes = [], array $errors = [])
     {
-        $base = factory($modelClass)->create();
+        $base = $modelClass::factory()->create();
 
         $route = route('api.' . $this->resource . '.update', [$base->id]);
         $fields = array_diff($attributes, [static::$DO_NOT_SEND]);
@@ -236,7 +236,7 @@ trait ResourceAssertionsTrait
      * Assert that the response has the given status code.
      *
      * @param string $expected
-     * @param \Illuminate\Foundation\Testing\TestResponse $response
+     * @param \Illuminate\Testing\TestResponse $response
      */
     protected function assertStatus($expected, TestResponse $response)
     {

@@ -17,9 +17,9 @@ class ModelerController extends Controller
     /**
      * Invokes the Process Modeler for rendering.
      */
-    public function __invoke(ModelerManager $manager, Process $process, Request $request)
+    public function show(ModelerManager $manager, Process $process, Request $request)
     {
-        /**
+        /*
          * Emit the ModelerStarting event, passing in our ModelerManager instance. This will
          * allow packages to add additional javascript for modeler initialization which
          * can customize the modeler controls list.

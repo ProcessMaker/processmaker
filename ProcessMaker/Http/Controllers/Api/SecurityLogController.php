@@ -22,7 +22,7 @@ class SecurityLogController extends Controller
      *     path="/security-logs",
      *     summary="Returns all security logs",
      *     operationId="getSecurityLogs",
-     *     tags={"Secuirty Logs"},
+     *     tags={"Security Logs"},
      *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
@@ -90,7 +90,7 @@ class SecurityLogController extends Controller
      *     path="/security-logs/{securityLog}",
      *     summary="Get single security log by ID",
      *     operationId="getSecurityLog",
-     *     tags={"Secuirty Logs"},
+     *     tags={"Security Logs"},
      *     @OA\Parameter(
      *         description="ID of security log to return",
      *         in="path",

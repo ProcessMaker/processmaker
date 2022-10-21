@@ -2,10 +2,12 @@
 
 namespace ProcessMaker\Providers;
 
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Support\Facades;
+use Illuminate\Support\Str;
 use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
@@ -25,6 +27,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
         static::bootObservers();
 
         static::extendValidators();
+
+        $this->setupFactories();
 
         parent::boot();
     }
@@ -210,5 +214,73 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         // we are using custom passport migrations
         Passport::ignoreMigrations();
+    }
+
+    private function setupFactories(): void
+    {
+        Factory::guessFactoryNamesUsing(function (string $modelName) {
+            $factoryFinder = [
+                [
+                    '/ProcessMaker\\\\Plugins\\\\(.*?)\\\\Models\\\\(.*)/',
+                    fn ($package, $baseName) => 'Database\\Factories\\ProcessMaker\\Plugins\\' . $package . '\\' . $baseName . 'Factory',
+                ],
+                [
+                    '/ProcessMaker\\\\Packages\\\\Connectors\\\\(.*?)\\\\Models\\\\(.*)/',
+                    fn ($package, $baseName) => 'Database\\Factories\\ProcessMaker\\Plugins\\' . $package . '\\' . $baseName . 'Factory',
+                ],
+                [
+                    '/ProcessMaker\\\\Package\\\\(.*?)\\\\Models\\\\(.*)/',
+                    fn ($package, $baseName) => 'Database\\Factories\\ProcessMaker\\Package\\' . $package . '\\' . $baseName . 'Factory',
+                ],
+                [
+                    '/ProcessMaker\\\\Models\\\\(.*)/',
+                    fn ($baseName) => 'Database\\Factories\\ProcessMaker\\Models\\' . $baseName . 'Factory',
+                ],
+            ];
+
+            $factory = null;
+            foreach ($factoryFinder as $matcher) {
+                if (preg_match($matcher[0], $modelName, $match)) {
+                    $factory = $matcher[1]($match[1], $match[2] ?? null);
+                    break;
+                }
+            }
+
+            return $factory;
+        });
+
+        Factory::guessModelNamesUsing(function ($factory) {
+            $modelFinder = [
+                [
+                    '/Database\\\\Factories\\\\ProcessMaker\\\\Plugins\\\\(.*?)\\\\(.*)Factory/',
+                    function ($package, $baseName) {
+                        $model = 'ProcessMaker\\Plugins\\' . $package . '\\Models\\' . $baseName;
+                        if (class_exists($model)) {
+                            return $model;
+                        } else {
+                            return 'ProcessMaker\\Packages\\Connectors\\' . $package . '\\Models\\' . $baseName;
+                        }
+                    },
+                ],
+                [
+                    '/Database\\\\Factories\\\\ProcessMaker\\\\Package\\\\(.*?)\\\\(.*)Factory/',
+                    fn ($package, $baseName) => 'ProcessMaker\\Package\\' . $package . '\\Models\\' . $baseName,
+                ],
+                [
+                    '/Database\\\\Factories\\\\(.*)Factory/',
+                    fn ($match) => $match,
+                ],
+            ];
+
+            $model = null;
+            foreach ($modelFinder as $matcher) {
+                if (preg_match($matcher[0], get_class($factory), $match)) {
+                    $model = $matcher[1]($match[1], $match[2] ?? null);
+                    break;
+                }
+            }
+
+            return $model;
+        });
     }
 }

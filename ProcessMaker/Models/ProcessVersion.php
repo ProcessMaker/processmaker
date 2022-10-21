@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use ProcessMaker\Contracts\ProcessModelInterface;
 use ProcessMaker\Traits\HasCategories;
@@ -22,7 +21,7 @@ use ProcessMaker\Traits\ProcessTrait;
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  */
-class ProcessVersion extends Model implements ProcessModelInterface
+class ProcessVersion extends ProcessMakerModel implements ProcessModelInterface
 {
     use HasSelfServiceTasks;
     use HasCategories;

@@ -28,7 +28,7 @@ class ConvertBPMNTest extends TestCase
      */
     public function testConvertSubProcess()
     {
-        $process = factory(Process::class)->create([
+        $process = Process::factory()->create([
             'status' => 'ACTIVE',
             'bpmn' => file_get_contents(__DIR__ . '/processes/CP.01.00 Create new customer.bpmn'),
         ]);
@@ -41,7 +41,7 @@ class ConvertBPMNTest extends TestCase
      */
     public function testConvertSendTask()
     {
-        $process = factory(Process::class)->create([
+        $process = Process::factory()->create([
             'status' => 'ACTIVE',
             'bpmn' => file_get_contents(__DIR__ . '/processes/adonis.bpmn'),
         ]);

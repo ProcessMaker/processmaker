@@ -31,14 +31,14 @@ class SearchByCategoryTest extends TestCase
      */
     public function testSearchProcessesByCategory()
     {
-        $cata = factory(ProcessCategory::class)->create(['name' => 'category_a']);
-        $catb = factory(ProcessCategory::class)->create(['name' => 'category_b']);
-        $catc = factory(ProcessCategory::class)->create(['name' => 'category_c']);
+        $cata = ProcessCategory::factory()->create(['name' => 'category_a']);
+        $catb = ProcessCategory::factory()->create(['name' => 'category_b']);
+        $catc = ProcessCategory::factory()->create(['name' => 'category_c']);
 
-        $entity1 = factory(Process::class)->create();
-        $entity2 = factory(Process::class)->create();
-        $entity3 = factory(Process::class)->create();
-        $entity4 = factory(Process::class)->create();
+        $entity1 = Process::factory()->create();
+        $entity2 = Process::factory()->create();
+        $entity3 = Process::factory()->create();
+        $entity4 = Process::factory()->create();
 
         $entity1->categories()->attach($cata);
         $entity1->categories()->attach($catb);
@@ -98,14 +98,14 @@ class SearchByCategoryTest extends TestCase
      */
     public function testSearchScreensByCategory()
     {
-        $cata = factory(ScreenCategory::class)->create(['name' => 'category_a']);
-        $catb = factory(ScreenCategory::class)->create(['name' => 'category_b']);
-        $catc = factory(ScreenCategory::class)->create(['name' => 'category_c']);
+        $cata = ScreenCategory::factory()->create(['name' => 'category_a']);
+        $catb = ScreenCategory::factory()->create(['name' => 'category_b']);
+        $catc = ScreenCategory::factory()->create(['name' => 'category_c']);
 
-        $entity1 = factory(Screen::class)->create();
-        $entity2 = factory(Screen::class)->create();
-        $entity3 = factory(Screen::class)->create();
-        $entity4 = factory(Screen::class)->create();
+        $entity1 = Screen::factory()->create();
+        $entity2 = Screen::factory()->create();
+        $entity3 = Screen::factory()->create();
+        $entity4 = Screen::factory()->create();
 
         $entity1->categories()->attach($cata);
         $entity1->categories()->attach($catb);
@@ -165,14 +165,14 @@ class SearchByCategoryTest extends TestCase
      */
     public function testSearchScriptsByCategory()
     {
-        $cata = factory(ScriptCategory::class)->create(['name' => 'category_a']);
-        $catb = factory(ScriptCategory::class)->create(['name' => 'category_b']);
-        $catc = factory(ScriptCategory::class)->create(['name' => 'category_c']);
+        $cata = ScriptCategory::factory()->create(['name' => 'category_a']);
+        $catb = ScriptCategory::factory()->create(['name' => 'category_b']);
+        $catc = ScriptCategory::factory()->create(['name' => 'category_c']);
 
-        $entity1 = factory(Script::class)->create();
-        $entity2 = factory(Script::class)->create();
-        $entity3 = factory(Script::class)->create();
-        $entity4 = factory(Script::class)->create();
+        $entity1 = Script::factory()->create();
+        $entity2 = Script::factory()->create();
+        $entity3 = Script::factory()->create();
+        $entity4 = Script::factory()->create();
 
         $entity1->categories()->attach($cata);
         $entity1->categories()->attach($catb);

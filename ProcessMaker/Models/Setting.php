@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\SerializeToIso8601;
-use Spatie\MediaLibrary\HasMedia\HasMedia;
-use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 /**
  * Class Settings
@@ -46,10 +46,10 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  *   },
  * )
  */
-class Setting extends Model implements HasMedia
+class Setting extends ProcessMakerModel implements HasMedia
 {
     use ExtendedPMQL;
-    use HasMediaTrait;
+    use InteractsWithMedia;
     use SerializeToIso8601;
 
     protected $table = 'settings';

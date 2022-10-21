@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Console\Commands;
 
+use Database\Seeders\UserSeeder;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Database\Query\Grammars\SqlServerGrammar;
@@ -12,7 +13,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use ProcessMaker\Traits\SupportsNonInteraction;
 use Symfony\Component\Console\Helper\Table;
-use UserSeeder;
 use Validator;
 
 /**
@@ -317,7 +317,7 @@ class Install extends Command
             $this->info(__('Installer completed. Consult ProcessMaker documentation on how to configure email, jobs and notifications.'));
         }
 
-        return true;
+        return 0;
     }
 
     /**

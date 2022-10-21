@@ -39,7 +39,7 @@ class EnvironmentVariablesTest extends TestCase
     /** @test */
     public function it_should_store_values_as_encrypted()
     {
-        $variable = factory(EnvironmentVariable::class)->create([
+        $variable = EnvironmentVariable::factory()->create([
             'value' => 'testvalue',
         ]);
         $this->assertDatabaseMissing('environment_variables', ['value' => 'testvalue']);
@@ -52,7 +52,7 @@ class EnvironmentVariablesTest extends TestCase
     public function it_should_have_validation_errors_on_name_uniqueness_during_create()
     {
         // Create an environment variable with a set name
-        factory(EnvironmentVariable::class)->create([
+        EnvironmentVariable::factory()->create([
             'name' => 'testname',
         ]);
         // Data with a duplicate name
@@ -90,7 +90,7 @@ class EnvironmentVariablesTest extends TestCase
     public function it_should_successfully_return_an_environment_variable()
     {
         // Create an environment variable with a set name
-        $variable = factory(EnvironmentVariable::class)->create([
+        $variable = EnvironmentVariable::factory()->create([
             'name' => 'testname',
             'value' => 'testvalue',
         ]);
@@ -112,12 +112,12 @@ class EnvironmentVariablesTest extends TestCase
     public function it_should_have_validation_errors_on_name_uniqueness_during_update()
     {
         // Create an environment variable with a set name for the update
-        $variable = factory(EnvironmentVariable::class)->create([
+        $variable = EnvironmentVariable::factory()->create([
             'name' => 'testname',
             'value' => 'testvalue',
         ]);
         // Create a variable with another name that will clash with the uniqueness rule
-        factory(EnvironmentVariable::class)->create([
+        EnvironmentVariable::factory()->create([
             'name' => 'anothername',
             'value' => 'testvalue',
         ]);
@@ -138,7 +138,7 @@ class EnvironmentVariablesTest extends TestCase
     public function it_should_successfully_update_an_environment_variable()
     {
         // Create an environment variable with a set name
-        $variable = factory(EnvironmentVariable::class)->create([
+        $variable = EnvironmentVariable::factory()->create([
             'name' => 'testname',
             'value' => 'testvalue',
         ]);
@@ -167,7 +167,7 @@ class EnvironmentVariablesTest extends TestCase
         EnvironmentVariable::whereNotNull('id')->delete();
 
         $this->withoutExceptionHandling();
-        factory(EnvironmentVariable::class, 50)->create();
+        EnvironmentVariable::factory()->count(50)->create();
         // Fetch from index
         $response = $this->apiCall('GET', self::API_TEST_VARIABLES);
         // Verify 200 status code
@@ -182,9 +182,9 @@ class EnvironmentVariablesTest extends TestCase
     /** @test */
     public function it_should_return_filtered_environment_variables()
     {
-        factory(EnvironmentVariable::class, 50)->create();
+        EnvironmentVariable::factory()->count(50)->create();
         // Put in a match
-        factory(EnvironmentVariable::class)->create([
+        EnvironmentVariable::factory()->create([
             'name' => 'matchingfield',
         ]);
         // Fetch from index
@@ -201,7 +201,7 @@ class EnvironmentVariablesTest extends TestCase
     public function it_should_successfully_remove_environment_variable()
     {
         // Create an environment variable with a set name
-        $variable = factory(EnvironmentVariable::class)->create([
+        $variable = EnvironmentVariable::factory()->create([
             'name' => 'testname',
             'value' => 'testvalue',
         ]);
@@ -220,7 +220,7 @@ class EnvironmentVariablesTest extends TestCase
     public function it_value_does_not_change_if_value_is_null()
     {
         // Create an environment variable with a set name
-        $variable = factory(EnvironmentVariable::class)->create([
+        $variable = EnvironmentVariable::factory()->create([
             'name' => 'testname',
             'value' => 'testvalue',
         ]);
