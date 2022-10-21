@@ -231,7 +231,7 @@ class BuildScriptExecutors extends Command
                 throw new \Exception('Not a valid image:' . (string) $image);
             }
             $id = intval($match[1]);
-            $existingTag = intval($match[2]);
+            $existingTag = $match[2];
             $existingExecutor = ScriptExecutor::find($id);
             if ($existingExecutor && $existingExecutor->id !== $id) {
                 // Already associated with another script executor
