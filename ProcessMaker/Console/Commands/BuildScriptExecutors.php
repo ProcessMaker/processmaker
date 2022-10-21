@@ -227,13 +227,18 @@ class BuildScriptExecutors extends Command
         $images = ScriptExecutor::listOfExecutorImages($executor->language);
         $instance = config('app.instance');
         foreach ($images as $image) {
-            if (!preg_match('/executor-' . $instance . '-.+-(\d+):/', $image, $match)) {
+            if (!preg_match('/executor-' . $instance . '-.+-(\d+):(v[0-9.]+)/', $image, $match)) {
                 throw new \Exception('Not a valid image:' . (string) $image);
             }
             $id = intval($match[1]);
+            $existingTag = intval($match[2]);
             $existingExecutor = ScriptExecutor::find($id);
             if ($existingExecutor && $existingExecutor->id !== $id) {
                 // Already associated with another script executor
+                continue;
+            }
+            if ($existingTag !== $executor->imageTag()) {
+                // A newer version is required
                 continue;
             }
             // Rename unassociated image with this executor's id
