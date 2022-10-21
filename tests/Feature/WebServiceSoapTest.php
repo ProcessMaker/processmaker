@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Api;
+namespace Tests\Feature;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -40,6 +40,8 @@ class WebServiceSoapTest extends TestCase
             ]);
             $mock->shouldReceive('toArray')->andReturn([
                 'id' => 1,
+                'authtype' => 'WSDL_FILE',
+                'wsdlFile' => ['path' => 'test.wsdl'],
                 'endpoints' => [
                     'Ping' => [
                         'method'=>'SOAP',
