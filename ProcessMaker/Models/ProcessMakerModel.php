@@ -2,9 +2,9 @@
 
 namespace ProcessMaker\Models;
 
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use DateTimeInterface;
 
 /**
  * Base class that all models should extend from.

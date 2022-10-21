@@ -45,6 +45,7 @@ class WebServiceRequest
         $request = $this->request->build($config, $data);
         $response = $this->requestCaller->call($request, $config);
         $result = $this->responseMapper->map($response, $config, $data);
+
         return $result;
     }
 
