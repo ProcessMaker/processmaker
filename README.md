@@ -35,17 +35,16 @@ Before installing, Nginx needs to be configured to use php-fpm and point to the 
 1. Edit the .env file to update any server specific settings
 1. Install javascript assets `npm install`
 1. Compile javascript assets `npm run dev`
-1. Configure [laravel echo server](https://github.com/tlaverdure/Laravel-Echo-Server) in a separate shell `npx laravel-echo-server init` and follow the instructions
-   1. Then run [laravel echo server](https://github.com/tlaverdure/Laravel-Echo-Server) `npx laravel-echo-server start`
-   1. Use the following settings:
-      1. Do you want to run this server in development mode? **Yes**
-      1. Which port would you like to serve from? **6001**
-      1. Which database would you like to use to store presence channel members? **redis**
-      1. Enter the host of your Laravel authentication server. *Enter your instance's url*
-      1. Will you be serving on http or https? **http**
-      1. Do you want to generate a client ID/Key for HTTP API? **No**
-      1. Do you want to setup cross domain access to the API? **No**
-      1. What do you want this config to be saved as? **laravel-echo-server.json**
+1. Configure [laravel echo server](https://github.com/tlaverdure/Laravel-Echo-Server) in a separate shell `npx laravel-echo-server init` using the following settings:
+   1. Do you want to run this server in development mode? **Yes**
+   1. Which port would you like to serve from? **6001**
+   1. Which database would you like to use to store presence channel members? **redis**
+   1. Enter the host of your Laravel authentication server. *Enter your instance's url*
+   1. Will you be serving on http or https? **http**
+   1. Do you want to generate a client ID/Key for HTTP API? **No**
+   1. Do you want to setup cross domain access to the API? **No**
+   1. What do you want this config to be saved as? **laravel-echo-server.json**
+1. Then run [laravel echo server](https://github.com/tlaverdure/Laravel-Echo-Server) `npx laravel-echo-server start`
 1. Run horizon in a separate shell `php artisan horizon`
 1. If you change any settings, make sure to run `php artisan optimize:clear` and restart horizon
 
