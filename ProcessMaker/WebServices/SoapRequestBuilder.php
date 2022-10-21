@@ -57,12 +57,12 @@ class SoapRequestBuilder implements WebServiceRequestBuilderInterface
                         'passphrase'    => $config['passphrase'],
                         'cache_wsdl'    => WSDL_CACHE_NONE,
                         'exceptions'    => true,
-                        'stream_context' => stream_context_create(array(
-                            'ssl' => array(
+                        'stream_context' => stream_context_create([
+                            'ssl' => [
                                 'verify_peer' => false,
                                 'verify_peer_name' => false,
-                                'allow_self_signed' => true
-                            )))
+                                'allow_self_signed' => true,
+                            ], ]),
                     ]),
                     'operation' => $config['operation'],
                     'parameters' => $config['parameters'],

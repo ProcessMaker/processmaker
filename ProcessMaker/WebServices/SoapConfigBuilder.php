@@ -81,9 +81,10 @@ class SoapConfigBuilder implements WebServiceConfigBuilderInterface
     {
         if ($dataSourceConfig['authtype'] === 'LOCAL_CERTIFICATE') {
             $wsdlUrl = $credentials['service_url'] ?? '';
-            $lastSlash = strrpos($wsdlUrl, "/") ?: PHP_INT_MAX;
-            $lastQuestion = strrpos($wsdlUrl, "?") ?: PHP_INT_MAX;
-            return substr($wsdlUrl,0, min ($lastSlash, $lastQuestion));
+            $lastSlash = strrpos($wsdlUrl, '/') ?: PHP_INT_MAX;
+            $lastQuestion = strrpos($wsdlUrl, '?') ?: PHP_INT_MAX;
+
+            return substr($wsdlUrl, 0, min($lastSlash, $lastQuestion));
         }
 
         return $credentials['location'] ?? '';
@@ -91,9 +92,10 @@ class SoapConfigBuilder implements WebServiceConfigBuilderInterface
 
     private function getCertificatePath($dataSourceConfig)
     {
-        if ($dataSourceConfig['credentials'] && $dataSourceConfig['credentials']['files'] && count ($dataSourceConfig['credentials']['files']) > 0) {
+        if ($dataSourceConfig['credentials'] && $dataSourceConfig['credentials']['files'] && count($dataSourceConfig['credentials']['files']) > 0) {
             return Storage::disk('web_services')->path($dataSourceConfig['credentials']['files'][0]['path']);
         }
+
         return '';
     }
 }
