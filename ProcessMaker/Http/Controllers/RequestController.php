@@ -3,29 +3,25 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Illuminate\Http\Request;
-use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\Comment;
-use ProcessMaker\Models\Process;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Spatie\MediaLibrary\Models\Media;
-use ProcessMaker\Managers\DataManager;
-use ProcessMaker\Models\ScreenVersion;
-use ProcessMaker\Models\ProcessRequest;
-use Spatie\MediaLibrary\HasMedia\HasMedia;
-use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Traits\HasControllerAddons;
-use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Models\Media as ModelsMedia;
 use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
-use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
-use ProcessMaker\Traits\SearchAutocompleteTrait;
+use ProcessMaker\Models\Comment;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Package\PackageComments\PackageServiceProvider;
+use ProcessMaker\Traits\HasControllerAddons;
+use ProcessMaker\Traits\SearchAutocompleteTrait;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class RequestController extends Controller
 {
-    use HasMediaTrait;
     use SearchAutocompleteTrait;
     use HasControllerAddons;
 
@@ -90,6 +86,7 @@ class RequestController extends Controller
                 ->count() > 0;
 
         $requestMedia = $request->media()->get()->pluck('id');
+
         $userHasCommentsForMedia = Comment::where('commentable_type', \ProcessMaker\Models\Media::class)
                 ->whereIn('commentable_id', $requestMedia)
                 ->where('body', 'like', '%{{' . \Auth::user()->id . '}}%')
@@ -114,6 +111,10 @@ class RequestController extends Controller
         $canViewComments = (Auth::user()->hasPermissionsFor('comments')->count() > 0) || class_exists(PackageServiceProvider::class);
         $canManuallyComplete = Auth::user()->is_administrator && $request->status === 'ERROR';
 
+        // While redundant, it's to emphasize the two different
+        // permissions for now for a refactor in the future
+        $canRetry = $canManuallyComplete;
+
         //$files = $request->getMedia();
         $parentRequest = \ProcessMaker\Models\Media::getParentRequest($request);
         $files = $parentRequest->getMedia();
@@ -127,7 +128,7 @@ class RequestController extends Controller
         $addons = $this->getPluginAddons('edit', compact(['request']));
 
         return view('requests.show', compact(
-            'request', 'files', 'canCancel', 'canViewComments', 'canManuallyComplete', 'manager', 'canPrintScreens', 'screenRequested', 'addons'
+            'request', 'files', 'canCancel', 'canViewComments', 'canManuallyComplete', 'canRetry', 'manager', 'canPrintScreens', 'screenRequested', 'addons'
         ));
     }
 

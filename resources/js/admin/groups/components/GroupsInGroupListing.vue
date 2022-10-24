@@ -162,16 +162,16 @@
 </script>
 
 <style lang="scss" scoped>
-    >>> th#_total_users {
+    :deep(th#_total_users) {
         width: 150px;
         text-align: center;
     }
 
-    >>> .vuetable-th-status {
+    :deep(.vuetable-th-status) {
         min-width: 90px;
     }
 
-    >>> .vuetable-th-members_count {
+    :deep(.vuetable-th-members_count) {
         min-width: 90px;
     }
 </style>

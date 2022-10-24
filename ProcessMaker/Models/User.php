@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -17,19 +18,20 @@ use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HasAuthorization;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
-use Spatie\MediaLibrary\HasMedia\HasMedia;
-use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 class User extends Authenticatable implements HasMedia
 {
     use PMQL;
     use HasApiTokens;
     use Notifiable;
-    use HasMediaTrait;
+    use InteractsWithMedia;
     use HasAuthorization;
     use SerializeToIso8601;
     use SoftDeletes;
     use HideSystemResources;
+    use HasFactory;
     use Exportable;
 
     protected $connection = 'processmaker';
@@ -352,9 +354,17 @@ class User extends Authenticatable implements HasMedia
 
     /**
      * Check if the user can do any of the listed permissions.
+     */
+    public function canAny($permissions, $arguments = []): bool
+    {
+        return parent::canAny(explode('|', $permissions), $arguments);
+    }
+
+    /**
+     * Check if the user can do any of the listed permissions.
      * If so, return the permission name, otherwise false
      */
-    public function canAny($permissions)
+    public function canAnyFirst($permissions): bool|string
     {
         foreach (explode('|', $permissions) as $permission) {
             if ($this->can($permission)) {

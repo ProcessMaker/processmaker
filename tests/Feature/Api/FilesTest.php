@@ -44,7 +44,7 @@ class FilesTest extends TestCase
         $fileUpload = UploadedFile::fake()->create('my_test_file123.txt', 1);
 
         // We create a model (in this case a user) and associate to him the file
-        $model = factory(User::class)->create();
+        $model = User::factory()->create();
         $model->addMedia($fileUpload)->toMediaCollection('local');
 
         // Basic listing assertions
@@ -87,7 +87,7 @@ class FilesTest extends TestCase
         $fileUpload = UploadedFile::fake()->create($testFileName, 1);
 
         // We create a model (in this case a user) and associate to him the file
-        $model = factory(User::class)->create();
+        $model = User::factory()->create();
         $addedMedia = $model->addMedia($fileUpload)->toMediaCollection('local');
 
         $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $addedMedia->id . '/contents');
@@ -114,7 +114,7 @@ class FilesTest extends TestCase
         ];
 
         // We create a model (in this case a user) to whom the file will be associated
-        $model = factory(User::class)->create();
+        $model = User::factory()->create();
 
         // Verify that if no model data is sent an error is returned
         $response = $this->apiCall('POST', self::API_TEST_URL, $data);
@@ -145,7 +145,7 @@ class FilesTest extends TestCase
         $fileUploadUpdate = UploadedFile::fake()->create('updatedFile.txt', 2);
 
         // We create a model (in this case a user) to whom the file will be associated
-        $model = factory(User::class)->create();
+        $model = User::factory()->create();
         $addedMedia = $model->addMedia($fileUploadInsert)->toMediaCollection('local');
 
         // In the data array add the file to update
@@ -177,7 +177,7 @@ class FilesTest extends TestCase
         $fileUpload = UploadedFile::fake()->create('test.txt', 1);
 
         // We create a model (in this case a user) and associate to him the file
-        $model = factory(User::class)->create();
+        $model = User::factory()->create();
         $addedMedia = $model->addMedia($fileUpload)->toMediaCollection('local');
 
         $response = $this->apiCall('DELETE', self::API_TEST_URL . '/' . $addedMedia->id);
@@ -196,11 +196,11 @@ class FilesTest extends TestCase
         $fileUpload = UploadedFile::fake()->create('my_test_file123.txt', 1);
 
         // We create a model (in this case a user) and associate to him the file
-        $model = factory(User::class)->create();
+        $model = User::factory()->create();
         $model->addMedia($fileUpload)->toMediaCollection('local');
 
         //The call is done without an authenticated user so it should return 401
-        $response = $this->actingAs(factory(User::class)->create())
+        $response = $this->actingAs(User::factory()->create())
                     ->json('GET', '/api/1.0' . self::API_TEST_URL, ['']);
         $response->assertStatus(401);
     }

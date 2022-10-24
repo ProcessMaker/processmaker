@@ -425,7 +425,7 @@ trait MakeHttpRequests
      */
     private function call($method, $url, array $headers, $body, $bodyType)
     {
-        $client = new Client(['verify' => $this->verifySsl]);
+        $client = $this->client ?? new Client(['verify' => $this->verifySsl]);
         $options = [];
         if ($bodyType === 'form-data') {
             $options['form_params'] = json_decode($body, true);

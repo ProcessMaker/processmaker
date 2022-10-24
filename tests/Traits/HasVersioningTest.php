@@ -15,7 +15,7 @@ class HasVersioningTest extends TestCase
         $this->markTestSkipped('Skip version locking for now');
 
         $date = Carbon::now();
-        $screen = factory(Screen::class)->create([
+        $screen = Screen::factory()->create([
             'description' => 'first version',
         ]);
 
@@ -24,14 +24,14 @@ class HasVersioningTest extends TestCase
         $screen->save();
 
         Carbon::setTestNow($date->addDays(2));
-        $processRequest = factory(ProcessRequest::class)->create();
+        $processRequest = ProcessRequest::factory()->create();
 
         Carbon::setTestNow($date->addDays(3));
         $screen->description = 'third version';
         $screen->save();
 
         Carbon::setTestNow($date->addDays(4));
-        factory(ProcessRequestToken::class)->create([
+        ProcessRequestToken::factory()->create([
             'process_request_id' => $processRequest->id,
         ]);
 

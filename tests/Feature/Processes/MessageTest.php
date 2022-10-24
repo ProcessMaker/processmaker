@@ -19,13 +19,13 @@ class MessageTest extends TestCase
 
     public function test()
     {
-        $script = factory(Script::class)->create([
+        $script = Script::factory()->create([
             'language' => 'php',
             'code' => '<?php return $config; ?>',
             'run_as_user_id' => $this->user->id,
         ]);
 
-        $process = factory(Process::class)->create([
+        $process = Process::factory()->create([
             'bpmn' => str_replace(
                 '[script_id]',
                 $script->id,

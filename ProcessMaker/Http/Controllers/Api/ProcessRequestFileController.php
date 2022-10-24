@@ -17,11 +17,8 @@ use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
-use ProcessMaker\Http\Resources\ProcessRequests;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\ProcessRequest;
-//use Spatie\MediaLibrary\HasMedia\HasMedia;
-use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
 class ProcessRequestFileController extends Controller
 {
@@ -36,8 +33,6 @@ class ProcessRequestFileController extends Controller
         'manipulations',
         'responsive_images',
     ];
-
-    use HasMediaTrait;
 
     /**
      * Display a listing of the resource.

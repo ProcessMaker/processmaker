@@ -64,7 +64,7 @@ class BroadcastTest extends TestCase
      */
     public function testActivityAssignedBroadcast()
     {
-        $task = factory(Task::class)->create([
+        $task = Task::factory()->create([
             'data' => [
                 'test' => $this->faker->text(20000),
             ],
@@ -81,7 +81,7 @@ class BroadcastTest extends TestCase
      */
     public function testActivityCompletedBroadcast()
     {
-        $task = factory(Task::class)->create([
+        $task = Task::factory()->create([
             'data' => [
                 'test' => $this->faker->text(20000),
             ],
@@ -97,7 +97,7 @@ class BroadcastTest extends TestCase
      */
     public function testProcessCompletedBroadcast()
     {
-        $request = factory(Request::class)->create([
+        $request = Request::factory()->create([
             'data' => [
                 'test' => $this->faker->text(20000),
             ],
@@ -113,7 +113,7 @@ class BroadcastTest extends TestCase
      */
     public function testProcessUpdatedBroadcast()
     {
-        $request = factory(Request::class)->create([
+        $request = Request::factory()->create([
             'data' => [
                 'test' => $this->faker->text(20000),
             ],
@@ -153,7 +153,7 @@ class BroadcastTest extends TestCase
      */
     public function testSessionStartedBroadcast()
     {
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
         event(new SessionStartedEvent($user));
 
         $this->assertLogContainsText('SessionStarted');
@@ -165,7 +165,7 @@ class BroadcastTest extends TestCase
      */
     public function testBuildScriptExecutorBroadcast()
     {
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
         event(new BuildScriptExecutor('output-text', $user->id, 'output-status'));
 
         $this->assertLogContainsText('output-text');
@@ -194,7 +194,7 @@ class BroadcastTest extends TestCase
         $this->expectsEvents([
             ImportedScreenSaved::class,
         ]);
-        $screen = factory(Screen::class)->create();
+        $screen = Screen::factory()->create();
         event(new ImportedScreenSaved($screen->id, $screen->toArray()));
     }
 
@@ -217,7 +217,7 @@ class BroadcastTest extends TestCase
         $this->expectsEvents([
             ScriptResponseEvent::class,
         ]);
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
         event(new ScriptResponseEvent($user, 200, ['foo' => 'bar'], ['config_one' => 1], 'nonce001'));
     }
 }
