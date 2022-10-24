@@ -4,7 +4,6 @@ namespace ProcessMaker\Models;
 
 use DOMElement;
 use Exception;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -43,8 +42,8 @@ use ProcessMaker\Traits\ProcessTaskAssignmentsTrait;
 use ProcessMaker\Traits\ProcessTimerEventsTrait;
 use ProcessMaker\Traits\ProcessTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
-use Spatie\MediaLibrary\HasMedia\HasMedia;
-use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Throwable;
 
 /**
@@ -136,9 +135,9 @@ use Throwable;
  *     @OA\Property(property="edit_data", type="object"),
  * )
  */
-class Process extends Model implements HasMedia, ProcessModelInterface
+class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterface
 {
-    use HasMediaTrait;
+    use InteractsWithMedia;
     use SerializeToIso8601;
     use SoftDeletes;
     use ProcessTaskAssignmentsTrait;
@@ -177,10 +176,6 @@ class Process extends Model implements HasMedia, ProcessModelInterface
      *
      * @var array
      */
-    protected $dates = [
-        'deleted_at',
-    ];
-
     /**
      * The attributes that should be hidden for serialization.
      *

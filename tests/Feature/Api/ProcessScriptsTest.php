@@ -61,7 +61,7 @@ class ProcessScriptsTest extends TestCase
     private function createTestProcess(array $data = [])
     {
         $data['bpmn'] = Process::getProcessTemplate('ScriptTasks.bpmn');
-        $process = factory(Process::class)->create($data);
+        $process = Process::factory()->create($data);
 
         return $process;
     }

@@ -34,7 +34,7 @@ class TaskLockAssignmentTest extends TestCase
     private function loadProcess($processFileName)
     {
         // Create a new process
-        $this->process = factory(Process::class)->create();
+        $this->process = Process::factory()->create();
 
         // Load a single task process
         $this->process->bpmn = file_get_contents(__DIR__ . '/processes/' . $processFileName);
@@ -42,11 +42,11 @@ class TaskLockAssignmentTest extends TestCase
         $this->process->save();
 
         // Create a group and 2 users to assign to group
-        $this->user1 = factory(User::class)->create(['status' => 'ACTIVE']);
-        $this->user2 = factory(User::class)->create(['status' => 'ACTIVE']);
+        $this->user1 = User::factory()->create(['status' => 'ACTIVE']);
+        $this->user2 = User::factory()->create(['status' => 'ACTIVE']);
 
         // Group with id 100 is created and the 2 users are attached to it
-        $group = factory(Group::class)->create(['id'=>100, 'status' => 'ACTIVE']);
+        $group = Group::factory()->create(['id'=>100, 'status' => 'ACTIVE']);
 
         $group_member = new GroupMember();
         $group_member->group()->associate($group);

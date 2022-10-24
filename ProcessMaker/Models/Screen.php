@@ -3,7 +3,6 @@
 namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Assets\ScreensInScreen;
 use ProcessMaker\Contracts\ScreenInterface;
@@ -61,7 +60,7 @@ use ProcessMaker\Validation\CategoryRule;
  *   @OA\Property(property="url", type="string"),
  * )
  */
-class Screen extends Model implements ScreenInterface
+class Screen extends ProcessMakerModel implements ScreenInterface
 {
     use SerializeToIso8601;
     use HideSystemResources;

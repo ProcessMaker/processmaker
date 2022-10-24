@@ -38,11 +38,11 @@ class AuthenticateSession extends BaseAuthenticateSession
             return $next($request);
         }
 
-        if (!$request->session()->has('password_hash')) {
+        if (!$request->session()->has('password_hash_' . $this->auth->getDefaultDriver())) {
             $this->storePasswordHashInSession($request);
         }
 
-        if ($request->session()->get('password_hash') !== $request->user()->getAuthPassword()) {
+        if ($request->session()->get('password_hash_' . $this->auth->getDefaultDriver()) !== $request->user()->getAuthPassword()) {
             $this->logout($request);
         }
 

@@ -53,7 +53,7 @@ class TaskAssignmentExecutionTest extends TestCase
     private function loadTestProcessUserAssignment()
     {
         // Create a new process
-        $this->process = factory(Process::class)->create();
+        $this->process = Process::factory()->create();
 
         // Load a single task process
         $this->process->bpmn = file_get_contents(__DIR__ . '/processes/SingleTask.bpmn');
@@ -61,7 +61,7 @@ class TaskAssignmentExecutionTest extends TestCase
         // Create user to be assigned to the task
         $task_uid = 'UserTaskUID';
         $this->task = $this->process->getDefinitions()->getActivity($task_uid);
-        $this->assigned = factory(User::class)->create([
+        $this->assigned = User::factory()->create([
             'id' => $this->task->getProperty('assignedUsers'),
             'status' => 'ACTIVE',
         ]);
@@ -103,9 +103,9 @@ class TaskAssignmentExecutionTest extends TestCase
 
     public function testUserByIdAssignment()
     {
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
 
-        $process = factory(Process::class)->create([
+        $process = Process::factory()->create([
             'bpmn' => file_get_contents(__DIR__ . '/processes/ByUserIdAssignment.bpmn'),
         ]);
 
@@ -142,20 +142,20 @@ class TaskAssignmentExecutionTest extends TestCase
 
     public function testSelfServeAssignment()
     {
-        $users = factory(User::class, 20)->create(['status'=>'ACTIVE']);
-        $userWithNoGroup = factory(User::class)->create(['status'=>'ACTIVE']);
-        $unassignedUser = factory(User::class)->create(['status'=>'ACTIVE']);
+        $users = User::factory()->count(20)->create(['status'=>'ACTIVE']);
+        $userWithNoGroup = User::factory()->create(['status'=>'ACTIVE']);
+        $unassignedUser = User::factory()->create(['status'=>'ACTIVE']);
 
-        $group = factory(Group::class)->create();
+        $group = Group::factory()->create();
         foreach ($users as $user) {
-            factory(GroupMember::class)->create([
+            GroupMember::factory()->create([
                 'member_id' => $user->id,
                 'member_type' => User::class,
                 'group_id' => $group->id,
             ]);
         }
 
-        $screen = factory(Screen::class)->create();
+        $screen = Screen::factory()->create();
 
         $bpmn = file_get_contents(__DIR__ . '/processes/SelfServeAssignment.bpmn');
         $bpmn = str_replace(
@@ -163,7 +163,7 @@ class TaskAssignmentExecutionTest extends TestCase
             [$screen->id, $group->id, $userWithNoGroup->id],
             $bpmn
         );
-        $process = factory(Process::class)->create([
+        $process = Process::factory()->create([
             'bpmn' => $bpmn,
             'user_id' => $this->user->id,
         ]);
@@ -220,20 +220,20 @@ class TaskAssignmentExecutionTest extends TestCase
 
     public function testSelfServeUserPersistence()
     {
-        $users = factory(User::class, 20)->create(['status'=>'ACTIVE']);
-        $userWithNoGroup = factory(User::class)->create(['status'=>'ACTIVE']);
-        $unassignedUser = factory(User::class)->create(['status'=>'ACTIVE']);
+        $users = User::factory()->count(20)->create(['status'=>'ACTIVE']);
+        $userWithNoGroup = User::factory()->create(['status'=>'ACTIVE']);
+        $unassignedUser = User::factory()->create(['status'=>'ACTIVE']);
 
-        $group = factory(Group::class)->create();
+        $group = Group::factory()->create();
         foreach ($users as $user) {
-            factory(GroupMember::class)->create([
+            GroupMember::factory()->create([
                 'member_id' => $user->id,
                 'member_type' => User::class,
                 'group_id' => $group->id,
             ]);
         }
 
-        $screen = factory(Screen::class)->create();
+        $screen = Screen::factory()->create();
 
         $bpmn = file_get_contents(__DIR__ . '/processes/SelfServeAssignment.bpmn');
         $bpmn = str_replace(
@@ -241,7 +241,7 @@ class TaskAssignmentExecutionTest extends TestCase
             [$screen->id, $group->id, $userWithNoGroup->id],
             $bpmn
         );
-        $process = factory(Process::class)->create([
+        $process = Process::factory()->create([
             'bpmn' => $bpmn,
             'user_id' => $this->user->id,
         ]);
@@ -289,10 +289,10 @@ class TaskAssignmentExecutionTest extends TestCase
      */
     public function testProcessManagerAssignment()
     {
-        $manager = factory(User::class)->create(['status'=>'ACTIVE']);
+        $manager = User::factory()->create(['status'=>'ACTIVE']);
 
         // Create a new process
-        $this->process = factory(Process::class)->create();
+        $this->process = Process::factory()->create();
 
         // Load process with single task assigned to Process Manager
         $this->process->bpmn = file_get_contents(__DIR__ . '/processes/AssignedToProcessManager.bpmn');
@@ -329,7 +329,7 @@ class TaskAssignmentExecutionTest extends TestCase
     public function testProcessManagerAssignmentWithoutAManagerAssociated()
     {
         // Create a new process
-        $this->process = factory(Process::class)->create();
+        $this->process = Process::factory()->create();
 
         // Load process with single task assigned to Process Manager
         $this->process->bpmn = file_get_contents(__DIR__ . '/processes/AssignedToProcessManager.bpmn');

@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
+use Database\Seeders\PermissionSeeder;
 use Illuminate\Support\Facades\Hash;
-use PermissionSeeder;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
@@ -29,21 +29,21 @@ class EditDataTest extends TestCase
         parent::setUp();
 
         // Creates an admin user
-        $this->admin = factory(User::class)->create([
+        $this->admin = User::factory()->create([
             'password' => Hash::make('password'),
             'is_administrator' => true,
         ]);
 
         // Creates a user
-        $this->user = factory(User::class)->create([
+        $this->user = User::factory()->create([
             'password' => Hash::make('password'),
             'is_administrator' => false,
         ]);
 
         // Create a group
-        $this->group = factory(Group::class)->create(['name' => 'group']);
+        $this->group = Group::factory()->create(['name' => 'group']);
 
-        factory(GroupMember::class)->create([
+        GroupMember::factory()->create([
             'member_id' => $this->user->id,
             'member_type' => User::class,
             'group_id' => $this->group->id,
@@ -108,7 +108,7 @@ class EditDataTest extends TestCase
     private function createSingleTaskProcessUserAssignment(User $userAssigned)
     {
         // Create a new process
-        $process = factory(Process::class)->create();
+        $process = Process::factory()->create();
 
         // Load a single task process
         $process->bpmn = Process::getProcessTemplate('SingleTask.bpmn');
@@ -200,7 +200,7 @@ class EditDataTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewIs('requests.show');
         $response->assertSee('Summary');
-        $response->assertSee('<!-- data edit -->');
+        $response->assertSee('<!-- data edit -->', false);
     }
 
     /**
@@ -236,7 +236,7 @@ class EditDataTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewIs('tasks.edit');
         $response->assertSee('Form');
-        $response->assertSee('<!-- data edit -->');
+        $response->assertSee('<!-- data edit -->', false);
     }
 
     /**
@@ -277,7 +277,7 @@ class EditDataTest extends TestCase
         $response = $this->webCall('GET', 'tasks/' . $task->id . '/edit');
         $response->assertStatus(200);
         $response->assertViewIs('tasks.edit');
-        $response->assertSee('<!-- data edit -->');
+        $response->assertSee('<!-- data edit -->', false);
     }
 
     /**
@@ -318,6 +318,6 @@ class EditDataTest extends TestCase
         $response->assertViewIs('requests.show');
         $response->assertSee('Completed');
         $response->assertSee('Summary');
-        $response->assertSee('<!-- data edit -->');
+        $response->assertSee('<!-- data edit -->', false);
     }
 }

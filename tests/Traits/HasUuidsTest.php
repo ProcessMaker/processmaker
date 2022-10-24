@@ -12,7 +12,7 @@ class HasUuidsTest extends TestCase
 
     public function testSetUuidWhenCreating()
     {
-        $screen = factory(Screen::class)->create();
+        $screen = Screen::factory()->create();
         $this->assertNotNull($screen->uuid);
     }
 }

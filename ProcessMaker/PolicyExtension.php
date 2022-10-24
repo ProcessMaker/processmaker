@@ -2,7 +2,7 @@
 
 namespace ProcessMaker;
 
-use Illuminate\Database\Eloquent\Model;
+use ProcessMaker\Models\ProcessMakerModel;
 use ProcessMaker\Models\User;
 
 class PolicyExtension
@@ -37,7 +37,7 @@ class PolicyExtension
         $this->extensions[$key][] = $policy;
     }
 
-    public function authorize(string $action, User $user, Model $model)
+    public function authorize(string $action, User $user, ProcessMakerModel $model)
     {
         $class = get_class($model);
         if (!$this->has($action, $class)) {

@@ -247,7 +247,7 @@
     .icon-square {
       color: #788793;
       font-size: $iconSize;
-      padding: $iconSize / 1.5;
+      padding: calc($iconSize / 1.5);
       text-align: center;
     }
 

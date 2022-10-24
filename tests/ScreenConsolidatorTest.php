@@ -13,7 +13,7 @@ class ScreenConsolidatorTest extends TestCase
     {
         $this->markTestSkipped('FOUR-6653');
 
-        $this->be(factory(User::class)->create());
+        $this->be(User::factory()->create());
 
         $content = file_get_contents(
             __DIR__ . '/Fixtures/nested_screen_process.json'
