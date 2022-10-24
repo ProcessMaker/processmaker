@@ -3,48 +3,48 @@
 namespace ProcessMaker\Managers;
 
 use Google\Client;
-use Illuminate\Mail\TransportManager;
+use Illuminate\Mail\MailManager;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Packages\Connectors\Email\EmailConfig;
 use Swift_Mime_SimpleMessage;
+use Swift_SmtpTransport as SmtpTransport;
 
-class OauthTransportManager extends TransportManager
+class OauthMailManager extends MailManager
 {
-    protected $config = null;
+    protected $app;
 
     private $token = null;
 
-    public function __construct($config)
+    public function __construct($app)
     {
-        $this->config = (object) $config;
+        $this->app = $app;
         $this->token = [
-            'client_id' => $config->get('services.gmail.key'),
-            'client_secret' => $config->get('services.gmail.secret'),
-            'access_token' => $config->get('services.gmail.access_token'),
-            'refresh_token' => $config->get('services.gmail.refresh_token'),
-            'expires_in' => $config->get('services.gmail.expires_in'),
-            'created' => $config->get('services.gmail.created'),
+            'client_id' => $app->config->get('services.gmail.key'),
+            'client_secret' => $app->config->get('services.gmail.secret'),
+            'access_token' => $app->config->get('services.gmail.access_token'),
+            'refresh_token' => $app->config->get('services.gmail.refresh_token'),
+            'expires_in' => $app->config->get('services.gmail.expires_in'),
+            'created' => $app->config->get('services.gmail.created'),
         ];
     }
 
-    protected function createSmtpDriver()
-    {
-        $transport = parent::createSmtpDriver();
-
-        $authMethod = $this->config->get('mail.auth_method');
+    protected function createSmtpTransport($config)
+    { 
+        $transport = parent::createSmtpTransport($config);
+        
+        $authMethod = $config['auth_method'];
 
         switch ($authMethod) {
             case 'google':
-                $serverIndex = $this->config->get('mail.server_index');
+                $serverIndex = $config['server_index'];
                 $accessToken = $this->checkForExpiredAccessToken($serverIndex);
-                $fromAddress = $this->config->get('mail.from.address');
+                $fromAddress = $config['from']['address'];
                 // Update Authencation Mode
                 $transport->setAuthMode('XOAUTH2')
                 ->setUsername($fromAddress)
                 ->setPassword($accessToken);
                 break;
         }
-
         return $transport;
     }
 
