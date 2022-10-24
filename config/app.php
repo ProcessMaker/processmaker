@@ -158,6 +158,7 @@ return [
         ProcessMaker\Providers\BroadcastServiceProvider::class,
         ProcessMaker\Providers\WorkflowServiceProvider::class,
         ProcessMaker\Providers\UpgradeServiceProvider::class,
+        ProcessMaker\Providers\OauthMailServiceProvider::class,
 
     ],
 
