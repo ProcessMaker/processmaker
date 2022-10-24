@@ -2,14 +2,14 @@
 
 namespace ProcessMaker\Managers;
 
-use Illuminate\Mail\MailManager;
-use ProcessMaker\Models\EnvironmentVariable;
-use ProcessMaker\Packages\Connectors\Email\EmailConfig;
 use DateInterval;
 use DateTime;
 use Google\Client as GoogleClient;
 use GuzzleHttp\Client;
+use Illuminate\Mail\MailManager;
 use Microsoft\Graph\Graph;
+use ProcessMaker\Models\EnvironmentVariable;
+use ProcessMaker\Packages\Connectors\Email\EmailConfig;
 
 class OauthMailManager extends MailManager
 {
@@ -56,32 +56,34 @@ class OauthMailManager extends MailManager
     }
 
     protected function createSmtpTransport($config)
-    { 
+    {
         $transport = parent::createSmtpTransport($config);
-        
+
         switch ($this->authMethod) {
             case 'google':
-                $accessToken = $this->checkForExpiredAccessToken($this->authMethod);
+                $accessToken = $this->checkForExpiredAccessToken();
                 // Update Authentication Mode
                 $transport->setAuthMode('XOAUTH2')
                 ->setUsername($this->fromAddress)
                 ->setPassword($accessToken);
                 break;
             case 'office365':
-                $accessToken = $this->checkForExpiredAccessToken($this->authMethod);
+                $accessToken = $this->checkForExpiredAccessToken();
                 // Update Authentication Mode
                 $transport->setAuthMode('XOAUTH2')
                 ->setUsername($this->fromAddress)
                 ->setPassword($accessToken);
                 break;
         }
+
         return $transport;
     }
 
-    public function checkForExpiredAccessToken($authMethod) {
-        switch ($authMethod) {
+    public function checkForExpiredAccessToken()
+    {
+        switch ($this->authMethod) {
             case 'google':
-                
+
                 $index = $this->emailServerIndex ? "_{$this->emailServerIndex}" : '';
 
                 $client = new GoogleClient();
@@ -94,31 +96,31 @@ class OauthMailManager extends MailManager
                 $client->setAuthConfig($authConfig);
                 $client->setAccessToken((array) $this->token);
                 $accessToken = $this->token->access_token;
-        
+
                 if ($client->isAccessTokenExpired()) {
                     $newToken = $client->fetchAccessTokenWithRefreshToken($this->token->refresh_token);
                     $client->setAccessToken($newToken['access_token']);
                     $accessToken = $newToken['access_token'];
-        
+
                     $this->updateEnvVar("EMAIL_CONNECTOR_GMAIL_API_ACCESS_TOKEN{$index}", $accessToken);
                     $this->updateEnvVar("EMAIL_CONNECTOR_GMAIL_API_REFRESH_TOKEN{$index}", $newToken['refresh_token']);
                     $this->updateEnvVar("EMAIL_CONNECTOR_GMAIL_API_ACCESS_TOKEN_EXPIRE_DATE{$index}", $newToken['expires_in']);
                     $this->updateEnvVar("EMAIL_CONNECTOR_GMAIL_API_TOKEN_CREATED{$index}", $newToken['created']);
                 }
-        
+
                 return $accessToken;
-           
+
                 break;
             case 'office365':
                 $now = new DateTime();
                 $now->format('Y-m-d H:i:s');
                 $expireDate = $this->token->expires_in;
                 $accessToken = $this->token->access_token;
-        
+
                 if ($now->format('Y-m-d H:i:s') > $expireDate) {
                     $accessToken = $this->refreshAccessToken();
                 }
-        
+
                 return $accessToken;
                 break;
         }
