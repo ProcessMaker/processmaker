@@ -5,7 +5,7 @@
     </div>
     <div v-else>
       {{ display }}
-       <b-badge v-if="setting && setting.key.includes('EMAIL_CONNECTOR_MAIL_AUTH_METHOD') && setting.config == 1" pill :variant="setting.ui.authorizedBadge ? 'success' : 'secondary'">
+       <b-badge v-if="showAuthBadge" pill :variant="setting.ui.authorizedBadge ? 'success' : 'secondary'">
          <span v-if="setting.ui.authorizedBadge">{{ $t('Authorized') }}</span>
          <span v-else>{{ $t('Not Authorized') }}</span>
        </b-badge>
@@ -73,6 +73,12 @@ export default {
         return this.input;
       }
     },
+    showAuthBadge() {
+      if(!this.setting || !this.setting.key.includes('EMAIL_CONNECTOR_MAIL_AUTH_METHOD')) {
+        return false;
+      }
+      return this.setting.config == 1 || this.setting.config == 2 ? true : false;
+    }
   },
   watch: {
     value: {

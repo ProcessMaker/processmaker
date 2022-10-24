@@ -86,10 +86,6 @@ class Setting extends ProcessMakerModel implements HasMedia
         'key',
         'config',
         'format',
-        'name',
-        'helper',
-        'ui',
-        'group',
     ];
 
     /**
