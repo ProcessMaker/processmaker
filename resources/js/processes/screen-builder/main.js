@@ -3,7 +3,7 @@ import Vuex from "vuex";
 import ScreenBuilder from "./screen";
 
 Vue.use(Vuex);
-const store = new Vuex.Store({ modules: {} });
+const store = new Vuex.Store({});
 
 // Bootstrap our Designer application
 new Vue({

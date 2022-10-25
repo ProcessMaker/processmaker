@@ -81,7 +81,7 @@ class UsersTest extends TestCase
 
         $deletedUser = (object) [];
         User::withoutEvents(function () use (&$deletedUser) {
-            $deletedUser = factory(User::class)->create([
+            $deletedUser = User::factory()->create([
                 'deleted_at' => '2019-01-01',
                 'status' => 'ACTIVE',
             ]);
@@ -160,7 +160,7 @@ class UsersTest extends TestCase
      */
     public function testNotCreateUserWithUsernameExists()
     {
-        factory(User::class)->create([
+        User::factory()->create([
             'username' => 'mytestusername',
         ]);
 
@@ -186,7 +186,7 @@ class UsersTest extends TestCase
 
         $faker = Faker::create();
 
-        factory(User::class, 10)->create();
+        User::factory()->count(10)->create();
 
         $response = $this->apiCall('GET', self::API_TEST_URL);
 
@@ -209,7 +209,7 @@ class UsersTest extends TestCase
     public function testUserListDates()
     {
         $username = 'userTestTimezone';
-        $newEntity = factory(User::class)->create(['username' => $username]);
+        $newEntity = User::factory()->create(['username' => $username]);
         $route = self::API_TEST_URL . '?filter=' . $username;
 
         $response = $this->apiCall('GET', $route);
@@ -232,7 +232,7 @@ class UsersTest extends TestCase
     {
         $username = 'mytestusername';
 
-        factory(User::class)->create([
+        User::factory()->create([
             'username' => $username,
         ]);
 
@@ -261,7 +261,7 @@ class UsersTest extends TestCase
      */
     public function testFetchUserByEmailAddressFilter()
     {
-        factory(User::class)->create([
+        User::factory()->create([
             'email' => 'test@example.com',
         ]);
 
@@ -288,7 +288,7 @@ class UsersTest extends TestCase
     public function testGetUser()
     {
         //get the id from the factory
-        $user = factory(User::class)->create()->id;
+        $user = User::factory()->create()->id;
 
         //load api
         $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $user);
@@ -306,7 +306,7 @@ class UsersTest extends TestCase
     // public function testGetUserIncledMembership()
     // {
     //     //get the id from the factory
-    //     $user = factory(User::class)->create()->id;
+    //     $user = User::factory()->create()->id;
     //
     //     //load api
     //     $response = $this->apiCall('GET', self::API_TEST_URL. '/' . $user . '?include=memberships');
@@ -324,7 +324,7 @@ class UsersTest extends TestCase
     public function testUpdateUserParametersRequired()
     {
         //The post must have the required parameters
-        $url = self::API_TEST_URL . '/' . factory(User::class)->create()->id;
+        $url = self::API_TEST_URL . '/' . User::factory()->create()->id;
 
         $response = $this->apiCall('PUT', $url, [
             'username' => '',
@@ -341,7 +341,7 @@ class UsersTest extends TestCase
     {
         $faker = Faker::create();
 
-        $url = self::API_TEST_URL . '/' . factory(User::class)->create()->id;
+        $url = self::API_TEST_URL . '/' . User::factory()->create()->id;
 
         //Load the starting user data
         $verify = $this->apiCall('GET', $url);
@@ -384,7 +384,7 @@ class UsersTest extends TestCase
     {
         $faker = Faker::create();
 
-        $url = self::API_TEST_URL . '/' . factory(User::class)->create()->id;
+        $url = self::API_TEST_URL . '/' . User::factory()->create()->id;
 
         //Post saved success
         $response = $this->apiCall('PUT', $url, [
@@ -411,11 +411,11 @@ class UsersTest extends TestCase
      */
     public function testUpdateUserTitleExists()
     {
-        $user1 = factory(User::class)->create([
+        $user1 = User::factory()->create([
             'username' => 'MyUserName',
         ]);
 
-        $user2 = factory(User::class)->create();
+        $user2 = User::factory()->create();
 
         $url = self::API_TEST_URL . '/' . $user2->id;
 
@@ -433,7 +433,7 @@ class UsersTest extends TestCase
     public function testDeleteUser()
     {
         //Remove user
-        $url = self::API_TEST_URL . '/' . factory(User::class)->create()->id;
+        $url = self::API_TEST_URL . '/' . User::factory()->create()->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code
@@ -446,7 +446,7 @@ class UsersTest extends TestCase
     public function testDeleteUserNotExist()
     {
         //User not exist
-        $url = self::API_TEST_URL . '/' . factory(User::class)->make()->id;
+        $url = self::API_TEST_URL . '/' . User::factory()->make()->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code
@@ -459,7 +459,7 @@ class UsersTest extends TestCase
     public function testUpdateUserAvatar()
     {
         //Create a new user
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'username' => 'AvatarUser',
         ]);
 
@@ -507,7 +507,7 @@ class UsersTest extends TestCase
     public function testRestoreSoftDeletedUser()
     {
         // create an user
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'email' => 'test@email.com',
             'username' => 'mytestusername',
         ]);

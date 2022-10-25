@@ -17,6 +17,7 @@
           ref="builder"
           @change="updateConfig"
           :screen="screen"
+          :render-controls="displayBuilder"
         >
           <data-loading-basic
             :is-loaded="false"
@@ -82,10 +83,11 @@
 
                 <b-collapse v-model="showDataInput" id="showDataInput">
                   <monaco-editor
+                    v-model="previewInput"
                     :options="monacoOptions"
                     class="data-collapse"
-                    v-model="previewInput"
                     language="json"
+                    @change="updateDataInput"
                   />
 
                   <div v-if="!previewInputValid" class="pl-3">
@@ -112,7 +114,7 @@
                   <monaco-editor
                     :options="monacoOptions"
                     class="editor"
-                    v-model="previewDataStringyfy"
+                    v-model="previewDataStringify"
                     language="json"
                     @editorDidMount="monacoMounted"
                   />
@@ -333,6 +335,7 @@ export default {
     ];
 
     return {
+      previewDataStringify: "",
       numberOfElements: 0,
       preview: {
         config: [
@@ -396,33 +399,11 @@ export default {
     DataLoadingBasic,
   },
   watch: {
-    config() {
-      // Reset the preview data with clean object to start
-      this.previewData = {};
-    },
-    previewInput() {
-      if (this.previewInputValid) {
-        // Copy data over
-        this.previewData = JSON.parse(this.previewInput);
-      } else {
-        this.previewData = {};
-      }
-    },
     customCSS(newCustomCSS) {
       this.preview.custom_css = newCustomCSS;
     },
   },
   computed: {
-    previewDataStringyfy: {
-      get() {
-        if (this.previewInputValid && !isEqual(this.previewData, this.previewDataSaved)) {
-          Object.assign(this.previewDataSaved, this.previewData);
-          this.formatMonaco();
-        }
-        return JSON.stringify(this.previewData);
-      },
-      set() {}
-    },
     previewInputValid() {
       try {
         JSON.parse(this.previewInput);
@@ -483,6 +464,18 @@ export default {
     this.countElements();
   },
   methods: {
+    // eslint-disable-next-line func-names
+    updateDataInput: debounce(function () {
+      if (this.previewInputValid) {
+        // Copy data over
+        this.previewData = JSON.parse(this.previewInput);
+        this.updateDataPreview();
+      }
+    }, 1000),
+    // eslint-disable-next-line func-names
+    updateDataPreview: debounce(function () {
+      this.previewDataStringify = JSON.stringify(this.previewData, null, 2);
+    }, 1000),
     monacoMounted(editor) {
       this.editor = editor;
       this.editor.updateOptions({ readOnly:  true });
@@ -635,6 +628,7 @@ export default {
       }
     },
     onUpdate(data) {
+      this.updateDataPreview();
       ProcessMaker.EventBus.$emit("form-data-updated", data);
     },
     getValidationErrorsForItems(items, page) {
@@ -732,6 +726,8 @@ export default {
     },
     updateConfig(newConfig) {
       this.config = newConfig;
+      // Reset the preview data with clean object to start
+      this.previewData = {};
       this.refreshSession();
       ProcessMaker.EventBus.$emit("new-changes");
       // Recount number of elements

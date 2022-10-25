@@ -38,7 +38,6 @@ class SanitizeUsernames implements ShouldQueue
     public function handle()
     {
         foreach ($this->users as $index => $user) {
-
             // Store the pre-update username for comparison
             $pre_update_username = $user->username;
             $updated_username = static::filterAndValidateUsername($user->username, $user->id);

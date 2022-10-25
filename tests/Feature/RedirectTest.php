@@ -20,7 +20,7 @@ class RedirectTest extends TestCase
      */
     public function test401RedirectsToLogin()
     {
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'is_administrator' => false,
         ]);
         Auth::login($user);
@@ -38,7 +38,7 @@ class RedirectTest extends TestCase
      */
     public function testRedirectToForcePasswordChange()
     {
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'force_change_password' => 1,
         ]);
 

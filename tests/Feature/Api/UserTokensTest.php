@@ -38,7 +38,7 @@ class UserTokensTest extends TestCase
      */
     public function testListTokensWithEmptyTokensForOtherUser()
     {
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
         $response = $this->apiCall('GET', '/users/' . $user->id . '/tokens');
 
         //Validate the header status code
@@ -51,10 +51,10 @@ class UserTokensTest extends TestCase
     public function testPermissionDeniedForUserWithoutViewPermissions()
     {
         $this->debug = false;
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
         $this->user = $user;
 
-        $targetUser = factory(User::class)->create();
+        $targetUser = User::factory()->create();
 
         $response = $this->apiCall('GET', '/users/' . $targetUser->id . '/tokens');
         $response->assertStatus(403);
@@ -75,10 +75,10 @@ class UserTokensTest extends TestCase
     public function testPermissionDeniedForUserWithoutEditPermissionsForCreatingToken()
     {
         $this->debug = false;
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
         $this->user = $user;
 
-        $targetUser = factory(User::class)->create();
+        $targetUser = User::factory()->create();
 
         $response = $this->apiCall('POST', '/users/' . $targetUser->id . '/tokens');
         $response->assertStatus(403);
@@ -148,7 +148,7 @@ class UserTokensTest extends TestCase
     {
         $this->debug = false;
 
-        $targetUser = factory(User::class)->create();
+        $targetUser = User::factory()->create();
 
         $user = $this->user;
         $response = $this->apiCall('POST', '/users/' . $user->id . '/tokens', [
@@ -161,7 +161,7 @@ class UserTokensTest extends TestCase
         $responseObj = $response->decodeResponseJson();
 
         $targetUser = $user;
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
         $this->user = $user;
 
         $response = $this->apiCall('GET', '/users/' . $targetUser->id . '/tokens/' . $responseObj['token']['id']);
@@ -201,7 +201,7 @@ class UserTokensTest extends TestCase
     {
         $this->debug = false;
 
-        $targetUser = factory(User::class)->create();
+        $targetUser = User::factory()->create();
 
         $user = $this->user;
         $response = $this->apiCall('POST', '/users/' . $user->id . '/tokens', [
@@ -214,7 +214,7 @@ class UserTokensTest extends TestCase
         $responseObj = $response->decodeResponseJson();
 
         $targetUser = $user;
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
         $this->user = $user;
 
         $response = $this->apiCall('DELETE', '/users/' . $targetUser->id . '/tokens/' . $responseObj['token']['id']);

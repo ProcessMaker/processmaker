@@ -1,0 +1,2990 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+    xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+    xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/"
+    xmlns:ns="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://jenrique.com/jxchange/TPG/2008"
+    targetNamespace="http://jenrique.com/jxchange/TPG/2008">
+
+    <!-- This starts the Types section  -->
+
+    <types>
+        <xsd:schema elementFormDefault="qualified" attributeFormDefault="qualified"
+            targetNamespace="http://jenrique.com/jxchange/TPG/2008"
+            xmlns="http://jenrique.com/jxchange/TPG/2008" version="2022.0.02"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+            <xsd:include schemaLocation="TPG_CustomerMaster.xsd" />
+
+        </xsd:schema>
+    </types>
+
+    <!-- This starts the Message section  -->
+
+    <message name="MessageFault">
+        <part name="parameters" element="tns:HdrFault" />
+    </message>
+
+    <message name="PingInput">
+        <part name="parameters" element="tns:Ping" />
+    </message>
+    <message name="PingOutput">
+        <part name="parameters" element="tns:PingResponse" />
+    </message>
+
+    <message name="CustInqInput">
+        <part name="parameters" element="tns:CustInq" />
+    </message>
+    <message name="CustInqOutput">
+        <part name="parameters" element="tns:CustInqResponse" />
+    </message>
+
+    <message name="CustSrchInput">
+        <part name="parameters" element="tns:CustSrch" />
+    </message>
+    <message name="CustSrchOutput">
+        <part name="parameters" element="tns:CustSrchResponse" />
+    </message>
+
+    <message name="CustMsgSrchInput">
+        <part name="parameters" element="tns:CustMsgSrch" />
+    </message>
+    <message name="CustMsgSrchOutput">
+        <part name="parameters" element="tns:CustMsgSrchResponse" />
+    </message>
+
+    <message name="CustAddInput">
+        <part name="parameters" element="tns:CustAdd" />
+    </message>
+    <message name="CustAddOutput">
+        <part name="parameters" element="tns:CustAddResponse" />
+    </message>
+
+    <message name="AddrSrchInput">
+        <part name="parameters" element="tns:AddrSrch" />
+    </message>
+    <message name="AddrSrchOutput">
+        <part name="parameters" element="tns:AddrSrchResponse" />
+    </message>
+
+    <message name="AddrModInput">
+        <part name="parameters" element="tns:AddrMod" />
+    </message>
+    <message name="AddrModOutput">
+        <part name="parameters" element="tns:AddrModResponse" />
+    </message>
+
+    <message name="AddrAddInput">
+        <part name="parameters" element="tns:AddrAdd" />
+    </message>
+    <message name="AddrAddOutput">
+        <part name="parameters" element="tns:AddrAddResponse" />
+    </message>
+
+    <message name="CustRelAddInput">
+        <part name="parameters" element="tns:CustRelAdd" />
+    </message>
+    <message name="CustRelAddOutput">
+        <part name="parameters" element="tns:CustRelAddResponse" />
+    </message>
+
+    <message name="CustRelModInput">
+        <part name="parameters" element="tns:CustRelMod" />
+    </message>
+    <message name="CustRelModOutput">
+        <part name="parameters" element="tns:CustRelModResponse" />
+    </message>
+
+    <message name="CustModInput">
+        <part name="parameters" element="tns:CustMod" />
+    </message>
+    <message name="CustModOutput">
+        <part name="parameters" element="tns:CustModResponse" />
+    </message>
+
+    <message name="SvcDftInput">
+        <part name="parameters" element="tns:SvcDft" />
+    </message>
+    <message name="SvcDftOutput">
+        <part name="parameters" element="tns:SvcDftResponse" />
+    </message>
+
+    <message name="IdVerifyAddInput">
+        <part name="parameters" element="tns:IdVerifyAdd" />
+    </message>
+    <message name="IdVerifyAddOutput">
+        <part name="parameters" element="tns:IdVerifyAddResponse" />
+    </message>
+
+    <message name="IdVerifyModInput">
+        <part name="parameters" element="tns:IdVerifyMod" />
+    </message>
+    <message name="IdVerifyModOutput">
+        <part name="parameters" element="tns:IdVerifyModResponse" />
+    </message>
+
+    <message name="ParmValSrchInput">
+        <part name="parameters" element="tns:ParmValSrch" />
+    </message>
+    <message name="ParmValSrchOutput">
+        <part name="parameters" element="tns:ParmValSrchResponse" />
+    </message>
+
+    <message name="AcctIdGenInput">
+        <part name="parameters" element="tns:AcctIdGen" />
+    </message>
+    <message name="AcctIdGenOutput">
+        <part name="parameters" element="tns:AcctIdGenResponse" />
+    </message>
+
+    <message name="EFTCardAddInput">
+        <part name="parameters" element="tns:EFTCardAdd" />
+    </message>
+    <message name="EFTCardAddOutput">
+        <part name="parameters" element="tns:EFTCardAddResponse" />
+    </message>
+
+    <message name="EFTCardAcctIdAddInput">
+        <part name="parameters" element="tns:EFTCardAcctIdAdd" />
+    </message>
+    <message name="EFTCardAcctIdAddOutput">
+        <part name="parameters" element="tns:EFTCardAcctIdAddResponse" />
+    </message>
+
+    <message name="IntnetFinInstIdAddInput">
+        <part name="parameters" element="tns:IntnetFinInstIdAdd" />
+    </message>
+    <message name="IntnetFinInstIdAddOutput">
+        <part name="parameters" element="tns:IntnetFinInstIdAddResponse" />
+    </message>
+
+    <message name="IntnetFinInstAcctIdAddInput">
+        <part name="parameters" element="tns:IntnetFinInstAcctIdAdd" />
+    </message>
+    <message name="IntnetFinInstAcctIdAddOutput">
+        <part name="parameters" element="tns:IntnetFinInstAcctIdAddResponse" />
+    </message>
+
+    <message name="CustMsgAddInput">
+        <part name="parameters" element="tns:CustMsgAdd" />
+    </message>
+    <message name="CustMsgAddOutput">
+        <part name="parameters" element="tns:CustMsgAddResponse" />
+    </message>
+
+    <message name="CustMsgModInput">
+        <part name="parameters" element="tns:CustMsgMod" />
+    </message>
+    <message name="CustMsgModOutput">
+        <part name="parameters" element="tns:CustMsgModResponse" />
+    </message>
+
+    <message name="IntYieldInqInput">
+        <part name="parameters" element="tns:IntYieldInq" />
+    </message>
+    <message name="IntYieldInqOutput">
+        <part name="parameters" element="tns:IntYieldInqResponse" />
+    </message>
+
+    <message name="IntRateSrchInput">
+        <part name="parameters" element="tns:IntRateSrch" />
+    </message>
+    <message name="IntRateSrchOutput">
+        <part name="parameters" element="tns:IntRateSrchResponse" />
+    </message>
+
+    <message name="EFTCardModInput">
+        <part name="parameters" element="tns:EFTCardMod" />
+    </message>
+    <message name="EFTCardModOutput">
+        <part name="parameters" element="tns:EFTCardModResponse" />
+    </message>
+
+    <message name="UsrEnrollInqInput">
+        <part name="parameters" element="tns:UsrEnrollInq" />
+    </message>
+    <message name="UsrEnrollInqOutput">
+        <part name="parameters" element="tns:UsrEnrollInqResponse" />
+    </message>
+
+    <message name="EFTCardAddValidateInput">
+        <part name="parameters" element="tns:EFTCardAddValidate" />
+    </message>
+    <message name="EFTCardAddValidateOutput">
+        <part name="parameters" element="tns:EFTCardAddValidateResponse" />
+    </message>
+
+    <message name="IntnetFinInstIdAddValidateInput">
+        <part name="parameters" element="tns:IntnetFinInstIdAddValidate" />
+    </message>
+    <message name="IntnetFinInstIdAddValidateOutput">
+        <part name="parameters" element="tns:IntnetFinInstIdAddValidateResponse" />
+    </message>
+
+    <message name="IntnetFinInstAcctIdAddValidateInput">
+        <part name="parameters" element="tns:IntnetFinInstAcctIdAddValidate" />
+    </message>
+    <message name="IntnetFinInstAcctIdAddValidateOutput">
+        <part name="parameters" element="tns:IntnetFinInstAcctIdAddValidateResponse" />
+    </message>
+
+    <message name="EFTCardInqInput">
+        <part name="parameters" element="tns:EFTCardInq" />
+    </message>
+    <message name="EFTCardInqOutput">
+        <part name="parameters" element="tns:EFTCardInqResponse" />
+    </message>
+
+    <message name="EmplAppAddInput">
+        <part name="parameters" element="tns:EmplAppAdd" />
+    </message>
+    <message name="EmplAppAddOutput">
+        <part name="parameters" element="tns:EmplAppAddResponse" />
+    </message>
+
+    <message name="EFTCardSrchInput">
+        <part name="parameters" element="tns:EFTCardSrch" />
+    </message>
+    <message name="EFTCardSrchOutput">
+        <part name="parameters" element="tns:EFTCardSrchResponse" />
+    </message>
+
+    <message name="SvcDictSrchInput">
+        <part name="parameters" element="tns:SvcDictSrch" />
+    </message>
+    <message name="SvcDictSrchOutput">
+        <part name="parameters" element="tns:SvcDictSrchResponse" />
+    </message>
+
+    <message name="IntnetFinInstIdInqInput">
+        <part name="parameters" element="tns:IntnetFinInstIdInq" />
+    </message>
+    <message name="IntnetFinInstIdInqOutput">
+        <part name="parameters" element="tns:IntnetFinInstIdInqResponse" />
+    </message>
+
+    <message name="IntnetFinInstIdUsrInqInput">
+        <part name="parameters" element="tns:IntnetFinInstIdUsrInq" />
+    </message>
+    <message name="IntnetFinInstIdUsrInqOutput">
+        <part name="parameters" element="tns:IntnetFinInstIdUsrInqResponse" />
+    </message>
+
+    <message name="AddrInqInput">
+        <part name="parameters" element="tns:AddrInq" />
+    </message>
+    <message name="AddrInqOutput">
+        <part name="parameters" element="tns:AddrInqResponse" />
+    </message>
+
+    <message name="CustMsgInqInput">
+        <part name="parameters" element="tns:CustMsgInq" />
+    </message>
+    <message name="CustMsgInqOutput">
+        <part name="parameters" element="tns:CustMsgInqResponse" />
+    </message>
+
+    <message name="CustCollatSrchInput">
+        <part name="parameters" element="tns:CustCollatSrch" />
+    </message>
+    <message name="CustCollatSrchOutput">
+        <part name="parameters" element="tns:CustCollatSrchResponse" />
+    </message>
+
+    <message name="EFTCardUsrAuthInqInput">
+        <part name="parameters" element="tns:EFTCardUsrAuthInq" />
+    </message>
+    <message name="EFTCardUsrAuthInqOutput">
+        <part name="parameters" element="tns:EFTCardUsrAuthInqResponse" />
+    </message>
+
+    <message name="CustRelAddValidateInput">
+        <part name="parameters" element="tns:CustRelAddValidate" />
+    </message>
+    <message name="CustRelAddValidateOutput">
+        <part name="parameters" element="tns:CustRelAddValidateResponse" />
+    </message>
+
+    <message name="IntnetFinInstIdModInput">
+        <part name="parameters" element="tns:IntnetFinInstIdMod" />
+    </message>
+    <message name="IntnetFinInstIdModOutput">
+        <part name="parameters" element="tns:IntnetFinInstIdModResponse" />
+    </message>
+
+    <message name="IntnetFinInstIdUsrModInput">
+        <part name="parameters" element="tns:IntnetFinInstIdUsrMod" />
+    </message>
+    <message name="IntnetFinInstIdUsrModOutput">
+        <part name="parameters" element="tns:IntnetFinInstIdUsrModResponse" />
+    </message>
+
+    <message name="CRMCustSrchInput">
+        <part name="parameters" element="tns:CRMCustSrch" />
+    </message>
+    <message name="CRMCustSrchOutput">
+        <part name="parameters" element="tns:CRMCustSrchResponse" />
+    </message>
+
+    <message name="CRMReferSrchInput">
+        <part name="parameters" element="tns:CRMReferSrch" />
+    </message>
+    <message name="CRMReferSrchOutput">
+        <part name="parameters" element="tns:CRMReferSrchResponse" />
+    </message>
+
+    <message name="CRMMktCmpgnSrchInput">
+        <part name="parameters" element="tns:CRMMktCmpgnSrch" />
+    </message>
+    <message name="CRMMktCmpgnSrchOutput">
+        <part name="parameters" element="tns:CRMMktCmpgnSrchResponse" />
+    </message>
+
+    <message name="CRMPotSaleSrchInput">
+        <part name="parameters" element="tns:CRMPotSaleSrch" />
+    </message>
+    <message name="CRMPotSaleSrchOutput">
+        <part name="parameters" element="tns:CRMPotSaleSrchResponse" />
+    </message>
+
+    <message name="CRMEventSrchInput">
+        <part name="parameters" element="tns:CRMEventSrch" />
+    </message>
+    <message name="CRMEventSrchOutput">
+        <part name="parameters" element="tns:CRMEventSrchResponse" />
+    </message>
+
+    <message name="CRMActSrchInput">
+        <part name="parameters" element="tns:CRMActSrch" />
+    </message>
+    <message name="CRMActSrchOutput">
+        <part name="parameters" element="tns:CRMActSrchResponse" />
+    </message>
+
+    <message name="CRMProspSrchInput">
+        <part name="parameters" element="tns:CRMProspSrch" />
+    </message>
+    <message name="CRMProspSrchOutput">
+        <part name="parameters" element="tns:CRMProspSrchResponse" />
+    </message>
+
+    <message name="CRMProspInqInput">
+        <part name="parameters" element="tns:CRMProspInq" />
+    </message>
+    <message name="CRMProspInqOutput">
+        <part name="parameters" element="tns:CRMProspInqResponse" />
+    </message>
+
+    <message name="PersonNameModInput">
+        <part name="parameters" element="tns:PersonNameMod" />
+    </message>
+    <message name="PersonNameModOutput">
+        <part name="parameters" element="tns:PersonNameModResponse" />
+    </message>
+
+    <message name="EFTCardOrderAddInput">
+        <part name="parameters" element="tns:EFTCardOrderAdd" />
+    </message>
+    <message name="EFTCardOrderAddOutput">
+        <part name="parameters" element="tns:EFTCardOrderAddResponse" />
+    </message>
+
+    <message name="EFTCardPINOffSetModInput">
+        <part name="parameters" element="tns:EFTCardPINOffSetMod" />
+    </message>
+    <message name="EFTCardPINOffSetModOutput">
+        <part name="parameters" element="tns:EFTCardPINOffSetModResponse" />
+    </message>
+
+    <message name="CRMEventInqInput">
+        <part name="parameters" element="tns:CRMEventInq" />
+    </message>
+    <message name="CRMEventInqOutput">
+        <part name="parameters" element="tns:CRMEventInqResponse" />
+    </message>
+
+    <message name="CRMEventAddInput">
+        <part name="parameters" element="tns:CRMEventAdd" />
+    </message>
+    <message name="CRMEventAddOutput">
+        <part name="parameters" element="tns:CRMEventAddResponse" />
+    </message>
+
+    <message name="CRMEventModInput">
+        <part name="parameters" element="tns:CRMEventMod" />
+    </message>
+    <message name="CRMEventModOutput">
+        <part name="parameters" element="tns:CRMEventModResponse" />
+    </message>
+
+    <message name="CRMReferInqInput">
+        <part name="parameters" element="tns:CRMReferInq" />
+    </message>
+    <message name="CRMReferInqOutput">
+        <part name="parameters" element="tns:CRMReferInqResponse" />
+    </message>
+
+    <message name="CRMReferAddInput">
+        <part name="parameters" element="tns:CRMReferAdd" />
+    </message>
+    <message name="CRMReferAddOutput">
+        <part name="parameters" element="tns:CRMReferAddResponse" />
+    </message>
+
+    <message name="CRMReferModInput">
+        <part name="parameters" element="tns:CRMReferMod" />
+    </message>
+    <message name="CRMReferModOutput">
+        <part name="parameters" element="tns:CRMReferModResponse" />
+    </message>
+
+    <message name="CRMActInqInput">
+        <part name="parameters" element="tns:CRMActInq" />
+    </message>
+    <message name="CRMActInqOutput">
+        <part name="parameters" element="tns:CRMActInqResponse" />
+    </message>
+
+    <message name="CRMActModInput">
+        <part name="parameters" element="tns:CRMActMod" />
+    </message>
+    <message name="CRMActModOutput">
+        <part name="parameters" element="tns:CRMActModResponse" />
+    </message>
+
+    <message name="CRMActAddInput">
+        <part name="parameters" element="tns:CRMActAdd" />
+    </message>
+    <message name="CRMActAddOutput">
+        <part name="parameters" element="tns:CRMActAddResponse" />
+    </message>
+
+    <message name="IntRateInqInput">
+        <part name="parameters" element="tns:IntRateInq" />
+    </message>
+    <message name="IntRateInqOutput">
+        <part name="parameters" element="tns:IntRateInqResponse" />
+    </message>
+
+    <message name="IntRateAddInput">
+        <part name="parameters" element="tns:IntRateAdd" />
+    </message>
+    <message name="IntRateAddOutput">
+        <part name="parameters" element="tns:IntRateAddResponse" />
+    </message>
+
+    <message name="IntRateModInput">
+        <part name="parameters" element="tns:IntRateMod" />
+    </message>
+    <message name="IntRateModOutput">
+        <part name="parameters" element="tns:IntRateModResponse" />
+    </message>
+
+    <message name="PltfmProdSrchInput">
+        <part name="parameters" element="tns:PltfmProdSrch" />
+    </message>
+    <message name="PltfmProdSrchOutput">
+        <part name="parameters" element="tns:PltfmProdSrchResponse" />
+    </message>
+
+    <message name="CRMProspAddInput">
+        <part name="parameters" element="tns:CRMProspAdd" />
+    </message>
+    <message name="CRMProspAddOutput">
+        <part name="parameters" element="tns:CRMProspAddResponse" />
+    </message>
+
+    <message name="CRMProspModInput">
+        <part name="parameters" element="tns:CRMProspMod" />
+    </message>
+    <message name="CRMProspModOutput">
+        <part name="parameters" element="tns:CRMProspModResponse" />
+    </message>
+
+    <message name="PltfmProdInqInput">
+        <part name="parameters" element="tns:PltfmProdInq" />
+    </message>
+    <message name="PltfmProdInqOutput">
+        <part name="parameters" element="tns:PltfmProdInqResponse" />
+    </message>
+
+    <message name="IntnetFinInstIdAcctAccessInqInput">
+        <part name="parameters" element="tns:IntnetFinInstIdAcctAccessInq" />
+    </message>
+    <message name="IntnetFinInstIdAcctAccessInqOutput">
+        <part name="parameters" element="tns:IntnetFinInstIdAcctAccessInqResponse" />
+    </message>
+
+    <message name="LnPltfmProdSrchInput">
+        <part name="parameters" element="tns:LnPltfmProdSrch" />
+    </message>
+    <message name="LnPltfmProdSrchOutput">
+        <part name="parameters" element="tns:LnPltfmProdSrchResponse" />
+    </message>
+
+    <message name="LnUnvIdGenInput">
+        <part name="parameters" element="tns:LnUnvIdGen" />
+    </message>
+    <message name="LnUnvIdGenOutput">
+        <part name="parameters" element="tns:LnUnvIdGenResponse" />
+    </message>
+
+    <message name="CustAcctRelInqInput">
+        <part name="parameters" element="tns:CustAcctRelInq" />
+    </message>
+    <message name="CustAcctRelInqOutput">
+        <part name="parameters" element="tns:CustAcctRelInqResponse" />
+    </message>
+
+    <message name="PltfmDocInqInput">
+        <part name="parameters" element="tns:PltfmDocInq" />
+    </message>
+    <message name="PltfmDocInqOutput">
+        <part name="parameters" element="tns:PltfmDocInqResponse" />
+    </message>
+
+    <message name="PltfmDocStatInqInput">
+        <part name="parameters" element="tns:PltfmDocStatInq" />
+    </message>
+    <message name="PltfmDocStatInqOutput">
+        <part name="parameters" element="tns:PltfmDocStatInqResponse" />
+    </message>
+
+    <message name="PltfmEntityValidateInput">
+        <part name="parameters" element="tns:PltfmEntityValidate" />
+    </message>
+    <message name="PltfmEntityValidateOutput">
+        <part name="parameters" element="tns:PltfmEntityValidateResponse" />
+    </message>
+
+    <message name="CRMCustInqInput">
+        <part name="parameters" element="tns:CRMCustInq" />
+    </message>
+    <message name="CRMCustInqOutput">
+        <part name="parameters" element="tns:CRMCustInqResponse" />
+    </message>
+
+    <message name="CardAlrtSubAddInput">
+        <part name="parameters" element="tns:CardAlrtSubAdd" />
+    </message>
+    <message name="CardAlrtSubAddOutput">
+        <part name="parameters" element="tns:CardAlrtSubAddResponse" />
+    </message>
+
+    <message name="CardAlrtSubModInput">
+        <part name="parameters" element="tns:CardAlrtSubMod" />
+    </message>
+    <message name="CardAlrtSubModOutput">
+        <part name="parameters" element="tns:CardAlrtSubModResponse" />
+    </message>
+
+    <message name="CardAlrtModInput">
+        <part name="parameters" element="tns:CardAlrtMod" />
+    </message>
+    <message name="CardAlrtModOutput">
+        <part name="parameters" element="tns:CardAlrtModResponse" />
+    </message>
+
+    <message name="CardAlrtSubInqInput">
+        <part name="parameters" element="tns:CardAlrtSubInq" />
+    </message>
+    <message name="CardAlrtSubInqOutput">
+        <part name="parameters" element="tns:CardAlrtSubInqResponse" />
+    </message>
+
+    <message name="BenflOwnSrchInput">
+        <part name="parameters" element="tns:BenflOwnSrch" />
+    </message>
+    <message name="BenflOwnSrchOutput">
+        <part name="parameters" element="tns:BenflOwnSrchResponse" />
+    </message>
+
+    <message name="LobbyQueAddInput">
+        <part name="parameters" element="tns:LobbyQueAdd" />
+    </message>
+    <message name="LobbyQueAddOutput">
+        <part name="parameters" element="tns:LobbyQueAddResponse" />
+    </message>
+
+    <message name="LobbyQueSrchInput">
+        <part name="parameters" element="tns:LobbyQueSrch" />
+    </message>
+    <message name="LobbyQueSrchOutput">
+        <part name="parameters" element="tns:LobbyQueSrchResponse" />
+    </message>
+
+    <message name="LobbyQueInqInput">
+        <part name="parameters" element="tns:LobbyQueInq" />
+    </message>
+    <message name="LobbyQueInqOutput">
+        <part name="parameters" element="tns:LobbyQueInqResponse" />
+    </message>
+
+    <message name="LobbyQueModInput">
+        <part name="parameters" element="tns:LobbyQueMod" />
+    </message>
+    <message name="LobbyQueModOutput">
+        <part name="parameters" element="tns:LobbyQueModResponse" />
+    </message>
+
+    <message name="CardAlrtNotfInqInput">
+        <part name="parameters" element="tns:CardAlrtNotfInq" />
+    </message>
+    <message name="CardAlrtNotfInqOutput">
+        <part name="parameters" element="tns:CardAlrtNotfInqResponse" />
+    </message>
+
+    <message name="PltfmBusEntityValidateInput">
+        <part name="parameters" element="tns:PltfmBusEntityValidate" />
+    </message>
+    <message name="PltfmBusEntityValidateOutput">
+        <part name="parameters" element="tns:PltfmBusEntityValidateResponse" />
+    </message>
+
+    <message name="EFTCardAddrSrchInput">
+        <part name="parameters" element="tns:EFTCardAddrSrch" />
+    </message>
+    <message name="EFTCardAddrSrchOutput">
+        <part name="parameters" element="tns:EFTCardAddrSrchResponse" />
+    </message>
+
+    <message name="EFTCardMsgSrchInput">
+        <part name="parameters" element="tns:EFTCardMsgSrch" />
+    </message>
+    <message name="EFTCardMsgSrchOutput">
+        <part name="parameters" element="tns:EFTCardMsgSrchResponse" />
+    </message>
+
+    <message name="EFTCardMsgAddInput">
+        <part name="parameters" element="tns:EFTCardMsgAdd" />
+    </message>
+    <message name="EFTCardMsgAddOutput">
+        <part name="parameters" element="tns:EFTCardMsgAddResponse" />
+    </message>
+
+    <message name="EFTCardMsgModInput">
+        <part name="parameters" element="tns:EFTCardMsgMod" />
+    </message>
+    <message name="EFTCardMsgModOutput">
+        <part name="parameters" element="tns:EFTCardMsgModResponse" />
+    </message>
+
+    <message name="IntnetFinInstIdFileMainSrchInput">
+        <part name="parameters" element="tns:IntnetFinInstIdFileMainSrch" />
+    </message>
+    <message name="IntnetFinInstIdFileMainSrchOutput">
+        <part name="parameters" element="tns:IntnetFinInstIdFileMainSrchResponse" />
+    </message>
+
+    <message name="EFTCardPINModInitInput">
+        <part name="parameters" element="tns:EFTCardPINModInit" />
+    </message>
+    <message name="EFTCardPINModInitOutput">
+        <part name="parameters" element="tns:EFTCardPINModInitResponse" />
+    </message>
+
+    <message name="EFTCardPINModInput">
+        <part name="parameters" element="tns:EFTCardPINMod" />
+    </message>
+    <message name="EFTCardPINModOutput">
+        <part name="parameters" element="tns:EFTCardPINModResponse" />
+    </message>
+
+    <message name="CustRelInqInput">
+        <part name="parameters" element="tns:CustRelInq" />
+    </message>
+    <message name="CustRelInqOutput">
+        <part name="parameters" element="tns:CustRelInqResponse" />
+    </message>
+
+    <message name="IdVerifCmntAddInput">
+        <part name="parameters" element="tns:IdVerifCmntAdd" />
+    </message>
+    <message name="IdVerifCmntAddOutput">
+        <part name="parameters" element="tns:IdVerifCmntAddResponse" />
+    </message>
+
+    <message name="EFTCardFileMainSrchInput">
+        <part name="parameters" element="tns:EFTCardFileMainSrch" />
+    </message>
+    <message name="EFTCardFileMainSrchOutput">
+        <part name="parameters" element="tns:EFTCardFileMainSrchResponse" />
+    </message>
+
+    <message name="CustInfoMsgInqInput">
+        <part name="parameters" element="tns:CustInfoMsgInq" />
+    </message>
+    <message name="CustInfoMsgInqOutput">
+        <part name="parameters" element="tns:CustInfoMsgInqResponse" />
+    </message>
+
+    <message name="CustIncmInqInput">
+        <part name="parameters" element="tns:CustIncmInq" />
+    </message>
+    <message name="CustIncmInqOutput">
+        <part name="parameters" element="tns:CustIncmInqResponse" />
+    </message>
+
+    <message name="TeaserRateAddInput">
+        <part name="parameters" element="tns:TeaserRateAdd" />
+    </message>
+    <message name="TeaserRateAddOutput">
+        <part name="parameters" element="tns:TeaserRateAddResponse" />
+    </message>
+
+    <message name="TeaserRateSrchInput">
+        <part name="parameters" element="tns:TeaserRateSrch" />
+    </message>
+    <message name="TeaserRateSrchOutput">
+        <part name="parameters" element="tns:TeaserRateSrchResponse" />
+    </message>
+
+    <message name="TeaserRateInqInput">
+        <part name="parameters" element="tns:TeaserRateInq" />
+    </message>
+    <message name="TeaserRateInqOutput">
+        <part name="parameters" element="tns:TeaserRateInqResponse" />
+    </message>
+
+    <message name="TeaserRateModInput">
+        <part name="parameters" element="tns:TeaserRateMod" />
+    </message>
+    <message name="TeaserRateModOutput">
+        <part name="parameters" element="tns:TeaserRateModResponse" />
+    </message>
+
+    <message name="InstDefFldSrchInput">
+        <part name="parameters" element="tns:InstDefFldSrch" />
+    </message>
+    <message name="InstDefFldSrchOutput">
+        <part name="parameters" element="tns:InstDefFldSrchResponse" />
+    </message>
+
+    <message name="InstDefFldInqInput">
+        <part name="parameters" element="tns:InstDefFldInq" />
+    </message>
+    <message name="InstDefFldInqOutput">
+        <part name="parameters" element="tns:InstDefFldInqResponse" />
+    </message>
+
+    <message name="InstDefFldModInput">
+        <part name="parameters" element="tns:InstDefFldMod" />
+    </message>
+    <message name="InstDefFldModOutput">
+        <part name="parameters" element="tns:InstDefFldModResponse" />
+    </message>
+
+    <message name="CRMClientRelDataInqInput">
+        <part name="parameters" element="tns:CRMClientRelDataInq" />
+    </message>
+    <message name="CRMClientRelDataInqOutput">
+        <part name="parameters" element="tns:CRMClientRelDataInqResponse" />
+    </message>
+
+    <message name="CRMClientRelDataModInput">
+        <part name="parameters" element="tns:CRMClientRelDataMod" />
+    </message>
+    <message name="CRMClientRelDataModOutput">
+        <part name="parameters" element="tns:CRMClientRelDataModResponse" />
+    </message>
+
+    <message name="EFTCardAwardsAddInput">
+        <part name="parameters" element="tns:EFTCardAwardsAdd" />
+    </message>
+    <message name="EFTCardAwardsAddOutput">
+        <part name="parameters" element="tns:EFTCardAwardsAddResponse" />
+    </message>
+
+    <message name="EFTCardHouseHoldSrchInput">
+        <part name="parameters" element="tns:EFTCardHouseHoldSrch" />
+    </message>
+    <message name="EFTCardHouseHoldSrchOutput">
+        <part name="parameters" element="tns:EFTCardHouseHoldSrchResponse" />
+    </message>
+
+    <message name="EFTCardAwardsInqInput">
+        <part name="parameters" element="tns:EFTCardAwardsInq" />
+    </message>
+    <message name="EFTCardAwardsInqOutput">
+        <part name="parameters" element="tns:EFTCardAwardsInqResponse" />
+    </message>
+
+    <message name="EFTCardAwardsModInput">
+        <part name="parameters" element="tns:EFTCardAwardsMod" />
+    </message>
+    <message name="EFTCardAwardsModOutput">
+        <part name="parameters" element="tns:EFTCardAwardsModResponse" />
+    </message>
+
+    <!-- This starts the PortType section  -->
+
+    <portType name="CustomerService">
+
+        <operation name="Ping">
+            <input message="tns:PingInput" />
+            <output message="tns:PingOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CustInq">
+            <input message="tns:CustInqInput" />
+            <output message="tns:CustInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CustSrch">
+            <input message="tns:CustSrchInput" />
+            <output message="tns:CustSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CustMsgSrch">
+            <input message="tns:CustMsgSrchInput" />
+            <output message="tns:CustMsgSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CustAdd">
+            <input message="tns:CustAddInput" />
+            <output message="tns:CustAddOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="AddrSrch">
+            <input message="tns:AddrSrchInput" />
+            <output message="tns:AddrSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="AddrMod">
+            <input message="tns:AddrModInput" />
+            <output message="tns:AddrModOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="AddrAdd">
+            <input message="tns:AddrAddInput" />
+            <output message="tns:AddrAddOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CustRelAdd">
+            <input message="tns:CustRelAddInput" />
+            <output message="tns:CustRelAddOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CustRelMod">
+            <input message="tns:CustRelModInput" />
+            <output message="tns:CustRelModOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CustMod">
+            <input message="tns:CustModInput" />
+            <output message="tns:CustModOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="SvcDft">
+            <input message="tns:SvcDftInput" />
+            <output message="tns:SvcDftOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="IdVerifyAdd">
+            <input message="tns:IdVerifyAddInput" />
+            <output message="tns:IdVerifyAddOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="IdVerifyMod">
+            <input message="tns:IdVerifyModInput" />
+            <output message="tns:IdVerifyModOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="ParmValSrch">
+            <input message="tns:ParmValSrchInput" />
+            <output message="tns:ParmValSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="AcctIdGen">
+            <input message="tns:AcctIdGenInput" />
+            <output message="tns:AcctIdGenOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="EFTCardAdd">
+            <input message="tns:EFTCardAddInput" />
+            <output message="tns:EFTCardAddOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="EFTCardAcctIdAdd">
+            <input message="tns:EFTCardAcctIdAddInput" />
+            <output message="tns:EFTCardAcctIdAddOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="IntnetFinInstIdAdd">
+            <input message="tns:IntnetFinInstIdAddInput" />
+            <output message="tns:IntnetFinInstIdAddOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="IntnetFinInstAcctIdAdd">
+            <input message="tns:IntnetFinInstAcctIdAddInput" />
+            <output message="tns:IntnetFinInstAcctIdAddOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CustMsgAdd">
+            <input message="tns:CustMsgAddInput" />
+            <output message="tns:CustMsgAddOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CustMsgMod">
+            <input message="tns:CustMsgModInput" />
+            <output message="tns:CustMsgModOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="IntYieldInq">
+            <input message="tns:IntYieldInqInput" />
+            <output message="tns:IntYieldInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="IntRateSrch">
+            <input message="tns:IntRateSrchInput" />
+            <output message="tns:IntRateSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="EFTCardMod">
+            <input message="tns:EFTCardModInput" />
+            <output message="tns:EFTCardModOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="UsrEnrollInq">
+            <input message="tns:UsrEnrollInqInput" />
+            <output message="tns:UsrEnrollInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="EFTCardAddValidate">
+            <input message="tns:EFTCardAddValidateInput" />
+            <output message="tns:EFTCardAddValidateOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="IntnetFinInstIdAddValidate">
+            <input message="tns:IntnetFinInstIdAddValidateInput" />
+            <output message="tns:IntnetFinInstIdAddValidateOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="IntnetFinInstAcctIdAddValidate">
+            <input message="tns:IntnetFinInstAcctIdAddValidateInput" />
+            <output message="tns:IntnetFinInstAcctIdAddValidateOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="EFTCardInq">
+            <input message="tns:EFTCardInqInput" />
+            <output message="tns:EFTCardInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="EmplAppAdd">
+            <input message="tns:EmplAppAddInput" />
+            <output message="tns:EmplAppAddOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="EFTCardSrch">
+            <input message="tns:EFTCardSrchInput" />
+            <output message="tns:EFTCardSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="SvcDictSrch">
+            <input message="tns:SvcDictSrchInput" />
+            <output message="tns:SvcDictSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="IntnetFinInstIdInq">
+            <input message="tns:IntnetFinInstIdInqInput" />
+            <output message="tns:IntnetFinInstIdInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="IntnetFinInstIdUsrInq">
+            <input message="tns:IntnetFinInstIdUsrInqInput" />
+            <output message="tns:IntnetFinInstIdUsrInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="AddrInq">
+            <input message="tns:AddrInqInput" />
+            <output message="tns:AddrInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CustMsgInq">
+            <input message="tns:CustMsgInqInput" />
+            <output message="tns:CustMsgInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CustCollatSrch">
+            <input message="tns:CustCollatSrchInput" />
+            <output message="tns:CustCollatSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="EFTCardUsrAuthInq">
+            <input message="tns:EFTCardUsrAuthInqInput" />
+            <output message="tns:EFTCardUsrAuthInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CustRelAddValidate">
+            <input message="tns:CustRelAddValidateInput" />
+            <output message="tns:CustRelAddValidateOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="IntnetFinInstIdMod">
+            <input message="tns:IntnetFinInstIdModInput" />
+            <output message="tns:IntnetFinInstIdModOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="IntnetFinInstIdUsrMod">
+            <input message="tns:IntnetFinInstIdUsrModInput" />
+            <output message="tns:IntnetFinInstIdUsrModOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CRMCustSrch">
+            <input message="tns:CRMCustSrchInput" />
+            <output message="tns:CRMCustSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CRMReferSrch">
+            <input message="tns:CRMReferSrchInput" />
+            <output message="tns:CRMReferSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CRMMktCmpgnSrch">
+            <input message="tns:CRMMktCmpgnSrchInput" />
+            <output message="tns:CRMMktCmpgnSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CRMPotSaleSrch">
+            <input message="tns:CRMPotSaleSrchInput" />
+            <output message="tns:CRMPotSaleSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CRMEventSrch">
+            <input message="tns:CRMEventSrchInput" />
+            <output message="tns:CRMEventSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CRMActSrch">
+            <input message="tns:CRMActSrchInput" />
+            <output message="tns:CRMActSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CRMProspSrch">
+            <input message="tns:CRMProspSrchInput" />
+            <output message="tns:CRMProspSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CRMProspInq">
+            <input message="tns:CRMProspInqInput" />
+            <output message="tns:CRMProspInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="PersonNameMod">
+            <input message="tns:PersonNameModInput" />
+            <output message="tns:PersonNameModOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="EFTCardOrderAdd">
+            <input message="tns:EFTCardOrderAddInput" />
+            <output message="tns:EFTCardOrderAddOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="EFTCardPINOffSetMod">
+            <input message="tns:EFTCardPINOffSetModInput" />
+            <output message="tns:EFTCardPINOffSetModOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CRMEventInq">
+            <input message="tns:CRMEventInqInput" />
+            <output message="tns:CRMEventInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CRMEventAdd">
+            <input message="tns:CRMEventAddInput" />
+            <output message="tns:CRMEventAddOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CRMEventMod">
+            <input message="tns:CRMEventModInput" />
+            <output message="tns:CRMEventModOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CRMReferInq">
+            <input message="tns:CRMReferInqInput" />
+            <output message="tns:CRMReferInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CRMReferAdd">
+            <input message="tns:CRMReferAddInput" />
+            <output message="tns:CRMReferAddOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CRMReferMod">
+            <input message="tns:CRMReferModInput" />
+            <output message="tns:CRMReferModOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CRMActInq">
+            <input message="tns:CRMActInqInput" />
+            <output message="tns:CRMActInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CRMActMod">
+            <input message="tns:CRMActModInput" />
+            <output message="tns:CRMActModOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CRMActAdd">
+            <input message="tns:CRMActAddInput" />
+            <output message="tns:CRMActAddOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="IntRateInq">
+            <input message="tns:IntRateInqInput" />
+            <output message="tns:IntRateInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="IntRateAdd">
+            <input message="tns:IntRateAddInput" />
+            <output message="tns:IntRateAddOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="IntRateMod">
+            <input message="tns:IntRateModInput" />
+            <output message="tns:IntRateModOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="PltfmProdSrch">
+            <input message="tns:PltfmProdSrchInput" />
+            <output message="tns:PltfmProdSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CRMProspAdd">
+            <input message="tns:CRMProspAddInput" />
+            <output message="tns:CRMProspAddOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CRMProspMod">
+            <input message="tns:CRMProspModInput" />
+            <output message="tns:CRMProspModOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="PltfmProdInq">
+            <input message="tns:PltfmProdInqInput" />
+            <output message="tns:PltfmProdInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="IntnetFinInstIdAcctAccessInq">
+            <input message="tns:IntnetFinInstIdAcctAccessInqInput" />
+            <output message="tns:IntnetFinInstIdAcctAccessInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="LnPltfmProdSrch">
+            <input message="tns:LnPltfmProdSrchInput" />
+            <output message="tns:LnPltfmProdSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="LnUnvIdGen">
+            <input message="tns:LnUnvIdGenInput" />
+            <output message="tns:LnUnvIdGenOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CustAcctRelInq">
+            <input message="tns:CustAcctRelInqInput" />
+            <output message="tns:CustAcctRelInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="PltfmDocInq">
+            <input message="tns:PltfmDocInqInput" />
+            <output message="tns:PltfmDocInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="PltfmDocStatInq">
+            <input message="tns:PltfmDocStatInqInput" />
+            <output message="tns:PltfmDocStatInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="PltfmEntityValidate">
+            <input message="tns:PltfmEntityValidateInput" />
+            <output message="tns:PltfmEntityValidateOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CRMCustInq">
+            <input message="tns:CRMCustInqInput" />
+            <output message="tns:CRMCustInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CardAlrtSubAdd">
+            <input message="tns:CardAlrtSubAddInput" />
+            <output message="tns:CardAlrtSubAddOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CardAlrtSubMod">
+            <input message="tns:CardAlrtSubModInput" />
+            <output message="tns:CardAlrtSubModOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CardAlrtMod">
+            <input message="tns:CardAlrtModInput" />
+            <output message="tns:CardAlrtModOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CardAlrtSubInq">
+            <input message="tns:CardAlrtSubInqInput" />
+            <output message="tns:CardAlrtSubInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="BenflOwnSrch">
+            <input message="tns:BenflOwnSrchInput" />
+            <output message="tns:BenflOwnSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="LobbyQueAdd">
+            <input message="tns:LobbyQueAddInput" />
+            <output message="tns:LobbyQueAddOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="LobbyQueSrch">
+            <input message="tns:LobbyQueSrchInput" />
+            <output message="tns:LobbyQueSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="LobbyQueInq">
+            <input message="tns:LobbyQueInqInput" />
+            <output message="tns:LobbyQueInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="LobbyQueMod">
+            <input message="tns:LobbyQueModInput" />
+            <output message="tns:LobbyQueModOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CardAlrtNotfInq">
+            <input message="tns:CardAlrtNotfInqInput" />
+            <output message="tns:CardAlrtNotfInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="PltfmBusEntityValidate">
+            <input message="tns:PltfmBusEntityValidateInput" />
+            <output message="tns:PltfmBusEntityValidateOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="EFTCardAddrSrch">
+            <input message="tns:EFTCardAddrSrchInput" />
+            <output message="tns:EFTCardAddrSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="EFTCardMsgSrch">
+            <input message="tns:EFTCardMsgSrchInput" />
+            <output message="tns:EFTCardMsgSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="EFTCardMsgAdd">
+            <input message="tns:EFTCardMsgAddInput" />
+            <output message="tns:EFTCardMsgAddOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="EFTCardMsgMod">
+            <input message="tns:EFTCardMsgModInput" />
+            <output message="tns:EFTCardMsgModOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="IntnetFinInstIdFileMainSrch">
+            <input message="tns:IntnetFinInstIdFileMainSrchInput" />
+            <output message="tns:IntnetFinInstIdFileMainSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="EFTCardPINModInit">
+            <input message="tns:EFTCardPINModInitInput" />
+            <output message="tns:EFTCardPINModInitOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="EFTCardPINMod">
+            <input message="tns:EFTCardPINModInput" />
+            <output message="tns:EFTCardPINModOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CustRelInq">
+            <input message="tns:CustRelInqInput" />
+            <output message="tns:CustRelInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="IdVerifCmntAdd">
+            <input message="tns:IdVerifCmntAddInput" />
+            <output message="tns:IdVerifCmntAddOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="EFTCardFileMainSrch">
+            <input message="tns:EFTCardFileMainSrchInput" />
+            <output message="tns:EFTCardFileMainSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CustInfoMsgInq">
+            <input message="tns:CustInfoMsgInqInput" />
+            <output message="tns:CustInfoMsgInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CustIncmInq">
+            <input message="tns:CustIncmInqInput" />
+            <output message="tns:CustIncmInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="TeaserRateAdd">
+            <input message="tns:TeaserRateAddInput" />
+            <output message="tns:TeaserRateAddOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="TeaserRateSrch">
+            <input message="tns:TeaserRateSrchInput" />
+            <output message="tns:TeaserRateSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="TeaserRateInq">
+            <input message="tns:TeaserRateInqInput" />
+            <output message="tns:TeaserRateInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="TeaserRateMod">
+            <input message="tns:TeaserRateModInput" />
+            <output message="tns:TeaserRateModOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="InstDefFldSrch">
+            <input message="tns:InstDefFldSrchInput" />
+            <output message="tns:InstDefFldSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="InstDefFldInq">
+            <input message="tns:InstDefFldInqInput" />
+            <output message="tns:InstDefFldInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="InstDefFldMod">
+            <input message="tns:InstDefFldModInput" />
+            <output message="tns:InstDefFldModOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CRMClientRelDataInq">
+            <input message="tns:CRMClientRelDataInqInput" />
+            <output message="tns:CRMClientRelDataInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="CRMClientRelDataMod">
+            <input message="tns:CRMClientRelDataModInput" />
+            <output message="tns:CRMClientRelDataModOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="EFTCardAwardsAdd">
+            <input message="tns:EFTCardAwardsAddInput" />
+            <output message="tns:EFTCardAwardsAddOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="EFTCardHouseHoldSrch">
+            <input message="tns:EFTCardHouseHoldSrchInput" />
+            <output message="tns:EFTCardHouseHoldSrchOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="EFTCardAwardsInq">
+            <input message="tns:EFTCardAwardsInqInput" />
+            <output message="tns:EFTCardAwardsInqOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+        <operation name="EFTCardAwardsMod">
+            <input message="tns:EFTCardAwardsModInput" />
+            <output message="tns:EFTCardAwardsModOutput" />
+            <fault name="Fault" message="tns:MessageFault" />
+        </operation>
+
+    </portType>
+
+    <!-- This starts the Binding section  -->
+
+    <binding name="CustomerServiceSoapBinding" type="tns:CustomerService">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+
+        <operation name="Ping">
+            <soap:operation soapAction="http://jenrique.com/ws/Ping" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CustInq">
+            <soap:operation soapAction="http://jenrique.com/ws/CustInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CustSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/CustSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CustMsgSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/CustMsgSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CustAdd">
+            <soap:operation soapAction="http://jenrique.com/ws/CustAdd" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="AddrSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/AddrSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="AddrMod">
+            <soap:operation soapAction="http://jenrique.com/ws/AddrMod" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="AddrAdd">
+            <soap:operation soapAction="http://jenrique.com/ws/AddrAdd" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CustRelAdd">
+            <soap:operation soapAction="http://jenrique.com/ws/CustRelAdd" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CustRelMod">
+            <soap:operation soapAction="http://jenrique.com/ws/CustRelMod" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CustMod">
+            <soap:operation soapAction="http://jenrique.com/ws/CustMod" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="SvcDft">
+            <soap:operation soapAction="http://jenrique.com/ws/SvcDft" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="IdVerifyAdd">
+            <soap:operation soapAction="http://jenrique.com/ws/IdVerifyAdd" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="IdVerifyMod">
+            <soap:operation soapAction="http://jenrique.com/ws/IdVerifyMod" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="ParmValSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/ParmValSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="AcctIdGen">
+            <soap:operation soapAction="http://jenrique.com/ws/AcctIdGen" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="EFTCardAdd">
+            <soap:operation soapAction="http://jenrique.com/ws/EFTCardAdd" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="EFTCardAcctIdAdd">
+            <soap:operation soapAction="http://jenrique.com/ws/EFTCardAcctIdAdd" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="IntnetFinInstIdAdd">
+            <soap:operation soapAction="http://jenrique.com/ws/IntnetFinInstIdAdd" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="IntnetFinInstAcctIdAdd">
+            <soap:operation soapAction="http://jenrique.com/ws/IntnetFinInstAcctIdAdd" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CustMsgAdd">
+            <soap:operation soapAction="http://jenrique.com/ws/CustMsgAdd" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CustMsgMod">
+            <soap:operation soapAction="http://jenrique.com/ws/CustMsgMod" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="IntYieldInq">
+            <soap:operation soapAction="http://jenrique.com/ws/IntYieldInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="IntRateSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/IntRateSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="EFTCardMod">
+            <soap:operation soapAction="http://jenrique.com/ws/EFTCardMod" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="UsrEnrollInq">
+            <soap:operation soapAction="http://jenrique.com/ws/UsrEnrollInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="EFTCardAddValidate">
+            <soap:operation soapAction="http://jenrique.com/ws/EFTCardAddValidate" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="IntnetFinInstIdAddValidate">
+            <soap:operation soapAction="http://jenrique.com/ws/IntnetFinInstIdAddValidate" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="IntnetFinInstAcctIdAddValidate">
+            <soap:operation soapAction="http://jenrique.com/ws/IntnetFinInstAcctIdAddValidate" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="EFTCardInq">
+            <soap:operation soapAction="http://jenrique.com/ws/EFTCardInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="EmplAppAdd">
+            <soap:operation soapAction="http://jenrique.com/ws/EmplAppAdd" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="EFTCardSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/EFTCardSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="SvcDictSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/SvcDictSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="IntnetFinInstIdInq">
+            <soap:operation soapAction="http://jenrique.com/ws/IntnetFinInstIdInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="IntnetFinInstIdUsrInq">
+            <soap:operation soapAction="http://jenrique.com/ws/IntnetFinInstIdUsrInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="AddrInq">
+            <soap:operation soapAction="http://jenrique.com/ws/AddrInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CustMsgInq">
+            <soap:operation soapAction="http://jenrique.com/ws/CustMsgInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CustCollatSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/CustCollatSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="EFTCardUsrAuthInq">
+            <soap:operation soapAction="http://jenrique.com/ws/EFTCardUsrAuthInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CustRelAddValidate">
+            <soap:operation soapAction="http://jenrique.com/ws/CustRelAddValidate" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="IntnetFinInstIdMod">
+            <soap:operation soapAction="http://jenrique.com/ws/IntnetFinInstIdMod" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="IntnetFinInstIdUsrMod">
+            <soap:operation soapAction="http://jenrique.com/ws/IntnetFinInstIdUsrMod" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CRMCustSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/CRMCustSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CRMReferSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/CRMReferSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CRMMktCmpgnSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/CRMMktCmpgnSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CRMPotSaleSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/CRMPotSaleSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CRMEventSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/CRMEventSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CRMActSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/CRMActSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CRMProspSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/CRMProspSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CRMProspInq">
+            <soap:operation soapAction="http://jenrique.com/ws/CRMProspInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="PersonNameMod">
+            <soap:operation soapAction="http://jenrique.com/ws/PersonNameMod" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="EFTCardOrderAdd">
+            <soap:operation soapAction="http://jenrique.com/ws/EFTCardOrderAdd" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="EFTCardPINOffSetMod">
+            <soap:operation soapAction="http://jenrique.com/ws/EFTCardPINOffSetMod" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CRMEventInq">
+            <soap:operation soapAction="http://jenrique.com/ws/CRMEventInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CRMEventAdd">
+            <soap:operation soapAction="http://jenrique.com/ws/CRMEventAdd" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CRMEventMod">
+            <soap:operation soapAction="http://jenrique.com/ws/CRMEventMod" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CRMReferInq">
+            <soap:operation soapAction="http://jenrique.com/ws/CRMReferInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CRMReferAdd">
+            <soap:operation soapAction="http://jenrique.com/ws/CRMReferAdd" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CRMReferMod">
+            <soap:operation soapAction="http://jenrique.com/ws/CRMReferMod" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CRMActInq">
+            <soap:operation soapAction="http://jenrique.com/ws/CRMActInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CRMActMod">
+            <soap:operation soapAction="http://jenrique.com/ws/CRMActMod" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CRMActAdd">
+            <soap:operation soapAction="http://jenrique.com/ws/CRMActAdd" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="IntRateInq">
+            <soap:operation soapAction="http://jenrique.com/ws/IntRateInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="IntRateAdd">
+            <soap:operation soapAction="http://jenrique.com/ws/IntRateAdd" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="IntRateMod">
+            <soap:operation soapAction="http://jenrique.com/ws/IntRateMod" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="PltfmProdSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/PltfmProdSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CRMProspAdd">
+            <soap:operation soapAction="http://jenrique.com/ws/CRMProspAdd" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CRMProspMod">
+            <soap:operation soapAction="http://jenrique.com/ws/CRMProspMod" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="PltfmProdInq">
+            <soap:operation soapAction="http://jenrique.com/ws/PltfmProdInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="IntnetFinInstIdAcctAccessInq">
+            <soap:operation soapAction="http://jenrique.com/ws/IntnetFinInstIdAcctAccessInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="LnPltfmProdSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/LnPltfmProdSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="LnUnvIdGen">
+            <soap:operation soapAction="http://jenrique.com/ws/LnUnvIdGen" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CustAcctRelInq">
+            <soap:operation soapAction="http://jenrique.com/ws/CustAcctRelInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="PltfmDocInq">
+            <soap:operation soapAction="http://jenrique.com/ws/PltfmDocInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="PltfmDocStatInq">
+            <soap:operation soapAction="http://jenrique.com/ws/PltfmDocStatInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="PltfmEntityValidate">
+            <soap:operation soapAction="http://jenrique.com/ws/PltfmEntityValidate" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CRMCustInq">
+            <soap:operation soapAction="http://jenrique.com/ws/CRMCustInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CardAlrtSubAdd">
+            <soap:operation soapAction="http://jenrique.com/ws/CardAlrtSubAdd" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CardAlrtSubMod">
+            <soap:operation soapAction="http://jenrique.com/ws/CardAlrtSubMod" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CardAlrtMod">
+            <soap:operation soapAction="http://jenrique.com/ws/CardAlrtMod" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CardAlrtSubInq">
+            <soap:operation soapAction="http://jenrique.com/ws/CardAlrtSubInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="BenflOwnSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/BenflOwnSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="LobbyQueAdd">
+            <soap:operation soapAction="http://jenrique.com/ws/LobbyQueAdd" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="LobbyQueSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/LobbyQueSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="LobbyQueInq">
+            <soap:operation soapAction="http://jenrique.com/ws/LobbyQueInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="LobbyQueMod">
+            <soap:operation soapAction="http://jenrique.com/ws/LobbyQueMod" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CardAlrtNotfInq">
+            <soap:operation soapAction="http://jenrique.com/ws/CardAlrtNotfInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="PltfmBusEntityValidate">
+            <soap:operation soapAction="http://jenrique.com/ws/PltfmBusEntityValidate" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="EFTCardAddrSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/EFTCardAddrSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="EFTCardMsgSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/EFTCardMsgSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="EFTCardMsgAdd">
+            <soap:operation soapAction="http://jenrique.com/ws/EFTCardMsgAdd" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="EFTCardMsgMod">
+            <soap:operation soapAction="http://jenrique.com/ws/EFTCardMsgMod" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="IntnetFinInstIdFileMainSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/IntnetFinInstIdFileMainSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="EFTCardPINModInit">
+            <soap:operation soapAction="http://jenrique.com/ws/EFTCardPINModInit" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="EFTCardPINMod">
+            <soap:operation soapAction="http://jenrique.com/ws/EFTCardPINMod" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CustRelInq">
+            <soap:operation soapAction="http://jenrique.com/ws/CustRelInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="IdVerifCmntAdd">
+            <soap:operation soapAction="http://jenrique.com/ws/IdVerifCmntAdd" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="EFTCardFileMainSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/EFTCardFileMainSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CustInfoMsgInq">
+            <soap:operation soapAction="http://jenrique.com/ws/CustInfoMsgInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CustIncmInq">
+            <soap:operation soapAction="http://jenrique.com/ws/CustIncmInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="TeaserRateAdd">
+            <soap:operation soapAction="http://jenrique.com/ws/TeaserRateAdd" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="TeaserRateSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/TeaserRateSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="TeaserRateInq">
+            <soap:operation soapAction="http://jenrique.com/ws/TeaserRateInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="TeaserRateMod">
+            <soap:operation soapAction="http://jenrique.com/ws/TeaserRateMod" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="InstDefFldSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/InstDefFldSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="InstDefFldInq">
+            <soap:operation soapAction="http://jenrique.com/ws/InstDefFldInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="InstDefFldMod">
+            <soap:operation soapAction="http://jenrique.com/ws/InstDefFldMod" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CRMClientRelDataInq">
+            <soap:operation soapAction="http://jenrique.com/ws/CRMClientRelDataInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="CRMClientRelDataMod">
+            <soap:operation soapAction="http://jenrique.com/ws/CRMClientRelDataMod" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="EFTCardAwardsAdd">
+            <soap:operation soapAction="http://jenrique.com/ws/EFTCardAwardsAdd" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="EFTCardHouseHoldSrch">
+            <soap:operation soapAction="http://jenrique.com/ws/EFTCardHouseHoldSrch" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="EFTCardAwardsInq">
+            <soap:operation soapAction="http://jenrique.com/ws/EFTCardAwardsInq" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="EFTCardAwardsMod">
+            <soap:operation soapAction="http://jenrique.com/ws/EFTCardAwardsMod" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="Fault">
+                <soap:fault name="Fault" use="literal" />
+            </fault>
+        </operation>
+
+    </binding>
+
+    <!-- This starts the Service section  -->
+
+    <service name="CustomerService">
+        <documentation>Service Description for the CustomerService Interface</documentation>
+        <port name="CustomerServiceSoap" binding="tns:CustomerServiceSoapBinding">
+            <soap:address location="https://jxtest.jenrique.com/jxchange/2008/ServiceGateway/Customer.svc" />
+        </port>
+    </service>
+</definitions>

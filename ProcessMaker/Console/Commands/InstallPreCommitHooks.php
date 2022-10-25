@@ -73,10 +73,13 @@ class InstallPreCommitHooks extends Command
             unlink($hookPath);
         }
 
-        symlink(
-            base_path('.pre-commit'),
-            $hookPath
-        );
+        try {
+            symlink(
+                base_path('.pre-commit'),
+                $hookPath
+            );
+        } catch(\ErrorException $e) {
+        }
     }
 
     private function addConfig($configDir)
@@ -85,9 +88,13 @@ class InstallPreCommitHooks extends Command
         if (file_exists($configPath)) {
             unlink($configPath);
         }
-        symlink(
-            base_path('.php-cs-fixer.php'),
-            $configPath
-        );
+
+        try {
+            symlink(
+                base_path('.php-cs-fixer.php'),
+                $configPath
+            );
+        } catch(\ErrorException $e) {
+        }
     }
 }

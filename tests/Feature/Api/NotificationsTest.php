@@ -53,7 +53,7 @@ class NotificationsTest extends TestCase
     {
         $existing = Notification::count();
 
-        factory(Notification::class, 10)->create([
+        Notification::factory()->count(10)->create([
             'notifiable_type' => User::class,
             'notifiable_id' => $this->user->id,
         ]);
@@ -78,7 +78,7 @@ class NotificationsTest extends TestCase
      */
     public function testNotificationListDates()
     {
-        $newEntity = factory(Notification::class)->create([
+        $newEntity = Notification::factory()->create([
             'notifiable_type' => User::class,
             'notifiable_id' => $this->user->id,
         ]);
@@ -102,7 +102,7 @@ class NotificationsTest extends TestCase
     public function testGetNotification()
     {
         //get the id from the factory
-        $notification = factory(Notification::class)->create()->id;
+        $notification = Notification::factory()->create()->id;
 
         //load api
         $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $notification);
@@ -119,7 +119,7 @@ class NotificationsTest extends TestCase
      */
     public function testUpdateNotification()
     {
-        $url = self::API_TEST_URL . '/' . factory(Notification::class)->create()->id;
+        $url = self::API_TEST_URL . '/' . Notification::factory()->create()->id;
 
         //Load the starting notification data
         $verify = $this->apiCall('GET', $url);
@@ -145,7 +145,7 @@ class NotificationsTest extends TestCase
     public function testDeleteNotification()
     {
         //Remove notification
-        $url = self::API_TEST_URL . '/' . factory(Notification::class)->create()->id;
+        $url = self::API_TEST_URL . '/' . Notification::factory()->create()->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code
@@ -158,7 +158,7 @@ class NotificationsTest extends TestCase
     public function testDeleteNotificationNotExist()
     {
         //Notification not exist
-        $url = self::API_TEST_URL . '/' . factory(Notification::class)->make()->id;
+        $url = self::API_TEST_URL . '/' . Notification::factory()->make()->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code

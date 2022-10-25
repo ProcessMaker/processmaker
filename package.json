@@ -1,6 +1,6 @@
 {
     "name": "@processmaker/processmaker",
-    "version": "4.2.35",
+    "version": "4.3.0-RC1",
     "description": "ProcessMaker 4",
     "author": "DevOps <devops@processmaker.com>",
     "license": "ISC",
@@ -9,12 +9,12 @@
     "scripts": {
         "postinstall": "mkdir -p public/css/precompiled && cp -rf node_modules/npm-font-open-sans public/css/precompiled/npm-font-open-sans && cp -rf node_modules/bootstrap/scss public/css/precompiled/bootstrap && cp -rf node_modules/@fortawesome/fontawesome-free public/css/precompiled/fontawesome-free && cp -rf node_modules/@processmaker/vue-multiselect/dist/vue-multiselect.min.css public/css/precompiled",
         "dev": "npm run development",
-        "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-        "watch": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-        "watch-poll": "npm run watch -- --watch-poll",
-        "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
+        "development": "mix",
+        "watch": "mix watch",
+        "watch-poll": "mix watch -- --watch-options-poll=1000",
+        "hot": "mix watch --hot",
         "prod": "npm run production",
-        "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+        "production": "mix --production",
         "test": "cross-env NODE_ENV=test jest",
         "test-watch": "npm run test -- --watch --notify",
         "lint": "eslint --fix --ignore-path .eslintignore resources/",
@@ -22,15 +22,7 @@
         "e2e:open": "cypress open"
     },
     "devDependencies": {
-        "@babel/core": "^7.15.8",
-        "@babel/eslint-parser": "^7.15.8",
-        "@vue/test-utils": "^1.1.1",
         "accounting": "^0.4.1",
-        "babel-jest": "^22.4.4",
-        "babel-loader": "^8.2.4",
-        "babel-plugin-transform-runtime": "^6.23.0",
-        "babel-preset-es2015": "^6.24.1",
-        "babel-preset-stage-2": "^6.24.1",
         "chartjs-plugin-colorschemes": "^0.4.0",
         "cross-env": "^7.0.3",
         "cypress": "^9.5.4",
@@ -40,19 +32,15 @@
         "eslint-plugin-import": "^2.25.2",
         "eslint-plugin-jest": "^26.1.5",
         "eslint-plugin-vue": "^7.20.0",
-        "jest": "^22.4.4",
-        "jquery": "^3.5.1",
         "js-yaml-loader": "^1.2.2",
-        "laravel-mix": "^5.0.9",
+        "laravel-mix": "^6.0.49",
         "moment": "^2.29.1",
         "moment-timezone": "^0.5.31",
         "resolve-url-loader": "^3.1.2",
-        "sass": "^1.29.0",
-        "sass-loader": "^8.0.2",
-        "vue-jest": "^2.6.0"
+        "sass-loader": "^12.6.0",
+        "vue-loader": "^15.10.0"
     },
     "dependencies": {
-        "@babel/runtime": "^7.12.5",
         "@fortawesome/fontawesome-free": "^5.15.1",
         "@fortawesome/fontawesome-svg-core": "^1.2.32",
         "@fortawesome/free-brands-svg-icons": "^5.15.1",
@@ -61,9 +49,10 @@
         "@panter/vue-i18next": "^0.15.2",
         "@processmaker/modeler": "1.23.0",
         "@processmaker/processmaker-bpmn-moddle": "0.13.0",
-        "@processmaker/screen-builder": "2.50.0",
-        "@processmaker/vue-form-elements": "0.40.0",
+        "@processmaker/screen-builder": "2.60.0",
+        "@processmaker/vue-form-elements": "0.41.1",
         "@processmaker/vue-multiselect": "2.2.0",
+        "autoprefixer": "10.4.5",
         "axios": "^0.27.2",
         "bootstrap": "^4.5.3",
         "bootstrap-vue": "^2.18.1",
@@ -80,8 +69,8 @@
         "laravel-echo-server": "^1.6.1",
         "lodash": "^4.17.21",
         "luxon": "^1.25.0",
-        "monaco-editor": "^0.20.0",
-        "monaco-editor-webpack-plugin": "^1.9.1",
+        "monaco-editor": "^0.34.0",
+        "monaco-editor-webpack-plugin": "^7.0.1",
         "npm-font-open-sans": "^1.1.0",
         "phpunserialize": "^1.0.1",
         "popper.js": "^1.16.1",
@@ -136,7 +125,7 @@
         "coverageDirectory": "<rootDir>/tests/js/coverage"
     },
     "engines": {
-        "npm": ">=8",
-        "node": ">=16 <18"
+        "npm": "~8.9",
+        "node": "~16.15"
     }
 }

@@ -1,13 +1,15 @@
 <?php
+
 namespace ProcessMaker\ImportExport;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
-class MigrationHelper {
-    
-    public function addUuidsToTables($tables) {
+class MigrationHelper
+{
+    public function addUuidsToTables($tables)
+    {
         foreach ($tables as $table) {
             if (!Schema::hasColumn($table, 'uuid')) {
                 Schema::table($table, function (Blueprint $table) {
@@ -16,8 +18,9 @@ class MigrationHelper {
             }
         }
     }
-    
-    public function removeUuidsFromTables($tables) {
+
+    public function removeUuidsFromTables($tables)
+    {
         foreach ($tables as $table) {
             if (Schema::hasColumn($table, 'uuid')) {
                 Schema::table($table, function (Blueprint $table) {
@@ -29,17 +32,17 @@ class MigrationHelper {
 
     public function populateUuids($tables)
     {
-        foreach($tables as $table) {
+        foreach ($tables as $table) {
             \DB::table($table)
              ->select('id')
              ->where('uuid', '=', null)
-             ->orderBy('id')->chunkById(1000, function($rows) use ($table) {
+             ->orderBy('id')->chunkById(1000, function ($rows) use ($table) {
                  $count = count($rows);
                  foreach ($rows as $row) {
                      $uuid = (string) Str::orderedUuid();
                      \DB::statement("update `$table` set `uuid` = ? where `id` = ?", [$uuid, $row->id]);
                  }
              });
-         }
+        }
     }
 }
