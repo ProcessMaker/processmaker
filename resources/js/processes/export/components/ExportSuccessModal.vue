@@ -48,7 +48,7 @@ export default {
   data() {
       return {
         disabled: false,
-        advancedExport: true,
+        advancedExport: false,
         nonExportedAssets: {},
       }
   },
