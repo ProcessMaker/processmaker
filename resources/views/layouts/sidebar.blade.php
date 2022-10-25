@@ -1,6 +1,7 @@
+@if ($sidebar && $sidebar->all()->count())
 <nav aria-label="Sidebar" id="sidebar-inner" class="d-flex h-100 align-items-start flex-column" :class="{ closed: !expanded, open: expanded }">
   <ul class="mb-auto w-100">
-      <li v-if="expanded === true" v-cloak class="logo">
+      <li v-if="expanded === true" v-cloak class="logo"> {{ $sidebar->count() }}
       <a href="/" aria-label="{{ config('logo-alt-text', 'ProcessMaker') }}">
           @php
             $logo = \ProcessMaker\Models\Setting::getLogo();
@@ -16,14 +17,14 @@
           <img src={{$icon}} alt="{{ config('logo-alt-text', 'ProcessMaker') }}">
         </a>
       </li>
-      @if ($sidebar)
-        @foreach($sidebar->topMenu()->items as $section)
-          <li class="section" v-if="expanded === true" aria-label="{{$section->title}}" v-cloak>{{$section->title}}</li>
-          @foreach($section->children() as $item)
-            <sidebaricon :item='@lavaryMenuJson($item)'></sidebaricon>
-          @endforeach
-        @endforeach
-      @endif
+
+    @foreach($sidebar->topMenu()->items as $section)
+      <li class="section" v-if="expanded === true" aria-label="{{$section->title}}" v-cloak>{{$section->title}}</li>
+      @foreach($section->children() as $item)
+        <sidebaricon :item='@lavaryMenuJson($item)'></sidebaricon>
+      @endforeach
+    @endforeach
+
     </ul>
   <div class="w-100" v-cloak>
     <div
@@ -55,3 +56,5 @@
     </div>
   </div>
 </nav>
+@endif
+
