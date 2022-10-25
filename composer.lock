@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0cfe60dbb8bc4a80a2af8b474a51d82e",
+    "content-hash": "94d8bcd13e1b847aea06138fdd45456d",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -798,23 +798,23 @@
         },
         {
             "name": "doctrine/dbal",
-            "version": "3.5.1",
+            "version": "3.4.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "f38ee8aaca2d58ee88653cb34a6a3880c23f38a5"
+                "reference": "a5a58773109c0abb13e658c8ccd92aeec8d07f9e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/f38ee8aaca2d58ee88653cb34a6a3880c23f38a5",
-                "reference": "f38ee8aaca2d58ee88653cb34a6a3880c23f38a5",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/a5a58773109c0abb13e658c8ccd92aeec8d07f9e",
+                "reference": "a5a58773109c0abb13e658c8ccd92aeec8d07f9e",
                 "shasum": ""
             },
             "require": {
                 "composer-runtime-api": "^2",
                 "doctrine/cache": "^1.11|^2.0",
                 "doctrine/deprecations": "^0.5.3|^1",
-                "doctrine/event-manager": "^1|^2",
+                "doctrine/event-manager": "^1.0",
                 "php": "^7.4 || ^8.0",
                 "psr/cache": "^1|^2|^3",
                 "psr/log": "^1|^2|^3"
@@ -822,14 +822,14 @@
             "require-dev": {
                 "doctrine/coding-standard": "10.0.0",
                 "jetbrains/phpstorm-stubs": "2022.2",
-                "phpstan/phpstan": "1.8.10",
-                "phpstan/phpstan-strict-rules": "^1.4",
-                "phpunit/phpunit": "9.5.25",
+                "phpstan/phpstan": "1.8.3",
+                "phpstan/phpstan-strict-rules": "^1.3",
+                "phpunit/phpunit": "9.5.24",
                 "psalm/plugin-phpunit": "0.17.0",
                 "squizlabs/php_codesniffer": "3.7.1",
                 "symfony/cache": "^5.4|^6.0",
                 "symfony/console": "^4.4|^5.4|^6.0",
-                "vimeo/psalm": "4.29.0"
+                "vimeo/psalm": "4.27.0"
             },
             "suggest": {
                 "symfony/console": "For helpful console commands such as SQL execution and import of files."
@@ -889,7 +889,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/dbal/issues",
-                "source": "https://github.com/doctrine/dbal/tree/3.5.1"
+                "source": "https://github.com/doctrine/dbal/tree/3.4.5"
             },
             "funding": [
                 {
@@ -905,7 +905,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-10-24T07:26:18+00:00"
+            "time": "2022-09-23T17:48:57+00:00"
         },
         {
             "name": "doctrine/deprecations",
@@ -952,29 +952,30 @@
         },
         {
             "name": "doctrine/event-manager",
-            "version": "2.0.0",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/event-manager.git",
-                "reference": "750671534e0241a7c50ea5b43f67e23eb5c96f32"
+                "reference": "95aa4cb529f1e96576f3fda9f5705ada4056a520"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/event-manager/zipball/750671534e0241a7c50ea5b43f67e23eb5c96f32",
-                "reference": "750671534e0241a7c50ea5b43f67e23eb5c96f32",
+                "url": "https://api.github.com/repos/doctrine/event-manager/zipball/95aa4cb529f1e96576f3fda9f5705ada4056a520",
+                "reference": "95aa4cb529f1e96576f3fda9f5705ada4056a520",
                 "shasum": ""
             },
             "require": {
-                "php": "^8.1"
+                "doctrine/deprecations": "^0.5.3 || ^1",
+                "php": "^7.1 || ^8.0"
             },
             "conflict": {
                 "doctrine/common": "<2.9"
             },
             "require-dev": {
-                "doctrine/coding-standard": "^10",
-                "phpstan/phpstan": "^1.8.8",
-                "phpunit/phpunit": "^9.5",
-                "vimeo/psalm": "^4.28"
+                "doctrine/coding-standard": "^9 || ^10",
+                "phpstan/phpstan": "~1.4.10 || ^1.8.8",
+                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.5",
+                "vimeo/psalm": "^4.24"
             },
             "type": "library",
             "autoload": {
@@ -1023,7 +1024,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/event-manager/issues",
-                "source": "https://github.com/doctrine/event-manager/tree/2.0.0"
+                "source": "https://github.com/doctrine/event-manager/tree/1.2.0"
             },
             "funding": [
                 {
@@ -1039,27 +1040,27 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-10-12T20:59:15+00:00"
+            "time": "2022-10-12T20:51:15+00:00"
         },
         {
             "name": "doctrine/inflector",
-            "version": "2.0.6",
+            "version": "2.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/inflector.git",
-                "reference": "d9d313a36c872fd6ee06d9a6cbcf713eaa40f024"
+                "reference": "ade2b3bbfb776f27f0558e26eed43b5d9fe1b392"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/inflector/zipball/d9d313a36c872fd6ee06d9a6cbcf713eaa40f024",
-                "reference": "d9d313a36c872fd6ee06d9a6cbcf713eaa40f024",
+                "url": "https://api.github.com/repos/doctrine/inflector/zipball/ade2b3bbfb776f27f0558e26eed43b5d9fe1b392",
+                "reference": "ade2b3bbfb776f27f0558e26eed43b5d9fe1b392",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.2 || ^8.0"
             },
             "require-dev": {
-                "doctrine/coding-standard": "^10",
+                "doctrine/coding-standard": "^9",
                 "phpstan/phpstan": "^1.8",
                 "phpstan/phpstan-phpunit": "^1.1",
                 "phpstan/phpstan-strict-rules": "^1.3",
@@ -1114,7 +1115,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/inflector/issues",
-                "source": "https://github.com/doctrine/inflector/tree/2.0.6"
+                "source": "https://github.com/doctrine/inflector/tree/2.0.5"
             },
             "funding": [
                 {
@@ -1130,7 +1131,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-10-20T09:10:12+00:00"
+            "time": "2022-09-07T09:01:28+00:00"
         },
         {
             "name": "doctrine/lexer",
@@ -1720,16 +1721,16 @@
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.272.0",
+            "version": "v0.271.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-api-php-client-services.git",
-                "reference": "52b494231f6b531983d12aefac057d0eeec2861c"
+                "reference": "3ab645dbdd0e511ba4c7a937fb4dc764e861ed6a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/52b494231f6b531983d12aefac057d0eeec2861c",
-                "reference": "52b494231f6b531983d12aefac057d0eeec2861c",
+                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/3ab645dbdd0e511ba4c7a937fb4dc764e861ed6a",
+                "reference": "3ab645dbdd0e511ba4c7a937fb4dc764e861ed6a",
                 "shasum": ""
             },
             "require": {
@@ -1758,9 +1759,9 @@
             ],
             "support": {
                 "issues": "https://github.com/googleapis/google-api-php-client-services/issues",
-                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.272.0"
+                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.271.0"
             },
-            "time": "2022-10-21T01:18:13+00:00"
+            "time": "2022-10-15T00:58:16+00:00"
         },
         {
             "name": "google/auth",
@@ -2096,16 +2097,16 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "2.4.2",
+            "version": "2.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "3148458748274be1546f8f2809a6c09fe66f44aa"
+                "reference": "69568e4293f4fa993f3b0e51c9723e1e17c41379"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/3148458748274be1546f8f2809a6c09fe66f44aa",
-                "reference": "3148458748274be1546f8f2809a6c09fe66f44aa",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/69568e4293f4fa993f3b0e51c9723e1e17c41379",
+                "reference": "69568e4293f4fa993f3b0e51c9723e1e17c41379",
                 "shasum": ""
             },
             "require": {
@@ -2195,7 +2196,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
-                "source": "https://github.com/guzzle/psr7/tree/2.4.2"
+                "source": "https://github.com/guzzle/psr7/tree/2.4.1"
             },
             "funding": [
                 {
@@ -2211,7 +2212,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-10-25T13:49:28+00:00"
+            "time": "2022-08-28T14:45:39+00:00"
         },
         {
             "name": "igaster/laravel-theme",
@@ -2535,16 +2536,16 @@
         },
         {
             "name": "laravel/horizon",
-            "version": "v5.10.3",
+            "version": "v5.10.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/horizon.git",
-                "reference": "22403726851d62c45051114c89106130c348decc"
+                "reference": "de84bf86ffee940fa92e29c54d41618048ec9b6f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/horizon/zipball/22403726851d62c45051114c89106130c348decc",
-                "reference": "22403726851d62c45051114c89106130c348decc",
+                "url": "https://api.github.com/repos/laravel/horizon/zipball/de84bf86ffee940fa92e29c54d41618048ec9b6f",
+                "reference": "de84bf86ffee940fa92e29c54d41618048ec9b6f",
                 "shasum": ""
             },
             "require": {
@@ -2606,9 +2607,9 @@
             ],
             "support": {
                 "issues": "https://github.com/laravel/horizon/issues",
-                "source": "https://github.com/laravel/horizon/tree/v5.10.3"
+                "source": "https://github.com/laravel/horizon/tree/v5.10.2"
             },
-            "time": "2022-10-14T13:33:44+00:00"
+            "time": "2022-09-26T13:45:51+00:00"
         },
         {
             "name": "laravel/passport",
@@ -2821,16 +2822,16 @@
         },
         {
             "name": "laravel/telescope",
-            "version": "v4.9.5",
+            "version": "v4.9.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/telescope.git",
-                "reference": "a316d6d15793b559c51ccb4b5dc59b223da500e5"
+                "reference": "ca8bec380ecef80d00ce6daecac2dc17c7e35ccd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/telescope/zipball/a316d6d15793b559c51ccb4b5dc59b223da500e5",
-                "reference": "a316d6d15793b559c51ccb4b5dc59b223da500e5",
+                "url": "https://api.github.com/repos/laravel/telescope/zipball/ca8bec380ecef80d00ce6daecac2dc17c7e35ccd",
+                "reference": "ca8bec380ecef80d00ce6daecac2dc17c7e35ccd",
                 "shasum": ""
             },
             "require": {
@@ -2883,9 +2884,9 @@
             ],
             "support": {
                 "issues": "https://github.com/laravel/telescope/issues",
-                "source": "https://github.com/laravel/telescope/tree/v4.9.5"
+                "source": "https://github.com/laravel/telescope/tree/v4.9.4"
             },
-            "time": "2022-10-06T14:01:10+00:00"
+            "time": "2022-10-03T14:55:50+00:00"
         },
         {
             "name": "laravel/tinker",
@@ -4145,16 +4146,16 @@
         },
         {
             "name": "microsoft/microsoft-graph",
-            "version": "1.81.0",
+            "version": "1.77.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/microsoftgraph/msgraph-sdk-php.git",
-                "reference": "951515671eb167f417903bf4b23af6d49fcbfb76"
+                "reference": "4e505f208c5d95d08560aaa8d4f6b8c81cd96222"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/microsoftgraph/msgraph-sdk-php/zipball/951515671eb167f417903bf4b23af6d49fcbfb76",
-                "reference": "951515671eb167f417903bf4b23af6d49fcbfb76",
+                "url": "https://api.github.com/repos/microsoftgraph/msgraph-sdk-php/zipball/4e505f208c5d95d08560aaa8d4f6b8c81cd96222",
+                "reference": "4e505f208c5d95d08560aaa8d4f6b8c81cd96222",
                 "shasum": ""
             },
             "require": {
@@ -4190,9 +4191,9 @@
             "homepage": "https://developer.microsoft.com/en-us/graph",
             "support": {
                 "issues": "https://github.com/microsoftgraph/msgraph-sdk-php/issues",
-                "source": "https://github.com/microsoftgraph/msgraph-sdk-php/tree/1.81.0"
+                "source": "https://github.com/microsoftgraph/msgraph-sdk-php/tree/1.77.0"
             },
-            "time": "2022-10-25T13:05:29+00:00"
+            "time": "2022-09-28T09:07:44+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -5605,16 +5606,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "3.0.17",
+            "version": "3.0.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "dbc2307d5c69aeb22db136c52e91130d7f2ca761"
+                "reference": "7181378909ed8890be4db53d289faac5b77f8b05"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/dbc2307d5c69aeb22db136c52e91130d7f2ca761",
-                "reference": "dbc2307d5c69aeb22db136c52e91130d7f2ca761",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/7181378909ed8890be4db53d289faac5b77f8b05",
+                "reference": "7181378909ed8890be4db53d289faac5b77f8b05",
                 "shasum": ""
             },
             "require": {
@@ -5695,7 +5696,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpseclib/phpseclib/issues",
-                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.17"
+                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.16"
             },
             "funding": [
                 {
@@ -5711,7 +5712,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-10-24T10:51:50+00:00"
+            "time": "2022-09-05T18:03:08+00:00"
         },
         {
             "name": "pion/laravel-chunk-upload",
@@ -5853,10 +5854,16 @@
         {
             "name": "processmaker/docker-executor-lua",
             "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/docker-executor-lua.git",
+                "reference": "2278b68b63bbce34ce37cf538b43a724304f9562"
+            },
             "dist": {
-                "type": "path",
-                "url": "/Users/sanjacornelius/Documents/processmaker-plugins/docker-executor-lua",
-                "reference": "fecc182ae486f4a077a7e4ab9054371c4236b171"
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-lua/zipball/2278b68b63bbce34ce37cf538b43a724304f9562",
+                "reference": "2278b68b63bbce34ce37cf538b43a724304f9562",
+                "shasum": ""
             },
             "type": "library",
             "extra": {
@@ -5868,26 +5875,31 @@
             },
             "autoload": {
                 "psr-4": {
-                    "ProcessMaker\\Package\\DockerExecutorLua\\": "src",
-                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
+                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners",
+                    "ProcessMaker\\Package\\DockerExecutorLua\\": "src"
                 }
             },
-            "license": [
-                "GAGPL-3.0-or-later"
-            ],
+            "notification-url": "https://packagist.org/downloads/",
             "description": "Lua script executor for processmaker 4",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "issues": "https://github.com/ProcessMaker/docker-executor-lua/issues",
+                "source": "https://github.com/ProcessMaker/docker-executor-lua/tree/v1.0.0"
+            },
+            "time": "2020-03-31T21:45:44+00:00"
         },
         {
             "name": "processmaker/docker-executor-node",
-            "version": "1.0.2",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/docker-executor-node.git",
+                "reference": "e61f24090422f890cb227bc94a4461438f3ec9a6"
+            },
             "dist": {
-                "type": "path",
-                "url": "/Users/sanjacornelius/Documents/processmaker-plugins/docker-executor-node",
-                "reference": "81f404c9742e4b038f2304f68e63b1143250f311"
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-node/zipball/e61f24090422f890cb227bc94a4461438f3ec9a6",
+                "reference": "e61f24090422f890cb227bc94a4461438f3ec9a6",
+                "shasum": ""
             },
             "type": "library",
             "extra": {
@@ -5899,26 +5911,34 @@
             },
             "autoload": {
                 "psr-4": {
-                    "ProcessMaker\\Package\\DockerExecutorNode\\": "src",
-                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
+                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners",
+                    "ProcessMaker\\Package\\DockerExecutorNode\\": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GAGPL-3.0-or-later"
             ],
             "description": "Javascript script executor for processmaker 4",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "issues": "https://github.com/ProcessMaker/docker-executor-node/issues",
+                "source": "https://github.com/ProcessMaker/docker-executor-node/tree/v1.0.1"
+            },
+            "time": "2020-07-02T22:53:17+00:00"
         },
         {
             "name": "processmaker/docker-executor-php",
             "version": "1.0.1",
-            "dist": {
-                "type": "path",
-                "url": "/Users/sanjacornelius/Documents/processmaker-plugins/docker-executor-php",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/docker-executor-php.git",
                 "reference": "fa170f095279f6f0a55361d33ac177a6e0331310"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-php/zipball/fa170f095279f6f0a55361d33ac177a6e0331310",
+                "reference": "fa170f095279f6f0a55361d33ac177a6e0331310",
+                "shasum": ""
             },
             "type": "library",
             "extra": {
@@ -5930,30 +5950,39 @@
             },
             "autoload": {
                 "psr-4": {
-                    "ProcessMaker\\Package\\DockerExecutorPhp\\": "src",
-                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
+                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners",
+                    "ProcessMaker\\Package\\DockerExecutorPhp\\": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GAGPL-3.0-or-later"
             ],
             "description": "PHP script executor for processmaker 4",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "issues": "https://github.com/ProcessMaker/docker-executor-php/issues",
+                "source": "https://github.com/ProcessMaker/docker-executor-php/tree/v1.0.1"
+            },
+            "time": "2022-07-05T20:26:35+00:00"
         },
         {
             "name": "processmaker/laravel-i18next",
             "version": "dev-master",
-            "dist": {
-                "type": "path",
-                "url": "/Users/sanjacornelius/Documents/processmaker-plugins/laravel-i18next",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/laravel-i18next.git",
                 "reference": "f950a439a75cd69c06235213ef9b776f29a78573"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/laravel-i18next/zipball/f950a439a75cd69c06235213ef9b776f29a78573",
+                "reference": "f950a439a75cd69c06235213ef9b776f29a78573",
+                "shasum": ""
             },
             "require-dev": {
                 "phpunit/phpunit": "^7.2"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -5963,19 +5992,15 @@
                 }
             },
             "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
                 "psr-4": {
                     "ProcessMaker\\i18next\\": "src",
                     "ProcessMaker\\i18next\\Tests\\": "tests"
-                },
-                "files": [
-                    "src/helpers.php"
-                ]
+                }
             },
-            "scripts": {
-                "test": [
-                    "vendor/bin/phpunit --configuration phpunit.xml"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -5990,18 +6015,25 @@
                 }
             ],
             "description": "Transform Laravel localization files into i18next compatible format. Provides routes for i18next-xhr-backend.",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "issues": "https://github.com/ProcessMaker/laravel-i18next/issues",
+                "source": "https://github.com/ProcessMaker/laravel-i18next/tree/master"
+            },
+            "time": "2020-11-26T14:26:47+00:00"
         },
         {
             "name": "processmaker/nayra",
             "version": "1.9.4",
-            "dist": {
-                "type": "path",
-                "url": "/Users/sanjacornelius/Documents/processmaker-plugins/nayra",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/nayra.git",
                 "reference": "e83d67072632fd178018905eba311e7a85e70622"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/e83d67072632fd178018905eba311e7a85e70622",
+                "reference": "e83d67072632fd178018905eba311e7a85e70622",
+                "shasum": ""
             },
             "require-dev": {
                 "phpunit/phpunit": "^7.5"
@@ -6012,40 +6044,30 @@
                     "ProcessMaker\\": "src/ProcessMaker/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Tests\\Feature\\": "tests/Feature/",
-                    "ProcessMaker\\": [
-                        "src/ProcessMaker/",
-                        "tests/unit/ProcessMaker/",
-                        "tests/ProcessMaker/"
-                    ]
-                }
-            },
-            "scripts": {
-                "test": [
-                    "phpunit"
-                ],
-                "coverage": [
-                    "phpunit -d memory_limit=-1 --coverage-html coverage"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "Apache-2.0"
             ],
             "description": "BPMN compliant engine",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "issues": "https://github.com/ProcessMaker/nayra/issues",
+                "source": "https://github.com/ProcessMaker/nayra/tree/v1.9.4"
+            },
+            "time": "2022-09-03T00:32:24+00:00"
         },
         {
             "name": "processmaker/pmql",
             "version": "1.8.0",
-            "dist": {
-                "type": "path",
-                "url": "/Users/sanjacornelius/Documents/processmaker-plugins/pmql",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/pmql.git",
                 "reference": "0975a286ff1a49cfb0472fa91d2e3ec3d8e66f49"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/0975a286ff1a49cfb0472fa91d2e3ec3d8e66f49",
+                "reference": "0975a286ff1a49cfb0472fa91d2e3ec3d8e66f49",
+                "shasum": ""
             },
             "require": {
                 "laravel/framework": "^5.7|^6|^7|^8|^9"
@@ -6065,11 +6087,7 @@
                     "ProcessMaker\\Query\\": "src"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "ProcessMaker\\Query\\Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "authors": [
                 {
                     "name": "Taylor Dondich",
@@ -6077,10 +6095,11 @@
                 }
             ],
             "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "issues": "https://github.com/ProcessMaker/pmql/issues",
+                "source": "https://github.com/ProcessMaker/pmql/tree/v1.8.0"
+            },
+            "time": "2022-10-18T21:33:41+00:00"
         },
         {
             "name": "psr/cache",
@@ -6568,16 +6587,16 @@
         },
         {
             "name": "pusher/pusher-php-server",
-            "version": "7.2.1",
+            "version": "7.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pusher/pusher-http-php.git",
-                "reference": "5d708d43d774218e1068037c56a887658a4930ac"
+                "reference": "7ed4a62956c7426814c7dc67b2bb764cd0e1a603"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pusher/pusher-http-php/zipball/5d708d43d774218e1068037c56a887658a4930ac",
-                "reference": "5d708d43d774218e1068037c56a887658a4930ac",
+                "url": "https://api.github.com/repos/pusher/pusher-http-php/zipball/7ed4a62956c7426814c7dc67b2bb764cd0e1a603",
+                "reference": "7ed4a62956c7426814c7dc67b2bb764cd0e1a603",
                 "shasum": ""
             },
             "require": {
@@ -6590,7 +6609,7 @@
             },
             "require-dev": {
                 "overtrue/phplint": "^2.3",
-                "phpunit/phpunit": "^9.3"
+                "phpunit/phpunit": "^8.5|^9.3"
             },
             "type": "library",
             "extra": {
@@ -6623,9 +6642,9 @@
             ],
             "support": {
                 "issues": "https://github.com/pusher/pusher-http-php/issues",
-                "source": "https://github.com/pusher/pusher-http-php/tree/7.2.1"
+                "source": "https://github.com/pusher/pusher-http-php/tree/7.2.0"
             },
-            "time": "2022-10-17T08:33:16+00:00"
+            "time": "2022-10-03T14:28:42+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
@@ -7323,16 +7342,16 @@
         },
         {
             "name": "swagger-api/swagger-ui",
-            "version": "v4.15.0",
+            "version": "v4.14.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swagger-api/swagger-ui.git",
-                "reference": "2005a0c996f295dc0d2e3eca06de4de630d993be"
+                "reference": "278dc05c886ce9d5d91860d56d9b57f3ab53ad5b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/2005a0c996f295dc0d2e3eca06de4de630d993be",
-                "reference": "2005a0c996f295dc0d2e3eca06de4de630d993be",
+                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/278dc05c886ce9d5d91860d56d9b57f3ab53ad5b",
+                "reference": "278dc05c886ce9d5d91860d56d9b57f3ab53ad5b",
                 "shasum": ""
             },
             "type": "library",
@@ -7378,9 +7397,9 @@
             ],
             "support": {
                 "issues": "https://github.com/swagger-api/swagger-ui/issues",
-                "source": "https://github.com/swagger-api/swagger-ui/tree/v4.15.0"
+                "source": "https://github.com/swagger-api/swagger-ui/tree/v4.14.3"
             },
-            "time": "2022-10-20T20:57:58+00:00"
+            "time": "2022-10-11T09:13:18+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -10397,16 +10416,16 @@
         },
         {
             "name": "vlucas/phpdotenv",
-            "version": "v5.5.0",
+            "version": "v5.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vlucas/phpdotenv.git",
-                "reference": "1a7ea2afc49c3ee6d87061f5a233e3a035d0eae7"
+                "reference": "264dce589e7ce37a7ba99cb901eed8249fbec92f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/1a7ea2afc49c3ee6d87061f5a233e3a035d0eae7",
-                "reference": "1a7ea2afc49c3ee6d87061f5a233e3a035d0eae7",
+                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/264dce589e7ce37a7ba99cb901eed8249fbec92f",
+                "reference": "264dce589e7ce37a7ba99cb901eed8249fbec92f",
                 "shasum": ""
             },
             "require": {
@@ -10421,19 +10440,15 @@
             "require-dev": {
                 "bamarni/composer-bin-plugin": "^1.4.1",
                 "ext-filter": "*",
-                "phpunit/phpunit": "^7.5.20 || ^8.5.30 || ^9.5.25"
+                "phpunit/phpunit": "^7.5.20 || ^8.5.21 || ^9.5.10"
             },
             "suggest": {
                 "ext-filter": "Required to use the boolean validator."
             },
             "type": "library",
             "extra": {
-                "bamarni-bin": {
-                    "bin-links": true,
-                    "forward-command": true
-                },
                 "branch-alias": {
-                    "dev-master": "5.5-dev"
+                    "dev-master": "5.4-dev"
                 }
             },
             "autoload": {
@@ -10465,7 +10480,7 @@
             ],
             "support": {
                 "issues": "https://github.com/vlucas/phpdotenv/issues",
-                "source": "https://github.com/vlucas/phpdotenv/tree/v5.5.0"
+                "source": "https://github.com/vlucas/phpdotenv/tree/v5.4.1"
             },
             "funding": [
                 {
@@ -10477,7 +10492,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-10-16T01:01:54+00:00"
+            "time": "2021-12-12T23:22:04+00:00"
         },
         {
             "name": "voku/portable-ascii",
@@ -10677,16 +10692,16 @@
         },
         {
             "name": "zircote/swagger-php",
-            "version": "4.4.10",
+            "version": "4.4.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zircote/swagger-php.git",
-                "reference": "795be27b3b3bacc8353350cacc663ac5cbcd05cc"
+                "reference": "0c1cdd31e8cfeb7116c54696aafdab9c778070fd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zircote/swagger-php/zipball/795be27b3b3bacc8353350cacc663ac5cbcd05cc",
-                "reference": "795be27b3b3bacc8353350cacc663ac5cbcd05cc",
+                "url": "https://api.github.com/repos/zircote/swagger-php/zipball/0c1cdd31e8cfeb7116c54696aafdab9c778070fd",
+                "reference": "0c1cdd31e8cfeb7116c54696aafdab9c778070fd",
                 "shasum": ""
             },
             "require": {
@@ -10748,9 +10763,9 @@
             ],
             "support": {
                 "issues": "https://github.com/zircote/swagger-php/issues",
-                "source": "https://github.com/zircote/swagger-php/tree/4.4.10"
+                "source": "https://github.com/zircote/swagger-php/tree/4.4.9"
             },
-            "time": "2022-10-19T02:28:50+00:00"
+            "time": "2022-09-11T20:51:43+00:00"
         }
     ],
     "packages-dev": [
