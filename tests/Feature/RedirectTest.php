@@ -2,16 +2,17 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use ProcessMaker\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Tests\Feature\Shared\RequestHelper;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Models\User;
+use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class RedirectTest extends TestCase
 {
     use RequestHelper;
+
     /**
      * A basic test example.
      *
@@ -19,7 +20,7 @@ class RedirectTest extends TestCase
      */
     public function test401RedirectsToLogin()
     {
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'is_administrator' => false,
         ]);
         Auth::login($user);
@@ -31,12 +32,13 @@ class RedirectTest extends TestCase
         //302 because we want to make sure they are being redirected
         $response->assertStatus(302);
     }
+
     /**
      * Redirect to password change when user has flag to true
      */
     public function testRedirectToForcePasswordChange()
     {
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'force_change_password' => 1,
         ]);
 

@@ -1,20 +1,20 @@
 <?php
+
 namespace ProcessMaker\Exception;
 
-use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Response;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\App;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Support\Facades\Route as RouteFacade;
-use Illuminate\Routing\Route;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Throwable;
 
 /**
  * Our general exception handler
- * @package ProcessMaker\Exception
  */
 class Handler extends ExceptionHandler
 {
@@ -32,19 +32,20 @@ class Handler extends ExceptionHandler
         \Illuminate\Validation\ValidationException::class,
     ];
 
-
     /**
      * Report our exception. If in testing with verbosity, it will also dump exception information to the console
-     * @param Exception $exception
-     * @throws Exception
+     *
+     * @param  Throwable  $exception
+     *
+     * @throws Throwable
      */
-    public function report(Exception $exception)
+    public function report(Throwable $exception)
     {
         if (App::environment() == 'testing' && env('TESTING_VERBOSE')) {
             // If we're verbose, we should print ALL Exceptions to the screen
-            print($exception->getMessage() . "\n");
-            print($exception->getFile() . ": Line: " . $exception->getLine() . "\n");
-            print($exception);
+            echo $exception->getMessage() . "\n";
+            echo $exception->getFile() . ': Line: ' . $exception->getLine() . "\n";
+            echo $exception;
         }
         parent::report($exception);
     }
@@ -53,33 +54,33 @@ class Handler extends ExceptionHandler
      * Render an exception into an HTTP response.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $exception
+     * @param  \Throwable  $exception
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $exception)
+    public function render($request, Throwable $exception)
     {
         $prefix = '';
         $route = $request->route();
-        
+
         if ($route) {
             if ($exception instanceof NotFoundHttpException) {
                 return RouteFacade::respondWithRoute($this->getFallbackRoute($route));
             }
-    
+
             if ($exception instanceof ModelNotFoundException) {
                 return RouteFacade::respondWithRoute($this->getFallbackRoute($route));
-            }   
+            }
         }
-        
+
         return parent::render($request, $exception);
     }
-    
+
     /**
      * Determine which fallback route should be used.
      *
      * @param  \Illuminate\Routing\Route  $route
      * @return string
-     */    
+     */
     private function getFallbackRoute(Route $route)
     {
         $prefixes = [];
@@ -89,14 +90,14 @@ class Handler extends ExceptionHandler
                 $prefixes[] = 'api';
             }
         }
-        
+
         foreach ($prefixes as $prefix) {
             if (RouteFacade::has("$prefix.fallback")) {
                 return "$prefix.fallback";
             }
         }
-        
-        return "fallback";
+
+        return 'fallback';
     }
 
     /**
@@ -111,6 +112,7 @@ class Handler extends ExceptionHandler
         if ($request->expectsJson()) {
             return response()->json(['error' => 'Unauthenticated.'], 401);
         }
+
         return redirect()->guest('login');
     }
 
@@ -118,10 +120,10 @@ class Handler extends ExceptionHandler
      * Convert the given exception to an array.
      * @note This is overridding Laravel's default exception handler in order to handle binary data in message
      *
-     * @param  \Exception  $e
+     * @param  \Throwable  $e
      * @return array
      */
-    protected function convertExceptionToArray(Exception $e)
+    protected function convertExceptionToArray(Throwable $e)
     {
         return config('app.debug') ? [
             'message' => utf8_encode($e->getMessage()),
@@ -135,6 +137,4 @@ class Handler extends ExceptionHandler
             'message' => $this->isHttpException($e) ? $e->getMessage() : 'Server Error',
         ];
     }
-
-
 }

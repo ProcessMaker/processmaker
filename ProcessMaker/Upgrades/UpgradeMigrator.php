@@ -2,11 +2,11 @@
 
 namespace ProcessMaker\Upgrades;
 
-use Throwable;
-use Illuminate\Support\Arr;
-use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Database\Events\MigrationsEnded;
 use Illuminate\Database\Events\MigrationsStarted;
+use Illuminate\Database\Migrations\Migrator;
+use Illuminate\Support\Arr;
+use RuntimeException;
 
 class UpgradeMigrator extends Migrator
 {
@@ -16,7 +16,9 @@ class UpgradeMigrator extends Migrator
      * @param  array  $migrations
      * @param  array  $paths
      * @param  bool  $pretend
+     *
      * @return array
+     * @throws \Throwable
      */
     protected function resetMigrations(array $migrations, array $paths, $pretend = false)
     {
@@ -40,8 +42,6 @@ class UpgradeMigrator extends Migrator
      * @param  bool  $pretend
      *
      * @return void
-     *
-     * @throws \ProcessMaker\Exception\UpgradeMigrationUnsuccessful
      */
     protected function runUp($file, $batch, $pretend)
     {
@@ -151,7 +151,7 @@ class UpgradeMigrator extends Migrator
         foreach ($migrations as $migration) {
             $migration = (object) $migration;
 
-            if (! $file = Arr::get($files, $migration->upgrade)) {
+            if (!$file = Arr::get($files, $migration->upgrade)) {
                 $this->note("<fg=red>Upgrade migration not found:</> {$migration->upgrade}");
 
                 continue;
@@ -189,9 +189,15 @@ class UpgradeMigrator extends Migrator
         // other upgrade migrations from running.
         try {
             $migration->preflightChecks();
-        } catch (Throwable $exception) {
+        } catch (RuntimeException $exception) {
             $this->note("<fg=red>Preflight Check Failed:</> {$name}");
             $this->note("|-- <comment>Failure Message:</comment> {$exception->getMessage()}");
+
+            // Exception code of 1 means we should exit and
+            // stop the upgrade migrations from running
+            if ($exception->getCode() === 1) {
+                exit(1);
+            }
 
             return false;
         }

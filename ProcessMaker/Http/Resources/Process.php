@@ -1,9 +1,9 @@
 <?php
+
 namespace ProcessMaker\Http\Resources;
 
 class Process extends ApiResource
 {
-
     /**
      * Transform the resource into an array.
      *
@@ -27,6 +27,7 @@ class Process extends ApiResource
             $array['svg'] = $this->svg;
         }
         $array['manager_id'] = $this->manager_id;
+
         return $array;
     }
 }

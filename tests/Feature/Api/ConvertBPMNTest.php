@@ -5,10 +5,10 @@ namespace Tests\Feature\Api;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Nayra\Storage\BpmnDocument;
+use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
-use Tests\Feature\Shared\RequestHelper;
-use ProcessMaker\Nayra\Storage\BpmnDocument;
 
 /**
  * Tests routes related to processes / CRUD related methods
@@ -28,7 +28,7 @@ class ConvertBPMNTest extends TestCase
      */
     public function testConvertSubProcess()
     {
-        $process = factory(Process::class)->create([
+        $process = Process::factory()->create([
             'status' => 'ACTIVE',
             'bpmn' => file_get_contents(__DIR__ . '/processes/CP.01.00 Create new customer.bpmn'),
         ]);
@@ -41,7 +41,7 @@ class ConvertBPMNTest extends TestCase
      */
     public function testConvertSendTask()
     {
-        $process = factory(Process::class)->create([
+        $process = Process::factory()->create([
             'status' => 'ACTIVE',
             'bpmn' => file_get_contents(__DIR__ . '/processes/adonis.bpmn'),
         ]);

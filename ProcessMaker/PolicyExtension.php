@@ -2,10 +2,11 @@
 
 namespace ProcessMaker;
 
+use ProcessMaker\Models\ProcessMakerModel;
 use ProcessMaker\Models\User;
-use Illuminate\Database\Eloquent\Model;
 
-class PolicyExtension {
+class PolicyExtension
+{
     private $extensions;
 
     public function __construct()
@@ -18,14 +19,15 @@ class PolicyExtension {
         return $action . '-' . $class;
     }
 
-    public function has(string $action, string $class) {
+    public function has(string $action, string $class)
+    {
         return array_key_exists(
             $this->key($action, $class),
             $this->extensions
         );
     }
 
-    public function add(string $action, string $class, Callable $policy)
+    public function add(string $action, string $class, callable $policy)
     {
         $key = $this->key($action, $class);
         if (!$this->has($action, $class)) {
@@ -35,7 +37,7 @@ class PolicyExtension {
         $this->extensions[$key][] = $policy;
     }
 
-    public function authorize(string $action, User $user, Model $model)
+    public function authorize(string $action, User $user, ProcessMakerModel $model)
     {
         $class = get_class($model);
         if (!$this->has($action, $class)) {
@@ -43,7 +45,7 @@ class PolicyExtension {
         }
 
         $ok = false;
-        foreach($this->extensions[$this->key($action, $class)] as $extension) {
+        foreach ($this->extensions[$this->key($action, $class)] as $extension) {
             $ok = $extension($user, $model);
             if ($ok) {
                 break;
@@ -53,7 +55,8 @@ class PolicyExtension {
         return $ok;
     }
 
-    public function getExtensions() {
+    public function getExtensions()
+    {
         return array_keys($this->extensions);
     }
 }

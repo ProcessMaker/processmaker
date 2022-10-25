@@ -2,14 +2,15 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use Tests\Feature\Shared\RequestHelper;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Models\User;
-use ProcessMaker\Models\ProcessCategory;
+use Database\Seeders\PermissionSeeder;
 use Illuminate\Support\Facades\Artisan;
-use ProcessMaker\Providers\AuthServiceProvider;
 use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\User;
+use ProcessMaker\Providers\AuthServiceProvider;
+use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class ProcessesTest extends TestCase
 {
@@ -32,7 +33,7 @@ class ProcessesTest extends TestCase
 
     public function testIndex()
     {
-        $this->user = factory(User::class)->create([
+        $this->user = User::factory()->create([
             'is_administrator' => false,
         ]);
         // Set the URL & permission to test.
@@ -56,9 +57,9 @@ class ProcessesTest extends TestCase
 
     public function testEdit()
     {
-        $process = factory(Process::class)->create(['name' => 'Test Edit']);
+        $process = Process::factory()->create(['name' => 'Test Edit']);
 
-        $this->user = factory(User::class)->create([
+        $this->user = User::factory()->create([
             'is_administrator' => false,
         ]);
         // Set the URL & permission to test.
@@ -82,9 +83,9 @@ class ProcessesTest extends TestCase
 
     public function testCreate()
     {
-        $process = factory(Process::class)->create(['name' => 'Test Create']);
+        $process = Process::factory()->create(['name' => 'Test Create']);
 
-        $this->user = factory(User::class)->create([
+        $this->user = User::factory()->create([
             'is_administrator' => false,
         ]);
         // Set the URL & permission to test.
@@ -107,9 +108,9 @@ class ProcessesTest extends TestCase
 
     public function testStore()
     {
-        $process = factory(Process::class)->create(['name' => 'Test Edit']);
+        $process = Process::factory()->create(['name' => 'Test Edit']);
 
-        $this->user = factory(User::class)->create([
+        $this->user = User::factory()->create([
             'is_administrator' => false,
         ]);
         // Set the URL, permission, and data with which to test.
@@ -118,7 +119,7 @@ class ProcessesTest extends TestCase
         $data = [
             'name' => 'Stored new process',
             'description' => 'My description',
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
         ];
 
         // Our user has no permissions, so this should return 403.
@@ -137,9 +138,9 @@ class ProcessesTest extends TestCase
 
     public function testUpdate()
     {
-        $process = factory(Process::class)->create(['name' => 'Test Update']);
+        $process = Process::factory()->create(['name' => 'Test Update']);
 
-        $this->user = factory(User::class)->create([
+        $this->user = User::factory()->create([
             'is_administrator' => false,
         ]);
         // Set the URL, permission, and data with which to test.
@@ -166,9 +167,9 @@ class ProcessesTest extends TestCase
 
     public function testArchive()
     {
-        $process = factory(Process::class)->create(['name' => 'Test Archive']);
+        $process = Process::factory()->create(['name' => 'Test Archive']);
 
-        $this->user = factory(User::class)->create([
+        $this->user = User::factory()->create([
             'is_administrator' => false,
         ]);
         // Set the URL & permission to test.
@@ -191,11 +192,11 @@ class ProcessesTest extends TestCase
 
     public function testIndexPermissionRedirect()
     {
-        $this->user = factory(User::class)->create();
+        $this->user = User::factory()->create();
         $response = $this->webCall('GET', '/processes');
         $response->assertStatus(403);
 
-        foreach(explode('|',
+        foreach (explode('|',
             'view-processes|view-process-categories|view-scripts|view-screens|view-environment_variables'
         ) as $perm) {
             $this->user->permissions()->attach(Permission::byName($perm));
@@ -205,7 +206,7 @@ class ProcessesTest extends TestCase
         $response = $this->webCall('GET', '/processes');
         $response->assertViewIs('processes.index');
 
-        $checkNextAuth = function($perm, $nextRoute) {
+        $checkNextAuth = function ($perm, $nextRoute) {
             $this->user->permissions()->detach(Permission::byName($perm));
             $this->user->refresh();
             $this->flushSession();

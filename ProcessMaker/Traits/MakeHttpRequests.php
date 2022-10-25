@@ -32,11 +32,13 @@ trait MakeHttpRequests
 
     private $mustache = null;
 
-    private function getMustache() {
-       if ($this->mustache === null)  {
-           $this->mustache = app(Mustache_Engine::class);
-       }
-       return $this->mustache;
+    private function getMustache()
+    {
+        if ($this->mustache === null) {
+            $this->mustache = app(Mustache_Engine::class);
+        }
+
+        return $this->mustache;
     }
 
     /**
@@ -55,6 +57,7 @@ trait MakeHttpRequests
     {
         try {
             $request = $this->prepareRequestWithOutboundConfig($data, $config);
+
             return $this->responseWithHeaderData($this->call(...$request), $data, $config);
         } catch (ClientException $exception) {
             throw new HttpResponseException($exception->getResponse());
@@ -89,6 +92,7 @@ trait MakeHttpRequests
         }
         $request = [$method, $url, $headers, $body, $bodyType];
         $request = $this->addAuthorizationHeaders(...$request);
+
         return $request;
     }
 
@@ -114,6 +118,7 @@ trait MakeHttpRequests
                 }
             }
         }
+
         return $data;
     }
 
@@ -134,6 +139,7 @@ trait MakeHttpRequests
         try {
             $formal = new FormalExpression();
             $formal->setBody($expression);
+
             return $formal($data);
         } catch (Exception $exception) {
             return "{$expression}: " . $exception->getMessage();
@@ -193,6 +199,7 @@ trait MakeHttpRequests
 
         $request = [$method, $url, $headers, $body, $bodyType];
         $request = $this->addAuthorizationHeaders(...$request);
+
         return $request;
     }
 
@@ -207,8 +214,10 @@ trait MakeHttpRequests
     {
         if (isset($this->authTypes[$this->authtype])) {
             $callable = [$this, $this->authTypes[$this->authtype]];
+
             return call_user_func_array($callable, $config);
         }
+
         return $config;
     }
 
@@ -228,6 +237,7 @@ trait MakeHttpRequests
         if (isset($this->credentials) && is_array($this->credentials)) {
             $headers['Authorization'] = 'Basic ' . base64_encode($this->credentials['username'] . ':' . $this->credentials['password']);
         }
+
         return [$method, $url, $headers, $body, $bodyType];
     }
 
@@ -247,6 +257,7 @@ trait MakeHttpRequests
         if (isset($this->credentials) && is_array($this->credentials)) {
             $headers['Authorization'] = 'Bearer ' . $this->credentials['token'];
         }
+
         return [$method, $url, $headers, $body, $bodyType];
     }
 
@@ -276,6 +287,7 @@ trait MakeHttpRequests
             $token = $this->response($this->call('POST', $this->credentials['url'], ['Accept' => 'application/json'], json_encode($config), 'form-data'), [], ['dataMapping' => []], new Mustache_Engine());
             $headers['Authorization'] = 'Bearer ' . $token['response']['access_token'];
         }
+
         return [$method, $url, $headers, $body, $bodyType];
     }
 
@@ -295,7 +307,7 @@ trait MakeHttpRequests
         $status = $response->getStatusCode();
         $bodyContent = $response->getBody()->getContents();
         if (!$this->isJson($bodyContent)) {
-            return ["response" => $bodyContent, "status" => $status];
+            return ['response' => $bodyContent, 'status' => $status];
         }
 
         switch (true) {
@@ -323,6 +335,7 @@ trait MakeHttpRequests
                 Arr::set($mapped, $map['key'], $value);
             }
         }
+
         return $mapped;
     }
 
@@ -331,7 +344,7 @@ trait MakeHttpRequests
         $status = $response->getStatusCode();
         $bodyContent = $response->getBody()->getContents();
         if (!$this->isJson($bodyContent)) {
-            return ["response" => $bodyContent, "status" => $status];
+            return ['response' => $bodyContent, 'status' => $status];
         }
 
         switch (true) {
@@ -393,6 +406,7 @@ trait MakeHttpRequests
             }
             $mapped[$processVar] = $evaluatedApiVar;
         }
+
         return $mapped;
     }
 
@@ -411,12 +425,13 @@ trait MakeHttpRequests
      */
     private function call($method, $url, array $headers, $body, $bodyType)
     {
-        $client = new Client(['verify' => $this->verifySsl]);
+        $client = $this->client ?? new Client(['verify' => $this->verifySsl]);
         $options = [];
         if ($bodyType === 'form-data') {
             $options['form_params'] = json_decode($body, true);
         }
         $request = new Request($method, $url, $headers, $body);
+
         return $client->send($request, $options);
     }
 
@@ -437,7 +452,7 @@ trait MakeHttpRequests
 
         $url = $endpoint['url'];
         // If url does not include the protocol and server name complete it with the local server
-        if (substr($url, 0,1) === '/') {
+        if (substr($url, 0, 1) === '/') {
             $url = url($url);
         }
 
@@ -472,10 +487,11 @@ trait MakeHttpRequests
 
         $parsedUrl['query'] = http_build_query($query);
         $url = $this->unparseUrl($parsedUrl);
+
         return $url;
     }
 
-    private function addHeaders($endpoint, array $config,  array $data)
+    private function addHeaders($endpoint, array $config, array $data)
     {
         $headers = ['Accept' => 'application/json'];
 
@@ -486,6 +502,7 @@ trait MakeHttpRequests
                     $headers[$this->getMustache()->render($header['key'], $data)] = $this->getMustache()->render($header['value'], $data);
                 }
             }
+
             return $headers;
         }
 
@@ -509,19 +526,22 @@ trait MakeHttpRequests
             if (!$existsInDataSourceParams) {
                 array_push($dataSourceParams, [
                     'key' => $cfgParam['key'],
-                    'value' => $cfgParam['value']
+                    'value' => $cfgParam['value'],
                 ]);
             }
         }
         foreach ($dataSourceParams as $header) {
             $headers[$this->getMustache()->render($header['key'], $data)] = $this->getMustache()->render($header['value'], $data);
         }
+
         return $headers;
     }
 
-    function isJson($str) {
+    public function isJson($str)
+    {
         json_decode($str);
-        return (json_last_error() == JSON_ERROR_NONE);
+
+        return json_last_error() == JSON_ERROR_NONE;
     }
 
     private function addCollectionsRootObject($value)
@@ -549,6 +569,7 @@ trait MakeHttpRequests
                 $value = trim($value);
             }
         }
+
         return $value;
     }
 
@@ -574,6 +595,7 @@ trait MakeHttpRequests
         foreach ($parts as $name => $value) {
             $parts[$name] = urldecode($value);
         }
+
         return $parts;
     }
 
@@ -585,15 +607,16 @@ trait MakeHttpRequests
      */
     private function unparseUrl(array $parsed_url)
     {
-        $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
-        $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
-        $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
-        $user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
-        $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass']  : '';
-        $pass     = ($user || $pass) ? "$pass@" : '';
-        $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
-        $query    = !empty($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+        $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+        $host = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+        $port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+        $user = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+        $pass = isset($parsed_url['pass']) ? ':' . $parsed_url['pass'] : '';
+        $pass = ($user || $pass) ? "$pass@" : '';
+        $path = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+        $query = !empty($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
         $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
+
         return "$scheme$user$pass$host$port$path$query$fragment";
     }
 }

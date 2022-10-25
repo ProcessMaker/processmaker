@@ -1,10 +1,11 @@
 <?php
+
 namespace ProcessMaker\Jobs;
 
 use Exception;
+use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
-use ProcessMaker\Managers\ExportManager;
 
 class ImportScreen extends ImportProcess
 {
@@ -16,6 +17,7 @@ class ImportScreen extends ImportProcess
     private function parseFileV1()
     {
         $this->file->screens = [$this->file->screens];
+
         return $this->parseFileV2();
     }
 
@@ -48,17 +50,19 @@ class ImportScreen extends ImportProcess
         foreach ($this->file->screens as $screen) {
             $new[Screen::class][$screen->id] = $this->saveScreen($screen);
             //determine if the screen has watchers
-            if (property_exists($screen, "watchers")) {
+            if (property_exists($screen, 'watchers')) {
                 $names = [];
-                foreach ($screen->watchers as $watcher) {
-                    $names[] = $watcher->name;
+                if ($screen->watchers) {
+                    foreach ($screen->watchers as $watcher) {
+                        $names[] = $watcher->name;
+                    }
+                    $this->status['screens']['info'] = __('Please assign a run script user to: ') . implode(', ', $names);
                 }
-                $this->status['screens']['info'] = __('Please assign a run script user to: ') . implode(', ', $names);
             }
         }
         $this->finishStatus('screens');
 
-        if (! isset($this->file->scripts)) {
+        if (!isset($this->file->scripts)) {
             $this->findWatcherScripts($new[Screen::class]);
         }
 
@@ -79,7 +83,7 @@ class ImportScreen extends ImportProcess
     /**
      * Execute the job.
      *
-     * @return boolean
+     * @return bool
      */
     public function handle()
     {
@@ -93,7 +97,8 @@ class ImportScreen extends ImportProcess
                 $this->status['screens'] = [
                     'label' => __('Screens'),
                     'success' => false,
-                    'message' => __('Starting')];
+                    'message' => __('Starting'), ];
+
                 return $this->{$method}();
             }
         }

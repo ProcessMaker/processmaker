@@ -1,15 +1,16 @@
 <?php
+
 namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\User;
 use ProcessMaker\Models\ScriptExecutor;
+use ProcessMaker\Models\User;
+use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
-use Tests\Feature\Shared\RequestHelper;
 
 /**
  * Test the process execution with requests
@@ -18,15 +19,15 @@ use Tests\Feature\Shared\RequestHelper;
  */
 class ProcessScriptsTest extends TestCase
 {
-
     use ResourceAssertionsTrait;
     use WithFaker;
     use RequestHelper;
 
     /**
-     * @var Process $process
+     * @var Process
      */
     protected $process;
+
     private $requestStructure = [
         'id',
         'process_id',
@@ -35,12 +36,11 @@ class ProcessScriptsTest extends TestCase
         'name',
         'initiated_at',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
      * Initialize the controller tests
-     *
      */
     protected function withUserSetup()
     {
@@ -49,7 +49,6 @@ class ProcessScriptsTest extends TestCase
 
     /**
      * Make sure we have a personal access client set up
-     *
      */
     public function setUpWithPersonalAccessClient()
     {
@@ -62,7 +61,8 @@ class ProcessScriptsTest extends TestCase
     private function createTestProcess(array $data = [])
     {
         $data['bpmn'] = Process::getProcessTemplate('ScriptTasks.bpmn');
-        $process = factory(Process::class)->create($data);
+        $process = Process::factory()->create($data);
+
         return $process;
     }
 

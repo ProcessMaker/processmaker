@@ -2,11 +2,11 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\Traits\SerializeToIso8601;
+use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HideSystemResources;
+use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
  * Represents a business screen category definition.
@@ -34,17 +34,18 @@ use ProcessMaker\Traits\HideSystemResources;
  *   },
  * )
  */
-class ScreenCategory extends Model
+class ScreenCategory extends ProcessMakerModel
 {
     use SerializeToIso8601;
     use HideSystemResources;
+    use Exportable;
 
     protected $connection = 'processmaker';
 
     protected $fillable = [
         'name',
         'status',
-        'is_system'
+        'is_system',
     ];
 
     public static function rules($existing = null)
@@ -53,7 +54,7 @@ class ScreenCategory extends Model
 
         return [
             'name' => ['required', 'string', 'max:100', $unique, 'alpha_spaces'],
-            'status' => 'required|string|in:ACTIVE,INACTIVE'
+            'status' => 'required|string|in:ACTIVE,INACTIVE',
         ];
     }
 

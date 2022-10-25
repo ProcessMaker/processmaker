@@ -2,8 +2,8 @@
 
 namespace ProcessMaker\Managers;
 
+use ProcessMaker\Models\ProcessMakerModel;
 use ProcessMaker\Models\Screen;
-use Illuminate\Database\Eloquent\Model;
 
 class ExportManager
 {
@@ -40,7 +40,7 @@ class ExportManager
      * Get dependencies of a $modelClass type
      *
      * @param string $modelClass
-     * @param Model $owner
+     * @param ProcessMakerModel $owner
      * @param array $references
      *
      * @return array
@@ -53,19 +53,20 @@ class ExportManager
             list($class, $id) = $ref;
             $class === $modelClass ? $ids[] = $id : null;
         }
+
         return array_unique($ids);
     }
 
     /**
      * Review all the dependencies of the $owner
      *
-     * @param Model $owner
+     * @param ProcessMakerModel $owner
      * @param array $references
      * @param array $reviewed
      *
      * @return array
      */
-    private function reviewDependenciesOf(Model $owner, array $references = [], array $reviewed = [])
+    private function reviewDependenciesOf(ProcessMakerModel $owner, array $references = [], array $reviewed = [])
     {
         $key = get_class($owner) . ':' . $owner->getKey();
         if (in_array($key, $reviewed)) {
@@ -89,16 +90,17 @@ class ExportManager
                 $references = $this->reviewDependenciesOf($nextOwner, $references, $reviewed);
             }
         }
+
         return $references;
     }
 
     /**
      * Update references for a given model
      *
-     * @param Model $model
+     * @param ProcesssMakerModel $model
      * @param array $newReferences
      *
-     * @return Model
+     * @return ProcessMakerModel
      */
     public function updateReferences(array $newReferences)
     {
@@ -107,13 +109,13 @@ class ExportManager
                 foreach ($model as $item) {
                     $this->updateModelReferences($item, $newReferences);
                 }
-            } elseif (is_object($model) && $model instanceof Model) {
+            } elseif (is_object($model) && $model instanceof ProcessMakerModel) {
                 $this->updateModelReferences($model, $newReferences);
             }
         }
     }
 
-    private function updateModelReferences(Model $model, array $newReferences)
+    private function updateModelReferences(ProcessMakerModel $model, array $newReferences)
     {
         foreach ($this->dependencies as $dependencie) {
             if (is_a($model, $dependencie['owner']) && isset($dependencie['updateReferences'])) {
@@ -125,7 +127,7 @@ class ExportManager
     public function addDependencyManager($class)
     {
         if (is_string($class)) {
-            $instance  = new $class;
+            $instance = new $class;
         } else {
             $instance = $class;
         }
@@ -136,6 +138,7 @@ class ExportManager
             'referencesToExport' => [$instance, 'referencesToExport'],
             'updateReferences' => [$instance, 'updateReferences'],
         ]);
+
         return $this;
     }
 
@@ -154,6 +157,7 @@ class ExportManager
                 $result[] = $item;
             }
         }
+
         return $result;
     }
 

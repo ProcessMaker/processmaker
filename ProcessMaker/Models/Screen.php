@@ -3,22 +3,21 @@
 namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
+use ProcessMaker\Assets\ScreensInScreen;
+use ProcessMaker\Contracts\ScreenInterface;
+use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasScreenFields;
 use ProcessMaker\Traits\HasVersioning;
-use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\HideSystemResources;
+use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Validation\CategoryRule;
-use ProcessMaker\Assets\ScreensInScreen;
-use ProcessMaker\Contracts\ScreenInterface;
 
 /**
  * Class Screen
  *
- * @package ProcessMaker\Models
  *
  * @property string id
  * @property string title
@@ -60,9 +59,8 @@ use ProcessMaker\Contracts\ScreenInterface;
  *   schema="screenExported",
  *   @OA\Property(property="url", type="string"),
  * )
- *
  */
-class Screen extends Model implements ScreenInterface
+class Screen extends ProcessMakerModel implements ScreenInterface
 {
     use SerializeToIso8601;
     use HideSystemResources;
@@ -70,6 +68,7 @@ class Screen extends Model implements ScreenInterface
     use HasScreenFields;
     use HasVersioning;
     use ExtendedPMQL;
+    use Exportable;
 
     const categoryClass = ScreenCategory::class;
 
@@ -134,7 +133,7 @@ class Screen extends Model implements ScreenInterface
             'title' => ['required', $unique, 'alpha_spaces'],
             'description' => 'required',
             'type' => 'required',
-            'screen_category_id' => [new CategoryRule($existing)]
+            'screen_category_id' => [new CategoryRule($existing)],
         ];
     }
 
@@ -157,7 +156,10 @@ class Screen extends Model implements ScreenInterface
     public function scopeExclude($query, $value = [])
     {
         $columns = array_diff($this->columns, (array) $value);
-        $columns = array_map(function($column) { return $this->table . '.' . $column; } , $columns);
+        $columns = array_map(function ($column) {
+            return $this->table . '.' . $column;
+        }, $columns);
+
         return $query->select($columns);
     }
 
@@ -186,6 +188,7 @@ class Screen extends Model implements ScreenInterface
         if (isset($this->config['builderComponent'])) {
             return $this->config['builderComponent'];
         }
+
         return 'ScreenBuilder';
     }
 
@@ -194,6 +197,7 @@ class Screen extends Model implements ScreenInterface
         if (isset($this->config['renderComponent'])) {
             return $this->config['renderComponent'];
         }
+
         return 'task-screen';
     }
 
@@ -217,9 +221,10 @@ class Screen extends Model implements ScreenInterface
         $screenIds = [];
         $screenFinder = new ScreensInScreen();
         $screenFinder->setProcessRequest($processRequest);
-        foreach($screenFinder->referencesToExport($this) as $screen) {
+        foreach ($screenFinder->referencesToExport($this) as $screen) {
             $screenIds[] = $screen[1];
         }
+
         return $screenIds;
     }
 }

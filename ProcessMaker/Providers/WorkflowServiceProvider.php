@@ -13,14 +13,15 @@ use ProcessMaker\Bpmn\MustacheOptions;
 use ProcessMaker\BpmnEngine;
 use ProcessMaker\Contracts\TimerExpressionInterface;
 use ProcessMaker\Facades\WorkflowManager as WorkflowManagerFacade;
+use ProcessMaker\Factories\SoapClientFactory;
 use ProcessMaker\Listeners\BpmnSubscriber;
 use ProcessMaker\Listeners\CommentsSubscriber;
 use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Managers\WorkflowManager;
 use ProcessMaker\Models\FormalExpression;
-use ProcessMaker\Nayra\Bpmn\Models\EventDefinitionBus;
 use ProcessMaker\Models\SignalEventDefinition;
+use ProcessMaker\Nayra\Bpmn\Models\EventDefinitionBus;
 use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\EventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowNodeInterface;
@@ -33,6 +34,13 @@ use ProcessMaker\Nayra\Contracts\Engine\EngineInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Repositories\DefinitionsRepository;
+use ProcessMaker\WebServices\Contracts\SoapClientInterface;
+use ProcessMaker\WebServices\NativeSoapClient;
+use ProcessMaker\WebServices\SoapConfigBuilder;
+use ProcessMaker\WebServices\SoapRequestBuilder;
+use ProcessMaker\WebServices\SoapResponseMapper;
+use ProcessMaker\WebServices\SoapServiceCaller;
+use ProcessMaker\WebServices\WebServiceRequest;
 
 class WorkflowServiceProvider extends ServiceProvider
 {
@@ -86,6 +94,7 @@ class WorkflowServiceProvider extends ServiceProvider
             $engine->setJobManager(new TaskSchedulerManager());
             $definitions->setEngine($engine);
             $engine->loadProcessDefinitions($definitions);
+
             return $engine;
         });
 
@@ -124,7 +133,7 @@ class WorkflowServiceProvider extends ServiceProvider
                         FlowNodeInterface::BPMN_PROPERTY_INCOMING => ['n', [BpmnDocument::BPMN_MODEL, FlowNodeInterface::BPMN_PROPERTY_INCOMING]],
                         FlowNodeInterface::BPMN_PROPERTY_OUTGOING => ['n', [BpmnDocument::BPMN_MODEL, FlowNodeInterface::BPMN_PROPERTY_OUTGOING]],
                         StartEventInterface::BPMN_PROPERTY_EVENT_DEFINITIONS => ['n', EventDefinitionInterface::class],
-                    ]
+                    ],
                 ]
             );
 
@@ -135,7 +144,7 @@ class WorkflowServiceProvider extends ServiceProvider
                     TimerExpressionInterface::class,
                     [
                         FormalExpressionInterface::BPMN_PROPERTY_BODY => ['1', BpmnDocument::DOM_ELEMENT_BODY],
-                    ]
+                    ],
                 ]
             );
 
@@ -146,7 +155,7 @@ class WorkflowServiceProvider extends ServiceProvider
                     TimerExpressionInterface::class,
                     [
                         FormalExpressionInterface::BPMN_PROPERTY_BODY => ['1', BpmnDocument::DOM_ELEMENT_BODY],
-                    ]
+                    ],
                 ]
             );
             $bpmnRepository->setBpmnElementMapping(
@@ -156,7 +165,7 @@ class WorkflowServiceProvider extends ServiceProvider
                     TimerExpressionInterface::class,
                     [
                         FormalExpressionInterface::BPMN_PROPERTY_BODY => ['1', BpmnDocument::DOM_ELEMENT_BODY],
-                    ]
+                    ],
                 ]
             );
 
@@ -168,6 +177,7 @@ class WorkflowServiceProvider extends ServiceProvider
                 'callActivity',
                 $callActivityMap
             );
+
             return $bpmnRepository;
         });
         /**
@@ -179,6 +189,7 @@ class WorkflowServiceProvider extends ServiceProvider
             $instance->addDependencyManager(ScreensInScreen::class);
             $instance->addDependencyManager(ScriptsInProcess::class);
             $instance->addDependencyManager(ScriptsInScreen::class);
+
             return $instance;
         });
         /**
@@ -186,6 +197,7 @@ class WorkflowServiceProvider extends ServiceProvider
          */
         $this->app->bind(Mustache_Engine::class, function () {
             $op = new MustacheOptions;
+
             return new Mustache_Engine([
                 'helpers' => $op->helpers,
                 'pragmas' => [Mustache_Engine::PRAGMA_FILTERS],
@@ -195,5 +207,23 @@ class WorkflowServiceProvider extends ServiceProvider
         $this->app->bind('workflow.FormalExpression', function ($app) {
             return new FormalExpression();
         });
+
+        $this->app->bind(SoapClientInterface::class, function ($app, $request_config) {
+            return new NativeSoapClient($request_config['wsdl'], $request_config['options']);
+        });
+
+        $this->app->bind('WebServiceRequest', function ($app, $params) {
+            $dataSource = $params['dataSource'];
+
+            return new WebServiceRequest(
+                new SoapConfigBuilder(),
+                new SoapRequestBuilder(),
+                new SoapResponseMapper(),
+                new SoapServiceCaller(),
+                $dataSource
+            );
+        });
+
+        parent::register();
     }
 }

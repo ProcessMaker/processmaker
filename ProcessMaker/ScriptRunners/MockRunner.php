@@ -1,9 +1,10 @@
 <?php
 
 namespace ProcessMaker\ScriptRunners;
+
 use Illuminate\Support\Str;
-use ProcessMaker\Exception\ScriptTimeoutException;
 use Log;
+use ProcessMaker\Exception\ScriptTimeoutException;
 
 class MockRunner
 {
@@ -11,9 +12,10 @@ class MockRunner
     {
     }
 
-    public function run($code, $data, $config, $timeout, $user) {
+    public function run($code, $data, $config, $timeout, $user)
+    {
         if (app()->env !== 'testing') {
-            throw new \Exception("MockRunner is for tests only.");
+            throw new \Exception('MockRunner is for tests only.');
         }
 
         if (config('simulate_timeout')) {
@@ -27,8 +29,11 @@ class MockRunner
         } else {
             $res = ['response' => 1];
         }
+
         return ['output' => $res];
     }
 
-    public function setTokenId() {}
+    public function setTokenId()
+    {
+    }
 }

@@ -3,16 +3,16 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Cache;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Http\Controllers\Api\ProcessController as ApiProcessController;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
-use Illuminate\Http\Request;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
-use Illuminate\Auth\Access\AuthorizationException;
 use ProcessMaker\Traits\HasControllerAddons;
-use ProcessMaker\Http\Controllers\Api\ProcessController as ApiProcessController;
 
 class ProcessController extends Controller
 {
@@ -40,11 +40,11 @@ class ProcessController extends Controller
             return redirect()->route($redirect);
         }
 
-        $catConfig = (object)[
-            'labels' => (object)[
+        $catConfig = (object) [
+            'labels' => (object) [
                 'countColumn' => __('# Processes'),
             ],
-            'routes' => (object)[
+            'routes' => (object) [
                 'itemsIndexWeb' => 'processes.index',
                 'editCategoryWeb' => 'process-categories.edit',
                 'categoryListApi' => 'api.process_categories.index',
@@ -59,10 +59,10 @@ class ProcessController extends Controller
             ],
         ];
 
-        $listConfig = (object)[
+        $listConfig = (object) [
             'processes' => Process::all(),
             'countCategories' => ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count(),
-            'status' => $request->input('status')
+            'status' => $request->input('status'),
         ];
 
         return view('processes.index', compact('listConfig', 'catConfig'));
@@ -136,11 +136,13 @@ class ProcessController extends Controller
 
         $users->map(function ($item) {
             $item->type = 'user';
+
             return $item;
         });
 
         $groups->map(function ($item) {
             $item->type = 'group';
+
             return $item;
         });
 
@@ -169,6 +171,7 @@ class ProcessController extends Controller
         $process->user_id = \Auth::user()->getKey();
         $process->bpmn = '';
         $process->saveOrFail();
+
         return redirect('/processes');
     }
 
@@ -217,16 +220,19 @@ class ProcessController extends Controller
         $request->validate(Process::rules($request));
         $process->fill($request->input());
         $process->saveOrFail();
+
         return redirect('/processes');
     }
 
     public function destroy(Process $process) // destory existing process to DB / UI
     {
         $process->delete();
+
         return redirect('/processes');
     }
 
-    public function triggerStartEventApi(Process $process, Request $request) {
+    public function triggerStartEventApi(Process $process, Request $request)
+    {
         $api_request = new ApiProcessController();
         $response = $api_request->triggerStartEvent($process, $request);
         $instance_id = $response->data['_request']['id'];
@@ -237,7 +243,7 @@ class ProcessController extends Controller
     private function checkAuth()
     {
         $perm = 'view-processes|view-process-categories|view-scripts|view-screens|view-environment_variables';
-        switch (\Auth::user()->canAny($perm)) {
+        switch (\Auth::user()->canAnyFirst($perm)) {
             case 'view-processes':
                 return false; // already on index, continue with it
             case 'view-process-categories':

@@ -1,11 +1,10 @@
 <?php
 
-use ProcessMaker\Models\User;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\AnonymousUser;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
+use ProcessMaker\Models\User;
 
 class AddAnonymousUser extends Migration
 {
@@ -20,19 +19,7 @@ class AddAnonymousUser extends Migration
             $table->boolean('is_system')->after('is_administrator')->default(false);
         });
 
-        $user = User::updateOrCreate(
-            ['username' => AnonymousUser::ANONYMOUS_USERNAME],
-            [
-                'firstname' => 'Anonymous',
-                'lastname' => 'User',
-                'email' => 'anonymous-pm4-user@processmaker.com',
-                'status' => 'ACTIVE',
-                'password' => Hash::make(bin2hex(random_bytes(16))),
-            ]
-        );
-
-        $user->is_system = true;
-        $user->save();
+        // Creating user moved to seeder
     }
 
     /**

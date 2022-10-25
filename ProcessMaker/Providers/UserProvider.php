@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Providers;
 
 use Illuminate\Auth\EloquentUserProvider;
@@ -8,11 +9,9 @@ use ProcessMaker\Model\User;
 
 /**
  * Our User Provider which assists in finding users in our database
- * @package ProcessMaker\Providers
  */
 class UserProvider extends EloquentUserProvider
 {
-
     /**
      * Create our user provider, with the hashing implementation needed
      * @param HasherContract $hasher
@@ -54,9 +53,9 @@ class UserProvider extends EloquentUserProvider
      */
     public function retrieveByCredentials(array $credentials)
     {
-        if(isset($credentials['email'])) {
+        if (isset($credentials['email'])) {
             return User::where('email', $credentials['email'])->first();
-        } else if(isset($credentials['username'])) {
+        } elseif (isset($credentials['username'])) {
             return User::where('username', $credentials['username'])->first();
         }
         // No valid credential to find, let's return nothing

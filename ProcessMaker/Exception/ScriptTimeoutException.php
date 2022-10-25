@@ -6,7 +6,6 @@ use RuntimeException;
 
 /**
  * Script execution timeout exception.
- *
  */
 class ScriptTimeoutException extends RuntimeException
 {

@@ -24,9 +24,9 @@ class CreateSecurityLogsTable extends Migration
             $table->unsignedInteger('user_id')->nullable();
             $table->timestamp('occurred_at');
         });
-        
-        if (! Permission::where('name', 'view-security-logs')->first()) {
-            factory(Permission::class)->create([
+
+        if (!Permission::where('name', 'view-security-logs')->first()) {
+            Permission::factory()->create([
                 'title' => 'View Security Logs',
                 'name' => 'view-security-logs',
                 'group' => 'Security Logs',
@@ -42,7 +42,7 @@ class CreateSecurityLogsTable extends Migration
     public function down()
     {
         Schema::dropIfExists('security_logs');
-        
+
         if ($permission = Permission::where('name', 'view-security-logs')->first()) {
             $permission->delete();
         }

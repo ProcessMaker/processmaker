@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\User;
-use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class ScreenTest extends TestCase
 {
@@ -50,7 +50,7 @@ class ScreenTest extends TestCase
             'title' => 'Title Screen',
             'type' => 'FORM',
             'description' => $faker->sentence(10),
-            'screen_category_id' => factory(ScreenCategory::class)->create()->id
+            'screen_category_id' => ScreenCategory::factory()->create()->id,
         ]);
         $response->assertStatus(201);
     }
@@ -67,19 +67,18 @@ class ScreenTest extends TestCase
             'title' => 'Title Screen',
             'type' => 'DISPLAY',
             'description' => $faker->sentence(10),
-            'screen_category_id' => factory(ScreenCategory::class)->create()->id
+            'screen_category_id' => ScreenCategory::factory()->create()->id,
         ]);
 
         $response->assertStatus(201);
     }
-
 
     /**
      * Can not create a screen with an existing title
      */
     public function testNotCreateScreenWithTitleExists()
     {
-        factory(Screen::class)->create([
+        Screen::factory()->create([
             'title' => 'Title Screen',
         ]);
 
@@ -88,7 +87,7 @@ class ScreenTest extends TestCase
         $url = self::API_TEST_SCREEN;
         $response = $this->apiCall('POST', $url, [
             'title' => 'Title Screen',
-            'description' => $faker->sentence(10)
+            'description' => $faker->sentence(10),
         ]);
         $response->assertStatus(422);
         $this->assertArrayHasKey('message', $response->json());
@@ -102,7 +101,7 @@ class ScreenTest extends TestCase
         Screen::query()->delete();
         //add Screen to process
         $faker = Faker::create();
-        factory(Screen::class, 10)->create();
+        Screen::factory()->count(10)->create();
 
         //List Screen
         $url = self::API_TEST_SCREEN;
@@ -130,7 +129,7 @@ class ScreenTest extends TestCase
     public function testScreenListDates()
     {
         $title = 'testScreenTimezone';
-        $newEntity = factory(Screen::class)->create(['title' => $title]);
+        $newEntity = Screen::factory()->create(['title' => $title]);
         $route = self::API_TEST_SCREEN . '?filter=' . $title;
         $response = $this->apiCall('GET', $route);
 
@@ -151,7 +150,7 @@ class ScreenTest extends TestCase
     public function testListScreenWithQueryParameter()
     {
         $title = 'search Title Screen';
-        factory(Screen::class)->create([
+        Screen::factory()->create([
             'title' => $title,
         ]);
 
@@ -188,14 +187,14 @@ class ScreenTest extends TestCase
     public function testGetScreen()
     {
         //load Screen
-        $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->create([
+        $url = self::API_TEST_SCREEN . '/' . Screen::factory()->create([
             'config' => [
                 'field' => 'field 1',
                 'field 2' => [
                     'data1' => 'text',
-                    'data2' => 'text 2'
-                ]
-            ]
+                    'data2' => 'text 2',
+                ],
+            ],
         ])->id;
         $response = $this->apiCall('GET', $url);
         //Validate the answer is correct
@@ -211,10 +210,10 @@ class ScreenTest extends TestCase
     public function testUpdateScreenParametersRequired()
     {
         //Post should have the parameter title
-        $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->create()->id;
+        $url = self::API_TEST_SCREEN . '/' . Screen::factory()->create()->id;
         $response = $this->apiCall('PUT', $url, [
             'title' => '',
-            'description' => ''
+            'description' => '',
         ]);
         //Validate the answer is incorrect
         $response->assertStatus(422);
@@ -229,9 +228,9 @@ class ScreenTest extends TestCase
         //Post saved success
         $faker = Faker::create();
         $yesterday = \Carbon\Carbon::now()->subDay();
-        $screen = factory(Screen::class)->create([
-            "created_at" => $yesterday,
-            "type" => 'FORM',
+        $screen = Screen::factory()->create([
+            'created_at' => $yesterday,
+            'type' => 'FORM',
         ]);
         $original_attributes = $screen->getAttributes();
         $url = self::API_TEST_SCREEN . '/' . $screen->id;
@@ -240,7 +239,7 @@ class ScreenTest extends TestCase
             'description' => $faker->sentence(5),
             'config' => '{"foo":"bar"}',
             'type' => $screen->type,
-            'screen_category_id' => $screen->screen_category_id
+            'screen_category_id' => $screen->screen_category_id,
         ]);
 
         //Validate the answer is correct
@@ -263,8 +262,8 @@ class ScreenTest extends TestCase
     {
         $faker = Faker::create();
         $type = 'FORM';
-        $screen = factory(Screen::class)->create([
-            'type' => $type
+        $screen = Screen::factory()->create([
+            'type' => $type,
         ]);
         $url = self::API_TEST_SCREEN . '/' . $screen->id;
         $response = $this->apiCall('PUT', $url, [
@@ -272,7 +271,7 @@ class ScreenTest extends TestCase
             'type' => 'DETAIL',
             'description' => $faker->sentence(5),
             'config' => '',
-            'screen_category_id' => $screen->screen_category_id
+            'screen_category_id' => $screen->screen_category_id,
         ]);
         $response->assertStatus(204);
     }
@@ -284,15 +283,15 @@ class ScreenTest extends TestCase
     {
         $faker = Faker::create();
         $config = '{"foo":"bar"}';
-        $screen = factory(Screen::class)->create([
-            'config' => $config
+        $screen = Screen::factory()->create([
+            'config' => $config,
         ]);
         $url = self::API_TEST_SCREEN . '/' . $screen->id . '/duplicate';
         $response = $this->apiCall('PUT', $url, [
-            'title' => "TITLE",
+            'title' => 'TITLE',
             'type' => 'FORM',
             'description' => $faker->sentence(5),
-            'screen_category_id' => $screen->screen_category_id
+            'screen_category_id' => $screen->screen_category_id,
         ]);
         $new_screen = Screen::find($response->json()['id']);
         $this->assertEquals($config, $new_screen->config);
@@ -306,7 +305,7 @@ class ScreenTest extends TestCase
         //Post saved success
         $faker = Faker::create();
         $title = 'Some title';
-        $screen = factory(Screen::class)->create([
+        $screen = Screen::factory()->create([
             'title' => $title,
             'type' => 'DISPLAY',
         ]);
@@ -316,7 +315,7 @@ class ScreenTest extends TestCase
             'description' => $faker->sentence(5),
             'config' => '',
             'type' => 'DISPLAY',
-            'screen_category_id' => $screen->screen_category_id
+            'screen_category_id' => $screen->screen_category_id,
         ]);
         //Validate the answer is correct
         $response->assertStatus(204);
@@ -328,7 +327,7 @@ class ScreenTest extends TestCase
     public function testDeleteScreen()
     {
         //Remove Screen
-        $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->create()->id;
+        $url = self::API_TEST_SCREEN . '/' . Screen::factory()->create()->id;
         $response = $this->apiCall('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(204);
@@ -340,7 +339,7 @@ class ScreenTest extends TestCase
     public function testDeleteScreenNotExist()
     {
         //screen not exist
-        $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->make()->id;
+        $url = self::API_TEST_SCREEN . '/' . Screen::factory()->make()->id;
         $response = $this->apiCall('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(405);
@@ -348,12 +347,12 @@ class ScreenTest extends TestCase
 
     public function testCategoryNotRequiredIfAlreadySavedInDatabase()
     {
-        $screen = factory(Screen::class)->create();
+        $screen = Screen::factory()->create();
         $url = route('api.screens.update', $screen);
         $params = [
             'title' => 'Title Screen',
             'type' => 'FORM',
-            'description' => 'Description.'
+            'description' => 'Description.',
         ];
         $response = $this->apiCall('PUT', $url, $params);
         $response->assertStatus(204);
@@ -365,10 +364,10 @@ class ScreenTest extends TestCase
         $params = [
             'title' => 'Title Screen',
             'type' => 'FORM',
-            'description' => 'Description.'
+            'description' => 'Description.',
         ];
 
-        $err = function($response) {
+        $err = function ($response) {
             return $response->json()['errors']['screen_category_id'][0];
         };
 
@@ -376,8 +375,8 @@ class ScreenTest extends TestCase
         $response = $this->apiCall('POST', $url, $params);
         $this->assertEquals('The Screen category id field is required.', $err($response));
 
-        $category1 = factory(ScreenCategory::class)->create(['status' => 'ACTIVE']);
-        $category2 = factory(ScreenCategory::class)->create(['status' => 'ACTIVE']);
+        $category1 = ScreenCategory::factory()->create(['status' => 'ACTIVE']);
+        $category2 = ScreenCategory::factory()->create(['status' => 'ACTIVE']);
 
         $params['screen_category_id'] = $category1->id . ',foo';
         $response = $this->apiCall('POST', $url, $params);
@@ -399,15 +398,14 @@ class ScreenTest extends TestCase
     public function testFilterByCategory()
     {
         $name = 'Search title Category Screen';
-        $category = factory(ScreenCategory::class)->create([
+        $category = ScreenCategory::factory()->create([
             'name' => $name,
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
-
-        factory(Screen::class)->create([
+        Screen::factory()->create([
             'screen_category_id' => $category->getKey(),
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         //List Screen with filter option
@@ -430,7 +428,6 @@ class ScreenTest extends TestCase
         $this->assertEquals($name, $json['meta']['filter']);
         //verify structure of model
         $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
-
 
         //List Screen without peers
         $name = 'Search category that does not exist';
@@ -457,31 +454,31 @@ class ScreenTest extends TestCase
 
     public function testUpdateScreenCategories()
     {
-        $screen = factory(Screen::class)->create();
+        $screen = Screen::factory()->create();
         $url = route('api.screens.update', $screen);
         $params = [
             'title' => 'Title Screen',
             'type' => 'FORM',
             'description' => 'Description.',
-            'screen_category_id' => factory(ScreenCategory::class)->create()->getKey() . ',' . factory(ScreenCategory::class)->create()->getKey()
+            'screen_category_id' => ScreenCategory::factory()->create()->getKey() . ',' . ScreenCategory::factory()->create()->getKey(),
         ];
         $response = $this->apiCall('PUT', $url, $params);
         $response->assertStatus(204);
     }
 
-
-    public function testWithUserWithoutAuthorization() {
-        $screen = factory(Screen::class)->create();
+    public function testWithUserWithoutAuthorization()
+    {
+        $screen = Screen::factory()->create();
         $url = route('api.screens.update', $screen);
         $params = [
             'title' => 'Title Screen',
             'type' => 'FORM',
             'description' => 'Description.',
-            'screen_category_id' => factory(ScreenCategory::class)->create()->getKey() . ',' . factory(ScreenCategory::class)->create()->getKey()
+            'screen_category_id' => ScreenCategory::factory()->create()->getKey() . ',' . ScreenCategory::factory()->create()->getKey(),
         ];
 
         //The call is done without an authenticated user so it should return 401
-        $response = $this->actingAs(factory(User::class)->create())
+        $response = $this->actingAs(User::factory()->create())
             ->json('PUT', $url, $params);
         $response->assertStatus(401);
     }
@@ -489,9 +486,9 @@ class ScreenTest extends TestCase
     public function testPreviewScreen()
     {
         $this->markTestSkipped('Skip consolidated screen preview');
-        $child = factory(Screen::class)->create([
+        $child = Screen::factory()->create([
             'config' => json_decode(
-                file_get_contents(__DIR__ . "/../../Fixtures/simple_child_screen.json")
+                file_get_contents(__DIR__ . '/../../Fixtures/simple_child_screen.json')
             ),
             'watchers' => [['name' => 'child1'], ['name' => 'child2']],
             'computed' => [['id' => 1, 'name' => 'c1'], ['id' => 2, 'name' => 'c2']],
@@ -499,7 +496,7 @@ class ScreenTest extends TestCase
         ]);
 
         $previewConfig = json_decode(
-            file_get_contents(__DIR__ . "/../../Fixtures/simple_parent_screen.json"),
+            file_get_contents(__DIR__ . '/../../Fixtures/simple_parent_screen.json'),
             true
         );
         $previewConfig[0]['items'][1]['config']['screen'] = $child->id;
@@ -515,7 +512,7 @@ class ScreenTest extends TestCase
         $response = $this->apiCall('POST', $url, $preview);
 
         $screen = $response->json();
-        
+
         $json = $response->json();
         $this->assertEquals('<p>Parent</p>', $json['config'][0]['items'][0]['config']['content']);
         $this->assertEquals('<p>Child</p>', $json['config'][0]['items'][1]['config']['content']);

@@ -2,11 +2,11 @@
 
 namespace Tests\Feature\Admin;
 
-use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
-use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
+use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class GroupTest extends TestCase
 {
@@ -31,7 +31,7 @@ class GroupTest extends TestCase
      */
     public function testEditRoute()
     {
-        $groupId = factory(Group::class)->create()->getKey();
+        $groupId = Group::factory()->create()->getKey();
         // get the URL
         $response = $this->webCall('GET', '/admin/groups/' . $groupId . '/edit');
 

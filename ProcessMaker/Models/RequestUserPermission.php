@@ -2,13 +2,12 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
 
-class RequestUserPermission extends Model
+class RequestUserPermission extends ProcessMakerModel
 {
-    protected $table = "request_user_permissions";
+    protected $table = 'request_user_permissions';
 
     protected $connection = 'data';
 

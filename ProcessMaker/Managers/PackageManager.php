@@ -23,12 +23,12 @@ class PackageManager
 
     /**
      * List packages
-     *
      */
     public function listPackages()
     {
         $list = array_keys($this->packages);
         sort($list);
+
         return $list;
     }
 
@@ -51,5 +51,4 @@ class PackageManager
     {
         unset($this->packages[$name]);
     }
-
 }

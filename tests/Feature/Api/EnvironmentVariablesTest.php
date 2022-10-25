@@ -2,12 +2,12 @@
 
 namespace Tests\Feature\Api;
 
-use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Models\User;
 use ProcessMaker\Models\EnvironmentVariable;
+use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class EnvironmentVariablesTest extends TestCase
 {
@@ -21,7 +21,7 @@ class EnvironmentVariablesTest extends TestCase
         $data = [
             'name' => 'testvariable',
             'description' => 'test description',
-            'value' => 'testsecret'
+            'value' => 'testsecret',
         ];
 
         $response = $this->apiCall('POST', self::API_TEST_VARIABLES, $data);
@@ -39,8 +39,8 @@ class EnvironmentVariablesTest extends TestCase
     /** @test */
     public function it_should_store_values_as_encrypted()
     {
-        $variable = factory(EnvironmentVariable::class)->create([
-            'value' => 'testvalue'
+        $variable = EnvironmentVariable::factory()->create([
+            'value' => 'testvalue',
         ]);
         $this->assertDatabaseMissing('environment_variables', ['value' => 'testvalue']);
         // Now fetch record
@@ -52,14 +52,14 @@ class EnvironmentVariablesTest extends TestCase
     public function it_should_have_validation_errors_on_name_uniqueness_during_create()
     {
         // Create an environment variable with a set name
-        factory(EnvironmentVariable::class)->create([
-            'name' => 'testname'
+        EnvironmentVariable::factory()->create([
+            'name' => 'testname',
         ]);
         // Data with a duplicate name
         $data = [
             'name' => 'testname',
             'description' => 'test',
-            'value' => 'testvalue'
+            'value' => 'testvalue',
         ];
         $response = $this->apiCall('POST', self::API_TEST_VARIABLES, $data);
 
@@ -78,7 +78,7 @@ class EnvironmentVariablesTest extends TestCase
         $data = [
             'name' => 'test name',
             'description' => 'test',
-            'value' => 'testvalue'
+            'value' => 'testvalue',
         ];
         $response = $this->apiCall('POST', self::API_TEST_VARIABLES, $data);
 
@@ -90,9 +90,9 @@ class EnvironmentVariablesTest extends TestCase
     public function it_should_successfully_return_an_environment_variable()
     {
         // Create an environment variable with a set name
-        $variable = factory(EnvironmentVariable::class)->create([
+        $variable = EnvironmentVariable::factory()->create([
             'name' => 'testname',
-            'value' => 'testvalue'
+            'value' => 'testvalue',
         ]);
         $variable->fresh();
         // Is now fetch the variable and see if success
@@ -108,26 +108,25 @@ class EnvironmentVariablesTest extends TestCase
         // Ensure the JSON response does NOT have value attribute, as this should be hidden
     }
 
-
     /** @test */
     public function it_should_have_validation_errors_on_name_uniqueness_during_update()
     {
         // Create an environment variable with a set name for the update
-        $variable = factory(EnvironmentVariable::class)->create([
+        $variable = EnvironmentVariable::factory()->create([
             'name' => 'testname',
-            'value' => 'testvalue'
+            'value' => 'testvalue',
         ]);
         // Create a variable with another name that will clash with the uniqueness rule
-        factory(EnvironmentVariable::class)->create([
+        EnvironmentVariable::factory()->create([
             'name' => 'anothername',
-            'value' => 'testvalue'
+            'value' => 'testvalue',
         ]);
 
         $variable->fresh();
         $data = [
             'name' => 'anothername',
             'description' => 'testdescription',
-            'value' => 'differentvalue'
+            'value' => 'differentvalue',
         ];
         $response = $this->apiCall('PUT', self::API_TEST_VARIABLES . '/' . $variable->id, $data);
 
@@ -139,15 +138,15 @@ class EnvironmentVariablesTest extends TestCase
     public function it_should_successfully_update_an_environment_variable()
     {
         // Create an environment variable with a set name
-        $variable = factory(EnvironmentVariable::class)->create([
+        $variable = EnvironmentVariable::factory()->create([
             'name' => 'testname',
-            'value' => 'testvalue'
+            'value' => 'testvalue',
         ]);
         $variable->fresh();
         $data = [
             'name' => 'newname',
             'description' => 'newdescription',
-            'value' => 'newvalue'
+            'value' => 'newvalue',
         ];
         $response = $this->apiCall('PUT', self::API_TEST_VARIABLES . '/' . $variable->id, $data);
 
@@ -161,7 +160,6 @@ class EnvironmentVariablesTest extends TestCase
         $this->assertEquals('newvalue', $variable->value);
     }
 
-
     /** @test */
     public function it_should_return_paginated_environment_variables_during_index()
     {
@@ -169,7 +167,7 @@ class EnvironmentVariablesTest extends TestCase
         EnvironmentVariable::whereNotNull('id')->delete();
 
         $this->withoutExceptionHandling();
-        factory(EnvironmentVariable::class, 50)->create();
+        EnvironmentVariable::factory()->count(50)->create();
         // Fetch from index
         $response = $this->apiCall('GET', self::API_TEST_VARIABLES);
         // Verify 200 status code
@@ -184,10 +182,10 @@ class EnvironmentVariablesTest extends TestCase
     /** @test */
     public function it_should_return_filtered_environment_variables()
     {
-        factory(EnvironmentVariable::class, 50)->create();
+        EnvironmentVariable::factory()->count(50)->create();
         // Put in a match
-        factory(EnvironmentVariable::class)->create([
-            'name' => 'matchingfield'
+        EnvironmentVariable::factory()->create([
+            'name' => 'matchingfield',
         ]);
         // Fetch from index
         $response = $this->apiCall('GET', self::API_TEST_VARIABLES . '?filter=' . urlencode('matchingfield'));
@@ -203,9 +201,9 @@ class EnvironmentVariablesTest extends TestCase
     public function it_should_successfully_remove_environment_variable()
     {
         // Create an environment variable with a set name
-        $variable = factory(EnvironmentVariable::class)->create([
+        $variable = EnvironmentVariable::factory()->create([
             'name' => 'testname',
-            'value' => 'testvalue'
+            'value' => 'testvalue',
         ]);
         $variable->fresh();
         $response = $this->apiCall('DELETE', self::API_TEST_VARIABLES . '/' . $variable->id);
@@ -214,7 +212,7 @@ class EnvironmentVariablesTest extends TestCase
 
         $this->assertDatabaseMissing('environment_variables', [
             'name' => 'testname',
-            'value' => 'testvalue'
+            'value' => 'testvalue',
         ]);
     }
 
@@ -222,15 +220,15 @@ class EnvironmentVariablesTest extends TestCase
     public function it_value_does_not_change_if_value_is_null()
     {
         // Create an environment variable with a set name
-        $variable = factory(EnvironmentVariable::class)->create([
+        $variable = EnvironmentVariable::factory()->create([
             'name' => 'testname',
-            'value' => 'testvalue'
+            'value' => 'testvalue',
         ]);
         $variable->fresh();
         $data = [
             'name' => 'newname',
             'description' => 'newdescription',
-            'value' => ''
+            'value' => '',
         ];
         $response = $this->apiCall('PUT', self::API_TEST_VARIABLES . '/' . $variable->id, $data);
 

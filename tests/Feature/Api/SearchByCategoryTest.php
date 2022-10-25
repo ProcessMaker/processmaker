@@ -11,9 +11,9 @@ use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
+use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
-use Tests\Feature\Shared\RequestHelper;
 
 /**
  * Tests routes related to processes / CRUD related methods
@@ -22,7 +22,6 @@ use Tests\Feature\Shared\RequestHelper;
  */
 class SearchByCategoryTest extends TestCase
 {
-
     use WithFaker;
     use ResourceAssertionsTrait;
     use RequestHelper;
@@ -32,14 +31,14 @@ class SearchByCategoryTest extends TestCase
      */
     public function testSearchProcessesByCategory()
     {
-        $cata = factory(ProcessCategory::class)->create(['name' => 'category_a']);
-        $catb = factory(ProcessCategory::class)->create(['name' => 'category_b']);
-        $catc = factory(ProcessCategory::class)->create(['name' => 'category_c']);
+        $cata = ProcessCategory::factory()->create(['name' => 'category_a']);
+        $catb = ProcessCategory::factory()->create(['name' => 'category_b']);
+        $catc = ProcessCategory::factory()->create(['name' => 'category_c']);
 
-        $entity1 = factory(Process::class)->create();
-        $entity2 = factory(Process::class)->create();
-        $entity3 = factory(Process::class)->create();
-        $entity4 = factory(Process::class)->create();
+        $entity1 = Process::factory()->create();
+        $entity2 = Process::factory()->create();
+        $entity3 = Process::factory()->create();
+        $entity4 = Process::factory()->create();
 
         $entity1->categories()->attach($cata);
         $entity1->categories()->attach($catb);
@@ -64,9 +63,9 @@ class SearchByCategoryTest extends TestCase
         // check that the returned list and metadata shows all the processes with category_a
         $response = $this->apiCall('GET', $route . '?filter=category_a&per_page=10');
         $data = $response->json('data');
-        $dataIds = array_map(function($item) {
+        $dataIds = array_map(function ($item) {
             return $item['id'];
-        },$data);
+        }, $data);
         $meta = $response->json('meta');
         $this->assertCount(3, $data);
         $this->assertEquals(3, $meta['count']);
@@ -75,9 +74,9 @@ class SearchByCategoryTest extends TestCase
         // check that the returned list and metadata shows all the processes with category_c
         $response = $this->apiCall('GET', $route . '?filter=category_c&per_page=10');
         $data = $response->json('data');
-        $dataIds = array_map(function($item) {
+        $dataIds = array_map(function ($item) {
             return $item['id'];
-        },$data);
+        }, $data);
         $meta = $response->json('meta');
         $this->assertCount(2, $data);
         $this->assertEquals(2, $meta['count']);
@@ -86,9 +85,9 @@ class SearchByCategoryTest extends TestCase
         // check that the returned list and metadata is empty with filter by zyx
         $response = $this->apiCall('GET', $route . '?filter=zyx&per_page=10');
         $data = $response->json('data');
-        $dataIds = array_map(function($item) {
+        $dataIds = array_map(function ($item) {
             return $item['id'];
-        },$data);
+        }, $data);
         $meta = $response->json('meta');
         $this->assertCount(0, $data);
         $this->assertEquals(0, $meta['count']);
@@ -99,14 +98,14 @@ class SearchByCategoryTest extends TestCase
      */
     public function testSearchScreensByCategory()
     {
-        $cata = factory(ScreenCategory::class)->create(['name' => 'category_a']);
-        $catb = factory(ScreenCategory::class)->create(['name' => 'category_b']);
-        $catc = factory(ScreenCategory::class)->create(['name' => 'category_c']);
+        $cata = ScreenCategory::factory()->create(['name' => 'category_a']);
+        $catb = ScreenCategory::factory()->create(['name' => 'category_b']);
+        $catc = ScreenCategory::factory()->create(['name' => 'category_c']);
 
-        $entity1 = factory(Screen::class)->create();
-        $entity2 = factory(Screen::class)->create();
-        $entity3 = factory(Screen::class)->create();
-        $entity4 = factory(Screen::class)->create();
+        $entity1 = Screen::factory()->create();
+        $entity2 = Screen::factory()->create();
+        $entity3 = Screen::factory()->create();
+        $entity4 = Screen::factory()->create();
 
         $entity1->categories()->attach($cata);
         $entity1->categories()->attach($catb);
@@ -131,9 +130,9 @@ class SearchByCategoryTest extends TestCase
         // check that the returned list and metadata shows all the processes with category_a
         $response = $this->apiCall('GET', $route . '?filter=category_a&per_page=10');
         $data = $response->json('data');
-        $dataIds = array_map(function($item) {
+        $dataIds = array_map(function ($item) {
             return $item['id'];
-        },$data);
+        }, $data);
         $meta = $response->json('meta');
         $this->assertCount(3, $data);
         $this->assertEquals(3, $meta['count']);
@@ -142,9 +141,9 @@ class SearchByCategoryTest extends TestCase
         // check that the returned list and metadata shows all the processes with category_c
         $response = $this->apiCall('GET', $route . '?filter=category_c&per_page=10');
         $data = $response->json('data');
-        $dataIds = array_map(function($item) {
+        $dataIds = array_map(function ($item) {
             return $item['id'];
-        },$data);
+        }, $data);
         $meta = $response->json('meta');
         $this->assertCount(2, $data);
         $this->assertEquals(2, $meta['count']);
@@ -153,9 +152,9 @@ class SearchByCategoryTest extends TestCase
         // check that the returned list and metadata is empty with filter by zyx
         $response = $this->apiCall('GET', $route . '?filter=zyx&per_page=10');
         $data = $response->json('data');
-        $dataIds = array_map(function($item) {
+        $dataIds = array_map(function ($item) {
             return $item['id'];
-        },$data);
+        }, $data);
         $meta = $response->json('meta');
         $this->assertCount(0, $data);
         $this->assertEquals(0, $meta['count']);
@@ -166,14 +165,14 @@ class SearchByCategoryTest extends TestCase
      */
     public function testSearchScriptsByCategory()
     {
-        $cata = factory(ScriptCategory::class)->create(['name' => 'category_a']);
-        $catb = factory(ScriptCategory::class)->create(['name' => 'category_b']);
-        $catc = factory(ScriptCategory::class)->create(['name' => 'category_c']);
+        $cata = ScriptCategory::factory()->create(['name' => 'category_a']);
+        $catb = ScriptCategory::factory()->create(['name' => 'category_b']);
+        $catc = ScriptCategory::factory()->create(['name' => 'category_c']);
 
-        $entity1 = factory(Script::class)->create();
-        $entity2 = factory(Script::class)->create();
-        $entity3 = factory(Script::class)->create();
-        $entity4 = factory(Script::class)->create();
+        $entity1 = Script::factory()->create();
+        $entity2 = Script::factory()->create();
+        $entity3 = Script::factory()->create();
+        $entity4 = Script::factory()->create();
 
         $entity1->categories()->attach($cata);
         $entity1->categories()->attach($catb);
@@ -198,9 +197,9 @@ class SearchByCategoryTest extends TestCase
         // check that the returned list and metadata shows all the processes with category_a
         $response = $this->apiCall('GET', $route . '?filter=category_a&per_page=10');
         $data = $response->json('data');
-        $dataIds = array_map(function($item) {
+        $dataIds = array_map(function ($item) {
             return $item['id'];
-        },$data);
+        }, $data);
         $meta = $response->json('meta');
         $this->assertCount(3, $data);
         $this->assertEquals(3, $meta['count']);
@@ -209,9 +208,9 @@ class SearchByCategoryTest extends TestCase
         // check that the returned list and metadata shows all the processes with category_c
         $response = $this->apiCall('GET', $route . '?filter=category_c&per_page=10');
         $data = $response->json('data');
-        $dataIds = array_map(function($item) {
+        $dataIds = array_map(function ($item) {
             return $item['id'];
-        },$data);
+        }, $data);
         $meta = $response->json('meta');
         $this->assertCount(2, $data);
         $this->assertEquals(2, $meta['count']);
@@ -220,9 +219,9 @@ class SearchByCategoryTest extends TestCase
         // check that the returned list and metadata is empty with filter by zyx
         $response = $this->apiCall('GET', $route . '?filter=zyx&per_page=10');
         $data = $response->json('data');
-        $dataIds = array_map(function($item) {
+        $dataIds = array_map(function ($item) {
             return $item['id'];
-        },$data);
+        }, $data);
         $meta = $response->json('meta');
         $this->assertCount(0, $data);
         $this->assertEquals(0, $meta['count']);

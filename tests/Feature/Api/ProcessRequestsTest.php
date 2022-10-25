@@ -7,14 +7,14 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Models\Comment;
+use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
-use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\User;
-use ProcessMaker\Models\Comment;
 
 /**
  * Tests routes related to processes / CRUD related methods
@@ -41,7 +41,7 @@ class ProcessRequestsTest extends TestCase
         'completed_at',
         'initiated_at',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
@@ -51,7 +51,7 @@ class ProcessRequestsTest extends TestCase
     {
         ProcessRequest::query()->delete();
 
-        factory(ProcessRequest::class, 10)->create();
+        ProcessRequest::factory()->count(10)->create();
 
         $response = $this->apiCall('GET', self::API_TEST_URL);
 
@@ -74,7 +74,7 @@ class ProcessRequestsTest extends TestCase
     public function testScreenListDates()
     {
         $name = 'testRequestTimezone';
-        $newEntity = factory(ProcessRequest::class)->create(['name' => $name]);
+        $newEntity = ProcessRequest::factory()->create(['name' => $name]);
         $route = self::API_TEST_URL . '?filter=' . $name;
         $response = $this->apiCall('GET', $route);
 
@@ -97,7 +97,7 @@ class ProcessRequestsTest extends TestCase
         $requestname = 'mytestrequestnameincludesdata';
 
         //Create requests with data
-        factory(ProcessRequest::class)->create([
+        ProcessRequest::factory()->create([
             'name' => $requestname,
             'data' => ['test' => 'value1'],
         ]);
@@ -118,12 +118,12 @@ class ProcessRequestsTest extends TestCase
         $requestname = 'mytestrequestnameorderbydata';
 
         //Create requests with data
-        factory(ProcessRequest::class)->create([
+        ProcessRequest::factory()->create([
             'name' => $requestname,
             'data' => ['test' => 'value1'],
         ]);
 
-        factory(ProcessRequest::class)->create([
+        ProcessRequest::factory()->create([
             'name' => $requestname,
             'data' => ['test' => 'value2'],
         ]);
@@ -152,7 +152,7 @@ class ProcessRequestsTest extends TestCase
     {
         $requestname = 'mytestrequestname';
 
-        factory(ProcessRequest::class)->create([
+        ProcessRequest::factory()->create([
             'name' => $requestname,
         ]);
 
@@ -181,8 +181,8 @@ class ProcessRequestsTest extends TestCase
      */
     public function testWithPagination()
     {
-        $process = factory(Process::class)->create();
-        factory(ProcessRequest::class, 5)->create([
+        $process = Process::factory()->create();
+        ProcessRequest::factory()->count(5)->create([
             'name' => $process->name,
             'process_id' => $process->id,
         ]);
@@ -207,14 +207,14 @@ class ProcessRequestsTest extends TestCase
      */
     public function testListRequestWithType()
     {
-        $in_progress = factory(ProcessRequest::class)->create([
+        $in_progress = ProcessRequest::factory()->create([
             'status' => 'ACTIVE',
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ]);
 
-        $completed = factory(ProcessRequest::class)->create([
+        $completed = ProcessRequest::factory()->create([
             'status' => 'COMPLETED',
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ]);
 
         $response = $this->apiCall('GET', self::API_TEST_URL . '/?type=completed');
@@ -233,9 +233,9 @@ class ProcessRequestsTest extends TestCase
      */
     public function testListRequestWithIncludes()
     {
-        $process = factory(Process::class)->create();
+        $process = Process::factory()->create();
 
-        factory(ProcessRequest::class)->create([
+        ProcessRequest::factory()->create([
             'process_id' => $process->id,
         ]);
 
@@ -249,8 +249,8 @@ class ProcessRequestsTest extends TestCase
      */
     public function testListRequestViewAllPermission()
     {
-        $this->user = factory(User::class)->create(['status'=>'ACTIVE']);
-        $processRequest = factory(ProcessRequest::class)->create([]);
+        $this->user = User::factory()->create(['status'=>'ACTIVE']);
+        $processRequest = ProcessRequest::factory()->create([]);
 
         $response = $this->apiCall('GET', self::API_TEST_URL);
         $json = $response->json();
@@ -270,7 +270,7 @@ class ProcessRequestsTest extends TestCase
     public function testGetRequest()
     {
         //get the id from the factory
-        $request = factory(ProcessRequest::class)->create()->id;
+        $request = ProcessRequest::factory()->create()->id;
 
         //load api
         $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $request);
@@ -287,12 +287,12 @@ class ProcessRequestsTest extends TestCase
      */
     public function testUpdateProcessRequestParametersRequired()
     {
-        $id = factory(ProcessRequest::class)->create(['name' => 'mytestrequestname'])->id;
+        $id = ProcessRequest::factory()->create(['name' => 'mytestrequestname'])->id;
         //The post must have the required parameters
         $url = self::API_TEST_URL . '/' . $id;
 
         $response = $this->apiCall('PUT', $url, [
-            'name' => null
+            'name' => null,
         ]);
 
         //Validate the header status code
@@ -306,7 +306,7 @@ class ProcessRequestsTest extends TestCase
     {
         $faker = Faker::create();
 
-        $url = self::API_TEST_URL . '/' . factory(ProcessRequest::class)->create()->id;
+        $url = self::API_TEST_URL . '/' . ProcessRequest::factory()->create()->id;
 
         //Load the starting request data
         $verify = $this->apiCall('GET', $url);
@@ -315,7 +315,7 @@ class ProcessRequestsTest extends TestCase
         $response = $this->apiCall('PUT', $url, [
             'name' => $faker->unique()->name,
             'data' => '{"test":1}',
-            'process_id' => json_decode($verify->getContent())->process_id
+            'process_id' => json_decode($verify->getContent())->process_id,
         ]);
 
         //Validate the header status code
@@ -333,11 +333,11 @@ class ProcessRequestsTest extends TestCase
      */
     public function testUpdateProcessRequestTitleExists()
     {
-        $request1 = factory(ProcessRequest::class)->create([
+        $request1 = ProcessRequest::factory()->create([
             'name' => 'MyRequestName',
         ]);
 
-        $request2 = factory(ProcessRequest::class)->create();
+        $request2 = ProcessRequest::factory()->create();
 
         $url = self::API_TEST_URL . '/' . $request2->id;
 
@@ -357,26 +357,26 @@ class ProcessRequestsTest extends TestCase
         // We need an admin user and a non-admin user
         $admin = $this->user;
 
-        $nonAdmin = factory(User::class)->create([
-            'is_administrator' => false
+        $nonAdmin = User::factory()->create([
+            'is_administrator' => false,
         ]);
 
         // Create a single process in order to create
         // two process requests with the same process
-        $process = factory(Process::class)->create([
-            'user_id' => $admin->id
+        $process = Process::factory()->create([
+            'user_id' => $admin->id,
         ]);
 
         // Create the initial process request
-        $initialProcessVersionRequest = factory(ProcessRequest::class)->create([
+        $initialProcessVersionRequest = ProcessRequest::factory()->create([
             'user_id' => $nonAdmin->id,
-            'process_id' => $process->id
+            'process_id' => $process->id,
         ]);
 
         // Attempt to cancel a request
         $this->user = $nonAdmin;
         $route = route('api.requests.update', [$initialProcessVersionRequest->id]);
-        $response = $this->apiCall('PUT', $route, ['status' => 'CANCELED',]);
+        $response = $this->apiCall('PUT', $route, ['status' => 'CANCELED']);
 
         // Confirm the user does not have access
         $response->assertStatus(403);
@@ -387,21 +387,21 @@ class ProcessRequestsTest extends TestCase
         $response = $this->apiCall('PUT', $route, [
             'name' => 'Update Process',
             'description' => 'Update Test',
-            'cancel_request' => ['users' => [$nonAdmin->id], 'groups' => []]
+            'cancel_request' => ['users' => [$nonAdmin->id], 'groups' => []],
         ]);
 
         // Create a second process request with the
         // same process, this time the process request
         // will honor the new process configuration
-        $secondProcessVersionRequest = factory(ProcessRequest::class)->create([
+        $secondProcessVersionRequest = ProcessRequest::factory()->create([
             'user_id' => $nonAdmin->id,
-            'process_id' => $process->id
+            'process_id' => $process->id,
         ]);
 
         // Attempt to cancel a request
         $this->user = $nonAdmin;
         $route = route('api.requests.update', [$secondProcessVersionRequest->id]);
-        $response = $this->apiCall('PUT', $route, ['status' => 'CANCELED',]);
+        $response = $this->apiCall('PUT', $route, ['status' => 'CANCELED']);
 
         // Assert that the API updated
         $response->assertStatus(204);
@@ -414,14 +414,14 @@ class ProcessRequestsTest extends TestCase
     {
         $this->user->is_administrator = false;
         $this->user->saveOrFail();
-        $request = factory(ProcessRequest::class)->create(['status' => 'ACTIVE']);
+        $request = ProcessRequest::factory()->create(['status' => 'ACTIVE']);
 
         // give the user editData permission to get past the route check
         $request->processVersion->usersCanEditData()->sync([
             $this->user->id => [
                 'method' => 'EDIT_DATA',
-                'process_id' => $request->process->id
-            ]
+                'process_id' => $request->process->id,
+            ],
         ]);
 
         $route = route('api.requests.update', [$request->id]);
@@ -466,30 +466,30 @@ class ProcessRequestsTest extends TestCase
      */
     public function testDeleteParentProcessRequestShouldRemoveRequestAndTokensForParentAndChildren()
     {
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
         // Prepare data
-        $parentProcessRequest = factory(ProcessRequest::class)->create(['status' => 'ACTIVE']);
+        $parentProcessRequest = ProcessRequest::factory()->create(['status' => 'ACTIVE']);
 
-        $childProcessRequest1 = factory(ProcessRequest::class)->create([
+        $childProcessRequest1 = ProcessRequest::factory()->create([
             'status' => 'ACTIVE',
-            'parent_request_id' => $parentProcessRequest->id
+            'parent_request_id' => $parentProcessRequest->id,
         ]);
 
-        $childProcessRequest2 = factory(ProcessRequest::class)->create([
+        $childProcessRequest2 = ProcessRequest::factory()->create([
             'status' => 'ACTIVE',
-            'parent_request_id' => $childProcessRequest1->id
+            'parent_request_id' => $childProcessRequest1->id,
         ]);
 
-        $parentTokens = factory(ProcessRequestToken::class, 3)->create([
-            'process_request_id' => $parentProcessRequest->id
+        $parentTokens = ProcessRequestToken::factory()->count(3)->create([
+            'process_request_id' => $parentProcessRequest->id,
         ]);
 
-        $childTokens1 = factory(ProcessRequestToken::class, 4)->create([
-            'process_request_id' => $childProcessRequest1->id
+        $childTokens1 = ProcessRequestToken::factory()->count(4)->create([
+            'process_request_id' => $childProcessRequest1->id,
         ]);
 
-        $childTokens2 = factory(ProcessRequestToken::class, 5)->create([
-            'process_request_id' => $childProcessRequest2->id
+        $childTokens2 = ProcessRequestToken::factory()->count(5)->create([
+            'process_request_id' => $childProcessRequest2->id,
         ]);
 
         // Assert database has parent and child requests
@@ -525,30 +525,30 @@ class ProcessRequestsTest extends TestCase
      */
     public function testDeleteChildProcessRequestShouldRemoveRequestAndTokensForChildren()
     {
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
         // Prepare data
-        $parentProcessRequest = factory(ProcessRequest::class)->create(['status' => 'ACTIVE']);
+        $parentProcessRequest = ProcessRequest::factory()->create(['status' => 'ACTIVE']);
 
-        $childProcessRequest1 = factory(ProcessRequest::class)->create([
+        $childProcessRequest1 = ProcessRequest::factory()->create([
             'status' => 'ACTIVE',
-            'parent_request_id' => $parentProcessRequest->id
+            'parent_request_id' => $parentProcessRequest->id,
         ]);
 
-        $childProcessRequest2 = factory(ProcessRequest::class)->create([
+        $childProcessRequest2 = ProcessRequest::factory()->create([
             'status' => 'ACTIVE',
-            'parent_request_id' => $childProcessRequest1->id
+            'parent_request_id' => $childProcessRequest1->id,
         ]);
 
-        $parentTokens = factory(ProcessRequestToken::class, 3)->create([
-            'process_request_id' => $parentProcessRequest->id
+        $parentTokens = ProcessRequestToken::factory()->count(3)->create([
+            'process_request_id' => $parentProcessRequest->id,
         ]);
 
-        $childTokens1 = factory(ProcessRequestToken::class, 4)->create([
-            'process_request_id' => $childProcessRequest1->id
+        $childTokens1 = ProcessRequestToken::factory()->count(4)->create([
+            'process_request_id' => $childProcessRequest1->id,
         ]);
 
-        $childTokens2 = factory(ProcessRequestToken::class, 5)->create([
-            'process_request_id' => $childProcessRequest2->id
+        $childTokens2 = ProcessRequestToken::factory()->count(5)->create([
+            'process_request_id' => $childProcessRequest2->id,
         ]);
 
         // Assert database has parent and child requests
@@ -585,7 +585,7 @@ class ProcessRequestsTest extends TestCase
     public function testDeleteProcessRequestNotExist()
     {
         //ProcessRequest not exist
-        $url = self::API_TEST_URL . '/' . factory(ProcessRequest::class)->make()->id;
+        $url = self::API_TEST_URL . '/' . ProcessRequest::factory()->make()->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code
@@ -596,9 +596,9 @@ class ProcessRequestsTest extends TestCase
     {
         ProcessRequest::query()->delete();
 
-        factory(ProcessRequest::class, 5)->create(['status' => 'ACTIVE']);
-        factory(ProcessRequest::class, 3)->create(['status' => 'COMPLETED']);
-        factory(ProcessRequest::class, 1)->create(['status' => 'CANCELED']);
+        ProcessRequest::factory()->count(5)->create(['status' => 'ACTIVE']);
+        ProcessRequest::factory()->count(3)->create(['status' => 'COMPLETED']);
+        ProcessRequest::factory()->count(1)->create(['status' => 'CANCELED']);
 
         // The list of requests should show just ACTIVE requests
         $response = $this->apiCall('GET', self::API_TEST_URL . '?type=in_progress');
@@ -624,10 +624,10 @@ class ProcessRequestsTest extends TestCase
         $fileUpload = UploadedFile::fake()->create($testFileName, 1);
 
         // Create a request
-        $request = factory(ProcessRequest::class)->create();
+        $request = ProcessRequest::factory()->create();
 
         // Crate a user without administrator privileges
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'status' => 'ACTIVE',
             'is_administrator' => false,
         ]);
@@ -638,7 +638,7 @@ class ProcessRequestsTest extends TestCase
             ->withCustomProperties(['data_name' => 'test'])
             ->toMediaCollection('local');
 
-        $route = self::API_TEST_URL . '/'. $request->id . '/files/' . $addedMedia->id;
+        $route = self::API_TEST_URL . '/' . $request->id . '/files/' . $addedMedia->id;
         $response = $this->apiCall('GET', $route);
 
         // Validate the header status code
@@ -650,13 +650,13 @@ class ProcessRequestsTest extends TestCase
 
     public function testParticipantPermissionsToView()
     {
-        $participant = factory(User::class)->create();
-        $otherUser = factory(User::class)->create();
+        $participant = User::factory()->create();
+        $otherUser = User::factory()->create();
 
-        $request = factory(ProcessRequest::class)->create(['status' => 'ACTIVE']);
-        $token = factory(ProcessRequestToken::class)->create([
+        $request = ProcessRequest::factory()->create(['status' => 'ACTIVE']);
+        $token = ProcessRequestToken::factory()->create([
             'process_request_id' => $request->id,
-            'user_id' => $participant->id
+            'user_id' => $participant->id,
         ]);
 
         $url = route('api.requests.show', $request);
@@ -678,10 +678,10 @@ class ProcessRequestsTest extends TestCase
 
     public function testUserCanEditCompletedData()
     {
-        $this->user = factory(User::class)->create();
-        $process = factory(Process::class)->create();
+        $this->user = User::factory()->create();
+        $process = Process::factory()->create();
 
-        $initialProcessRequest = factory(ProcessRequest::class)->create([
+        $initialProcessRequest = ProcessRequest::factory()->create([
             'status' => 'COMPLETED',
             'data' => ['foo' => 'bar'],
             'process_id' => $process->id,
@@ -725,7 +725,7 @@ class ProcessRequestsTest extends TestCase
         // configuration since the process request now honors
         // the process configuration how it existed when the
         // process request was initiated
-        $secondProcessRequest = factory(ProcessRequest::class)->create([
+        $secondProcessRequest = ProcessRequest::factory()->create([
             'status' => 'COMPLETED',
             'data' => ['foo' => 'bar'],
             'process_id' => $process->id,
@@ -749,7 +749,7 @@ class ProcessRequestsTest extends TestCase
         $this->user->is_administrator = false;
         $this->user->save();
 
-        factory(ProcessRequest::class, 10)->create([
+        ProcessRequest::factory()->count(10)->create([
             'user_id' => $this->user->getKey(),
         ]);
 
@@ -767,7 +767,7 @@ class ProcessRequestsTest extends TestCase
         $this->assertEquals(10, $response->json()['meta']['total']);
 
         // Create 10 more
-        factory(ProcessRequest::class, 10)->create([
+        ProcessRequest::factory()->count(10)->create([
             'user_id' => $this->user->getKey(),
         ]);
 
@@ -788,7 +788,7 @@ class ProcessRequestsTest extends TestCase
         $this->assertEquals(20, $response->json()['meta']['total']);
 
         // Create 10 more for different users
-        factory(ProcessRequest::class, 10)->create();
+        ProcessRequest::factory()->count(10)->create();
 
         $response = $this->apiCall('GET', self::API_TEST_URL . '?per_page=15');
 

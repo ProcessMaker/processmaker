@@ -8,6 +8,8 @@ class SessionTest extends TestCase
 {
     public function test()
     {
+        $this->markTestSkipped('FOUR-6653');
+
         $response = $this->get('/');
 
         // check 'expire_on_close' => true,

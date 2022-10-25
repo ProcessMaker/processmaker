@@ -3,8 +3,8 @@
 namespace Tests\Feature\Processes;
 
 use ProcessMaker\Models\Screen;
-use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class ScreenTest extends TestCase
 {
@@ -34,7 +34,7 @@ class ScreenTest extends TestCase
     {
         // get the URL
         $response = $this->webCall('GET', '/designer/screens/' .
-            factory(Screen::class)->create()->id . '/edit');
+            Screen::factory()->create()->id . '/edit');
 
         $response->assertStatus(200);
         // check the correct view is called

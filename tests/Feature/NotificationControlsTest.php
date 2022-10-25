@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Database\Seeders\ProcessSeeder;
 use Illuminate\Database\Seeder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
@@ -10,9 +11,9 @@ use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Notification;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\ProcessNotificationSetting;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
 use ProcessMaker\Notifications\ProcessCreatedNotification;
@@ -33,7 +34,7 @@ class NotificationControlsTest extends TestCase
     public function testRequestWithNotifications()
     {
         // Create a user
-        $adminUser = factory(User::class)->create([
+        $adminUser = User::factory()->create([
             'username' => 'admin',
             'is_administrator' => true,
         ]);
@@ -46,13 +47,13 @@ class NotificationControlsTest extends TestCase
 
         // Get the process we'll be testing on
         $process = Process::where('name', 'Leave Absence Request')->first();
-        
+
         // Assign a process manager
         $process->manager_id = $adminUser->getKey();
         $process->save();
-        
+
         // Allow the process manager to receive canceled notificaitons
-        factory(ProcessNotificationSetting::class)->create([
+        ProcessNotificationSetting::factory()->create([
             'process_id' => $process->getKey(),
             'notifiable_type' => 'manager',
             'notification_type' => 'canceled',
@@ -77,7 +78,7 @@ class NotificationControlsTest extends TestCase
         $url = route('api.process_events.trigger', [$process->id, 'event' => 'node_2']);
         $response = $this->apiCall('POST', $url);
         $response->assertStatus(201);
-        
+
         // Obtain request ID
         $responseId = $response->getData()->id;
 
@@ -85,12 +86,12 @@ class NotificationControlsTest extends TestCase
         $this->assertDatabaseHas('notifications', [
             'type' => ProcessCreatedNotification::class,
         ]);
-        
+
         // Cancel the process
         $url = route('api.requests.update', [$responseId]);
         $response = $this->apiCall('PUT', $url, ['status' => 'CANCELED']);
         $response->assertStatus(204);
-        
+
         // Assert that our database now has a process canceled notification
         $this->assertDatabaseHas('notifications', [
             'type' => ProcessCanceledNotification::class,
@@ -107,7 +108,7 @@ class NotificationControlsTest extends TestCase
     public function testRequestWithoutNotifications()
     {
         // Create a user
-        $adminUser = factory(User::class)->create([
+        $adminUser = User::factory()->create([
             'username' => 'admin',
             'is_administrator' => true,
         ]);
@@ -154,7 +155,7 @@ class NotificationControlsTest extends TestCase
     public function testNotificationMarkedAsReadWhenTaskIsVisited()
     {
         // Create a request token to simulate that a new task is created for the user
-        $token = factory(ProcessRequestToken::class)->create();
+        $token = ProcessRequestToken::factory()->create();
 
         //url to edit the task
         $taskUrl = route('tasks.edit', [$token], false);
@@ -164,7 +165,7 @@ class NotificationControlsTest extends TestCase
             'type' => 'TEST',
             'notifiable_type' => 'NOTIFIABLE/TEST',
             'data' => json_encode(['url' => $taskUrl]),
-            'notifiable_id' => 1
+            'notifiable_id' => 1,
         ]);
         $response->assertStatus(201);
 

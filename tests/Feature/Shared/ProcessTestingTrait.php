@@ -25,7 +25,7 @@ trait ProcessTestingTrait
     {
         $attributes = is_string($attributes) ? ['bpmn' => $attributes] : $attributes;
         // Create a new process
-        $process = factory(Process::class)->create($attributes);
+        $process = Process::factory()->create($attributes);
 
         $definitions = $process->getDefinitions();
         foreach ($definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'task') as $task) {
@@ -40,6 +40,7 @@ trait ProcessTestingTrait
         $process->bpmn = $definitions->saveXml();
         // When save the process creates the assignments
         $process->save();
+
         return $process;
     }
 
@@ -60,7 +61,7 @@ trait ProcessTestingTrait
             if (isset($users[$userId])) {
                 $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedUsers', $users[$userId]->id);
             } elseif (!User::find($userId)) {
-                $users[$userId] = factory(User::class)->create([
+                $users[$userId] = User::factory()->create([
                     'id' => $userId,
                     'status' => 'ACTIVE',
                 ]);
@@ -85,6 +86,7 @@ trait ProcessTestingTrait
         $route = route('api.process_events.trigger', [$process->getKey(), 'event' => $startEvent]);
         $response = $this->apiCall('POST', $route, $data);
         $requestJson = $response->json();
+
         return ProcessRequest::find($requestJson['id']);
     }
 
@@ -139,7 +141,6 @@ trait ProcessTestingTrait
 
     /**
      * Run scheduled tasks
-     *
      */
     private function runScheduledTasks()
     {
@@ -155,7 +156,6 @@ trait ProcessTestingTrait
 
     /**
      * Restore the fake date for TaskSchedulerManager
-     *
      */
     protected function teardownProcessTestingTrait()
     {

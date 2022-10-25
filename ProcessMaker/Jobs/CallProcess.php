@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Jobs;
 
 use ProcessMaker\Models\Process as Definitions;
@@ -6,9 +7,10 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
 
 class CallProcess extends BpmnAction
 {
-
     public $definitionsId;
+
     public $processId;
+
     public $data;
 
     /**
@@ -36,6 +38,7 @@ class CallProcess extends BpmnAction
 
         //Call the process
         $instance = $process->call($dataStorage);
+
         return $instance;
     }
 }

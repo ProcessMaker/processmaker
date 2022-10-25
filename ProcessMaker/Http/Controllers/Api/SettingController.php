@@ -60,12 +60,12 @@ class SettingController extends Controller
         $orderBy = 'group';
         $orderDirection = 'ASC';
 
-        if($request->has('order_by') && in_array($request->input('order_by'), $this->fields)){
-          $orderBy = $request->input('order_by');
+        if ($request->has('order_by') && in_array($request->input('order_by'), $this->fields)) {
+            $orderBy = $request->input('order_by');
         }
 
-        if($request->has('order_direction')){
-          $orderDirection = $request->input('order_direction');
+        if ($request->has('order_direction')) {
+            $orderDirection = $request->input('order_direction');
         }
 
         $response = $query->orderBy($orderBy, $orderDirection)
@@ -81,9 +81,10 @@ class SettingController extends Controller
             ->where('format', 'button')
             ->get()
             ->toArray();
-        foreach($buttons as $i => $button) {
+        foreach ($buttons as $i => $button) {
             $buttons[$i]['ui'] = \is_string($button['ui']) ? json_decode($button['ui']) : $button['ui'];
         }
+
         return $buttons;
     }
 
@@ -154,11 +155,11 @@ class SettingController extends Controller
         $orderBy = 'name';
         $orderDirection = 'ASC';
 
-        if ($request->has('order_by') && in_array($request->input('order_by'), $this->fields)){
+        if ($request->has('order_by') && in_array($request->input('order_by'), $this->fields)) {
             $orderBy = $request->input('order_by');
         }
 
-        if ($request->has('order_direction')){
+        if ($request->has('order_direction')) {
             $orderDirection = $request->input('order_direction');
         }
 
@@ -255,13 +256,13 @@ class SettingController extends Controller
                 $mustache = app(\Mustache_Engine::class);
                 $settings = Setting::all();
                 $settingsData = [];
-                foreach($settings as $item) {
+                foreach ($settings as $item) {
                     $settingsData[str_replace('.', '_', $item->key)] = $item->config;
                 }
                 $copyTo = $mustache->render(str_replace('.', '_', $setting->ui->copy_to), $settingsData);
                 if ($copyTo) {
                     $this->createStoragePathIfNotExists(storage_path($copyTo));
-                    copy (
+                    copy(
                         storage_path('app/private/settings/') . $collectionName,
                         // Saving upload file into storage folder
                         // Note: $copyTo MUST always be a relative path
@@ -284,5 +285,4 @@ class SettingController extends Controller
             mkdir($dir, 0755, true);
         }
     }
-
 }
