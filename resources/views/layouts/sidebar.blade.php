@@ -1,4 +1,4 @@
-@if ($sidebar && $sidebar->all()->count())
+@if ($sidebar && $sidebar->conf('display') !== false)
 <nav aria-label="Sidebar" id="sidebar-inner" class="d-flex h-100 align-items-start flex-column" :class="{ closed: !expanded, open: expanded }">
   <ul class="mb-auto w-100">
       <li v-if="expanded === true" v-cloak class="logo"> {{ $sidebar->count() }}
