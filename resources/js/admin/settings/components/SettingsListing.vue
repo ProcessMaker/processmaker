@@ -386,7 +386,7 @@ export default {
         if (this.group === 'Email Default Settings' || this.group.includes('Email Server')) {
           return this.filterEmailServerButtons(this.group, groupData, btn);
         } else if (this.group === 'Actions By Email') {
-          return this.filterAbeButtons(this.group, groupData, btn);
+          return this.filterAbeButtons(groupData, btn);
         }
 
         if (btn.ui.props.hasOwnProperty('position')) {
@@ -423,10 +423,10 @@ export default {
       // Returns all 'top' position buttons except the 'Authorize Account' button for email default settings tab
       return btn.ui.props.position === 'top' && !btn.key.includes('EMAIL_CONNECTOR_AUTHORIZE_ACCOUNT');
     },
-    filterAbeButtons(groupName, groupData, btn) {
+    filterAbeButtons(groupData, btn) {
       const authMethod = groupData.find(data => data.key.includes("abe_imap_auth_method"));
       const selectedAuthMethod = authMethod ? authMethod.ui.options[authMethod.config] : null;
-      const showAuthAccBtn = selectedAuthMethod && (selectedAuthMethod === 'google' || selectedAuthMethod === 'office365') ? true : false;
+      const showAuthAccBtn = selectedAuthMethod && selectedAuthMethod !== 'standard' ? true : false;
       
       if (showAuthAccBtn) {
         // Returns all 'top' position buttons
