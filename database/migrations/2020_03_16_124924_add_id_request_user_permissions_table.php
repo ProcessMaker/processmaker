@@ -30,6 +30,7 @@ class AddIdRequestUserPermissionsTable extends Migration
      */
     public function down()
     {
+        $model = new ProcessRequest();
         Schema::connection($model->getConnectionName())->table('request_user_permissions', function (Blueprint $table) {
             $table->dropColumn(['id']);
             $table->primary(['request_id', 'user_id']);

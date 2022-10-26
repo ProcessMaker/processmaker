@@ -28,7 +28,10 @@ class AddNotificationsIndexToProcessRequestTokens extends Migration
     {
         Schema::table('process_request_tokens', function (Blueprint $table) {
             // Remove index by: user_id, status, due_at, due_notified
-            $table->dropIndex(['user_id', 'status', 'due_at', 'due_notified']);
+            $sm = Schema::getConnection()->getDoctrineSchemaManager();
+            $indexesFound = $sm->listTableIndexes('process_request_tokens');
+            if(array_key_exists("user_id", $indexesFound))
+                $table->dropIndex(['user_id', 'status', 'due_at', 'due_notified']);
         });
     }
 }
