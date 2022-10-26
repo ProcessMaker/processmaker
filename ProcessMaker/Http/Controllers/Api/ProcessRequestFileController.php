@@ -171,7 +171,7 @@ class ProcessRequestFileController extends Controller
         $file = Media::where([
             'model_id' => $parentRequest->id,
             'model_type' => ProcessRequests::class,
-            'id' => $file
+            'id' => $file,
         ])->firstOrFail();
 
         $path = Storage::disk('public')->getAdapter()->getPathPrefix() .

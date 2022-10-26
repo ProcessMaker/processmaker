@@ -3,19 +3,19 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Carbon\Carbon;
-use ProcessMaker\Models\User;
-use ProcessMaker\Models\Media;
-use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\Comment;
-use ProcessMaker\Models\Notification;
-use ProcessMaker\Managers\DataManager;
 use Illuminate\Support\Facades\Request;
-use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
-use ProcessMaker\Traits\SearchAutocompleteTrait;
+use ProcessMaker\Models\Comment;
+use ProcessMaker\Models\Media;
+use ProcessMaker\Models\Notification;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
+use ProcessMaker\Traits\HasControllerAddons;
+use ProcessMaker\Traits\SearchAutocompleteTrait;
 
 class TaskController extends Controller
 {
