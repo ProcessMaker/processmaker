@@ -115,9 +115,11 @@ class RequestController extends Controller
         // permissions for now for a refactor in the future
         $canRetry = $canManuallyComplete;
 
-        //$files = $request->getMedia();
-        $parentRequest = \ProcessMaker\Models\Media::getParentRequest($request);
-        $files = $parentRequest->getMedia();
+        // Get all processes and subprocesses request token id's ..
+        $requestTokenIds = $request->collaboration->requests->pluck('id');
+
+        // Get all files for process and all subprocesses ..
+        $files = Media::whereIn('model_id', $requestTokenIds)->get();
 
         $canPrintScreens = $this->canUserPrintScreen($request);
         $screenRequested = $canPrintScreens ? $request->getScreensRequested() : [];

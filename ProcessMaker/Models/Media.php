@@ -173,16 +173,4 @@ class Media extends MediaLibraryModel
             ]);
         }
     }
-
-    public static function getParentRequest(ProcessRequest $request)
-    {
-        $parentId = $request->parent_request_id;
-        $parentRequest = $request;
-
-        if ($parentId) {
-            $parentRequest = self::getParentRequest(ProcessRequest::find($parentId));
-        }
-
-        return $parentRequest;
-    }
 }

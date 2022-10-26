@@ -81,16 +81,11 @@ class ProcessRequestFileController extends Controller
      */
     public function index(Request $laravel_request, ProcessRequest $request)
     {
-        /*$parentId = $request->parent_request_id;
-        $parentRequest = $request;
+        // Get all processes and subprocesses request token id's ..
+        $requestTokenIds = $request->collaboration->requests->pluck('id');
 
-        while($parentId != null) {
-            $parentRequest = ProcessRequest::find($parentId);
-            $parentId = $parentRequest->parent_request_id;
-        }*/
-        $parentRequest = Media::getParentRequest($request);
-
-        $media = Media::where('model_id', $parentRequest->id)->get();
+        // Get all files for process and all subprocesses ..
+        $media = Media::whereIn('model_id', $requestTokenIds)->get();
 
         //Retrieve input filter variables
         $name = $laravel_request->get('name');
@@ -166,7 +161,13 @@ class ProcessRequestFileController extends Controller
     {
         dd('-----------------------');
         \Log::debug($file);
-        $parentRequest = Media::getParentRequest($request);
+
+        // Get all processes and subprocesses request token id's ..
+        $requestTokenIds = $request->collaboration->requests->pluck('id');
+
+        // Get all files for process and all subprocesses ..
+        $media = Media::whereIn('model_id', $requestTokenIds)->get();
+
         $file = Media::where([
             'model_id' => $parentRequest->id,
             'model_type' => ProcessRequests::class,
