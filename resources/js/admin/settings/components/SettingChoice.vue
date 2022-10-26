@@ -5,7 +5,7 @@
     </div>
     <div v-else>
       {{ display }}
-       <b-badge v-if="setting && setting.hasAuthorizedBadge" pill :variant="setting.ui.authorizedBadge ? 'success' : 'secondary'">
+       <b-badge v-if="hasAuthorizedBadge" pill :variant="setting.ui.authorizedBadge ? 'success' : 'secondary'">
          <span v-if="setting.ui.authorizedBadge">{{ $t('Authorized') }}</span>
          <span v-else>{{ $t('Not Authorized') }}</span>
        </b-badge>
@@ -73,12 +73,19 @@ export default {
         return this.input;
       }
     },
+    hasAuthorizedBadge() {
+      if (!this.setting) {
+        return false;
+      }
+      // Prevent authorization badge from showing on 'standard' authentication
+      const hasAuthorizedBadge = _.has(this.setting, 'ui.authorizedBadge') && this.setting.config !== '0' ? true : false;
+      return hasAuthorizedBadge;
+    }
   },
   watch: {
     value: {
       handler: function(value) {
         this.input = value;
-        this.checkAuthBadge();
       },
     }
   },
@@ -97,14 +104,6 @@ export default {
       this.showModal = false;
       this.emitSaved(this.input);
     },
-    checkAuthBadge() {
-      if (!this.setting) {
-        return;
-      }
-      // Prevent authorization badge from showing on 'standard' authentication
-      const hasAuthorizedBadge = _.has(this.setting, 'ui.authorizedBadge') && this.setting.config !== '0' ? true : false;
-      this.setting.hasAuthorizedBadge = hasAuthorizedBadge;
-    }
   },
   mounted() {
     if (this.value === null) {
@@ -113,7 +112,6 @@ export default {
       this.input = this.value;
     }
     this.transformed = this.copy(this.input);
-    this.checkAuthBadge();
   }
 };
 </script>
