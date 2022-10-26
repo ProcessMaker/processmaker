@@ -95,10 +95,7 @@ if (env('TEST_TOKEN')) {
     Artisan::call('db:wipe', ['--database' => \DB::connection()->getName()]);
     Artisan::call('migrate:fresh', []);
     Artisan::call('db:seed', ['--class' => 'AnonymousUserSeeder']);
-
-    // In \ProcessMaker\Console\Commands\MigrateFresh:35
-    // The migrations table is being manually created to resolve the bug described below.
-    // https://github.com/ProcessMaker/processmaker/pull/4537
+    
     \Illuminate\Foundation\Testing\RefreshDatabaseState::$migrated = true;
 
     ScriptExecutor::firstOrCreate(
