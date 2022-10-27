@@ -10,7 +10,7 @@ use Tests\TestCase;
 
 class ChangePasswordTest extends TestCase
 {
-    use RequestHelper, RefreshDatabase;
+    use RequestHelper;
 
     const API_TEST_URL = '/password/change';
 
