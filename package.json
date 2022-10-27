@@ -22,6 +22,7 @@
         "e2e:open": "cypress open"
     },
     "devDependencies": {
+        "@babel/eslint-parser": "^7.15.8",
         "accounting": "^0.4.1",
         "chartjs-plugin-colorschemes": "^0.4.0",
         "cross-env": "^7.0.3",
