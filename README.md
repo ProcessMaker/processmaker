@@ -11,9 +11,9 @@ If you are new to ProcessMaker 4 and would like to load the software locally, we
 ## System Requirements
 
 * [Composer 2](https://getcomposer.org/)
-* [Node.js 16.15.0](https://nodejs.org/en/)
-* [NPM 6.14](https://www.npmjs.com/package/npm)
-* [PHP 7.4](https://php.net)
+* [Node.js 16.15](https://nodejs.org/en/)
+* [NPM 8.9](https://www.npmjs.com/package/npm)
+* [PHP 8.1](https://php.net)
 * [PHP-FPM](https://www.php.net/manual/en/install.fpm.php)
 * [PHP GD Extension](https://www.php.net/manual/en/image.installation.php)
 * [PHP ImageMagick Extension](https://www.php.net/manual/en/book.imagick.php)
@@ -29,13 +29,22 @@ If you are new to ProcessMaker 4 and would like to load the software locally, we
 Before installing, Nginx needs to be configured to use php-fpm and point to the public folder
 
 1. Download and unzip a version from the releases page https://github.com/ProcessMaker/processmaker/releases
-1. Configure Nginx to use php-fpm and point to the public folder in the unzipped code. See https://laravel.com/docs/6.x/deployment#nginx
-1. CD into the folder and run `composer install --no-dev`
+1. Configure Nginx to use php-fpm and point to the public folder in the unzipped code. See https://laravel.com/docs/8.x/deployment#nginx
+1. CD into the folder and run `composer install`
 1. Run the installer `php artisan processmaker:install` and follow the instructions
 1. Edit the .env file to update any server specific settings
 1. Install javascript assets `npm install`
 1. Compile javascript assets `npm run dev`
-1. Run laravel echo server in a separate shell `npx laravel-echo-server start`
+1. Configure [laravel echo server](https://github.com/tlaverdure/Laravel-Echo-Server) in a separate shell `npx laravel-echo-server init` using the following settings:
+   1. Do you want to run this server in development mode? **Yes**
+   1. Which port would you like to serve from? **6001**
+   1. Which database would you like to use to store presence channel members? **redis**
+   1. Enter the host of your Laravel authentication server. *Enter your instance's url*
+   1. Will you be serving on http or https? **http**
+   1. Do you want to generate a client ID/Key for HTTP API? **No**
+   1. Do you want to setup cross domain access to the API? **No**
+   1. What do you want this config to be saved as? **laravel-echo-server.json**
+1. Then run [laravel echo server](https://github.com/tlaverdure/Laravel-Echo-Server) `npx laravel-echo-server start`
 1. Run horizon in a separate shell `php artisan horizon`
 1. If you change any settings, make sure to run `php artisan optimize:clear` and restart horizon
 
@@ -141,10 +150,10 @@ You can develop ProcessMaker as well as ProcessMaker packages locally. In order 
 
 * [Virtualbox  5.2](https://www.virtualbox.org/) or above
 * [Vagrant 2.2.0](https://www.vagrantup.com/) or above
-* [PHP 7.2.0](https://php.net) or above
+* [PHP 8.1](https://php.net) or above
   * Windows users can install [XAMPP](https://www.apachefriends.org/index.html)
-* [Composer](https://getcomposer.org/)
-* [Node.js 10.13.0](https://nodejs.org/en/) or above
+* [Composer 2](https://getcomposer.org/)
+* [Node.js 16.15](https://nodejs.org/en/) or above
 
 **Steps for Development Installation**
 

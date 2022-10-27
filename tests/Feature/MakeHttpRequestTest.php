@@ -60,7 +60,7 @@ class MakeHttpRequestTest extends TestCase
             'prepareRequestWithOutboundConfig',
             [$requestData, &$endpointConfig]);
         $this->assertNotNull($request);
-        [$method, $url, $headers, $body, $bodyType, $options] = array_values($request);
+        [$method, $url, $headers, $body, $bodyType] = array_values($request);
 
         // Verify all the request data parts
         $this->assertEquals('PUT', $method);
@@ -113,7 +113,7 @@ class MakeHttpRequestTest extends TestCase
             'prepareRequestWithOutboundConfig',
             [$requestData, &$endpointConfig]);
         $this->assertNotNull($request);
-        [$method, $url, $headers, $body, $bodyType, $options] = array_values($request);
+        [$method, $url, $headers, $body, $bodyType] = array_values($request);
 
         $this->assertEquals('PUT', $method);
         // we configured the url ($testStub->endpoints) without server so the current server must be added
@@ -161,7 +161,7 @@ class MakeHttpRequestTest extends TestCase
         ];
 
         // Verify that the endpoint maps an attribute
-        $stream = \GuzzleHttp\Psr7\stream_for('{"id" : "11", "name": "testName"}');
+        $stream = \GuzzleHttp\Psr7\Utils::streamFor('{"id" : "11", "name": "testName"}');
         $response = new \GuzzleHttp\Psr7\Response(200, ['Content-Type' => 'application/json'], $stream);
         $mapped = $this->callMethod($testStub,
             'responseWithHeaderData',
@@ -173,7 +173,7 @@ class MakeHttpRequestTest extends TestCase
             //value is empty so all the response should be mapped
             ['value' => '', 'key' => 'allData', 'format' => 'dotNotation'],
         ];
-        $stream = \GuzzleHttp\Psr7\stream_for('{"id" : "11", "name": "testName"}');
+        $stream = \GuzzleHttp\Psr7\Utils::streamFor('{"id" : "11", "name": "testName"}');
         $response = new \GuzzleHttp\Psr7\Response(200, ['Content-Type' => 'application/json'], $stream);
         $mapped = $this->callMethod($testStub,
             'responseWithHeaderData',
@@ -185,7 +185,7 @@ class MakeHttpRequestTest extends TestCase
             ['value' => 'data.user', 'key' => 'user', 'format' => 'dotNotation'],
             ['value' => 'data.code', 'key' => 'responseCode', 'format' => 'dotNotation'],
         ];
-        $stream = \GuzzleHttp\Psr7\stream_for('{"data": {"user": {"id" : "11", "name": "testName"}, "code":99}}');
+        $stream = \GuzzleHttp\Psr7\Utils::streamFor('{"data": {"user": {"id" : "11", "name": "testName"}, "code":99}}');
         $response = new \GuzzleHttp\Psr7\Response(200, ['Content-Type' => 'application/json'], $stream);
         $mapped = $this->callMethod($testStub,
             'responseWithHeaderData',
@@ -229,7 +229,7 @@ class MakeHttpRequestTest extends TestCase
             'prepareRequestWithOutboundConfig',
             [$requestData, &$endpointConfig]);
 
-        [$method, $url, $headers, $body, $bodyType, $options] = array_values($request);
+        [$method, $url, $headers, $body, $bodyType] = array_values($request);
 
         $mock = new MockHandler([
             new Response(200, ['Content-Type' => 'application/json'], '{"id": 1}'),
@@ -238,10 +238,9 @@ class MakeHttpRequestTest extends TestCase
         $handlerStack = HandlerStack::create($mock);
         $testStub->client = new Client(['handler' => $handlerStack]);
 
-        $response = $this->callMethod($testStub, 'call', [$request]);
+        $response = $this->callMethod($testStub, 'call', $request);
 
-        //$body = $response->getBody()->getContents();
-        $body = $response['response'];
+        $body = $response->getBody()->getContents();
 
         $this->assertEquals(json_decode('{"id": 1}'), json_decode($body));
     }
@@ -283,12 +282,6 @@ class MakeHttpRequestTest extends TestCase
         ]);
         $handlerStack = HandlerStack::create($mock);
         $testStub->client = new Client(['handler' => $handlerStack]);
-
-//        $request = $this->callMethod($testStub,
-//            'prepareRequestWithOutboundConfig',
-//            [$requestData, &$endpointConfig]);
-//
-//        [$method, $url, $headers, $body, $bodyType] = $request;
 
         $result = $testStub->request($requestData, $connectorConfig);
         $this->assertEquals(['pmRequestId' => 11], $result);
