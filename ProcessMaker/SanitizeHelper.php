@@ -131,6 +131,29 @@ class SanitizeHelper
         return self::sanitizeWithExceptions($data, $except);
     }
 
+    /**
+     * Sanitize data for a screen instead of a task. Used for start events when no task exists yet.
+     *
+     * @param array $data
+     * @param Screen $screen
+     *
+     * @return array
+     */
+    public static function sanitizeDataForScreen($data, Screen $screen)
+    {
+        $screens = [
+            $screen,
+            ...array_map(fn ($id) => Screen::findOrFail($id), $screen->nestedScreenIds()),
+        ];
+        $except = [];
+
+        foreach ($screens as $screen) {
+            $except = array_merge($except, self::getExceptions($screen));
+        }
+
+        return self::sanitizeWithExceptions($data, $except);
+    }
+
     private static function sanitizeWithExceptions(array $data, array $except, $parent = null)
     {
         foreach ($data as $key => $value) {
