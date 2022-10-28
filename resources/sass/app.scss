@@ -113,19 +113,6 @@ button:focus.navbar-toggler {
   float: right;
 }
 
-.multiselect__option--highlight {
-  background-color: #107C40 !important;
-}
-
-.multiselect__option--selected {
-  background-color: $danger !important;
-  color: white !important;
-}
-
-.multiselect__tag {
-  background-color: #107C40 !important;
-}
-
 .multiselect__tag-icon:focus,
 .multiselect__tag-icon:hover {
   background: #788793 !important;
