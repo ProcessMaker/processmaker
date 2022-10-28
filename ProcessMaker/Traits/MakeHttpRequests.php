@@ -68,8 +68,8 @@ trait MakeHttpRequests
     /**
      * Prepares data for the http request replacing mustache with pm instance
      *
-     * @param array $data , request data
-     * @param array $config , datasource configuration
+     * @param array $data, request data
+     * @param array $config, datasource configuration
      *
      * @return array
      */
@@ -169,8 +169,8 @@ trait MakeHttpRequests
     /**
      * Prepares data for the http request replacing mustache with pm instance and OutboundConfig
      *
-     * @param array $data , request data
-     * @param array $config , datasource configuration
+     * @param array $data, request data
+     * @param array $config, datasource configuration
      *
      * @return array
      */
@@ -640,6 +640,11 @@ trait MakeHttpRequests
             return;
         }
 
-        Log::channel('data-source')->info($label . str_replace(["\n", "\t", "\r"], '', $log));
+        try {
+            Log::channel('data-source')->info($label . str_replace(["\n", "\t", "\r"], '', $log));
+        }
+        catch(\Throwable $e) {
+            Log::error($e->getMessage());
+        }
     }
 }
