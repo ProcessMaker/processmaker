@@ -150,11 +150,24 @@ button:focus.navbar-toggler {
   color: $info !important;
 }
 
+.multiselect__content .multiselect__option--selected:after {
+  background-color: #f3f3f3 !important;
+  content: "×" !important;
+  color: $info !important;
+}
+
+.multiselect__content .multiselect__option--selected:hover:after {
+  background-color: #FFEBE9 !important;
+  color: #A61001 !important;
+  content: "×" !important;
+}
+
 .multiselect__content .multiselect__option--selected:hover {
   background-color: #FFEBE9 !important;
   color: #A61001 !important;
   font-Weight: 600;
 }
+
 
 .has-errors .multiselect__tags {
   border-color: $danger !important;
