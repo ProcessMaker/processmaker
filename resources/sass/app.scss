@@ -138,6 +138,24 @@ button:focus.navbar-toggler {
   // font-size: 14px;
 }
 
+.multiselect__content .multiselect__option--highlight {
+  background-color: #DEEBFF;
+  color: $info !important;
+  font-Weight: 600;
+}
+
+.multiselect__content .multiselect__option--selected {
+  background-color: #f3f3f3 !important;
+  font-Weight: 600;
+  color: $info !important;
+}
+
+.multiselect__content .multiselect__option--selected:hover {
+  background-color: #FFEBE9 !important;
+  color: #A61001 !important;
+  font-Weight: 600;
+}
+
 .has-errors .multiselect__tags {
   border-color: $danger !important;
 }
