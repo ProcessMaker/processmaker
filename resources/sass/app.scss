@@ -113,6 +113,12 @@ button:focus.navbar-toggler {
   float: right;
 }
 
+.multiselect__tags-wrap .multiselect__tag {
+  background-color: #DEEBFF;
+  color: $info;
+  font-weight: 600;
+}
+
 .multiselect__tag-icon:focus,
 .multiselect__tag-icon:hover {
   background: #788793 !important;
