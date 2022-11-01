@@ -323,7 +323,9 @@ class SanitizeHelperTest extends TestCase
             ],
         ];
 
-        $result = SanitizeHelper::sanitizeDataForScreen($data, $screen);
+        $exceptions = SanitizeHelper::getExceptionsForScreen($screen);
+        $result = SanitizeHelper::sanitizeWithExceptions($data, $exceptions);
+
         $this->assertEquals([
             'input' => 'foo',
             'richtext' => '<h1>bar</h1>',

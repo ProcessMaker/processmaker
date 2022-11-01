@@ -132,29 +132,22 @@ class SanitizeHelper
     }
 
     /**
-     * Sanitize data for a screen instead of a task. Used for start events when no task exists yet.
+     * Get exceptions for a screen. Used for web entry start events when no task exists yet.
      *
-     * @param array $data
      * @param Screen $screen
      *
      * @return array
      */
-    public static function sanitizeDataForScreen($data, Screen $screen)
+    public static function getExceptionsForScreen(Screen $screen)
     {
-        $screens = [
-            $screen,
-            ...array_map(fn ($id) => Screen::findOrFail($id), $screen->nestedScreenIds()),
-        ];
-        $except = [];
+        $screens = collect([$screen]);
+        $nestedScreens = collect($screen->nestedScreenIds())->map(fn ($id) => Screen::findOrFail($id));
+        $screens = $screens->concat($nestedScreens);
 
-        foreach ($screens as $screen) {
-            $except = array_merge($except, self::getExceptions($screen));
-        }
-
-        return self::sanitizeWithExceptions($data, $except);
+        return $screens->flatMap(fn ($screen) => self::getExceptions($screen))->toArray();
     }
 
-    private static function sanitizeWithExceptions(array $data, array $except, $parent = null)
+    public static function sanitizeWithExceptions(array $data, array $except, $parent = null)
     {
         foreach ($data as $key => $value) {
             if (!is_int($key)) {
