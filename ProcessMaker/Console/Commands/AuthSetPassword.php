@@ -42,39 +42,33 @@ class AuthSetPassword extends Command
     {
         $identifier = $this->ask("Enter the user's id or email address");
 
-        if (is_numeric($identifier)) {
-            $user = User::find($identifier);
-        } else {
-            $user = User::where('email', $identifier)->first();
-        }
+        $user = is_numeric($identifier) ? User::find($identifier) : User::where('email', $identifier)->first();
 
-        if ($user) {
-            if ($user->password) {
-                $verb = 'reset';
-            } else {
-                $verb = 'set';
-            }
-
-            $confirm = $this->confirm("Are you sure you want to {$verb} the password for {$user->fullname}?");
-
-            if ($confirm) {
-                $password = $this->secret('Enter the new password');
-                $confirm = $this->secret('Confirm the new password');
-
-                if ($password === $confirm) {
-                    $user->password = Hash::make($password);
-                    $user->save();
-
-                    Log::notice("Password {$verb} for user {$user->fullname} on command line.");
-                    $this->info("Password {$verb} for user {$user->fullname}.");
-                } else {
-                    return $this->error('Password & confirmation do not match. Please try again.');
-                }
-            } else {
-                return $this->error('Password not reset.');
-            }
-        } else {
+        if (!$user) {
             return $this->error('Unable to find user.');
         }
+
+        $verb = $user->password ? 'reset' : 'set';
+        $confirm = $this->confirm("Are you sure you want to {$verb} the password for {$user->fullname}?");
+
+        if (!$confirm) {
+            return $this->error('Password not reset.');
+        }
+
+        $password = $this->secret('Enter the new password');
+        $confirm = $this->secret('Confirm the new password');
+
+        if ($password !== $confirm) {
+            return $this->error('Password & confirmation do not match. Please try again.');
+        }
+
+        $user->password = Hash::make($password);
+        $user->force_change_password = $this->confirm('Should the user change the password on the next login?', true);
+
+        $user->save();
+
+        Log::notice("Password {$verb} for user {$user->fullname} on command line.");
+
+        return $this->info("Password {$verb} for user {$user->fullname}.");
     }
 }
