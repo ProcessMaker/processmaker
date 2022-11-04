@@ -14,7 +14,7 @@ class OauthMailServiceProvider extends MailServiceProvider
      */
     protected function registerIlluminateMailer()
     {
-        $this->app->singleton('mail.manager', function ($app) {
+        $this->app->bind('mail.manager', function ($app) {
             return new OauthMailManager($app);
         });
     }
