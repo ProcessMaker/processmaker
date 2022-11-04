@@ -8,7 +8,7 @@ use ProcessMaker\Managers\OauthMailManager;
 class OauthMailServiceProvider extends MailServiceProvider
 {
     /**
-     * Register the Swift Transport instance.
+     * Register the Illuminate Mailer instance.
      *
      * @return void
      */
