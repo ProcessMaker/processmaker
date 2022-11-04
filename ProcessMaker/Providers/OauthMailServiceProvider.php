@@ -17,5 +17,9 @@ class OauthMailServiceProvider extends MailServiceProvider
         $this->app->bind('mail.manager', function ($app) {
             return new OauthMailManager($app);
         });
+
+        $this->app->bind('mailer', function ($app) {
+            return $app->make('mail.manager')->mailer();
+        });
     }
 }
