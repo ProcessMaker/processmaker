@@ -31,6 +31,7 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
 use ProcessMaker\Query\SyntaxError;
+use ProcessMaker\RetryProcessRequest;
 use Symfony\Component\HttpFoundation\IpUtils;
 use Throwable;
 
@@ -233,6 +234,7 @@ class ProcessRequestController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function retry(ProcessRequest $request, Request $httpRequest): JsonResponse
     {
@@ -246,17 +248,26 @@ class ProcessRequestController extends Controller
             ]);
         }
 
-        try {
-            $exitCode = Artisan::call('processmaker:unblock-request', [
-                '--request' => $request->id,
+        $retryRequest = RetryProcessRequest::for($request);
+
+        if (!$retryRequest->hasRetriableTasks()) {
+            return response()->json([
+                'message' => ['No tasks available to retry'],
+                'success' => false,
             ]);
+        }
 
-            $output = Artisan::output();
+        try {
+            $retryRequest->retry();
+
+            return response()->json([
+                'message' => $retryRequest::$output,
+                'success' => true,
+            ]);
         } catch (Throwable $throwable) {
-            $exitCode = 1;
-            $output = $throwable->getMessage();
+            $message = $throwable->getMessage();
 
-            Log::error("UnblockRequest Failed for Request ID: {$request->id}", [
+            Log::error("ProcessRequest::{$request->id} Retry Failed", [
                 'message' => $throwable->getMessage(),
                 'line' => $throwable->getLine(),
                 'file' => $throwable->getFile(),
@@ -265,11 +276,9 @@ class ProcessRequestController extends Controller
             ]);
         }
 
-        $success = $exitCode === 0 && !is_int(strpos($output, 'no pending scripts found'));
-
         return response()->json([
-            'message' => $output,
-            'success' => $success,
+            'message' => [$message],
+            'success' => false,
         ]);
     }
 

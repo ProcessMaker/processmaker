@@ -290,8 +290,12 @@
 							@if($canRetry === true)
 								<li class="list-group-item">
 									<h5>{{__('Retry Request')}}</h5>
-									<button type="button" class="btn btn-outline-info btn-block"
-											data-toggle="modal" @click="retryRequest">
+									<button id="retryRequestButton"
+											type="button"
+											class="btn btn-outline-info btn-block"
+											data-toggle="modal"
+											:disabled="retryButtonDisabled"
+											@click="retryRequest">
 										<i class="fas fa-sync"></i> {{__('Retry')}}
 									</button>
 								</li>
@@ -384,6 +388,7 @@
             disabled: false,
             packages: [],
             processId: @json($request->process->id),
+			retryButtonDisabled: true,
             canViewComments: @json($canViewComments),
             configurationComments: {
               comments: false,
@@ -647,22 +652,47 @@
                 this.$t('Are you sure you want to retry this request?'),
                 'default',
                 () => {
-                  ProcessMaker.apiClient.put(`requests/${this.requestId}/retry`).then(response => {
-                    if (response.status === 200) {
-                      const success = response.data.success || false
-                      const message = response.data.message.toString()
+                  location.assign(
+                    `${location.href.replace('#', '')}#retry-disabled`
+				  );
 
-                      if (success) {
-                        ProcessMaker.alert(this.$t('Request retry started!'), 'success')
-                        setTimeout(() => location.reload(), 2500)
-                      } else {
-                        ProcessMaker.alert(this.$t("Request could not be retried:\n"+message), 'warning')
+                  ProcessMaker.apiClient.put(`requests/${this.requestId}/retry`).then(response => {
+                    if (response.status !== 200) {
+                      return;
+                    }
+
+                    const success = response.data.success || false
+                    const message = response.data.message;
+
+                    if (success) {
+                      if (Array.isArray(message)) {
+                        for (let line of message) {
+                          ProcessMaker.alert(this.$t(line), 'success')
+                        }
                       }
+
+                      setTimeout(() => location.reload(), 3000)
+                    } else {
+                      ProcessMaker.alert(this.$t("Request could not be retried"), 'danger')
                     }
                   })
                 },
             );
           },
+		  startEnableRetryButtonTimer() {
+            if (location.href.includes('#retry-disabled')) {
+              const url = location.href.replace('#retry-disabled', '').replace('#', '');
+              setTimeout(() => location.assign(`${url}#`), 30 * 1000);
+			}
+		  },
+		  listenForHashChange() {
+            const checkRetryHash = () => {
+              this.retryButtonDisabled = location.hash.includes('#retry-disabled')
+			}
+
+            checkRetryHash();
+            window.addEventListener('hashchange', checkRetryHash);
+		  },
           getConfigurationComments() {
             if (this.canViewComments) {
               const commentsPackage = 'comment-editor' in Vue.options.components;
@@ -684,6 +714,8 @@
           },
         },
         mounted() {
+          this.listenForHashChange();
+          this.startEnableRetryButtonTimer();
           this.getConfigurationComments();
           this.packages = window.ProcessMaker.requestShowPackages;
           this.listenRequestUpdates();
