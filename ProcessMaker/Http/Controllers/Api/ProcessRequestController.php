@@ -250,7 +250,7 @@ class ProcessRequestController extends Controller
 
         $retryRequest = RetryProcessRequest::for($request);
 
-        if (!$retryRequest->hasRetriableTasks()) {
+        if (!$retryRequest->hasRetriableTasks() || $retryRequest->hasNonRetriableTasks()) {
             return response()->json([
                 'message' => ['No tasks available to retry'],
                 'success' => false,

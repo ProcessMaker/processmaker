@@ -46,6 +46,28 @@ class RetryProcessRequest
         return $this->retriableTasksQuery()->exists();
     }
 
+    public function getRetriableTasks(): Collection
+    {
+        return $this->retriableTasksQuery()->get();
+    }
+
+    public function hasNonRetriableTasks(): bool
+    {
+        $currentTaskTypes = static::$taskTypes;
+
+        $this->determineTaskTypes(true);
+
+        $tasksQuery = $this->retriableTasksQuery();
+
+        $tasksQuery = $tasksQuery->whereNotIn('element_type', $currentTaskTypes);
+
+        $hasNonRetriableTasks = $tasksQuery->exists();
+
+        $this->determineTaskTypes();
+
+        return $hasNonRetriableTasks;
+    }
+
     public function retry(): void
     {
         if (!$this->hasRetriableTasks()) {
@@ -116,18 +138,13 @@ class RetryProcessRequest
         $comment->save();
     }
 
-    private function determineTaskTypes(): void
+    private function determineTaskTypes(bool $all = false): void
     {
-        if (app()->runningInConsole()) {
+        if ($all || app()->runningInConsole()) {
             static::$taskTypes = ['scriptTask', 'serviceTask', 'task'];
         } else {
             static::$taskTypes = ['scriptTask'];
         }
-    }
-
-    protected function getRetriableTasks(): Collection
-    {
-        return $this->retriableTasksQuery()->get();
     }
 
     protected function retriableTasksQuery(): HasMany

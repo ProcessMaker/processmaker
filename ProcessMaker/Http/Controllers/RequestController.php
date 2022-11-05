@@ -114,7 +114,8 @@ class RequestController extends Controller
         $canRetry = false;
 
         if ($canManuallyComplete) {
-            $canRetry = RetryProcessRequest::for($request)->hasRetriableTasks();
+            $retry = RetryProcessRequest::for($request);
+            $canRetry = $retry->hasRetriableTasks() && !$retry->hasNonRetriableTasks();
         }
 
         $files = $request->getMedia();
