@@ -13,6 +13,7 @@ use ProcessMaker\Bpmn\MustacheOptions;
 use ProcessMaker\BpmnEngine;
 use ProcessMaker\Contracts\TimerExpressionInterface;
 use ProcessMaker\Facades\WorkflowManager as WorkflowManagerFacade;
+use ProcessMaker\Factories\SoapClientFactory;
 use ProcessMaker\Listeners\BpmnSubscriber;
 use ProcessMaker\Listeners\CommentsSubscriber;
 use ProcessMaker\Managers\ExportManager;
@@ -33,6 +34,13 @@ use ProcessMaker\Nayra\Contracts\Engine\EngineInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Repositories\DefinitionsRepository;
+use ProcessMaker\WebServices\Contracts\SoapClientInterface;
+use ProcessMaker\WebServices\NativeSoapClient;
+use ProcessMaker\WebServices\SoapConfigBuilder;
+use ProcessMaker\WebServices\SoapRequestBuilder;
+use ProcessMaker\WebServices\SoapResponseMapper;
+use ProcessMaker\WebServices\SoapServiceCaller;
+use ProcessMaker\WebServices\WebServiceRequest;
 
 class WorkflowServiceProvider extends ServiceProvider
 {
@@ -198,6 +206,22 @@ class WorkflowServiceProvider extends ServiceProvider
 
         $this->app->bind('workflow.FormalExpression', function ($app) {
             return new FormalExpression();
+        });
+
+        $this->app->bind(SoapClientInterface::class, function ($app, $request_config) {
+            return new NativeSoapClient($request_config['wsdl'], $request_config['options']);
+        });
+
+        $this->app->bind('WebServiceRequest', function ($app, $params) {
+            $dataSource = $params['dataSource'];
+
+            return new WebServiceRequest(
+                new SoapConfigBuilder(),
+                new SoapRequestBuilder(),
+                new SoapResponseMapper(),
+                new SoapServiceCaller(),
+                $dataSource
+            );
         });
 
         parent::register();

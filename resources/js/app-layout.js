@@ -155,7 +155,7 @@ window.ProcessMaker.breadcrumbs = window.ProcessMaker.navbar;
 
 // Set our own specific alert function at the ProcessMaker global object that could
 // potentially be overwritten by some custom theme support
-window.ProcessMaker.alert = function (msg, variant, showValue = 5, stayNextScreen = false) {
+window.ProcessMaker.alert = function (msg, variant, showValue = 5, stayNextScreen = false, showLoader = false) {
   if (showValue === 0) {
     // Just show it indefinitely, no countdown
     showValue = true;
@@ -168,6 +168,7 @@ window.ProcessMaker.alert = function (msg, variant, showValue = 5, stayNextScree
     alertText: msg,
     alertShow: showValue,
     alertVariant: String(variant),
+    showLoader: showLoader,
     stayNextScreen,
     timestamp: Date.now(),
   });
