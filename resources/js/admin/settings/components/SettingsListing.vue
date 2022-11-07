@@ -385,7 +385,7 @@ export default {
       this.topButtons = sortedButtons.filter(btn => {
         if (this.group === 'Email Default Settings' || this.group.includes('Email Server')) {
           return this.filterEmailServerButtons(this.group, groupData, btn);
-        } else if (this.group === 'Actions by Email') {
+        } else if (this.group === 'Actions By Email') {
           return this.filterAbeButtons(groupData, btn);
         }
 
