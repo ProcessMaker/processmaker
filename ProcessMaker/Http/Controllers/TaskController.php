@@ -78,7 +78,6 @@ class TaskController extends Controller
         if ($element instanceof ScriptTaskInterface) {
             return redirect(route('requests.show', ['request' => $task->processRequest->getKey()]));
         } else {
-
             return view('tasks.edit', [
                 'task' => $task,
                 'dueLabels' => self::$dueLabels,

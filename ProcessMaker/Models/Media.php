@@ -173,7 +173,7 @@ class Media extends MediaLibraryModel
             ]);
         }
     }
-    
+
     /**
      * getFilesRequest
      *
