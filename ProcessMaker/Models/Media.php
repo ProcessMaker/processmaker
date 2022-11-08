@@ -192,6 +192,5 @@ class Media extends MediaLibraryModel
 
         // Get all files for process and all subprocesses ..
         return self::whereIn('model_id', $requestTokenIds)->get();
-
     }
 }

@@ -78,22 +78,13 @@ class TaskController extends Controller
         if ($element instanceof ScriptTaskInterface) {
             return redirect(route('requests.show', ['request' => $task->processRequest->getKey()]));
         } else {
-            // Get all processes and subprocesses request token id's ..
-            try {
-                $requestTokenIds = $task->processRequest->collaboration->requests->pluck('id');
-            } catch (\Throwable $th) {
-                $requestTokenIds = [$task->processRequest->id];
-            }
-            
-            // Get all files for process and all subprocesses ..
-            $files = Media::whereIn('model_id', $requestTokenIds)->get();
 
             return view('tasks.edit', [
                 'task' => $task,
                 'dueLabels' => self::$dueLabels,
                 'manager' => $manager,
                 'submitUrl' => $submitUrl,
-                'files' => $files,
+                'files' => $task->processRequest->requestFiles(),
                 'addons' => $this->getPluginAddons('edit', []),
                 'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
             ]);

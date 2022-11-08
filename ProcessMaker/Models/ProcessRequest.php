@@ -877,7 +877,9 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      */
     public function requestFiles(bool $includeToken = false)
     {
-        return (object) $this->getMedia()->mapToGroups(function ($file) use ($includeToken) {
+        $media = \ProcessMaker\Models\Media::getFilesRequest($this);
+
+        return (object) $media->mapToGroups(function ($file) use ($includeToken) {
             $dataName = $file->getCustomProperty('data_name');
             $info = [
                 'id' => $file->id,

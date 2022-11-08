@@ -3,7 +3,6 @@
 namespace ProcessMaker\Models;
 
 use Exception;
-use ProcessMaker\Jobs\CopyRequestFiles;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Nayra\Bpmn\ActivitySubProcessTrait;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
@@ -81,10 +80,6 @@ class CallActivity implements CallActivityInterface
         $dataStore->setData($data);
         $instance = $callable->call($dataStore, $startEvent);
 
-        \Log::info('DISPATCH COPY FILES 1');
-        // CopyRequestFiles::dispatchNow($token->getInstance(), $instance);
-        \Log::info('DISPATCH COPY FILES 2');
-
         return $instance;
     }
 
@@ -108,8 +103,6 @@ class CallActivity implements CallActivityInterface
         // Complete the sub process call
         $this->completeSubprocessBase($token);
         $this->synchronizeInstances($instance, $token->getInstance());
-
-        // CopyRequestFiles::dispatchNow($instance, $token->getInstance());
 
         return $this;
     }
