@@ -44,7 +44,7 @@
 
   export default {
     mixins: [datatableMixin],
-    props: ["processRequestId", "status", "isAdmin"],
+    props: ["processRequestId", "status", "isAdmin", "isProcessManager"],
     data() {
       return {
         orderBy: "due_at",
@@ -100,7 +100,10 @@
           if (this.isAdmin) {
               return true;
           }
-        return String(row.user_id) === String(window.ProcessMaker.user.id) || this.canClaim(row) || row.status === "FAILING";
+        return String(row.user_id) === String(window.ProcessMaker.user.id)
+            || this.canClaim(row)
+            || row.status === "FAILING"
+            || this.isProcessManager;
       },
       onAction(action, rowData, index) {
         switch (action) {

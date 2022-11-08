@@ -110,6 +110,7 @@
 							 :class="{ active: activePending }" id="pending" role="tabpanel"
 							 aria-labelledby="pending-tab">
 							<request-detail ref="pending" :process-request-id="requestId" status="ACTIVE"
+											:is-process-manager="{{$isProcessManager ? 'true' : 'false'}}"
 											:is-admin="{{Auth::user()->is_administrator ? 'true' : 'false'}}">
 							</request-detail>
 						</div>
