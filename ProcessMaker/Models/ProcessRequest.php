@@ -5,6 +5,7 @@ namespace ProcessMaker\Models;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Laravel\Scout\Searchable;
 use Log;
@@ -892,5 +893,25 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
 
             return [$dataName => $info];
         })->toArray();
+    }
+
+    public function downloadFile($fileId)
+    {
+        // Get all files for process and all subprocesses ..
+        $media = Media::getFilesRequest($this);
+
+        $filtered = $media->filter(function ($value) use ($fileId) {
+            return $value->id == $fileId;
+        })->first();
+
+        if (!$filtered) {
+            return null;
+        }
+
+        $path = Storage::disk('public')->getAdapter()->getPathPrefix() .
+            $filtered['id'] . '/' .
+            $filtered['file_name'];
+
+        return $path;
     }
 }

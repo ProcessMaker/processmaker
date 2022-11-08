@@ -153,24 +153,15 @@ class ProcessRequestFileController extends Controller
      *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
-    public function show(Request $laravel_request, ProcessRequest $request, $file)
+    public function show(Request $laravel_request, ProcessRequest $request, $media)
     {
-        // Get all files for process and all subprocesses ..
-        $media = Media::getFilesRequest($request);
+        $file = $request->downloadFile($media);
 
-        $filtered = $media->filter(function ($value) use ($file) {
-            return $value->id == $file;
-        })->first();
-
-        if (!$filtered) {
-            return abort(response(__('File ID does not exist'), 404));
+        if ($file) {
+            return response()->download($file);
         }
 
-        $path = Storage::disk('public')->getAdapter()->getPathPrefix() .
-            $filtered['id'] . '/' .
-            $filtered['file_name'];
-
-        return response()->download($path);
+        return abort(response(__('File ID does not exist'), 404));
     }
 
     /**
@@ -355,9 +346,15 @@ class ProcessRequestFileController extends Controller
      *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
-    public function destroy(Request $laravel_request, ProcessRequest $request, Media $file)
+    public function destroy(Request $laravel_request, ProcessRequest $request, $fileId)
     {
-        $request->getMedia()->firstWhere('id', $file->id)->delete();
+        $file = \ProcessMaker\Models\Media::getFilesRequest($request)->find($fileId);
+
+        if (!$file) {
+            return abort(response(__('File ID does not exist'), 404));
+        }
+
+        $file->delete();
 
         return response([], 204);
     }

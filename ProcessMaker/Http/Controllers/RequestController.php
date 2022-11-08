@@ -175,11 +175,12 @@ class RequestController extends Controller
 
     public function downloadFiles(ProcessRequest $request, Media $media)
     {
-        $ids = $request->getMedia()->pluck('id');
-        if (!$ids->contains($media->id)) {
-            abort(403);
+        $file = $request->downloadFile($media);
+
+        if ($file) {
+            return response()->download($file);
         }
 
-        return response()->download($media->getPath(), $media->file_name);
+        return abort(response(__('File ID does not exist'), 404));
     }
 }
