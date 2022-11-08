@@ -155,24 +155,20 @@ class ProcessRequestFileController extends Controller
      */
     public function show(Request $laravel_request, ProcessRequest $request, $file)
     {
-        dd('-----------------------');
-        \Log::debug($file);
-
-        // Get all processes and subprocesses request token id's ..
-        $requestTokenIds = $request->collaboration->requests->pluck('id');
-
         // Get all files for process and all subprocesses ..
-        $media = Media::whereIn('model_id', $requestTokenIds)->get();
+        $media = Media::getFilesRequest($request);
 
-        $file = Media::where([
-            'model_id' => $parentRequest->id,
-            'model_type' => ProcessRequests::class,
-            'id' => $file,
-        ])->firstOrFail();
+        $filtered = $media->filter(function ($value) use ($file) {
+            return $value->id == $file;
+        })->first();
+
+        if (!$filtered) {
+            return abort(response(__('File ID does not exist'), 404));
+        }
 
         $path = Storage::disk('public')->getAdapter()->getPathPrefix() .
-            $file->id . '/' .
-            $file->file_name;
+            $filtered['id'] . '/' .
+            $filtered['file_name'];
 
         return response()->download($path);
     }
