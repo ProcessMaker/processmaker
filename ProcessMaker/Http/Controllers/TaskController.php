@@ -79,8 +79,12 @@ class TaskController extends Controller
             return redirect(route('requests.show', ['request' => $task->processRequest->getKey()]));
         } else {
             // Get all processes and subprocesses request token id's ..
-            $requestTokenIds = $task->processRequest->collaboration->requests->pluck('id');
-
+            try {
+                $requestTokenIds = $task->processRequest->collaboration->requests->pluck('id');
+            } catch (\Throwable $th) {
+                $requestTokenIds = [$task->processRequest->id];
+            }
+            
             // Get all files for process and all subprocesses ..
             $files = Media::whereIn('model_id', $requestTokenIds)->get();
 

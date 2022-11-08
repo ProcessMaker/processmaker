@@ -81,11 +81,7 @@ class ProcessRequestFileController extends Controller
      */
     public function index(Request $laravel_request, ProcessRequest $request)
     {
-        // Get all processes and subprocesses request token id's ..
-        $requestTokenIds = $request->collaboration->requests->pluck('id');
-
-        // Get all files for process and all subprocesses ..
-        $media = Media::whereIn('model_id', $requestTokenIds)->get();
+        $media = \ProcessMaker\Models\Media::getFilesRequest($request);
 
         //Retrieve input filter variables
         $name = $laravel_request->get('name');
