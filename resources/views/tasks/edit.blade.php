@@ -223,7 +223,7 @@
     const task = @json($task);
     const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
-    const userIsProcessManager = {{ Auth::user()->id === $task->process()->first()?->manager_id ? "true": "false" }};
+    const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
 
   </script>
     @foreach($manager->getScripts() as $script)
