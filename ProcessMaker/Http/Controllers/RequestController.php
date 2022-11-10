@@ -173,7 +173,7 @@ class RequestController extends Controller
         return false;
     }
 
-    public function downloadFiles(ProcessRequest $request, Media $media)
+    public function downloadFiles(ProcessRequest $request, $media)
     {
         $file = $request->downloadFile($media);
 

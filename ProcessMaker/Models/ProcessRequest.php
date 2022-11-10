@@ -4,7 +4,7 @@ namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
 use DB;
-use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Laravel\Scout\Searchable;
@@ -913,5 +913,11 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             $filtered['file_name'];
 
         return $path;
+    }
+
+    public function getMedia(string $collectionName = 'default', $filters = []): Collection
+    {
+        \Log::debug('get media process request');
+        return \ProcessMaker\Models\Media::getFilesRequest($this);
     }
 }
