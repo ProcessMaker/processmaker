@@ -41,6 +41,11 @@ class RetryProcessRequest
         return new self($processRequest);
     }
 
+    public function isChildRequest(): bool
+    {
+        return $this->processRequest->parentRequest()->exists();
+    }
+
     public function hasRetriableTasks(): bool
     {
         return $this->retriableTasksQuery()->exists();
