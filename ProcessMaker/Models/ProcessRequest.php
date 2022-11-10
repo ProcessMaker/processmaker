@@ -335,21 +335,47 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             ->whereNotIn('element_type', ['startEvent', 'end_event'])
             ->where('status', 'CLOSED')
             ->orderBy('completed_at')
+            ->with([
+                'user',
+                'process',
+                'processRequest.processVersion',
+            ])
             ->get();
+
+        /** @var ProcessRequestToken[] $tokens */
+        $ids = [];
+        foreach ($tokens as $token) {
+            $definition = $token->getDefinition();
+            if (!empty($definition['screenRef'])) {
+                if (!in_array($definition['screenRef'], $ids)) {
+                    $ids[] = $definition['screenRef'];
+                }
+            }
+        }
+        $collection = Screen::whereIn('id', $ids)->get();
+
         $screens = [];
         foreach ($tokens as $token) {
             $definition = $token->getDefinition();
-            if (array_key_exists('screenRef', $definition)) {
-                $screen = $token->getScreenVersion();
-                if ($screen) {
-                    $screen->element_name = $token->element_name;
-                    $screen->element_type = $token->element_type;
-                    $dataManager = new DataManager();
-                    $screen->data = $dataManager->getData($token, true);
-                    $screen->screen_id = $screen->id;
-                    $screen->id = $token->id;
-                    $screens[] = $screen;
-                }
+            if (empty($definition['screenRef'])) {
+                continue;
+            }
+            /** @var Screen|null $item */
+            $item = $collection->filter(function(Screen $item) use($definition){
+                return $item->id == $definition['screenRef'];
+            })->first();
+            if (!$item) {
+                continue;
+            }
+            $screen = $item->versionFor($item->processRequest);
+            if ($screen) {
+                $screen->element_name = $token->element_name;
+                $screen->element_type = $token->element_type;
+                $dataManager = new DataManager();
+                $screen->data = $dataManager->getData($token, true);
+                $screen->screen_id = $screen->id;
+                $screen->id = $token->id;
+                $screens[] = $screen;
             }
         }
 
