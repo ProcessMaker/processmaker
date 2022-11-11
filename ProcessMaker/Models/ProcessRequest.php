@@ -917,7 +917,6 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
 
     public function getMedia(string $collectionName = 'default', $filters = []): Collection
     {
-        \Log::debug('get media process request');
         return \ProcessMaker\Models\Media::getFilesRequest($this);
     }
 }
