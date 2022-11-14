@@ -183,7 +183,7 @@ class Media extends MediaLibraryModel
     public static function getFilesRequest(ProcessRequest $request)
     {
         $requestTokenIds = [$request->id];
-        if ($request->collaboration()->exists() && $request->collaboration->requests()) {
+        if ($request->collaboration && $request->collaboration->requests()) {
             // Get all processes and subprocesses request token id's ..
             $requestTokenIds = $request->collaboration->requests->pluck('id');
         }
