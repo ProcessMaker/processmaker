@@ -671,6 +671,8 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                 $operator = $expression->operator;
                 if (is_string($value)) {
                     $value = '"' . $value . '"';
+                } else if (is_array($value)) {
+                    $value = json_encode($value);
                 }
 
                 $pmql = "$field $operator $value";
