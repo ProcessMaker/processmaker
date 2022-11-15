@@ -11,6 +11,7 @@ use ProcessMaker\Models\ProcessRequestLock;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Nayra\Bpmn\Models\ScriptTask;
 use ProcessMaker\Nayra\Bpmn\Models\ServiceTask;
+use ProcessMaker\RetryProcessRequest;
 
 class UnblockRequest extends Command
 {
@@ -41,66 +42,32 @@ class UnblockRequest extends Command
     /**
      * Execute the console command.
      *
-     * @return void
+     * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         $requestId = $this->option('request');
 
-        $this->info("Retrying request {$requestId}...");
-
         if (blank($request = ProcessRequest::find($requestId))) {
-            $this->error(__("Request with ID: \"{$requestId}\" does not exist."));
+            $this->error(__("ProcessRequest::{$requestId} was not found."));
 
-            return;
+            return 1;
         }
 
-        $processed = false;
-        $definitions = $request->process->getDefinitions();
+        $retryRequest = RetryProcessRequest::for($request);
 
-        // unlock the request
-        ProcessRequestLock::where('process_request_id', $requestId)->delete();
+        if (!$retryRequest->hasRetriableTasks()) {
+            $this->warn("ProcessRequest::{$requestId}: No retriable tasks found.");
 
-        foreach ($this->getOpenTasks($requestId) as $token) {
-            $task = $definitions->getEvent($token->element_id);
-            $instance = $token->processRequest;
-            $process = $instance->process;
-
-            switch (get_class($task)) {
-                case ScriptTask::class:
-                    $processed = true;
-                    $this->info("Request {$requestId}: Running Script Task '{$token->element_id}' ({$token->element_name}) again...");
-                    Log::info("Retrying script task with ID {$token->element_id} ({$token->element_name})");
-                    RunScriptTask::dispatch($process, $instance, $token, []);
-                    break;
-
-                case ServiceTask::class:
-                    $processed = true;
-                    $this->info("Request {$requestId}: Running Service Task '{$token->element_id}' ({$token->element_name}) again...");
-                    Log::info("Retrying service task with ID {$token->element_id} ({$token->element_name})");
-                    RunServiceTask::dispatch($process, $instance, $token, []);
-                    break;
-            }
+            return 1;
         }
 
-        if (!$processed) {
-            $this->info("Request {$requestId}: no pending scripts found.");
-        }
-    }
+        $retryRequest->retry();
 
-    /**
-     * Find all script and service tasks of a request that are halted for some reason
-     *
-     * @param $requestId
-     *
-     * @return mixed
-     */
-    private function getOpenTasks($requestId)
-    {
-        return ProcessRequestToken::whereIn('status', ['FAILING', 'ACTIVE', 'ERROR'])
-                                  ->whereIn('element_type', ['scriptTask', 'serviceTask', 'task'])
-                                  ->where('process_request_id', $requestId)
-                                  ->get()
-                                  ->all();
+        foreach ($retryRequest::$output as $line) {
+            $this->info($line);
+        }
+
+        return 0;
     }
 }
