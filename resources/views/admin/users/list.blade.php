@@ -14,7 +14,7 @@
             </div>
             @can('create-users')
                 <div class="d-flex ml-md-2 flex-column flex-md-row">
-                    <b-button aria-label="{{__('Create User')}}" @click="showModal()">
+                    <b-button aria-label="{{__('Add User')}}" @click="showModal()">
                         <i class="fas fa-plus"></i>
                         {{__('User')}}
                     </b-button>
