@@ -807,18 +807,26 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      */
     public function getConsolidatedUsers($group_id, array &$users)
     {
-        $groupMembers = GroupMember::where('group_id', $group_id)->get();
-        foreach ($groupMembers as $groupMember) {
-            if ($groupMember->member->status !== 'ACTIVE') {
-                continue;
-            }
-            if ($groupMember->member_type === User::class) {
-                $users[$groupMember->member_id] = $groupMember->member_id;
-            } else {
-                $this->getConsolidatedUsers($groupMember->member_id, $users);
-            }
-        }
+        $users = array_unique(array_merge(
+            GroupMember::where([
+                ['group_id', '=', $group_id],
+                ['member_type', '=', User::class]
+            ])
+                ->leftjoin('users', 'users.id', '=', 'group_members.member_id')
+                ->where('users.status', 'ACTIVE')->pluck('member_id')->toArray(),
+            $users
+        ));
+        $groupMembers = GroupMember::where([
+            ['group_id', '=', $group_id],
+            ['member_type', '=', Group::class]
+        ])
+            ->leftjoin('groups', 'groups.id', '=', 'group_members.member_id')
+            ->where('groups.status', 'ACTIVE')
+            ->pluck('member_id');
 
+        foreach ($groupMembers as $groupMember) {
+            $this->getConsolidatedUsers($groupMember, $users);
+        }
         return $users;
     }
 
