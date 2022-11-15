@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
 use DB;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
 use Laravel\Scout\Searchable;
@@ -343,16 +344,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             ->get();
 
         /** @var ProcessRequestToken[] $tokens */
-        $ids = [];
-        foreach ($tokens as $token) {
-            $definition = $token->getDefinition();
-            if (!empty($definition['screenRef'])) {
-                if (!in_array($definition['screenRef'], $ids)) {
-                    $ids[] = $definition['screenRef'];
-                }
-            }
-        }
-        $collection = Screen::whereIn('id', $ids)->get();
+        $cachedScreens = $this->getTokensAssociatedScreens($tokens);
 
         $screens = [];
         foreach ($tokens as $token) {
@@ -360,14 +352,14 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             if (empty($definition['screenRef'])) {
                 continue;
             }
-            /** @var Screen|null $item */
-            $item = $collection->filter(function(Screen $item) use($definition){
-                return $item->id == $definition['screenRef'];
+            /** @var Screen|null $cachedScreen */
+            $cachedScreen = $cachedScreens->filter(function(Screen $screen) use($definition){
+                return $screen->id == $definition['screenRef'];
             })->first();
-            if (!$item) {
+            if (!$cachedScreen) {
                 continue;
             }
-            $screen = $item->versionFor($item->processRequest);
+            $screen = $cachedScreen->versionFor($cachedScreen->processRequest);
             if ($screen) {
                 $screen->element_name = $token->element_name;
                 $screen->element_type = $token->element_type;
@@ -380,6 +372,25 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         }
 
         return $screens;
+    }
+
+    /**
+     * @param Collection|ProcessRequestToken[] $tokens
+     * @return Collection|Screen[]
+     */
+    protected function getTokensAssociatedScreens(Collection $tokens)
+    {
+        /** @var ProcessRequestToken[] $tokens */
+        $ids = [];
+        foreach ($tokens as $token) {
+            $definition = $token->getDefinition();
+            if (!empty($definition['screenRef'])) {
+                if (!in_array($definition['screenRef'], $ids)) {
+                    $ids[] = $definition['screenRef'];
+                }
+            }
+        }
+        return Screen::whereIn('id', $ids)->get();
     }
 
     /**
