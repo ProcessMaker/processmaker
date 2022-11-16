@@ -56,6 +56,7 @@
                       :title="$t('Unpause Start Timer Events')"
                       v-if="props.rowData.has_timer_start_events && props.rowData.pause_timer_start"
                       v-uni-aria-describedby="props.rowData.id.toString()"
+                      :aria-label="$t('Unpause Start Timer Events for') + ' ' + props.rowData.name.toString()"
               >
                 <i class="fas fa-play fa-lg fa-fw"></i>
               </b-btn>
@@ -66,6 +67,7 @@
                       :title="$t('Pause Start Timer Events')"
                       v-if="props.rowData.has_timer_start_events && !props.rowData.pause_timer_start"
                       v-uni-aria-describedby="props.rowData.id.toString()"
+                      :aria-label="$t('Pause Start Timer Events for') + ' ' + props.rowData.name.toString()"
               >
                 <i class="fas fa-pause fa-lg fa-fw"></i>
               </b-btn>
@@ -76,6 +78,7 @@
                       :title="$t('Edit')"
                       v-if="permission.includes('edit-processes') && (props.rowData.status === 'ACTIVE' || props.rowData.status === 'INACTIVE')"
                       v-uni-aria-describedby="props.rowData.id.toString()"
+                      :aria-label="$t('Edit') + ' ' + props.rowData.name.toString()"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
               </b-btn>
@@ -86,6 +89,7 @@
                       :title="$t('Configure')"
                       v-if="permission.includes('edit-processes') && (props.rowData.status === 'ACTIVE' || props.rowData.status === 'INACTIVE')"
                       v-uni-aria-describedby="props.rowData.id.toString()"
+                      :aria-label="$t('Configure') + ' ' + props.rowData.name.toString()"
               >
                 <i class="fas fa-cog fa-lg fa-fw"></i>
               </b-btn>
@@ -96,6 +100,7 @@
                       :title="$t('View Documentation')"
                       v-if="permission.includes('view-processes') && isDocumenterInstalled"
                       v-uni-aria-describedby="props.rowData.id.toString()"
+                      :aria-label="$t('View Documentation for') + ' ' + props.rowData.name.toString()"
               >
                 <i class="fas fa-map-signs fa-lg fa-fw"></i>
               </b-btn>
@@ -106,6 +111,7 @@
                       :title="$t('Export')"
                       v-if="permission.includes('export-processes')"
                       v-uni-aria-describedby="props.rowData.id.toString()"
+                      :aria-label="$t('Export') + ' ' + props.rowData.name.toString()"
               >
                 <i class="fas fa-file-export fa-lg fa-fw"></i>
               </b-btn>
@@ -116,6 +122,7 @@
                       :title="$t('Archive')"
                       v-if="permission.includes('archive-processes') && (props.rowData.status === 'ACTIVE' || props.rowData.status === 'INACTIVE')"
                       v-uni-aria-describedby="props.rowData.id.toString()"
+                      :aria-label="$t('Archive') + ' ' + props.rowData.name.toString()"
               >
                 <i class="fas fa-download fa-lg fa-fw"></i>
               </b-btn>
@@ -126,6 +133,7 @@
                       :title="$t('Restore')"
                       v-if="permission.includes('archive-processes') && props.rowData.status === 'ARCHIVED'"
                       v-uni-aria-describedby="props.rowData.id.toString()"
+                      :aria-label="$t('Restore') + ' ' + props.rowData.name.toString()"
               >
                 <i class="fas fa-upload fa-lg fa-fw"></i>
               </b-btn>
