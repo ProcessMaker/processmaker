@@ -1,6 +1,6 @@
 {
     "name": "@processmaker/processmaker",
-    "version": "4.3.0-RC3",
+    "version": "4.3.0-RC4",
     "description": "ProcessMaker 4",
     "author": "DevOps <devops@processmaker.com>",
     "license": "ISC",
@@ -126,7 +126,7 @@
         "coverageDirectory": "<rootDir>/tests/js/coverage"
     },
     "engines": {
-        "npm": "~8.9",
-        "node": "~16.15"
+        "npm": "~8.19",
+        "node": "~16.18"
     }
 }
