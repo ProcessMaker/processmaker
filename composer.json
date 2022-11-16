@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.3.0-RC3",
+    "version": "4.3.0-RC4",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -87,7 +87,7 @@
             ]
         },
         "processmaker": {
-            "build": "9e138885",
+            "build": "b2c97ea5",
             "custom": {
                 "package-ellucian-ethos": "1.8.1"
             },
