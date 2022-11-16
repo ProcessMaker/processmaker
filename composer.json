@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.3.0-RC2",
+    "version": "4.3.0-RC3",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -87,9 +87,9 @@
             ]
         },
         "processmaker": {
-            "build": "31207bf6",
+            "build": "9e138885",
             "custom": {
-                "package-ellucian-ethos": "1.8.0"
+                "package-ellucian-ethos": "1.8.1"
             },
             "enterprise": {
                 "connector-docusign": "1.1.0",
@@ -97,7 +97,7 @@
                 "connector-send-email": "1.12.0",
                 "connector-slack": "1.3.0",
                 "docker-executor-node-ssr": "1.1.0",
-                "package-actions-by-email": "1.7.0",
+                "package-actions-by-email": "1.7.1",
                 "package-advanced-user-manager": "1.1.0",
                 "package-auth": "1.6.0",
                 "package-collections": "2.6.0",
@@ -109,13 +109,13 @@
                 "package-googleplaces": "1.3.0",
                 "package-process-documenter": "1.2.0",
                 "package-process-optimization": "1.3.0",
-                "package-savedsearch": "1.19.0",
+                "package-savedsearch": "1.19.1",
                 "package-sentry": "1.3.0",
                 "package-signature": "1.4.0",
-                "package-translations": "2.3.0",
+                "package-translations": "2.3.1",
                 "package-versions": "1.3.0",
                 "package-vocabularies": "2.7.0",
-                "package-webentry": "2.6.0",
+                "package-webentry": "2.6.1",
                 "packages": "^0"
             }
         }

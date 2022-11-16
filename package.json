@@ -1,6 +1,6 @@
 {
     "name": "@processmaker/processmaker",
-    "version": "4.3.0-RC2",
+    "version": "4.3.0-RC3",
     "description": "ProcessMaker 4",
     "author": "DevOps <devops@processmaker.com>",
     "license": "ISC",
@@ -22,6 +22,7 @@
         "e2e:open": "cypress open"
     },
     "devDependencies": {
+        "@babel/eslint-parser": "^7.15.8",
         "accounting": "^0.4.1",
         "chartjs-plugin-colorschemes": "^0.4.0",
         "cross-env": "^7.0.3",
@@ -47,10 +48,10 @@
         "@fortawesome/free-solid-svg-icons": "^5.15.1",
         "@fortawesome/vue-fontawesome": "^0.1.9",
         "@panter/vue-i18next": "^0.15.2",
-        "@processmaker/modeler": "1.24.0",
+        "@processmaker/modeler": "1.24.1",
         "@processmaker/processmaker-bpmn-moddle": "0.13.0",
-        "@processmaker/screen-builder": "2.60.0",
-        "@processmaker/vue-form-elements": "0.41.1",
+        "@processmaker/screen-builder": "2.60.2",
+        "@processmaker/vue-form-elements": "0.41.4",
         "@processmaker/vue-multiselect": "2.2.0",
         "autoprefixer": "10.4.5",
         "axios": "^0.27.2",

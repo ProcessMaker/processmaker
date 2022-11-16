@@ -290,8 +290,11 @@
 							@if($canRetry === true)
 								<li class="list-group-item">
 									<h5>{{__('Retry Request')}}</h5>
-									<button type="button" class="btn btn-outline-info btn-block"
-											data-toggle="modal" @click="retryRequest">
+									<button id="retryRequestButton"
+											type="button"
+											class="btn btn-outline-info btn-block"
+											data-toggle="modal"
+											@click="retryRequest">
 										<i class="fas fa-sync"></i> {{__('Retry')}}
 									</button>
 								</li>
@@ -642,25 +645,34 @@
                 });
           },
           retryRequest() {
-            ProcessMaker.confirmModal(
-                this.$t('Confirm'),
-                this.$t('Are you sure you want to retry this request?'),
-                'default',
-                () => {
-                  ProcessMaker.apiClient.put(`requests/${this.requestId}/retry`).then(response => {
-                    if (response.status === 200) {
-                      const success = response.data.success || false
-                      const message = response.data.message.toString()
+			const apiRequest = () => {
+              ProcessMaker.apiClient.put(`requests/${this.requestId}/retry`).then(response => {
+                if (response.status !== 200) {
+                  return;
+                }
 
-                      if (success) {
-                        ProcessMaker.alert(this.$t('Request retry started!'), 'success')
-                        setTimeout(() => location.reload(), 2500)
-                      } else {
-                        ProcessMaker.alert(this.$t("Request could not be retried:\n"+message), 'warning')
-                      }
+                const success = response.data.success || false
+                const message = response.data.message;
+
+                if (success) {
+                  if (Array.isArray(message)) {
+                    for (let line of message) {
+                      ProcessMaker.alert(this.$t(line), 'success')
                     }
-                  })
-                },
+                  }
+
+                  setTimeout(() => location.reload(), 3000)
+                } else {
+                  ProcessMaker.alert(this.$t("Request could not be retried"), 'danger')
+                }
+              })
+			}
+
+            ProcessMaker.confirmModal(
+              this.$t('Confirm'),
+              this.$t('Are you sure you want to retry this request?'),
+              'default',
+			  apiRequest
             );
           },
           getConfigurationComments() {

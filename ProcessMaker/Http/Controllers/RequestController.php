@@ -16,6 +16,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Package\PackageComments\PackageServiceProvider;
+use ProcessMaker\RetryProcessRequest;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -110,10 +111,15 @@ class RequestController extends Controller
         $canCancel = Auth::user()->can('cancel', $request->processVersion);
         $canViewComments = (Auth::user()->hasPermissionsFor('comments')->count() > 0) || class_exists(PackageServiceProvider::class);
         $canManuallyComplete = Auth::user()->is_administrator && $request->status === 'ERROR';
+        $canRetry = false;
 
-        // While redundant, it's to emphasize the two different
-        // permissions for now for a refactor in the future
-        $canRetry = $canManuallyComplete;
+        if ($canManuallyComplete) {
+            $retry = RetryProcessRequest::for($request);
+
+            $canRetry = $retry->hasRetriableTasks() &&
+                !$retry->hasNonRetriableTasks() &&
+                !$retry->isChildRequest();
+        }
 
         $files = \ProcessMaker\Models\Media::getFilesRequest($request);
 
