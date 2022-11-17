@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Exception\ExpressionFailedException;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Exception\SyntaxErrorException;
@@ -254,6 +255,12 @@ class FormalExpression implements FormalExpressionInterface
             function () {
             },
             function ($arguments, $array, $key, $default) {
+                $array = json_decode(json_encode($array), true);
+                if (is_null($array) && !is_null($array)) {
+                    Log::error('The parameter cannot be converted to an array.', [
+                        'array' => $array
+                    ]);
+                }
                 return Arr::get($array, $key, $default);
             }
         );
