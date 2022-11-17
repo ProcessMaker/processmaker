@@ -43,15 +43,29 @@ class MissingFilesUploadId extends Command
     public function handle()
     {
         $this->writeln("Searching for request with calls to sub-process\n", 'info', true);
+        $aux = '';
+        $dataAux = [];
 
         foreach (ProcessRequest::where('process_collaboration_id', '!=', null)->orderBy('id', 'asc')->get() as $request) {
             $data = $request->data;
             $modify = false;
             foreach ($request->getMedia() as $file) {
-                if (Arr::has($data, $file->getCustomProperty('data_name'))) {
+                if (Arr::has($data, $file->getCustomProperty('data_name')) && !is_array(Arr::get($data, $file->getCustomProperty('data_name')))) {
                     $modify = true;
                     Arr::set($data, $file->getCustomProperty('data_name'), $file->id);
+                } else if (Arr::has($data, $file->getCustomProperty('data_name')) && is_array(Arr::get($data, $file->getCustomProperty('data_name')))) {
+                    if ($aux != '' && $aux != $file->getCustomProperty('data_name')) {
+                        Arr::set($data, $aux, $dataAux);
+                        $dataAux = [];
+                        $modify = true;
+                    }
+                    $aux = $file->getCustomProperty('data_name');
+                    $dataAux[] = (object)['file' => $file->id];
                 }
+            }
+            if (count($dataAux)> 0) {
+                Arr::set($data, $aux, $dataAux);
+                $modify = true;
             }
             if ($modify) {
                 $this->writeln("Process Request: {$request->id} modified", 'info', true);
@@ -65,7 +79,7 @@ class MissingFilesUploadId extends Command
     {
         $this->{$type}($message);
         if ($toLog) {
-            Log::Info('Garbage Collector: ' . $message);
+            Log::Info('File ID Broken: ' . $message);
         }
     }
 }
