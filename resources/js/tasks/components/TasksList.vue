@@ -63,6 +63,7 @@
                 v-b-tooltip.hover
                 :title="$t('Open Task')"
                 v-uni-aria-describedby="props.rowData.id.toString()"
+                :aria-label="$t('Open') + ' ' + props.rowData.element_name.toString()"
               >
                 <i class="fas fa-caret-square-right fa-lg fa-fw"></i>
               </b-btn>
@@ -72,6 +73,7 @@
                 v-b-tooltip.hover
                 :title="$t('Open Request')"
                 v-uni-aria-describedby="props.rowData.id.toString()"
+                :aria-label="$t('Open Request for') + ' ' + props.rowData.element_name.toString()"
               >
                 <i class="fas fa-clipboard fa-lg fa-fw"></i>
               </b-btn>

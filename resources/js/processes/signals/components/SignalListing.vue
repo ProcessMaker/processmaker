@@ -34,6 +34,7 @@
                     :disabled="!isEditable(props.rowData)"
                     v-if="permission.includes('edit-processes')"
                     v-uni-aria-describedby="props.rowData.id.toString()"
+                    :aria-label="$t('Edit') + ' ' + props.rowData.name.toString()"
                 >
                     <i class="fas fa-pen-square fa-lg fa-fw"></i>
                 </b-btn>
@@ -45,6 +46,7 @@
                     @click="onReview(props.rowData, props.rowIndex)"
                     :disabled="(!isDeletable(props.rowData) || !permission.includes('edit-processes')) && !isCollection(props.rowData)"
                     v-uni-aria-describedby="props.rowData.id.toString()"
+                    :aria-label="$t('Delete') + ' ' + props.rowData.name.toString()"
                 >
                     <i v-if="isCollection(props.rowData)" class="fas fa-external-link-alt fa-lg fa-fw"></i>
                     <i v-else class="fas fa-trash-alt fa-lg fa-fw"></i>
