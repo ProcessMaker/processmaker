@@ -810,7 +810,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         $users = array_unique(array_merge(
             GroupMember::where([
                 ['group_id', '=', $group_id],
-                ['member_type', '=', User::class]
+                ['member_type', '=', User::class],
             ])
                 ->leftjoin('users', 'users.id', '=', 'group_members.member_id')
                 ->where('users.status', 'ACTIVE')->pluck('member_id')->toArray(),
@@ -818,7 +818,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         ));
         $groupMembers = GroupMember::where([
             ['group_id', '=', $group_id],
-            ['member_type', '=', Group::class]
+            ['member_type', '=', Group::class],
         ])
             ->leftjoin('groups', 'groups.id', '=', 'group_members.member_id')
             ->where('groups.status', 'ACTIVE')
@@ -827,6 +827,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         foreach ($groupMembers as $groupMember) {
             $this->getConsolidatedUsers($groupMember, $users);
         }
+
         return $users;
     }
 
@@ -900,6 +901,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                 $response[] = $startEvent;
             }
         }
+
         return $response;
     }
 
