@@ -14,14 +14,18 @@ class Process extends ApiResource
     {
         $array = parent::append('notifications', 'task_notifications')->toArray($request);
         $include = explode(',', $request->input('include', ''));
+        $filterWithoutAssignments = $request->input('filter_without_assignments', null);
         if (in_array('user', $include)) {
             $array['user'] = new Users($this->user);
         }
         if (in_array('category', $include)) {
             $array['category'] = new ProcessCategory($this->category);
         }
-        if (in_array('events', $include)) {
-            $array['events'] = $this->getStartEvents(true);
+        if (in_array('events', $include) && $filterWithoutAssignments) {
+            $array['events'] = $this->getStartEvents(true, true);
+        }
+        if (in_array('events', $include) && !$filterWithoutAssignments) {
+            $array['events'] = $this->getStartEvents(true, false);
         }
         if (in_array('svg', $include)) {
             $array['svg'] = $this->svg;

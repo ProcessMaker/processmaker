@@ -861,7 +861,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      *
      * @return array
      */
-    public function getStartEvents($filterWithPermissions = false)
+    public function getStartEvents($filterWithPermissions = false, $filterWithoutAssignments = false)
     {
         $user = Auth::user();
         // Load Process Start Events
@@ -872,6 +872,11 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         if (!$filterWithPermissions || $user->is_administrator) {
             return $this->start_events;
         }
+        // If user have edit and view permissions and filter without assignments
+        if ($filterWithoutAssignments && $user->can('view-processes') && $user->can('edit-processes')) {
+            return $this->start_events;
+        }
+
         // Filter the start events assigned to the user
         $response = [];
         foreach ($this->start_events as $startEvent) {
@@ -895,7 +900,6 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                 $response[] = $startEvent;
             }
         }
-
         return $response;
     }
 
