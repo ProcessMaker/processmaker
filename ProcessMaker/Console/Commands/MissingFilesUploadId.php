@@ -46,7 +46,10 @@ class MissingFilesUploadId extends Command
         $aux = '';
         $dataAux = [];
 
-        foreach (ProcessRequest::where('process_collaboration_id', '!=', null)->orderBy('id', 'asc')->get() as $request) {
+        foreach (ProcessRequest::where('process_collaboration_id', '!=', null)
+            ->whereNotIn('STATUS', ['ERROR', 'COMPLETED', 'CANCELED'])
+            ->orderBy('id', 'asc')
+            ->get() as $request) {
             $data = $request->data;
             $modify = false;
             foreach ($request->getMedia() as $file) {
