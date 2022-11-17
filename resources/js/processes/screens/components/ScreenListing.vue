@@ -38,6 +38,7 @@
                 :title="$t('Edit')"
                 v-if="permission.includes('edit-screens')"
                 v-uni-aria-describedby="props.rowData.id.toString()"
+                :aria-label="$t('Edit') + ' ' + props.rowData.title.toString()"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
               </b-btn>
@@ -48,6 +49,7 @@
                 :title="$t('Configure')"
                 v-if="permission.includes('edit-screens')"
                 v-uni-aria-describedby="props.rowData.id.toString()"
+                :aria-label="$t('Configure') + ' ' + props.rowData.title.toString()"
               >
                 <i class="fas fa-cog fa-lg fa-fw"></i>
               </b-btn>
@@ -58,6 +60,7 @@
                 :title="$t('Copy')"
                 v-if="permission.includes('create-screens')"
                 v-uni-aria-describedby="props.rowData.id.toString()"
+                :aria-label="$t('Copy') + ' ' + props.rowData.title.toString()"
               >
                 <i class="fas fa-copy fa-lg fa-fw"></i>
               </b-btn>
@@ -68,6 +71,7 @@
                 :title="$t('Export')"
                 v-if="permission.includes('export-screens')"
                 v-uni-aria-describedby="props.rowData.id.toString()"
+                :aria-label="$t('Export') + ' ' + props.rowData.title.toString()"
               >
                 <i class="fas fa-file-export fa-lg fa-fw"></i>
               </b-btn>
@@ -78,6 +82,7 @@
                 :title="$t('Delete')"
                 v-if="permission.includes('delete-screens')"
                 v-uni-aria-describedby="props.rowData.id.toString()"
+                :aria-label="$t('Delete') + ' ' + props.rowData.title.toString()"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
               </b-btn>

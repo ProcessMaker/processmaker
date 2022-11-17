@@ -36,6 +36,7 @@
                 :title="$t('Edit')"
                 v-if="permission.includes('edit-users')"
                 v-uni-aria-describedby="props.rowData.id.toString()"
+                :aria-label="$t('Edit') + ' ' + props.rowData.fullname.toString()"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
               </b-btn>
@@ -46,6 +47,7 @@
                 :title="$t('Delete')"
                 v-if="permission.includes('delete-users')"
                 v-uni-aria-describedby="props.rowData.id.toString()"
+                :aria-label="$t('Delete') + ' ' + props.rowData.fullname.toString()"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
               </b-btn>
