@@ -1,7 +1,24 @@
 <template>
-    <div>
-        <b-table :items="formattedData" :fields="fields"></b-table>
-    </div>
+  <div>
+    <table role="table" class="table b-table">
+      <thead role="rowgroup">
+        <tr role="row">
+          <th role="columnheader" scope="col" aria-colindex="1">
+            <div>{{ $t('Key') }}</div>
+          </th>
+          <th role="columnheader" scope="col" aria-colindex="2">
+            <div>{{ $t('Value') }}</div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="row in formattedData" :key="row.key">
+          <td aria-colindex="1" role="cell">{{ row.key }}</td>
+          <td aria-colindex="2" role="cell">{{ row.value }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script>

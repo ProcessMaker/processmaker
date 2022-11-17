@@ -63,6 +63,7 @@
                         data: {
                             timeout: ProcessMaker.AccountTimeoutLength,
                             warnSeconds: ProcessMaker.AccountTimeoutWarnSeconds,
+                            enabled: window.ProcessMaker.AccountTimeoutEnabled
                         }
                     });
                     this.onClose();
