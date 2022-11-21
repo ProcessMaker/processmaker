@@ -8,6 +8,7 @@
                         <multiselect id="process_name_filter" v-model="process"
                                      @search-change="getProcesses"
                                      @input="buildPmql"
+                                     @select="processSelected"
                                      :show-labels="false"
                                      :loading="isLoading.process"
                                      open-direction="bottom"
@@ -15,8 +16,8 @@
                                      :options="processOptions"
                                      :track-by="'id'"
                                      :multiple="true"
-                                     :aria-label="$t('Process')"
-                                     :placeholder="$t('Process')">
+                                     :placeholder="$t('Process')"
+                                     :aria-label="this.process ? this.process.ariaLabel : $t('Process')">
                             <template slot="noResult">
                                 {{ $t('No Results') }}
                             </template>
@@ -31,13 +32,14 @@
                       <multiselect id="process_status_filter" v-model="status"
                                      :show-labels="false"
                                      @input="buildPmql"
+                                     @select="statusSelected"
                                      :loading="isLoading.status"
                                      open-direction="bottom"
                                      label="name"
                                      :options="statusOptions"
                                      track-by="value"
                                      :multiple="true"
-                                     :aria-label="$t('Status')"
+                                     :aria-label="this.status ? this.status.ariaLabel : $t('Status')"
                                      :placeholder="$t('Status')">
                             <template slot="noResult">
                                 {{ $t('No Results') }}
@@ -54,6 +56,7 @@
                                    v-model="requester"
                                      @search-change="getRequesters"
                                      @input="buildPmql"
+                                     @select="requesterSelected"
                                      :show-labels="false"
                                      :loading="isLoading.requester"
                                      open-direction="bottom"
@@ -61,7 +64,7 @@
                                      :options="requesterOptions"
                                      :track-by="'id'"
                                      :multiple="true"
-                                     :aria-label="$t('Requester')"
+                                     :aria-label="$t('Requester') + ' ' + this.requester[0].fullname"
                                      :placeholder="$t('Requester')">
                             <template slot="noResult">
                                 {{ $t('No Results') }}
@@ -83,6 +86,7 @@
                       <multiselect id="process_participant_filter" v-model="participants"
                                      @search-change="getParticipants"
                                      @input="buildPmql"
+                                     @select="participantSelected"
                                      :show-labels="false"
                                      :loading="isLoading.participants"
                                      open-direction="bottom"
@@ -115,6 +119,7 @@
                                   v-model="request"
                                      @search-change="getRequests"
                                      @input="buildPmql"
+                                     @select="requestSelected"
                                      :show-labels="false"
                                      :loading="isLoading.request"
                                      open-direction="bottom"
@@ -139,6 +144,7 @@
                                      v-model="name"
                                      @search-change="getNames"
                                      @input="buildPmql"
+                                     @select="taskSelected"
                                      :show-labels="false"
                                      :loading="isLoading.name"
                                      open-direction="bottom"
@@ -163,6 +169,7 @@
                                       v-model="status"
                                      :show-labels="false"
                                      @input="buildPmql"
+                                     @select="statusOptionsSelected"
                                      :loading="isLoading.status"
                                      open-direction="bottom"
                                      label="name"
@@ -494,15 +501,59 @@ export default {
             this.isLoading.name = false
             setTimeout(3000)
           });
-      }
+      },
+      processSelected(option) {
+        if (this.process) {
+          let name = document.getElementById('process_name_filter');
+          name.ariaLabel = 'Selected' + ' ' + option.name;
+        }
+      },
+      statusSelected(option) {      
+        if (this.status) {
+          let status = document.getElementById('process_status_filter');
+          status.ariaLabel = 'Selected' + ' ' + option.name;
+        }
+      },
+      requesterSelected(option) {
+        if (this.requester) {
+          let requester = document.getElementById('process_requester_filter');
+          requester.ariaLabel = 'Selected' + ' ' + option.fullname;
+        }
+      },
+      participantSelected(option) {
+        if (this.participants) {
+          let participants = document.getElementById('process_participant_filter');
+          participants.ariaLabel = 'Selected' + ' ' + option.fullname;
+        }
+      },
+      requestSelected(option) {
+        if (this.request) {
+          let request = document.getElementById('process_request_filter');
+          request.ariaLabel = 'Selected' + ' ' + option.name;
+        }
+      },
+      taskSelected(option) {
+        if (this.name) {
+          let name = document.getElementById('process_task_filter');
+          name.ariaLabel = 'Selected' + ' ' + option.name;
+        }
+      },
+      statusOptionsSelected(option) {
+        if (this.status) {
+          let status = document.getElementById('process_status_options_filter');
+          status.ariaLabel = 'Selected' + ' ' + option.name;
+        }
+      },
   },
   created() {
     if (this.paramProcess && Array.isArray(this.paramProcess)) {
         this.process = this.paramProcess;
+        this.process.ariaLabel = 'Selected' + ' ' + this.process[0].name;
     }
     
     if (this.paramStatus && Array.isArray(this.paramStatus)) {
         this.status = this.paramStatus;
+        this.status.ariaLabel = 'Selected' + ' ' + this.status[0].name;
     }
     
     if (this.paramRequester && Array.isArray(this.paramRequester)) {
