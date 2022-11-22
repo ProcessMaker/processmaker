@@ -53,27 +53,6 @@ class RemoveFieldCategoryScreenScript extends Migration
      */
     public function down()
     {
-        Schema::table('scripts', function (Blueprint $table) {
-            $table->string('category', '100')->after('status')->nullable()->default(null);
-        });
-        Schema::table('script_versions', function (Blueprint $table) {
-            $table->string('category', '100')->after('status')->nullable()->default(null);
-        });
-        Schema::table('screens', function (Blueprint $table) {
-            $table->string('category', '100')->after('status')->nullable()->default(null);
-        });
-        Schema::table('screen_versions', function (Blueprint $table) {
-            $table->string('category', '100')->after('status')->nullable()->default(null);
-        });
-        foreach (Script::all() as $script) {
-            $category = $script->category()->first();
-            !$category ?: $script->category = $category->name;
-            $script->save();
-        }
-        foreach (Screen::all() as $screen) {
-            $category = $screen->category()->first();
-            !$category ?: $screen->category = $category->name;
-            $screen->save();
-        }
+        //  We don't need to recreate the columns in the down method.
     }
 }
