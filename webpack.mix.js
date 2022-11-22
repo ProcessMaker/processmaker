@@ -25,8 +25,7 @@ mix.webpackConfig({
     alias: {
       'vue-monaco': path.resolve(__dirname, 'resources/js/vue-monaco-amd.js')
     },
-  },
-  node: {fs: "empty"}
+  }
 });
 
 mix.options({
@@ -115,14 +114,15 @@ mix.js("resources/js/app-layout.js", "public/js")
 // Monaco AMD modules. Copy only the files we need to make the build faster.
 const monacoSource = 'node_modules/monaco-editor/min/vs/';
 const monacoDestination = 'public/vendor/monaco-editor/min/vs/';
-const monacoLanguages = ['php', 'css', 'lua', 'javascript', 'csharp', 'java', 'python', 'r', 'html'];
+const monacoLanguages = ['php', 'css', 'lua', 'javascript', 'csharp', 'java', 'python', 'r', 'html', 'xml', 'typescript'];
 const monacoFiles = [
   'loader.js',
   'editor/editor.main.js',
   'editor/editor.main.css',
   'editor/editor.main.nls.js',
-  'base/browser/ui/codiconLabel/codicon/codicon.ttf',
+  'base/browser/ui/codicons/codicon/codicon.ttf',
   'base/worker/workerMain.js',
+  'base/common/worker/simpleWorker.nls.js',
 ];
 monacoFiles.forEach(file => {
   mix.copy(monacoSource + file, monacoDestination + file);
@@ -137,3 +137,5 @@ mix.sass("resources/sass/sidebar/sidebar.scss", "public/css")
   .sass("resources/sass/app.scss", "public/css")
   .sass("resources/sass/admin/queues.scss", "public/css/admin")
   .version();
+
+mix.vue({ version: 2 });

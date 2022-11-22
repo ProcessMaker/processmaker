@@ -5,7 +5,6 @@ namespace ProcessMaker\Models;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Notification;
 use Laravel\Scout\Searchable;
@@ -79,7 +78,7 @@ use Throwable;
  *
  * @method ProcessRequest getInstance()
  */
-class ProcessRequestToken extends Model implements TokenInterface
+class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 {
     use ExtendedPMQL;
     use TokenTrait;
@@ -134,27 +133,18 @@ class ProcessRequestToken extends Model implements TokenInterface
     ];
 
     /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
-     */
-    protected $dates = [
-        'completed_at',
-        'due_at',
-        'initiated_at',
-        'riskchanges_at',
-    ];
-
-    /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
     protected $casts = [
+        'completed_at' => 'datetime',
+        'due_at' => 'datetime',
+        'initiated_at' => 'datetime',
+        'riskchanges_at' => 'datetime',
         'data' => 'array',
         'self_service_groups' => 'array',
-        'token_properties' => 'array',
-    ];
+        'token_properties' => 'array',    ];
 
     /**
      * Get the indexable data array for the model.
@@ -681,6 +671,8 @@ class ProcessRequestToken extends Model implements TokenInterface
                 $operator = $expression->operator;
                 if (is_string($value)) {
                     $value = '"' . $value . '"';
+                } else if (is_array($value)) {
+                    $value = json_encode($value);
                 }
 
                 $pmql = "$field $operator $value";

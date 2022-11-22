@@ -91,7 +91,7 @@
         let assignable = false;
         if (row.assignable_users instanceof Array) {
           assignable = !!row.assignable_users.find(user => {
-            return String(user.id) === String(window.ProcessMaker.user.id);
+            return String(user) === String(window.ProcessMaker.user.id);
           });
         }
         return !row.user_id && row.is_self_service && assignable;
@@ -177,7 +177,7 @@
 </script>
 
 <style lang="scss" scoped>
-    >>> tr td:nth-child(3) {
+    :deep(tr td:nth-child(3)) {
         padding: 6px 10px;
     }
 </style>

@@ -28,8 +28,8 @@ class SanitizationTest extends TestCase
         // Create the process
         $faker = Faker::create();
 
-        $user = factory(User::class)->create(['is_administrator' => true]);
-        $script = factory(Script::class)->make([
+        $user = User::factory()->create(['is_administrator' => true]);
+        $script = Script::factory()->make([
             'title' => $title,
             'description' => $description,
             'code' => $code,

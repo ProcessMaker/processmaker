@@ -15,7 +15,7 @@ class UtilsTest extends TestCase
     public function setUpProcess()
     {
         $this->bpmn = file_get_contents(__DIR__ . '/fixtures/process-with-pm-config.bpmn.xml');
-        $this->process = factory(Process::class)->create(['bpmn' => $this->bpmn]);
+        $this->process = Process::factory()->create(['bpmn' => $this->bpmn]);
     }
 
     public function testGetServiceTasks()

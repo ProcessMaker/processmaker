@@ -5,6 +5,7 @@ namespace ProcessMaker\ImportExport\Exporters;
 use Illuminate\Support\Collection;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\SignalHelper;
+use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
@@ -24,23 +25,26 @@ class ProcessExporter extends ExporterBase
 
         $this->addDependent('user', $process->user, UserExporter::class);
 
-        // Process Categories.
         $this->exportCategories();
 
         $this->exportSignals();
 
+        $this->exportAssignments();
+
         // Notification Settings.
         $this->addReference('notification_settings', $process->notification_settings->toArray());
 
-        // Screens.
-        foreach ($this->getScreens($process) as $screen) {
-            $this->addDependent(DependentType::SCREENS, $screen, ScreenExporter::class);
+        // Screens
+        if ($process->cancel_screen_id) {
+            $screen = Screen::findOrFail($process->cancel_screen_id);
+            $this->addDependent('cancel-screen', $screen, ScreenExporter::class);
+        }
+        if ($process->request_detail_screen_id) {
+            $screen = Screen::findOrFail($process->request_detail_screen_id);
+            $this->addDependent('request-detail-screen', $screen, ScreenExporter::class);
         }
 
-        // Subprocesses.
-        foreach ($this->getSubprocesses($process) as $subProcess) {
-            $this->addDependent(DependentType::SUB_PROCESSES, $subProcess, self::class);
-        }
+        $this->exportSubprocesses();
     }
 
     public function import() : bool
@@ -52,6 +56,16 @@ class ProcessExporter extends ExporterBase
         $this->associateCategories(ProcessCategory::class, 'process_category_id');
 
         $this->importSignals();
+
+        foreach ($this->getDependents('cancel-screen') as $dependent) {
+            $process->cancel_screen_id = $dependent->model->id;
+        }
+
+        foreach ($this->getDependents('request-detail-screen') as $dependent) {
+            $process->request_detail_screen_id = $dependent->model->id;
+        }
+
+        $this->importSubprocesses();
 
         // TODO
         // Update screenRef
@@ -66,32 +80,61 @@ class ProcessExporter extends ExporterBase
         return true;
     }
 
-    private function getScreens($process): Collection
-    {
-        $ids = array_merge(
-            [
-                $process->cancel_screen_id,
-                $process->request_detail_screen_id,
-            ],
-            $this->manager->getDependenciesOfType(Screen::class, $process, [], false)
-        );
+    // private function getScreens($process): Collection
+    // {
+    //     $ids = array_merge(
+    //         [
+    //             $process->cancel_screen_id,
+    //             $process->request_detail_screen_id,
+    //         ],
+    //         $this->manager->getDependenciesOfType(Screen::class, $process, [], false)
+    //     );
 
-        return Screen::findMany($ids);
+    //     return Screen::findMany($ids);
+    // }
+
+    private function exportSubprocesses()
+    {
+        foreach ($this->getSubprocesses() as $path => $subProcess) {
+            $this->addDependent(DependentType::SUB_PROCESSES, $subProcess, self::class, $path);
+        }
     }
 
-    private function getSubprocesses($process): Collection
+    private function importSubprocesses()
     {
-        $ids = [];
-        $elements = $process->getDefinitions(true)->getElementsByTagName('callActivity');
-        foreach ($elements as $element) {
+        foreach ($this->getDependents(DependentType::SUB_PROCESSES) as $dependent) {
+            Utils::setAttributeAtXPath($this->model, $dependent->meta, 'calledElement', 'ProcessId-' . $dependent->model->id);
+            Utils::setPmConfigValueAtXPath($this->model, $dependent->meta, 'calledElement', 'ProcessId-' . $dependent->model->id);
+            Utils::setPmConfigValueAtXPath($this->model, $dependent->meta, 'processId', $dependent->model->id);
+        }
+    }
+
+    private function getSubprocesses(): array
+    {
+        $processesByPath = [];
+        foreach ($this->model->getDefinitions(true)->getElementsByTagName('callActivity') as $element) {
             $calledElementValue = optional($element->getAttributeNode('calledElement'))->value;
+
             $values = explode('-', $calledElementValue);
-            if (count($values) === 2) {
-                $ids[] = $values[1];
+            if (count($values) !== 2) {
+                continue; // not a subprocess
             }
+
+            $id = $values[1];
+            if (!is_numeric($id)) {
+                continue; // not a subprocess
+            }
+
+            $process = Process::find($values[1]);
+            if ($process->package_key !== null) {
+                continue; // not a subprocess
+            }
+
+            $path = $element->getNodePath();
+            $processesByPath[$path] = $process;
         }
 
-        return Process::findMany($ids);
+        return $processesByPath;
     }
 
     private function exportSignals()
@@ -120,5 +163,9 @@ class ProcessExporter extends ExporterBase
                 SignalManager::addSignal($signal);
             }
         }
+    }
+
+    private function exportAssignments()
+    {
     }
 }

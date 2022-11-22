@@ -22,12 +22,12 @@ class ScriptUserTaskTest extends TestCase
 
         $data = [];
         $data['bpmn'] = Process::getProcessTemplate('ScriptTasksWithUser.bpmn');
-        $process = factory(Process::class)->create($data);
+        $process = Process::factory()->create($data);
 
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
         $this->be($user);
 
-        factory(Script::class)->create([
+        Script::factory()->create([
             'id' => 10,
             'title' => 'titletest',
             'run_as_user_id' => $user->id,

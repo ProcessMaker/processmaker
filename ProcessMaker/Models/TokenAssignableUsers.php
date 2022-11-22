@@ -72,8 +72,7 @@ class TokenAssignableUsers extends Relation
     {
         foreach ($models as $model) {
             $ids = $model->process->getAssignableUsers($model->element_id);
-            $children = collect(User::whereIn('id', $ids)->get());
-            $model->setRelation($relation, $children);
+            $model->setRelation($relation, collect($ids));
         }
 
         return $models;

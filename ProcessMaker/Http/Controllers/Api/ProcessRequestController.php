@@ -5,11 +5,15 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Notification;
 use ProcessMaker\Exception\PmqlMethodException;
 use ProcessMaker\Exception\ReferentialIntegrityException;
@@ -27,7 +31,9 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
 use ProcessMaker\Query\SyntaxError;
+use ProcessMaker\RetryProcessRequest;
 use Symfony\Component\HttpFoundation\IpUtils;
+use Throwable;
 
 class ProcessRequestController extends Controller
 {
@@ -221,6 +227,62 @@ class ProcessRequestController extends Controller
     }
 
     /**
+     * Retry the service, script, and other tasks for a given request
+     *
+     * @param  \ProcessMaker\Models\ProcessRequest  $request
+     * @param  \Illuminate\Http\Request  $httpRequest
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function retry(ProcessRequest $request, Request $httpRequest): JsonResponse
+    {
+        if (!Auth::user()->is_administrator) {
+            throw new AuthorizationException(__('Not authorized to complete this request.'));
+        }
+
+        if ($request->status !== 'ERROR') {
+            throw ValidationException::withMessages([
+                'status' => __('Only requests with ERROR status can be retried'),
+            ]);
+        }
+
+        $retryRequest = RetryProcessRequest::for($request);
+
+        if (!$retryRequest->hasRetriableTasks() || $retryRequest->hasNonRetriableTasks()) {
+            return response()->json([
+                'message' => ['No tasks available to retry'],
+                'success' => false,
+            ]);
+        }
+
+        try {
+            $retryRequest->retry();
+
+            return response()->json([
+                'message' => $retryRequest::$output,
+                'success' => true,
+            ]);
+        } catch (Throwable $throwable) {
+            $message = $throwable->getMessage();
+
+            Log::error("ProcessRequest::{$request->id} Retry Failed", [
+                'message' => $throwable->getMessage(),
+                'line' => $throwable->getLine(),
+                'file' => $throwable->getFile(),
+                'code' => $throwable->getCode(),
+                'trace' => $throwable->getTrace(),
+            ]);
+        }
+
+        return response()->json([
+            'message' => [$message],
+            'success' => false,
+        ]);
+    }
+
+    /**
      * Update a request
      *
      * @param ProcessRequest $request
@@ -268,7 +330,7 @@ class ProcessRequestController extends Controller
                 throw new AuthorizationException(__('Not authorized to complete this request.'));
             }
             if ($request->status != 'ERROR') {
-                throw \Illuminate\Validation\ValidationException::withMessages([
+                throw ValidationException::withMessages([
                     'status' => __('Only requests with status: ERROR can be manually completed'),
                 ]);
             }
@@ -412,7 +474,7 @@ class ProcessRequestController extends Controller
         $whitelist = $whitelist === 'undefined' ? '' : $whitelist;
         if ($whitelist) {
             $ip = request()->ip();
-            list($ipWhitelist, $domainWhitelist) = $this->parseWhitelist($whitelist);
+            [$ipWhitelist, $domainWhitelist] = $this->parseWhitelist($whitelist);
             $domain = Cache::remember("ip_domain_{$ip}", self::DOMAIN_CACHE_TIME, function () use ($ip) {
                 return gethostbyaddr($ip);
             });

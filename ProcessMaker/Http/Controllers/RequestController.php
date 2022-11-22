@@ -16,15 +16,13 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Package\PackageComments\PackageServiceProvider;
+use ProcessMaker\RetryProcessRequest;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
-use Spatie\MediaLibrary\HasMedia\HasMedia;
-use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
-use Spatie\MediaLibrary\Models\Media;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class RequestController extends Controller
 {
-    use HasMediaTrait;
     use SearchAutocompleteTrait;
     use HasControllerAddons;
 
@@ -89,6 +87,7 @@ class RequestController extends Controller
                 ->count() > 0;
 
         $requestMedia = $request->media()->get()->pluck('id');
+
         $userHasCommentsForMedia = Comment::where('commentable_type', \ProcessMaker\Models\Media::class)
                 ->whereIn('commentable_id', $requestMedia)
                 ->where('body', 'like', '%{{' . \Auth::user()->id . '}}%')
@@ -112,6 +111,15 @@ class RequestController extends Controller
         $canCancel = Auth::user()->can('cancel', $request->processVersion);
         $canViewComments = (Auth::user()->hasPermissionsFor('comments')->count() > 0) || class_exists(PackageServiceProvider::class);
         $canManuallyComplete = Auth::user()->is_administrator && $request->status === 'ERROR';
+        $canRetry = false;
+
+        if ($canManuallyComplete) {
+            $retry = RetryProcessRequest::for($request);
+
+            $canRetry = $retry->hasRetriableTasks() &&
+                !$retry->hasNonRetriableTasks() &&
+                !$retry->isChildRequest();
+        }
 
         $files = $request->getMedia();
 
@@ -124,7 +132,7 @@ class RequestController extends Controller
         $addons = $this->getPluginAddons('edit', compact(['request']));
 
         return view('requests.show', compact(
-            'request', 'files', 'canCancel', 'canViewComments', 'canManuallyComplete', 'manager', 'canPrintScreens', 'screenRequested', 'addons'
+            'request', 'files', 'canCancel', 'canViewComments', 'canManuallyComplete', 'canRetry', 'manager', 'canPrintScreens', 'screenRequested', 'addons'
         ));
     }
 

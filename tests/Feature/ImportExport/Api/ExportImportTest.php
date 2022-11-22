@@ -14,7 +14,7 @@ class ExportImportTest extends TestCase
 
     public function testGetTree()
     {
-        $screen = factory(Screen::class)->create();
+        $screen = Screen::factory()->create();
 
         $route = route('api.export.tree', [
             'type' => 'screen',
@@ -28,21 +28,36 @@ class ExportImportTest extends TestCase
         $this->assertObjectHasAttribute('manifest', $data);
     }
 
-    public function testDownloadFile()
+    public function testDownloadExportFile()
     {
-        $screen = factory(Screen::class)->create();
+        $screen = Screen::factory()->create(['title' => 'Screen']);
 
-        $route = route('api.export.download', [
-            'type' => 'screen',
-            'id' => $screen->id,
-        ], [
-            'password' => null,
-        ]);
-        $response = $this->apiCall('GET', $route);
+        $response = $this->apiCall(
+            'POST',
+            route('api.export.download', [
+                'type' => 'screen',
+                'id' => $screen->id,
+            ]),
+            [
+                'password' => 'foobar',
+                'options' => [],
+            ]
+        );
 
         // Ensure we can download the exported file.
         $response->assertStatus(200);
-        $response->assertHeader('content-disposition', 'attachment; filename=export.json');
+        $response->assertHeader('content-disposition', "attachment; filename={$screen->title}.json");
+
+        // Ensure it's encrypted.
+        $payload = json_decode($response->streamedContent(), true);
+        $this->assertEquals(true, $payload['encrypted']);
+
+        $headers = $response->headers;
+        $exportInfo = json_decode($headers->get('export-info'), true)['exported'];
+        $this->assertCount(1, $exportInfo['screens']);
+        $this->assertEquals($screen->id, $exportInfo['screens'][0]);
+        $this->assertCount(1, $exportInfo['screen_categories']);
+        $this->assertEquals($screen->categories[0]->id, $exportInfo['screen_categories'][0]);
     }
 
     public function testImportPreview()
@@ -75,15 +90,16 @@ class ExportImportTest extends TestCase
 
     private function importFixtures()
     {
-        $screen = factory(Screen::class)->create();
+        $screen = Screen::factory()->create();
         $exporter = new Exporter();
         $exporter->exportScreen($screen);
 
         // Create fake file upload.
-        $content = json_encode($exporter->payload());
-        $fileName = tempnam(sys_get_temp_dir(), 'exported');
+        $payload = $exporter->payload();
+        $content = json_encode($payload);
+        $fileName = tempnam(sys_get_temp_dir(), $payload['name']);
         file_put_contents($fileName, $content);
-        $file = new UploadedFile($fileName, 'exported.json', null, null, null, true);
+        $file = new UploadedFile($fileName, $payload['name'] . '.json', null, null, null, true);
 
         return [
             $file,

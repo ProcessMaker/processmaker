@@ -88,8 +88,8 @@ class ManifestTest extends TestCase
 
     private function createScreen()
     {
-        $screen = factory(Screen::class)->create(['title' => 'exported screen']);
-        $screenCategory = factory(ScreenCategory::class)->create(['name' => 'exported category']);
+        $screen = Screen::factory()->create(['title' => 'exported screen']);
+        $screenCategory = ScreenCategory::factory()->create(['name' => 'exported category']);
         $screen->screen_category_id = $screenCategory->id;
         $screen->save();
 

@@ -25,7 +25,7 @@ class ManualTaskTest extends TestCase
         $this->loadTestProcess(
             file_get_contents(__DIR__ . '/processes/FileUpload.bpmn'),
             [
-                '2' => factory(User::class)->create([
+                '2' => User::factory()->create([
                     'status' => 'ACTIVE',
                     'is_administrator' => false,
                 ]),
