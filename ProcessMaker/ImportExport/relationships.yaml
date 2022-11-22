@@ -1,0 +1,54 @@
+---
+Screen:
+  type: ModelEntity
+  params:
+    class: ProcessMaker\Models\Screen
+  references: # each of these can contain multiple references
+    -
+      name: Nested Screen # Optional, for information only when display to the user. Otherwise entity name is used.
+      entity: Screen
+      strategy: ScreenConfig # inherits JsonConfig
+      params:
+        component: FormNestedScreen
+        field: screen
+    -
+      name: Watcher Script
+      entity: Script
+      strategy: WatcherConfig # inherits JsonConfig
+      params:
+        type: script # could also be data source (entity added by the data sources package)
+    -
+      name: Screen Category
+      entity: Category
+      strategy: Categories
+
+Script:
+  type: ModelEntity
+  params:
+    class: ProcessMaker\Models\Script
+  references:
+    -
+      entity: ScriptCategory
+      strategy: Categories
+    -
+      entity: User
+      strategy: ForeignKey
+      params:
+        source: run_as_user_id
+
+User:
+  type: ModelEntity
+  params:
+    class: ProcessMaker\Models\User
+  references: 
+    - # TODO: groups, permissions, etc.
+
+ScriptCategory:
+  type: ModelEntity
+  params:
+    class: ProcessMaker\Models\ScriptCategory
+
+ScreenCategory:
+  type: ModelEntity
+  params:
+    class: ProcessMaker\Models\ScreenCategory
