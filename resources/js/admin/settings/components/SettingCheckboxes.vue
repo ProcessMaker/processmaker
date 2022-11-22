@@ -57,7 +57,7 @@ export default {
       options: [],
       selected: null,
       showModal: false,
-      transformed: null,
+      transformed: [],
     };
   },
   computed: {
@@ -137,7 +137,7 @@ export default {
   },
   mounted() {
     if (this.value === null) {
-      this.input = '';
+      this.input = [];
     } else {
       this.input = this.value;
     }
