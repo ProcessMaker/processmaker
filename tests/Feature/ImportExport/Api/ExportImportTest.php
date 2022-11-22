@@ -14,7 +14,7 @@ class ExportImportTest extends TestCase
 
     public function testGetTree()
     {
-        $screen = factory(Screen::class)->create();
+        $screen = Screen::factory()->create();
 
         $route = route('api.export.tree', [
             'type' => 'screen',
@@ -30,7 +30,7 @@ class ExportImportTest extends TestCase
 
     public function testDownloadExportFile()
     {
-        $screen = factory(Screen::class)->create(['title' => 'Screen']);
+        $screen = Screen::factory()->create(['title' => 'Screen']);
 
         $response = $this->apiCall(
             'POST',
@@ -90,7 +90,7 @@ class ExportImportTest extends TestCase
 
     private function importFixtures()
     {
-        $screen = factory(Screen::class)->create();
+        $screen = Screen::factory()->create();
         $exporter = new Exporter();
         $exporter->exportScreen($screen);
 

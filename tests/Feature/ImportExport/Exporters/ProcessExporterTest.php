@@ -26,9 +26,9 @@ class ProcessExporterTest extends TestCase
     private function fixtures()
     {
         // Create simple screens. Extensive screen tests are in ScreenExporterTest.php
-        $cancelScreen = factory(Screen::class)->create(['title' => 'Cancel Screen']);
-        $requestDetailScreen = factory(Screen::class)->create(['title' => 'Request Detail Screen']);
-        $user = factory(User::class)->create(['username' => 'testuser']);
+        $cancelScreen = Screen::factory()->create(['title' => 'Cancel Screen']);
+        $requestDetailScreen = Screen::factory()->create(['title' => 'Request Detail Screen']);
+        $user = User::factory()->create(['username' => 'testuser']);
 
         $process = $this->createProcess('basic-process', [
             'name' => 'Process',
@@ -38,12 +38,12 @@ class ProcessExporterTest extends TestCase
         ]);
 
         // Notification Settings.
-        $processNotificationSetting1 = factory(ProcessNotificationSetting::class)->create([
+        $processNotificationSetting1 = ProcessNotificationSetting::factory()->create([
             'process_id' => $process->id,
             'notifiable_type' => 'requester',
             'notification_type' => 'assigned',
         ]);
-        $processNotificationSetting2 = factory(ProcessNotificationSetting::class)->create([
+        $processNotificationSetting2 = ProcessNotificationSetting::factory()->create([
             'process_id' => $process->id,
             'notifiable_type' => 'requester',
             'notification_type' => 'assigned',

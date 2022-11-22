@@ -116,16 +116,16 @@ class ScreenExporterTest extends TestCase
     private function fixtures()
     {
         $screen = $this->createScreen();
-        $screenCategory1 = factory(ScreenCategory::class)->create(['name' => 'category 1', 'status' => 'ACTIVE']);
-        $screenCategory2 = factory(ScreenCategory::class)->create(['name' => 'category 2', 'status' => 'ACTIVE']);
+        $screenCategory1 = ScreenCategory::factory()->create(['name' => 'category 1', 'status' => 'ACTIVE']);
+        $screenCategory2 = ScreenCategory::factory()->create(['name' => 'category 2', 'status' => 'ACTIVE']);
         $screen->screen_category_id = $screenCategory1->id . ',' . $screenCategory2->id;
 
-        $script = factory(Script::class)->create(['title' => 'script']);
+        $script = Script::factory()->create(['title' => 'script']);
         $this->associateScriptWatcher($screen, $script);
 
         $nestedScreen = $this->createScreen('nested screen', false);
         $nestedScreen->screen_category_id = $screenCategory1->id;
-        $nestedNestedScreen = factory(Screen::class)->create(['title' => 'nested nested screen', 'config' => []]);
+        $nestedNestedScreen = Screen::factory()->create(['title' => 'nested nested screen', 'config' => []]);
         $nestedNestedScreen->screen_category_id = $screenCategory2->id;
         $this->associateNestedScreen($nestedScreen, $nestedNestedScreen);
         $this->associateNestedScreen($screen, $nestedScreen);
@@ -157,7 +157,7 @@ class ScreenExporterTest extends TestCase
     {
         $config = json_decode(file_get_contents(__DIR__ . '/../fixtures/screen_with_nested_screen.json'), true);
         $watchers = $addWatchers ? json_decode(file_get_contents(__DIR__ . '/../fixtures/watchers.json'), true) : [];
-        $screen = factory(Screen::class)->create([
+        $screen = Screen::factory()->create([
             'title' => $title,
             'config' => $config,
             'watchers' => $watchers,

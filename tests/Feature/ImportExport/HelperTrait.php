@@ -19,7 +19,7 @@ trait HelperTrait
     {
         $bpmn = file_get_contents(__DIR__ . '/fixtures/' . $bpmnPath . '.bpmn.xml');
 
-        return factory(Process::class)->create(
+        return Process::factory()->create(
             array_merge(
                 $attrs,
                 [
@@ -31,7 +31,7 @@ trait HelperTrait
 
     public function addGlobalSignalProcess()
     {
-        factory(ProcessCategory::class)->create(['is_system'=> true]);
+        ProcessCategory::factory()->create(['is_system'=> true]);
         (new SignalSeeder())->run();
         $this->globalSignal = new SignalData('test_global_signal', 'test global signal', '');
         SignalManager::addSignal($this->globalSignal);
