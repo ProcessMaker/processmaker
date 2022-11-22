@@ -9,6 +9,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Mustache_Engine;
 use ProcessMaker\Exception\HttpInvalidArgumentException;
 use ProcessMaker\Exception\HttpResponseException;
@@ -425,14 +426,27 @@ trait MakeHttpRequests
      */
     private function call($method, $url, array $headers, $body, $bodyType)
     {
-        $client = new Client(['verify' => $this->verifySsl]);
+        $client = $this->client ?? new Client(['verify' => $this->verifySsl]);
         $options = [];
         if ($bodyType === 'form-data') {
             $options['form_params'] = json_decode($body, true);
         }
+
         $request = new Request($method, $url, $headers, $body);
 
-        return $client->send($request, $options);
+        if ($this->debug_mode) {
+            $this->log('Request: ', var_export(compact('method', 'url', 'body', 'bodyType'), true));
+            $this->log('Request Headers: ', var_export($headers, true));
+        }
+
+        $response =  $client->send($request, $options);
+
+        if ($this->debug_mode) {
+            $this->log('Response: ', var_export($response, true));
+            $this->log('Response headers: ', var_export($response->getHeaders(), true));
+        }
+
+        return $response;
     }
 
     /**
@@ -618,5 +632,19 @@ trait MakeHttpRequests
         $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
 
         return "$scheme$user$pass$host$port$path$query$fragment";
+    }
+
+    private function log($label, $log)
+    {
+        if (!$log) {
+            return;
+        }
+
+        try {
+            Log::channel('data-source')->info($label . str_replace(["\n", "\t", "\r"], '', $log));
+        }
+        catch(\Throwable $e) {
+            Log::error($e->getMessage());
+        }
     }
 }

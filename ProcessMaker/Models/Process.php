@@ -807,16 +807,25 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      */
     public function getConsolidatedUsers($group_id, array &$users)
     {
-        $groupMembers = GroupMember::where('group_id', $group_id)->get();
+        $users = array_unique(array_merge(
+            GroupMember::where([
+                ['group_id', '=', $group_id],
+                ['member_type', '=', User::class],
+            ])
+                ->leftjoin('users', 'users.id', '=', 'group_members.member_id')
+                ->where('users.status', 'ACTIVE')->pluck('member_id')->toArray(),
+            $users
+        ));
+        $groupMembers = GroupMember::where([
+            ['group_id', '=', $group_id],
+            ['member_type', '=', Group::class],
+        ])
+            ->leftjoin('groups', 'groups.id', '=', 'group_members.member_id')
+            ->where('groups.status', 'ACTIVE')
+            ->pluck('member_id');
+
         foreach ($groupMembers as $groupMember) {
-            if ($groupMember->member->status !== 'ACTIVE') {
-                continue;
-            }
-            if ($groupMember->member_type === User::class) {
-                $users[$groupMember->member_id] = $groupMember->member_id;
-            } else {
-                $this->getConsolidatedUsers($groupMember->member_id, $users);
-            }
+            $this->getConsolidatedUsers($groupMember, $users);
         }
 
         return $users;
@@ -853,7 +862,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      *
      * @return array
      */
-    public function getStartEvents($filterWithPermissions = false)
+    public function getStartEvents($filterWithPermissions = false, $filterWithoutAssignments = false)
     {
         $user = Auth::user();
         // Load Process Start Events
@@ -864,6 +873,11 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         if (!$filterWithPermissions || $user->is_administrator) {
             return $this->start_events;
         }
+        // If user have edit and view permissions and filter without assignments
+        if ($filterWithoutAssignments && $user->can('view-processes') && $user->can('edit-processes')) {
+            return $this->start_events;
+        }
+
         // Filter the start events assigned to the user
         $response = [];
         foreach ($this->start_events as $startEvent) {
