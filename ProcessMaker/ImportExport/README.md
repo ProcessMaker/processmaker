@@ -4,9 +4,9 @@ A type of object to export
 
 Schema:
 - props
-    - Array params
-    - Array references
-    - Array warnings (optional)
+  - Array params
+  - Array references
+  - Array warnings (optional)
 - methods:
   - save
   - load

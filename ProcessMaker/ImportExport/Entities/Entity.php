@@ -2,11 +2,19 @@
 
 namespace ProcessMaker\ImportExport\Entities;
 
-class Entity
+use ProcessMaker\ImportExport\Contracts\Entity as EntityInterface;
+
+class Entity implements EntityInterface
 {
+    public $references = [];
+
     public function __construct(
         public array $params,
-        public array $references
     ) {
+    }
+
+    public function setReferences($references)
+    {
+        $this->references = $references;
     }
 }

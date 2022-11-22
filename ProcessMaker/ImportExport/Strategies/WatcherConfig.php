@@ -2,6 +2,6 @@
 
 namespace ProcessMaker\ImportExport\Strategies;
 
-class ScreenConfig extends JsonConfig
+class WatcherConfig extends JsonConfig
 {
 }

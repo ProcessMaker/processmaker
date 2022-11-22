@@ -19,7 +19,7 @@ Screen:
         type: script # could also be data source (entity added by the data sources package)
     -
       name: Screen Category
-      entity: Category
+      entity: ScreenCategory
       strategy: Categories
 
 Script:
@@ -42,7 +42,7 @@ User:
   params:
     class: ProcessMaker\Models\User
   references: 
-    - # TODO: groups, permissions, etc.
+    # TODO: groups, permissions, etc.
 
 ScriptCategory:
   type: ModelEntity
