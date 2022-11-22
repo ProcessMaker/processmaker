@@ -35,6 +35,7 @@ Script:
       strategy: ForeignKey
       params:
         source: run_as_user_id
+        destination: id
 
 User:
   type: ModelEntity
@@ -52,3 +53,10 @@ ScreenCategory:
   type: ModelEntity
   params:
     class: ProcessMaker\Models\ScreenCategory
+
+GlobalSignal:
+  type: GlobalSignal
+  references: 
+    -
+      entity: Process
+      strategy: GlobalSignalsInProcesses
