@@ -16,8 +16,8 @@
                                      :options="processOptions"
                                      :track-by="'id'"
                                      :multiple="true"
-                                     :placeholder="$t('Process')"
-                                     :aria-label="this.process ? this.process.ariaLabel : $t('Process')">
+                                     :aria-label="this.paramProcess ? this.process.ariaLabel : $t('Process')"
+                                     :placeholder="$t('Process')">
                             <template slot="noResult">
                                 {{ $t('No Results') }}
                             </template>
@@ -39,7 +39,7 @@
                                      :options="statusOptions"
                                      track-by="value"
                                      :multiple="true"
-                                     :aria-label="this.status ? this.status.ariaLabel : $t('Status')"
+                                     :aria-label="this.paramStatus ? this.status.ariaLabel : $t('Status')"
                                      :placeholder="$t('Status')">
                             <template slot="noResult">
                                 {{ $t('No Results') }}
@@ -64,7 +64,7 @@
                                      :options="requesterOptions"
                                      :track-by="'id'"
                                      :multiple="true"
-                                     :aria-label="$t('Requester') + ' ' + this.requester[0].fullname"
+                                     :aria-label="this.paramRequester ? this.requester.ariaLabel : $t('Requester')"
                                      :placeholder="$t('Requester')">
                             <template slot="noResult">
                                 {{ $t('No Results') }}
@@ -94,7 +94,7 @@
                                      :options="participantsOptions"
                                      :track-by="'id'"
                                      :multiple="true"
-                                     :aria-label="$t('Participants')"
+                                     :aria-label="this.paramParticipants ? this.participants.ariaLabel : $t('Participants')"
                                      :placeholder="$t('Participants')">
                             <template slot="noResult">
                                 {{ $t('No Results') }}
@@ -558,10 +558,12 @@ export default {
     
     if (this.paramRequester && Array.isArray(this.paramRequester)) {
         this.requester = this.paramRequester;
+        this.requester.ariaLabel = 'Selected' + ' ' + this.requester[0].fullname;
     }
     
     if (this.paramParticipants && Array.isArray(this.paramParticipants)) {
         this.participants = this.paramParticipants;
+        this.participants.ariaLabel = 'Selected' + ' ' + this.participants[0].fullname;
     }
     
     this.buildPmql();
