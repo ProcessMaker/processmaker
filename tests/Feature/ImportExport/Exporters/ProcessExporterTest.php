@@ -15,7 +15,6 @@ use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\SignalData;
 use ProcessMaker\Models\SignalEventDefinition;
 use ProcessMaker\Models\User;
-use SignalSeeder;
 use Tests\Feature\ImportExport\HelperTrait;
 use Tests\TestCase;
 

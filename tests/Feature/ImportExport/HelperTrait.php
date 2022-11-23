@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\ImportExport;
 
+use Database\Seeders\SignalSeeder;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
@@ -9,7 +10,6 @@ use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\SignalData;
-use SignalSeeder;
 
 trait HelperTrait
 {
