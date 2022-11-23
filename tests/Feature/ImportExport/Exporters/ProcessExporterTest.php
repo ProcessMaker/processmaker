@@ -8,6 +8,7 @@ use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Managers\SignalManager;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessNotificationSetting;
@@ -27,7 +28,10 @@ class ProcessExporterTest extends TestCase
         // Create simple screens. Extensive screen tests are in ScreenExporterTest.php
         $cancelScreen = Screen::factory()->create(['title' => 'Cancel Screen']);
         $requestDetailScreen = Screen::factory()->create(['title' => 'Request Detail Screen']);
+
+        $group = Group::factory()->create(['name' => 'Group']);
         $user = User::factory()->create(['username' => 'testuser']);
+        $user->groups()->sync([$group->id]);
 
         $process = $this->createProcess('basic-process', [
             'name' => 'Process',
@@ -77,18 +81,23 @@ class ProcessExporterTest extends TestCase
             $process->forceDelete();
             $cancelScreen->delete();
             $requestDetailScreen->delete();
+            $user->groups()->delete();
             $user->delete();
 
             $this->assertEquals(0, Process::where('name', 'Process')->count());
             $this->assertEquals(0, Screen::where('title', 'Request Detail Screen')->count());
             $this->assertEquals(0, Screen::where('title', 'Cancel Screen')->count());
             $this->assertEquals(0, User::where('username', 'testuser')->count());
+            $this->assertEquals(0, Group::where('name', 'Group')->count());
         });
 
         $process = Process::where('name', 'Process')->firstOrFail();
         $this->assertEquals(1, Screen::where('title', 'Request Detail Screen')->count());
         $this->assertEquals(1, Screen::where('title', 'Cancel Screen')->count());
         $this->assertEquals('testuser', $process->user->username);
+
+        $group = $process->user->groups->first();
+        $this->assertEquals('Group', $group->name);
 
         $notificationSettings = $process->notification_settings;
         $this->assertCount(2, $notificationSettings);
