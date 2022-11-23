@@ -243,9 +243,10 @@ class ProcessRequestController extends Controller
         }
 
         if ($request->status !== 'ERROR') {
-            throw ValidationException::withMessages([
-                'status' => __('Only requests with ERROR status can be retried'),
-            ]);
+            return response()->json([
+                'message' => 'Only requests with ERROR status can be retried',
+                'success' => false
+            ], 422);
         }
 
         $retryRequest = RetryProcessRequest::for($request);
