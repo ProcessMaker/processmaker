@@ -649,14 +649,15 @@
           retryRequest() {
 			const apiRequest = () => {
               this.retryDisabled = true
+			  let success = true
 
               ProcessMaker.apiClient.put(`requests/${this.requestId}/retry`).then(response => {
                 if (response.status !== 200) {
                   return;
                 }
 
-                const success = response.data.success || false
                 const message = response.data.message;
+                success = response.data.success || false
 
                 if (success) {
                   if (Array.isArray(message)) {
@@ -664,12 +665,11 @@
                       ProcessMaker.alert(this.$t(line), 'success')
                     }
                   }
-
-                  setTimeout(() => location.reload(), 3000)
                 } else {
                   ProcessMaker.alert(this.$t("Request could not be retried"), 'danger')
+
                 }
-              })
+              }).finally(() => setTimeout(() => location.reload(), success ? 3000 : 1000))
 			}
 
             ProcessMaker.confirmModal(
