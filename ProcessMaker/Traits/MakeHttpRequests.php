@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Mustache_Engine;
 use ProcessMaker\Exception\HttpInvalidArgumentException;
 use ProcessMaker\Exception\HttpResponseException;
+use ProcessMaker\Helpers\StringHelper;
 use ProcessMaker\Models\FormalExpression;
 use Psr\Http\Message\ResponseInterface;
 
@@ -640,11 +641,20 @@ trait MakeHttpRequests
             return;
         }
 
+        if (empty($this->name)) {
+            return;
+        }
+
         try {
-            Log::channel('data-source')->info($label . str_replace(["\n", "\t", "\r"], '', $log));
+            $connectorName = StringHelper::friendlyFileName($this->name) . '_(' . $this->id . ')';
+            Log::build([
+                'driver' => 'daily',
+                'path' => storage_path("logs/data-connectors/$connectorName.log"),
+            ])->info($label . str_replace(["\n", "\t", "\r"], '', $log));
         }
         catch(\Throwable $e) {
             Log::error($e->getMessage());
         }
     }
+
 }
