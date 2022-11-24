@@ -644,13 +644,14 @@ trait MakeHttpRequests
         if (empty($this->name)) {
             return;
         }
-
+        $cleanedLog = preg_replace('/(Authorization.+Bearer\s+)(.+)([\'"])/mi', "$1*******$3", $log);
+        $cleanedLog = preg_replace('/(Authorization.+Basic\s+)(.+)([\'"])/mi', "$1*******$3", $log);
         try {
             $connectorName = StringHelper::friendlyFileName($this->name) . '_(' . $this->id . ')';
             Log::build([
                 'driver' => 'daily',
                 'path' => storage_path("logs/data-connectors/$connectorName.log"),
-            ])->info($label . str_replace(["\n", "\t", "\r"], '', $log));
+            ])->info($label . str_replace(["\n", "\t", "\r"], '', $cleanedLog));
         }
         catch(\Throwable $e) {
             Log::error($e->getMessage());
