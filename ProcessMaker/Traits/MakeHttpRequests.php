@@ -660,7 +660,8 @@ trait MakeHttpRequests
             $connectorName = StringHelper::friendlyFileName($this->name) . '_(' . $this->id . ')';
             Log::build([
                 'driver' => 'daily',
-                'path' => storage_path("logs/data-connectors/$connectorName.log"),
+                'path' => storage_path("logs/data-sources/$connectorName.log"),
+                'days' => env('DATA_SOURCE_CLEAR_LOG', 21),
             ])->info($label . str_replace(["\n", "\t", "\r"], '', $cleanedLog));
         }
         catch(\Throwable $e) {
