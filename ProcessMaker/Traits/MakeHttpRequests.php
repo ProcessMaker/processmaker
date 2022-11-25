@@ -644,8 +644,18 @@ trait MakeHttpRequests
         if (empty($this->name)) {
             return;
         }
-        $cleanedLog = preg_replace('/(Authorization.+Bearer\s+)(.+)([\'"])/mi', "$1*******$3", $log);
-        $cleanedLog = preg_replace('/(Authorization.+Basic\s+)(.+)([\'"])/mi', "$1*******$3", $log);
+        $cleanedLog = preg_replace('/(Authorization.+Bearer\s+)(.+?)([\'"])/mi', "$1*******$3", $log);
+        $cleanedLog = preg_replace('/(Authorization.+Basic\s+)(.+?)([\'"])/mi', "$1*******$3", $cleanedLog);
+
+        //oauth password sends security information in the body. As this request is our own,
+        //it is the only case in which we can obfuscate parts of the body as we know its structure
+        if ($this->authtype === 'OAUTH2_PASSWORD') {
+            $cleanedLog = preg_replace('/(body.+?)(username[\'"]\s*:\s*[\'"])(.+?)([\'"])/mi', "$1$2*******$4", $cleanedLog);
+            $cleanedLog = preg_replace('/(body.+?)(password[\'"]\s*:\s*[\'"])(.+?)([\'"])/mi', "$1$2*******$4", $cleanedLog);
+            $cleanedLog = preg_replace('/(body.+?)(client_id[\'"]\s*:\s*[\'"])(.+?)([\'"])/mi', "$1$2*******$4", $cleanedLog);
+            $cleanedLog = preg_replace('/(body.+?)(client_secret[\'"]\s*:\s*[\'"])(.+?)([\'"])/mi', "$1$2*******$4", $cleanedLog);
+        }
+
         try {
             $connectorName = StringHelper::friendlyFileName($this->name) . '_(' . $this->id . ')';
             Log::build([
