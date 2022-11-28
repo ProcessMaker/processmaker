@@ -1865,6 +1865,45 @@
                 }
             }
         },
+        "/processes/import/validation": {
+            "post": {
+                "tags": [
+                    "Processes"
+                ],
+                "summary": "Validate a import",
+                "description": "Validate the specified process before importing.",
+                "operationId": "validateImport",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "file": {
+                                        "description": "file to import",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProcessImport"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/processes/import": {
             "post": {
                 "tags": [
@@ -3772,7 +3811,7 @@
         "/security-logs": {
             "get": {
                 "tags": [
-                    "Secuirty Logs"
+                    "Security Logs"
                 ],
                 "summary": "Returns all security logs",
                 "description": "Get a list of Security Logs.",
@@ -3819,7 +3858,7 @@
         "/security-logs/{securityLog}": {
             "get": {
                 "tags": [
-                    "Secuirty Logs"
+                    "Security Logs"
                 ],
                 "summary": "Get single security log by ID",
                 "description": "Display the specified resource.",
