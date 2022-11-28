@@ -2,13 +2,13 @@
   <b-modal
     :id="id"
     ref="pmModal"
+    :title="title"
     footer-class="pm-modal-footer"
     cancel-variant="outline-secondary"
     :cancel-title="$t('Cancel')"
-    ok-variant="primary"
-    :ok-title="okTitle ? okTitle : $t('Save')"
+    ok-variant="secondary"
+    :ok-title="$t('Save')"
     :ok-disabled="okDisabled"
-    :size="size"
     no-close-on-backdrop
     centered
     @cancel="onEvent('cancel', $event)"
@@ -20,28 +20,13 @@
     @show="onEvent('show', $event)"
     @shown="onEvent('shown', $event)"
   >
-   <template #modal-title>
-      <h5>{{title}}</h5>
-      <small v-if="subtitle" class="text-muted subtitle">{{subtitle}}</small>
-    </template>
     <slot></slot>
-    <template v-if="setCustomButtons" #modal-footer>
-      <b-button v-for="button in customButtons" 
-        :key="button.content" 
-        @click="executeFunction(button.action)" 
-        :variant="button.variant" 
-        :disabled="button.disabled"
-        :hidden="button.hidden"
-      >
-        {{ button.content }}
-      </b-button>
-    </template>
   </b-modal>
 </template>
 
 <script>
   export default {
-    props: ["id", "title", "subtitle", "ok-disabled", 'ok-title', 'setCustomButtons', 'customButtons', 'size'],
+    props: ["id", "title", "ok-disabled"],
     methods: {
       onEvent(name, event) {
         this.$emit(name, event);
@@ -51,17 +36,7 @@
       },
       hide() {
         this.$refs.pmModal.hide();
-      },
-      executeFunction(callback) {
-        if (typeof eval(`this.$refs.pmModal.${callback}`) === "function") {
-          eval(`this.$refs.pmModal.${callback}`)
-        } else {
-          this.$emit(callback);
-        }
-      },
-    },
-    mounted() {
-      
+      }
     }
   };
 </script>
@@ -70,9 +45,4 @@
   .pm-modal-footer .btn {
     margin: 0;
   }
-
-  .subtitle {
-    font-size: 70%;
-  }
-
 </style>

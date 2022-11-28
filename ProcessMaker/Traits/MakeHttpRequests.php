@@ -439,7 +439,7 @@ trait MakeHttpRequests
             $this->log('Request Headers: ', var_export($headers, true));
         }
 
-        $response = $client->send($request, $options);
+        $response =  $client->send($request, $options);
 
         if ($this->debug_mode) {
             $this->log('Response: ', var_export($response, true));
@@ -642,7 +642,8 @@ trait MakeHttpRequests
 
         try {
             Log::channel('data-source')->info($label . str_replace(["\n", "\t", "\r"], '', $log));
-        } catch(\Throwable $e) {
+        }
+        catch(\Throwable $e) {
             Log::error($e->getMessage());
         }
     }

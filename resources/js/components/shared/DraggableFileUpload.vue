@@ -9,11 +9,9 @@
       <uploader-unsupport></uploader-unsupport>
 
       <uploader-drop id="uploaderMain" class="dotted-border p-4">
-        <i class="fas fa-file-upload fa-3x fa-fw text-secondary mb-1"></i>
-        <div>
-          {{ $t('Drag file here') }} <br />
-          - {{ $t('or') }} -
-        </div>
+        <i class="fas fa-file-upload fa-3x fa-fw text-secondary"></i>
+        <p>{{ $t('Drag file here') }}</p>
+        <p>- {{ $t('or') }} -</p>
         <uploader-btn id="submitFile" class="text-primary">{{ $t('Select file from computer') }}</uploader-btn>
       </uploader-drop>
 
@@ -80,22 +78,19 @@ export default {
 }
 
 .dotted-border {
-  border: 3px dotted #e0e0e0;
+    border: 3px dotted #e0e0e0;
 }
 
 #uploaderMain {
-  font-size: 18px;
+    font-size: 18px;
 }
 
 .uploader-drop {
-  background: none;
-}
-
-.uploader-btn:hover {
-  background:none;
+    background: none;
 }
 
 #submitFile {
-  border:none;
+    border:none;
+    text-decoration:underline;
 }
 </style>

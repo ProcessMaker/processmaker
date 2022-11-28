@@ -6,11 +6,9 @@ use ProcessMaker\Http\Controllers\Api\CommentController;
 use ProcessMaker\Http\Controllers\Api\CssOverrideController;
 use ProcessMaker\Http\Controllers\Api\DebugController;
 use ProcessMaker\Http\Controllers\Api\EnvironmentVariablesController;
-use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\Http\Controllers\Api\FileController;
 use ProcessMaker\Http\Controllers\Api\GroupController;
 use ProcessMaker\Http\Controllers\Api\GroupMemberController;
-use ProcessMaker\Http\Controllers\Api\ImportController;
 use ProcessMaker\Http\Controllers\Api\NotificationController;
 use ProcessMaker\Http\Controllers\Api\PermissionController;
 use ProcessMaker\Http\Controllers\Api\ProcessCategoryController;
@@ -113,7 +111,6 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('processes/{process}', [ProcessController::class, 'show'])->name('processes.show')->middleware('can:view-processes');
     Route::post('processes/{process}/export', [ProcessController::class, 'export'])->name('processes.export')->middleware('can:export-processes');
     Route::post('processes/import', [ProcessController::class, 'import'])->name('processes.import')->middleware('can:import-processes');
-    Route::post('processes/import/validation', [ProcessController::class, 'preimportValidation'])->name('processes.preimportValidation')->middleware('can:import-processes');
     Route::get('processes/import/{code}/is_ready', [ProcessController::class, 'import_ready'])->name('processes.import_is_ready')->middleware('can:import-processes');
     Route::post('processes/{process}/import/assignments', [ProcessController::class, 'importAssignments'])->name('processes.import.assignments')->middleware('can:import-processes');
     Route::post('processes', [ProcessController::class, 'store'])->name('processes.store')->middleware('can:create-processes');
@@ -220,10 +217,10 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('settings/upload-file', [SettingController::class, 'upload'])->name('settings.upload-file')->middleware('can:update-settings');
 
     // Import & Export
-    Route::get('export/{type}/tree/{id}', [ExportController::class, 'tree'])->name('export.tree')->middleware('can:export-processes');
-    Route::post('export/{type}/download/{id}', [ExportController::class, 'download'])->name('export.download')->middleware('can:export-processes');
-    Route::post('import/preview', [ImportController::class, 'preview'])->name('import.preview')->middleware('can:export-processes');
-    Route::post('import/do-import', [ImportController::class, 'import'])->name('import.do_import')->middleware('can:export-processes');
+    Route::get('export/{type}/tree/{id}', 'ExportController@tree')->name('export.tree')->middleware('can:export-processes');
+    Route::post('export/{type}/download/{id}', 'ExportController@download')->name('export.download')->middleware('can:export-processes');
+    Route::post('import/preview', 'ImportController@preview')->name('import.preview')->middleware('can:export-processes');
+    Route::post('import/do-import', 'ImportController@import')->name('import.do_import')->middleware('can:export-processes');
 
     // debugging javascript errors
     Route::post('debug', [DebugController::class, 'store'])->name('debug.store')->middleware('throttle');
