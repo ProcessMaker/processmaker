@@ -10,14 +10,45 @@
                     <div class="card-body">
                         <div id="pre-import" v-if="! importing && ! imported">
                             <draggable-file-upload v-if="!file || file && !fileIsValid" ref="file" v-model="file" :options="{singleFile: true}" :displayUploaderList="false" :accept="['.spark', 'application/json']"></draggable-file-upload>
+                            <div v-else class="text-left">
+                               <h5> {{ $t("You are about to import") }} <strong>{{processName}}</strong></h5>
+                                <div class="border-dotted p-3 col-4 text-center font-weight-bold my-3">
+                                    {{file.name}} 
+                                    <b-button 
+                                        variant="link" 
+                                        @click="removeFile" 
+                                        class="p-0"
+                                        aria-describedby=""
+                                    >
+                                        <i class="fas fa-times-circle text-danger"></i>
+                                    </b-button>
+                                </div>
+                                <b-form-group>
+                                    <h6>{{ $t('Select Import Type') }}</h6>
+                                    <b-form-radio 
+                                        v-for="(item, index) in importTypeOptions" 
+                                        v-model="selectedImportOption" 
+                                        v-uni-aria-describedby="index.toString()"
+                                        :key="item.value" 
+                                        :value="item.value"
+                                    >
+                                        <span class="fw-medium">{{ item.content }}</span>
+                                        <div>
+                                            <small v-uni-id="index.toString()" class="text-muted">{{item.helper}}</small>
+                                        </div>
+                                    </b-form-radio>
+                                </b-form-group>
+                            </div>
+                            <enter-password-modal ref="enter-password-modal" @verified-password="importFile($event)"></enter-password-modal>
+                            <import-process-modal ref="import-process-modal" :processName="processName" :userHasEditPermissions="true" @import-new="onImportAsNew" @update-process="importFile($event)"></import-process-modal>
                         </div>
-                        <div id="during-import" v-if="importing" v-cloak>
+                        <!-- <div id="during-import" v-if="importing" v-cloak>
                             <h4 class="card-title mt-5 mb-5">
                                 <i class="fas fa-circle-notch fa-spin"></i> {{ $t('Importing') }}...
                             </h4>
-                        </div>
+                        </div> -->
                         
-                        <div id="post-import" class="text-left" v-if="imported" v-cloak>
+                        <!-- <div id="post-import" class="text-left" v-if="imported" v-cloak>
                             <h5>{{ $t('Status') }}</h5>
                             <ul v-show="options" class="mb-0 fa-ul">
                                 <li v-for="item in options">
@@ -253,15 +284,14 @@
                                     </table>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                     <div id="card-footer-pre-import" class="card-footer bg-light" align="right"
                          v-if="! importing && ! imported">
                         <button type="button" class="btn btn-outline-secondary" @click="onCancel">
                             {{$t('Cancel')}}
                         </button>
-                        <button type="button" class="btn btn-secondary ml-2" @click="importFile"
-                                :disabled="fileIsValid === false">
+                        <button type="button" class="btn btn-primary ml-2" @click="checkForPassword" :disabled="fileIsValid === false">
                             {{$t('Import')}}
                         </button>
                     </div>
@@ -287,12 +317,14 @@
 <script>
 const importingCode = window.location.hash.match(/#code=(.+)/);
 import DraggableFileUpload from '../../../components/shared/DraggableFileUpload';
+import EnterPasswordModal from '../components/EnterPasswordModal';
+import ImportProcessModal from '../components/ImportProcessModal';
 import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
     props: [''],
-    components: {DraggableFileUpload},
+    components: {DraggableFileUpload, EnterPasswordModal, ImportProcessModal},
     mixins: [uniqIdsMixin],
     data() {
         return {
@@ -319,6 +351,10 @@ export default {
                 {"value": "custom", "content": "Custom", "helper": "Select which  types of assets from the uploaded package should be imported to this environment."},
             ],
             fileIsValid: false,
+            selectedImportOption: "basic",
+            processName: null,
+            passwordEnabled: false,
+            processExists: false,
         }
     },
     filters: {
@@ -334,6 +370,7 @@ export default {
                 return
             }
             this.validateFile();
+            this.processName = this.file.name.split('.').slice(0,-1).toString();
         }
     },
     computed: {
@@ -480,30 +517,73 @@ export default {
         onCancel() {
             window.location = '/processes';
         },
-        importFile() {
-            this.importing = true;
-            let formData = new FormData();
-            formData.append('file', this.file);
-      
-            if (this.submitted) {
-                return;
+        importFile(processExists) {
+            this.processExists = processExists;
+            switch (this.selectedImportOption) {
+                case 'basic':
+                    this.handleBasicImport();
+                    break;
+            
+                default:
+                    // TODO:: IMPORT/EXPORT HANDLE CUSTOM IMPORT
+                    break;
             }
-            this.submitted = true;
-            ProcessMaker.apiClient.post('/processes/import?queue=1', formData,
+        },
+        handleBasicImport() {
+            // TODO: IMPORT/EXPORT check if process already exists. and users have edit permissions
+            if (this.processExists) {
+                this.$nextTick(() => {    
+                    this.$refs['enter-password-modal'].hide();  
+                    this.$refs['import-process-modal'].show();
+                });
+            } else {
+                // this.importing = true;
+                let formData = new FormData();
+                formData.append('file', this.file);
+        
+                if (this.submitted) {
+                    return;
+                }
+                this.submitted = true;
+                ProcessMaker.apiClient.post('/import/do-import', formData,
                 {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
-                }
-            )
-            .then(response => {
-                window.location.hash = `#code=${response.data.code}`;
-                this.importingCode = response.data.code;
-            })
-            .catch(error => {
-                this.submitted = false;
-                ProcessMaker.alert(this.$t('Unable to import the process.')  + (error.response.data.message ? ': ' + error.response.data.message : ''), 'danger');
-            });
+                }).then(response => {
+                    console.log('RESPONSE', response);
+                }).catch(error => {
+                    ProcessMaker.alert(this.$t('Unable to import the process.')  + (error.response.data.message ? ': ' + error.response.data.message : ''), 'danger');
+                    this.submitted = false;
+                });
+
+                // ProcessMaker.apiClient.post('/processes/import?queue=1', formData,
+                //     {
+                //         headers: {
+                //             'Content-Type': 'multipart/form-data'
+                //         }
+                //     }
+                // )
+                // .then(response => {
+                //     window.location.hash = `#code=${response.data.code}`;
+                //     this.importingCode = response.data.code;
+                // })
+                // .catch(error => {
+                //     this.submitted = false;
+                //     ProcessMaker.alert(this.$t('Unable to import the process.')  + (error.response.data.message ? ': ' + error.response.data.message : ''), 'danger');
+                // });
+            }
+            
+        },
+        checkForPassword() {
+            if (!this.passwordEnabled) {
+               this.importFile(false);
+            } else {
+                this.showEnterPasswordModal();
+            }
+        },
+        showEnterPasswordModal() {
+            this.$refs['enter-password-modal'].show();
         },
         importReady(response) {
             let message = this.$t("Unable to import the process.");
@@ -568,8 +648,16 @@ export default {
             )
             .then(response => {
                 this.fileIsValid = true;
-                this.importFile();
             });
+        },
+         removeFile() {
+            this.file = '';
+        },
+        onImportAsNew() {
+            console.log('ROUTER', this.$router);
+            this.$router.push({name: 'import-new-process', params: {file: this.file}})
+            // console.log('file', this.file);
+            // console.log('route to new vue');
         }
     },
     mounted() {
@@ -647,5 +735,13 @@ export default {
 
     .border-dotted {
         border: 3px dotted #e0e0e0;
+    }
+
+    .fw-medium {
+        font-weight:500;
+    }
+
+    .fw-semibold {
+        font-weight: 600;
     }
 </style>
