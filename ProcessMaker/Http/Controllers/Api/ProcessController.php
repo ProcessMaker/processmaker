@@ -787,11 +787,10 @@ class ProcessController extends Controller
         $content = $request->file('file')->get();
         if (!$this->validateImportedFile($content)) {
             return response(
-                ['message' => __('Invalid Format')],
+                ['message' => __('The selected file is invalid or not supported for import.')],
                 422
             );
         }
-
     }
 
     /**
