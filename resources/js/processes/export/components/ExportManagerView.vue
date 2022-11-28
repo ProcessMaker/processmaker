@@ -36,9 +36,11 @@
             <button type="button" class="btn btn-outline-secondary" @click="onCancel">
               {{ $t("Cancel") }}
             </button>
-            <button type="button" class="btn btn-primary ml-2" @click="onExport">
+            <button type="button" class="btn btn-primary ml-2" @click="showSetPasswordModal">
               {{ $t("Export") }}
             </button>
+            <set-password-modal ref="set-password-modal" :processId="processId" :processName="processName" @verifyPassword="exportProcess"></set-password-modal>
+            <export-success-modal ref="export-success-modal" :processName="processName" :processId="processId" :exportInfo="exportInfo"></export-success-modal>
           </div>
         </div>
       </div>
@@ -47,34 +49,60 @@
 </template>
 
 <script>
+import SetPasswordModal from './SetPasswordModal.vue';
+import ExportSuccessModal from './ExportSuccessModal.vue';
+
 export default {
-  props: ["processId", 'processName'],
-  components: {},
+  props: ["processId", "processName"],
+  components: {
+    SetPasswordModal,
+    ExportSuccessModal
+  },
   mixins: [],
   data() {
     return {
-      selected: "",
+      selected: "basic",
+      exportInfo: {},
     };
   },
   methods: {
     onCancel() {
       window.location = "/processes";
     },
-    onExport() {
-      ProcessMaker.apiClient
-        .post("processes/" + this.processId + "/export")
+    showSetPasswordModal() {
+        this.$refs['set-password-modal'].show();
+    },
+    exportProcess() {
+        const params = {
+            password: null,
+            options: [],
+        };
+        ProcessMaker.apiClient({
+            url: `export/process/download/${this.processId}`,
+            data: params,
+            method: "POST",
+            responseType: "blob",
+        })
         .then((response) => {
-          window.location = response.data.url;
-          ProcessMaker.alert(this.$t("The process was exported."), "success");
+            let header = response.headers['export-info'];
+            this.exportInfo = JSON.parse(header);
+            this.$refs['export-success-modal'].show();
+            this.$refs['set-password-modal'].hide();
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", "export.json");
+            document.body.appendChild(link);
+            link.click();
         })
         .catch((error) => {
-          ProcessMaker.alert(error.response.data.message, "danger");
-        });
-    },
-  },
-};
+            ProcessMaker.alert(error.response.data.message, "danger");
+        })
+    }
+  }
+}   
 </script>
-
+    
 <style lang="scss" scoped>
 .medium-font {
   font-weight: 500;

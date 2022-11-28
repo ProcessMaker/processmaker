@@ -1,27 +1,144 @@
 <template>
   <div>
-     <!-- TODO: IMPORT/EXPORT Create Set Password modal -->
+    <modal
+      id="set-password-modal" 
+      :title="$t('Set Password')" 
+      :subtitle="$t('This password will be required when importing the exported package/process.')"
+      :ok-title="$t('Export')"
+      :ok-disabled="disabled" 
+      @ok.prevent="verifyPassword" 
+      @hidden="onClose"
+    >
+      <template>
+        <b-form-group>
+          <div>
+            <b-form-checkbox class="pt-2" v-model="passwordProtect" switch>
+              Password Protect Export
+            </b-form-checkbox>
+          </div>
+            <template v-if="passwordProtect === true">
+              <div class="pt-3">
+                <label for="set-password">Password</label>
+                <vue-password v-model="password" id="set-password" :disable-strength=true />
+              </div>
+              <div class="pt-3">
+                <label for="confirm-set-password">Verify Password</label>
+                <vue-password v-model="confirmPassword" id="confirm-password" :disable-strength=true :class="errors.password ? 'invalid' : ''" />
+                <small v-if="errors && errors.password && errors.password.length" class="text-danger">{{ 'Must match password entered above.' }}</small>
+              </div>
+            </template>
+            <template v-else>
+              <div class="pt-3">
+                <label for="set-password">Password</label>
+                <vue-password :disable-strength=true disabled />
+              </div>
+              <div class="pt-3">
+                <label for="confirm-set-password">Verify Password</label>
+                <vue-password :disable-strength=true disabled />
+              </div>
+            </template>
+        </b-form-group>
+      </template>
+    </modal>
   </div>
 </template>
 
 <script>
-export default {
-  props: [],
-    components: {},
-    mixins: [],
-    data() {
-        return {
+import { FormErrorsMixin, Modal } from "SharedComponents";
 
+export default {
+  components: { 
+    Modal
+    },
+  props: ["processId", "processName"],
+  mixins: [ FormErrorsMixin ],
+  data() {
+      return {
+        passwordProtect: true,
+        disabled: true,
+        password: '',
+        confirmPassword: '',
+        type: 'password',
+        errors: {
+        'password': null,
         }
+      }
+  },
+  watch: {
+    password() {
+      if (this.passwordProtect === true) {
+        this.disabled = this.password ? false : true;
+      };
     },
-    methods: {      
-    },
-    mounted() {
+    passwordProtect() {
+      if (this.passwordProtect === false) {
+        this.disabled = false;
+        this.password = "";
+        this.confirmPassword = "";
+        this.errors.password = "";
+      } else {
+        this.disabled = this.password ? false : true;
+      }
     }
+  },
+  methods: { 
+    show() {
+      this.$bvModal.show('set-password-modal');
+    },
+    hide() {
+      this.$bvModal.hide('set-password-modal');
+    },
+    onClose() {
+      this.password = "";
+      this.confirmPassword = "";
+      this.errors.password = "";
+    },
+    verifyPassword() {
+      if (this.passwordProtect && !this.validatePassword()) {
+          return false;
+      }
+      else {
+          this.$emit("verifyPassword");
+          this.hide();
+      }
+    },
+    togglePassword(reference) {
+      if (this.$refs[reference].type == 'text') {
+        this.$refs[reference].type = 'password';
+      } else {
+        this.$refs[reference].type = 'text';
+      }
+    },
+    validatePassword() {
+      if (!this.password && !this.confirmPassword) {
+          return false
+      }
+
+      if (this.password.trim() === '' && this.confirmPassword.trim() === '') {
+          return false
+      }
+
+      if (this.password !== this.confirmPassword) {
+          this.errors.password = ['Passwords must match']
+          return false
+      }
+
+      this.errors.password = null
+      return true
+    },
+},     
+  mounted() {
+  }
 
 }
 </script>
 
 <style>
+  vue-password {
+    width: 90%;
+  }
 
+  .invalid {
+    border-color: #E50130;
+  }
 </style>

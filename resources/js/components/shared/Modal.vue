@@ -5,10 +5,10 @@
     footer-class="pm-modal-footer"
     cancel-variant="outline-secondary"
     :cancel-title="$t('Cancel')"
-    ok-variant="primary"
+    ok-variant="secondary"
     :ok-title="okTitle ? okTitle : $t('Save')"
     :ok-disabled="okDisabled"
-    :size="size"
+    :ok-only="okOnly"
     no-close-on-backdrop
     centered
     @cancel="onEvent('cancel', $event)"
@@ -41,7 +41,7 @@
 
 <script>
   export default {
-    props: ["id", "title", "subtitle", "ok-disabled", 'ok-title', 'setCustomButtons', 'customButtons', 'size'],
+    props: ["id", "title", "subtitle", "ok-disabled", 'ok-title', 'ok-only'],
     methods: {
       onEvent(name, event) {
         this.$emit(name, event);
