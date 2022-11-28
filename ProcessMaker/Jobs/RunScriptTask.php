@@ -105,7 +105,17 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
                 $this->instance = $instance;
             });
         } catch (Throwable $exception) {
+
+            $token->setStatus(ScriptTaskInterface::TOKEN_STATE_FAILING);
+
+            $error = $element->getRepository()->createError();
+            $error->setName($exception->getMessage());
+
+            $token->setProperty('error', $error);
             $token->logError($exception, $element);
+
+            Log::error('Script failed: ' . $scriptRef . ' - ' . $exception->getMessage());
+            Log::error($exception->getTraceAsString());
         }
     }
 
