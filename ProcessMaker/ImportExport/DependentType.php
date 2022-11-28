@@ -17,6 +17,4 @@ abstract class DependentType
     const SCRIPT_EXECUTORS = 'script_executors';
 
     const SUB_PROCESSES = 'sub_processes';
-
-    const GROUPS = 'groups';
 }
