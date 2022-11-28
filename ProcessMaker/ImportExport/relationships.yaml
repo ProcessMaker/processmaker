@@ -7,14 +7,11 @@ Screen:
     -
       name: Nested Screen # Optional, for information only when display to the user. Otherwise entity name is used.
       entity: Screen
-      strategy: ScreenConfig # inherits JsonConfig
-      params:
-        component: FormNestedScreen
-        field: screen
+      strategy: ScreenConfig
     -
       name: Watcher Script
       entity: Script
-      strategy: WatcherConfig # inherits JsonConfig
+      strategy: WatcherConfig
       params:
         type: script # could also be data source (entity added by the data sources package)
     -
@@ -54,9 +51,9 @@ ScreenCategory:
   params:
     class: ProcessMaker\Models\ScreenCategory
 
-GlobalSignal:
-  type: GlobalSignal
-  references: 
-    -
-      entity: Process
-      strategy: GlobalSignalsInProcesses
+# GlobalSignal:
+#   type: GlobalSignal
+#   references: 
+#     -
+#       entity: Process
+#       strategy: GlobalSignalsInProcesses

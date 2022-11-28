@@ -8,17 +8,18 @@ class EntityStore
 {
     private $entities;
 
-    public function get($name) : Entity|null
+    public function get($name) : Entity
     {
-        if (!isset($this->entities[$name])) {
-            return null;
-        }
-
         return $this->entities[$name];
     }
 
-    public function set(string $name, Entity $entity) : void
+    public function add(Entity $entity) : void
     {
-        $this->entities[$name] = $entity;
+        $this->entities[$entity->name] = $entity;
+    }
+    
+    public function all() : array
+    {
+        return $this->entities;
     }
 }

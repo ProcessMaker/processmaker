@@ -46,14 +46,14 @@ Schema:
   - export
 
 ## Exmaple: ScreeenConfig
-- Inherits: JsonConfig (which inherits Strategy)
+- Inherits: Strategy
 - props
   - source: Entity $screen # parent screen
   - destination: Entity $screen # nested screen
   - params: ['component' => 'FormNestedScreen', 'field' => 'screen']
 
 ## Exmaple: WatcherConfig
-- Inherits: JsonConfig (which inherits Strategy)
+- Inherits: Strategy
 - props
   - source: Entity:Screen
   - destination: Entity:DataSource

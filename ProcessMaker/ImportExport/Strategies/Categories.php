@@ -4,4 +4,7 @@ namespace ProcessMaker\ImportExport\Strategies;
 
 class Categories extends Strategy
 {
+    public function export()
+    {
+    }
 }

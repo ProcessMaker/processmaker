@@ -4,20 +4,40 @@ namespace ProcessMaker\ImportExport\Strategies;
 
 use ProcessMaker\ImportExport\Contracts\Entity;
 use ProcessMaker\ImportExport\Contracts\Strategy as StrategyInterface;
-use ProcessMaker\ImportExport\Reference;
+use ProcessMaker\ImportExport\AssetStore;
+use ProcessMaker\ImportExport\Dependent;
+use ProcessMaker\ImportExport\Asset;
 
 class Strategy implements StrategyInterface
 {
-    public Reference $reference;
+    public Asset $sourceAsset;
 
     public function __construct(
-        public Entity $source,
-        public array $params
+        private AssetStore $assetStore,
+        public Entity $sourceEntity,
+        public Entity $destinationEntity,
+        public array $params,
     ) {
     }
 
-    public function setReference(Reference $reference) : void
+    // protected function addAsset($id, array $meta = [])
+    // {
+    //     if (!$this->assetStore->has($this->referenceEntity, $id)) {
+    //         $asset = $this->referenceEntity->makeAsset($id, $meta);
+    //         $this->assetStore->add($asset);
+    //     }
+    // }
+    
+    protected function addDependent($id, $meta)
     {
-        $this->reference = $reference;
+        // $asset = $this->assetStore->get($this->referenceEntity, $entityId);
+        // if (!$asset) {
+            // $asset = $this->destinationEntity->makeAsset($id);
+            // $this->assetStore->add($asset);
+        // }
+
+        $asset = $this->destinationEntity->export($id);
+        $dependent = app()->make(Dependent::class, ['strategy' => $this, 'asset' => $asset, 'meta' => $meta]);
+        $this->sourceAsset->addDependent($dependent);
     }
 }

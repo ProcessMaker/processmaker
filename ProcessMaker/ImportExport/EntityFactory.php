@@ -7,53 +7,50 @@ use Symfony\Component\Yaml\Yaml;
 
 class EntityFactory
 {
-    public $relationships;
-
     public function __construct(
         private EntityStore $store,
     ) {
     }
 
-    public function make($name) : Entity
+    public function build()
     {
-        if (!$this->store->get($name)) {
-            $definition = $this->entityDefinition($name);
-            $class = '\\ProcessMaker\\ImportExport\\Entities\\' . $definition['type'];
-            $params = $definition['params'];
-            $entity = new $class($params);
-            $this->store->set($name, $entity);
-
-            if (isset($definition['references'])) {
-                $references = $this->references($definition['references']);
-                $entity->setReferences($references);
-            }
+        foreach ($this->relationships() as $entityName => $definition) {
+            $entityClass = '\\ProcessMaker\\ImportExport\\Entities\\' . $definition['type'];
+            $params = $definition['params'] ?? [];
+            $entity = app($entityClass, [
+                'name' => $entityName,
+                'params' => $params,
+                'definition' => $definition
+            ]);
+            $this->store->add($entity);
         }
 
-        return $this->store->get($name);
+        foreach ($this->store->all() as $entity) {
+            $this->buildReferences($entity);
+        }
     }
 
-    private function references($referencesDefinition)
+    private function buildReferences($entity)
     {
         $references = [];
-        foreach ($referencesDefinition as $reference) {
-            $name = $reference['entity'];
-            $entity = $this->make($name);
+        $referenceDefintions = $entity->definition['references'] ?? [];
+        foreach ($referenceDefintions as $reference) {
+            $destinationEntity = $this->store->get($reference['entity']);
             $strategyClass = '\\ProcessMaker\\ImportExport\\Strategies\\' . $reference['strategy'];
-            $strategy = new $strategyClass($entity, $reference['params'] ?? []);
-            $reference = new Reference($entity, $strategy);
-            $strategy->setReference($reference);
-            $references[] = $reference;
+            $params = $reference['params'] ?? [];
+            $strategy = app($strategyClass, [
+                'sourceEntity' => $entity,
+                'destinationEntity' => $destinationEntity,
+                'params' => $params
+            ]);
+            $references[] = $strategy;
         }
 
-        return $references;
+        $entity->setReferences($references);
     }
 
-    public function entityDefinition($name)
+    public function relationships()
     {
-        if (!$this->relationships) {
-            $this->relationships = Yaml::parseFile(__DIR__ . '/relationships.yaml');
-        }
-
-        return $this->relationships[$name];
+        return Yaml::parseFile(__DIR__ . '/relationships.yaml');
     }
 }
