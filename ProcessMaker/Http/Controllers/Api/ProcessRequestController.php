@@ -244,7 +244,7 @@ class ProcessRequestController extends Controller
 
         if ($request->status !== 'ERROR') {
             return response()->json([
-                'message' => 'Only requests with ERROR status can be retried',
+                'message' => __('Only requests with ERROR status can be retried'),
                 'success' => false
             ], 422);
         }
@@ -253,7 +253,7 @@ class ProcessRequestController extends Controller
 
         if (!$retryRequest->hasRetriableTasks() || $retryRequest->hasNonRetriableTasks()) {
             return response()->json([
-                'message' => ['No tasks available to retry'],
+                'message' => [__('No tasks available to retry')],
                 'success' => false,
             ]);
         }
