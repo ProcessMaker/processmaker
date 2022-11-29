@@ -6,7 +6,6 @@ use Illuminate\Support\Arr;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
-use ProcessMaker\ImportExport\Tree;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Group;
@@ -30,8 +29,7 @@ class ProcessExporterTest extends TestCase
         $cancelScreen = Screen::factory()->create(['title' => 'Cancel Screen']);
         $requestDetailScreen = Screen::factory()->create(['title' => 'Request Detail Screen']);
 
-        $manager = User::factory()->create(['username' => 'manager']);
-        $group = Group::factory()->create(['name' => 'Group', 'description' => 'My Example Group', 'manager_id' => $manager->id]);
+        $group = Group::factory()->create(['name' => 'Group']);
         $user = User::factory()->create(['username' => 'testuser']);
         $user->groups()->sync([$group->id]);
 
@@ -72,7 +70,6 @@ class ProcessExporterTest extends TestCase
         $this->assertEquals($process->category->uuid, Arr::get($tree, '0.dependents.1.uuid'));
         $this->assertEquals($cancelScreen->uuid, Arr::get($tree, '0.dependents.2.uuid'));
         $this->assertEquals($requestDetailScreen->uuid, Arr::get($tree, '0.dependents.3.uuid'));
-        $this->assertEquals($user->groups->first()->uuid, Arr::get($tree, '0.dependents.0.dependents.0.uuid'));
     }
 
     public function testImport()
@@ -84,7 +81,6 @@ class ProcessExporterTest extends TestCase
             $process->forceDelete();
             $cancelScreen->delete();
             $requestDetailScreen->delete();
-            $user->groups->first()->manager->delete();
             $user->groups()->delete();
             $user->delete();
 
@@ -102,8 +98,6 @@ class ProcessExporterTest extends TestCase
 
         $group = $process->user->groups->first();
         $this->assertEquals('Group', $group->name);
-        $this->assertEquals('My Example Group', $group->description);
-        $this->assertEquals($user->groups->first()->manager->id, $group->manager_id);
 
         $notificationSettings = $process->notification_settings;
         $this->assertCount(2, $notificationSettings);
