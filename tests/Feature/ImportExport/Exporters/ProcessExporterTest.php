@@ -4,6 +4,7 @@ namespace Tests\Feature\ImportExport\Exporters;
 
 use Illuminate\Support\Arr;
 use ProcessMaker\ImportExport\Exporter;
+use ProcessMaker\ImportExport\Exporters\ProcessExporter;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\ImportExport\Tree;
@@ -79,7 +80,7 @@ class ProcessExporterTest extends TestCase
     {
         list($process, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2) = $this->fixtures();
 
-        $this->runExportAndImport('exportProcess', $process, function () use ($process, $cancelScreen, $requestDetailScreen, $user) {
+        $this->runExportAndImport($process, ProcessExporter::class, function () use ($process, $cancelScreen, $requestDetailScreen, $user) {
             \DB::delete('delete from process_notification_settings');
             $process->forceDelete();
             $cancelScreen->delete();
@@ -117,7 +118,7 @@ class ProcessExporterTest extends TestCase
             'name' => 'my process',
         ]);
 
-        $this->runExportAndImport('exportProcess', $process, function () use ($process) {
+        $this->runExportAndImport($process, ProcessExporter::class, function () use ($process) {
             SignalManager::removeSignal($this->globalSignal);
             $this->assertNull(SignalManager::findSignal('test_global_signal'));
             $process->forceDelete();
@@ -139,7 +140,7 @@ class ProcessExporterTest extends TestCase
         Utils::setAttributeAtXPath($parentProcess, '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]', 'calledElement', 'ProcessId-' . $subProcess->id);
         $parentProcess->save();
 
-        $this->runExportAndImport('exportProcess', $parentProcess, function () use ($parentProcess, $subProcess, $packageProcess) {
+        $this->runExportAndImport($parentProcess, ProcessExporter::class, function () use ($parentProcess, $subProcess, $packageProcess) {
             $subProcess->forceDelete();
             $parentProcess->forceDelete();
             $packageProcess->forceDelete();

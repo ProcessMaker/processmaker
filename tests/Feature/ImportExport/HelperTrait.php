@@ -37,16 +37,27 @@ trait HelperTrait
         SignalManager::addSignal($this->globalSignal);
     }
 
-    public function runExportAndImport($name, $model, $between)
+    public function runExportAndImport($model, $exporterClass, $between)
     {
         $this->addGlobalSignalProcess();
 
-        $exporter = new Exporter();
-        $exporter->$name($model);
-        $payload = $exporter->payload();
+        $payload = $this->export($model, $exporterClass);
 
         $between();
 
+        $this->import($payload);
+    }
+
+    public function export($model, $exporterClass)
+    {
+        $exporter = new Exporter();
+        $exporter->export($model, $exporterClass);
+
+        return $exporter->payload();
+    }
+
+    public function import($payload)
+    {
         $options = new Options([]);
         $importer = new Importer($payload, $options);
         $importer->doImport();
