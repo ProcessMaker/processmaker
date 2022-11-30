@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ad3eaacd977913a21ef39ebb3a833980",
+    "content-hash": "f18d4d48bec56e48b7d9167c541f0e52",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -3581,6 +3581,10 @@
                 "source": "https://github.com/maennchen/ZipStream-PHP/tree/2.2.1"
             },
             "funding": [
+                {
+                    "url": "https://github.com/maennchen",
+                    "type": "github"
+                },
                 {
                     "url": "https://opencollective.com/zipstream",
                     "type": "open_collective"
