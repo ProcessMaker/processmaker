@@ -43,8 +43,8 @@ class SoapConfigBuilder implements WebServiceConfigBuilderInterface
         $config['service_url'] = $credentials['service_url'] ?? '';
         $config['passphrase'] = $credentials['passphrase'] ?? '';
         $config['password_type'] = $credentials['password_type'] ?? 'None';
-        $config['datasource_name'] = $dataSourceConfig['name'];
-        $config['datasource_id'] = $dataSourceConfig['id'];
+        $config['datasource_name'] = $dataSourceConfig['name'] ?? '';
+        $config['datasource_id'] = $dataSourceConfig['id'] ?? '';
         // Prepare endpoint params and dataMapping
         if (!empty($serviceTaskConfig['endpoint'])) {
             $endpoint = $serviceTaskConfig['endpoint'];
