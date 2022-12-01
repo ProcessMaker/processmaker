@@ -3,7 +3,7 @@
 namespace ProcessMaker\ImportExport\Exporters;
 
 use ProcessMaker\ImportExport\DependentType;
-use ProcessMaker\Models\User;
+use ProcessMaker\Models\Permission;
 
 class UserExporter extends ExporterBase
 {
@@ -12,6 +12,7 @@ class UserExporter extends ExporterBase
         foreach ($this->model->groups as $group) {
             $this->addDependent(DependentType::GROUPS, $group, GroupExporter::class);
         }
+        $this->addReference('permissions', $this->model->permissions()->pluck('name')->toArray());
     }
 
     public function import() : bool
@@ -23,6 +24,10 @@ class UserExporter extends ExporterBase
             $group = $dependent->model;
             $user->groups()->attach($group->id);
         }
+
+        $permissions = $this->getReference('permissions');
+        $permissionIds = Permission::whereIn('name', $permissions)->pluck('id')->toArray();
+        $user->permissions()->sync($permissionIds);
 
         return true;
     }
