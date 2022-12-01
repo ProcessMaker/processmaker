@@ -827,6 +827,10 @@ class ImportProcess implements ShouldQueue
         ];
     }
 
+    private function parseFileV2()
+    {
+    }
+
     /**
      * Replace any anonymous user placeholders with the anonymous user id
      *
