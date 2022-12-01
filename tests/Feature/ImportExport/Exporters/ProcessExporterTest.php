@@ -172,7 +172,7 @@ class ProcessExporterTest extends TestCase
 
         // Assign three users to group 1, assign two users to group 2, assign one user to group 3
         foreach ($users as $key => $user) {
-            if ($key <= 2) { 
+            if ($key <= 2) {
                 $group = $groups[0];
             }
             if ($key > 2 and $key <= 4) {
@@ -201,7 +201,6 @@ class ProcessExporterTest extends TestCase
         // Assign users and groups to process assignments
         $process->save();
 
-
         $exporter = new Exporter();
         $exporter->exportProcess($process);
         $tree = $exporter->tree();
@@ -209,12 +208,9 @@ class ProcessExporterTest extends TestCase
 
         // Run ExportAndImport
         // $this->runExportAndImport($process, ProcessExporter::class, function () use ($users, $groups) {
-            // $users->delete();
-            // $groups->delete();
+        // $users->delete();
+        // $groups->delete();
         // });
-
-        
-
 
         // $process = $this->createProcess('process-with-different-kinds-of-call-activities', ['name' => 'parent']);
         // Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[1]', 'calledElement', 'ProcessId-' . $packageProcess->id);

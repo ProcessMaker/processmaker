@@ -226,9 +226,11 @@ class ProcessExporter extends ExporterBase
         return $assignmentsByPath;
     }
 
-    private function getAssignmentIds($element): Array {
+    private function getAssignmentIds($element): array
+    {
         $userIds = explode(',', optional($element->getAttributeNode('pm:assignedUsers'))->value);
         $groupIds = explode(',', optional($element->getAttributeNode('pm:assignedGroups'))->value);
+
         return [$userIds, $groupIds];
     }
 }
