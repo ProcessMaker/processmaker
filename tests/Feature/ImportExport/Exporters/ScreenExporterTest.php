@@ -155,5 +155,4 @@ class ScreenExporterTest extends TestCase
         $screen->watchers = $watchers;
         $screen->saveOrFail();
     }
-
 }

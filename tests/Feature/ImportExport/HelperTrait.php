@@ -41,7 +41,7 @@ trait HelperTrait
                 ...[
                     'config' => $config,
                     'watchers' => $watchers,
-                ]
+                ],
             ]
         );
     }
