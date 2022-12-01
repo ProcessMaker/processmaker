@@ -11,6 +11,7 @@ use ProcessMaker\ImportExport\Tree;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Group;
+use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessNotificationSetting;
@@ -59,6 +60,9 @@ class ProcessExporterTest extends TestCase
         return [$process, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2];
     }
 
+    /**
+     * @group fix2
+     */
     public function testExport()
     {
         $this->addGlobalSignalProcess();
@@ -155,5 +159,79 @@ class ProcessExporterTest extends TestCase
         $this->assertEquals('ProcessId-' . $subProcess->id, Utils::getPmConfig($element)['calledElement']);
         $this->assertEquals($subProcess->id, Utils::getPmConfig($element)['processId']);
         $this->assertEquals(0, Process::where('name', 'package')->count());
+    }
+
+    /**
+     * @group fix
+     */
+    public function testAssignments()
+    {
+        // Create users and groups
+        $users = User::factory(10)->create();
+        $groups = Group::factory(5)->create();
+
+        // Assign three users to group 1, assign two users to group 2, assign one user to group 3
+        foreach ($users as $key => $user) {
+            if ($key <= 2) { 
+                $group = $groups[0];
+            }
+            if ($key > 2 and $key <= 4) {
+                $group = $groups[1];
+            }
+            if ($key > 4 and $key <= 5) {
+                $group = $groups[2];
+            }
+
+            if ($key > 5) {
+                continue;
+            }
+
+            GroupMember::factory()->create([
+                'member_type' => User::class,
+                'member_id' => $user->id,
+                'group_id' => $group->id,
+            ]);
+        }
+
+        $this->addGlobalSignalProcess();
+
+        // Create process
+        $process = $this->createProcess('process-with-different-kinds-of-assignments', ['name' => 'process']);
+
+        // Assign users and groups to process assignments
+        $process->save();
+
+
+        $exporter = new Exporter();
+        $exporter->exportProcess($process);
+        $tree = $exporter->tree();
+        dd($exporter);
+
+        // Run ExportAndImport
+        // $this->runExportAndImport($process, ProcessExporter::class, function () use ($users, $groups) {
+            // $users->delete();
+            // $groups->delete();
+        // });
+
+        
+
+
+        // $process = $this->createProcess('process-with-different-kinds-of-call-activities', ['name' => 'parent']);
+        // Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[1]', 'calledElement', 'ProcessId-' . $packageProcess->id);
+        // Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]', 'calledElement', 'ProcessId-' . $subProcess->id);
+        // $process->save();
+
+        // $this->runExportAndImport($process, ProcessExporter::class, function () use ($process) {
+        //     $process->forceDelete();
+        // });
+
+        // $process = Process::where('name', 'parent')->firstOrFail();
+        // $definitions = $process->getDefinitions(true);
+        // $element = Utils::getElementByPath($definitions, '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]');
+
+        // $this->assertEquals('ProcessId-' . $subProcess->id, $element->getAttribute('calledElement'));
+        // $this->assertEquals('ProcessId-' . $subProcess->id, Utils::getPmConfig($element)['calledElement']);
+        // $this->assertEquals($subProcess->id, Utils::getPmConfig($element)['processId']);
+        // $this->assertEquals(0, Process::where('name', 'package')->count());
     }
 }

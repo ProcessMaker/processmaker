@@ -8,10 +8,12 @@ use ProcessMaker\ImportExport\SignalHelper;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Managers\SignalManager;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\SignalData;
+use ProcessMaker\Models\User;
 
 class ProcessExporter extends ExporterBase
 {
@@ -167,5 +169,66 @@ class ProcessExporter extends ExporterBase
 
     private function exportAssignments()
     {
+        foreach ($this->getAssignments() as $path => $assignments) {
+            foreach ($assignments['userIds'] as $userId) {
+                $user = User::find($userId);
+                if ($user) {
+                    $this->addDependent(DependentType::USER_ASSIGNMENT, $user, UserExporter::class, $path);
+                }
+            }
+
+            foreach ($assignments['groupIds'] as $groupId) {
+                $group = Group::find($groupId);
+                if ($group) {
+                    $this->addDependent(DependentType::GROUP_ASSIGNMENT, $group, GroupExporter::class, $path);
+                }
+            }
+        }
+    }
+
+    public function getAssignments(): array
+    {
+        $assignmentsByPath = [];
+
+        // Look assignments into tasks
+        foreach ($this->model->getDefinitions(true)->getElementsByTagName('task') as $element) {
+            [$userIds, $groupIds] = $this->getAssignmentIds($element);
+
+            $path = $element->getNodePath();
+            $assignmentsByPath[$path] = [
+                'userIds' => $userIds,
+                'groupIds' => $groupIds,
+            ];
+        }
+
+        foreach ($this->model->getDefinitions(true)->getElementsByTagName('manualTask') as $element) {
+            [$userIds, $groupIds] = $this->getAssignmentIds($element);
+
+            $path = $element->getNodePath();
+            $assignmentsByPath[$path] = [
+                'userIds' => $userIds,
+                'groupIds' => $groupIds,
+            ];
+        }
+
+        // Look assignments into manual tasks
+        // foreach ($this->model->getDefinitions(true)->getElementsByTagName('manualTask') as $element) {
+        //     $assignmentTypeValue = optional($element->getAttributeNode('pm:assignment'))->value;
+        //     [$userIds, $groupIds] = $this->getAssignmentIds($element, $userIds, $groupIds);
+        // }
+
+        // // Look assignments into subprocesses
+        // foreach ($this->model->getDefinitions(true)->getElementsByTagName('callActivity') as $element) {
+        //     $assignmentTypeValue = optional($element->getAttributeNode('pm:assignment'))->value;
+        //     [$userIds, $groupIds] = $this->getAssignmentIds($element, $userIds, $groupIds);
+        // }
+
+        return $assignmentsByPath;
+    }
+
+    private function getAssignmentIds($element): Array {
+        $userIds = explode(',', optional($element->getAttributeNode('pm:assignedUsers'))->value);
+        $groupIds = explode(',', optional($element->getAttributeNode('pm:assignedGroups'))->value);
+        return [$userIds, $groupIds];
     }
 }
