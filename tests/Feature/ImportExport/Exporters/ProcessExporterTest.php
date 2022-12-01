@@ -28,8 +28,8 @@ class ProcessExporterTest extends TestCase
     private function fixtures()
     {
         // Create simple screens. Extensive screen tests are in ScreenExporterTest.php
-        $cancelScreen = Screen::factory()->create(['title' => 'Cancel Screen']);
-        $requestDetailScreen = Screen::factory()->create(['title' => 'Request Detail Screen']);
+        $cancelScreen = $this->createScreen('basic-form-screen', ['title' => 'Cancel Screen']);
+        $requestDetailScreen = $this->createScreen('basic-display-screen', ['title' => 'Request Detail Screen']);
 
         $manager = User::factory()->create(['username' => 'manager']);
         $group = Group::factory()->create(['name' => 'Group', 'description' => 'My Example Group', 'manager_id' => $manager->id]);
