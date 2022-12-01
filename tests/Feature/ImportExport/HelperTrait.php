@@ -9,6 +9,7 @@ use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\SignalData;
 
 trait HelperTrait
@@ -26,6 +27,22 @@ trait HelperTrait
                     'bpmn' => $bpmn,
                 ]
             )
+        );
+    }
+
+    public function createScreen($screenPath, $attrs = [], $watchersPath = null)
+    {
+        $config = json_decode(file_get_contents(__DIR__ . '/fixtures/' . $screenPath . '.json'), true);
+        $watchers = $watchersPath ? json_decode(file_get_contents(__DIR__ . '/fixtures/' . $watchersPath . '.json'), true) : [];
+
+        return Screen::factory()->create(
+            [
+                ...$attrs,
+                ...[
+                    'config' => $config,
+                    'watchers' => $watchers,
+                ],
+            ]
         );
     }
 
