@@ -4,8 +4,10 @@ namespace Tests\Feature\ImportExport\Exporters;
 
 use Illuminate\Support\Arr;
 use ProcessMaker\ImportExport\Exporter;
+use ProcessMaker\ImportExport\Exporters\ProcessExporter;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
+use ProcessMaker\ImportExport\Tree;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Group;
@@ -26,10 +28,11 @@ class ProcessExporterTest extends TestCase
     private function fixtures()
     {
         // Create simple screens. Extensive screen tests are in ScreenExporterTest.php
-        $cancelScreen = Screen::factory()->create(['title' => 'Cancel Screen']);
-        $requestDetailScreen = Screen::factory()->create(['title' => 'Request Detail Screen']);
+        $cancelScreen = $this->createScreen('basic-form-screen', ['title' => 'Cancel Screen']);
+        $requestDetailScreen = $this->createScreen('basic-display-screen', ['title' => 'Request Detail Screen']);
 
-        $group = Group::factory()->create(['name' => 'Group']);
+        $manager = User::factory()->create(['username' => 'manager']);
+        $group = Group::factory()->create(['name' => 'Group', 'description' => 'My Example Group', 'manager_id' => $manager->id]);
         $user = User::factory()->create(['username' => 'testuser']);
         $user->groups()->sync([$group->id]);
 
@@ -70,17 +73,19 @@ class ProcessExporterTest extends TestCase
         $this->assertEquals($process->category->uuid, Arr::get($tree, '0.dependents.1.uuid'));
         $this->assertEquals($cancelScreen->uuid, Arr::get($tree, '0.dependents.2.uuid'));
         $this->assertEquals($requestDetailScreen->uuid, Arr::get($tree, '0.dependents.3.uuid'));
+        $this->assertEquals($user->groups->first()->uuid, Arr::get($tree, '0.dependents.0.dependents.0.uuid'));
     }
 
     public function testImport()
     {
         list($process, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2) = $this->fixtures();
 
-        $this->runExportAndImport('exportProcess', $process, function () use ($process, $cancelScreen, $requestDetailScreen, $user) {
+        $this->runExportAndImport($process, ProcessExporter::class, function () use ($process, $cancelScreen, $requestDetailScreen, $user) {
             \DB::delete('delete from process_notification_settings');
             $process->forceDelete();
             $cancelScreen->delete();
             $requestDetailScreen->delete();
+            $user->groups->first()->manager->delete();
             $user->groups()->delete();
             $user->delete();
 
@@ -98,6 +103,8 @@ class ProcessExporterTest extends TestCase
 
         $group = $process->user->groups->first();
         $this->assertEquals('Group', $group->name);
+        $this->assertEquals('My Example Group', $group->description);
+        $this->assertEquals($user->groups->first()->manager->id, $group->manager_id);
 
         $notificationSettings = $process->notification_settings;
         $this->assertCount(2, $notificationSettings);
@@ -111,7 +118,7 @@ class ProcessExporterTest extends TestCase
             'name' => 'my process',
         ]);
 
-        $this->runExportAndImport('exportProcess', $process, function () use ($process) {
+        $this->runExportAndImport($process, ProcessExporter::class, function () use ($process) {
             SignalManager::removeSignal($this->globalSignal);
             $this->assertNull(SignalManager::findSignal('test_global_signal'));
             $process->forceDelete();
@@ -133,7 +140,7 @@ class ProcessExporterTest extends TestCase
         Utils::setAttributeAtXPath($parentProcess, '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]', 'calledElement', 'ProcessId-' . $subProcess->id);
         $parentProcess->save();
 
-        $this->runExportAndImport('exportProcess', $parentProcess, function () use ($parentProcess, $subProcess, $packageProcess) {
+        $this->runExportAndImport($parentProcess, ProcessExporter::class, function () use ($parentProcess, $subProcess, $packageProcess) {
             $subProcess->forceDelete();
             $parentProcess->forceDelete();
             $packageProcess->forceDelete();

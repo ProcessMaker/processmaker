@@ -2,9 +2,7 @@
 
 namespace ProcessMaker\ImportExport\Exporters;
 
-use Illuminate\Support\Collection;
-use ProcessMaker\ImportExport\DependentType;
-use ProcessMaker\Models\EnvironmentVariable;
+use ProcessMaker\Models\ScriptCategory;
 
 class ScriptExporter extends ExporterBase
 {
@@ -12,22 +10,16 @@ class ScriptExporter extends ExporterBase
     {
         $this->exportCategories();
 
-        foreach ($this->getEnvironmentVariables() as $variable) {
-            $this->addDependent(DependentType::ENVIRONMENT_VARIABLES, $variable, EnvironmentVariableExporter::class);
-        }
-
-        $this->addDependent(DependentType::SCRIPT_EXECUTORS, $this->model->scriptExecutor, ScriptExecutorExporter::class);
+        $this->addDependent('user', $this->model->runAsUser, UserExporter::class);
     }
 
     public function import() : bool
     {
-        return $this->model->save();
-    }
+        $this->associateCategories(ScriptCategory::class, 'script_category_id');
 
-    private function getEnvironmentVariables(): Collection
-    {
-        return EnvironmentVariable::query()
-            ->whereRaw("LOCATE(name, '{$this->model->code}') > 0")
-            ->get();
+        $scriptUser = $this->getDependents('user')[0];
+        $this->model->run_as_user_id = $scriptUser->model->id;
+
+        return $this->model->save();
     }
 }

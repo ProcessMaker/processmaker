@@ -99,7 +99,7 @@ class ExportImportTest extends TestCase
         $content = json_encode($payload);
         $fileName = tempnam(sys_get_temp_dir(), $payload['name']);
         file_put_contents($fileName, $content);
-        $file = new UploadedFile($fileName, $payload['name'] . '.json', null, null, null, true);
+        $file = new UploadedFile($fileName, $payload['name'] . '.json', null, null, true);
 
         return [
             $file,
