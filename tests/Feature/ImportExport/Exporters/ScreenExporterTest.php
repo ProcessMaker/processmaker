@@ -9,10 +9,13 @@ use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\Script;
+use Tests\Feature\ImportExport\HelperTrait;
 use Tests\TestCase;
 
 class ScreenExporterTest extends TestCase
 {
+    use HelperTrait;
+
     public function testExport()
     {
         list($screen, $screenCategory1, $screenCategory2, $script, $nestedScreen, $nestedNestedScreen) =
@@ -115,7 +118,7 @@ class ScreenExporterTest extends TestCase
 
     private function fixtures()
     {
-        $screen = $this->createScreen();
+        $screen = $this->createScreen('screen_with_nested_screen', ['title' => 'screen'], 'watchers');
         $screenCategory1 = ScreenCategory::factory()->create(['name' => 'category 1', 'status' => 'ACTIVE']);
         $screenCategory2 = ScreenCategory::factory()->create(['name' => 'category 2', 'status' => 'ACTIVE']);
         $screen->screen_category_id = $screenCategory1->id . ',' . $screenCategory2->id;
@@ -123,7 +126,7 @@ class ScreenExporterTest extends TestCase
         $script = Script::factory()->create(['title' => 'script']);
         $this->associateScriptWatcher($screen, $script);
 
-        $nestedScreen = $this->createScreen('nested screen', false);
+        $nestedScreen = $this->createScreen('screen_with_nested_screen', ['title' => 'nested screen']);
         $nestedScreen->screen_category_id = $screenCategory1->id;
         $nestedNestedScreen = Screen::factory()->create(['title' => 'nested nested screen', 'config' => []]);
         $nestedNestedScreen->screen_category_id = $screenCategory2->id;
@@ -153,16 +156,4 @@ class ScreenExporterTest extends TestCase
         $screen->saveOrFail();
     }
 
-    private function createScreen($title = 'screen', $addWatchers = true)
-    {
-        $config = json_decode(file_get_contents(__DIR__ . '/../fixtures/screen_with_nested_screen.json'), true);
-        $watchers = $addWatchers ? json_decode(file_get_contents(__DIR__ . '/../fixtures/watchers.json'), true) : [];
-        $screen = Screen::factory()->create([
-            'title' => $title,
-            'config' => $config,
-            'watchers' => $watchers,
-        ]);
-
-        return $screen;
-    }
 }
