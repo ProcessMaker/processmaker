@@ -13,6 +13,20 @@
             </h5>
             <div>
               <b-form-group label="Select Export Type" class="medium-font">
+                <b-form-radio 
+                    v-for="(item, index) in exportTypeOptions" 
+                    v-model="selectedExportOption" 
+                    v-uni-aria-describedby="index.toString()"
+                    :key="item.value" 
+                    :value="item.value"
+                >
+                    <span class="fw-medium">{{ item.content }}</span>
+                    <div>
+                        <small v-uni-id="index.toString()" class="text-muted">{{item.helper}}</small>
+                    </div>
+                </b-form-radio>
+            </b-form-group>
+              <!-- <b-form-group label="Select Export Type" class="medium-font">
                 <div class="pb-1">
                   <b-form-radio v-model="selected" aria-describedby="basic-export-type" name="basic-export-option" value="basic">
                     {{ $t("Basic") }}
@@ -29,7 +43,7 @@
                     </div>
                   </b-form-radio>
                 </div>
-              </b-form-group>
+              </b-form-group> -->
             </div>
           </div>
           <div class="card-footer bg-light" align="right">
@@ -41,6 +55,7 @@
             </button>
             <set-password-modal ref="set-password-modal" :processId="processId" :processName="processName" @verifyPassword="exportProcess"></set-password-modal>
             <export-success-modal ref="export-success-modal" :processName="processName" :processId="processId" :exportInfo="exportInfo"></export-success-modal>
+            <sidebar-navigation ref="sidebar-navigation" :processName="processName"></sidebar-navigation>
           </div>
         </div>
       </div>
@@ -49,19 +64,25 @@
 </template>
 
 <script>
-import SetPasswordModal from './SetPasswordModal.vue';
-import ExportSuccessModal from './ExportSuccessModal.vue';
+import SetPasswordModal from "./SetPasswordModal.vue";
+import ExportSuccessModal from "./ExportSuccessModal.vue";
+import SidebarNavigation from "../../../components/shared/SidebarNavigation.vue";
+
 
 export default {
-  props: ["processId", "processName"],
   components: {
     SetPasswordModal,
     ExportSuccessModal
   },
   mixins: [],
+  props: ["processId", "processName"],
   data() {
     return {
-      selected: "basic",
+      exportTypeOptions: [
+        {"value": "basic", "content": "Basic", "helper": "Download all related assets."},
+        {"value": "custom", "content": "Custom", "helper": "Select which assets to include in the export file for a custom export package."},
+      ],
+      selectedExportOption: "basic",
       exportInfo: {},
     };
   },
@@ -70,7 +91,7 @@ export default {
       window.location = "/processes";
     },
     showSetPasswordModal() {
-        this.$refs['set-password-modal'].show();
+        this.$refs["set-password-modal"].show();
     },
     exportProcess() {
         const params = {
