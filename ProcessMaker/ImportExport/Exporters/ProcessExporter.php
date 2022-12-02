@@ -69,6 +69,8 @@ class ProcessExporter extends ExporterBase
 
         $this->importSubprocesses();
 
+        $this->importAssignments();
+
         // TODO
         // Update screenRef
         $process->save();
@@ -105,6 +107,15 @@ class ProcessExporter extends ExporterBase
     private function importSubprocesses()
     {
         foreach ($this->getDependents(DependentType::SUB_PROCESSES) as $dependent) {
+            Utils::setAttributeAtXPath($this->model, $dependent->meta, 'calledElement', 'ProcessId-' . $dependent->model->id);
+            Utils::setPmConfigValueAtXPath($this->model, $dependent->meta, 'calledElement', 'ProcessId-' . $dependent->model->id);
+            Utils::setPmConfigValueAtXPath($this->model, $dependent->meta, 'processId', $dependent->model->id);
+        }
+    }
+
+    private function importAssignments()
+    {
+        foreach ($this->getDependents(DependentType::USER_ASSIGNMENT) as $dependent) {
             Utils::setAttributeAtXPath($this->model, $dependent->meta, 'calledElement', 'ProcessId-' . $dependent->model->id);
             Utils::setPmConfigValueAtXPath($this->model, $dependent->meta, 'calledElement', 'ProcessId-' . $dependent->model->id);
             Utils::setPmConfigValueAtXPath($this->model, $dependent->meta, 'processId', $dependent->model->id);
@@ -170,17 +181,24 @@ class ProcessExporter extends ExporterBase
     private function exportAssignments()
     {
         foreach ($this->getAssignments() as $path => $assignments) {
+            $meta = [
+                'path' => $path,
+                'assignmentType' => $assignments['assignmentType']
+            ];
+
             foreach ($assignments['userIds'] as $userId) {
                 $user = User::find($userId);
                 if ($user) {
-                    $this->addDependent(DependentType::USER_ASSIGNMENT, $user, UserExporter::class, $path);
+                    $this->addDependent(DependentType::USER_ASSIGNMENT, $user, UserExporter::class, $meta);
                 }
             }
+
+            dd($this->getDependents(DependentType::USER_ASSIGNMENT));
 
             foreach ($assignments['groupIds'] as $groupId) {
                 $group = Group::find($groupId);
                 if ($group) {
-                    $this->addDependent(DependentType::GROUP_ASSIGNMENT, $group, GroupExporter::class, $path);
+                    $this->addDependent(DependentType::GROUP_ASSIGNMENT, $group, GroupExporter::class, $meta);
                 }
             }
         }
@@ -190,38 +208,21 @@ class ProcessExporter extends ExporterBase
     {
         $assignmentsByPath = [];
 
-        // Look assignments into tasks
-        foreach ($this->model->getDefinitions(true)->getElementsByTagName('task') as $element) {
-            [$userIds, $groupIds] = $this->getAssignmentIds($element);
+        $tags = [
+            'bpmn:task',
+            'bpmn:manualTask',
+            'bpmn:callActivity'
+        ];
 
+        foreach (Utils::getElementByMultipleTags($this->model->getDefinitions(true), $tags) as $element) {
+            [$userIds, $groupIds] = $this->getAssignmentIds($element);
             $path = $element->getNodePath();
             $assignmentsByPath[$path] = [
                 'userIds' => $userIds,
                 'groupIds' => $groupIds,
+                'assignmentType' => optional($element->getAttributeNode('pm:assignment'))->value
             ];
         }
-
-        foreach ($this->model->getDefinitions(true)->getElementsByTagName('manualTask') as $element) {
-            [$userIds, $groupIds] = $this->getAssignmentIds($element);
-
-            $path = $element->getNodePath();
-            $assignmentsByPath[$path] = [
-                'userIds' => $userIds,
-                'groupIds' => $groupIds,
-            ];
-        }
-
-        // Look assignments into manual tasks
-        // foreach ($this->model->getDefinitions(true)->getElementsByTagName('manualTask') as $element) {
-        //     $assignmentTypeValue = optional($element->getAttributeNode('pm:assignment'))->value;
-        //     [$userIds, $groupIds] = $this->getAssignmentIds($element, $userIds, $groupIds);
-        // }
-
-        // // Look assignments into subprocesses
-        // foreach ($this->model->getDefinitions(true)->getElementsByTagName('callActivity') as $element) {
-        //     $assignmentTypeValue = optional($element->getAttributeNode('pm:assignment'))->value;
-        //     [$userIds, $groupIds] = $this->getAssignmentIds($element, $userIds, $groupIds);
-        // }
 
         return $assignmentsByPath;
     }

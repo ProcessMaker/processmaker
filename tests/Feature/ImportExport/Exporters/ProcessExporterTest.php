@@ -60,9 +60,6 @@ class ProcessExporterTest extends TestCase
         return [$process, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2];
     }
 
-    /**
-     * @group fix2
-     */
     public function testExport()
     {
         $this->addGlobalSignalProcess();
@@ -164,11 +161,11 @@ class ProcessExporterTest extends TestCase
     /**
      * @group fix
      */
-    public function testAssignments()
+    public function testExportImportAssignments()
     {
         // Create users and groups
-        $users = User::factory(10)->create();
-        $groups = Group::factory(5)->create();
+        $users = User::factory(12)->create();
+        $groups = Group::factory(10)->create();
 
         // Assign three users to group 1, assign two users to group 2, assign one user to group 3
         foreach ($users as $key => $user) {
@@ -180,6 +177,11 @@ class ProcessExporterTest extends TestCase
             }
             if ($key > 4 and $key <= 5) {
                 $group = $groups[2];
+            }
+
+            // Assign last user to last group
+            if ($key == 11) {
+                $group = $groups[9];
             }
 
             if ($key > 5) {
@@ -196,38 +198,61 @@ class ProcessExporterTest extends TestCase
         $this->addGlobalSignalProcess();
 
         // Create process
-        $process = $this->createProcess('process-with-different-kinds-of-assignments', ['name' => 'process']);
+        $process = $this->createProcess('process-with-different-kinds-of-assignments', ['name' => 'processTest']);
 
-        // Assign users and groups to process assignments
+        // Assign users to process assignments
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedUsers', implode(',', [$users[0]->id, $users[1]->id , $users[2]->id]));
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[2]', 'pm:assignedUsers', implode(',', [$users[3]->id, $users[4]->id]));
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[1]', 'pm:assignedUsers', implode(',', [$users[5]->id, $users[6]->id]));
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[2]', 'pm:assignedUsers', implode(',', [$users[7]->id]));
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[1]', 'pm:assignedUsers', implode(',', [$users[8]->id, $users[9]->id]));
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]', 'pm:assignedUsers', implode(',', [$users[10]->id]));
+
+        // Assign groups to process assignments
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedGroups', implode(',', [$groups[0]->id]));
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[2]', 'pm:assignedGroups', implode(',', [$groups[1]->id, $groups[2]->id]));
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[1]', 'pm:assignedGroups', implode(',', [$groups[3]->id]));
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[2]', 'pm:assignedGroups', implode(',', [$groups[4]->id, $groups[5]->id]));
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[1]', 'pm:assignedGroups', implode(',', [$groups[6]->id, $groups[7]->id, $groups[8]->id]));
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]', 'pm:assignedGroups', implode(',', [$groups[9]->id]));
+
         $process->save();
 
-        $exporter = new Exporter();
-        $exporter->exportProcess($process);
-        $tree = $exporter->tree();
-        dd($exporter);
+        $this->runExportAndImport($process, ProcessExporter::class, function () use ($process) {
+            User::query()->forceDelete();
+            Group::query()->forceDelete();
+            GroupMember::query()->forceDelete();
+            Process::query()->forceDelete();
 
-        // Run ExportAndImport
-        // $this->runExportAndImport($process, ProcessExporter::class, function () use ($users, $groups) {
-        // $users->delete();
-        // $groups->delete();
-        // });
+            $this->assertEquals(0, User::get()->count());
+            $this->assertEquals(0, Group::get()->count());
+            $this->assertEquals(0, GroupMember::get()->count());
+            $this->assertEquals(0, Process::get()->count());
+        });
 
-        // $process = $this->createProcess('process-with-different-kinds-of-call-activities', ['name' => 'parent']);
-        // Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[1]', 'calledElement', 'ProcessId-' . $packageProcess->id);
-        // Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]', 'calledElement', 'ProcessId-' . $subProcess->id);
-        // $process->save();
 
-        // $this->runExportAndImport($process, ProcessExporter::class, function () use ($process) {
-        //     $process->forceDelete();
-        // });
+        // 11 from 12 created users should be exported ..
+        $this->assertEquals(11, User::whereIn('username', $users->pluck('username'))->get()->count());
+        $this->assertEquals(10, Group::whereIn('name', $groups->pluck('name'))->get()->count());
+        $this->assertDatabaseHas('processes', ['name' => $process->name]);
+        $process = Process::where('name', $process->name)->firstOrFail();
 
-        // $process = Process::where('name', 'parent')->firstOrFail();
-        // $definitions = $process->getDefinitions(true);
-        // $element = Utils::getElementByPath($definitions, '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]');
+        // reasignar los ids de los usuarios nuevos al bpmn del nuevo proceso
+        dd($process->bpmn);
+        // fijarse en $process->bpmn y hacer assert que existe 
+        // Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedUsers', implode(',', [$users[0]->id, $users[1]->id, $users[2]->id]));
+        // Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[2]', 'pm:assignedUsers', implode(',', [$users[3]->id, $users[4]->id]));
+        // Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[1]', 'pm:assignedUsers', implode(',', [$users[5]->id, $users[6]->id]));
+        // Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[2]', 'pm:assignedUsers', implode(',', [$users[7]->id]));
+        // Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[1]', 'pm:assignedUsers', implode(',', [$users[8]->id, $users[9]->id]));
+        // Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]', 'pm:assignedUsers', implode(',', [$users[10]->id]));
 
-        // $this->assertEquals('ProcessId-' . $subProcess->id, $element->getAttribute('calledElement'));
-        // $this->assertEquals('ProcessId-' . $subProcess->id, Utils::getPmConfig($element)['calledElement']);
-        // $this->assertEquals($subProcess->id, Utils::getPmConfig($element)['processId']);
-        // $this->assertEquals(0, Process::where('name', 'package')->count());
+        // // Assign groups to process assignments
+        // Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedGroups', implode(',', [$groups[0]->id]));
+        // Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[2]', 'pm:assignedGroups', implode(',', [$groups[1]->id, $groups[2]->id]));
+        // Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[1]', 'pm:assignedGroups', implode(',', [$groups[3]->id]));
+        // Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[2]', 'pm:assignedGroups', implode(',', [$groups[4]->id, $groups[5]->id]));
+        // Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[1]', 'pm:assignedGroups', implode(',', [$groups[6]->id, $groups[7]->id, $groups[8]->id]));
+        // Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]', 'pm:assignedGroups', implode(',', [$groups[9]->id]));
     }
 }

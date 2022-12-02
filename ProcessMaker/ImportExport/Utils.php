@@ -38,6 +38,20 @@ class Utils
         return $elements->item(0);
     }
 
+    public static function getElementByMultipleTags($document, array $tags = [])
+    {
+        $path = '';
+
+        foreach ($tags as $tag) {
+            $path .= "//$tag|";
+        }
+
+        $xpath = new DOMXPath($document);
+        $elements = $xpath->query(rtrim($path, '|'));
+
+        return $elements;
+    }
+
     public static function setPmConfigValue(BpmnElement &$element, string $path, $value) : void
     {
         $config = json_decode($element->getAttribute('pm:config'), true);
