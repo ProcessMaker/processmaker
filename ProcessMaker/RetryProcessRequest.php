@@ -2,6 +2,7 @@
 
 namespace ProcessMaker;
 
+use ProcessMaker\Facades\WorkflowManager;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +17,7 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\Models\ScriptTask;
 use ProcessMaker\Nayra\Bpmn\Models\ServiceTask;
 use ProcessMaker\Repositories\BpmnDocument;
+use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 
 class RetryProcessRequest
 {
@@ -81,50 +83,72 @@ class RetryProcessRequest
 
         $this->unlockProcessRequest();
 
+        $this->reactivateRequest();
+
         $this->getRetriableTasks()->each(function (ProcessRequestToken $token) {
+            // Load the token instance
+            $token = $token->loadTokenInstance();
+
             // Get the task to retry from the BPMN definitions
             $task = $this->bpmnDefinitions->getEvent($element = $token->element_id);
 
-            // $job will remain false if we can't find the correct
-            // job type to dispatch in order to retry the task
-            $job = false;
-
-            // Find the correct job type to retry the task
-            switch ($task::class) {
-                case ScriptTask::class:
-                    $job = RunScriptTask::class;
-                    break;
-
-                case ServiceTask::class:
-                    $job = RunServiceTask::class;
-                    break;
-            }
-
-            if (!$job) {
+            if (!$task) {
                 return;
             }
 
-            $output = 'Retrying ' . class_basename($task) . " ({$element}) for Request::{$token->processRequest->id}";
+            $this->clearTokenErrors($token);
 
-            static::$output[] = $output;
+            if ($task instanceof ScriptTask) {
+                WorkflowManager::runScripTask($task, $token);
+            } elseif ($task instanceof ServiceTask) {
+                WorkflowManager::runServiceTask($task, $token);
+            }
 
-            Log::info($output, [
-                'user_initializing_retry' => $this->initializingUser(),
-                'token' => $token,
-            ]);
-
-            $job::dispatch($token->processRequest->process, $token->processRequest, $token, []);
+            static::$output[] = $this->formatOutput($task, $element, $token);
         });
 
         $this->createRequestComment();
     }
 
-    protected function initializingUser(): User|bool
+    /**
+     * Clear previous ProcessRequestToken errors off of its parent ProcessRequest(s)
+     *
+     * @param  \ProcessMaker\Models\ProcessRequestToken  $token
+     *
+     * @return void
+     */
+    public function clearTokenErrors(ProcessRequestToken $token): void
+    {
+        $errors = collect($token->processRequest->errors ?? []);
+
+        if ($errors->isEmpty()) {
+            return;
+        }
+
+        $errors = $errors->keyBy('element_id');
+
+        if ($errors->has($element = $token->element_id)) {
+            $errors->forget($element);
+        }
+
+        $token->processRequest->errors = $errors->all();
+
+        if (!$token->processRequest->isNonPersistent()) {
+            $token->processRequest->save();
+        }
+    }
+
+    public function formatOutput($task, $element, $token): string
+    {
+        return 'Retrying ' . class_basename($task) . " ({$element}) for Request::{$token->processRequest->id}";
+    }
+
+    public function initializingUser(): User|bool
     {
         return Auth::check() ? Auth::user() : false;
     }
 
-    protected function createRequestComment(): void
+    public function createRequestComment(): void
     {
         $comment = (new Comment)->fill([
             'type' => 'LOG',
@@ -152,7 +176,7 @@ class RetryProcessRequest
         }
     }
 
-    protected function retriableTasksQuery(): HasMany
+    public function retriableTasksQuery(): HasMany
     {
         $tokensQuery = $this->processRequest->tokens();
 
@@ -163,13 +187,36 @@ class RetryProcessRequest
         return $tokensQuery;
     }
 
-    protected function unlockProcessRequest(): void
+    public function unlockProcessRequest(): void
     {
-        ProcessRequestLock::where('process_request_id', $this->processRequest->id)
+        ProcessRequestLock::whereIn('process_request_id', $this->getRequestsFromTokens()->all())
                           ->delete();
     }
 
-    protected function getBpmnDefinitions(): BpmnDocument
+    public function reactivateRequest(): bool
+    {
+        $reactivated = true;
+
+        $this->getRequestsFromTokens()->each(
+            function ($request) use ($reactivated) {
+                $success = ProcessRequest::findOrFail($request)
+                                         ->fill(['status' => 'ACTIVE'])
+                                         ->save();
+
+                if (!$success) {
+                    $reactivated = false;
+                }
+            });
+
+        return $reactivated;
+    }
+
+    public function getRequestsFromTokens()
+    {
+        return $this->getRetriableTasks()->pluck('process_request_id');
+    }
+
+    public function getBpmnDefinitions(): BpmnDocument
     {
         return $this->processRequest->process->getDefinitions();
     }
