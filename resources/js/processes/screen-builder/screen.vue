@@ -56,6 +56,7 @@
                 :watchers="preview.watchers"
                 :data="previewData"
                 :type="screen.type"
+                @update="onUpdate"
                 @submit="previewSubmit"
               />
             </div>
