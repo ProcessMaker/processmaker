@@ -13,16 +13,16 @@
             </h5>
             <div>
               <b-form-group label="Select Export Type" class="medium-font">
-                <b-form-radio 
-                    v-for="(item, index) in exportTypeOptions" 
-                    v-model="selectedExportOption" 
-                    v-uni-aria-describedby="index.toString()"
-                    :key="item.value" 
+                <b-form-radio
+                    v-for="(item, index) in exportTypeOptions"
+                    v-model="selectedExportOption"
+                    :aria-describedby="index.toString()"
+                    :key="item.value"
                     :value="item.value"
                 >
                     <span class="fw-medium">{{ item.content }}</span>
                     <div>
-                        <small v-uni-id="index.toString()" class="text-muted">{{item.helper}}</small>
+                        <small class="text-muted">{{ item.helper }}</small>
                     </div>
                 </b-form-radio>
             </b-form-group>
@@ -50,12 +50,12 @@
             <button type="button" class="btn btn-outline-secondary" @click="onCancel">
               {{ $t("Cancel") }}
             </button>
-            <button type="button" class="btn btn-primary ml-2" @click="showSetPasswordModal">
+            <button type="button" class="btn btn-primary ml-2" @click="onExport">
               {{ $t("Export") }}
             </button>
-            <set-password-modal ref="set-password-modal" :processId="processId" :processName="processName" @verifyPassword="exportProcess"></set-password-modal>
-            <export-success-modal ref="export-success-modal" :processName="processName" :processId="processId" :exportInfo="exportInfo"></export-success-modal>
-            <sidebar-navigation ref="sidebar-navigation" :processName="processName"></sidebar-navigation>
+            <set-password-modal ref="set-password-modal" :processId="processId" :processName="processName" @verifyPassword="exportProcess" />
+            <export-success-modal ref="export-success-modal" :processName="processName" :processId="processId" :exportInfo="exportInfo" />
+            <custom-export-view ref="export-success-modal" :processName="processName" />
           </div>
         </div>
       </div>
@@ -66,13 +66,13 @@
 <script>
 import SetPasswordModal from "./SetPasswordModal.vue";
 import ExportSuccessModal from "./ExportSuccessModal.vue";
-import SidebarNavigation from "../../../components/shared/SidebarNavigation.vue";
-
+import CustomExportView from "./CustomExportView.vue";
 
 export default {
   components: {
     SetPasswordModal,
-    ExportSuccessModal
+    ExportSuccessModal,
+    CustomExportView,
   },
   mixins: [],
   props: ["processId", "processName"],
@@ -91,7 +91,20 @@ export default {
       window.location = "/processes";
     },
     showSetPasswordModal() {
-        this.$refs["set-password-modal"].show();
+      this.$refs["set-password-modal"].show();
+    },
+    onExport() {
+      switch (this.selectedExportOption) {
+        case "basic":
+          this.handleBasicExport();
+          break;
+        case "custom":
+          this.handleCustomExport();
+          break;
+        default:
+          this.handleBasicExport();
+          break;
+      }
     },
     exportProcess() {
         const params = {
@@ -118,8 +131,14 @@ export default {
         })
         .catch((error) => {
             ProcessMaker.alert(error.response.data.message, "danger");
-        })
-    }
+        });
+    },
+    handleBasicExport() {
+      this.showSetPasswordModal();
+    },
+    handleCustomExport() {
+
+    },
   }
 }   
 </script>
