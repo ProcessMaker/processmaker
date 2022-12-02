@@ -201,7 +201,7 @@ class ProcessExporterTest extends TestCase
         $process = $this->createProcess('process-with-different-kinds-of-assignments', ['name' => 'processTest']);
 
         // Assign users to process assignments
-        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedUsers', implode(',', [$users[0]->id, $users[1]->id , $users[2]->id]));
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedUsers', implode(',', [$users[0]->id, $users[1]->id, $users[2]->id]));
         Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[2]', 'pm:assignedUsers', implode(',', [$users[3]->id, $users[4]->id]));
         Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[1]', 'pm:assignedUsers', implode(',', [$users[5]->id, $users[6]->id]));
         Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[2]', 'pm:assignedUsers', implode(',', [$users[7]->id]));
@@ -230,7 +230,6 @@ class ProcessExporterTest extends TestCase
             $this->assertEquals(0, Process::get()->count());
         });
 
-
         // 11 from 12 created users should be exported ..
         $this->assertEquals(11, User::whereIn('username', $users->pluck('username'))->get()->count());
         $this->assertEquals(10, Group::whereIn('name', $groups->pluck('name'))->get()->count());
@@ -239,7 +238,7 @@ class ProcessExporterTest extends TestCase
 
         // reasignar los ids de los usuarios nuevos al bpmn del nuevo proceso
         dd($process->bpmn);
-        // fijarse en $process->bpmn y hacer assert que existe 
+        // fijarse en $process->bpmn y hacer assert que existe
         // Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedUsers', implode(',', [$users[0]->id, $users[1]->id, $users[2]->id]));
         // Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[2]', 'pm:assignedUsers', implode(',', [$users[3]->id, $users[4]->id]));
         // Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[1]', 'pm:assignedUsers', implode(',', [$users[5]->id, $users[6]->id]));

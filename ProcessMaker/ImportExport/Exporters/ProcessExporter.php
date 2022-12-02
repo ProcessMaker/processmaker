@@ -183,7 +183,7 @@ class ProcessExporter extends ExporterBase
         foreach ($this->getAssignments() as $path => $assignments) {
             $meta = [
                 'path' => $path,
-                'assignmentType' => $assignments['assignmentType']
+                'assignmentType' => $assignments['assignmentType'],
             ];
 
             foreach ($assignments['userIds'] as $userId) {
@@ -211,7 +211,7 @@ class ProcessExporter extends ExporterBase
         $tags = [
             'bpmn:task',
             'bpmn:manualTask',
-            'bpmn:callActivity'
+            'bpmn:callActivity',
         ];
 
         foreach (Utils::getElementByMultipleTags($this->model->getDefinitions(true), $tags) as $element) {
@@ -220,7 +220,7 @@ class ProcessExporter extends ExporterBase
             $assignmentsByPath[$path] = [
                 'userIds' => $userIds,
                 'groupIds' => $groupIds,
-                'assignmentType' => optional($element->getAttributeNode('pm:assignment'))->value
+                'assignmentType' => optional($element->getAttributeNode('pm:assignment'))->value,
             ];
         }
 
