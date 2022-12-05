@@ -50,12 +50,12 @@
             <button type="button" class="btn btn-outline-secondary" @click="onCancel">
               {{ $t("Cancel") }}
             </button>
-            <button type="button" class="btn btn-primary ml-2" @click="onExport">
+            <button type="button" class="btn btn-primary ml-2" @click="showSetPasswordModal">
               {{ $t("Export") }}
             </button>
             <set-password-modal ref="set-password-modal" :processId="processId" :processName="processName" @verifyPassword="exportProcess" />
             <export-success-modal ref="export-success-modal" :processName="processName" :processId="processId" :exportInfo="exportInfo" />
-            <custom-export-view ref="export-success-modal" :processName="processName" />
+            <custom-export-view ref="custom-export-view" :processName="processName" />
           </div>
         </div>
       </div>
@@ -96,13 +96,13 @@ export default {
     onExport() {
       switch (this.selectedExportOption) {
         case "basic":
-          this.handleBasicExport();
+          this.showSetPasswordModal();
           break;
         case "custom":
           this.handleCustomExport();
           break;
         default:
-          this.handleBasicExport();
+          this.showSetPasswordModal();
           break;
       }
     },
@@ -133,11 +133,8 @@ export default {
             ProcessMaker.alert(error.response.data.message, "danger");
         });
     },
-    handleBasicExport() {
-      this.showSetPasswordModal();
-    },
     handleCustomExport() {
-
+      // this.exportProcess();
     },
   }
 }   

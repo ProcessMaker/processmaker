@@ -1,8 +1,11 @@
 <template>
     <div>
         <b-row>
-            <b-col cols="4">
+            <b-col cols="4" class="border-right">
                 <sidebar-navigation ref="sidebar-navigation" :processName="processName"></sidebar-navigation>
+            </b-col>
+            <b-col>
+                
             </b-col>
         </b-row>
     </div>
