@@ -71,6 +71,7 @@ class Utils
     {
         $definitions = $process->getDefinitions(true);
         $element = self::getElementByPath($definitions, $xmlPath);
+
         return $element->getAttribute($attrName);
     }
 

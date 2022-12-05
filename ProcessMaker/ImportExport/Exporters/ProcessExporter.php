@@ -124,7 +124,7 @@ class ProcessExporter extends ExporterBase
             }
             $userAssignments[$dependent->meta['path']] = [
                 ...$userAssignments[$dependent->meta['path']],
-                ...[$dependent->model->id]
+                ...[$dependent->model->id],
             ];
         }
 
@@ -134,12 +134,12 @@ class ProcessExporter extends ExporterBase
             }
             $groupAssignments[$dependent->meta['path']] = [
                 ...$groupAssignments[$dependent->meta['path']],
-                ...[$dependent->model->id]
+                ...[$dependent->model->id],
             ];
         }
 
         foreach ($userAssignments as $path => $ids) {
-            Utils::setAttributeAtXPath($this->model, $path, 'pm:assignment' ,$dependent->meta['assignmentType']);
+            Utils::setAttributeAtXPath($this->model, $path, 'pm:assignment', $dependent->meta['assignmentType']);
             Utils::setAttributeAtXPath($this->model, $path, 'pm:assignedUsers', implode(',', $ids));
         }
 
