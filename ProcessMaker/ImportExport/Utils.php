@@ -67,6 +67,13 @@ class Utils
         $process->bpmn = $definitions->saveXml();
     }
 
+    public static function getAttributeAtXPath(Process &$process, string $xmlPath, string $attrName)
+    {
+        $definitions = $process->getDefinitions(true);
+        $element = self::getElementByPath($definitions, $xmlPath);
+        return $element->getAttribute($attrName);
+    }
+
     public static function setPmConfigValueAtXPath(Process &$process, string $xmlPath, string $arrayPath, $value)
     {
         $definitions = $process->getDefinitions(true);
