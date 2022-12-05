@@ -115,10 +115,37 @@ class ProcessExporter extends ExporterBase
 
     private function importAssignments()
     {
+        $userAssignments = [];
+        $groupAssignments = [];
+
         foreach ($this->getDependents(DependentType::USER_ASSIGNMENT) as $dependent) {
-            Utils::setAttributeAtXPath($this->model, $dependent->meta, 'calledElement', 'ProcessId-' . $dependent->model->id);
-            Utils::setPmConfigValueAtXPath($this->model, $dependent->meta, 'calledElement', 'ProcessId-' . $dependent->model->id);
-            Utils::setPmConfigValueAtXPath($this->model, $dependent->meta, 'processId', $dependent->model->id);
+            if (!array_key_exists($dependent->meta['path'], $userAssignments)) {
+                $userAssignments[$dependent->meta['path']] = [];
+            }
+            $userAssignments[$dependent->meta['path']] = [
+                ...$userAssignments[$dependent->meta['path']],
+                ...[$dependent->model->id]
+            ];
+        }
+
+        foreach ($this->getDependents(DependentType::GROUP_ASSIGNMENT) as $dependent) {
+            if (!array_key_exists($dependent->meta['path'], $groupAssignments)) {
+                $groupAssignments[$dependent->meta['path']] = [];
+            }
+            $groupAssignments[$dependent->meta['path']] = [
+                ...$groupAssignments[$dependent->meta['path']],
+                ...[$dependent->model->id]
+            ];
+        }
+
+        foreach ($userAssignments as $path => $ids) {
+            Utils::setAttributeAtXPath($this->model, $path, 'pm:assignment' ,$dependent->meta['assignmentType']);
+            Utils::setAttributeAtXPath($this->model, $path, 'pm:assignedUsers', implode(',', $ids));
+        }
+
+        foreach ($groupAssignments as $path => $ids) {
+            Utils::setAttributeAtXPath($this->model, $path, 'pm:assignment', $dependent->meta['assignmentType']);
+            Utils::setAttributeAtXPath($this->model, $path, 'pm:assignedGroups', implode(',', $ids));
         }
     }
 
@@ -192,8 +219,6 @@ class ProcessExporter extends ExporterBase
                     $this->addDependent(DependentType::USER_ASSIGNMENT, $user, UserExporter::class, $meta);
                 }
             }
-
-            dd($this->getDependents(DependentType::USER_ASSIGNMENT));
 
             foreach ($assignments['groupIds'] as $groupId) {
                 $group = Group::find($groupId);
