@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\ImportExport;
 
-use MJS\TopSort\CircularDependencyException;
 use ProcessMaker\ImportExport\Dependent;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ScreenExporter;
@@ -17,6 +16,7 @@ class ManifestTest extends TestCase
 {
     public function testOrderForImport()
     {
+        $this->markTestSkipped('Removed sorting');
         $test = [
             'A' => $this->mockExporter(['C']),
             'B' => $this->mockExporter(['C', 'A']),
@@ -32,6 +32,7 @@ class ManifestTest extends TestCase
 
     public function testOrderForImportCircularDependency()
     {
+        $this->markTestSkipped('Removed sorting');
         $test = [
             'A' => $this->mockExporter(['C']),
             'B' => $this->mockExporter(['A']),

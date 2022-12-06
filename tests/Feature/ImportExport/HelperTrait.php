@@ -50,7 +50,7 @@ trait HelperTrait
     {
         ProcessCategory::factory()->create(['is_system'=> true]);
         (new SignalSeeder())->run();
-        $this->globalSignal = new SignalData('test_global_signal', 'test global signal', '');
+        $this->globalSignal = new SignalData('test_global', 'test_global', '');
         SignalManager::addSignal($this->globalSignal);
     }
 

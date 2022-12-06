@@ -139,22 +139,30 @@ class ProcessExporter extends ExporterBase
 
     private function exportSignals()
     {
-        $globalSignalInfo = [];
-        foreach (SignalHelper::processessReferencedBySignals($this->model) as $dependentInfo) {
-            if ($dependentInfo['type'] === SignalHelper::TYPE_GLOBAL) {
-                $globalSignalInfo[] = $dependentInfo['signalData'];
-            } else {
-                // Do not export dependent processes based on signals yet
-            }
+        $signalHelper = app()->make(SignalHelper::class);
+
+        $globalSignalsInProcess = [];
+
+        foreach ($signalHelper->processessReferencedByThrowSignals($this->model) as [$process, $signalId]) {
+            $this->addDependent('signal-process', $process, self::class, $signalId);
         }
-        $this->addReference('global-signals', $globalSignalInfo);
+
+        foreach ($signalHelper->globalSignalsInProcess($this->model) as $signalInfo) {
+            $globalSignalsInProcess[$signalInfo['id']] = $signalInfo;
+        }
+        $this->addReference('global-signals', $globalSignalsInProcess);
     }
 
     private function importSignals()
     {
+        // Note: No associations are needed for process signals.
+        // The dependent process has already been saved at this point.
+
+        // Import global signals
+        $signalHelper = app()->make(SignalHelper::class);
+        $globalSignals = $signalHelper->getGlobalSignals();
         foreach ($this->getReference('global-signals') as $signalData) {
-            $existing = SignalManager::findSignal($signalData['id']);
-            if (!$existing) {
+            if (!$globalSignals->has($signalData['id'])) {
                 $signal = new SignalData($signalData['id'], $signalData['name'], $signalData['detail']);
                 $errors = SignalManager::validateSignal($signal, null);
                 if ($errors) {
