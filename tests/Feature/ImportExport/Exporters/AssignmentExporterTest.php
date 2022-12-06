@@ -136,8 +136,14 @@ class AssignmentExporterTest extends TestCase
         $process = Process::where('name', $process->name)->firstOrFail();
 
         // Get new user/group Ids imported...
-        $newUserIds = User::whereIn('username', $users->pluck('username'))->get()->pluck('id');
-        $newGroupIds = Group::whereIn('name', $groups->pluck('name'))->get()->pluck('id');
+        $newUserIds = User::whereIn('username', $users->pluck('username'))
+            ->orderBy('id', 'asc')
+            ->get()
+            ->pluck('id');
+        $newGroupIds = Group::whereIn('name', $groups->pluck('name'))
+            ->orderBy('id', 'asc')
+            ->get()
+            ->pluck('id');
 
         // Assert the new imported user and groups are correctly assigned to the process
         $this->assertEquals("$newUserIds[0],$newUserIds[1],$newUserIds[2]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedUsers'));
