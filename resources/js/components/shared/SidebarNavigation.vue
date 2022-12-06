@@ -1,21 +1,23 @@
 <template>
   <div>
-    <div class="process-name">
+    <div class="process-name-container">
       <li class="font-weight-bold active sidebar-nav">
         <b-link
           @click="showProcessElements = !showProcessElements"
           :aria-expanded="showProcessElements ? 'true' : 'false'"
           class="sidebar-nav"
         >
-          <i
-            class="fa"
-            :class="{
-              'fa-chevron-right': !showProcessElements,
-              'fa-chevron-down': showProcessElements,
-            }"
-            style="width: 14px"
-          />
-          <span>{{ processName }}</span>
+          <div class="d-flex justify-content-between align-items-center p-2">
+            <span>{{ processName }}</span>
+            <i
+              class="fa chevron"
+              :class="{
+                'fa-chevron-right': !showProcessElements,
+                'fa-chevron-down': showProcessElements,
+              }"
+              style="width: 14px"
+            />
+          </div>
         </b-link>
       </li>
     </div>
@@ -26,37 +28,37 @@
                 showProcessElements = !showProcessElements
                 ">{{ initDockerfile.split("\n")[0] }} <template v-if="!showDockerfile">...</template></pre> -->
       <b-collapse id="processelements" v-model="showProcessElements" :aria-hidden="showProcessElements ? 'false' : 'true'">
-        <li>
+        <li class="nav-list-item">
           <b-link class="sidebar-nav">
             <i class="fas nav-icon fa-code sidebar-nav" />
             <span>{{ $t("Scripts") }}</span>
           </b-link>
         </li>
-        <li>
+        <li class="nav-list-item">
           <b-link class="sidebar-nav">
             <i class="fas nav-icon fa-file-alt sidebar-nav" />
             <span>{{ $t("Screens") }}</span>
           </b-link>
         </li>
-        <li>
+        <li class="nav-list-item">
           <b-link class="sidebar-nav">
             <i class="fas nav-icon fa-lock sidebar-nav" />
             <span>{{ $t("Environment Variables") }}</span>
           </b-link>
         </li>
-        <li>
+        <li class="nav-list-item">
           <b-link class="sidebar-nav">
             <i class="fas nav-icon bpmn-icon-end-event-signal" />
             <span>{{ $t("Signals") }}</span>
           </b-link>
         </li>
-        <li>
+        <li class="nav-list-item">
           <b-link class="sidebar-nav">
             <i class="fas nav-icon fa-cog" />
             <span>{{ $t("Data Connectors") }}</span>
           </b-link>
         </li>
-        <li>
+        <li class="nav-list-item">
           <b-link class="sidebar-nav">
             <i class="fas nav-icon fa-book" />
             <span>{{ $t("Vocabularies") }}</span>
@@ -74,7 +76,7 @@ export default {
   data() {
     return {
       showProcessElements: false,
-    }
+    };
   },
   mounted() {
   },
@@ -88,8 +90,9 @@ export default {
 @import "../../../sass/variables";
 @import "../../../sass/variables";
 
-.process-name {
+.process-name-container {
   text-align: left;
+  width: 100%;
 }
 
 a.sidebar-nav {
@@ -99,11 +102,17 @@ a.sidebar-nav {
 li {
   list-style: none;
   text-align: left;
-  padding-top: 1em;
+  width: 100%;
   &.active {
      background-color: $grey-bg;
      border-radius: 0.125em;
   }
+}
+
+.nav-list-item {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  padding-left: 0.5em;
 }
 
 </style>
