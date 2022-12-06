@@ -1591,7 +1591,7 @@
   "Reset Password Notification" : "Benachrichtigung zum Zurücksetzen des Passworts",
   "You are receiving this email because we received a password reset request for your account." : "Sie erhalten diese E-Mail, weil wir eine Anfrage zum Zurücksetzen des Passworts für Ihr Konto erhalten haben.",
   "This password reset link will expire in :count minutes." : "Dieser Link zum Zurücksetzen des Passworts läuft in :count Minuten ab.",
-  "If you did not request a password reset, no further action is required." : "Wenn Sie das Zurücksetzen Ihres Passworts nicht beantragt haben, sind keine weiteren Maßnahmen erforderlich.",
+  "If you did not request a password reset, please call us." : "Wenn Sie kein Zurücksetzen des Passworts angefordert haben, rufen Sie uns bitte an.",
   "Hello!" : "Hallo!",
   "Regards" : "Mit freundlichen Grüßen",
   "If you're having trouble clicking the \":actionText\" button, copy and paste the URL below\ninto your web browser:" : "Wenn Sie Probleme haben, auf den Button „:actionText“ zu klicken, kopieren Sie die folgende URL\nin Ihren Webbrowser:"
