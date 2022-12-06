@@ -166,7 +166,7 @@ class ProcessExporter extends ExporterBase
             }
 
             $process = Process::find($values[1]);
-            if ($process->package_key !== null) {
+            if (!$process || $process->package_key !== null) {
                 continue; // not a subprocess
             }
 
