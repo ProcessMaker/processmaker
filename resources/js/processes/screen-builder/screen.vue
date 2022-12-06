@@ -56,6 +56,7 @@
                 :watchers="preview.watchers"
                 :data="previewData"
                 :type="screen.type"
+                @update="onUpdate"
                 @submit="previewSubmit"
               />
             </div>
@@ -212,6 +213,7 @@ import MonacoEditor from "vue-monaco";
 import mockMagicVariables from "./mockMagicVariables";
 import TopMenu from "../../components/Menu";
 import { cloneDeep, debounce , isEqual} from 'lodash';
+import { mapMutations } from 'vuex';
 import i18next from 'i18next';
 
 // Bring in our initial set of controls
@@ -464,6 +466,7 @@ export default {
     this.countElements();
   },
   methods: {
+    ...mapMutations("globalErrorsModule", { setStoreMode: "setMode" }),
     // eslint-disable-next-line func-names
     updateDataInput: debounce(function () {
       if (this.previewInputValid) {
@@ -615,6 +618,7 @@ export default {
         this.$refs.menuScreen.sectionRight = false;
       }
       this.mode = mode;
+      this.setStoreMode(this.mode);
       this.previewData = this.previewInputValid ? JSON.parse(this.previewInput) : {};
       this.rendererKey++;
       if (mode == 'preview') {

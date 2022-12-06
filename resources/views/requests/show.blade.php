@@ -294,6 +294,7 @@
 											type="button"
 											class="btn btn-outline-info btn-block"
 											data-toggle="modal"
+											:disabled="retryDisabled"
 											@click="retryRequest">
 										<i class="fas fa-sync"></i> {{__('Retry')}}
 									</button>
@@ -385,6 +386,7 @@
             userRequested: [],
             errorLogs: @json(['data'=>$request->errors]),
             disabled: false,
+            retryDisabled: false,
             packages: [],
             processId: @json($request->process->id),
             canViewComments: @json($canViewComments),
@@ -646,13 +648,16 @@
           },
           retryRequest() {
 			const apiRequest = () => {
+              this.retryDisabled = true
+			  let success = true
+
               ProcessMaker.apiClient.put(`requests/${this.requestId}/retry`).then(response => {
                 if (response.status !== 200) {
                   return;
                 }
 
-                const success = response.data.success || false
                 const message = response.data.message;
+                success = response.data.success || false
 
                 if (success) {
                   if (Array.isArray(message)) {
@@ -660,12 +665,11 @@
                       ProcessMaker.alert(this.$t(line), 'success')
                     }
                   }
-
-                  setTimeout(() => location.reload(), 3000)
                 } else {
                   ProcessMaker.alert(this.$t("Request could not be retried"), 'danger')
+
                 }
-              })
+              }).finally(() => setTimeout(() => location.reload(), success ? 3000 : 1000))
 			}
 
             ProcessMaker.confirmModal(

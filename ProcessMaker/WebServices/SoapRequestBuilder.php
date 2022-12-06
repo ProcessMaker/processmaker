@@ -26,6 +26,8 @@ class SoapRequestBuilder implements WebServiceRequestBuilderInterface
                         'location' => null,
                         'debug_mode' => $config['debug_mode'],
                         'password_type' => $config['password_type'],
+                        'datasource_name' => $config['datasource_name'],
+                        'datasource_id' => $config['datasource_id'],
                     ]),
                     'operation' => $config['operation'],
                     'parameters' => $config['parameters'],
@@ -40,6 +42,8 @@ class SoapRequestBuilder implements WebServiceRequestBuilderInterface
                         'password' => $config['password'],
                         'location' => $config['location'],
                         'debug_mode' => $config['debug_mode'],
+                        'datasource_name' => $config['datasource_name'],
+                        'datasource_id' => $config['datasource_id'],
                     ]),
                     'operation' => $config['operation'],
                     'parameters' => $config['parameters'],
@@ -57,6 +61,9 @@ class SoapRequestBuilder implements WebServiceRequestBuilderInterface
                         'passphrase'    => $config['passphrase'],
                         'cache_wsdl'    => WSDL_CACHE_NONE,
                         'exceptions'    => true,
+                        'debug_mode' => $config['debug_mode'],
+                        'datasource_name' => $config['datasource_name'],
+                        'datasource_id' => $config['datasource_id'],
                         'stream_context' => stream_context_create([
                             'ssl' => [
                                 'verify_peer' => false,

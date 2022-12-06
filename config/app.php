@@ -222,6 +222,7 @@ return [
          */
         'ElasticScoutDriver\Factories\SearchRequestFactory' => ProcessMaker\Factories\SearchRequestFactory::class,
 
+        'RequestDevice' => ProcessMaker\Facades\RequestDevice::class,
     ],
 
     'debug_blacklist' => [

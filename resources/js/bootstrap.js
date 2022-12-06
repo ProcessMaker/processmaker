@@ -24,6 +24,7 @@ import Modal from "./components/shared/Modal";
 import AccessibilityMixin from "./components/common/mixins/accessibility";
 import { initializeScreenCache } from "@processmaker/screen-builder";
 import Vue from 'vue'
+import VueCookies from 'vue-cookies'
 
 window.__ = translator;
 window._ = require("lodash");
@@ -58,6 +59,7 @@ window.Vue = Vue;
 window.Vue.use(BootstrapVue);
 window.Vue.use(ScreenBuilder);
 window.Vue.use(VueDeepSet);
+window.Vue.use(VueCookies);
 if (!document.head.querySelector("meta[name=\"is-horizon\"]")) {
   window.Vue.use(Router);
 }
@@ -272,32 +274,42 @@ if (userID) {
     }
   });
 
-  window.ProcessMaker.AccountTimeoutWorker.postMessage({
-    method: 'start',
-    data: {
-      timeout: window.ProcessMaker.AccountTimeoutLength,
-      warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds,
-      enabled: window.ProcessMaker.AccountTimeoutEnabled
-    }
-  });
-}
+  const isSameDevice = (e) => {
+    const localDeviceId = Vue.$cookies.get(e.device_variable);
+    const remoteDeviceId = e.device_id;
+    return localDeviceId && localDeviceId === remoteDeviceId;
+  }
 
-if (userID) {
   window.Echo.private(`ProcessMaker.Models.User.${userID.content}`)
-    .notification((token) => {
-      ProcessMaker.pushNotification(token);
-    })
-    .listen('.SessionStarted', (e) => {
-      let lifetime = parseInt(eval(e.lifetime));
-      window.ProcessMaker.AccountTimeoutWorker.postMessage({
-        method: 'start',
-        data: {
-          timeout: lifetime,
-          warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds
+      .notification((token) => {
+        ProcessMaker.pushNotification(token);
+      })
+      .listen('.SessionStarted', (e) => {
+        const lifetime = parseInt(eval(e.lifetime));
+        if (isSameDevice(e)) {
+          window.ProcessMaker.AccountTimeoutWorker.postMessage({
+            method: 'start',
+            data: {
+              timeout: lifetime,
+              warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds,
+              enabled: window.ProcessMaker.AccountTimeoutEnabled
+            }
+          });
+          window.ProcessMaker.closeSessionModal();
+        }
+      })
+      .listen('.Logout', (e) => {
+        if (isSameDevice(e) && window.location.pathname.indexOf('/logout') === -1) {
+          const localDeviceId = Vue.$cookies.get(e.device_variable);
+          let redirectLogoutinterval = setInterval(() => {
+            const newDeviceId = Vue.$cookies.get(e.device_variable);
+            if (localDeviceId !== newDeviceId) {
+              clearInterval(redirectLogoutinterval);
+              window.location.href = '/logout';
+            }
+          }, 100);
         }
       });
-      window.ProcessMaker.closeSessionModal();
-    });
 }
 
 // Configuration Global object used by ScreenBuilder

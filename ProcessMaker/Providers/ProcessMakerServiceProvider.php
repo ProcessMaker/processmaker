@@ -12,6 +12,7 @@ use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
 use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\Helpers\PmHash;
 use ProcessMaker\Managers;
 use ProcessMaker\Models;
 use ProcessMaker\Observers;
@@ -27,6 +28,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
         static::bootObservers();
 
         static::extendValidators();
+
+        static::extendDrivers();
 
         $this->setupFactories();
 
@@ -85,6 +88,14 @@ class ProcessMakerServiceProvider extends ServiceProvider
          */
         $this->app->singleton(Managers\ScriptBuilderManager::class, function ($app) {
             return new Managers\ScriptBuilderManager();
+        });
+
+        $this->app->singleton(PmHash::class, function () {
+            return new PmHash;
+        });
+
+        $this->app->singleton(Models\RequestDevice::class, function () {
+            return new Models\RequestDevice;
         });
 
         /*
@@ -281,6 +292,12 @@ class ProcessMakerServiceProvider extends ServiceProvider
             }
 
             return $model;
+        });
+    }
+
+    protected static function extendDrivers(): void{
+        Facades\Hash::extend('pm', function() {
+            return resolve(PmHash::class);
         });
     }
 }
