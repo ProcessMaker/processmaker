@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
+use ProcessMaker\Notifications\ResetPassword as ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -522,5 +523,16 @@ class User extends Authenticatable implements HasMedia
     public function manager()
     {
         return $this->belongsTo(self::class);
+    }
+
+    /**
+     * Send the password reset notification.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPasswordNotification($token));
     }
 }
