@@ -274,6 +274,16 @@ if (userID) {
     }
   });
 
+  //in some cases it's necessary to start manually
+  window.ProcessMaker.AccountTimeoutWorker.postMessage({
+    method: 'start',
+    data: {
+      timeout: window.ProcessMaker.AccountTimeoutLength,
+      warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds,
+      enabled: window.ProcessMaker.AccountTimeoutEnabled
+    }
+  });
+
   const isSameDevice = (e) => {
     const localDeviceId = Vue.$cookies.get(e.device_variable);
     const remoteDeviceId = e.device_id;
