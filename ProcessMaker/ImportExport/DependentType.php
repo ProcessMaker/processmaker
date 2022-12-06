@@ -19,4 +19,8 @@ abstract class DependentType
     const SUB_PROCESSES = 'sub_processes';
 
     const GROUPS = 'groups';
+
+    const USER_ASSIGNMENT = 'user_assignment';
+
+    const GROUP_ASSIGNMENT = 'group_assignment';
 }

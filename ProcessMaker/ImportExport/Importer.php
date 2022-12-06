@@ -3,6 +3,7 @@
 namespace ProcessMaker\ImportExport;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class Importer
 {
@@ -32,8 +33,17 @@ class Importer
     public function doImport()
     {
         DB::transaction(function () {
-            foreach ($this->manifest->orderForImport() as $uuid) {
-                $exporter = $this->manifest->get($uuid);
+            // First, we save the model so we have IDs set for all assets
+            Schema::disableForeignKeyConstraints();
+            foreach ($this->manifest->all() as $exporter) {
+                if ($exporter->importMode !== 'discard') {
+                    $exporter->model->save();
+                }
+            }
+            Schema::enableForeignKeyConstraints();
+
+            // Now, run the import method in each Exporter class
+            foreach ($this->manifest->all() as $exporter) {
                 if ($exporter->importMode !== 'discard') {
                     $exporter->runImport();
                 }

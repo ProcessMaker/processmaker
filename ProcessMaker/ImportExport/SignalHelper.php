@@ -2,95 +2,105 @@
 
 namespace ProcessMaker\ImportExport;
 
+use Illuminate\Support\Collection;
 use ProcessMaker\Managers\SignalManager;
-use Psy\Command\PsyVersionCommand;
+use ProcessMaker\Models\Process;
 
 class SignalHelper
 {
-    const THROW_EVENTS = [
+    const THROW_TYPES = [
         'endEvent',
         'intermediateThrowEvent',
     ];
 
-    const TYPE_THROW = 'throw';
+    public $allSignals;
 
-    const TYPE_CATCH = 'catch';
+    public $globalSignals;
 
-    const TYPE_GLOBAL = 'global';
-
-    const TYPE_PROCESS = 'process';
-
-    public static function processessReferencedBySignals($process)
+    public function getGlobalSignals() : Collection
     {
-        $dependents = [];
-
-        self::findGlobalSignals($dependents, $process);
-
-        // May be needed in the future
-        // self::findDependentProcessesFromSignals($dependents, $process);
-
-        return $dependents;
-    }
-
-    public static function findGlobalSignals(&$dependents, $process)
-    {
-        $globalSignalProcess = SignalManager::getGlobalSignalProcess();
-        $globalSignalIds = SignalManager::getAllSignals(true, [$globalSignalProcess])->map(fn ($s) => $s['id']);
-
-        foreach (SignalManager::getAllSignals(false, [$process]) as $signalData) {
-            if ($globalSignalIds->contains($signalData['id'])) {
-                $dependents[] = ['type' => self::TYPE_GLOBAL, 'signalData' => $signalData];
-            }
+        if (!$this->globalSignals) {
+            $globalSignalProcess = SignalManager::getGlobalSignalProcess();
+            $this->globalSignals = SignalManager::getAllSignals(true, [$globalSignalProcess])
+                ->mapWithKeys(fn ($s) => [$s['id'] => $s['name']]);
         }
+
+        return $this->globalSignals;
     }
 
-    public static function findDependentProcessesFromSignals(&$dependents, $exportingProcess)
+    public function globalSignalsInProcess(Process $process)
     {
-        list($throws, $catches) = self::getSignalsByType($exportingProcess);
+        $globalSignals = $this->getGlobalSignals();
+        $signalsInProcess = SignalManager::getAllSignals(true, [$process])
+            ->filter(fn ($signalInfo) => $globalSignals->has($signalInfo['id']))
+            ->map(function ($signalInfo) {
+                return [
+                    'id' => $signalInfo['id'],
+                    'name' => $signalInfo['name'],
+                    'detail' => $signalInfo['detail'],
+                ];
+            });
 
-        // Iterate through all processes and get ones we depend on with throws and catches
-        foreach (SignalManager::getAllSignals() as $signalData) {
-            $signalId = $signalData['id'];
-            foreach ($signalData['processes'] as $processInfo) {
-                $processId = $processInfo['id'];
+        return $signalsInProcess;
+    }
 
-                if ($processId === $exportingProcess->id) {
-                    // No need to add signals from the process we're exporting
+    public function processessReferencedByThrowSignals(Process $sourceProcess)
+    {
+        $id = $sourceProcess->id;
+        $signalIdsInProcess = $this->throwSignalsInProcess($sourceProcess);
+        $processes = [];
+
+        foreach ($this->getAllSignals() as $signalInfo) {
+            if (!in_array($signalInfo['id'], $signalIdsInProcess)) {
+                continue;
+            }
+
+            foreach ($signalInfo['processes'] as $processInfo) {
+                if ($processInfo['id'] === $id) {
+                    // Do not include the source process
                     continue;
                 }
 
-                foreach ($processInfo['catches'] as $node) {
-                    if (
-                        (self::type($node) === self::TYPE_THROW && in_array($signalId, $catches)) ||
-                        (self::type($node) === self::TYPE_CATCH && in_array($signalId, $throws))
-                    ) {
-                        $dependents[] = ['type' => self::TYPE_PROCESS, 'signalId' => $signalId, 'processId' => $processId];
+                foreach ($processInfo['catches'] as $catchInfo) {
+                    $processes[] = [
+                        Process::findOrFail($processInfo['id']),
+                        $signalInfo['id'],
+                        $signalInfo['name'],
+                    ];
+                }
+            }
+        }
+
+        return $processes;
+    }
+
+    public function throwSignalsInProcess(Process $sourceProcess)
+    {
+        $id = $sourceProcess->id;
+        $signalIds = [];
+        foreach ($this->getAllSignals() as $signalInfo) {
+            foreach ($signalInfo['processes'] as $processInfo) {
+                if ($processInfo['id'] === $id) {
+                    foreach ($processInfo['catches'] as $catchInfo) {
+                        if (in_array($catchInfo['type'], self::THROW_TYPES)) {
+                            $signalIds[] = $signalInfo['id'];
+                            break;
+                        }
                     }
-                }
-            }
-        }
-    }
-
-    public static function getSignalsByType($process)
-    {
-        $processSignalInfo = SignalManager::getAllSignals(false, [$process]);
-        $throws = [];
-        $catches = [];
-        foreach ($processSignalInfo as $signalInfo) {
-            foreach ($signalInfo['processes'][0]['catches'] as $node) {
-                if (self::type($node) === self::TYPE_THROW) {
-                    $throws[] = $signalInfo['id'];
-                } else {
-                    $catches[] = $signalInfo['id'];
+                    break;
                 }
             }
         }
 
-        return [$throws, $catches];
+        return $signalIds;
     }
 
-    public static function type($node)
+    public function getAllSignals()
     {
-        return in_array($node['type'], self::THROW_EVENTS) ? self::TYPE_THROW : self::TYPE_CATCH;
+        if (!$this->allSignals) {
+            $this->allSignals = SignalManager::getAllSignals(false);
+        }
+
+        return $this->allSignals;
     }
 }

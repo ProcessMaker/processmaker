@@ -7,10 +7,12 @@ use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ProcessExporter;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
+use ProcessMaker\ImportExport\SignalHelper;
 use ProcessMaker\ImportExport\Tree;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Group;
+use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessNotificationSetting;
@@ -114,20 +116,26 @@ class ProcessExporterTest extends TestCase
 
     public function testSignals()
     {
-        $process = $this->createProcess('process-with-signals', [
-            'name' => 'my process',
+        $processA = $this->createProcess('signal-process-a', [
+            'name' => 'signal process a',
         ]);
 
-        $this->runExportAndImport($process, ProcessExporter::class, function () use ($process) {
-            SignalManager::removeSignal($this->globalSignal);
-            $this->assertNull(SignalManager::findSignal('test_global_signal'));
-            $process->forceDelete();
+        $processB = $this->createProcess('signal-process-b', [
+            'name' => 'signal process b',
+        ]);
+
+        $this->runExportAndImport($processA, ProcessExporter::class, function () use ($processA, $processB) {
+            SignalManager::getGlobalSignalProcess()->forceDelete();
+            $processA->forceDelete();
+            $processB->forceDelete();
+            app()->forgetInstance(SignalHelper::class);
+            $this->addGlobalSignalProcess();
         });
 
-        $this->assertNotNull(SignalManager::findSignal('test_global_signal'));
+        $globalSignals = app()->make(SignalHelper::class)->getGlobalSignals()->toArray();
+        $this->assertContains('test_global', $globalSignals);
 
-        $globalSignals = SignalManager::getAllSignals(true, [SignalManager::getGlobalSignalProcess()])->toArray();
-        $this->assertEquals('test_global_signal', $globalSignals[0]['id']);
+        $this->assertEquals(1, Process::where('name', 'signal process b')->count());
     }
 
     public function testSubprocesses()

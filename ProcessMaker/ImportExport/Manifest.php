@@ -2,9 +2,7 @@
 
 namespace ProcessMaker\ImportExport;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
-use MJS\TopSort\Implementations\StringSort;
 use ProcessMaker\ImportExport\Exporters\ExporterInterface;
 
 class Manifest
@@ -24,6 +22,11 @@ class Manifest
     public function set($manifest)
     {
         return $this->manifest = $manifest;
+    }
+
+    public function all()
+    {
+        return $this->manifest;
     }
 
     public function toArray()
@@ -110,17 +113,6 @@ class Manifest
                     break;
             }
         }
-    }
-
-    public function orderForImport()
-    {
-        $sorter = new StringSort();
-        foreach ($this->manifest as $uuid => $exporter) {
-            $dependentUuids = array_map(fn ($d) => $d->uuid, $exporter->dependents);
-            $sorter->add($uuid, $dependentUuids);
-        }
-
-        return $sorter->sort();
     }
 
     public function modelExists($class, $attribute, $value) : bool

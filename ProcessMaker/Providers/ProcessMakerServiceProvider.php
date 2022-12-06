@@ -13,6 +13,7 @@ use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\ImportExport\Extension;
+use ProcessMaker\ImportExport\SignalHelper;
 use ProcessMaker\Managers;
 use ProcessMaker\Models;
 use ProcessMaker\Observers;
@@ -111,6 +112,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         // Define the Import/Export Extension object as a singleton
         $this->app->singleton(Extension::class);
+
+        // Define the SignalHelper object as a singleton
+        $this->app->singleton(SignalHelper::class);
 
         // Register app-level events
         static::registerEvents();

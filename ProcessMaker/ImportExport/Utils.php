@@ -38,6 +38,20 @@ class Utils
         return $elements->item(0);
     }
 
+    public static function getElementByMultipleTags($document, array $tags = [])
+    {
+        $path = '';
+
+        foreach ($tags as $tag) {
+            $path .= "//$tag|";
+        }
+
+        $xpath = new DOMXPath($document);
+        $elements = $xpath->query(rtrim($path, '|'));
+
+        return $elements;
+    }
+
     public static function setPmConfigValue(BpmnElement &$element, string $path, $value) : void
     {
         $config = json_decode($element->getAttribute('pm:config'), true);
@@ -51,6 +65,14 @@ class Utils
         $element = self::getElementByPath($definitions, $xmlPath);
         $element->setAttribute($attrName, $value);
         $process->bpmn = $definitions->saveXml();
+    }
+
+    public static function getAttributeAtXPath(Process &$process, string $xmlPath, string $attrName)
+    {
+        $definitions = $process->getDefinitions(true);
+        $element = self::getElementByPath($definitions, $xmlPath);
+
+        return $element->getAttribute($attrName);
     }
 
     public static function setPmConfigValueAtXPath(Process &$process, string $xmlPath, string $arrayPath, $value)
