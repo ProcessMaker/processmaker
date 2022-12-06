@@ -8,10 +8,12 @@ use ProcessMaker\ImportExport\SignalHelper;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Managers\SignalManager;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\SignalData;
+use ProcessMaker\Models\User;
 
 class ProcessExporter extends ExporterBase
 {
@@ -67,6 +69,8 @@ class ProcessExporter extends ExporterBase
 
         $this->importSubprocesses();
 
+        $this->importAssignments();
+
         // TODO
         // Update screenRef
         $process->save();
@@ -109,6 +113,42 @@ class ProcessExporter extends ExporterBase
         }
     }
 
+    private function importAssignments()
+    {
+        $userAssignments = [];
+        $groupAssignments = [];
+
+        foreach ($this->getDependents(DependentType::USER_ASSIGNMENT) as $dependent) {
+            if (!array_key_exists($dependent->meta['path'], $userAssignments)) {
+                $userAssignments[$dependent->meta['path']] = [];
+            }
+            $userAssignments[$dependent->meta['path']] = [
+                ...$userAssignments[$dependent->meta['path']],
+                ...[$dependent->model->id],
+            ];
+        }
+
+        foreach ($this->getDependents(DependentType::GROUP_ASSIGNMENT) as $dependent) {
+            if (!array_key_exists($dependent->meta['path'], $groupAssignments)) {
+                $groupAssignments[$dependent->meta['path']] = [];
+            }
+            $groupAssignments[$dependent->meta['path']] = [
+                ...$groupAssignments[$dependent->meta['path']],
+                ...[$dependent->model->id],
+            ];
+        }
+
+        foreach ($userAssignments as $path => $ids) {
+            Utils::setAttributeAtXPath($this->model, $path, 'pm:assignment', $dependent->meta['assignmentType']);
+            Utils::setAttributeAtXPath($this->model, $path, 'pm:assignedUsers', implode(',', $ids));
+        }
+
+        foreach ($groupAssignments as $path => $ids) {
+            Utils::setAttributeAtXPath($this->model, $path, 'pm:assignment', $dependent->meta['assignmentType']);
+            Utils::setAttributeAtXPath($this->model, $path, 'pm:assignedGroups', implode(',', $ids));
+        }
+    }
+
     private function getSubprocesses(): array
     {
         $processesByPath = [];
@@ -126,7 +166,7 @@ class ProcessExporter extends ExporterBase
             }
 
             $process = Process::find($values[1]);
-            if ($process->package_key !== null) {
+            if (!$process || $process->package_key !== null) {
                 continue; // not a subprocess
             }
 
@@ -175,5 +215,56 @@ class ProcessExporter extends ExporterBase
 
     private function exportAssignments()
     {
+        foreach ($this->getAssignments() as $path => $assignments) {
+            $meta = [
+                'path' => $path,
+                'assignmentType' => $assignments['assignmentType'],
+            ];
+
+            foreach ($assignments['userIds'] as $userId) {
+                $user = User::find($userId);
+                if ($user) {
+                    $this->addDependent(DependentType::USER_ASSIGNMENT, $user, UserExporter::class, $meta);
+                }
+            }
+
+            foreach ($assignments['groupIds'] as $groupId) {
+                $group = Group::find($groupId);
+                if ($group) {
+                    $this->addDependent(DependentType::GROUP_ASSIGNMENT, $group, GroupExporter::class, $meta);
+                }
+            }
+        }
+    }
+
+    public function getAssignments(): array
+    {
+        $assignmentsByPath = [];
+
+        $tags = [
+            'bpmn:task',
+            'bpmn:manualTask',
+            'bpmn:callActivity',
+        ];
+
+        foreach (Utils::getElementByMultipleTags($this->model->getDefinitions(true), $tags) as $element) {
+            [$userIds, $groupIds] = $this->getAssignmentIds($element);
+            $path = $element->getNodePath();
+            $assignmentsByPath[$path] = [
+                'userIds' => $userIds,
+                'groupIds' => $groupIds,
+                'assignmentType' => optional($element->getAttributeNode('pm:assignment'))->value,
+            ];
+        }
+
+        return $assignmentsByPath;
+    }
+
+    private function getAssignmentIds($element): array
+    {
+        $userIds = explode(',', optional($element->getAttributeNode('pm:assignedUsers'))->value);
+        $groupIds = explode(',', optional($element->getAttributeNode('pm:assignedGroups'))->value);
+
+        return [$userIds, $groupIds];
     }
 }
