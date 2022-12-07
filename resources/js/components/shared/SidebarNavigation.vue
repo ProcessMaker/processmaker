@@ -1,13 +1,13 @@
 <template>
   <div>
     <div class="process-name-container">
-      <li class="font-weight-bold active sidebar-nav">
+      <li class="font-weight-bold sidebar-nav">
         <b-link
           @click="showProcessElements = !showProcessElements"
           :aria-expanded="showProcessElements ? 'true' : 'false'"
           class="sidebar-nav"
         >
-          <div class="d-flex justify-content-between align-items-center p-2">
+          <div class="d-flex justify-content-between align-items-center p-2 active">
             <span>{{ processName }}</span>
             <i
               class="fa chevron"
@@ -88,7 +88,6 @@ export default {
 
 <style lang="scss" scoped>
 @import "../../../sass/variables";
-@import "../../../sass/variables";
 
 .process-name-container {
   text-align: left;
@@ -103,9 +102,8 @@ li {
   list-style: none;
   text-align: left;
   width: 100%;
-  &.active {
-     background-color: $grey-bg;
-     border-radius: 0.125em;
+  &:hover {
+    background-color: $grey-bg;
   }
 }
 
@@ -113,6 +111,21 @@ li {
   padding-top: 0.5em;
   padding-bottom: 0.5em;
   padding-left: 0.5em;
+}
+
+.active {
+    background-color: $grey-bg;
+    border-radius: 0.125em;
+}
+
+.active::after {
+  position: absolute;
+  left: 0.4em;
+  width: 4px;
+  height: 24px;
+  content: "";
+  background-color: #0872c2;
+  border-radius: 6px;
 }
 
 </style>
