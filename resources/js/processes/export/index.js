@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VuePassword from "vue-password";
 import ExportManager from './components/ExportManager';
 import ExportManagerView from './components/ExportManagerView';
+import CustomExportView from "./components/CustomExportView.vue";
 
 Vue.component("VuePassword", VuePassword);
 
@@ -17,6 +18,16 @@ const routes = [
             routeName: 'main',
             processName: processName,
           })
+    },
+    { 
+        path: '/processes/:processId/export/custom', 
+        name: 'export-custom-process', 
+        component: CustomExportView,
+        props: route => ({
+            processId: route.params.processId,
+            routeName: 'export-custom-process',
+            processName: processName,
+          }),
     },
 ];
 
