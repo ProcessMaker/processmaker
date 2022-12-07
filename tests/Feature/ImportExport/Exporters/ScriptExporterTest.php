@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\ImportExport\Exporters;
 
+use Database\Seeders\CategorySystemSeeder;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\ImportExport\Exporters\ScriptExporter;
 use ProcessMaker\Models\Script;
@@ -34,5 +35,26 @@ class ScriptExporterTest extends TestCase
         $script = Script::where('title', 'test')->firstOrFail();
         $this->assertEquals('test category', $script->categories[0]->name);
         $this->assertEquals('scriptuser', $script->runAsUser->username);
+    }
+
+    public function testExportUncategorized()
+    {
+        DB::beginTransaction();
+        (new CategorySystemSeeder)->run();
+        $uncategorizedCategory = \ProcessMaker\Models\ScriptCategory::first();
+
+        $script = Script::factory()->create(['title' => 'test']);
+        $script->categories()->sync([$uncategorizedCategory->id]);
+        $payload = $this->export($script, ScriptExporter::class);
+        DB::rollBack(); // Delete all created items since DB::beginTransaction
+
+        (new CategorySystemSeeder)->run();
+        $existingUncategorizedCategory = \ProcessMaker\Models\ScriptCategory::first();
+        $existingUuid = $existingUncategorizedCategory->uuid;
+
+        $this->import($payload);
+
+        $script = Script::where('title', 'test')->firstOrFail();
+        $this->assertEquals($script->categories->first()->uuid, $existingUuid);
     }
 }

@@ -167,7 +167,12 @@ abstract class ExporterBase implements ExporterInterface
     protected function exportCategories()
     {
         foreach ($this->model->categories as $category) {
-            $this->addDependent(DependentType::CATEGORIES, $category, CategoryExporter::class);
+            if ($category->name == 'Uncategorized') {
+                $this->addReference('uncategorized-category', true);
+            } else {
+                $this->addReference('uncategorized-category', false);
+                $this->addDependent(DependentType::CATEGORIES, $category, CategoryExporter::class);
+            }
         }
     }
 
@@ -177,6 +182,11 @@ abstract class ExporterBase implements ExporterInterface
         foreach ($this->getDependents(DependentType::CATEGORIES) as $dependent) {
             $categories->push($categoryClass::findOrFail($dependent->model->id));
         }
+
+        if ($categories->empty() && $this->getReference('uncategorized-category')) {
+            $categories->push($categoryClass::where('name', 'Uncategorized')->firstOrFail());
+        }
+
         $categoriesString = $categories->map(fn ($c) => $c->id)->unique()->join(',');
         if (!empty($categoriesString)) {
             $this->model->$property = $categoriesString;
