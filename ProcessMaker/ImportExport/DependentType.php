@@ -23,4 +23,8 @@ abstract class DependentType
     const USER_ASSIGNMENT = 'user_assignment';
 
     const GROUP_ASSIGNMENT = 'group_assignment';
+
+    const USER_RECIPIENT = 'user_recipient';
+
+    const GROUP_RECIPIENT = 'group_recipient';
 }
