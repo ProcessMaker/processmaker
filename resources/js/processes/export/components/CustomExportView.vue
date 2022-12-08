@@ -1,12 +1,11 @@
 <template>
-    <div class="container">
+    <div class="custom-export-container p-5">
         <b-row>
             <b-col cols="3" class="border-right">
                 <sidebar-navigation ref="sidebar-navigation" :processName="processName"></sidebar-navigation>
             </b-col>
             <b-col cols="6" class="data-container">
-                <h2>Export Process: {{ processName }}</h2>
-                <hr>
+                <custom-export-overview :processName="processName"></custom-export-overview>
             </b-col>
       <b-col cols="3" />
         </b-row>
@@ -15,12 +14,14 @@
 
 <script>
 
+import CustomExportOverview from "./CustomExportOverview.vue";
 import SidebarNavigation from "../../../components/shared/SidebarNavigation.vue";
 
 export default {
     props: ["processName"],
     components: {
         SidebarNavigation,
+        CustomExportOverview
     },
     mixins: [],
     data() {
@@ -38,8 +39,9 @@ export default {
 <style lang="scss" scoped>
 @import "../../../../sass/variables";
 
-.container {
-    // max-width: 1600px;
+.custom-export-container {
+    max-width: 1600px;
+    margin: auto;
     background-color: $light;
 }
 
