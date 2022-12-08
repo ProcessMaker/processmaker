@@ -50,12 +50,11 @@
             <button type="button" class="btn btn-outline-secondary" @click="onCancel">
               {{ $t("Cancel") }}
             </button>
-            <button type="button" class="btn btn-primary ml-2" @click="showSetPasswordModal">
+            <button type="button" class="btn btn-primary ml-2" @click="onExport">
               {{ $t("Export") }}
             </button>
             <set-password-modal ref="set-password-modal" :processId="processId" :processName="processName" @verifyPassword="exportProcess" />
             <export-success-modal ref="export-success-modal" :processName="processName" :processId="processId" :exportInfo="exportInfo" />
-            <custom-export-view ref="custom-export-view" :processName="processName" />
           </div>
         </div>
       </div>
@@ -66,13 +65,11 @@
 <script>
 import SetPasswordModal from "./SetPasswordModal.vue";
 import ExportSuccessModal from "./ExportSuccessModal.vue";
-import CustomExportView from "./CustomExportView.vue";
 
 export default {
   components: {
     SetPasswordModal,
     ExportSuccessModal,
-    CustomExportView,
   },
   mixins: [],
   props: ["processId", "processName"],
@@ -101,9 +98,9 @@ export default {
         case "custom":
           this.handleCustomExport();
           break;
-        default:
-          this.showSetPasswordModal();
-          break;
+        // default:
+        //   this.showSetPasswordModal();
+        //   break;
       }
     },
     exportProcess() {
@@ -134,7 +131,7 @@ export default {
         });
     },
     handleCustomExport() {
-      // this.exportProcess();
+      this.$router.push({ name: "export-custom-process" });
     },
   }
 }   
