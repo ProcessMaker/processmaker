@@ -82,7 +82,7 @@ export default {
         return assetString.join(' ');
     },
     formatAssetValue(value) {
-        return value.toString();
+        return value.length;
     }
   },
 
