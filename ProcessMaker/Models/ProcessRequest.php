@@ -20,6 +20,7 @@ use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
 use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Traits\ExtendedPMQL;
+use ProcessMaker\Traits\ForUserScope;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\SqlsrvSupportTrait;
@@ -86,6 +87,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     use SqlsrvSupportTrait;
     use HideSystemResources;
     use Searchable;
+    use ForUserScope;
 
     protected $connection = 'data';
 
