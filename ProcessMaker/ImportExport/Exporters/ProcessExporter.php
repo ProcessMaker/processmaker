@@ -215,7 +215,13 @@ class ProcessExporter extends ExporterBase
 
     private function exportAssignments()
     {
-        foreach ($this->getAssignments() as $path => $assignments) {
+        $tags = [
+            'bpmn:task',
+            'bpmn:manualTask',
+            'bpmn:callActivity',
+        ];
+
+        foreach (Utils::getAssignments($this->model, $tags) as $path => $assignments) {
             $meta = [
                 'path' => $path,
                 'assignmentType' => $assignments['assignmentType'],
@@ -235,36 +241,5 @@ class ProcessExporter extends ExporterBase
                 }
             }
         }
-    }
-
-    public function getAssignments(): array
-    {
-        $assignmentsByPath = [];
-
-        $tags = [
-            'bpmn:task',
-            'bpmn:manualTask',
-            'bpmn:callActivity',
-        ];
-
-        foreach (Utils::getElementByMultipleTags($this->model->getDefinitions(true), $tags) as $element) {
-            [$userIds, $groupIds] = $this->getAssignmentIds($element);
-            $path = $element->getNodePath();
-            $assignmentsByPath[$path] = [
-                'userIds' => $userIds,
-                'groupIds' => $groupIds,
-                'assignmentType' => optional($element->getAttributeNode('pm:assignment'))->value,
-            ];
-        }
-
-        return $assignmentsByPath;
-    }
-
-    private function getAssignmentIds($element): array
-    {
-        $userIds = explode(',', optional($element->getAttributeNode('pm:assignedUsers'))->value);
-        $groupIds = explode(',', optional($element->getAttributeNode('pm:assignedGroups'))->value);
-
-        return [$userIds, $groupIds];
     }
 }

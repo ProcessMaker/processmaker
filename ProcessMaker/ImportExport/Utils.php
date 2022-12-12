@@ -102,4 +102,41 @@ class Utils
 
         return $matches;
     }
+
+    public static function getAssignments($model, $tags): array
+    {
+        $assignmentsByPath = [];
+
+        foreach (self::getElementByMultipleTags($model->getDefinitions(true), $tags) as $element) {
+            [$userIds, $groupIds] = self::getAssignmentIds($element);
+            $path = $element->getNodePath();
+            $assignmentsByPath[$path] = [
+                'userIds' => $userIds,
+                'groupIds' => $groupIds,
+                'assignmentType' => optional($element->getAttributeNode('pm:assignment'))->value,
+            ];
+        }
+
+        return $assignmentsByPath;
+    }
+
+    public static function getAssignmentsByPath($model, $path): array
+    {
+        $element = self::getElementByPath($model->getDefinitions(true), $path);
+        [$userIds, $groupIds] = self::getAssignmentIds($element);
+
+        return [
+            'userIds' => $userIds,
+            'groupIds' => $groupIds,
+            'assignmentType' => optional($element->getAttributeNode('pm:assignment'))->value,
+        ];
+    }
+
+    private static function getAssignmentIds($element): array
+    {
+        $userIds = explode(',', optional($element->getAttributeNode('pm:assignedUsers'))->value);
+        $groupIds = explode(',', optional($element->getAttributeNode('pm:assignedGroups'))->value);
+
+        return [$userIds, $groupIds];
+    }
 }
