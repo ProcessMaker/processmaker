@@ -107,7 +107,7 @@ class Utils
     {
         $assignmentsByPath = [];
 
-        foreach (Utils::getElementByMultipleTags($model->getDefinitions(true), $tags) as $element) {
+        foreach (self::getElementByMultipleTags($model->getDefinitions(true), $tags) as $element) {
             [$userIds, $groupIds] = self::getAssignmentIds($element);
             $path = $element->getNodePath();
             $assignmentsByPath[$path] = [
@@ -122,8 +122,9 @@ class Utils
 
     public static function getAssignmentsByPath($model, $path): array
     {
-        $element = Utils::getElementByPath($model->getDefinitions(true), $path);
+        $element = self::getElementByPath($model->getDefinitions(true), $path);
         [$userIds, $groupIds] = self::getAssignmentIds($element);
+
         return [
             'userIds' => $userIds,
             'groupIds' => $groupIds,
