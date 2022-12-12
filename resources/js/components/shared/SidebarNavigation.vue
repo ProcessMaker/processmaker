@@ -1,15 +1,16 @@
 <template>
-  <div>
+  <div class="sidebar-nav-container">
     <div class="process-name-container">
       <li class="font-weight-bold sidebar-nav">
         <b-link
-          @click="showProcessElements = !showProcessElements"
+          
           :aria-expanded="showProcessElements ? 'true' : 'false'"
           class="sidebar-nav"
         >
           <div class="d-flex justify-content-between align-items-center p-2 active">
             <span>{{ processName }}</span>
             <i
+              @click="showProcessElements = !showProcessElements"
               class="fa chevron"
               :class="{
                 'fa-chevron-right': !showProcessElements,
@@ -22,14 +23,11 @@
       </li>
     </div>
     <div>
-      <!-- <pre
-                class="mt-1 mb-0"
-                @click="
-                showProcessElements = !showProcessElements
-                ">{{ initDockerfile.split("\n")[0] }} <template v-if="!showDockerfile">...</template></pre> -->
       <b-collapse id="processelements" v-model="showProcessElements" :aria-hidden="showProcessElements ? 'false' : 'true'">
         <li class="nav-list-item">
-          <b-link class="sidebar-nav">
+          <b-link
+          @click="onScripts"
+          class="sidebar-nav" >
             <i class="fas nav-icon fa-code sidebar-nav" />
             <span>{{ $t("Scripts") }}</span>
           </b-link>
@@ -81,6 +79,9 @@ export default {
   mounted() {
   },
   methods: {
+    onScripts() {
+      this.$emit("scriptsView");
+    },
   },
 
 };
@@ -88,6 +89,10 @@ export default {
 
 <style lang="scss" scoped>
 @import "../../../sass/variables";
+
+.sidebar-nav-container {
+    padding-left: 0;
+}
 
 .process-name-container {
   text-align: left;
@@ -103,7 +108,7 @@ li {
   text-align: left;
   width: 100%;
   &:hover {
-    background-color: $grey-bg;
+    background-color: #f7f9fb;
   }
 }
 
