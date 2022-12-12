@@ -1,7 +1,15 @@
 <template>
     <div>
         <!-- TO DO: ADD IN COMPONENTS FOR PROCESS, SCRIPT, SCREENS, ETC. -->
-        <component :is="processElements"></component>
+        <component :is="processElements" :processName="processName"></component>
+        <div class="pt-3 card-footer bg-light" align="right">
+            <button type="button" class="btn btn-outline-secondary">
+              {{ $t("Cancel") }}
+            </button>
+            <button type="button" class="btn btn-primary ml-2">
+              {{ $t("Export") }}
+            </button>
+        </div>
     </div>
 </template>
 

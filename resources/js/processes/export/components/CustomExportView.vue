@@ -1,13 +1,13 @@
 <template>
-    <div class="custom-export-container p-5">
+    <div class="custom-export-container container pt-3">
         <b-row>
             <b-col cols="3" class="border-right">
                 <sidebar-navigation ref="sidebar-navigation" :processName="processName"></sidebar-navigation>
             </b-col>
-            <b-col cols="6" class="data-container">
+            <b-col cols="7" class="data-container">
                 <custom-export-overview :processName="processName"></custom-export-overview>
             </b-col>
-      <b-col cols="3" />
+      <b-col cols="2" />
         </b-row>
     </div>
 </template>
@@ -40,8 +40,10 @@ export default {
 @import "../../../../sass/variables";
 
 .custom-export-container {
-    max-width: 1600px;
-    margin: auto;
+    // max-width: 1600px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
     background-color: $light;
 }
 
