@@ -23,7 +23,7 @@
                             <h5 class="mt-3">{{ __('Welcome', ['name' => $user->fullname]) }}</h5>
                         </div>
                         <h5 class="mb-3">{{ __('Please change your account password') }}</h5>
-                        <div class="alert alert-primary">Password Requirements:
+                        <div class="alert alert-primary">{{ __('Password Requirements')  }}:
                             <ul>
                                 <li>{{ __('Minimum of 8 characters in length') }}</li>
                                 <li>{{ __('Contains an uppercase letter') }}</li>

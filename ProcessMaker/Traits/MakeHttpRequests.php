@@ -9,9 +9,11 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Mustache_Engine;
 use ProcessMaker\Exception\HttpInvalidArgumentException;
 use ProcessMaker\Exception\HttpResponseException;
+use ProcessMaker\Helpers\StringHelper;
 use ProcessMaker\Models\FormalExpression;
 use Psr\Http\Message\ResponseInterface;
 
@@ -430,9 +432,22 @@ trait MakeHttpRequests
         if ($bodyType === 'form-data') {
             $options['form_params'] = json_decode($body, true);
         }
+
         $request = new Request($method, $url, $headers, $body);
 
-        return $client->send($request, $options);
+        if ($this->debug_mode) {
+            $this->log('Request: ', var_export(compact('method', 'url', 'body', 'bodyType'), true));
+            $this->log('Request Headers: ', var_export($headers, true));
+        }
+
+        $response =  $client->send($request, $options);
+
+        if ($this->debug_mode) {
+            $this->log('Response: ', var_export($response, true));
+            $this->log('Response headers: ', var_export($response->getHeaders(), true));
+        }
+
+        return $response;
     }
 
     /**
@@ -619,4 +634,39 @@ trait MakeHttpRequests
 
         return "$scheme$user$pass$host$port$path$query$fragment";
     }
+
+    private function log($label, $log)
+    {
+        if (!$log) {
+            return;
+        }
+
+        if (empty($this->name)) {
+            return;
+        }
+        $cleanedLog = preg_replace('/(Authorization.+Bearer\s+)(.+?)([\'"])/mi', "$1*******$3", $log);
+        $cleanedLog = preg_replace('/(Authorization.+Basic\s+)(.+?)([\'"])/mi', "$1*******$3", $cleanedLog);
+
+        //oauth password sends security information in the body. As this request is our own,
+        //it is the only case in which we can obfuscate parts of the body as we know its structure
+        if ($this->authtype === 'OAUTH2_PASSWORD') {
+            $cleanedLog = preg_replace('/(body.+?)(username[\'"]\s*:\s*[\'"])(.+?)([\'"])/mi', "$1$2*******$4", $cleanedLog);
+            $cleanedLog = preg_replace('/(body.+?)(password[\'"]\s*:\s*[\'"])(.+?)([\'"])/mi', "$1$2*******$4", $cleanedLog);
+            $cleanedLog = preg_replace('/(body.+?)(client_id[\'"]\s*:\s*[\'"])(.+?)([\'"])/mi', "$1$2*******$4", $cleanedLog);
+            $cleanedLog = preg_replace('/(body.+?)(client_secret[\'"]\s*:\s*[\'"])(.+?)([\'"])/mi', "$1$2*******$4", $cleanedLog);
+        }
+
+        try {
+            $connectorName = StringHelper::friendlyFileName($this->name) . '_(' . $this->id . ')';
+            Log::build([
+                'driver' => 'daily',
+                'path' => storage_path("logs/data-sources/$connectorName.log"),
+                'days' => env('DATA_SOURCE_CLEAR_LOG', 21),
+            ])->info($label . str_replace(["\n", "\t", "\r"], '', $cleanedLog));
+        }
+        catch(\Throwable $e) {
+            Log::error($e->getMessage());
+        }
+    }
+
 }

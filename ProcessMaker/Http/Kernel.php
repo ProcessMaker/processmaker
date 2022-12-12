@@ -30,8 +30,8 @@ class Kernel extends HttpKernel
     protected $middlewareGroups = [
         'web' => [
             \ProcessMaker\Http\Middleware\EncryptCookies::class,
-            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \ProcessMaker\Http\Middleware\SessionStarted::class,
             \ProcessMaker\Http\Middleware\AuthenticateSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,

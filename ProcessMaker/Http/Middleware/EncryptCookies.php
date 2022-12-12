@@ -16,8 +16,9 @@ class EncryptCookies extends BaseEncrypter
      * @var array
      */
     protected $except = [
-    /**
-     * Add any cookie names where we should not encrypt it's data here
-     */
+        /**
+         * Add any cookie names where we should not encrypt it's data here
+         */
+        'device_id'
     ];
 }
