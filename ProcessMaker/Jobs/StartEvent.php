@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Jobs;
 
 use ProcessMaker\Models\Process as Definitions;
@@ -7,10 +8,12 @@ use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 
 class StartEvent extends BpmnAction
 {
-
     public $definitionsId;
+
     public $processId;
+
     public $elementId;
+
     public $data;
 
     /**

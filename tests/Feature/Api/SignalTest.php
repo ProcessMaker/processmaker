@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use Database\Seeders\SignalSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -9,7 +10,6 @@ use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\SignalData;
-use SignalSeeder;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
@@ -18,28 +18,29 @@ class SignalTest extends TestCase
     use RequestHelper;
 
     protected $resource = 'api.signals';
+
     protected $structure = [
         'id',
         'detail',
         'name',
         'processes',
-        'type'
+        'type',
     ];
 
     public function createSignal($count = 1)
     {
         // Create global process for signals..
-        factory(Process::class)->create(['name' => 'global_signals']);
+        Process::factory()->create(['name' => 'global_signals']);
         $faker = Faker::create();
 
         $signals = [];
 
-        for ($i=0; $i < $count; $i++) {
+        for ($i = 0; $i < $count; $i++) {
             // Create signal data ..
             $signalData = [
                 'id' => $faker->unique()->lexify('????'),
                 'name' => $faker->unique()->lexify('??????????????????'),
-                'detail' => $faker->sentence(5)
+                'detail' => $faker->sentence(5),
             ];
 
             $newSignal = new SignalData(
@@ -57,6 +58,7 @@ class SignalTest extends TestCase
 
             $signals[] = ['id' => $newSignal->getId(), 'name' => $newSignal->getName()];
         }
+
         return $signals;
     }
 
@@ -87,7 +89,7 @@ class SignalTest extends TestCase
             'count' => $perPage,
             'per_page' => $perPage,
             'current_page' => $page,
-            'total_pages' => 2
+            'total_pages' => 2,
         ], $meta);
         //Verify the data size
         $this->assertCount($meta['count'], $data);
@@ -120,7 +122,7 @@ class SignalTest extends TestCase
             'count' => $perPage,
             'per_page' => $perPage,
             'current_page' => $page,
-            'total_pages' => 2
+            'total_pages' => 2,
         ], $meta);
         //Verify the data size
         $this->assertCount($meta['count'], $data);
@@ -153,7 +155,7 @@ class SignalTest extends TestCase
             'count' => $perPage,
             'per_page' => $perPage,
             'current_page' => $page,
-            'total_pages' => 1
+            'total_pages' => 1,
         ], $meta);
         //Verify the data size
         $this->assertCount($meta['count'], $data);
@@ -192,8 +194,8 @@ class SignalTest extends TestCase
 
         // Create process with the signal assigned
         $bpmnContent = file_get_contents(__DIR__ . '/processes/SignalSimple.bpmn');
-        $process = factory(Process::class)->create([
-            'bpmn' => str_replace(['signalRef="MySignalID"', 'id="MySignalID"'], ['signalRef="'.$signal['id'].'"', 'id="'.$signal['id'].'"'], $bpmnContent)
+        $process = Process::factory()->create([
+            'bpmn' => str_replace(['signalRef="MySignalID"', 'id="MySignalID"'], ['signalRef="' . $signal['id'] . '"', 'id="' . $signal['id'] . '"'], $bpmnContent),
         ]);
 
         // Assert signal was created
@@ -254,13 +256,13 @@ class SignalTest extends TestCase
         $signal = $this->createSignal()[0];
 
         //Create a system category
-        $systemProcessCategory = factory(ProcessCategory::class)->create(['is_system' => true]);
+        $systemProcessCategory = ProcessCategory::factory()->create(['is_system' => true]);
 
         // Create process with the signal assigned
         $bpmnContent = file_get_contents(__DIR__ . '/processes/SignalSimple.bpmn');
-        $process = factory(Process::class)->create([
-            'bpmn' => str_replace(['signalRef="MySignalID"', 'id="MySignalID"'], ['signalRef="'.$signal['id'].'"', 'id="'.$signal['id'].'"'], $bpmnContent),
-            'process_category_id' => $systemProcessCategory
+        $process = Process::factory()->create([
+            'bpmn' => str_replace(['signalRef="MySignalID"', 'id="MySignalID"'], ['signalRef="' . $signal['id'] . '"', 'id="' . $signal['id'] . '"'], $bpmnContent),
+            'process_category_id' => $systemProcessCategory,
         ]);
 
         // Assert signal was created

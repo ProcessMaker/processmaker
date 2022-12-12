@@ -9,6 +9,7 @@ use ProcessMaker\Models\Script;
 class ScriptsInScreen
 {
     public $type = Script::class;
+
     public $owner = Screen::class;
 
     /**
@@ -29,6 +30,7 @@ class ScriptsInScreen
                 }
             });
         }
+
         return $scripts;
     }
 
@@ -40,13 +42,13 @@ class ScriptsInScreen
      *
      * @return void
      */
-    public function updateReferences(Screen $screen, array $references = [], ExportManager $exportManager)
+    public function updateReferences(Screen $screen, array $references, ExportManager $exportManager)
     {
         $watches = $screen->watchers;
         if (is_array($watches)) {
             foreach ($watches as &$watcher) {
                 $refParts = explode('-', $watcher['script_id']);
-                if ($refParts[0] === "data_source") {
+                if ($refParts[0] === 'data_source') {
                     continue;
                 }
                 $oldRef = $refParts[1];

@@ -58,13 +58,6 @@
                   .post("/keep-alive", {}, {baseURL: ''})
                   .then(() => {
                     this.disabled = false;
-                    ProcessMaker.AccountTimeoutWorker.postMessage({
-                        method: 'start',
-                        data: {
-                            timeout: ProcessMaker.AccountTimeoutLength,
-                            warnSeconds: ProcessMaker.AccountTimeoutWarnSeconds,
-                        }
-                    });
                     this.onClose();
                   })
                   .catch(error => {

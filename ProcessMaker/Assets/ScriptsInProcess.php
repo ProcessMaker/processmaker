@@ -10,6 +10,7 @@ use ProcessMaker\Providers\WorkflowServiceProvider;
 class ScriptsInProcess
 {
     public $type = Script::class;
+
     public $owner = Process::class;
 
     /**
@@ -31,6 +32,7 @@ class ScriptsInProcess
         foreach ($nodes as $node) {
             $scripts[] = [Script::class, $node->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef')];
         }
+
         return $scripts;
     }
 

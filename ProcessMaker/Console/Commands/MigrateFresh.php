@@ -31,6 +31,9 @@ class MigrateFresh extends FreshCommand
             }
         }
 
+        $this->info('Creating migrations table...');
+        $this->call('migrate:install');
+
         $this->info('Dropped all tables successfully.');
 
         $this->call('migrate', array_filter([

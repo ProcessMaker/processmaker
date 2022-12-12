@@ -1,26 +1,27 @@
 <?php
+
 namespace Tests\Feature\Api;
 
+use Database\Seeders\SignalSeeder;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\User;
-use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
-use \SignalSeeder;
+use Tests\TestCase;
 
-class SignalPermissionsTest extends TestCase {
-
+class SignalPermissionsTest extends TestCase
+{
     use RequestHelper;
-    
+
     public $withPermissions = true;
 
     private function createUser()
     {
-        $this->user = factory(User::class)->create(['status' => 'ACTIVE']);
+        $this->user = User::factory()->create(['status' => 'ACTIVE']);
     }
 
     public function setUpSignalAssets(): void
     {
-        factory(ProcessCategory::class)->create(['is_system' => true]);
+        ProcessCategory::factory()->create(['is_system' => true]);
         (new SignalSeeder)->run();
     }
 
@@ -29,7 +30,7 @@ class SignalPermissionsTest extends TestCase {
         $response = $this->apiCall($method, $url, $data);
         $response->assertStatus(403);
     }
-    
+
     private function assertSuccess($method, $url, $data = [])
     {
         $response = $this->apiCall($method, $url, $data);
@@ -118,7 +119,7 @@ class SignalPermissionsTest extends TestCase {
         $response = $this->webCall('GET', $indexRoute);
         $response->assertStatus(200);
     }
-    
+
     public function testWebEditPermission()
     {
         $storeRoute = route('api.signals.store');
@@ -127,7 +128,7 @@ class SignalPermissionsTest extends TestCase {
             'name' => 'anything',
         ];
         $this->apiCall('POST', $storeRoute, $data);
-        
+
         $this->createUser();
         $indexRoute = route('signals.edit', 'anything');
         $response = $this->webCall('GET', $indexRoute);

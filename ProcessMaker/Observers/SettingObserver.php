@@ -3,9 +3,8 @@
 namespace ProcessMaker\Observers;
 
 use Exception;
-use ProcessMaker\Models\Setting;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Artisan;
+use ProcessMaker\Models\Setting;
 
 class SettingObserver
 {
@@ -19,8 +18,9 @@ class SettingObserver
     {
         $config = $setting->getAttributes()['config'];
 
-        if ($config === "null" || $config === null) {
+        if ($config === 'null' || $config === null) {
             $setting->config = null;
+
             return;
         }
 
@@ -64,30 +64,6 @@ class SettingObserver
 
                 $setting->config = $return;
                 break;
-        }
-    }
-
-    public function saved(Setting $setting)
-    {
-        try {
-            cache_settings(true);
-        } catch (Exception $exception) {
-            Log::error('Could not cache configuration.', [$exception]);
-        }
-    }
-
-    /**
-     * Handle the setting "deleted" event.
-     *
-     * @param  \ProcessMaker\Models\Setting  $setting
-     * @return void
-     */
-    public function deleted(Setting $setting)
-    {
-        try {
-            cache_settings(true);
-        } catch (Exception $exception) {
-            Log::error('Could not cache configuration.', [$exception]);
         }
     }
 }

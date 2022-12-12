@@ -3,10 +3,12 @@
 namespace ProcessMaker\Http\Middleware;
 
 use Auth;
-use Closure;
-use Session;
 use Carbon\Carbon;
+use Closure;
+use Illuminate\Support\Facades\Cookie;
 use ProcessMaker\Events\SessionStarted as SessionStartedEvent;
+use ProcessMaker\Facades\RequestDevice;
+use Session;
 
 class SessionStarted
 {
@@ -25,6 +27,15 @@ class SessionStarted
 
         //Store in the session the rememberme token status so it is accesible in layout.blade
         Session::put('rememberme', $this->userHasValidRememberMe($request));
+        Cookie::queue(
+            RequestDevice::getVariableName(),
+            RequestDevice::getId(),
+            config('session.lifetime'),
+            config('session.path'),
+            config('session.domain'),
+            config('session.secure'),
+            false
+        );
 
         return $next($request);
     }
@@ -37,7 +48,6 @@ class SessionStarted
      */
     private function userHasValidRememberMe($request)
     {
-
         if (\Auth::user() === null) {
             return false;
         }

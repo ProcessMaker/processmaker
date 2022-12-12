@@ -9,9 +9,11 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Mustache_Engine;
 use ProcessMaker\Exception\HttpInvalidArgumentException;
 use ProcessMaker\Exception\HttpResponseException;
+use ProcessMaker\Helpers\StringHelper;
 use ProcessMaker\Models\FormalExpression;
 use Psr\Http\Message\ResponseInterface;
 
@@ -32,11 +34,13 @@ trait MakeHttpRequests
 
     private $mustache = null;
 
-    private function getMustache() {
-       if ($this->mustache === null)  {
-           $this->mustache = app(Mustache_Engine::class);
-       }
-       return $this->mustache;
+    private function getMustache()
+    {
+        if ($this->mustache === null) {
+            $this->mustache = app(Mustache_Engine::class);
+        }
+
+        return $this->mustache;
     }
 
     /**
@@ -55,6 +59,7 @@ trait MakeHttpRequests
     {
         try {
             $request = $this->prepareRequestWithOutboundConfig($data, $config);
+
             return $this->responseWithHeaderData($this->call(...$request), $data, $config);
         } catch (ClientException $exception) {
             throw new HttpResponseException($exception->getResponse());
@@ -89,6 +94,7 @@ trait MakeHttpRequests
         }
         $request = [$method, $url, $headers, $body, $bodyType];
         $request = $this->addAuthorizationHeaders(...$request);
+
         return $request;
     }
 
@@ -114,6 +120,7 @@ trait MakeHttpRequests
                 }
             }
         }
+
         return $data;
     }
 
@@ -134,6 +141,7 @@ trait MakeHttpRequests
         try {
             $formal = new FormalExpression();
             $formal->setBody($expression);
+
             return $formal($data);
         } catch (Exception $exception) {
             return "{$expression}: " . $exception->getMessage();
@@ -193,6 +201,7 @@ trait MakeHttpRequests
 
         $request = [$method, $url, $headers, $body, $bodyType];
         $request = $this->addAuthorizationHeaders(...$request);
+
         return $request;
     }
 
@@ -207,8 +216,10 @@ trait MakeHttpRequests
     {
         if (isset($this->authTypes[$this->authtype])) {
             $callable = [$this, $this->authTypes[$this->authtype]];
+
             return call_user_func_array($callable, $config);
         }
+
         return $config;
     }
 
@@ -228,6 +239,7 @@ trait MakeHttpRequests
         if (isset($this->credentials) && is_array($this->credentials)) {
             $headers['Authorization'] = 'Basic ' . base64_encode($this->credentials['username'] . ':' . $this->credentials['password']);
         }
+
         return [$method, $url, $headers, $body, $bodyType];
     }
 
@@ -247,6 +259,7 @@ trait MakeHttpRequests
         if (isset($this->credentials) && is_array($this->credentials)) {
             $headers['Authorization'] = 'Bearer ' . $this->credentials['token'];
         }
+
         return [$method, $url, $headers, $body, $bodyType];
     }
 
@@ -276,6 +289,7 @@ trait MakeHttpRequests
             $token = $this->response($this->call('POST', $this->credentials['url'], ['Accept' => 'application/json'], json_encode($config), 'form-data'), [], ['dataMapping' => []], new Mustache_Engine());
             $headers['Authorization'] = 'Bearer ' . $token['response']['access_token'];
         }
+
         return [$method, $url, $headers, $body, $bodyType];
     }
 
@@ -295,7 +309,7 @@ trait MakeHttpRequests
         $status = $response->getStatusCode();
         $bodyContent = $response->getBody()->getContents();
         if (!$this->isJson($bodyContent)) {
-            return ["response" => $bodyContent, "status" => $status];
+            return ['response' => $bodyContent, 'status' => $status];
         }
 
         switch (true) {
@@ -323,6 +337,7 @@ trait MakeHttpRequests
                 Arr::set($mapped, $map['key'], $value);
             }
         }
+
         return $mapped;
     }
 
@@ -331,7 +346,7 @@ trait MakeHttpRequests
         $status = $response->getStatusCode();
         $bodyContent = $response->getBody()->getContents();
         if (!$this->isJson($bodyContent)) {
-            return ["response" => $bodyContent, "status" => $status];
+            return ['response' => $bodyContent, 'status' => $status];
         }
 
         switch (true) {
@@ -393,6 +408,7 @@ trait MakeHttpRequests
             }
             $mapped[$processVar] = $evaluatedApiVar;
         }
+
         return $mapped;
     }
 
@@ -411,13 +427,27 @@ trait MakeHttpRequests
      */
     private function call($method, $url, array $headers, $body, $bodyType)
     {
-        $client = new Client(['verify' => $this->verifySsl]);
+        $client = $this->client ?? new Client(['verify' => $this->verifySsl]);
         $options = [];
         if ($bodyType === 'form-data') {
             $options['form_params'] = json_decode($body, true);
         }
+
         $request = new Request($method, $url, $headers, $body);
-        return $client->send($request, $options);
+
+        if ($this->debug_mode) {
+            $this->log('Request: ', var_export(compact('method', 'url', 'body', 'bodyType'), true));
+            $this->log('Request Headers: ', var_export($headers, true));
+        }
+
+        $response =  $client->send($request, $options);
+
+        if ($this->debug_mode) {
+            $this->log('Response: ', var_export($response, true));
+            $this->log('Response headers: ', var_export($response->getHeaders(), true));
+        }
+
+        return $response;
     }
 
     /**
@@ -437,7 +467,7 @@ trait MakeHttpRequests
 
         $url = $endpoint['url'];
         // If url does not include the protocol and server name complete it with the local server
-        if (substr($url, 0,1) === '/') {
+        if (substr($url, 0, 1) === '/') {
             $url = url($url);
         }
 
@@ -472,10 +502,11 @@ trait MakeHttpRequests
 
         $parsedUrl['query'] = http_build_query($query);
         $url = $this->unparseUrl($parsedUrl);
+
         return $url;
     }
 
-    private function addHeaders($endpoint, array $config,  array $data)
+    private function addHeaders($endpoint, array $config, array $data)
     {
         $headers = ['Accept' => 'application/json'];
 
@@ -486,6 +517,7 @@ trait MakeHttpRequests
                     $headers[$this->getMustache()->render($header['key'], $data)] = $this->getMustache()->render($header['value'], $data);
                 }
             }
+
             return $headers;
         }
 
@@ -509,19 +541,22 @@ trait MakeHttpRequests
             if (!$existsInDataSourceParams) {
                 array_push($dataSourceParams, [
                     'key' => $cfgParam['key'],
-                    'value' => $cfgParam['value']
+                    'value' => $cfgParam['value'],
                 ]);
             }
         }
         foreach ($dataSourceParams as $header) {
             $headers[$this->getMustache()->render($header['key'], $data)] = $this->getMustache()->render($header['value'], $data);
         }
+
         return $headers;
     }
 
-    function isJson($str) {
+    public function isJson($str)
+    {
         json_decode($str);
-        return (json_last_error() == JSON_ERROR_NONE);
+
+        return json_last_error() == JSON_ERROR_NONE;
     }
 
     private function addCollectionsRootObject($value)
@@ -549,6 +584,7 @@ trait MakeHttpRequests
                 $value = trim($value);
             }
         }
+
         return $value;
     }
 
@@ -574,6 +610,7 @@ trait MakeHttpRequests
         foreach ($parts as $name => $value) {
             $parts[$name] = urldecode($value);
         }
+
         return $parts;
     }
 
@@ -585,15 +622,51 @@ trait MakeHttpRequests
      */
     private function unparseUrl(array $parsed_url)
     {
-        $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
-        $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
-        $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
-        $user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
-        $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass']  : '';
-        $pass     = ($user || $pass) ? "$pass@" : '';
-        $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
-        $query    = !empty($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+        $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+        $host = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+        $port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+        $user = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+        $pass = isset($parsed_url['pass']) ? ':' . $parsed_url['pass'] : '';
+        $pass = ($user || $pass) ? "$pass@" : '';
+        $path = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+        $query = !empty($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
         $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
+
         return "$scheme$user$pass$host$port$path$query$fragment";
     }
+
+    private function log($label, $log)
+    {
+        if (!$log) {
+            return;
+        }
+
+        if (empty($this->name)) {
+            return;
+        }
+        $cleanedLog = preg_replace('/(Authorization.+Bearer\s+)(.+?)([\'"])/mi', "$1*******$3", $log);
+        $cleanedLog = preg_replace('/(Authorization.+Basic\s+)(.+?)([\'"])/mi', "$1*******$3", $cleanedLog);
+
+        //oauth password sends security information in the body. As this request is our own,
+        //it is the only case in which we can obfuscate parts of the body as we know its structure
+        if ($this->authtype === 'OAUTH2_PASSWORD') {
+            $cleanedLog = preg_replace('/(body.+?)(username[\'"]\s*:\s*[\'"])(.+?)([\'"])/mi', "$1$2*******$4", $cleanedLog);
+            $cleanedLog = preg_replace('/(body.+?)(password[\'"]\s*:\s*[\'"])(.+?)([\'"])/mi', "$1$2*******$4", $cleanedLog);
+            $cleanedLog = preg_replace('/(body.+?)(client_id[\'"]\s*:\s*[\'"])(.+?)([\'"])/mi', "$1$2*******$4", $cleanedLog);
+            $cleanedLog = preg_replace('/(body.+?)(client_secret[\'"]\s*:\s*[\'"])(.+?)([\'"])/mi', "$1$2*******$4", $cleanedLog);
+        }
+
+        try {
+            $connectorName = StringHelper::friendlyFileName($this->name) . '_(' . $this->id . ')';
+            Log::build([
+                'driver' => 'daily',
+                'path' => storage_path("logs/data-sources/$connectorName.log"),
+                'days' => env('DATA_SOURCE_CLEAR_LOG', 21),
+            ])->info($label . str_replace(["\n", "\t", "\r"], '', $cleanedLog));
+        }
+        catch(\Throwable $e) {
+            Log::error($e->getMessage());
+        }
+    }
+
 }

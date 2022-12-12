@@ -18,8 +18,11 @@ class ThrowSignalEvent implements ShouldQueue
     private const maxJobs = 10;
 
     public $signalRef;
+
     public $data_uid;
+
     public $excludeProcesses;
+
     public $excludeRequests;
 
     /**

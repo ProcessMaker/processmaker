@@ -2,8 +2,6 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
 /**
  * Represents a business process task assignment definition.
  *
@@ -29,7 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
  */
-class ProcessTaskAssignment extends Model
+class ProcessTaskAssignment extends ProcessMakerModel
 {
     protected $connection = 'processmaker';
 
@@ -37,7 +35,7 @@ class ProcessTaskAssignment extends Model
         'process_id',
         'process_task_id',
         'assignment_id',
-        'assignment_type'
+        'assignment_type',
     ];
 
     /**
@@ -60,7 +58,7 @@ class ProcessTaskAssignment extends Model
         return [
             'process_id' => 'required|exists:processes,id',
             'assignment_id' => 'required',
-            'assignment_type' => 'required|in:' . User::class . ',' . Group::class
+            'assignment_type' => 'required|in:' . User::class . ',' . Group::class,
         ];
     }
 

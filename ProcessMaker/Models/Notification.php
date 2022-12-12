@@ -3,7 +3,6 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\Scopes\NotificationWithValidJson;
 use ProcessMaker\Traits\SerializeToIso8601;
@@ -45,9 +44,8 @@ use Ramsey\Uuid\Uuid;
  *     ),
  *   },
  * )
- *
  */
-class Notification extends Model
+class Notification extends ProcessMakerModel
 {
     use SerializeToIso8601;
 
@@ -81,7 +79,9 @@ class Notification extends Model
 
     public static function rules($existing = null)
     {
-        $required = Rule::requiredIf(function () use ($existing) { return $existing === null; });
+        $required = Rule::requiredIf(function () use ($existing) {
+            return $existing === null;
+        });
 
         $rules = [
             'notifiable_id' => [$required, 'integer'],

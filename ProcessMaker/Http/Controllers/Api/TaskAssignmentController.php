@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
@@ -20,7 +21,7 @@ class TaskAssignmentController extends Controller
         //
     ];
 
-     /**
+    /**
      * Display a listing of the resource.
      *
      * @param Request $request
@@ -36,7 +37,7 @@ class TaskAssignmentController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
-     *     
+     *
      *     @OA\Response(
      *         response=200,
      *         description="list of task assignments",
@@ -56,11 +57,10 @@ class TaskAssignmentController extends Controller
      *     ),
      * )
      */
-
     public function index(Request $request)
     {
         $query = ProcessTaskAssignment::select();
-        $include  = $request->input('include') ? explode(',',$request->input('include')) : [];
+        $include = $request->input('include') ? explode(',', $request->input('include')) : [];
         $query->with($include);
         $filterByFields = ['process_id', 'process_task_id', 'assignment_id', 'assignment_type'];
         $parameters = $request->all();
@@ -74,6 +74,7 @@ class TaskAssignmentController extends Controller
             $request->input('order_by', 'updated_at'), $request->input('order_direction', 'asc')
         );
         $response = $query->paginate($request->input('per_page', 10));
+
         return new ApiCollection($response);
     }
 
@@ -88,7 +89,7 @@ class TaskAssignmentController extends Controller
      *     path="/task_assignments",
      *     summary="Save a new Task Assignment",
      *     operationId="createTaskAssignments",
-     *     tags={"Task Assignments"}, 
+     *     tags={"Task Assignments"},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(ref="#/components/schemas/taskAssignmentsEditable")
@@ -107,6 +108,7 @@ class TaskAssignmentController extends Controller
         $assignment = new ProcessTaskAssignment();
         $assignment->fill($request->input());
         $assignment->saveOrFail();
+
         return new ApiResource($assignment->refresh());
     }
 
@@ -123,7 +125,7 @@ class TaskAssignmentController extends Controller
      *     path="/task_assignments/{task_assignment}",
      *     summary="Update a Task Assignment",
      *     operationId="updateTaskAssignments",
-     *     tags={"Task Assignments"}, 
+     *     tags={"Task Assignments"},
      *     @OA\Parameter(
      *         description="ID of task assignment to update",
      *         in="path",
@@ -150,6 +152,7 @@ class TaskAssignmentController extends Controller
         $request->validate(ProcessTaskAssignment::rules());
         $task_assignment->fill($request->input());
         $task_assignment->save();
+
         return new TaskAssignmentResource($task_assignment);
     }
 
@@ -163,7 +166,7 @@ class TaskAssignmentController extends Controller
      *     path="/task_assignments/{task_assignment}",
      *     summary="Delete a Task Assignment",
      *     operationId="deleteTaskAssignments",
-     *     tags={"Task Assignments"}, 
+     *     tags={"Task Assignments"},
      *     @OA\Parameter(
      *         description="ID of task assignment to delete",
      *         in="path",
@@ -186,6 +189,7 @@ class TaskAssignmentController extends Controller
     public function destroy(ProcessTaskAssignment $task_assignment)
     {
         $task_assignment->delete();
+
         return response('', 204);
     }
 }

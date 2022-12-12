@@ -3,10 +3,10 @@
 namespace ProcessMaker\Jobs;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class BuildScriptExecutor implements ShouldQueue
 {
@@ -14,11 +14,12 @@ class BuildScriptExecutor implements ShouldQueue
 
     // These will be send with the payload
     protected $lang;
+
     protected $userId;
 
     // Do not retry this job if it fails
     public $tries = 1;
-    
+
     // Building can take some time
     public $timeout = 600;
 

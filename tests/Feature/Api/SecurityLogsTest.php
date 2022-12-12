@@ -2,8 +2,7 @@
 
 namespace Tests\Feature\Api;
 
-use Tests\TestCase;
-use PermissionSeeder;
+use Database\Seeders\PermissionSeeder;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Models\Permission;
@@ -11,6 +10,7 @@ use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Models\User;
 use ProcessMaker\Providers\AuthServiceProvider;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class SecurityLogsTest extends TestCase
 {
@@ -20,10 +20,10 @@ class SecurityLogsTest extends TestCase
     {
         $this->user->is_administrator = false;
         $this->user->save();
-    
+
         // Seed our tables.
         Artisan::call('db:seed', ['--class' => 'PermissionSeeder']);
-    
+
         // Reboot our AuthServiceProvider. This is necessary so that it can
         // pick up the new permissions and setup gates for each of them.
         $asp = new AuthServiceProvider(app());
@@ -42,12 +42,12 @@ class SecurityLogsTest extends TestCase
     {
         $response = $this->apiCall('GET', '/security-logs');
         $response->assertStatus(403);
-        
+
         $permission = Permission::byName('view-security-logs');
         $this->user->permissions()->attach($permission->id);
         $this->user->refresh();
         $this->flushSession();
-        
+
         $response = $this->apiCall('GET', '/security-logs');
         $response->assertStatus(200);
     }
@@ -59,7 +59,7 @@ class SecurityLogsTest extends TestCase
         $this->user->refresh();
 
         // Create security logs for two users.
-        factory(SecurityLog::class)->create([
+        SecurityLog::factory()->create([
             'event' => 'login',
             'user_id' => $this->user->id,
             'meta' => [
@@ -67,11 +67,11 @@ class SecurityLogsTest extends TestCase
                     'name' => 'OS X',
                 ],
                 'browser' => [
-                    'name' => 'Firefox'
-                ]
+                    'name' => 'Firefox',
+                ],
             ],
         ]);
-        factory(SecurityLog::class)->create([
+        SecurityLog::factory()->create([
             'event' => 'login',
             'user_id' => $this->user->id,
             'meta' => [
@@ -79,12 +79,12 @@ class SecurityLogsTest extends TestCase
                     'name' => 'OS X',
                 ],
                 'browser' => [
-                    'name' => 'Chrome'
-                ]
+                    'name' => 'Chrome',
+                ],
             ],
         ]);
-        $anotherUser = factory(User::class)->create();
-        factory(SecurityLog::class)->create([
+        $anotherUser = User::factory()->create();
+        SecurityLog::factory()->create([
             'event' => 'login',
             'user_id' => $anotherUser->id,
             'meta' => [
@@ -92,15 +92,15 @@ class SecurityLogsTest extends TestCase
                     'name' => 'OS X',
                 ],
                 'browser' => [
-                    'name' => 'Firefox'
-                ]
-            ]
+                    'name' => 'Firefox',
+                ],
+            ],
         ]);
 
         // Test that the results obtained are from the user in session.
         $response = $this->apiCall('GET', '/security-logs', [
             'pmql' => "user_id={$this->user->id}",
-            'filter' => 'firefox'
+            'filter' => 'firefox',
         ]);
         $response->assertStatus(200);
         $results = $response->getData()->data;

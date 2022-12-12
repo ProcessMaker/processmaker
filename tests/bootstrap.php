@@ -3,7 +3,7 @@
  * Test harness bootstrap that sets up initial defines and builds up the initial database schema
  */
 // Bring in our standard bootstrap
-include_once(__DIR__ . '/../bootstrap/autoload.php');
+include_once __DIR__ . '/../bootstrap/autoload.php';
 require_once __DIR__ . '/../bootstrap/app.php';
 
 use Illuminate\Contracts\Console\Kernel;
@@ -13,8 +13,8 @@ use ProcessMaker\Models\ScriptExecutor;
 // Bootstrap laravel
 app()->make(Kernel::class)->bootstrap();
 
-// Clear cache so we don't overwrite our local development database
-Artisan::call('config:clear', ['--env' => 'testing']);
+// Cache with new config so we don't overwrite our local development database
+Artisan::call('config:cache', ['--env' => 'testing']);
 
 //Ensure storage directory is linked
 Artisan::call('storage:link', []);
@@ -53,7 +53,7 @@ if (env('RUN_MSSQL_TESTS')) {
         $table->string('value');
     });
     DB::connection('testexternal')->table('test')->insert([
-        'value' => 'testvalue'
+        'value' => 'testvalue',
     ]);
 
     // Only do if we are supporting MSSql tests
@@ -82,20 +82,21 @@ if (env('RUN_MSSQL_TESTS')) {
         $table->string('value');
     });
     DB::connection('mssql')->table('test')->insert([
-        'value' => 'testvalue'
+        'value' => 'testvalue',
     ]);
 }
-
 
 // setup parallel test databases
 if (env('TEST_TOKEN')) {
     $database = 'test_' . env('TEST_TOKEN');
     $_ENV['DB_DATABASE'] = $database;
     $_ENV['DATA_DB_DATABASE'] = $database;
-
 } elseif (env('POPULATE_DATABASE')) {
     Artisan::call('db:wipe', ['--database' => \DB::connection()->getName()]);
     Artisan::call('migrate:fresh', []);
+    Artisan::call('db:seed', ['--class' => 'AnonymousUserSeeder']);
+    
+    \Illuminate\Foundation\Testing\RefreshDatabaseState::$migrated = true;
 
     ScriptExecutor::firstOrCreate(
         ['language' => 'php'],
@@ -105,7 +106,7 @@ if (env('TEST_TOKEN')) {
         ['language' => 'lua'],
         ['title' => 'Test Executor']
     );
-    
+
     if (env('PARALLEL_TEST_PROCESSES')) {
         Artisan::call('processmaker:create-test-dbs');
     }

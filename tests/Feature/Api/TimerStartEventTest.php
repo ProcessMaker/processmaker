@@ -1,14 +1,15 @@
 <?php
+
 namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
+use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ScheduledTask;
-use Tests\Feature\Shared\ResourceAssertionsTrait;
-use ProcessMaker\Facades\WorkflowManager;
-use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\Feature\Shared\ResourceAssertionsTrait;
+use Tests\TestCase;
 
 /**
  * Test the process execution with requests
@@ -18,15 +19,15 @@ use Tests\Feature\Shared\RequestHelper;
  */
 class TimerStartEventTest extends TestCase
 {
-
     use ResourceAssertionsTrait;
     use WithFaker;
     use RequestHelper;
 
     /**
-     * @var Process $process
+     * @var Process
      */
     protected $process;
+
     private $requestStructure = [
         'id',
         'process_id',
@@ -35,12 +36,11 @@ class TimerStartEventTest extends TestCase
         'name',
         'initiated_at',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
      * Initialize the controller tests
-     *
      */
     protected function withUserSetup()
     {
@@ -53,10 +53,10 @@ class TimerStartEventTest extends TestCase
     private function createTestProcess(array $data = [])
     {
         $data['bpmn'] = Process::getProcessTemplate('TimerStartEvent.bpmn');
-        $process = factory(Process::class)->create($data);
+        $process = Process::factory()->create($data);
+
         return $process;
     }
-
 
     public function executeTimerStartEvent()
     {
@@ -69,7 +69,7 @@ class TimerStartEventTest extends TestCase
 
         $data = [];
         $data['bpmn'] = Process::getProcessTemplate('TimerStartEvent.bpmn');
-        $process = factory(Process::class)->create($data);
+        $process = Process::factory()->create($data);
 
         // at this point the save method should have created 4 rows in the
         // scheduled tasks table
@@ -92,7 +92,7 @@ class TimerStartEventTest extends TestCase
                 'interval' => 'R/2019-02-15T00:00:00Z/P1D/2019-02-20T00:00:00Z',
                 'type' => 'TimeCycle',
                 'expectedNextDate' => '2019-02-19T00:00:00Z',
-                'title' => '1 day recurrence, currentDate < endDate'
+                'title' => '1 day recurrence, currentDate < endDate',
             ],
             [
                 'lastExecution' => '2019-02-20T00:00:00Z',
@@ -100,7 +100,7 @@ class TimerStartEventTest extends TestCase
                 'interval' => 'R/2019-02-15T00:00:00Z/P1D/2019-02-20T00:00:00Z',
                 'type' => 'TimeCycle',
                 'expectedNextDate' => null,
-                'title' => '1 day recurrence, currentDate > endDate'
+                'title' => '1 day recurrence, currentDate > endDate',
             ],
             [
                 'lastExecution' => '2019-02-15T01:00:00Z',
@@ -108,7 +108,7 @@ class TimerStartEventTest extends TestCase
                 'interval' => 'R4/2019-02-15T01:00:00Z/P1D',
                 'type' => 'TimeCycle',
                 'expectedNextDate' => '2019-02-16T01:00:00Z',
-                'title' => '1 day recurrence currentDate > startDate'
+                'title' => '1 day recurrence currentDate > startDate',
             ],
             [
                 'lastExecution' => '2019-02-19T01:00:00Z',
@@ -116,7 +116,7 @@ class TimerStartEventTest extends TestCase
                 'interval' => 'R4/2019-02-15T01:00:00Z/P1D',
                 'type' => 'TimeCycle',
                 'expectedNextDate' => null,
-                'title' => '1 day recurrence currentDate has passed the number of recurrences '
+                'title' => '1 day recurrence currentDate has passed the number of recurrences ',
             ],
             [
                 'lastExecution' => null,
@@ -124,7 +124,7 @@ class TimerStartEventTest extends TestCase
                 'interval' => 'R4/2019-02-15T00:00:00Z/P1M',
                 'type' => 'TimeCycle',
                 'expectedNextDate' => '2019-02-15T00:00:00Z',
-                'title' => '1 day recurrence currentDate < startDate '
+                'title' => '1 day recurrence currentDate < startDate ',
             ],
             [
                 'lastExecution' => '2019-04-15T00:00:00Z',
@@ -132,7 +132,7 @@ class TimerStartEventTest extends TestCase
                 'interval' => 'R/2019-02-15T00:00:00Z/P1M',
                 'type' => 'TimeCycle',
                 'expectedNextDate' => '2019-05-15T00:00:00Z',
-                'title' => '1 month recurrence currentDate < startDate '
+                'title' => '1 month recurrence currentDate < startDate ',
             ],
             [
                 'lastExecution' => null,
@@ -140,7 +140,7 @@ class TimerStartEventTest extends TestCase
                 'interval' => 'R/2019-02-14T11:02:00Z/PT1M',
                 'type' => 'TimeCycle',
                 'expectedNextDate' => '2019-02-14T11:02:00Z',
-                'title' => '1 month recurrence currentDate < startDate by hours'
+                'title' => '1 month recurrence currentDate < startDate by hours',
             ],
             [
                 'lastExecution' => '2019-02-15T01:00:00Z',
@@ -148,7 +148,7 @@ class TimerStartEventTest extends TestCase
                 'interval' => '2019-02-15T01:00:00Z',
                 'type' => 'TimeDate',
                 'expectedNextDate' => null,
-                'title' => 'Specific date off'
+                'title' => 'Specific date off',
             ],
             [
                 'lastExecution' => null,
@@ -156,7 +156,7 @@ class TimerStartEventTest extends TestCase
                 'interval' => '2019-02-15T01:00:00Z',
                 'type' => 'TimeDate',
                 'expectedNextDate' => '2019-02-15T01:00:00Z',
-                'title' => 'Specific date on time'
+                'title' => 'Specific date on time',
             ],
             [
                 'lastExecution' => null,
@@ -164,11 +164,11 @@ class TimerStartEventTest extends TestCase
                 'interval' => 'P1D',
                 'type' => 'TimeDuration',
                 'expectedNextDate' => '2019-02-16T01:01:00Z',
-                'title' => 'Time Duration of 1 day'
+                'title' => 'Time Duration of 1 day',
             ],
         ];
 
-        foreach($cases as $case) {
+        foreach ($cases as $case) {
             $currentDate = new \DateTime($case['currentDate']);
             $nayraInterval = $case['interval'];
             $expectedNextDate = $case['expectedNextDate'] === null ? null : new \DateTime($case['expectedNextDate']);
@@ -176,9 +176,9 @@ class TimerStartEventTest extends TestCase
             $nextDate = $manager->nextDate($currentDate, (object) [
                 'type' => $case['type'],
                 'interval' => $nayraInterval,
-                'element_id' => 'test'
+                'element_id' => 'test',
             ], $lastExecution);
-            $this->assertEquals($expectedNextDate, $nextDate, 'Assertion failed in "'. $case['title']. '""');
+            $this->assertEquals($expectedNextDate, $nextDate, 'Assertion failed in "' . $case['title'] . '""');
         }
     }
 
@@ -194,13 +194,13 @@ class TimerStartEventTest extends TestCase
         $data['bpmn'] = Process::getProcessTemplate('TimerStartEvent.bpmn');
 
         //Create process
-        $process = factory(Process::class)->create($data);
+        $process = Process::factory()->create($data);
 
         $manager = new TaskSchedulerManager();
         $task = new ScheduledTask();
         $task->process_id = $process->id;
         $task->configuration = '{"type":"TimeCycle","interval":"R4\/2019-02-13T13:08:00Z\/PT1M", "element_id" : "_9"}';
-        $task->type= 'TIMER_START_EVENT';
+        $task->type = 'TIMER_START_EVENT';
         $manager->executeTimerStartEvent($task, json_decode($task->configuration));
     }
 
@@ -219,13 +219,13 @@ class TimerStartEventTest extends TestCase
         $data['status'] = 'INACTIVE';
 
         //Create process
-        $process = factory(Process::class)->create($data);
+        $process = Process::factory()->create($data);
 
         $manager = new TaskSchedulerManager();
         $task = new ScheduledTask();
         $task->process_id = $process->id;
         $task->configuration = '{"type":"TimeCycle","interval":"R4\/2019-02-13T13:08:00Z\/PT1M", "element_id" : "_9"}';
-        $task->type= 'TIMER_START_EVENT';
+        $task->type = 'TIMER_START_EVENT';
         $manager->executeTimerStartEvent($task, json_decode($task->configuration));
     }
 }

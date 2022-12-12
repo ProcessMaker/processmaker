@@ -18,6 +18,5 @@ class ProcessCollaborationObserver
         //If the collaboration is deleted the request stays without collaboration
         ProcessRequest::where('process_collaboration_id', $processCollaboration->id)
             ->update(['process_collaboration_id' => null]);
-
     }
 }

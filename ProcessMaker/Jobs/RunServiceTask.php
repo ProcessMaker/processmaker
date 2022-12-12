@@ -18,12 +18,16 @@ use Throwable;
 class RunServiceTask extends BpmnAction implements ShouldQueue
 {
     public $definitionsId;
+
     public $instanceId;
+
     public $tokenId;
+
     public $data;
 
     public $tries = 3;
-    public $retryAfter = 60;
+
+    public $backoff = 60;
 
     /**
      * Create a new job instance.
@@ -84,7 +88,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
 
             if ($existsImpl) {
                 $response = [
-                    'output' => WorkflowManager::runServiceImplementation($implementation, $data, $configuration, $token->getId())
+                    'output' => WorkflowManager::runServiceImplementation($implementation, $data, $configuration, $token->getId()),
                 ];
             } else {
                 $response = $script->runScript($data, $configuration, $token->getId());
@@ -124,6 +128,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
     {
         if (!$this->tokenId) {
             Log::error('Script failed: ' . $exception->getMessage());
+
             return;
         }
         Log::error('Script (#' . $this->tokenId . ') failed: ' . $exception->getMessage());

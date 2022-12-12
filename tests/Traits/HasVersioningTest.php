@@ -1,11 +1,12 @@
 <?php
+
 namespace Tests\Traits;
 
-use Tests\TestCase;
-use ProcessMaker\Models\Screen;
+use Illuminate\Support\Carbon;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
-use Illuminate\Support\Carbon;
+use ProcessMaker\Models\Screen;
+use Tests\TestCase;
 
 class HasVersioningTest extends TestCase
 {
@@ -14,8 +15,8 @@ class HasVersioningTest extends TestCase
         $this->markTestSkipped('Skip version locking for now');
 
         $date = Carbon::now();
-        $screen = factory(Screen::class)->create([
-            'description' => 'first version'
+        $screen = Screen::factory()->create([
+            'description' => 'first version',
         ]);
 
         Carbon::setTestNow($date->addDays(1));
@@ -23,17 +24,17 @@ class HasVersioningTest extends TestCase
         $screen->save();
 
         Carbon::setTestNow($date->addDays(2));
-        $processRequest = factory(ProcessRequest::class)->create();
-        
+        $processRequest = ProcessRequest::factory()->create();
+
         Carbon::setTestNow($date->addDays(3));
         $screen->description = 'third version';
         $screen->save();
 
         Carbon::setTestNow($date->addDays(4));
-        factory(ProcessRequestToken::class)->create([
-            'process_request_id' => $processRequest->id
+        ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest->id,
         ]);
-        
+
         Carbon::setTestNow($date->addDays(5));
         $screen->description = 'fourth version';
         $screen->save();
@@ -42,7 +43,8 @@ class HasVersioningTest extends TestCase
         $this->assertEquals('second version', $screenVersion->description);
     }
 
-    public function tearDown() : void {
+    public function tearDownCarbon()
+    {
         Carbon::setTestNow(); // reset
     }
 }

@@ -18,16 +18,16 @@ use Tests\TestCase;
  */
 class ServiceTaskExecutionTest extends TestCase
 {
-
     use RequestHelper;
     use WithFaker;
 
     const START_EVENT_ID = '_3';
 
     /**
-     * @var Process $process
+     * @var Process
      */
     protected $process;
+
     private $requestStructure = [
         'id',
         'process_id',
@@ -36,16 +36,15 @@ class ServiceTaskExecutionTest extends TestCase
         'name',
         'initiated_at',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
      * Initialize the controller tests
-     *
      */
     protected function withUserSetUp()
     {
-        factory(Script::class)->create([
+        Script::factory()->create([
             'key' => 'EchoConnector',
             'language' => 'php',
             'code' => '<?php return ["pong" => $data["ping"]];',
@@ -53,10 +52,9 @@ class ServiceTaskExecutionTest extends TestCase
         ]);
         $this->process = $this->createTestProcess();
     }
-    
+
     /**
      * Make sure we have a personal access client set up
-     *
      */
     public function setUpWithPersonalAccessClient()
     {
@@ -69,7 +67,8 @@ class ServiceTaskExecutionTest extends TestCase
     private function createTestProcess(array $data = [])
     {
         $data['bpmn'] = Process::getProcessTemplate('ServiceTaskProcess.bpmn');
-        $process = factory(Process::class)->create($data);
+        $process = Process::factory()->create($data);
+
         return $process;
     }
 
@@ -111,7 +110,7 @@ class ServiceTaskExecutionTest extends TestCase
         ];
 
         //The call is done without an authenticated user so it should return 401
-        $response = $this->actingAs(factory(User::class)->create())
+        $response = $this->actingAs(User::factory()->create())
             ->json('GET', $url, []);
         $response->assertStatus(401);
     }

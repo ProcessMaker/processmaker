@@ -3,8 +3,8 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Exception;
-use ProcessMaker\Models\Setting;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Models\Setting;
 
 class AboutController extends Controller
 {
@@ -32,14 +32,14 @@ class AboutController extends Controller
             $indexedSearch = false;
         }
 
-        $packages = array();
+        $packages = [];
 
-        foreach($vendor_directories as $directory) {
+        foreach ($vendor_directories as $directory) {
             $content = json_decode(file_get_contents($vendor_path . '/' . basename($directory) . '/composer.json'));
             array_push($packages, $content);
         }
 
-        foreach($dependencies as $key => $value) {
+        foreach ($dependencies as $key => $value) {
             if (strpos($key, $string) !== false) {
                 $value = str_replace('^', '', $value);
                 $content = new \stdClass();
@@ -57,7 +57,7 @@ class AboutController extends Controller
             }
         } catch (Exception $exception) {
             Log::warning('Commit hash missing from composer.json', [
-                'composer.json' => $composer_json_path
+                'composer.json' => $composer_json_path,
             ]);
         }
 

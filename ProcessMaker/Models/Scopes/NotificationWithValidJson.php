@@ -13,7 +13,7 @@ class NotificationWithValidJson implements Scope
     // clauses, if they contain a json_extract and the data has a non json string,
     // will not be evaluated and generate errors.
     // For the reasons above we'll left apply empty just as a placeholder for the method defined in Scope
-    public function apply(Builder $builder,Model $model)
+    public function apply(Builder $builder, Model $model)
     {
     }
 

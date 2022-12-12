@@ -12,11 +12,9 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 /**
  * Before a task is assigned, search the tokens table for a previously assigned
  * task and use that users id for the new assignment.
- *
  */
 class PreviousTaskAssignee implements AssignmentRuleInterface
 {
-
     /**
      * Before a task is assigned, search the tokens table for a previously
      * assigned task and use that users id for the new assignment.
@@ -35,6 +33,7 @@ class PreviousTaskAssignee implements AssignmentRuleInterface
         if (!$previous) {
             return null;
         }
+
         return $previous->user_id;
     }
 }

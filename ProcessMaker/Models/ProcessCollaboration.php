@@ -1,7 +1,6 @@
 <?php
-namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
+namespace ProcessMaker\Models;
 
 /**
  * Represents an Eloquent model of a Request which is an instance of a Process.
@@ -10,11 +9,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $process_id
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
- *
  */
-class ProcessCollaboration extends Model
+class ProcessCollaboration extends ProcessMakerModel
 {
-
     protected $connection = 'processmaker';
 
     /**
@@ -49,7 +46,6 @@ class ProcessCollaboration extends Model
 
     /**
      * Get requests in the collaboration.
-     *
      */
     public function requests()
     {

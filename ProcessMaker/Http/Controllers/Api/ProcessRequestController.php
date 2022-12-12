@@ -5,18 +5,22 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Notification;
 use ProcessMaker\Exception\PmqlMethodException;
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
 use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
 use ProcessMaker\Jobs\CancelRequest;
 use ProcessMaker\Jobs\TerminateRequest;
 use ProcessMaker\Models\Comment;
@@ -27,7 +31,9 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
 use ProcessMaker\Query\SyntaxError;
+use ProcessMaker\RetryProcessRequest;
 use Symfony\Component\HttpFoundation\IpUtils;
+use Throwable;
 
 class ProcessRequestController extends Controller
 {
@@ -94,10 +100,10 @@ class ProcessRequestController extends Controller
     public function index(Request $request, $getTotal = false, User $user = null)
     {
         // If a specific user is specified, use it; otherwise use the authorized user
-        if (! $user) {
+        if (!$user) {
             $user = Auth::user();
         }
-        
+
         // Update request permissions for the user
         $user->updatePermissionsToRequests();
 
@@ -126,11 +132,11 @@ class ProcessRequestController extends Controller
                 $query->get();
                 break;
         }
-        
+
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $query->filter($filter);
-        }        
+        }
 
         $pmql = $request->input('pmql', '');
         if (!empty($pmql)) {
@@ -143,7 +149,7 @@ class ProcessRequestController extends Controller
             }
         }
 
-        if (! $user->can('view-all_requests')) {
+        if (!$user->can('view-all_requests')) {
             $query->pmql('requester = "' . $user->username . '" OR participant = "' . $user->username . '"');
         }
 
@@ -161,7 +167,7 @@ class ProcessRequestController extends Controller
                 )->paginate($request->input('per_page', 10));
                 $total = $response->total();
             }
-        } catch(QueryException $e) {
+        } catch (QueryException $e) {
             throw $e;
             $rawMessage = $e->getMessage();
             if (preg_match("/Column not found: 1054 (.*) in 'where clause'/", $rawMessage, $matches)) {
@@ -169,9 +175,10 @@ class ProcessRequestController extends Controller
             } else {
                 $message = $rawMessage;
             }
+
             return response(['message' => $message], 400);
         }
-        
+
         if (isset($response)) {
             //Map each item through its resource
             $response = $response->map(function ($processRequest) use ($request) {
@@ -220,6 +227,63 @@ class ProcessRequestController extends Controller
     }
 
     /**
+     * Retry the service, script, and other tasks for a given request
+     *
+     * @param  \ProcessMaker\Models\ProcessRequest  $request
+     * @param  \Illuminate\Http\Request  $httpRequest
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function retry(ProcessRequest $request, Request $httpRequest): JsonResponse
+    {
+        if (!Auth::user()->is_administrator) {
+            throw new AuthorizationException(__('Not authorized to complete this request.'));
+        }
+
+        if ($request->status !== 'ERROR') {
+            return response()->json([
+                'message' => __('Only requests with ERROR status can be retried'),
+                'success' => false
+            ], 422);
+        }
+
+        $retryRequest = RetryProcessRequest::for($request);
+
+        if (!$retryRequest->hasRetriableTasks() || $retryRequest->hasNonRetriableTasks()) {
+            return response()->json([
+                'message' => [__('No tasks available to retry')],
+                'success' => false,
+            ]);
+        }
+
+        try {
+            $retryRequest->retry();
+
+            return response()->json([
+                'message' => $retryRequest::$output,
+                'success' => true,
+            ]);
+        } catch (Throwable $throwable) {
+            $message = $throwable->getMessage();
+
+            Log::error("ProcessRequest::{$request->id} Retry Failed", [
+                'message' => $throwable->getMessage(),
+                'line' => $throwable->getLine(),
+                'file' => $throwable->getFile(),
+                'code' => $throwable->getCode(),
+                'trace' => $throwable->getTrace(),
+            ]);
+        }
+
+        return response()->json([
+            'message' => [$message],
+            'success' => false,
+        ]);
+    }
+
+    /**
      * Update a request
      *
      * @param ProcessRequest $request
@@ -259,6 +323,7 @@ class ProcessRequestController extends Controller
                 throw new AuthorizationException(__('Not authorized to cancel this request.'));
             }
             $this->cancelRequestToken($request);
+
             return response([], 204);
         }
         if ($httpRequest->post('status') === 'COMPLETED') {
@@ -266,11 +331,12 @@ class ProcessRequestController extends Controller
                 throw new AuthorizationException(__('Not authorized to complete this request.'));
             }
             if ($request->status != 'ERROR') {
-                throw \Illuminate\Validation\ValidationException::withMessages([
-                    'status' => __('Only requests with status: ERROR can be manually completed')
+                throw ValidationException::withMessages([
+                    'status' => __('Only requests with status: ERROR can be manually completed'),
                 ]);
             }
             $this->completeRequest($request);
+
             return response([], 204);
         }
         $fields = $httpRequest->json()->all();
@@ -308,6 +374,7 @@ class ProcessRequestController extends Controller
             $request->fill($fields);
             $request->saveOrFail();
         }
+
         return response([], 204);
     }
 
@@ -344,6 +411,7 @@ class ProcessRequestController extends Controller
     {
         try {
             $request->delete();
+
             return response([], 204);
         } catch (\Exception $e) {
             abort($e->getCode(), $e->getMessage());
@@ -358,7 +426,7 @@ class ProcessRequestController extends Controller
      * @param ProcessRequest $request
      * @param string $event
      * @return void
-     * 
+     *
      * @OA\Post(
      *     path="/requests/{process_request_id}/events/{event_id}",
      *     summary="Update a process request event",
@@ -407,7 +475,7 @@ class ProcessRequestController extends Controller
         $whitelist = $whitelist === 'undefined' ? '' : $whitelist;
         if ($whitelist) {
             $ip = request()->ip();
-            list($ipWhitelist, $domainWhitelist) = $this->parseWhitelist($whitelist);
+            [$ipWhitelist, $domainWhitelist] = $this->parseWhitelist($whitelist);
             $domain = Cache::remember("ip_domain_{$ip}", self::DOMAIN_CACHE_TIME, function () use ($ip) {
                 return gethostbyaddr($ip);
             });
@@ -436,10 +504,11 @@ class ProcessRequestController extends Controller
             }
         }
 
-        $data = (array)request()->json()->all();
+        $data = (array) request()->json()->all();
 
         // Trigger the catch event
         WorkflowManager::completeCatchEvent($process, $request, $token, $data);
+
         return response([]);
     }
 
@@ -463,6 +532,7 @@ class ProcessRequestController extends Controller
                 }
             }
         }
+
         return [$ipWhitelist, $domainWhitelist];
     }
 
@@ -472,7 +542,7 @@ class ProcessRequestController extends Controller
      * @param string $domain
      * @param array $whitelist
      *
-     * @return boolean
+     * @return bool
      */
     private function checkDomain($domain, $whitelist)
     {
@@ -482,6 +552,7 @@ class ProcessRequestController extends Controller
                 return true;
             }
         }
+
         return false;
     }
 
@@ -541,6 +612,7 @@ class ProcessRequestController extends Controller
         $token = ProcessRequestToken::where(
             ['element_id' => $task_element_id, 'process_request_id' => $request->id]
         )->firstOrFail();
+
         return $token->element_name;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Repositories;
 
 use ProcessMaker\Bpmn\Process;
@@ -14,12 +15,11 @@ use ProcessMaker\Nayra\RepositoryTrait;
 
 /**
  * Definitions Repository
- *
  */
 class DefinitionsRepository implements RepositoryInterface
 {
     use RepositoryTrait;
-    
+
     private $tokenRepository = null;
 
     public function createCallActivity()
@@ -52,9 +52,10 @@ class DefinitionsRepository implements RepositoryInterface
         if ($this->tokenRepository === null) {
             $this->tokenRepository = new TokenRepository($this->createExecutionInstanceRepository());
         }
+
         return $this->tokenRepository;
     }
-    
+
     public function createDataStore()
     {
         return new DataStore();
@@ -79,6 +80,7 @@ class DefinitionsRepository implements RepositoryInterface
     {
         $process = new Process();
         $process->setRepository($this);
+
         return $process;
     }
 

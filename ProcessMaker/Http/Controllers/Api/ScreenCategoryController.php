@@ -4,9 +4,9 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
+use ProcessMaker\Models\ScreenCategory;
 
 class ScreenCategoryController extends Controller
 {
@@ -92,6 +92,7 @@ class ScreenCategoryController extends Controller
             $request->input('order_direction', 'asc')
         );
         $response = $query->paginate($request->input('per_page', 10));
+
         return new ApiCollection($response);
     }
 
@@ -156,6 +157,7 @@ class ScreenCategoryController extends Controller
         $category = new ScreenCategory();
         $category->fill($request->json()->all());
         $category->saveOrFail();
+
         return new ApiResource($category);
     }
 
@@ -196,6 +198,7 @@ class ScreenCategoryController extends Controller
         $request->validate(ScreenCategory::rules($screenCategory));
         $screenCategory->fill($request->json()->all());
         $screenCategory->saveOrFail();
+
         return new ApiResource($screenCategory);
     }
 
@@ -229,13 +232,14 @@ class ScreenCategoryController extends Controller
     public function destroy(ScreenCategory $screenCategory)
     {
         if ($screenCategory->screens->count() !== 0) {
-            return response (
+            return response(
                 ['message'=>'The item should not have associated screens',
-                    'errors'=> ['screens' => $screenCategory->screens->count()]],
-                    422);
+                    'errors'=> ['screens' => $screenCategory->screens->count()], ],
+                422);
         }
 
         $screenCategory->delete();
+
         return response('', 204);
     }
 }

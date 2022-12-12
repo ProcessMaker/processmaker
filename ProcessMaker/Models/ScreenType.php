@@ -2,8 +2,6 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
 /**
  * Represents a business screen Type definition.
  *
@@ -25,9 +23,8 @@ use Illuminate\Database\Eloquent\Model;
  *   },
  * )
  */
-class ScreenType extends Model
+class ScreenType extends ProcessMakerModel
 {
-
     protected $connection = 'processmaker';
 
     public $timestamps = false;
@@ -42,5 +39,4 @@ class ScreenType extends Model
             'name' => 'required|string|max:100|unique:screen_types,name,alpha_spaces',
         ];
     }
-
 }

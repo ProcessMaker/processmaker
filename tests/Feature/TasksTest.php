@@ -1,12 +1,14 @@
 <?php
+
 namespace Tests\Feature;
+
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\User;
-use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class TasksTest extends TestCase
 {
@@ -17,25 +19,28 @@ class TasksTest extends TestCase
     private function createTestProcess(array $data = [])
     {
         $data['bpmn'] = file_get_contents(__DIR__ . '/Api/processes/ManualTask.bpmn');
-        $process = factory(Process::class)->create($data);
+        $process = Process::factory()->create($data);
         $taskId = 'TaskUID';
-        factory(ProcessTaskAssignment::class)->create([
+        ProcessTaskAssignment::factory()->create([
             'process_id' => $process->id,
             'process_task_id' => $taskId,
             'assignment_id' => $this->user->id,
             'assignment_type' => User::class,
         ]);
+
         return $process;
     }
 
-    public function testIndex() {
+    public function testIndex()
+    {
         $response = $this->webGet(self::TASKS_URL, []);
         $response->assertStatus(200);
         $response->assertViewIs('tasks.index');
         $response->assertSee('Tasks');
     }
 
-    public function testViewTaskWithComments() {
+    public function testViewTaskWithComments()
+    {
         //Start a process request
         $process = $this->createTestProcess();
         $route = route('api.process_events.trigger', [$process->id, 'event' => 'StartEventUID']);
@@ -48,14 +53,14 @@ class TasksTest extends TestCase
         $task = $response->json('data')[0];
 
         // A user without permissions for the task should generate a 403 error
-        $this->user = factory(User::class)->create([
+        $this->user = User::factory()->create([
             'username' => 'testuser',
         ]);
         $response = $this->webGet(self::TASKS_URL . '/' . $task['id'] . '/edit', []);
         $response->assertStatus(403);
 
         // Create a comment where the user is not tagged
-        factory(Comment::class)->create([
+        Comment::factory()->create([
             'user_id' => $this->user->id,
             'body' => 'This comment should not be accessible because @xyz is a non existent user',
             'commentable_type' => ProcessRequestToken::class,
@@ -67,7 +72,7 @@ class TasksTest extends TestCase
         $response->assertStatus(403);
 
         // Create a comment where the user is tagged
-        factory(Comment::class)->create([
+        Comment::factory()->create([
             'user_id' => $this->user->id,
             'body' => 'This comment should be accessible by @' . $this->user->username,
             'commentable_type' => ProcessRequestToken::class,

@@ -3,8 +3,8 @@
 namespace Tests\Feature\Processes;
 
 use ProcessMaker\Models\EnvironmentVariable;
-use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class EnvironmentVariablesTest extends TestCase
 {
@@ -17,7 +17,6 @@ class EnvironmentVariablesTest extends TestCase
      */
     public function testIndexRoute()
     {
-
         // get the URL
         $response = $this->webCall('GET', '/designer/environment-variables');
         // check the correct view is called
@@ -37,7 +36,7 @@ class EnvironmentVariablesTest extends TestCase
     {
         // get the URL
         $response = $this->webCall('GET', '/designer/environment-variables/' .
-            factory(EnvironmentVariable::class)->create()->id . '/edit');
+            EnvironmentVariable::factory()->create()->id . '/edit');
 
         $response->assertStatus(200);
         // check the correct view is called

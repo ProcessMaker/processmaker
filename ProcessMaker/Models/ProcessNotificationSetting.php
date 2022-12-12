@@ -2,9 +2,7 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class ProcessNotificationSetting extends Model
+class ProcessNotificationSetting extends ProcessMakerModel
 {
     protected $connection = 'processmaker';
 

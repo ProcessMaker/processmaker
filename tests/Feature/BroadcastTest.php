@@ -1,79 +1,90 @@
 <?php
+
 namespace Tests\Feature;
 
-use Auth;
-use Tests\TestCase;
-use Tests\Feature\Shared\LoggingHelper;
+use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityCompleted;
+use ProcessMaker\Events\BuildScriptExecutor;
+use ProcessMaker\Events\ImportedScreenSaved;
+use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Events\ProcessCompleted;
 use ProcessMaker\Events\ProcessUpdated;
 use ProcessMaker\Events\ScreenBuilderStarting;
-use ProcessMaker\Events\ModelerStarting;
-use ProcessMaker\Events\BuildScriptExecutor;
-use ProcessMaker\Events\ScriptBuilderStarting;
-use ProcessMaker\Events\SessionStarted as SessionStartedEvent;
-use ProcessMaker\Models\User;
-use ProcessMaker\Models\ProcessRequestToken as Task;
-use ProcessMaker\Models\ProcessRequest as Request;
-use ProcessMaker\Managers\ScreenBuilderManager as ScreenBuilder;
-use ProcessMaker\Managers\ModelerManager as Modeler;
-use ProcessMaker\Managers\ScriptBuilderManager as ScriptBuilder;
-use Illuminate\Foundation\Testing\WithFaker;
-use ProcessMaker\Events\ImportedScreenSaved;
-use ProcessMaker\Events\TestStatusEvent;
 use ProcessMaker\Events\ScriptResponseEvent;
+use ProcessMaker\Events\SessionStarted as SessionStartedEvent;
+use ProcessMaker\Events\TestStatusEvent;
+use ProcessMaker\Managers\ModelerManager as Modeler;
 use ProcessMaker\Managers\ScreenBuilderManager;
+use ProcessMaker\Managers\ScreenBuilderManager as ScreenBuilder;
+use ProcessMaker\Models\ProcessRequest as Request;
+use ProcessMaker\Models\ProcessRequestToken as Task;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\User;
+use Tests\Feature\Shared\LoggingHelper;
+use Tests\TestCase;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class BroadcastTest extends TestCase
 {
-    use LoggingHelper, WithFaker;
+    use LoggingHelper;
+    use WithFaker;
 
     public function testBroadcastEventsHaveTesting()
     {
-        $path = app_path('Events');
-        $files = scandir($path);
-        foreach ($files as $file) {
-            $doesMatch = preg_match('/(?<name>.+).php/', $file, $matches);
-            if ($doesMatch) {
-                $name = $matches['name'];
-                $methodName = "test{$name}Broadcast";
-                $this->assertTrue(method_exists($this, $methodName), "Failed asserting that broadcast event $name has a test.");
+        $this->markTestSkipped('FOUR-6653');
+
+        foreach (scandir(app_path('Events')) as $file) {
+            if (!preg_match('/(?<name>.+).php/', $file, $matches)) {
+                continue;
             }
+
+            $name = $matches['name'];
+            $methodName = "test{$name}Broadcast";
+
+            $this->assertTrue(method_exists($this, $methodName), "Failed asserting that broadcast event {$name} has a test.");
         }
     }
 
     /**
+     * Test that the SettingsLoaded event was fired during the Application boot up.
+     */
+    public function testSettingsLoadedBroadcast()
+    {
+        $this->markTestSkipped('FOUR-6653');
+
+        $this->assertTrue(config('app.settings.loaded'));
+    }
+
+    /**
      * Asserts that the ActivityAssigned broadcast event works.
-     *
-     * @return void
      */
     public function testActivityAssignedBroadcast()
     {
-        $task = factory(Task::class)->create([
+        $task = Task::factory()->create([
             'data' => [
                 'test' => $this->faker->text(20000),
-            ]
+            ],
         ]);
-        
+
         event(new ActivityAssigned($task));
         $this->assertLogContainsText('ActivityAssigned');
         $this->assertLogContainsText(addcslashes(route('api.tasks.show', ['task' => $task->id]), '/'));
         $this->assertBroadcastEventSizeLessThan('ActivityAssigned', 10000);
     }
 
-     /**
+    /**
      * Asserts that the ActivityCompleted broadcast event works.
-     *
-     * @return void
      */
     public function testActivityCompletedBroadcast()
     {
-        $task = factory(Task::class)->create([
+        $task = Task::factory()->create([
             'data' => [
                 'test' => $this->faker->text(20000),
-            ]
+            ],
         ]);
         event(new ActivityCompleted($task));
         $this->assertLogContainsText('ActivityCompleted');
@@ -81,17 +92,15 @@ class BroadcastTest extends TestCase
         $this->assertBroadcastEventSizeLessThan('ActivityCompleted', 10000);
     }
 
-     /**
+    /**
      * Asserts that the ProcessCompleted broadcast event works.
-     *
-     * @return void
      */
     public function testProcessCompletedBroadcast()
     {
-        $request = factory(Request::class)->create([
+        $request = Request::factory()->create([
             'data' => [
                 'test' => $this->faker->text(20000),
-            ]
+            ],
         ]);
         event(new ProcessCompleted($request));
         $this->assertLogContainsText('ProcessCompleted');
@@ -101,15 +110,13 @@ class BroadcastTest extends TestCase
 
     /**
      * Asserts that the ProcessUpdated broadcast event works.
-     *
-     * @return void
      */
     public function testProcessUpdatedBroadcast()
     {
-        $request = factory(Request::class)->create([
+        $request = Request::factory()->create([
             'data' => [
                 'test' => $this->faker->text(20000),
-            ]
+            ],
         ]);
         event(new ProcessUpdated($request, 'ACTIVITY_COMPLETED'));
         $this->assertLogContainsText('ProcessUpdated');
@@ -117,11 +124,8 @@ class BroadcastTest extends TestCase
         $this->assertBroadcastEventSizeLessThan('ProcessUpdated', 10000);
     }
 
-
     /**
      * Asserts that the ScreenBuilderStarting broadcast event works.
-     *
-     * @return void
      */
     public function testScreenBuilderStartingBroadcast()
     {
@@ -132,10 +136,8 @@ class BroadcastTest extends TestCase
         event(new ScreenBuilderStarting($manager, 'DISPLAY'));
     }
 
-     /**
+    /**
      * Asserts that the ScreenBuilderStarting broadcast event works.
-     *
-     * @return void
      */
     public function testModelerStartingBroadcast()
     {
@@ -146,30 +148,26 @@ class BroadcastTest extends TestCase
         event(new ModelerStarting($manager));
     }
 
-     /**
+    /**
      * Asserts that the SessionStart broadcast event works.
-     *
-     * @return void
      */
     public function testSessionStartedBroadcast()
     {
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
         event(new SessionStartedEvent($user));
-        
+
         $this->assertLogContainsText('SessionStarted');
         $this->assertBroadcastEventSizeLessThan('SessionStarted', 10000);
     }
 
     /**
      * Asserts that the BuildScriptExecutor event works.
-     *
-     * @return void
      */
     public function testBuildScriptExecutorBroadcast()
     {
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
         event(new BuildScriptExecutor('output-text', $user->id, 'output-status'));
-        
+
         $this->assertLogContainsText('output-text');
         $this->assertLogContainsText((string) $user->id);
         $this->assertLogContainsText('output-status');
@@ -177,8 +175,6 @@ class BroadcastTest extends TestCase
 
     /**
      * Asserts that the ScreenBuilderStarting broadcast event works.
-     *
-     * @return void
      */
     public function testScriptBuilderStartingBroadcast()
     {
@@ -192,23 +188,18 @@ class BroadcastTest extends TestCase
 
     /**
      * Asserts that the BuildScriptExecutor event works.
-     *
-     * @return void
      */
     public function testImportedScreenSavedBroadcast()
     {
         $this->expectsEvents([
             ImportedScreenSaved::class,
         ]);
-        $screen = factory(Screen::class)->create();
+        $screen = Screen::factory()->create();
         event(new ImportedScreenSaved($screen->id, $screen->toArray()));
     }
 
-
     /**
      * Asserts that the TestStatusEvent event works.
-     *
-     * @return void
      */
     public function testTestStatusEventBroadcast()
     {
@@ -217,18 +208,16 @@ class BroadcastTest extends TestCase
         ]);
         event(new TestStatusEvent('test', 'test status event'));
     }
-    
+
     /**
      * Asserts that the BuildScriptExecutor event works.
-     *
-     * @return void
      */
     public function testScriptResponseEventBroadcast()
     {
         $this->expectsEvents([
             ScriptResponseEvent::class,
         ]);
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
         event(new ScriptResponseEvent($user, 200, ['foo' => 'bar'], ['config_one' => 1], 'nonce001'));
     }
 }

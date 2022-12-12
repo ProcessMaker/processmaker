@@ -4,9 +4,9 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
+use ProcessMaker\Models\ScriptCategory;
 
 class ScriptCategoryController extends Controller
 {
@@ -92,6 +92,7 @@ class ScriptCategoryController extends Controller
             $request->input('order_direction', 'asc')
         );
         $response = $query->paginate($request->input('per_page', 10));
+
         return new ApiCollection($response);
     }
 
@@ -158,6 +159,7 @@ class ScriptCategoryController extends Controller
         $category = new ScriptCategory();
         $category->fill($request->json()->all());
         $category->saveOrFail();
+
         return new ApiResource($category);
     }
 
@@ -200,6 +202,7 @@ class ScriptCategoryController extends Controller
         $request->validate(ScriptCategory::rules($scriptCategory));
         $scriptCategory->fill($request->json()->all());
         $scriptCategory->saveOrFail();
+
         return new ApiResource($scriptCategory);
     }
 
@@ -234,13 +237,14 @@ class ScriptCategoryController extends Controller
     public function destroy(ScriptCategory $scriptCategory)
     {
         if ($scriptCategory->scripts->count() !== 0) {
-            return response (
+            return response(
                 ['message'=>'The item should not have associated scripts',
-                    'errors'=> ['scripts' => $scriptCategory->scripts->count()]],
+                    'errors'=> ['scripts' => $scriptCategory->scripts->count()], ],
                 422);
         }
 
         $scriptCategory->delete();
+
         return response('', 204);
     }
 }

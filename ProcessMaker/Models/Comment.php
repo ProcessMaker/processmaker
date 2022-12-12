@@ -3,22 +3,21 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\SqlsrvSupportTrait;
 
 /**
  * Represents a business process definition.
  *
- * @property integer 'id',
- * @property integer 'user_id',
- * @property integer 'commentable_id',
+ * @property int 'id',
+ * @property int 'user_id',
+ * @property int 'commentable_id',
  * @property string 'commentable_type',
- * @property integer 'up',
- * @property integer 'down',
+ * @property int 'up',
+ * @property int 'down',
  * @property string 'subject',
  * @property string 'body',
- * @property boolean 'hidden',
+ * @property bool 'hidden',
  * @property string 'type',
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
@@ -42,9 +41,8 @@ use ProcessMaker\Traits\SqlsrvSupportTrait;
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
- *
  */
-class Comment extends Model
+class Comment extends ProcessMakerModel
 {
     use SerializeToIso8601;
     use SqlsrvSupportTrait;
@@ -53,7 +51,7 @@ class Comment extends Model
     protected $connection = 'data';
 
     protected $fillable = [
-        'user_id', 'commentable_id', 'commentable_type', 'subject', 'body', 'hidden', 'type'
+        'user_id', 'commentable_id', 'commentable_type', 'subject', 'body', 'hidden', 'type',
     ];
 
     protected $casts = [
@@ -72,7 +70,6 @@ class Comment extends Model
             'hidden' => 'required|boolean',
             'type' => 'required|in:LOG,MESSAGE',
         ];
-
     }
 
     /**
@@ -119,8 +116,8 @@ class Comment extends Model
      */
     public function children()
     {
-        return $this->hasMany(Comment::class, 'commentable_id', 'id')
-            ->where('commentable_type', Comment::class)
+        return $this->hasMany(self::class, 'commentable_id', 'id')
+            ->where('commentable_type', self::class)
             ->with('user');
     }
 
@@ -135,7 +132,7 @@ class Comment extends Model
             return $this->commentable->getDefinition()['name'];
         } elseif ($this->commentable instanceof Media) {
             return $this->commentable->manager_name;
-        } elseif ($this->commentable instanceof Comment) {
+        } elseif ($this->commentable instanceof self) {
             return $this->commentable->element_name;
         } else {
             return get_class($this->commentable);
@@ -146,11 +143,12 @@ class Comment extends Model
     {
         // Get al mentions and replace with the user id in mustaches
         $value = mb_ereg_replace_callback('(^|\s)([@][\p{L}\p{N}\-_]+)', function ($matches) {
-            $username = str_replace([' @','@'], '', $matches[0]);
+            $username = str_replace([' @', '@'], '', $matches[0]);
             $user = User::where('username', $username)->first();
             if ($user) {
                 return ' {{' . $user->id . '}}';
             }
+
             return $matches[0];
         }, $value);
         $this->attributes['body'] = $value;
@@ -165,6 +163,7 @@ class Comment extends Model
                 return '@' . $user->username;
             }
         }, $body);
+
         return $body;
     }
 
@@ -173,7 +172,7 @@ class Comment extends Model
      */
     public function getUrlAttribute($id = null)
     {
-        if (! $id) {
+        if (!$id) {
             $id = $this->id;
         }
 
@@ -183,7 +182,7 @@ class Comment extends Model
             return sprintf('/tasks/%s/edit#comment-%s', $this->commentable->id, $id);
         } elseif ($this->commentable instanceof Media) {
             return $this->commentable->manager_url;
-        } elseif ($this->commentable instanceof Comment) {
+        } elseif ($this->commentable instanceof self) {
             return $this->commentable->getUrlAttribute($this->id);
         } else {
             return '/';

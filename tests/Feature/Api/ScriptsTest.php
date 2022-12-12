@@ -2,29 +2,29 @@
 
 namespace Tests\Feature\Api;
 
-use Tests\TestCase;
-use PermissionSeeder;
+use Database\Seeders\PermissionSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Event;
-use ProcessMaker\Models\User;
-use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\Script;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Jobs\ImportProcess;
-use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\ScriptCategory;
-use ProcessMaker\Models\ScriptExecutor;
-use Tests\Feature\Shared\RequestHelper;
-use ProcessMaker\Facades\WorkflowManager;
 use Illuminate\Support\Facades\Notification;
 use Mockery;
 use ProcessMaker\Events\ScriptResponseEvent;
-use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Providers\AuthServiceProvider;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
+use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Jobs\ImportProcess;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ScriptCategory;
+use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\ScriptVersion;
+use ProcessMaker\Models\User;
 use ProcessMaker\PolicyExtension;
+use ProcessMaker\Providers\AuthServiceProvider;
+use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class ScriptsTest extends TestCase
 {
@@ -38,7 +38,7 @@ class ScriptsTest extends TestCase
         'language',
         'code',
         'script_category_id',
-        'description'
+        'description',
     ];
 
     public function setUpWithPersonalAccessClient()
@@ -65,8 +65,8 @@ class ScriptsTest extends TestCase
     public function testCreateScript()
     {
         $faker = Faker::create();
-        $user = factory(User::class)->create(['is_administrator' => true]);
-        $category = factory(ScriptCategory::class)->create(['status' => 'ACTIVE']);
+        $user = User::factory()->create(['is_administrator' => true]);
+        $category = ScriptCategory::factory()->create(['status' => 'ACTIVE']);
 
         //Post saved correctly
         $url = self::API_TEST_SCRIPT;
@@ -76,7 +76,7 @@ class ScriptsTest extends TestCase
             'code' => '123',
             'description' => 'Description',
             'script_category_id' => $category->getkey(),
-            'run_as_user_id' => $user->id
+            'run_as_user_id' => $user->id,
         ]);
         //validating the answer is correct.
         //Check structure of response.
@@ -94,7 +94,7 @@ class ScriptsTest extends TestCase
             'run_as_user_id' => $this->user->id,
         ];
 
-        $err = function($response) {
+        $err = function ($response) {
             return $response->json()['errors']['script_category_id'][0];
         };
 
@@ -102,8 +102,8 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('POST', $url, $params);
         $this->assertEquals('The Script category id field is required.', $err($response));
 
-        $category1 = factory(ScriptCategory::class)->create(['status' => 'ACTIVE']);
-        $category2 = factory(ScriptCategory::class)->create(['status' => 'ACTIVE']);
+        $category1 = ScriptCategory::factory()->create(['status' => 'ACTIVE']);
+        $category2 = ScriptCategory::factory()->create(['status' => 'ACTIVE']);
 
         $params['script_category_id'] = $category1->id . ',foo';
         $response = $this->apiCall('POST', $url, $params);
@@ -124,7 +124,7 @@ class ScriptsTest extends TestCase
      */
     public function testNotCreateScriptWithTitleExists()
     {
-        $script = factory(Script::class)->create([
+        $script = Script::factory()->create([
             'title' => 'Script Title',
         ]);
 
@@ -135,7 +135,7 @@ class ScriptsTest extends TestCase
             'title' => 'Script Title',
             'language' => 'php',
             'code' => $faker->sentence($faker->randomDigitNotNull),
-            'script_category_id' => $script->script_category_id
+            'script_category_id' => $script->script_category_id,
         ]);
         $response->assertStatus(422);
         $response->assertSeeText('The Name has already been taken');
@@ -146,7 +146,7 @@ class ScriptsTest extends TestCase
      */
     public function testNotCreateScriptWithKeyExists()
     {
-        $script = factory(Script::class)->create([
+        $script = Script::factory()->create([
             'key' => 'some-key',
         ]);
 
@@ -155,7 +155,7 @@ class ScriptsTest extends TestCase
             'key' => 'some-key',
             'code' => '123',
             'language' => 'php',
-            'script_category_id' => $script->script_category_id
+            'script_category_id' => $script->script_category_id,
         ]);
         $response->assertStatus(422);
         $response->assertSeeText('The Key has already been taken');
@@ -170,13 +170,13 @@ class ScriptsTest extends TestCase
         Script::query()->delete();
         $faker = Faker::create();
         $total = $faker->randomDigitNotNull;
-        factory(Script::class, $total)->create([
-            'code' => $faker->sentence($faker->randomDigitNotNull)
+        Script::factory()->count($total)->create([
+            'code' => $faker->sentence($faker->randomDigitNotNull),
         ]);
 
         // Create script with a key set. These should NOT be in the results.
-        factory(Script::class)->create([
-            'key' => 'some-key'
+        Script::factory()->create([
+            'key' => 'some-key',
         ]);
 
         //List scripts
@@ -201,7 +201,7 @@ class ScriptsTest extends TestCase
     public function testScriptListDates()
     {
         $name = 'tetScriptTimezone';
-        $newEntity = factory(Script::class)->create(['title' => $name]);
+        $newEntity = Script::factory()->create(['title' => $name]);
 
         $route = self::API_TEST_SCRIPT . '?filter=' . $name;
         $response = $this->apiCall('GET', $route);
@@ -223,7 +223,7 @@ class ScriptsTest extends TestCase
     public function testListScriptsWithQueryParameter()
     {
         $title = 'search script title';
-        factory(Script::class)->create([
+        Script::factory()->create([
             'title' => $title,
         ]);
 
@@ -257,7 +257,7 @@ class ScriptsTest extends TestCase
     public function testGetScript()
     {
         //add scripts to process
-        $script = factory(Script::class)->create();
+        $script = Script::factory()->create();
 
         //load script
         $url = self::API_TEST_SCRIPT . '/' . $script->id;
@@ -276,7 +276,7 @@ class ScriptsTest extends TestCase
     {
         $faker = Faker::create();
 
-        $script = factory(Script::class)->create(['code' => $faker->sentence(50)])->id;
+        $script = Script::factory()->create(['code' => $faker->sentence(50)])->id;
 
         //The post must have the required parameters
         $url = self::API_TEST_SCRIPT . '/' . $script;
@@ -297,11 +297,11 @@ class ScriptsTest extends TestCase
     public function testUpdateScript()
     {
         $faker = Faker::create();
-        $user = factory(User::class)->create(['is_administrator' => true]);
+        $user = User::factory()->create(['is_administrator' => true]);
 
         //Post saved success
         $yesterday = \Carbon\Carbon::now()->subDay();
-        $script = factory(Script::class)->create([
+        $script = Script::factory()->create([
             'description' => 'ufufu',
             'created_at' => $yesterday,
         ]);
@@ -314,7 +314,7 @@ class ScriptsTest extends TestCase
             'description' => 'jdbsdfkj',
             'code' => $faker->sentence(3),
             'run_as_user_id' => $user->id,
-            'script_category_id' => $script->script_category_id
+            'script_category_id' => $script->script_category_id,
         ]);
 
         //Validate the answer is correct
@@ -335,11 +335,11 @@ class ScriptsTest extends TestCase
      */
     public function testUpdateScriptTitleExists()
     {
-        $script1 = factory(Script::class)->create([
+        $script1 = Script::factory()->create([
             'title' => 'Some title',
         ]);
 
-        $script2 = factory(Script::class)->create();
+        $script2 = Script::factory()->create();
 
         $url = self::API_TEST_SCRIPT . '/' . $script2->id;
         $response = $this->apiCall('PUT', $url, [
@@ -356,11 +356,11 @@ class ScriptsTest extends TestCase
     public function testDuplicateScript()
     {
         $faker = Faker::create();
-        $user = factory(User::class)->create(['is_administrator' => true]);
+        $user = User::factory()->create(['is_administrator' => true]);
 
         $code = '{"foo":"bar"}';
-        $script = factory(Script::class)->create([
-            'code' => $code
+        $script = Script::factory()->create([
+            'code' => $code,
         ]);
         $url = self::API_TEST_SCRIPT . '/' . $script->id;
         $response = $this->apiCall('PUT', $url . '/duplicate', [
@@ -368,7 +368,7 @@ class ScriptsTest extends TestCase
             'language' => 'php',
             'description' => $faker->sentence(5),
             'run_as_user_id' => $user->id,
-            'script_category_id' => $script->script_category_id
+            'script_category_id' => $script->script_category_id,
         ]);
         $new_script = Script::find($response->json()['id']);
         $this->assertEquals($code, $new_script->code);
@@ -389,6 +389,7 @@ class ScriptsTest extends TestCase
         Event::assertDispatched(ScriptResponseEvent::class, function ($event) {
             $response = $event->response;
             $nonce = $event->nonce;
+
             return $response['output'] === ['response' => 1];
         });
 
@@ -404,6 +405,7 @@ class ScriptsTest extends TestCase
         Event::assertDispatched(ScriptResponseEvent::class, function ($event) {
             $response = $event->response;
             $nonce = $event->nonce;
+
             return $response['output'] === ['response' => 1] && $nonce === '123abc';
         });
     }
@@ -429,6 +431,7 @@ class ScriptsTest extends TestCase
         Event::assertDispatched(ScriptResponseEvent::class, function ($event) {
             $response = $event->response;
             $nonce = $event->nonce;
+
             return $response['exception'] === ScriptLanguageNotSupported::class;
         });
     }
@@ -439,7 +442,7 @@ class ScriptsTest extends TestCase
     public function testDeleteScript()
     {
         //Remove script
-        $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->create()->id;
+        $url = self::API_TEST_SCRIPT . '/' . Script::factory()->create()->id;
         $response = $this->apiCall('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(204);
@@ -451,7 +454,7 @@ class ScriptsTest extends TestCase
     public function testDeleteScriptNotExist()
     {
         //Script not exist
-        $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->make()->id;
+        $url = self::API_TEST_SCRIPT . '/' . Script::factory()->make()->id;
         $response = $this->apiCall('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(405);
@@ -464,11 +467,11 @@ class ScriptsTest extends TestCase
     {
         $faker = Faker::create();
         $code = '{"foo":"bar"}';
-        $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->create([
-            'code' => $code
+        $url = self::API_TEST_SCRIPT . '/' . Script::factory()->create([
+            'code' => $code,
         ])->id;
         $response = $this->apiCall('PUT', $url . '/duplicate', [
-            'title' => "TITLE",
+            'title' => 'TITLE',
             'language' => 'php',
             'description' => $faker->sentence(5),
         ]);
@@ -483,7 +486,7 @@ class ScriptsTest extends TestCase
      */
     private function getScript($language)
     {
-        return factory(Script::class)->create([
+        return Script::factory()->create([
             'run_as_user_id' => $this->user->id,
             'language' => $language,
         ]);
@@ -495,15 +498,14 @@ class ScriptsTest extends TestCase
     public function testFilterByCategory()
     {
         $name = 'Search title Category Screen';
-        $category = factory(ScriptCategory::class)->create([
+        $category = ScriptCategory::factory()->create([
             'name' => $name,
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
-
-        factory(Script::class)->create([
+        Script::factory()->create([
             'script_category_id' => $category->getKey(),
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         //List Screen with filter option
@@ -526,7 +528,6 @@ class ScriptsTest extends TestCase
         $this->assertEquals($name, $json['meta']['filter']);
         //verify structure of model
         $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
-
 
         //List Screen without peers
         $name = 'Search category that does not exist';
@@ -553,14 +554,14 @@ class ScriptsTest extends TestCase
 
     public function testUpdateScriptCategories()
     {
-        $screen = factory(Script::class)->create();
+        $screen = Script::factory()->create();
         $url = route('api.scripts.update', $screen);
         $params = [
             'title' => 'Title Script',
             'language' => 'php',
             'description' => 'Description.',
-            'run_as_user_id' => factory(User::class)->create(['status' => 'ACTIVE', 'is_administrator' => true])->getKey(),
-            'script_category_id' => factory(ScriptCategory::class)->create()->getKey() . ',' . factory(ScriptCategory::class)->create()->getKey()
+            'run_as_user_id' => User::factory()->create(['status' => 'ACTIVE', 'is_administrator' => true])->getKey(),
+            'script_category_id' => ScriptCategory::factory()->create()->getKey() . ',' . ScriptCategory::factory()->create()->getKey(),
         ];
         $response = $this->apiCall('PUT', $url, $params);
         $response->assertStatus(204);
@@ -571,7 +572,7 @@ class ScriptsTest extends TestCase
         (new PermissionSeeder)->run();
         $asp = new AuthServiceProvider(app());
         $asp->boot();
-        $this->user = factory(User::class)->create();
+        $this->user = User::factory()->create();
         $this->user->giveDirectPermission('view-scripts');
         app()->instance(PolicyExtension::class, null); // clear in case packages are installed in test context
 
@@ -586,14 +587,14 @@ class ScriptsTest extends TestCase
             $process->getDefinitions()->getEvent('node_1'),
             []
         );
-        
+
         $task = ProcessRequestToken::orderBy('id', 'desc')->first();
 
         $url = route('api.scripts.execute', [$script]);
         $response = $this->apiCall('post', $url);
         $response->assertStatus(200);
 
-        app(PolicyExtension::class)->add('execute', Script::class, function($user, $script) {
+        app(PolicyExtension::class)->add('execute', Script::class, function ($user, $script) {
             return false;
         });
 
@@ -604,18 +605,18 @@ class ScriptsTest extends TestCase
     public function testExecuteVersion()
     {
         $this->markTestSkipped('Skip version locking for now');
-        
+
         Event::fake([
             ScriptResponseEvent::class,
         ]);
 
-        $script = factory(Script::class)->create([
+        $script = Script::factory()->create([
             'run_as_user_id' => $this->user->id,
             'language' => 'php',
             'code' => '<?php return["version" => "original"];',
         ]);
-        $task = factory(ProcessRequestToken::class)->create();
-        
+        $task = ProcessRequestToken::factory()->create();
+
         Carbon::setTestNow(Carbon::now()->addMinute(1));
         $script->update(['code' => '<?php return["version" => "new"];']);
 
@@ -625,6 +626,7 @@ class ScriptsTest extends TestCase
 
         Event::assertDispatched(ScriptResponseEvent::class, function ($event) {
             $response = $event->response;
+
             return $response['output']['version'] === 'original';
         });
 

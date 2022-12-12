@@ -5,9 +5,9 @@ namespace ProcessMaker\Http\Controllers\Api;
 use DB;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
+use ProcessMaker\Models\SecurityLog;
 
 class SecurityLogController extends Controller
 {
@@ -22,7 +22,7 @@ class SecurityLogController extends Controller
      *     path="/security-logs",
      *     summary="Returns all security logs",
      *     operationId="getSecurityLogs",
-     *     tags={"Secuirty Logs"},
+     *     tags={"Security Logs"},
      *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
@@ -54,7 +54,7 @@ class SecurityLogController extends Controller
         if ($filter = $request->input('filter')) {
             $filter = '%' . mb_strtolower($filter) . '%';
             $query->where('event', 'like', $filter)
-                  ->orWhere(DB::raw("LOWER(ip)"), 'like', $filter)
+                  ->orWhere(DB::raw('LOWER(ip)'), 'like', $filter)
                   ->orWhere(DB::raw("LOWER(meta->>'$.browser.name')"), 'like', $filter)
                   ->orWhere(DB::raw("LOWER(meta->>'$.os.name')"), 'like', $filter);
         }
@@ -64,7 +64,7 @@ class SecurityLogController extends Controller
 
             $orderDirection = $request->input('order_direction');
 
-            if (! $orderDirection) {
+            if (!$orderDirection) {
                 $orderDirection = 'asc';
             }
 
@@ -80,7 +80,7 @@ class SecurityLogController extends Controller
         return new ApiCollection($response);
     }
 
-     /**
+    /**
      * Display the specified resource.
      *
      * @param  int  $id
@@ -90,7 +90,7 @@ class SecurityLogController extends Controller
      *     path="/security-logs/{securityLog}",
      *     summary="Get single security log by ID",
      *     operationId="getSecurityLog",
-     *     tags={"Secuirty Logs"},
+     *     tags={"Security Logs"},
      *     @OA\Parameter(
      *         description="ID of security log to return",
      *         in="path",

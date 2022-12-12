@@ -2,11 +2,10 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Contracts\ScreenInterface;
 use ProcessMaker\Traits\HasCategories;
 
-class ScreenVersion extends Model implements ScreenInterface
+class ScreenVersion extends ProcessMakerModel implements ScreenInterface
 {
     use HasCategories;
 
@@ -17,7 +16,7 @@ class ScreenVersion extends Model implements ScreenInterface
     /**
      * Attributes that are not mass assignable.
      *
-     * @var array $fillable
+     * @var array
      */
     protected $guarded = [
         'id',
@@ -49,5 +48,4 @@ class ScreenVersion extends Model implements ScreenInterface
     {
         return $this->belongsTo(Screen::class, 'screen_id', 'id');
     }
-
 }

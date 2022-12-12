@@ -1,40 +1,41 @@
 <?php
+
 namespace Tests\Model;
 
 use Illuminate\Support\Facades\Hash;
-use Tests\TestCase;
-use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
-use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\GroupMember;
+use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\PermissionAssignment;
+use ProcessMaker\Models\User;
 use ProcessMaker\Providers\AuthServiceProvider;
+use Tests\TestCase;
 
 class UserTest extends TestCase
 {
+    public function testPermissions()
+    {
+        $president_user = User::factory()->create(['password' => Hash::make('password')]);
+        $technician_user = User::factory()->create(['password' => Hash::make('password')]);
+        $mom_user = User::factory()->create(['password' => Hash::make('password')]);
 
-    public function testPermissions() {
-        $president_user = factory(User::class)->create(['password' => Hash::make('password')]);
-        $technician_user = factory(User::class)->create(['password' => Hash::make('password')]);
-        $mom_user = factory(User::class)->create(['password' => Hash::make('password')]);
-
-        $ln_permission = factory(Permission::class)->create([
+        $ln_permission = Permission::factory()->create([
             'name' => 'launch.nukes',
         ]);
-        $dn_permission = factory(Permission::class)->create([
+        $dn_permission = Permission::factory()->create([
             'name' => 'disarm.nukes',
         ]);
 
-        $nl_group = factory(Group::class)->create(['name' => 'Nuke Launchers']);
-        $p_group = factory(Group::class)->create(['name' => 'Presidents']);
+        $nl_group = Group::factory()->create(['name' => 'Nuke Launchers']);
+        $p_group = Group::factory()->create(['name' => 'Presidents']);
 
-        factory(GroupMember::class)->create([
+        GroupMember::factory()->create([
             'group_id' => $nl_group->id,
             'member_type' => User::class,
             'member_id' => $technician_user,
         ]);
-        
-        factory(GroupMember::class)->create([
+
+        GroupMember::factory()->create([
             'group_id' => $p_group->id,
             'member_type' => User::class,
             'member_id' => $president_user->id,
@@ -56,26 +57,26 @@ class UserTest extends TestCase
         $this->assertFalse($mom_user->hasPermission('launch.nukes'));
     }
 
-    public function testCanAny()
+    public function testCanAnyFirst()
     {
-        $user = factory(User::class)->create();
-        
-        $p1 = factory(Permission::class)->create(['name' => 'foo']);
-        $p2 = factory(Permission::class)->create(['name' => 'bar']);
-        $p3 = factory(Permission::class)->create(['name' => 'baz']);
-        
+        $user = User::factory()->create();
+
+        $p1 = Permission::factory()->create(['name' => 'foo']);
+        $p2 = Permission::factory()->create(['name' => 'bar']);
+        $p3 = Permission::factory()->create(['name' => 'baz']);
+
         (new AuthServiceProvider(app()))->boot();
 
         $this->assertFalse($user->can('bar'));
-        $this->assertFalse($user->canAny('foo|bar'));
-        
+        $this->assertFalse($user->canAnyFirst('foo|bar'));
+
         $user->permissions()->attach($p2);
         $user->permissions()->attach($p3);
         $user->refresh();
 
         $this->assertTrue($user->can('bar'));
-        $this->assertEquals('bar', $user->canAny('foo|bar'));
-        $this->assertEquals('baz', $user->canAny('foo|baz'));
+        $this->assertEquals('bar', $user->canAnyFirst('foo|bar'));
+        $this->assertEquals('baz', $user->canAnyFirst('foo|baz'));
     }
 
     public function testAddCategoryViewPermissions()
@@ -83,27 +84,26 @@ class UserTest extends TestCase
         $testFor = [
             'processes' => 'view-process-categories',
             'scripts' => 'view-script-categories',
-            'screens' => 'view-screen-categories'
+            'screens' => 'view-screen-categories',
         ];
 
-        $testFor = function($singular, $plural) {
-
-            $viewCatPerm = factory(Permission::class)->create(['name' => 'view-' . $singular . '-categories']);
-            $editCatePerm = factory(Permission::class)->create(['name' => 'edit-' . $singular . '-categories']);
+        $testFor = function ($singular, $plural) {
+            $viewCatPerm = Permission::factory()->create(['name' => 'view-' . $singular . '-categories']);
+            $editCatePerm = Permission::factory()->create(['name' => 'edit-' . $singular . '-categories']);
 
             foreach (['create', 'edit'] as $method) {
-                $user = factory(User::class)->create();
-                
-                $perm = factory(Permission::class)->create(['name' => "{$method}-{$plural}"]);
-                
+                $user = User::factory()->create();
+
+                $perm = Permission::factory()->create(['name' => "{$method}-{$plural}"]);
+
                 (new AuthServiceProvider(app()))->boot();
-                
+
                 $this->assertFalse($user->can($perm->name));
                 $this->assertFalse($user->can($viewCatPerm->name));
 
                 $user->permissions()->attach($perm);
                 $user->refresh();
-                
+
                 $this->assertTrue($user->can($viewCatPerm->name));
                 $this->assertFalse($user->can($editCatePerm->name));
             }
@@ -112,6 +112,5 @@ class UserTest extends TestCase
         $testFor('process', 'processes');
         $testFor('screen', 'screens');
         $testFor('script', 'scripts');
-
     }
 }

@@ -1,10 +1,11 @@
 <?php
+
 namespace Tests\Traits;
 
-use Tests\TestCase;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class SearchAutocompleteTraitTest extends TestCase
 {
@@ -12,25 +13,26 @@ class SearchAutocompleteTraitTest extends TestCase
 
     public function testDoesNotIncludeSystemProcesses()
     {
-        $regularProcessCategory = factory(ProcessCategory::class)->create();
-        $systemProcessCategory = factory(ProcessCategory::class)->create(['is_system' => true]);
-        $regularProcess = factory(Process::class)->create([
+        $regularProcessCategory = ProcessCategory::factory()->create();
+        $systemProcessCategory = ProcessCategory::factory()->create(['is_system' => true]);
+        $regularProcess = Process::factory()->create([
             'name' => 'some regular process',
-            'process_category_id' => $regularProcessCategory
+            'process_category_id' => $regularProcessCategory,
         ]);
-        $anotherRegularProcess = factory(Process::class)->create([
+        $anotherRegularProcess = Process::factory()->create([
             'name' => 'another regular process',
-            'process_category_id' => $regularProcessCategory
+            'process_category_id' => $regularProcessCategory,
         ]);
-        $systemProcess = factory(Process::class)->create([
+        $systemProcess = Process::factory()->create([
             'name' => 'some system process',
-            'process_category_id' => $systemProcessCategory
+            'process_category_id' => $systemProcessCategory,
         ]);
 
-        $call = function($query) {
+        $call = function ($query) {
             $result = $this->webCall('GET', '/requests/search?' . $query);
             $result = json_decode($result->getContent(), true);
             $processes = collect($result['process']);
+
             return $processes->pluck('id');
         };
 
@@ -38,7 +40,7 @@ class SearchAutocompleteTraitTest extends TestCase
         $this->assertCount(2, $processIds);
         $this->assertContains($regularProcess->id, $processIds);
         $this->assertContains($anotherRegularProcess->id, $processIds);
-        
+
         $processIds = $call('type=all&filter=some');
         $this->assertCount(1, $processIds);
         $this->assertEquals($processIds[0], $regularProcess->id);

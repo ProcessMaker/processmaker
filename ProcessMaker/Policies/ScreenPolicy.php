@@ -2,11 +2,11 @@
 
 namespace ProcessMaker\Policies;
 
-use ProcessMaker\Models\User;
-use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\ProcessRequestToken;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use ProcessMaker\Assets\ScreensInScreen;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\User;
 
 class ScreenPolicy
 {
@@ -37,7 +37,7 @@ class ScreenPolicy
         }
 
         $taskScreenVersion = $task->getScreenVersion();
-        
+
         if ($taskScreenVersion->screen_id === $screen->id) {
             return true;
         }
@@ -47,7 +47,7 @@ class ScreenPolicy
         $screenFinder->setProcessRequest($task->processRequest);
         $nestedScreens = $screenFinder->referencesToExport($taskScreenVersion->parent);
 
-        $nestedScreenIds = array_map(function($screen) {
+        $nestedScreenIds = array_map(function ($screen) {
             return $screen[1];
         }, $nestedScreens);
 

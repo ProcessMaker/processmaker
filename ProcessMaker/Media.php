@@ -7,7 +7,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Spatie\MediaLibrary\FileManipulator;
 use Spatie\MediaLibrary\Filesystem\Filesystem;
-use Spatie\MediaLibrary\Models\Media as BaseMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;
 
 class Media extends BaseMedia
 {
@@ -17,7 +17,7 @@ class Media extends BaseMedia
      * @param UploadedFile $newFile
      * @param Models\Media $file
      */
-    public function updateFile(UploadedFile $newFile, \ProcessMaker\Models\Media $file)
+    public function updateFile(UploadedFile $newFile, Models\Media $file)
     {
         $newFileName = $this->sanitizeFileName($newFile->getClientOriginalName());
 

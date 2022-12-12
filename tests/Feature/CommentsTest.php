@@ -1,12 +1,14 @@
 <?php
+
 namespace Tests\Feature;
+
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\User;
-use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class CommentsTest extends TestCase
 {
@@ -15,9 +17,9 @@ class CommentsTest extends TestCase
     private function createTask(array $data = [])
     {
         $data['bpmn'] = file_get_contents(__DIR__ . '/Api/processes/ManualTask.bpmn');
-        $process = factory(Process::class)->create($data);
+        $process = Process::factory()->create($data);
         $taskId = 'TaskUID';
-        factory(ProcessTaskAssignment::class)->create([
+        ProcessTaskAssignment::factory()->create([
             'process_id' => $process->id,
             'process_task_id' => $taskId,
             'assignment_id' => $this->user->id,
@@ -45,12 +47,12 @@ class CommentsTest extends TestCase
         $task = $this->createTask();
 
         // Create sample user
-        $testUser = factory(User::class)->create([
-            'username' => 'testuser'
+        $testUser = User::factory()->create([
+            'username' => 'testuser',
         ]);
 
         // Create a comment where the user is tagged
-        $comment = factory(Comment::class)->create([
+        $comment = Comment::factory()->create([
             'user_id' => $this->user->id,
             'body' => 'Should replace the username to user id in mustaches @' . $testUser->username,
             'commentable_type' => ProcessRequestToken::class,
@@ -58,7 +60,7 @@ class CommentsTest extends TestCase
         ]);
 
         // Assert that the comment body without the accessor is stored as userid with mustaches
-        $this->assertEquals('Should replace the username to user id in mustaches {{'.$testUser->id.'}}', $comment->getOriginal('body'));
+        $this->assertEquals('Should replace the username to user id in mustaches {{' . $testUser->id . '}}', $comment->getRawOriginal('body'));
 
         // Assert that the comment body with the accessor is parsed to username to the ui
         $this->assertEquals('Should replace the username to user id in mustaches @' . $testUser->username, $comment->body);
@@ -73,12 +75,12 @@ class CommentsTest extends TestCase
         $task = $this->createTask();
 
         // Create sample user
-        $testUser = factory(User::class)->create([
-            'username' => '测试用户'
+        $testUser = User::factory()->create([
+            'username' => '测试用户',
         ]);
 
         // Create a comment where the user is tagged
-        $comment = factory(Comment::class)->create([
+        $comment = Comment::factory()->create([
             'user_id' => $this->user->id,
             'body' => 'Should replace the username to user id in mustaches @' . $testUser->username,
             'commentable_type' => ProcessRequestToken::class,
@@ -86,7 +88,7 @@ class CommentsTest extends TestCase
         ]);
 
         // Assert that the comment body without the accessor is stored as userid with mustaches
-        $this->assertEquals('Should replace the username to user id in mustaches {{'.$testUser->id.'}}', $comment->getOriginal('body'));
+        $this->assertEquals('Should replace the username to user id in mustaches {{' . $testUser->id . '}}', $comment->getRawOriginal('body'));
 
         // Assert that the comment body with the accessor is parsed to username to the ui
         $this->assertEquals('Should replace the username to user id in mustaches @' . $testUser->username, $comment->body);
@@ -101,12 +103,12 @@ class CommentsTest extends TestCase
         $task = $this->createTask();
 
         // Create sample user
-        $testUser = factory(User::class)->create([
-            'username' => 'النسر'
+        $testUser = User::factory()->create([
+            'username' => 'النسر',
         ]);
 
         // Create a comment where the user is tagged
-        $comment = factory(Comment::class)->create([
+        $comment = Comment::factory()->create([
             'user_id' => $this->user->id,
             'body' => 'Should replace the username to user id in mustaches @' . $testUser->username,
             'commentable_type' => ProcessRequestToken::class,
@@ -114,7 +116,7 @@ class CommentsTest extends TestCase
         ]);
 
         // Assert that the comment body without the accessor is stored as userid with mustaches
-        $this->assertEquals('Should replace the username to user id in mustaches {{'.$testUser->id.'}}', $comment->getOriginal('body'));
+        $this->assertEquals('Should replace the username to user id in mustaches {{' . $testUser->id . '}}', $comment->getRawOriginal('body'));
 
         // Assert that the comment body with the accessor is parsed to username to the ui
         $this->assertEquals('Should replace the username to user id in mustaches @' . $testUser->username, $comment->body);
@@ -129,12 +131,12 @@ class CommentsTest extends TestCase
         $task = $this->createTask();
 
         // Create sample user with german characters
-        $testUser = factory(User::class)->create([
-            'username' => 'ÄÖÜäöü'
+        $testUser = User::factory()->create([
+            'username' => 'ÄÖÜäöü',
         ]);
 
         // Create a comment where the user is tagged
-        $comment = factory(Comment::class)->create([
+        $comment = Comment::factory()->create([
             'user_id' => $this->user->id,
             'body' => 'Should replace the username to user id in mustaches @' . $testUser->username,
             'commentable_type' => ProcessRequestToken::class,
@@ -142,7 +144,7 @@ class CommentsTest extends TestCase
         ]);
 
         // Assert that the comment body without the accessor is stored as userid with mustaches
-        $this->assertEquals('Should replace the username to user id in mustaches {{'.$testUser->id.'}}', $comment->getOriginal('body'));
+        $this->assertEquals('Should replace the username to user id in mustaches {{' . $testUser->id . '}}', $comment->getRawOriginal('body'));
 
         // Assert that the comment body with the accessor is parsed to username to the ui
         $this->assertEquals('Should replace the username to user id in mustaches @' . $testUser->username, $comment->body);
@@ -157,12 +159,12 @@ class CommentsTest extends TestCase
         $task = $this->createTask();
 
         // Create sample user with swiss characters
-        $testUser = factory(User::class)->create([
-            'username' => 'օգտագործող'
+        $testUser = User::factory()->create([
+            'username' => 'օգտագործող',
         ]);
 
         // Create a comment where the user is tagged
-        $comment = factory(Comment::class)->create([
+        $comment = Comment::factory()->create([
             'user_id' => $this->user->id,
             'body' => 'Should replace the username to user id in mustaches @' . $testUser->username,
             'commentable_type' => ProcessRequestToken::class,
@@ -170,7 +172,7 @@ class CommentsTest extends TestCase
         ]);
 
         // Assert that the comment body without the accessor is stored as userid with mustaches
-        $this->assertEquals('Should replace the username to user id in mustaches {{'.$testUser->id.'}}', $comment->getOriginal('body'));
+        $this->assertEquals('Should replace the username to user id in mustaches {{' . $testUser->id . '}}', $comment->getRawOriginal('body'));
 
         // Assert that the comment body with the accessor is parsed to username to the ui
         $this->assertEquals('Should replace the username to user id in mustaches @' . $testUser->username, $comment->body);
@@ -185,12 +187,12 @@ class CommentsTest extends TestCase
         $task = $this->createTask();
 
         // Create sample user with bulgarian characters
-        $testUser = factory(User::class)->create([
-            'username' => 'Тестов'
+        $testUser = User::factory()->create([
+            'username' => 'Тестов',
         ]);
 
         // Create a comment where the user is tagged
-        $comment = factory(Comment::class)->create([
+        $comment = Comment::factory()->create([
             'user_id' => $this->user->id,
             'body' => 'Should replace the username to user id in mustaches @' . $testUser->username,
             'commentable_type' => ProcessRequestToken::class,
@@ -198,7 +200,7 @@ class CommentsTest extends TestCase
         ]);
 
         // Assert that the comment body without the accessor is stored as userid with mustaches
-        $this->assertEquals('Should replace the username to user id in mustaches {{'.$testUser->id.'}}', $comment->getOriginal('body'));
+        $this->assertEquals('Should replace the username to user id in mustaches {{' . $testUser->id . '}}', $comment->getRawOriginal('body'));
 
         // Assert that the comment body with the accessor is parsed to username to the ui
         $this->assertEquals('Should replace the username to user id in mustaches @' . $testUser->username, $comment->body);

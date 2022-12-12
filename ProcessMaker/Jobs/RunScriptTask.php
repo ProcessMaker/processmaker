@@ -18,12 +18,16 @@ use Throwable;
 class RunScriptTask extends BpmnAction implements ShouldQueue
 {
     public $definitionsId;
+
     public $instanceId;
+
     public $tokenId;
+
     public $data;
 
     public $tries = 3;
-    public $retryAfter = 60;
+
+    public $backoff = 60;
 
     /**
      * Create a new job instance.
@@ -101,11 +105,15 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
                 $this->instance = $instance;
             });
         } catch (Throwable $exception) {
-            // Change to error status
+
             $token->setStatus(ScriptTaskInterface::TOKEN_STATE_FAILING);
+
             $error = $element->getRepository()->createError();
             $error->setName($exception->getMessage());
+
             $token->setProperty('error', $error);
+            $token->logError($exception, $element);
+
             Log::error('Script failed: ' . $scriptRef . ' - ' . $exception->getMessage());
             Log::error($exception->getTraceAsString());
         }
@@ -118,6 +126,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
     {
         if (!$this->tokenId) {
             Log::error('Script failed: ' . $exception->getMessage());
+
             return;
         }
         Log::error('Script (#' . $this->tokenId . ') failed: ' . $exception->getMessage());

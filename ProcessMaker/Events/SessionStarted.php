@@ -2,14 +2,15 @@
 
 namespace ProcessMaker\Events;
 
-use ProcessMaker\Models\User;
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
+use ProcessMaker\Facades\RequestDevice;
+use ProcessMaker\Models\User;
 use Session;
 
 class SessionStarted implements ShouldBroadcastNow
@@ -43,7 +44,8 @@ class SessionStarted implements ShouldBroadcastNow
      *
      * @return string
      */
-    public function broadcastAs() {
+    public function broadcastAs()
+    {
         return 'SessionStarted';
     }
 
@@ -52,10 +54,16 @@ class SessionStarted implements ShouldBroadcastNow
      *
      * @return array
      */
-    public function broadcastWith() {
+    public function broadcastWith()
+    {
         $lifetime = Session::has('rememberme') && Session::get('rememberme')
-                        ? "Number.MAX_SAFE_INTEGER"
+                        ? 'Number.MAX_SAFE_INTEGER'
                         : config('session.lifetime');
-        return ['lifetime' => $lifetime];
+
+        return [
+            'lifetime' => $lifetime,
+            'device_id' => RequestDevice::getId(),
+            'device_variable' => RequestDevice::getVariableName()
+        ];
     }
 }

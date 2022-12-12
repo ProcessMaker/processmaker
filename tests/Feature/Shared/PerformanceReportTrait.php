@@ -9,6 +9,11 @@ trait PerformanceReportTrait
 {
     private static $measurements = [];
 
+    public function setUpSkip()
+    {
+        $this->markTestSkipped('FOUR-6653');
+    }
+
     public function setUpMockArtisan()
     {
         // Prevent saved search user observer from running artisan in test

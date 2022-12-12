@@ -17,6 +17,7 @@
           ref="builder"
           @change="updateConfig"
           :screen="screen"
+          :render-controls="displayBuilder"
         >
           <data-loading-basic
             :is-loaded="false"
@@ -27,13 +28,6 @@
         <b-row class="h-100 m-0" id="preview" v-show="displayPreview">
 
           <b-col class="overflow-auto h-100">
-            <div v-if="$store.getters['globalErrorsModule/isValidScreen'] === false" class="alert alert-danger mt-3">
-              <i class="fas fa-exclamation-circle"/>
-              {{ $store.getters['globalErrorsModule/getErrorMessage'] }}
-              <button type="button" class="close" aria-label="Close" @click="$store.dispatch('globalErrorsModule/close')">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
             <vue-form-renderer
               v-if="renderComponent === 'task-screen'"
               ref="renderer"
@@ -62,6 +56,7 @@
                 :watchers="preview.watchers"
                 :data="previewData"
                 :type="screen.type"
+                @update="onUpdate"
                 @submit="previewSubmit"
               />
             </div>
@@ -89,10 +84,11 @@
 
                 <b-collapse v-model="showDataInput" id="showDataInput">
                   <monaco-editor
+                    v-model="previewInput"
                     :options="monacoOptions"
                     class="data-collapse"
-                    v-model="previewInput"
                     language="json"
+                    @change="updateDataInput"
                   />
 
                   <div v-if="!previewInputValid" class="pl-3">
@@ -119,7 +115,7 @@
                   <monaco-editor
                     :options="monacoOptions"
                     class="editor"
-                    v-model="previewDataStringyfy"
+                    v-model="previewDataStringify"
                     language="json"
                     @editorDidMount="monacoMounted"
                   />
@@ -217,6 +213,7 @@ import MonacoEditor from "vue-monaco";
 import mockMagicVariables from "./mockMagicVariables";
 import TopMenu from "../../components/Menu";
 import { cloneDeep, debounce , isEqual} from 'lodash';
+import { mapMutations } from 'vuex';
 import i18next from 'i18next';
 
 // Bring in our initial set of controls
@@ -340,6 +337,7 @@ export default {
     ];
 
     return {
+      previewDataStringify: "",
       numberOfElements: 0,
       preview: {
         config: [
@@ -403,33 +401,11 @@ export default {
     DataLoadingBasic,
   },
   watch: {
-    config() {
-      // Reset the preview data with clean object to start
-      this.previewData = {};
-    },
-    previewInput() {
-      if (this.previewInputValid) {
-        // Copy data over
-        this.previewData = JSON.parse(this.previewInput);
-      } else {
-        this.previewData = {};
-      }
-    },
     customCSS(newCustomCSS) {
       this.preview.custom_css = newCustomCSS;
     },
   },
   computed: {
-    previewDataStringyfy: {
-      get() {
-        if (this.previewInputValid && !isEqual(this.previewData, this.previewDataSaved)) {
-          Object.assign(this.previewDataSaved, this.previewData);
-          this.formatMonaco();
-        }
-        return JSON.stringify(this.previewData);
-      },
-      set() {}
-    },
     previewInputValid() {
       try {
         JSON.parse(this.previewInput);
@@ -490,6 +466,19 @@ export default {
     this.countElements();
   },
   methods: {
+    ...mapMutations("globalErrorsModule", { setStoreMode: "setMode" }),
+    // eslint-disable-next-line func-names
+    updateDataInput: debounce(function () {
+      if (this.previewInputValid) {
+        // Copy data over
+        this.previewData = JSON.parse(this.previewInput);
+        this.updateDataPreview();
+      }
+    }, 1000),
+    // eslint-disable-next-line func-names
+    updateDataPreview: debounce(function () {
+      this.previewDataStringify = JSON.stringify(this.previewData, null, 2);
+    }, 1000),
     monacoMounted(editor) {
       this.editor = editor;
       this.editor.updateOptions({ readOnly:  true });
@@ -629,6 +618,7 @@ export default {
         this.$refs.menuScreen.sectionRight = false;
       }
       this.mode = mode;
+      this.setStoreMode(this.mode);
       this.previewData = this.previewInputValid ? JSON.parse(this.previewInput) : {};
       this.rendererKey++;
       if (mode == 'preview') {
@@ -642,6 +632,7 @@ export default {
       }
     },
     onUpdate(data) {
+      this.updateDataPreview();
       ProcessMaker.EventBus.$emit("form-data-updated", data);
     },
     getValidationErrorsForItems(items, page) {
@@ -739,6 +730,8 @@ export default {
     },
     updateConfig(newConfig) {
       this.config = newConfig;
+      // Reset the preview data with clean object to start
+      this.previewData = {};
       this.refreshSession();
       ProcessMaker.EventBus.$emit("new-changes");
       // Recount number of elements

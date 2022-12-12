@@ -2,8 +2,6 @@
 
 namespace ProcessMaker\Contracts;
 
-use Illuminate\Database\Eloquent\Model;
-
 interface ProcessAssetsInterface
 {
     /**
