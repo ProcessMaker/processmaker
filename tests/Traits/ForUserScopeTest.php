@@ -59,6 +59,22 @@ class ForUserScopeTest extends TestCase
         $this->assertEquals([$request->id], $this->requestIds());
     }
 
+    public function testUserHasEditProccessDataPermission()
+    {
+        $group = Group::factory()->create();
+        $process1 = Process::factory()->create();
+        $process1->usersCanEditData()->sync([$this->user->id => ['method' => 'EDIT_DATA']]);
+        $process2 = Process::factory()->create();
+        $process2->groupsCanEditData()->sync([$group->id => ['method' => 'EDIT_DATA']]);
+
+        $request1 = ProcessRequest::factory()->create(['process_id' => $process1]);
+        $request2 = ProcessRequest::factory()->create(['process_id' => $process2]);
+
+        $this->user->groups()->sync([$group->id]);
+
+        $this->assertEquals([$request1->id, $request2->id], $this->requestIds());
+    }
+
     public function testSelfServeRequests()
     {
         $nonMatchingProcess = ProcessRequest::factory()->create();

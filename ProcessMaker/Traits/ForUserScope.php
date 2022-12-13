@@ -2,7 +2,8 @@
 
 namespace ProcessMaker\Traits;
 
-use ProcessMaker\Models\ProcessRequest;
+use DB;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Models\User;
 
 trait ForUserScope
@@ -22,7 +23,7 @@ trait ForUserScope
         return $query->userStarted($user)
             ->orWhere(fn ($q) => $q->userParticipated($user))
             ->orWhere(fn ($q) => $q->userHasSelfServiceTasks($user))
-            ->orWhere(fn ($q) => $q->userGroupsHaveSelfServiceTasks($user));
+            ->orWhere(fn ($q) => $q->userHasEditProcessDataPermission($user));
     }
 
     public function scopeUserStarted($query, $user)
@@ -43,11 +44,6 @@ trait ForUserScope
             $query->whereJsonContains('self_service_groups->users', $stringUserId);
         });
 
-        return $query;
-    }
-
-    public function scopeUserGroupsHaveSelfServiceTasks($query, $user)
-    {
         $stringGroupIds = $user->groups()
             ->pluck('groups.id')
             ->map(fn ($id) => (string) $id);
@@ -62,6 +58,29 @@ trait ForUserScope
                     ]
                 );
             });
+        }
+
+        return $query;
+    }
+
+    public function scopeUserHasEditProcessDataPermission($query, $user)
+    {
+        $query->whereIn('process_id', DB::table('processables')->select('process_id')->where([
+            'processable_type' => User::class,
+            'processable_id' => $user->id,
+            'method' => 'EDIT_DATA',
+        ]));
+
+        $stringGroupIds = $user->groups()
+            ->pluck('groups.id')
+            ->map(fn ($id) => (string) $id);
+
+        if ($stringGroupIds->isNotEmpty()) {
+            $processables = DB::table('processables')->select('process_id')->where([
+                'processable_type' => Group::class,
+                'method' => 'EDIT_DATA',
+            ])->whereIn('processable_id', $stringGroupIds);
+            $query->orWhereIn('process_id', $processables);
         }
 
         return $query;
