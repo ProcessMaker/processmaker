@@ -28,7 +28,11 @@ class ForUserScopeTest extends TestCase
         (new PermissionSeeder)->run();
         $asp = new AuthServiceProvider(app());
         $asp->boot();
+    }
 
+    protected function withUserSetUp()
+    {
+        // Make $this->user a regular user insetad of an admin
         $this->user = User::factory()->create();
     }
 
