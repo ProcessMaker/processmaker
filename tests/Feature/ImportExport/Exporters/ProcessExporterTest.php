@@ -168,31 +168,24 @@ class ProcessExporterTest extends TestCase
     public function testProcessTaskScreen()
     {
         // Create process from template
+        $process = $this->createProcess('process-with-task-screen', ['name' => 'Process with task']);
+        // Create screens
         $screenA = Screen::factory()->create(['id' => 5, 'title' => 'Screen A']);
         $screenB = Screen::factory()->create(['id' => 2, 'title' => 'Screen B']);
-        $process = $this->createProcess('process-with-task-screen', ['name' => 'Process with task']);
-        $definitions = $process->getDefinitions(true);
 
         // Get task config
         $tasks = [
-            '/bpmn:definitions/bpmn:process/bpmn:task[1]' => ['screenRef' => null],
-            '/bpmn:definitions/bpmn:process/bpmn:task[2]' => ['screenRef' => null],
+            '/bpmn:definitions/bpmn:process/bpmn:task[1]' => ['title' => $screenA->title],
+            '/bpmn:definitions/bpmn:process/bpmn:task[2]' => ['title' => $screenB->title],
         ];
-
-        foreach ($tasks as $key => $task) {
-            $element = Utils::getElementByPath($definitions, $key);
-            $tasks[$key] = [
-                'screenRef' => $element->getAttribute('pm:screenRef'),
-            ];
-        }
 
         $this->runExportAndImport($process, ProcessExporter::class, function () use ($process, $screenA, $screenB) {
             $process->forceDelete();
             $screenA->forceDelete();
             $screenB->forceDelete();
-            $this->assertEquals(0, Process::where('name', 'Process with tasks')->count());
-            $this->assertEquals(0, Screen::where('title', 'Screen A')->count());
-            $this->assertEquals(0, Screen::where('title', 'Screen B')->count());
+            $this->assertDatabaseMissing('processes', ['name' => $process->name]);
+            $this->assertDatabaseMissing('screens', ['title' => $screenA->title]);
+            $this->assertDatabaseMissing('screens', ['title' => $screenB->title]);
         });
 
         $this->assertDatabaseHas('processes', ['name' => $process->name]);
@@ -200,16 +193,13 @@ class ProcessExporterTest extends TestCase
         $this->assertDatabaseHas('screens', ['title' => $screenB->title]);
 
         $process = Process::where('name', 'Process with task')->firstOrFail();
-        $importedScreenA = Screen::where('title', 'Screen A')->firstOrFail();
-        $importedScreenB = Screen::where('title', 'Screen B')->firstOrFail();
 
         $definitions = $process->getDefinitions(true);
-        foreach ($tasks as $key => $task) {
-            $element = Utils::getElementByPath($definitions, $key);
-            $tasks[$key] = [
-                'screenRef' => $element->getAttribute('pm:screenRef'),
-            ];
-            $this->assertEquals($importedScreenA->id, $tasks[$key]['screenRef']);
+        foreach ($tasks as $path => $taskScreen) {
+            $element = Utils::getElementByPath($definitions, $path);
+            $screenRef = $element->getAttribute('pm:screenRef');
+            $importedScreen = Screen::where('id', $screenRef)->firstOrFail();
+            $this->assertEquals($importedScreen->title, $taskScreen['title']);
         }
     }
 }
