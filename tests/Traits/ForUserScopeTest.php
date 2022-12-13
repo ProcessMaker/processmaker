@@ -7,8 +7,10 @@ use Illuminate\Database\DatabaseManager;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\RequestUserPermission;
 use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Models\User;
 use ProcessMaker\Providers\AuthServiceProvider;
@@ -17,6 +19,8 @@ use Tests\TestCase;
 
 class ForUserScopeTest extends TestCase
 {
+    use RequestHelper;
+
     public function setUpRequests()
     {
         $this->useSameDBConnection();
@@ -115,5 +119,40 @@ class ForUserScopeTest extends TestCase
     private function requestIds()
     {
         return ProcessRequest::forUser($this->user)->pluck('id')->toArray();
+    }
+
+    public function testPerformance()
+    {
+        $processRequestCount = 5000;
+
+        $this->user = $loggedInUser = User::factory()->create();
+
+        $requestStarterUser = User::factory()->create();
+        $process = Process::factory()->create();
+        $processCollaboration = ProcessCollaboration::factory()->create([
+            'process_id' => $process->id,
+        ]);
+
+        $requestParams = [
+            'process_id' => $process->id,
+            'user_id' => $requestStarterUser->id,
+            'process_collaboration_id' => $processCollaboration->id,
+            'process_version_id' => $process->getLatestVersion()->id,
+            'callable_id' => 'ProcessId',
+        ];
+
+        $requests = ProcessRequest::factory($processRequestCount)->create($requestParams);
+        $route = route('api.requests.index');
+
+        $loggedInUser->giveDirectPermission('view-all_requests');
+
+        $start = microtime(true);
+        $result = $this->apiCall('GET', $route);
+        $duration = microtime(true) - $start;
+
+        $total = $result->json()['meta']['total'];
+
+        $this->assertEquals($processRequestCount, $total);
+        $this->assertLessThan(0.1, $duration);
     }
 }
