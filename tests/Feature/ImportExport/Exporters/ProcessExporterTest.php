@@ -164,4 +164,33 @@ class ProcessExporterTest extends TestCase
         $this->assertEquals($subProcess->id, Utils::getPmConfig($element)['processId']);
         $this->assertEquals(0, Process::where('name', 'package')->count());
     }
+
+    public function testProcessTaskScreen()
+    {
+        // Create process from template
+        $screen = Screen::factory()->create(['id' => 1, 'title' => 'New Screen']);
+        $process = $this->createProcess('process-with-task-screen', ['name' => 'Process with task']);
+        $definitions = $process->getDefinitions(true);
+
+        // Get task config
+        $tasks = [
+            '/bpmn:definitions/bpmn:process/bpmn:task[1]' => ['screenRef' => null],
+            '/bpmn:definitions/bpmn:process/bpmn:task[2]' => ['screenRef' => null],
+        ];
+
+        foreach ($tasks as $key => $task) {
+            $element = Utils::getElementByPath($definitions, $key);
+            $tasks[$key] = [
+                'screenRef' => $element->getAttribute('pm:screenRef'), true,
+            ];
+        }
+        dd($tasks);
+
+        // Export the process
+        // Delete the process
+        // Assert no process in database
+        // Import process
+        // Assert imported process exists
+        // Assert imported process have Task is configured
+    }
 }
