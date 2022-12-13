@@ -252,6 +252,15 @@ class TaskController extends Controller
      *           type="integer",
      *         )
      *     ),
+     *     @OA\Parameter(
+     *         description="include",
+     *         in="query",
+     *         name="include",
+     *         required=false,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="success",
