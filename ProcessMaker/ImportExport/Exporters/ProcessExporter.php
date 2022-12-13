@@ -27,6 +27,8 @@ class ProcessExporter extends ExporterBase
 
         $this->addDependent('user', $process->user, UserExporter::class);
 
+        $this->exportScreens();
+
         $this->exportCategories();
 
         $this->exportSignals();
@@ -66,6 +68,8 @@ class ProcessExporter extends ExporterBase
         foreach ($this->getDependents('request-detail-screen') as $dependent) {
             $process->request_detail_screen_id = $dependent->model->id;
         }
+
+        $this->importScreens();
 
         $this->importSubprocesses();
 
@@ -240,6 +244,32 @@ class ProcessExporter extends ExporterBase
                     $this->addDependent(DependentType::GROUP_ASSIGNMENT, $group, GroupExporter::class, $meta);
                 }
             }
+        }
+    }
+
+    private function exportScreens()
+    {
+        $tags = [
+            'bpmn:task',
+        ];
+
+        foreach (Utils::getElementByMultipleTags($this->model->getDefinitions(true), $tags) as $element) {
+            $path = $element->getNodePath();
+            $meta = [
+                'path' => $path,
+            ];
+
+            $screenId = $element->getAttribute('pm:screenRef');
+            $screen = Screen::findOrFail($screenId);
+            $this->addDependent('task-screen-ref', $screen, ScreenExporter::class, $meta);
+        }
+    }
+
+    private function importScreens()
+    {
+        foreach ($this->getDependents('task-screen-ref') as $dependent) {
+            $path = $dependent->meta['path'];
+            Utils::setAttributeAtXPath($this->model, $path, 'pm:screenRef', $dependent->model->id);
         }
     }
 }

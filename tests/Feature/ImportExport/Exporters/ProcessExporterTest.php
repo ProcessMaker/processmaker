@@ -168,7 +168,8 @@ class ProcessExporterTest extends TestCase
     public function testProcessTaskScreen()
     {
         // Create process from template
-        $screen = Screen::factory()->create(['id' => 1, 'title' => 'New Screen']);
+        $screenA = Screen::factory()->create(['id' => 5, 'title' => 'Screen A']);
+        $screenB = Screen::factory()->create(['id' => 2, 'title' => 'Screen B']);
         $process = $this->createProcess('process-with-task-screen', ['name' => 'Process with task']);
         $definitions = $process->getDefinitions(true);
 
@@ -181,16 +182,34 @@ class ProcessExporterTest extends TestCase
         foreach ($tasks as $key => $task) {
             $element = Utils::getElementByPath($definitions, $key);
             $tasks[$key] = [
-                'screenRef' => $element->getAttribute('pm:screenRef'), true,
+                'screenRef' => $element->getAttribute('pm:screenRef'),
             ];
         }
-        dd($tasks);
 
-        // Export the process
-        // Delete the process
-        // Assert no process in database
-        // Import process
-        // Assert imported process exists
-        // Assert imported process have Task is configured
+        $this->runExportAndImport($process, ProcessExporter::class, function () use ($process, $screenA, $screenB) {
+            $process->forceDelete();
+            $screenA->forceDelete();
+            $screenB->forceDelete();
+            $this->assertEquals(0, Process::where('name', 'Process with tasks')->count());
+            $this->assertEquals(0, Screen::where('title', 'Screen A')->count());
+            $this->assertEquals(0, Screen::where('title', 'Screen B')->count());
+        });
+
+        $this->assertDatabaseHas('processes', ['name' => $process->name]);
+        $this->assertDatabaseHas('screens', ['title' => $screenA->title]);
+        $this->assertDatabaseHas('screens', ['title' => $screenB->title]);
+
+        $process = Process::where('name', 'Process with task')->firstOrFail();
+        $importedScreenA = Screen::where('title', 'Screen A')->firstOrFail();
+        $importedScreenB = Screen::where('title', 'Screen B')->firstOrFail();
+
+        $definitions = $process->getDefinitions(true);
+        foreach ($tasks as $key => $task) {
+            $element = Utils::getElementByPath($definitions, $key);
+            $tasks[$key] = [
+                'screenRef' => $element->getAttribute('pm:screenRef'),
+            ];
+            $this->assertEquals($importedScreenA->id, $tasks[$key]['screenRef']);
+        }
     }
 }
