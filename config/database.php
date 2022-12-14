@@ -58,21 +58,6 @@ return [
             'engine' => 'InnoDB',
             'timezone'  => env('DB_TIMEZONE'),
         ],
-        'data' => [
-            'driver' => env('DATA_DB_DRIVER', 'mysql'),
-            'host' => env('DATA_DB_HOST', 'localhost'),
-            'port' => env('DATA_DB_PORT'),
-            'database' => env('DATA_DB_DATABASE'),
-            'username' => env('DATA_DB_USERNAME'),
-            'password' => env('DATA_DB_PASSWORD'),
-            'unix_socket' => env('DATA_DB_SOCKET'),
-            'charset' => $charset,
-            'collation' => $collation,
-            'schema' => env('DATA_DB_SCHEMA'),
-            'engine' => env('DATA_DB_ENGINE'),
-            'date_format' => env('DATA_DB_DATE_FORMAT'),
-            'timezone'  => env('DATA_DB_TIMEZONE'),
-        ],
     ],
 
     /*
