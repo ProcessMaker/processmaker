@@ -45,8 +45,6 @@ class SecurityLog extends ProcessMakerModel
 
     const UPDATED_AT = null;
 
-    protected $connection = 'data';
-
     /**
      * The attributes that aren't mass assignable.
      *
