@@ -17,18 +17,16 @@ class ProcessRequestPolicyTest extends TestCase
 {
     use RequestHelper;
 
-    public function setUpDb()
-    {
-        $this->useSameDBConnection();
+    public $withPermissions = true;
 
-        (new PermissionSeeder)->run();
-        $asp = new AuthServiceProvider(app());
-        $asp->boot();
+    public function withUserSetup()
+    {
+        // Make $this->user a regular user instead of an admin user
+        $this->user = User::factory()->create();
     }
 
     public function testUserHasParticipated()
     {
-        $this->user = User::factory()->create();
         $request = ProcessRequest::factory()->create();
 
         $route = route('api.requests.show', [$request]);
@@ -47,7 +45,6 @@ class ProcessRequestPolicyTest extends TestCase
 
     public function testUserHasPermission()
     {
-        $this->user = User::factory()->create();
         $request = ProcessRequest::factory()->create();
 
         $route = route('api.requests.show', [$request]);
