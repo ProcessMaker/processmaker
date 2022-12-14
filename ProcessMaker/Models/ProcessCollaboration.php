@@ -12,8 +12,6 @@ namespace ProcessMaker\Models;
  */
 class ProcessCollaboration extends ProcessMakerModel
 {
-    protected $connection = 'processmaker';
-
     /**
      * The attributes that aren't mass assignable.
      *

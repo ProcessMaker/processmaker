@@ -54,8 +54,6 @@ class Setting extends ProcessMakerModel implements HasMedia
 
     protected $table = 'settings';
 
-    protected $connection = 'processmaker';
-
     public const DISK_CSS = 'settings';
 
     public const COLLECTION_CSS_LOGIN = 'login';

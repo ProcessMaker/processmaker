@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class Permission extends ProcessMakerModel
 {
-    protected $connection = 'processmaker';
-
     protected $fillable = [
         'title',
         'name',

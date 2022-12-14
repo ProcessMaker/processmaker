@@ -28,8 +28,6 @@ class EnvironmentVariable extends ProcessMakerModel
 {
     use Exportable;
 
-    protected $connection = 'processmaker';
-
     protected $fillable = [
         'name',
         'description',

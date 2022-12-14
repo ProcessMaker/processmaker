@@ -48,8 +48,6 @@ class Comment extends ProcessMakerModel
     use SqlsrvSupportTrait;
     use SoftDeletes;
 
-    protected $connection = 'data';
-
     protected $fillable = [
         'user_id', 'commentable_id', 'commentable_type', 'subject', 'body', 'hidden', 'type',
     ];

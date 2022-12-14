@@ -9,8 +9,6 @@ class RequestUserPermission extends ProcessMakerModel
 {
     protected $table = 'request_user_permissions';
 
-    protected $connection = 'data';
-
     protected $fillable = [
         'request_id',
         'user_id',

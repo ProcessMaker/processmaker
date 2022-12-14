@@ -86,8 +86,6 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     use Searchable;
     use HideSystemResources;
 
-    protected $connection = 'processmaker';
-
     /**
      * Attributes that are not mass assignable.
      *
@@ -671,7 +669,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                 $operator = $expression->operator;
                 if (is_string($value)) {
                     $value = '"' . $value . '"';
-                } else if (is_array($value)) {
+                } elseif (is_array($value)) {
                     $value = json_encode($value);
                 }
 

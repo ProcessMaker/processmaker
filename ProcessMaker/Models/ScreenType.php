@@ -25,8 +25,6 @@ namespace ProcessMaker\Models;
  */
 class ScreenType extends ProcessMakerModel
 {
-    protected $connection = 'processmaker';
-
     public $timestamps = false;
 
     protected $fillable = [

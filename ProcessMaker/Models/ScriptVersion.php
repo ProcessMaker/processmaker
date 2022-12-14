@@ -11,8 +11,6 @@ class ScriptVersion extends ProcessMakerModel implements ScriptInterface
 
     const categoryClass = ScriptCategory::class;
 
-    protected $connection = 'processmaker';
-
     /**
      * Attributes that are not mass assignable.
      *

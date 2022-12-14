@@ -57,8 +57,6 @@ class Media extends MediaLibraryModel
 {
     use HasFactory;
 
-    protected $connection = 'processmaker';
-
     protected $table = 'media';
 
     /**
