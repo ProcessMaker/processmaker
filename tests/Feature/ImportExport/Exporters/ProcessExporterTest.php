@@ -140,7 +140,10 @@ class ProcessExporterTest extends TestCase
 
     public function testSubprocesses()
     {
+        $screen = Screen::factory()->create(['title' => 'Screen A']);
         $parentProcess = $this->createProcess('process-with-different-kinds-of-call-activities', ['name' => 'parent']);
+        Utils::setAttributeAtXPath($parentProcess, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:screenRef', $screen->id);
+        Utils::setAttributeAtXPath($parentProcess, '/bpmn:definitions/bpmn:process/bpmn:task[2]', 'pm:screenRef', $screen->id);
         $subProcess = $this->createProcess('basic-process', ['name' => 'sub']);
         $packageProcess = $this->createProcess('basic-process', ['name' => 'package', 'package_key' => 'foo']);
 
@@ -148,7 +151,8 @@ class ProcessExporterTest extends TestCase
         Utils::setAttributeAtXPath($parentProcess, '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]', 'calledElement', 'ProcessId-' . $subProcess->id);
         $parentProcess->save();
 
-        $this->runExportAndImport($parentProcess, ProcessExporter::class, function () use ($parentProcess, $subProcess, $packageProcess) {
+        $this->runExportAndImport($parentProcess, ProcessExporter::class, function () use ($parentProcess, $subProcess, $packageProcess, $screen) {
+            $screen->forceDelete();
             $subProcess->forceDelete();
             $parentProcess->forceDelete();
             $packageProcess->forceDelete();
@@ -170,8 +174,10 @@ class ProcessExporterTest extends TestCase
         // Create process from template
         $process = $this->createProcess('process-with-task-screen', ['name' => 'Process with task']);
         // Create screens
-        $screenA = Screen::factory()->create(['id' => 5, 'title' => 'Screen A']);
-        $screenB = Screen::factory()->create(['id' => 2, 'title' => 'Screen B']);
+        $screenA = Screen::factory()->create(['title' => 'Screen A']);
+        $screenB = Screen::factory()->create(['title' => 'Screen B']);
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:screenRef', $screenA->id);
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[2]', 'pm:screenRef', $screenB->id);
 
         // Get task config
         $tasks = [
@@ -179,6 +185,7 @@ class ProcessExporterTest extends TestCase
             '/bpmn:definitions/bpmn:process/bpmn:task[2]' => ['title' => $screenB->title],
         ];
 
+        //
         $this->runExportAndImport($process, ProcessExporter::class, function () use ($process, $screenA, $screenB) {
             $process->forceDelete();
             $screenA->forceDelete();

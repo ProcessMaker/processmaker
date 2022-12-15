@@ -253,7 +253,9 @@ class ProcessExporter extends ExporterBase
             'bpmn:task',
         ];
 
-        foreach (Utils::getElementByMultipleTags($this->model->getDefinitions(true), $tags) as $element) {
+        $getElements = Utils::getElementByMultipleTags($this->model->getDefinitions(true), $tags);
+
+        foreach ($getElements as $element) {
             $path = $element->getNodePath();
             $meta = [
                 'path' => $path,
@@ -261,6 +263,7 @@ class ProcessExporter extends ExporterBase
 
             $screenId = $element->getAttribute('pm:screenRef');
             $screen = Screen::findOrFail($screenId);
+
             $this->addDependent('task-screen-ref', $screen, ScreenExporter::class, $meta);
         }
     }
