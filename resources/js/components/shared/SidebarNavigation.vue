@@ -24,44 +24,54 @@
     </div>
     <div>
       <b-collapse id="processelements" v-model="showProcessElements" :aria-hidden="showProcessElements ? 'false' : 'true'">
-        <li class="nav-list-item">
-          <b-link
-          @click="onScripts"
-          class="sidebar-nav" >
-            <i class="fas nav-icon fa-code sidebar-nav" />
-            <span>{{ $t("Scripts") }}</span>
-          </b-link>
-        </li>
-        <li class="nav-list-item">
-          <b-link class="sidebar-nav">
-            <i class="fas nav-icon fa-file-alt sidebar-nav" />
-            <span>{{ $t("Screens") }}</span>
-          </b-link>
-        </li>
-        <li class="nav-list-item">
-          <b-link class="sidebar-nav">
-            <i class="fas nav-icon fa-lock sidebar-nav" />
-            <span>{{ $t("Environment Variables") }}</span>
-          </b-link>
-        </li>
-        <li class="nav-list-item">
-          <b-link class="sidebar-nav">
-            <i class="fas nav-icon bpmn-icon-end-event-signal" />
-            <span>{{ $t("Signals") }}</span>
-          </b-link>
-        </li>
-        <li class="nav-list-item">
-          <b-link class="sidebar-nav">
-            <i class="fas nav-icon fa-cog" />
-            <span>{{ $t("Data Connectors") }}</span>
-          </b-link>
-        </li>
-        <li class="nav-list-item">
-          <b-link class="sidebar-nav">
-            <i class="fas nav-icon fa-book" />
-            <span>{{ $t("Vocabularies") }}</span>
-          </b-link>
-        </li>
+        <b-link
+            @click="onScripts"
+            class="sidebar-nav">
+            <li class="nav-list-item">
+                <i class="fas nav-icon fa-code sidebar-nav" />
+                <span>{{ $t("Scripts") }}</span>
+            </li>
+        </b-link>
+        <b-link
+          @click="onScreens"
+          class="sidebar-nav">
+            <li class="nav-list-item">
+                <i class="fas nav-icon fa-file-alt sidebar-nav" />
+                <span>{{ $t("Screens") }}</span>
+            </li>
+        </b-link>
+        <b-link
+          @click="onEnvironmentVariables"
+          class="sidebar-nav">
+            <li class="nav-list-item">
+                <i class="fas nav-icon fa-lock sidebar-nav" />
+                <span>{{ $t("Environment Variables") }}</span>
+            </li>
+        </b-link>
+        <b-link
+          @click="onSignals"
+          class="sidebar-nav">
+            <li class="nav-list-item">
+                <i class="fas nav-icon bpmn-icon-end-event-signal" />
+                <span>{{ $t("Signals") }}</span>
+            </li>
+        </b-link>
+        <b-link
+          @click="onDataConnectors"
+          class="sidebar-nav">
+            <li class="nav-list-item">
+                <i class="fas nav-icon fa-cog" />
+                <span>{{ $t("Data Connectors") }}</span>
+            </li>
+        </b-link>
+        <b-link
+          @click="onVocabularies"
+          class="sidebar-nav">
+            <li class="nav-list-item">
+                <i class="fas nav-icon fa-book" />
+                <span>{{ $t("Vocabularies") }}</span>
+            </li>
+        </b-link>
       </b-collapse>
     </div>
   </div>
@@ -82,8 +92,22 @@ export default {
     onScripts() {
       this.$emit("scriptsView");
     },
+    onScreens() {
+      this.$emit("screensView");
+    },
+    onEnvironmentVariables() {
+      this.$emit("environmentVariablesView");
+    },
+    onSignals() {
+      this.$emit("signalsView");
+    },
+    onDataConnectors() {
+      this.$emit("dataConnectorsView");
+    },
+    onVocabularies() {
+      this.$emit("vocabulariesView");
+    },
   },
-
 };
 </script>
 

@@ -16,7 +16,7 @@
             <b-col cols="7" class="data-container">
                 <div>
                     <KeepAlive>
-                    <component :is="currentProcessElement" :processName="processName"></component>
+                    <component :is="currentProcessElement" :processName="processName" @processesView="showProcessesView"></component>
                     </KeepAlive>
                     <div class="pt-3 card-footer bg-light" align="right">
                         <button type="button" class="btn btn-outline-secondary">
@@ -44,7 +44,6 @@ import DataConnectorsView from "./process-elements/DataConnectorsView.vue";
 import VocabulariesView from "./process-elements/VocabulariesView.vue";
 
 export default {
-    props: ["processName"],
     components: {
         SidebarNavigation,
         ProcessesView,
@@ -54,8 +53,8 @@ export default {
         SignalsView,
         DataConnectorsView,
         VocabulariesView,
-        // CustomExportOverview
     },
+    props: ["processName"],
     mixins: [],
     data() {
         return {
@@ -70,6 +69,9 @@ export default {
         }
     },
     methods: {
+        showProcessesView() {
+            this.currentProcessElement = ProcessesView;
+        },
         showScriptsView() {
             this.currentProcessElement = ScriptsView;
         },
