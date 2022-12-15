@@ -89,28 +89,4 @@ abstract class TestCase extends BaseTestCase
     {
         return ['processmaker', 'data'];
     }
-
-    /**
-     * Since these four classess use a different db connection
-     * (even though they are on the same server as of 2021), we
-     * need to force the same connection instance in tests so
-     * they can access data in a transaction.
-     *
-     * TODO: remove the `data` connection
-     */
-    protected function useSameDBConnection()
-    {
-        $fakeManager = new class($this->app, $this->app['db.factory']) extends DatabaseManager {
-            public function connection($name = null)
-            {
-                return parent::connection($this->getDefaultConnection());
-            }
-        };
-        $this->app->instance('db', $fakeManager);
-
-        ProcessRequest::setConnectionResolver($fakeManager);
-        ProcessRequestLock::setConnectionResolver($fakeManager);
-        RequestUserPermission::setConnectionResolver($fakeManager);
-        SecurityLog::setConnectionResolver($fakeManager);
-    }
 }

@@ -16,7 +16,6 @@ class RequestListingPerformanceTest extends TestCase
     {
         $seeder = new RequestListingPerformanceData();
 
-        $seeder->processesCount = 10;
         $seeder->requestCount = 100_000;
         $seeder->processCount = 50;
         $seeder->userCount = 20_000;
