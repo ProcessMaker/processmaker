@@ -24,7 +24,7 @@
                 <b-form-text class="process-options-helper-text">Define a password to protect your export file.</b-form-text>
                 </b-form-checkbox>
                 <b-form-checkbox
-                    v-model="exportAll"
+                    v-model="exportAllElements"
                     class="process-metadata"
                     stacked
                 >
@@ -34,7 +34,7 @@
             </b-form-group>
         </div>
         <hr>
-        <data-card></data-card>
+        <data-card :exportAll="exportAll" />
     </div>
 </template>
 
@@ -43,13 +43,15 @@
 import DataCard from "../../../../components/shared/DataCard.vue";
 
 export default {
-    props: ["processName"],
+    props: ["processName", "exportAll"],
     components: {
         DataCard,
     },
     mixins: [],
     data() {
         return {
+            passwordProtect: true,
+            exportAllElements: true,
         }
     },
     methods: {      
