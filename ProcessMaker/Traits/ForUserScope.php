@@ -4,6 +4,7 @@ namespace ProcessMaker\Traits;
 
 use DB;
 use ProcessMaker\Models\Group;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 
 trait ForUserScope
@@ -33,15 +34,22 @@ trait ForUserScope
 
     public function scopeUserParticipated($query, $user)
     {
-        return $query->whereHas('tokens', fn ($q) => $q->where('user_id', $user->id));
+        return $query->whereIn('id', function ($query) use ($user) {
+            $query->select('process_request_id')
+                ->from((new ProcessRequestToken)->getTable())
+                ->where('user_id', $user->id);
+        });
     }
 
     public function scopeUserHasSelfServiceTasks($query, $user)
     {
-        $query->whereHas('tokens', function ($query) use ($user) {
+        $query->whereIn('id', function ($query) use ($user) {
             $stringUserId = (string) $user->id;
-            $query->where('is_self_service', true);
-            $query->whereJsonContains('self_service_groups->users', $stringUserId);
+
+            return $query->select('process_request_id')
+                ->from((new ProcessRequestToken)->getTable())
+                ->where('is_self_service', true)
+                ->whereJsonContains('self_service_groups->users', $stringUserId);
         });
 
         $stringGroupIds = $user->groups()
@@ -49,14 +57,16 @@ trait ForUserScope
             ->map(fn ($id) => (string) $id);
 
         if ($stringGroupIds->isNotEmpty()) {
-            $query->orWhereHas('tokens', function ($query) use ($stringGroupIds) {
-                $query->where('is_self_service', true);
-                $query->whereRaw(
-                    'JSON_OVERLAPS(JSON_EXTRACT(`self_service_groups`, \'$."groups"\'), ?)',
-                    [
-                        $stringGroupIds->toJson(),
-                    ]
-                );
+            $query->orWhereIn('id', function ($query) use ($stringGroupIds) {
+                return $query->select('process_request_id')
+                    ->from((new ProcessRequestToken)->getTable())
+                    ->where('is_self_service', true)
+                    ->whereRaw(
+                        'JSON_OVERLAPS(JSON_EXTRACT(`self_service_groups`, \'$."groups"\'), ?)',
+                        [
+                            $stringGroupIds->toJson(),
+                        ]
+                    );
             });
         }
 
