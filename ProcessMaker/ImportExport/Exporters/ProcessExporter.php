@@ -253,18 +253,25 @@ class ProcessExporter extends ExporterBase
             'bpmn:task',
         ];
 
-        $getElements = Utils::getElementByMultipleTags($this->model->getDefinitions(true), $tags);
-
-        foreach ($getElements as $element) {
+        foreach (Utils::getElementByMultipleTags($this->model->getDefinitions(true), $tags) as $element) {
             $path = $element->getNodePath();
             $meta = [
                 'path' => $path,
             ];
 
             $screenId = $element->getAttribute('pm:screenRef');
-            $screen = Screen::findOrFail($screenId);
+            $interstitialScreenId = $element->getAttribute('pm:interstitialScreenRef');
 
-            $this->addDependent('task-screen-ref', $screen, ScreenExporter::class, $meta);
+            if (!empty($screenId)) {
+                $screen = Screen::findOrFail($screenId);
+                $this->addDependent('task-screen-ref', $screen, ScreenExporter::class, $meta);
+            }
+
+            // Let's check if interstitialScreen exist
+            if (!empty($interstitialScreenId)) {
+                $interstitialScreen = Screen::findOrFail($interstitialScreenId);
+                $this->addDependent('interstitial-screen-ref', $interstitialScreen, ScreenExporter::class, $meta);
+            }
         }
     }
 
@@ -273,6 +280,13 @@ class ProcessExporter extends ExporterBase
         foreach ($this->getDependents('task-screen-ref') as $dependent) {
             $path = $dependent->meta['path'];
             Utils::setAttributeAtXPath($this->model, $path, 'pm:screenRef', $dependent->model->id);
+        }
+
+        if ($this->getDependents('interstitial-screen-ref')) {
+            foreach ($this->getDependents('interstitial-screen-ref') as $interDependent) {
+                $path = $interDependent->meta['path'];
+                Utils::setAttributeAtXPath($this->model, $path, 'pm:interstitialScreenRef', $interDependent->model->id);
+            }
         }
     }
 }
