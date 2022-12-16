@@ -264,26 +264,26 @@ class ProcessExporter extends ExporterBase
 
             if (!empty($screenId)) {
                 $screen = Screen::findOrFail($screenId);
-                $this->addDependent('task-screen-ref', $screen, ScreenExporter::class, $meta);
+                $this->addDependent(DependencyType::SCREENS, $screen, ScreenExporter::class, $meta);
             }
 
             // Let's check if interstitialScreen exist
             if (!empty($interstitialScreenId)) {
                 $interstitialScreen = Screen::findOrFail($interstitialScreenId);
-                $this->addDependent('interstitial-screen-ref', $interstitialScreen, ScreenExporter::class, $meta);
+                $this->addDependent(DependencyType::SCREENS, $interstitialScreen, ScreenExporter::class, $meta);
             }
         }
     }
 
     private function importScreens()
     {
-        foreach ($this->getDependents('task-screen-ref') as $dependent) {
+        foreach ($this->getDependents(DependencyType::SCREENS) as $dependent) {
             $path = $dependent->meta['path'];
             Utils::setAttributeAtXPath($this->model, $path, 'pm:screenRef', $dependent->model->id);
         }
 
-        if ($this->getDependents('interstitial-screen-ref')) {
-            foreach ($this->getDependents('interstitial-screen-ref') as $interDependent) {
+        if ($this->getDependents(DependencyType::SCREENS)) {
+            foreach ($this->getDependents(DependencyType::SCREENS) as $interDependent) {
                 $path = $interDependent->meta['path'];
                 Utils::setAttributeAtXPath($this->model, $path, 'pm:interstitialScreenRef', $interDependent->model->id);
             }
