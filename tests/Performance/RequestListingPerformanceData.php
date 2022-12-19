@@ -19,7 +19,7 @@ class RequestListingPerformanceData
 
     public $chunkSize = 100;
 
-    public $processesCount = 1;
+    public $processCount = 1;
 
     public $tokensPerRequest = 10;
 
@@ -47,7 +47,7 @@ class RequestListingPerformanceData
         $requestStarterUser = User::factory()->create();
 
         $this->processIds = collect();
-        for ($i = 0; $i < $this->processesCount; $i++) {
+        for ($i = 0; $i < $this->processCount; $i++) {
             $process = Process::factory()->create();
             $collaboration = ProcessCollaboration::factory()->create([
                 'process_id' => $process->id,
@@ -83,14 +83,14 @@ class RequestListingPerformanceData
             'user_id' => $requestStarterUser->id,
             'process_version_id' => $process->getLatestVersion()->id,
             'callable_id' => 'ProcessId',
-            'data' => '{"random":"' . $this->generateRandomString($this->dataSize) . '"}',
+            'data' => '{"foo":"bar", "random":"' . $this->generateRandomString($this->dataSize) . '"}',
         ];
 
         $tokenParams = [
             'process_request_id' => null,
             'element_id' => 'node_1',
             'element_type' => 'task',
-            'data' => '{"random":"' . $this->generateRandomString($this->dataSize) . '"}',
+            'data' => '{"foo":"bar", "random":"' . $this->generateRandomString($this->dataSize) . '"}',
         ];
 
         $requestStartId = (DB::select('select max(id) as id from `process_requests`')[0]->id ?? 0) + 1;
