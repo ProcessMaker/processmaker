@@ -16,7 +16,17 @@
             <b-col cols="7" class="data-container">
                 <div>
                     <KeepAlive>
-                    <component :is="currentProcessElement" :processName="processName" @processesView="showProcessesView"></component>
+                    <component 
+                        :is="currentProcessElement"
+                        @processesView="showProcessesView"
+                        :processName="processName"
+                        :processDescription="processDescription"
+                        :processCategory="processCategory"
+                        :processManager="processManager"
+                        :processCreatedAt="processCreatedAt"
+                        :processUpdatedAt="processUpdatedAt"
+                        :processUpdatedBy="processUpdatedBy"
+                        ></component>
                     </KeepAlive>
                     <div class="pt-3 card-footer bg-light" align="right">
                         <button type="button" class="btn btn-outline-secondary">
@@ -54,7 +64,14 @@ export default {
         DataConnectorsView,
         VocabulariesView,
     },
-    props: ["processName"],
+    props: ["processName",
+    "processDescription",
+    "processCategory",
+    "processManager",
+    "processCreatedAt",
+    "processUpdatedAt",
+    "processUpdatedBy",
+    ],
     mixins: [],
     data() {
         return {

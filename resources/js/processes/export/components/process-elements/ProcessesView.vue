@@ -6,11 +6,11 @@
         <div>
             <h4>Summary</h4>
             <ul class="process-summary">
-                <li> Description: <span class="process-metadata">[[ Process Description ]]</span></li>
-                <li> Categories: <span class="process-metadata">[[ Process Categories ]]</span></li>
-                <li> Process Manager: <span class="process-metadata"><b-link>[[ Process Manager ]]</b-link></span></li>
-                <li> Created: <span class="process-metadata">[[ Created Date + Time ]]</span></li>
-                <li> Last Modified: <span class="process-metadata">[[ Last Modified Date + Time ]] By: <b-link>[[ Last User to Modify ]]</b-link></span></li>
+                <li> Description: <span class="process-metadata">{{ processDescription }}</span></li>
+                <li> Categories: <span class="process-metadata">{{ processCategory }}</span></li>
+                <li> Process Manager: <span class="process-metadata"><b-link>{{ processManager }}</b-link></span></li>
+                <li> Created: <span class="process-metadata">{{ processCreatedAt }}</span></li>
+                <li> Last Modified: <span class="process-metadata">{{ processUpdatedAt }}</span> By: <span class="process-metadata"><b-link>{{ processUpdatedBy }}</b-link></span></li>
             </ul>
         </div>
         <div>
@@ -43,7 +43,14 @@
 import DataCard from "../../../../components/shared/DataCard.vue";
 
 export default {
-    props: ["processName", "exportAll"],
+  props: ["processName",
+    "processDescription",
+    "processCategory",
+    "processManager",
+    "processCreatedAt",
+    "processUpdatedAt",
+    "processUpdatedBy",
+    "exportAll"],
     components: {
         DataCard,
     },
@@ -57,7 +64,15 @@ export default {
     methods: {      
     },
     mounted() {
-    }
+        console.log(this.processUpdatedBy);
+    },
+    watch: {
+      exportAllElements() {
+        if (this.exportAllElements === true) {
+            this.exportAll = true;
+        }
+      }
+    },
 }
 </script>
 
