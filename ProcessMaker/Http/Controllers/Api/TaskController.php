@@ -384,7 +384,7 @@ class TaskController extends Controller
             return $tasksList;
         }
 
-        $requestQuery = DB::connection('data')->table('process_requests');
+        $requestQuery = ProcessRequest::query();
 
         foreach ($requestColumns as $column) {
             $columnName = trim(explode('.', $column)[1]);
