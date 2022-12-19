@@ -8,6 +8,7 @@ use ProcessMaker\ImportExport\Dependent;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Extension;
 use ProcessMaker\ImportExport\Manifest;
+use ProcessMaker\Traits\HasVersioning;
 
 abstract class ExporterBase implements ExporterInterface
 {
@@ -108,11 +109,38 @@ abstract class ExporterBase implements ExporterInterface
         return [
             'exporter' => get_class($this),
             'name' => $this->getName(),
+            'last_modified_by' => $this->getLastModifiedBy(),
             'model' => get_class($this->model),
             'attributes' => $this->getExportAttributes(),
             'references' => $this->references,
             'dependents' => array_map(fn ($d) => $d->toArray(), $this->dependents),
         ];
+    }
+
+    public function getLastModifiedBy()
+    {
+        $versionHistoryClass = '\ProcessMaker\Package\Versions\Models\VersionHistory';
+
+        if (!class_exists($versionHistoryClass)) {
+            return '';
+        }
+
+        if (!in_array(HasVersioning::class, class_uses_recursive(get_class($this->model)))) {
+            return '';
+        }
+
+        $version = $this->model->getLatestVersion();
+
+        $versionHistory = $versionHistoryClass::where([
+            'versionable_id' => $version->id,
+            'versionable_type' => get_class($version),
+        ])->first();
+
+        if (!$versionHistory) {
+            return '';
+        }
+
+        return $versionHistory->user->getFullName();
     }
 
     public function updateDuplicateAttributes()
