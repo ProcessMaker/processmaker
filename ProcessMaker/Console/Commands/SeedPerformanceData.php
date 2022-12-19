@@ -39,9 +39,9 @@ class SeedPerformanceData extends Command
     public function handle()
     {
         $seeder = new RequestListingPerformanceData();
-        $seeder->requestCount = 10_000;
+        $seeder->requestCount = 100_000;
         $seeder->processCount = 10;
-        $seeder->userCount = 1_000;
+        $seeder->userCount = 2_000;
         $seeder->run();
         $seeder->associateWithUser(50, 50, 50);
     }
