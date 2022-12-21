@@ -262,13 +262,13 @@ class ProcessExporter extends ExporterBase
             $screenId = $element->getAttribute('pm:screenRef');
             $interstitialScreenId = $element->getAttribute('pm:interstitialScreenRef');
 
-            if (!empty($screenId)) {
+            if (is_numeric($screenId)) {
                 $screen = Screen::findOrFail($screenId);
                 $this->addDependent(DependentType::SCREENS, $screen, ScreenExporter::class, $meta);
             }
 
             // Let's check if interstitialScreen exist
-            if (!empty($interstitialScreenId)) {
+            if (is_numeric($interstitialScreenId)) {
                 $interstitialScreen = Screen::findOrFail($interstitialScreenId);
                 $this->addDependent(DependentType::INTERSTITIAL_SCREEN, $interstitialScreen, ScreenExporter::class, $meta);
             }
