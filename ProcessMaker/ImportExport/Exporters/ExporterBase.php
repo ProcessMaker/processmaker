@@ -110,11 +110,23 @@ abstract class ExporterBase implements ExporterInterface
             'exporter' => get_class($this),
             'name' => $this->getName(),
             'last_modified_by' => $this->getLastModifiedBy(),
+            'process_manager' => $this->getProcessManager(),
             'model' => get_class($this->model),
             'attributes' => $this->getExportAttributes(),
             'references' => $this->references,
             'dependents' => array_map(fn ($d) => $d->toArray(), $this->dependents),
         ];
+    }
+
+    public function getProcessManager(): string
+    {
+        $managerName = 'Unknown';
+
+        if (isset($this->model->manager->fullname)) {
+            $managerName = $this->model->manager->fullname;
+        }
+
+        return $managerName;
     }
 
     public function getLastModifiedBy()

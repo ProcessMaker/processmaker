@@ -132,4 +132,24 @@ class ManifestTest extends TestCase
         $lastModifiedBy = $payload['export'][$process->uuid]['last_modified_by'];
         $this->assertEquals('Bob The Builder', $lastModifiedBy);
     }
+
+    public function testGetProcessManager()
+    {
+        $this->addGlobalSignalProcess();
+        $managerUser = User::factory()->create([
+            'firstname'=>'John',
+            'lastname'=>'Doe',
+        ]);
+
+        $process = Process::factory()->create([
+            'manager_id'=> $managerUser->id,
+        ]);
+
+        $exporter = new Exporter();
+        $exporter->exportProcess($process);
+        $payload = $exporter->payload();
+
+        $processManager = $payload['export'][$process->uuid]['process_manager'];
+        $this->assertEquals('John Doe', $processManager);
+    }
 }
