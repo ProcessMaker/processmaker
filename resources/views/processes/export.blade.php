@@ -6,6 +6,13 @@
 
 @section('meta')
     <meta name="export-process-name" content="{{ $process->name }}">
+    <meta name="export-process-description" content="{{ $process->description }}">
+    <meta name="export-process-category" content="{{ $process->category->name }}">
+    <meta name="export-process-manager" content="{{ $process->manager->fullname }}">
+    <meta name="export-process-created-at" content="{{ $process->created_at }}">
+    <meta name="export-process-updated-at" content="{{ $process->updated_at }}">
+    <meta name="export-process-updated-by" content="{{ $process->updatedBy }}">
+
 @endsection
 
 @section('sidebar')
