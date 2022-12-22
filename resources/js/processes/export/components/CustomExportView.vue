@@ -2,10 +2,41 @@
     <div class="custom-export-container container pt-3">
         <b-row>
             <b-col cols="3" class="border-right">
-                <sidebar-navigation ref="sidebar-navigation" :processName="processName"></sidebar-navigation>
+                <sidebar-navigation 
+                ref="sidebar-navigation" 
+                :processName="processName" 
+                @scriptsView="showScriptsView"
+                @screensView="showScreensView"
+                @environmentVariablesView="showEnvironmentVariablesView"
+                @signalsView="showSignalsView"
+                @dataConnectorsView="showDataConnectorsView"
+                @vocabulariesView="showVocabulariesView"
+                ></sidebar-navigation>
             </b-col>
             <b-col cols="7" class="data-container">
-                <custom-export-overview :processName="processName"></custom-export-overview>
+                <div>
+                    <KeepAlive>
+                    <component 
+                        :is="currentProcessElement"
+                        @processesView="showProcessesView"
+                        :processName="processName"
+                        :processDescription="processDescription"
+                        :processCategory="processCategory"
+                        :processManager="processManager"
+                        :processCreatedAt="processCreatedAt"
+                        :processUpdatedAt="processUpdatedAt"
+                        :processUpdatedBy="processUpdatedBy"
+                        ></component>
+                    </KeepAlive>
+                    <div class="pt-3 card-footer bg-light" align="right">
+                        <button type="button" class="btn btn-outline-secondary">
+                            {{ $t("Cancel") }}
+                        </button>
+                        <button type="button" class="btn btn-primary ml-2">
+                            {{ $t("Export") }}
+                        </button>
+                    </div>
+                </div>
             </b-col>
       <b-col cols="2" />
         </b-row>
@@ -13,23 +44,69 @@
 </template>
 
 <script>
-
-import CustomExportOverview from "./CustomExportOverview.vue";
 import SidebarNavigation from "../../../components/shared/SidebarNavigation.vue";
+import ProcessesView from "./process-elements/ProcessesView.vue";
+import ScriptsView from "./process-elements/ScriptsView.vue";
+import ScreensView from "./process-elements/ScreensView.vue";
+import EnvironmentVariablesView from "./process-elements/EnvironmentVariablesView.vue";
+import SignalsView from "./process-elements/SignalsView.vue";
+import DataConnectorsView from "./process-elements/DataConnectorsView.vue";
+import VocabulariesView from "./process-elements/VocabulariesView.vue";
 
 export default {
-    props: ["processName"],
     components: {
         SidebarNavigation,
-        CustomExportOverview
+        ProcessesView,
+        ScriptsView,
+        ScreensView,
+        EnvironmentVariablesView,
+        SignalsView,
+        DataConnectorsView,
+        VocabulariesView,
     },
+    props: ["processName",
+    "processDescription",
+    "processCategory",
+    "processManager",
+    "processCreatedAt",
+    "processUpdatedAt",
+    "processUpdatedBy",
+    ],
     mixins: [],
     data() {
         return {
-
+            currentProcessElement: "ProcessesView",
+            processElements: ["ProcessesView",
+            "ScriptsView",
+            "ScreensView",
+            "EnvironmentVariablesView",
+            "SignalsView",
+            "DataConnectorsView",
+            "VocabulariesView"],
         }
     },
-    methods: {      
+    methods: {
+        showProcessesView() {
+            this.currentProcessElement = ProcessesView;
+        },
+        showScriptsView() {
+            this.currentProcessElement = ScriptsView;
+        },
+        showScreensView() {
+            this.currentProcessElement = ScreensView;
+        },
+        showEnvironmentVariablesView() {
+            this.currentProcessElement = EnvironmentVariablesView;
+        },
+        showSignalsView() {
+            this.currentProcessElement = SignalsView;
+        },
+        showDataConnectorsView() {
+            this.currentProcessElement = DataConnectorsView;
+        },
+        showVocabulariesView() {
+            this.currentProcessElement = VocabulariesView;
+        }
     },
     mounted() {
     }

@@ -1,13 +1,59 @@
 <template>
-    <div>
-        <!-- TODO: Set Up Component -->
+    <div class="mb-2">
+        <h2>Export Process: {{ processName }}</h2>
+        <hr>
+        <div>
+            <h4>Scripts</h4>
+            <div v-if="exportAll">
+                <h6>Export Status:
+                    <b-badge
+                    pill
+                    variant="success"
+                    >
+                    <i class="fas fa-check-circle export-status-label" />
+                    Full Export
+                    </b-badge>
+                </h6>
+                <p><span class="font-weight-bold">All</span> Scripts will be included in this export.</p>
+            </div>
+            <div v-else>
+                <h6>Export Status:
+                <b-badge
+                    pill
+                    variant="warning"
+                    >
+                    <i class="fas fa-exclamation-triangle export-status-label" />
+                    Not Exporting
+                    </b-badge>
+                </h6>
+                <p>All Scripts will <span class="font-weight-bold">not</span> be included in this export.</p>
+            </div>
+            <b-link @click="returnToSummary">Return to Summary</b-link>
+        </div>
+        <hr>
+        <div>
+            <b-card>
+                <template #header>
+                    <h6 class="mb-0 data-card-header font-weight-bold">[[ Script Name ]]</h6>
+                </template>
+            <b-card-text>
+                <ul class="process-element-metadata">
+                    <li>Description: </li>
+                    <li>Categories: </li>
+                    <li>Language: </li>
+                    <li>Created: </li>
+                    <li>Last Modified: </li>
+                </ul>   
+            </b-card-text>
+            </b-card>
+        </div>
     </div>
 </template>
 
 <script>
 
 export default {
-    props: [],
+    props: ["processName","exportAll"],
     components: {
     },
     mixins: [],
@@ -16,14 +62,24 @@ export default {
 
         }
     },
-    methods: {      
+    methods: {
+        returnToSummary() {
+            this.$emit("processesView");
+        },
     },
     mounted() {
     }
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
+
+.export-status-label {
+    padding-right: 0;
+}
+
+.process-element-metadata {
+    padding-left: 0;
+}
 
 </style>
-

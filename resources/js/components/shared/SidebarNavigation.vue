@@ -1,15 +1,16 @@
 <template>
-  <div>
+  <div class="sidebar-nav-container">
     <div class="process-name-container">
       <li class="font-weight-bold sidebar-nav">
         <b-link
-          @click="showProcessElements = !showProcessElements"
+          
           :aria-expanded="showProcessElements ? 'true' : 'false'"
           class="sidebar-nav"
         >
           <div class="d-flex justify-content-between align-items-center p-2 active">
             <span>{{ processName }}</span>
             <i
+              @click="showProcessElements = !showProcessElements"
               class="fa chevron"
               :class="{
                 'fa-chevron-right': !showProcessElements,
@@ -22,48 +23,55 @@
       </li>
     </div>
     <div>
-      <!-- <pre
-                class="mt-1 mb-0"
-                @click="
-                showProcessElements = !showProcessElements
-                ">{{ initDockerfile.split("\n")[0] }} <template v-if="!showDockerfile">...</template></pre> -->
       <b-collapse id="processelements" v-model="showProcessElements" :aria-hidden="showProcessElements ? 'false' : 'true'">
-        <li class="nav-list-item">
-          <b-link class="sidebar-nav">
-            <i class="fas nav-icon fa-code sidebar-nav" />
-            <span>{{ $t("Scripts") }}</span>
-          </b-link>
-        </li>
-        <li class="nav-list-item">
-          <b-link class="sidebar-nav">
-            <i class="fas nav-icon fa-file-alt sidebar-nav" />
-            <span>{{ $t("Screens") }}</span>
-          </b-link>
-        </li>
-        <li class="nav-list-item">
-          <b-link class="sidebar-nav">
-            <i class="fas nav-icon fa-lock sidebar-nav" />
-            <span>{{ $t("Environment Variables") }}</span>
-          </b-link>
-        </li>
-        <li class="nav-list-item">
-          <b-link class="sidebar-nav">
-            <i class="fas nav-icon bpmn-icon-end-event-signal" />
-            <span>{{ $t("Signals") }}</span>
-          </b-link>
-        </li>
-        <li class="nav-list-item">
-          <b-link class="sidebar-nav">
-            <i class="fas nav-icon fa-cog" />
-            <span>{{ $t("Data Connectors") }}</span>
-          </b-link>
-        </li>
-        <li class="nav-list-item">
-          <b-link class="sidebar-nav">
-            <i class="fas nav-icon fa-book" />
-            <span>{{ $t("Vocabularies") }}</span>
-          </b-link>
-        </li>
+        <b-link
+            @click="onScripts"
+            class="sidebar-nav">
+            <li class="nav-list-item">
+                <i class="fas nav-icon fa-code sidebar-nav" />
+                <span>{{ $t("Scripts") }}</span>
+            </li>
+        </b-link>
+        <b-link
+          @click="onScreens"
+          class="sidebar-nav">
+            <li class="nav-list-item">
+                <i class="fas nav-icon fa-file-alt sidebar-nav" />
+                <span>{{ $t("Screens") }}</span>
+            </li>
+        </b-link>
+        <b-link
+          @click="onEnvironmentVariables"
+          class="sidebar-nav">
+            <li class="nav-list-item">
+                <i class="fas nav-icon fa-lock sidebar-nav" />
+                <span>{{ $t("Environment Variables") }}</span>
+            </li>
+        </b-link>
+        <b-link
+          @click="onSignals"
+          class="sidebar-nav">
+            <li class="nav-list-item">
+                <i class="fas nav-icon bpmn-icon-end-event-signal" />
+                <span>{{ $t("Signals") }}</span>
+            </li>
+        </b-link>
+        <b-link
+          @click="onDataConnectors"
+          class="sidebar-nav">
+            <li class="nav-list-item">
+                <i class="fas nav-icon fa-cog" />
+                <span>{{ $t("Data Connectors") }}</span>
+            </li>
+        </b-link>
+        <b-link
+          @click="onVocabularies"
+          class="sidebar-nav">
+            <li class="nav-list-item">
+                <i class="fas nav-icon fa-book" />
+                <span>{{ $t("Vocabularies") }}</span>
+            </li>
+        </b-link>
       </b-collapse>
     </div>
   </div>
@@ -81,13 +89,34 @@ export default {
   mounted() {
   },
   methods: {
+    onScripts() {
+      this.$emit("scriptsView");
+    },
+    onScreens() {
+      this.$emit("screensView");
+    },
+    onEnvironmentVariables() {
+      this.$emit("environmentVariablesView");
+    },
+    onSignals() {
+      this.$emit("signalsView");
+    },
+    onDataConnectors() {
+      this.$emit("dataConnectorsView");
+    },
+    onVocabularies() {
+      this.$emit("vocabulariesView");
+    },
   },
-
 };
 </script>
 
 <style lang="scss" scoped>
 @import "../../../sass/variables";
+
+.sidebar-nav-container {
+    padding-left: 0;
+}
 
 .process-name-container {
   text-align: left;
@@ -103,7 +132,7 @@ li {
   text-align: left;
   width: 100%;
   &:hover {
-    background-color: $grey-bg;
+    background-color: #f7f9fb;
   }
 }
 

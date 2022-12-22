@@ -8,12 +8,18 @@ use ProcessMaker\ImportExport\Exporters\ScreenExporter;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Manifest;
 use ProcessMaker\ImportExport\Options;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
+use ProcessMaker\Models\User;
+use ProcessMaker\Package\Versions\Models\VersionHistory;
 use Tests\TestCase;
 
 class ManifestTest extends TestCase
 {
+    use HelperTrait;
+
     public function testOrderForImport()
     {
         $this->markTestSkipped('Removed sorting');
@@ -102,5 +108,28 @@ class ManifestTest extends TestCase
         $screenCategory->update(['name' => 'category on target instance']);
 
         return [$payload, $screen, $screenCategory];
+    }
+
+    public function testLastModifiedBy()
+    {
+        $this->addGlobalSignalProcess();
+        $process = Process::factory()->create();
+        $latestProcessVersion = $process->getLatestVersion();
+        $lastUpdateUser = User::factory()->create([
+            'firstname'=>'Bob',
+            'lastname'=>'The Builder',
+        ]);
+        $versionHistory = VersionHistory::factory()->create([
+            'user_id'=>$lastUpdateUser->id,
+            'versionable_id'=>$latestProcessVersion->id,
+            'versionable_type'=> ProcessVersion::class,
+        ]);
+
+        $exporter = new Exporter();
+        $exporter->exportProcess($process);
+        $payload = $exporter->payload();
+
+        $lastModifiedBy = $payload['export'][$process->uuid]['last_modified_by'];
+        $this->assertEquals('Bob The Builder', $lastModifiedBy);
     }
 }

@@ -222,7 +222,7 @@ class ProcessExporterTest extends TestCase
 
             $this->assertEquals($importedScreen->title, $taskScreen['title']);
 
-            if (!empty($interstitialScreenRef)) {
+            if (is_numeric($interstitialScreenRef)) {
                 $importedInterstitialScreen = Screen::where('id', $interstitialScreenRef)->firstOrFail();
                 $this->assertEquals($importedInterstitialScreen->title, $taskScreen['interstitialTitle']);
             }

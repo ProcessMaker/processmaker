@@ -98,9 +98,9 @@ export default {
         case "custom":
           this.handleCustomExport();
           break;
-        // default:
-        //   this.showSetPasswordModal();
-        //   break;
+        default:
+          this.showSetPasswordModal();
+          break;
       }
     },
     exportProcess() {

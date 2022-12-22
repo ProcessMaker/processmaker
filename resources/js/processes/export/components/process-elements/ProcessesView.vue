@@ -6,11 +6,11 @@
         <div>
             <h4>Summary</h4>
             <ul class="process-summary">
-                <li> Description: <span class="process-metadata">[[ Process Description ]]</span></li>
-                <li> Categories: <span class="process-metadata">[[ Process Categories ]]</span></li>
-                <li> Process Manager: <span class="process-metadata"><b-link>[[ Process Manager ]]</b-link></span></li>
-                <li> Created: <span class="process-metadata">[[ Created Date + Time ]]</span></li>
-                <li> Last Modified: <span class="process-metadata">[[ Last Modified Date + Time ]] By: <b-link>[[ Last User to Modify ]]</b-link></span></li>
+                <li> Description: <span class="process-metadata">{{ processDescription }}</span></li>
+                <li> Categories: <span class="process-metadata">{{ processCategory }}</span></li>
+                <li> Process Manager: <span class="process-metadata"><b-link>{{ processManager }}</b-link></span></li>
+                <li> Created: <span class="process-metadata">{{ processCreatedAt }}</span></li>
+                <li> Last Modified: <span class="process-metadata">{{ processUpdatedAt }}</span> By: <span class="process-metadata"><b-link>{{ processUpdatedBy }}</b-link></span></li>
             </ul>
         </div>
         <div>
@@ -24,7 +24,7 @@
                 <b-form-text class="process-options-helper-text">Define a password to protect your export file.</b-form-text>
                 </b-form-checkbox>
                 <b-form-checkbox
-                    v-model="exportAll"
+                    v-model="exportAllElements"
                     class="process-metadata"
                     stacked
                 >
@@ -34,7 +34,7 @@
             </b-form-group>
         </div>
         <hr>
-        <data-card></data-card>
+        <data-card :exportAll="exportAll" />
     </div>
 </template>
 
@@ -43,19 +43,36 @@
 import DataCard from "../../../../components/shared/DataCard.vue";
 
 export default {
-    props: ["processName"],
+  props: ["processName",
+    "processDescription",
+    "processCategory",
+    "processManager",
+    "processCreatedAt",
+    "processUpdatedAt",
+    "processUpdatedBy",
+    "exportAll"],
     components: {
         DataCard,
     },
     mixins: [],
     data() {
         return {
+            passwordProtect: true,
+            exportAllElements: true,
         }
     },
     methods: {      
     },
     mounted() {
-    }
+        console.log(this.processUpdatedBy);
+    },
+    watch: {
+      exportAllElements() {
+        if (this.exportAllElements === true) {
+            this.exportAll = true;
+        }
+      }
+    },
 }
 </script>
 
