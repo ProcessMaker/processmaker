@@ -15,6 +15,37 @@ class ScreenExporter extends ExporterBase
 
     const WATCHER_TYPE_DATA_SOURCE = 'data_source';
 
+    /**
+     * If the screen was seeded with a key attribute, we want to associate it
+     * using key instead of uuid since the uuid will be different but is
+     * essentially refering to the same asset on the target instance.
+     */
+    public static function modelFinder($uuid, $assetInfo)
+    {
+        $key = Arr::get($assetInfo, 'attributes.key');
+        if (!empty($key)) {
+            return Screen::where('key', $key);
+        }
+
+        return parent::modelFinder($uuid, $assetInfo);
+    }
+
+    /**
+     * If we associated it using the key above, then we don't actually want to
+     * update the UUID so we remove it from the attrs during import.
+     */
+    public static function prepareAttributes($attrs)
+    {
+        $attrs = parent::prepareAttributes($attrs);
+        $key = Arr::get($attrs, 'key');
+        if (!empty($key)) {
+            // Do not overwrite existing UUID
+            unset($attrs['uuid']);
+        }
+
+        return $attrs;
+    }
+
     public function export() : void
     {
         $this->exportCategories();
