@@ -32,7 +32,7 @@
         </div>
         <hr>
         <div>
-            <b-card>
+            <b-card class="high-elevation">
                 <template #header>
                     <h6 class="mb-0 data-card-header font-weight-bold">[[ Script Name ]]</h6>
                 </template>
@@ -80,6 +80,14 @@ export default {
 
 .process-element-metadata {
     padding-left: 0;
+}
+
+.high-elevation {
+    box-shadow: 0px 8px 10px 1px rgb(0 0 0 / 14%), 0px 3px 14px 2px rgb(0 0 0 / 12%), 0px 5px 5px -3px rgb(0 0 0 / 20%);
+}
+
+.low-elevation {
+    box-shadow: 0px 1px 2px 0px rgb(60 64 67 / 25%), 0px 2px 6px 2px rgb(60 64 67 / 10%);
 }
 
 </style>
