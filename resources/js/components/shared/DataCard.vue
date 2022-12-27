@@ -48,7 +48,7 @@
 
 <script>
 export default {
-    props: ["exportAll"],
+    props: [],
     components: {},
     mixins: [],
     data() {
@@ -59,7 +59,7 @@ export default {
     methods: {      
     },
     mounted() {
-    }
+    },
 }
 </script>
 

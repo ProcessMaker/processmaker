@@ -26,24 +26,6 @@
                     </div>
                 </b-form-radio>
             </b-form-group>
-              <!-- <b-form-group label="Select Export Type" class="medium-font">
-                <div class="pb-1">
-                  <b-form-radio v-model="selected" aria-describedby="basic-export-type" name="basic-export-option" value="basic">
-                    {{ $t("Basic") }}
-                    <div class="helper-text text-muted">
-                        <small id="basic-export-type">{{ $t("Download all related assets.") }}</small>
-                    </div>
-                  </b-form-radio>
-                </div>
-                <div class="pb-1">
-                  <b-form-radio v-model="selected" aria-describedby="custom-export-type" name="custom-export-option" value="custom">
-                    {{ $t("Custom") }}
-                    <div class="helper-text text-muted">
-                        <small id="custom-export-type">{{ $t("Select which assets to include in the export file for a custom export package.") }}</small>
-                    </div>
-                  </b-form-radio>
-                </div>
-              </b-form-group> -->
             </div>
           </div>
           <div class="card-footer bg-light" align="right">
@@ -81,6 +63,7 @@ export default {
       ],
       selectedExportOption: "basic",
       exportInfo: {},
+      // processInfo: {},
     };
   },
   methods: {
