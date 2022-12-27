@@ -28,8 +28,7 @@ class Tree
         foreach ($dependents as $dependent) {
             $exporter = $this->manifest->get($dependent->uuid);
             if ($depth > self::MAX_DEPTH) {
-                // $dependentsInfo = implode(',', array_map(fn ($d) => "($d->type) $d->uuid", $exporter->dependents));
-                throw new \Exception('Max depth exceeded. Do you have a circular reference?');
+                $dependentsInfo = 'Max Depth Exceeded. ' . implode(',', array_map(fn ($d) => "($d->type) $d->uuid", $exporter->dependents));
             } else {
                 $dependentsInfo = $this->treeRecursion($exporter->dependents, $depth + 1);
             }
