@@ -19,23 +19,10 @@
                     <component 
                         :is="currentProcessElement"
                         @processesView="showProcessesView"
+                        :processInfo="processInfo"
                         :processName="processName"
-                        :processDescription="processDescription"
-                        :processCategory="processCategory"
-                        :processManager="processManager"
-                        :processCreatedAt="processCreatedAt"
-                        :processUpdatedAt="processUpdatedAt"
-                        :processUpdatedBy="processUpdatedBy"
                         ></component>
                     </KeepAlive>
-                    <div class="pt-3 card-footer bg-light" align="right">
-                        <button type="button" class="btn btn-outline-secondary">
-                            {{ $t("Cancel") }}
-                        </button>
-                        <button type="button" class="btn btn-primary ml-2">
-                            {{ $t("Export") }}
-                        </button>
-                    </div>
                 </div>
             </b-col>
       <b-col cols="2" />
@@ -65,12 +52,7 @@ export default {
         VocabulariesView,
     },
     props: ["processName",
-    "processDescription",
-    "processCategory",
-    "processManager",
-    "processCreatedAt",
-    "processUpdatedAt",
-    "processUpdatedBy",
+    "processId",
     ],
     mixins: [],
     data() {
@@ -83,6 +65,7 @@ export default {
             "SignalsView",
             "DataConnectorsView",
             "VocabulariesView"],
+            processInfo: {},
         }
     },
     methods: {
@@ -109,6 +92,24 @@ export default {
         }
     },
     mounted() {
+        ProcessMaker.apiClient({
+            url: `export/process/tree/${this.processId}`,
+            method: "GET",
+        })
+        .then((response) => {
+            console.log('response', response);
+            let payload = response.data;
+            console.log('payload', payload);
+            let manifest = payload.manifest;
+            console.log('manifest', manifest);
+            let rootUuid = manifest.root;
+            console.log('rootUuid', rootUuid);
+            this.processInfo = manifest.export[rootUuid];
+            console.log(this.processInfo);
+        })
+        .catch((error) => {
+            ProcessMaker.alert(error.response.data.message, "danger");
+        });
     }
 }
 </script>

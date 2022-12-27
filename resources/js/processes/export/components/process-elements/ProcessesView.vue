@@ -1,16 +1,16 @@
 <template>
     <div class="mb-2">
-        <!-- TODO: Set Up Process Component -->
         <h2>Export Process: {{ processName }}</h2>
         <hr>
         <div>
             <h4>Summary</h4>
-            <ul class="process-summary">
-                <li> Description: <span class="process-metadata">{{ processDescription }}</span></li>
-                <li> Categories: <span class="process-metadata">{{ processCategory }}</span></li>
-                <li> Process Manager: <span class="process-metadata"><b-link>{{ processManager }}</b-link></span></li>
-                <li> Created: <span class="process-metadata">{{ processCreatedAt }}</span></li>
-                <li> Last Modified: <span class="process-metadata">{{ processUpdatedAt }}</span> By: <span class="process-metadata"><b-link>{{ processUpdatedBy }}</b-link></span></li>
+            <ul v-if="processInfo && processInfo.attributes" class="process-summary">
+                <li> Description: <span class="process-metadata">{{ processInfo.attributes.description }}</span></li>
+                <li> Categories: <span class="process-metadata">{{ processInfo.process_category_names }}</span></li>
+                <li> Process Manager: <span class="process-metadata"><b-link>{{ processInfo.process_manager }}</b-link></span></li>
+                <li> Created: <span class="process-metadata">{{ processInfo.attributes.created_at }}</span></li>
+                <li> Last Modified: <span class="process-metadata">{{ processInfo.attributes.updated_at }}</span></li>
+                <li> Modified By: <span class="process-metadata"><b-link>{{ processInfo.last_modified_by }}</b-link></span></li>
             </ul>
         </div>
         <div>
@@ -35,24 +35,31 @@
         </div>
         <hr>
         <data-card :exportAll="exportAll" />
+        <div class="pt-3 card-footer bg-light" align="right">
+            <button type="button" class="btn btn-outline-secondary">
+                {{ $t("Cancel") }}
+            </button>
+            <button type="button" class="btn btn-primary ml-2" @click="onExport">
+                {{ $t("Export") }}
+            </button>
+            <set-password-modal ref="set-password-modal" :processId="processId" :processName="processName" @verifyPassword="exportProcess" />
+        </div>
     </div>
 </template>
 
 <script>
 
 import DataCard from "../../../../components/shared/DataCard.vue";
+import SetPasswordModal from "../SetPasswordModal.vue";
 
 export default {
   props: ["processName",
-    "processDescription",
-    "processCategory",
-    "processManager",
-    "processCreatedAt",
-    "processUpdatedAt",
-    "processUpdatedBy",
-    "exportAll"],
+    "processId",
+    "exportAll",
+    "processInfo"],
     components: {
         DataCard,
+        SetPasswordModal
     },
     mixins: [],
     data() {
@@ -61,10 +68,19 @@ export default {
             exportAllElements: true,
         }
     },
-    methods: {      
+    methods: {
+        showSetPasswordModal() {
+            this.$refs["set-password-modal"].show();
+        },
+        onExport() {
+            this.showSetPasswordModal();
+            console.log(this.processId);
+        },
+        exportProcess() {
+        
+    },
     },
     mounted() {
-        console.log(this.processUpdatedBy);
     },
     watch: {
       exportAllElements() {
