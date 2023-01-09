@@ -1,0 +1,93 @@
+<template>
+  <component
+    :is="component"
+    :href.prop="href"
+    class="sidebar-button m-0 py-2 px-3 rounded-sm d-flex align-items-center"
+    :class="{'font-weight-bold': parent, 'active': active}"
+  >
+    <i
+      v-if="!parent"
+      class="mr-2"
+      :class="`fas fa-fw fa-${icon}`"
+    ></i>
+    <span><slot></slot></span>
+    <i
+      v-if="parent"
+      class="ml-auto fas fa-chevron-down"
+    ></i>
+  </component>
+</template>
+
+<script>
+export default {
+  components: {},
+  props: {
+    href: {
+      type: String,
+      default: null,
+    },
+    active: {
+      type: Boolean,
+      default: false,
+    },
+    parent: {
+      type: Boolean,
+      default: false,
+    },
+    icon: {
+      type: String,
+      default: 'file',
+    }
+  },
+  data() {
+    return {
+      component: 'button',
+    };
+  },
+  mounted() {
+    if (this.href) {
+      this.component = 'a';
+    }
+  },
+  methods: {
+    is() {
+      if (this.href) {
+        return 'a';
+      } else {
+        return 'button';
+      }
+    }
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+@import "../../../sass/variables";
+.sidebar-button {
+  background: transparent;
+  border: 0;
+  color: $darkneutral;
+  text-align: left;
+  text-decoration: none;
+  width: 100%;
+  
+  &:hover {
+    background: $grey-bg-light;
+  }
+  
+  &:active,
+  &.active {
+    background: $grey-bg;
+  }
+  
+  &.active::before {
+    position: absolute;
+    left: 6px;
+    width: 4px;
+    height: 24px;
+    content: "";
+    background-color: #0872c2;
+    border-radius: 6px;
+  }
+}
+</style>
