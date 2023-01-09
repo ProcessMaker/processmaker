@@ -6,6 +6,8 @@
 ## Exporters
 Exporter classes handle both the importing and exporting of a model asset.
 
+See the files in ProcessMaker/ImportExport/Exporters for examples.
+
 In core they should be saved in the ProcessMaker/ImportExport/Exporters folder. In packages, they should be saved in the src/ImportExport folder.
 
 They use a top-down approach to finding dependencies and adding them to the manifest.
@@ -21,9 +23,10 @@ A model asset is any model that has a UUID
   - Logic to run if a column must be unique and already exists on the target instance
 
 ## Exporter Extensions
-
 Extensions are used in packages to extend an Exporter class defined in core
 or in another package.
+
+See the files in https://github.com/ProcessMaker/package-data-sources/tree/feature/FOUR-6769/src/ImportExport for examples.
 
 These should be saved in the same folder as the Exporters and should have the same name as the Exporter it's extending but with the `Extension` suffix.
 
