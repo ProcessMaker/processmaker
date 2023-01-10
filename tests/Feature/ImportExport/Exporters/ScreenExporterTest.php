@@ -4,6 +4,7 @@ namespace Tests\Feature\ImportExport\Exporters;
 
 use Illuminate\Support\Arr;
 use ProcessMaker\ImportExport\Exporter;
+use ProcessMaker\ImportExport\Exporters\ScreenExporter;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Screen;
@@ -114,6 +115,23 @@ class ScreenExporterTest extends TestCase
         $this->assertCount(2, $categories);
         $this->assertContains('category 3', $categories);
         $this->assertContains('category 4', $categories);
+    }
+
+    public function testSeededScreensWithKeyAttribute()
+    {
+        \DB::beginTransaction();
+        $exportedScreen = Screen::factory()->create(['title' => 'exported screen', 'key' => 'foo']);
+        $exportedScreenUuid = $exportedScreen->uuid;
+        $payload = $this->export($exportedScreen, ScreenExporter::class);
+        \DB::rollBack();
+
+        $existingScreen = Screen::factory()->create(['title' => 'existing screen', 'key' => 'foo']);
+        $this->import($payload);
+        $existingScreen->refresh();
+
+        // If a key attribute exists, use the key to find the model, not the UUID
+        $this->assertNotEquals($exportedScreenUuid, $existingScreen->uuid);
+        $this->assertEquals('exported screen', $existingScreen->title);
     }
 
     private function fixtures()

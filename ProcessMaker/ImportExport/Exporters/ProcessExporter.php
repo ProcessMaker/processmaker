@@ -27,6 +27,8 @@ class ProcessExporter extends ExporterBase
 
         $this->addDependent('user', $process->user, UserExporter::class);
 
+        $this->exportScreens();
+
         $this->exportCategories();
 
         $this->exportSignals();
@@ -66,6 +68,8 @@ class ProcessExporter extends ExporterBase
         foreach ($this->getDependents('request-detail-screen') as $dependent) {
             $process->request_detail_screen_id = $dependent->model->id;
         }
+
+        $this->importScreens();
 
         $this->importSubprocesses();
 
@@ -239,6 +243,49 @@ class ProcessExporter extends ExporterBase
                 if ($group) {
                     $this->addDependent(DependentType::GROUP_ASSIGNMENT, $group, GroupExporter::class, $meta);
                 }
+            }
+        }
+    }
+
+    private function exportScreens()
+    {
+        $tags = [
+            'bpmn:task',
+        ];
+
+        foreach (Utils::getElementByMultipleTags($this->model->getDefinitions(true), $tags) as $element) {
+            $path = $element->getNodePath();
+            $meta = [
+                'path' => $path,
+            ];
+
+            $screenId = $element->getAttribute('pm:screenRef');
+            $interstitialScreenId = $element->getAttribute('pm:interstitialScreenRef');
+
+            if (is_numeric($screenId)) {
+                $screen = Screen::findOrFail($screenId);
+                $this->addDependent(DependentType::SCREENS, $screen, ScreenExporter::class, $meta);
+            }
+
+            // Let's check if interstitialScreen exist
+            if (is_numeric($interstitialScreenId)) {
+                $interstitialScreen = Screen::findOrFail($interstitialScreenId);
+                $this->addDependent(DependentType::INTERSTITIAL_SCREEN, $interstitialScreen, ScreenExporter::class, $meta);
+            }
+        }
+    }
+
+    private function importScreens()
+    {
+        foreach ($this->getDependents(DependentType::SCREENS) as $dependent) {
+            $path = $dependent->meta['path'];
+            Utils::setAttributeAtXPath($this->model, $path, 'pm:screenRef', $dependent->model->id);
+        }
+
+        if ($this->getDependents(DependentType::INTERSTITIAL_SCREEN)) {
+            foreach ($this->getDependents(DependentType::INTERSTITIAL_SCREEN) as $interDependent) {
+                $path = $interDependent->meta['path'];
+                Utils::setAttributeAtXPath($this->model, $path, 'pm:interstitialScreenRef', $interDependent->model->id);
             }
         }
     }
