@@ -24,6 +24,18 @@ abstract class ExporterBase implements ExporterInterface
 
     public $originalId = null;
 
+    public static function modelFinder($uuid, $asssetInfo)
+    {
+        return $asssetInfo['model']::where('uuid', $uuid);
+    }
+
+    public static function prepareAttributes($attrs)
+    {
+        unset($attrs['id']);
+
+        return $attrs;
+    }
+
     public function __construct(Model $model, Manifest $manifest)
     {
         $this->model = $model;
