@@ -1,10 +1,12 @@
 ## Terminology
 - Source Instance: The instance of PM4 where you run the export.
 - Target Instance: The instance of PM4 where you run the import.
-- Manifest: An object that contains all the exported assets and and information on how to link them when importing. The json encoded manifest is the export file the users downloads.
-
+- Manifest: An object that contains all the exported assets and information on how to link them when importing. The json encoded manifest is the export file the users downloads.
+- Asset: Any model instance that has a UUID and can be exported. The model class has the trait `Exportable`
+- Dependent: A child asset required by a parent asset to work correctly. For example, a Process asset will have a dependent User asset for the process manager if the process manager is set.
+  
 ## Exporters
-Exporter classes handle both the importing and exporting of a model asset.
+Exporter classes handle both the importing and exporting of an asset.
 
 See the files in ProcessMaker/ImportExport/Exporters for examples.
 
@@ -21,6 +23,8 @@ A model asset is any model that has a UUID
   - Logic to run when importing the model. This is where you re-associate the dependencies to the model. Since IDs change across instances, this is where you will handle that.
 - `handleDuplicateAttributes()` (optional)
   - Logic to run if a column must be unique and already exists on the target instance
+
+See Exporting Assets and Importing Assets below for more information
 
 ## Exporter Extensions
 Extensions are used in packages to extend an Exporter class defined in core
@@ -91,7 +95,15 @@ ScreenExporter::registerExtension(ScreenExporterExtension::class);
 Note: You don't need to register Exporters. Exporters are imported by the ExporterExtension classes.
 
 ## Adding Dependencies
-### Exporting
+### Exporting Assets
+
+Exporting is handled in a top-down manner by getting all an assets dependencies and running their respective exporters.
+
+For example:
+- A Process with a task will need to export the task Screen. The screen is a dependent of the process.
+- If the screen has a script watcher, the script will need to be exported as a dependent of the screen.
+- The script runs as a user, so that user will need to be exported as a dependent of the script.
+
 - `addDependent('name', $modelInstance, ExporterClass::class, $metadata=null)`
   - When a model depends on another model that has a UUID, you use addDependent.
     For example, a Screen reference a Script (in watchers) and another Screen
@@ -118,6 +130,17 @@ Note: You don't need to register Exporters. Exporters are imported by the Export
     ```
 
 ### Importing
+
+Importing is done in the following order for each asset:
+- Find an existing model (based on UUID) or create a new one.
+- Set the attributes on the model from the imported manifest.
+- Save the model.
+- Run any preImport() methods from extensions
+- Run the import() method in the Exporter
+- Run any postImport() methods from extensions
+
+The import() methods is where you link assets to their dependencies. Because IDs are often different 
+
 - `$this->getDependents('name')`
   - Get the dependencies that were exported
     - Params:
@@ -142,7 +165,7 @@ The dependent object contains the reference model as it exists on the target ins
 Properties:
 - model: The dependent model on the target instance. The model has already been saved when you access it here.
 - meta: The metadata that was exported with the dependent object.
-- orginalId: The orginal id as it was on the source instance. To get the new ID, use `$this->model->id`
+- originalId: The original ID as it was on the source instance. To get the ID on the target instance, use `$dependent->model->id`
 
 
 ## Options
