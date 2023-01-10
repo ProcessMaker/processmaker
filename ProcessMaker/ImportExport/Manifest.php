@@ -90,6 +90,12 @@ class Manifest
                 $model->fill($attrs);
                 break;
             case 'discard':
+                $model = null;
+                break;
+            case 'copy':
+                $model = new $class();
+                unset($attrs['uuid']);
+                $model->fill($attrs);
                 break;
             case 'new':
                 $model = new $class();
@@ -97,7 +103,11 @@ class Manifest
                 $model->uuid = $uuid;
                 break;
         }
-        self::handleCasts($model);
+
+        if ($model) {
+            self::handleCasts($model);
+        }
+
         $class::reguard();
 
         return [$mode, $model];

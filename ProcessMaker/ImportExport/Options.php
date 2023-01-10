@@ -24,6 +24,7 @@ class Options
         $this->options = $options;
     }
 
+    // Name can only equal "mode" for now
     public function get($name, $uuid = null)
     {
         if ($uuid) {

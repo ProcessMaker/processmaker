@@ -36,7 +36,7 @@ abstract class ExporterBase implements ExporterInterface
         return $attrs;
     }
 
-    public function __construct(Model $model, Manifest $manifest)
+    public function __construct(?Model $model, Manifest $manifest)
     {
         $this->model = $model;
         $this->manifest = $manifest;
@@ -62,7 +62,7 @@ abstract class ExporterBase implements ExporterInterface
     public function getDependents($type)
     {
         return array_values(
-            array_filter($this->dependents, fn ($d) => $d->type === $type)
+            array_filter($this->dependents, fn ($d) => $d->type === $type && !is_null($d->model))
         );
     }
 
