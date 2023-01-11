@@ -507,6 +507,9 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             case 'user_by_id':
                 $user = $this->getNextUserFromVariable($activity, $token);
                 break;
+            case 'process_variable':
+                $user = $this->getNextUserFromProcessVariable($activity, $token);
+                break;
             case 'requester':
                 $user = $this->getRequester($activity, $token);
                 break;
@@ -613,6 +616,49 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         } catch (Exception $exception) {
             return null;
         }
+    }
+
+    /*
+     * Used to assign a user when the task is assigned by variables that have lists
+     * of users and groups
+     */
+    private function getNextUserFromProcessVariable($activity, $token)
+    {
+        $usersVariable = $activity->getProperty('assignedUsers');
+        $groupsVariable = $activity->getProperty('assignedGroups');
+
+        $dataManager = new DataManager();
+        $instanceData = $dataManager->getData($token);
+
+        $assignedUsers = $instanceData[$usersVariable];
+        $assignedGroups = $instanceData[$groupsVariable];
+
+        if (!is_array($assignedUsers)) {
+            $assignedUsers = [$assignedUsers];
+        }
+
+        if (!is_array($assignedGroups)) {
+            $assignedGroups = [$assignedGroups];
+        }
+
+
+        $users = array_unique($assignedUsers);
+        foreach ($assignedGroups as $groupId) {
+            $this->getConsolidatedUsers($groupId, $users);
+        }
+
+        sort($users);
+
+        $nextAssignee =  $this->getNextUserFromGroupAssignment($activity->getId(), $users);
+
+        return $nextAssignee;
+
+
+//        if (!$user) {
+//            throw new InvalidUserAssignmentException($usersVariable, $userId);
+//        }
+
+        //return $user->id;
     }
 
     /**
