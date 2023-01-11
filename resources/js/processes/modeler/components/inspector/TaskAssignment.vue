@@ -36,15 +36,16 @@
             v-if="showAssignRuleExpression"
             v-model="specialAssignments" 
           />
-            
-          <form-checkbox v-for="configurable in optionsConfigurables"
-            :key="configurable"
-            :label="configurableLabel(configurable)"
-            :checked="getConfigurableValue(configurable)"
-            toggle="true"
-            @change="setConfigurableValue($event, configurable)">
-          </form-checkbox>
-
+          <div v-for="configurable in optionsConfigurables">
+            <h6 class="font-weight-bold" v-if="configurable.startsWith('SECTION_TITLE:')" v-text="configurableLabel(configurable)"></h6>
+            <form-checkbox v-else
+               :key="configurable"
+               :label="configurableLabel(configurable)"
+               :checked="getConfigurableValue(configurable)"
+               toggle="true"
+               @change="setConfigurableValue($event, configurable)">
+            </form-checkbox>
+          </div>
         </div>
     </div>
 </template>
@@ -235,7 +236,16 @@
         }
       },
       configurableLabel(configurable) {
+        if (configurable.substr(0, 'SECTION_TITLE:'.length) === 'SECTION_TITLE:') {
+          configurable = configurable.substr('SECTION_TITLE:'.length);
+        }
         switch (configurable) {
+          case 'ASSIGNMENT_OPTIONS':
+            return this.$t('Assignment Options');
+          case 'ASSIGNEE_PERMISSIONS':
+            return this.$t('Assignee Permissions');
+          case 'SELF_SERVICE':
+            return this.$t('Self Service');
           case 'LOCK_TASK_ASSIGNMENT':
             return this.$t('Lock User Assignment');
           case 'ALLOW_REASSIGNMENT':
