@@ -3,20 +3,19 @@
     <div class="process-name-container">
       <li class="font-weight-bold sidebar-nav">
         <b-link
-          
           :aria-expanded="showProcessElements ? 'true' : 'false'"
           class="sidebar-nav"
         >
           <div class="d-flex justify-content-between align-items-center p-2 active">
             <span>{{ processName }}</span>
             <i
-              @click="showProcessElements = !showProcessElements"
               class="fa chevron"
               :class="{
                 'fa-chevron-right': !showProcessElements,
                 'fa-chevron-down': showProcessElements,
               }"
               style="width: 14px"
+              @click="showProcessElements = !showProcessElements"
             />
           </div>
         </b-link>
@@ -25,52 +24,58 @@
     <div>
       <b-collapse id="processelements" v-model="showProcessElements" :aria-hidden="showProcessElements ? 'false' : 'true'">
         <b-link
-            @click="onScripts"
-            class="sidebar-nav">
-            <li class="nav-list-item">
-                <i class="fas nav-icon fa-code sidebar-nav" />
-                <span>{{ $t("Scripts") }}</span>
-            </li>
+          class="sidebar-nav"
+          @click="onScripts"
+        >
+          <li class="nav-list-item">
+            <i class="fas nav-icon fa-code sidebar-nav" />
+            <span>{{ $t("Scripts") }}</span>
+          </li>
         </b-link>
         <b-link
+          class="sidebar-nav"
           @click="onScreens"
-          class="sidebar-nav">
-            <li class="nav-list-item">
-                <i class="fas nav-icon fa-file-alt sidebar-nav" />
-                <span>{{ $t("Screens") }}</span>
-            </li>
+        >
+          <li class="nav-list-item">
+            <i class="fas nav-icon fa-file-alt sidebar-nav" />
+            <span>{{ $t("Screens") }}</span>
+          </li>
         </b-link>
         <b-link
+          class="sidebar-nav"
           @click="onEnvironmentVariables"
-          class="sidebar-nav">
-            <li class="nav-list-item">
-                <i class="fas nav-icon fa-lock sidebar-nav" />
-                <span>{{ $t("Environment Variables") }}</span>
-            </li>
+        >
+          <li class="nav-list-item">
+            <i class="fas nav-icon fa-lock sidebar-nav" />
+            <span>{{ $t("Environment Variables") }}</span>
+          </li>
         </b-link>
         <b-link
+          class="sidebar-nav"
           @click="onSignals"
-          class="sidebar-nav">
-            <li class="nav-list-item">
-                <i class="fas nav-icon bpmn-icon-end-event-signal" />
-                <span>{{ $t("Signals") }}</span>
-            </li>
+        >
+          <li class="nav-list-item">
+            <i class="fas nav-icon bpmn-icon-end-event-signal" />
+            <span>{{ $t("Signals") }}</span>
+          </li>
         </b-link>
         <b-link
+          class="sidebar-nav"
           @click="onDataConnectors"
-          class="sidebar-nav">
-            <li class="nav-list-item">
-                <i class="fas nav-icon fa-cog" />
-                <span>{{ $t("Data Connectors") }}</span>
-            </li>
+        >
+          <li class="nav-list-item">
+            <i class="fas nav-icon fa-cog" />
+            <span>{{ $t("Data Connectors") }}</span>
+          </li>
         </b-link>
         <b-link
+          class="sidebar-nav"
           @click="onVocabularies"
-          class="sidebar-nav">
-            <li class="nav-list-item">
-                <i class="fas nav-icon fa-book" />
-                <span>{{ $t("Vocabularies") }}</span>
-            </li>
+        >
+          <li class="nav-list-item">
+            <i class="fas nav-icon fa-book" />
+            <span>{{ $t("Vocabularies") }}</span>
+          </li>
         </b-link>
       </b-collapse>
     </div>

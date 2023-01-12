@@ -6,7 +6,7 @@
       :subtitle="$t('This password will be required when importing the exported package/process.')"
       :ok-title="$t('Export')"
       :ok-disabled="disabled" 
-      @ok.prevent="verifyPassword" 
+      @ok.prevent="verifyPassword"
       @hidden="onClose"
     >
       <template>

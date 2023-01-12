@@ -1,9 +1,9 @@
 <template>
     <div class="mb-2">
-        <h2>Export Process: {{ processName }}</h2>
-        <hr>
+        <!-- <h2>Export Process: {{ processName }}</h2>
+        <hr> -->
         <div>
-            <h4>Summary</h4>
+            <!-- <h4>Summary</h4> -->
             <ul v-if="processInfo && processInfo.attributes" class="process-summary">
                 <li> Description: <span class="process-metadata">{{ processInfo.attributes.description }}</span></li>
                 <li> Categories: <span class="process-metadata">{{ processInfo.process_category_names }}</span></li>

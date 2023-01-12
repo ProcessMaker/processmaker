@@ -186,6 +186,11 @@ class ProcessController extends Controller
         return view('processes.export', compact('process'));
     }
 
+    public function nav()
+    {
+        return view('processes.nav');
+    }
+
     public function import(Process $process)
     {
         return view('processes.import');

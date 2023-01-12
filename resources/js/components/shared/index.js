@@ -13,6 +13,10 @@ import FileUploadButton from "./FileUploadButton";
 import FormErrorsMixin from "./FormErrorsMixin";
 import IconSelector from "./IconSelector";
 import Modal from "./Modal";
+import PTab from "./PTab";
+import PTabs from "./PTabs";
+import SidebarButton from "./SidebarButton";
+import SidebarNav from "./SidebarNav";
 import SidebarNavigation from "./SidebarNavigation";
 import Required from "./Required";
 
@@ -32,6 +36,10 @@ export {
   FormErrorsMixin,
   IconSelector,
   Modal,
+  PTab,
+  PTabs,
+  SidebarButton,
+  SidebarNav,
   SidebarNavigation,
   Required,
 };
