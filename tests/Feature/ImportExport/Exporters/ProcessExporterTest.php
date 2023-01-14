@@ -140,7 +140,10 @@ class ProcessExporterTest extends TestCase
 
     public function testSubprocesses()
     {
+        $screen = Screen::factory()->create(['title' => 'Screen A']);
         $parentProcess = $this->createProcess('process-with-different-kinds-of-call-activities', ['name' => 'parent']);
+        Utils::setAttributeAtXPath($parentProcess, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:screenRef', $screen->id);
+        Utils::setAttributeAtXPath($parentProcess, '/bpmn:definitions/bpmn:process/bpmn:task[2]', 'pm:screenRef', $screen->id);
         $subProcess = $this->createProcess('basic-process', ['name' => 'sub']);
         $packageProcess = $this->createProcess('basic-process', ['name' => 'package', 'package_key' => 'foo']);
 
@@ -148,7 +151,8 @@ class ProcessExporterTest extends TestCase
         Utils::setAttributeAtXPath($parentProcess, '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]', 'calledElement', 'ProcessId-' . $subProcess->id);
         $parentProcess->save();
 
-        $this->runExportAndImport($parentProcess, ProcessExporter::class, function () use ($parentProcess, $subProcess, $packageProcess) {
+        $this->runExportAndImport($parentProcess, ProcessExporter::class, function () use ($parentProcess, $subProcess, $packageProcess, $screen) {
+            $screen->forceDelete();
             $subProcess->forceDelete();
             $parentProcess->forceDelete();
             $packageProcess->forceDelete();
@@ -163,5 +167,65 @@ class ProcessExporterTest extends TestCase
         $this->assertEquals('ProcessId-' . $subProcess->id, Utils::getPmConfig($element)['calledElement']);
         $this->assertEquals($subProcess->id, Utils::getPmConfig($element)['processId']);
         $this->assertEquals(0, Process::where('name', 'package')->count());
+    }
+
+    public function testProcessTaskScreen()
+    {
+        // Create process from template
+        $process = $this->createProcess('process-with-task-screen', ['name' => 'Process with task']);
+        // Create screens
+        $screenA = Screen::factory()->create(['title' => 'Screen A', 'type' => 'FORM']);
+        $screenB = Screen::factory()->create(['title' => 'Screen B', 'type' => 'FORM']);
+        $interstitialScreen = Screen::factory()->create(['title' => 'Interstitial Screen', 'type' => 'DISPLAY']);
+
+        // Set id's of screens
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:screenRef', $screenA->id);
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:interstitialScreenRef', $interstitialScreen->id);
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[2]', 'pm:screenRef', $screenB->id);
+        $process->save();
+
+        // Export and Import process
+        $this->runExportAndImport($process, ProcessExporter::class, function () use ($process, $screenA, $screenB, $interstitialScreen) {
+            $process->forceDelete();
+            $screenA->forceDelete();
+            $screenB->forceDelete();
+            $interstitialScreen->forceDelete();
+            $this->assertDatabaseMissing('processes', ['name' => $process->name]);
+            $this->assertDatabaseMissing('screens', ['title' => $screenA->title]);
+            $this->assertDatabaseMissing('screens', ['title' => $screenB->title]);
+            $this->assertDatabaseMissing('screens', ['title' => $interstitialScreen->title]);
+        });
+
+        // Assert that the process and screen exist in the database
+        $this->assertDatabaseHas('processes', ['name' => $process->name]);
+        $this->assertDatabaseHas('screens', ['title' => $screenA->title]);
+        $this->assertDatabaseHas('screens', ['title' => $screenB->title]);
+        $this->assertDatabaseHas('screens', ['title' => $interstitialScreen->title]);
+
+        // Get imported process
+        $process = Process::where('name', 'Process with task')->firstOrFail();
+
+        // Get task config
+        $tasks = [
+            '/bpmn:definitions/bpmn:process/bpmn:task[1]' => ['title' => $screenA->title, 'interstitialTitle' => $interstitialScreen->title],
+            '/bpmn:definitions/bpmn:process/bpmn:task[2]' => ['title' => $screenB->title],
+        ];
+
+        // Assert that screens have been imported properly
+        $definitions = $process->getDefinitions(true);
+        foreach ($tasks as $path => $taskScreen) {
+            $element = Utils::getElementByPath($definitions, $path);
+
+            $screenRef = $element->getAttribute('pm:screenRef');
+            $interstitialScreenRef = $element->getAttribute('pm:interstitialScreenRef');
+            $importedScreen = Screen::where('id', $screenRef)->firstOrFail();
+
+            $this->assertEquals($importedScreen->title, $taskScreen['title']);
+
+            if (is_numeric($interstitialScreenRef)) {
+                $importedInterstitialScreen = Screen::where('id', $interstitialScreenRef)->firstOrFail();
+                $this->assertEquals($importedInterstitialScreen->title, $taskScreen['interstitialTitle']);
+            }
+        }
     }
 }

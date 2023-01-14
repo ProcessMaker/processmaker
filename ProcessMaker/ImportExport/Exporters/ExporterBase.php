@@ -24,7 +24,19 @@ abstract class ExporterBase implements ExporterInterface
 
     public $originalId = null;
 
-    public function __construct(Model $model, Manifest $manifest)
+    public static function modelFinder($uuid, $asssetInfo)
+    {
+        return $asssetInfo['model']::where('uuid', $uuid);
+    }
+
+    public static function prepareAttributes($attrs)
+    {
+        unset($attrs['id']);
+
+        return $attrs;
+    }
+
+    public function __construct(?Model $model, Manifest $manifest)
     {
         $this->model = $model;
         $this->manifest = $manifest;
@@ -50,7 +62,7 @@ abstract class ExporterBase implements ExporterInterface
     public function getDependents($type)
     {
         return array_values(
-            array_filter($this->dependents, fn ($d) => $d->type === $type)
+            array_filter($this->dependents, fn ($d) => $d->type === $type && !is_null($d->model))
         );
     }
 

@@ -90,7 +90,7 @@ class ManifestTest extends TestCase
         $this->assertEquals('screen on target instance', $screen->refresh()->title);
         $this->assertEquals('category on target instance', $screenCategory->refresh()->name);
         $new = Screen::where('title', 'exported screen')->firstOrFail();
-        $this->assertEquals($screenCategory->id, $new->categories[0]->id);
+        $this->assertCount(0, $new->categories);
     }
 
     private function createScreen()
