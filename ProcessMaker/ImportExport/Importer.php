@@ -37,7 +37,11 @@ class Importer
             Schema::disableForeignKeyConstraints();
             foreach ($this->manifest->all() as $exporter) {
                 if ($exporter->importMode !== 'discard') {
-                    $exporter->model->save();
+                    if ($exporter->disableEventsWhenImporting) {
+                        $exporter->model->saveQuietly();
+                    } else {
+                        $exporter->model->save();
+                    }
                 }
             }
             Schema::enableForeignKeyConstraints();

@@ -24,6 +24,8 @@ abstract class ExporterBase implements ExporterInterface
 
     public $originalId = null;
 
+    public $disableEventsWhenImporting = false;
+
     public static function modelFinder($uuid, $asssetInfo)
     {
         return $asssetInfo['model']::where('uuid', $uuid);
