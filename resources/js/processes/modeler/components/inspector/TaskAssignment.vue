@@ -18,27 +18,25 @@
             v-if="showAssignments"
             :label="$t('Assigned Users/Groups')"
             v-model="assignments"
-            :hide-users="hideUsers" 
+            :hide-users="hideUsers"
             :multiple="true" />
-          
-          <user-by-id
-              v-if="showAssignUserById"
-              :label="$t('Variable Name')"
-              v-model="assigned"
-              :helper="$t('Variable containing the numeric User ID')"
-          ></user-by-id>
 
-          <self-service-select v-if="showAssignSelfService" 
-            v-model="assignments"
-          ></self-service-select>
+          <div v-if="showAssignByVariable">
+            <label>{{ $t('Variable Name (users)') }}</label>
+            <b-form-input v-model="assignedUsersVar" />
 
-          <assign-expression 
+            <label>{{ $t('Variable Name (groups)') }}</label>
+            <b-form-input v-model="assignedGroupsVar" />
+            <small v-if="helper" class="form-text text-muted" >{{ $t(helper) }}</small>
+          </div>
+
+          <assign-expression
             v-if="showAssignRuleExpression"
             v-model="specialAssignments" 
           />
           <div v-for="configurable in optionsConfigurables">
             <h6 class="font-weight-bold" v-if="configurable.startsWith('SECTION_TITLE:')" v-text="configurableLabel(configurable)"></h6>
-            <form-checkbox v-else
+            <form-checkbox v-else-if="configurable !== 'SELF_SERVICE' || (configurable === 'SELF_SERVICE' && showAssignSelfService)"
                :key="configurable"
                :label="configurableLabel(configurable)"
                :checked="getConfigurableValue(configurable)"
@@ -118,6 +116,22 @@
       assignedGroupGetter () {
         return _.get(this.node, "assignedGroups");
       },
+      assignedUsersVar: {
+        get () {
+          return _.get(this.node, "assignedUsers");
+        },
+        set (value) {
+          this.$set(this.node, "assignedUsers", value);
+        }
+      },
+      assignedGroupsVar: {
+        get () {
+          return _.get(this.node, "assignedGroups");
+        },
+        set (value) {
+          this.$set(this.node, "assignedGroups", value);
+        }
+      },
       assignments: {
         get () {
           let value = [],
@@ -176,8 +190,8 @@
           this.$set(this.node, "assignment", value);
         }
       },
-      showAssignUserById () {
-        return this.assignment === "user_by_id";
+      showAssignByVariable () {
+        return this.assignment === "process_variable";
       },
       showAssignments() {
         this.hideUsers = this.assignment === "self_service";
@@ -185,7 +199,7 @@
         return assign.indexOf(this.assignment) !== -1;
       },
       showAssignSelfService () {
-        return this.assignment === "self_service";
+        return ['process_variable', 'user_group', 'rule_expression'].includes(this.assignment);
       },
       showAssignRuleExpression () {
         return this.assignment === 'rule_expression';

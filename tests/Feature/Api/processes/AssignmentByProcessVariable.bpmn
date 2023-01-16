@@ -7,7 +7,7 @@
     <bpmn:startEvent id="start_node" name="Start Event" pm:allowInterstitial="false" pm:config="{&#34;web_entry&#34;:null}">
       <bpmn:outgoing>start_to_task1_flow</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:manualTask id="task1_node" name="Task 1" pm:allowInterstitial="false" pm:assignment="process_variable" pm:assignedUsers="usersVariable" pm:assignedGroups="groupsVariable" pm:assignmentLock="false" pm:allowReassignment="false">
+    <bpmn:manualTask id="task1_node" name="Task 1" pm:allowInterstitial="false" pm:assignment="process_variable" pm:assignedUsers="usersVariable" pm:assignedGroups="groupsVariable" pm:assignmentLock="false" pm:allowReassignment="false" pm:config="{&#34;selfService&#34;:[IS_SELF_SERVICE]}">
       <bpmn:incoming>start_to_task1_flow</bpmn:incoming>
       <bpmn:outgoing>task1_to_end_flow</bpmn:outgoing>
     </bpmn:manualTask>

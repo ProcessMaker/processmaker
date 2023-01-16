@@ -95,8 +95,10 @@ class TokenRepository implements TokenRepositoryInterface
         $token->user_id = $user ? $user->getKey() : null;
 
         $token->is_self_service = 0;
-        if ($token->getAssignmentRule() === 'self_service') {
-            if ($user) {
+        //tododante may be, simplify the logical conditions
+        \Illuminate\Support\Facades\Log::Critical(__LINE__ ."  => " .  __FUNCTION__ ."-> is self service:". print_r($token->is_self_service, true));
+        if ($token->getAssignmentRule() === 'self_service' || $token->getSelfServiceAttribute()) {
+            if ($user && !$token->getSelfServiceAttribute()) {
                 // A user is already assigned (from assignmentLock) so do not
                 // treat this as a self-service task
                 $token->is_self_service = 0;
@@ -104,6 +106,7 @@ class TokenRepository implements TokenRepositoryInterface
                 $token->is_self_service = 1;
             }
         }
+        \Illuminate\Support\Facades\Log::Critical(__LINE__ ."  => " .  __FUNCTION__ ."-> is self service:". print_r($token->is_self_service, true));
 
         $selfServiceTasks = $token->getInstance()->processVersion->self_service_tasks;
         $token->self_service_groups = $selfServiceTasks && isset($selfServiceTasks[$activity->getId()]) ? $selfServiceTasks[$activity->getId()] : [];

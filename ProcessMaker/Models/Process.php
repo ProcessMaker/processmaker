@@ -489,6 +489,10 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         $properties = $definitions->findElementById($activity->getId())->getBpmnElementInstance()->getProperties();
         $assignmentLock = array_key_exists('assignmentLock', $properties) ? $properties['assignmentLock'] : false;
 
+        //dantetodo verify if it is necessary to have the selfService toggle value inside config or to create a new pm: xml atribute
+        $config = array_key_exists('config', $properties) ? json_decode($properties['config'], true) : [];
+        $selfService = array_key_exists('selfService', $config) ? $config['selfService'] : false;
+
         if (filter_var($assignmentLock, FILTER_VALIDATE_BOOLEAN) === true) {
             $user = $this->getLastUserAssignedToTask($activity->getId(), $token->getInstance()->getId());
             if ($user) {
@@ -496,6 +500,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             }
         }
 
+        \Illuminate\Support\Facades\Log::Critical(__LINE__ ."  => " .  __FUNCTION__ ."-> assign type: ". print_r($assignmentType, true));
         switch ($assignmentType) {
             case 'user_group':
             case 'group':
@@ -547,12 +552,18 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      */
     private function checkAssignment(ProcessRequest $request, ActivityInterface $activity, $assignmentType, $escalateToManager, User $user = null)
     {
+
+        //dantetodo have a helper that extract the config of an activity or token
+        $config = $activity->getProperty('config') ? json_decode($activity->getProperty('config'), true) : [];
+        $selfServiceToggle = array_key_exists('selfService', $config) ? $config['selfService'] : false;
+        $isSelfService = $selfServiceToggle || $assignmentType === 'self_service';
+
         if ($activity instanceof ScriptTaskInterface
             || $activity instanceof ServiceTaskInterface) {
             return $user;
         }
         if ($user === null) {
-            if ($assignmentType === 'self_service' && !$escalateToManager) {
+            if ($isSelfService && !$escalateToManager) {
                 return null;
             }
             $user = $request->processVersion->manager;
@@ -624,6 +635,11 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      */
     private function getNextUserFromProcessVariable($activity, $token)
     {
+        // self service tasks should not have a next user
+        if ($token->getSelfServiceAttribute()) {
+            return null;
+        }
+
         $usersVariable = $activity->getProperty('assignedUsers');
         $groupsVariable = $activity->getProperty('assignedGroups');
 
@@ -650,6 +666,8 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         sort($users);
 
         $nextAssignee =  $this->getNextUserFromGroupAssignment($activity->getId(), $users);
+
+        \Illuminate\Support\Facades\Log::Critical(__LINE__ ."  => " .  __FUNCTION__ ."-> next asignee". print_r($nextAssignee, true));
 
         return $nextAssignee;
 
