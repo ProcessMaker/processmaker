@@ -25,7 +25,7 @@ class CssOverrideController extends Controller
     ];
 
     /**
-     * Create a new Settings css-override
+     * Create or update a new setting.
      *
      * @param Request $request
      *
@@ -33,9 +33,9 @@ class CssOverrideController extends Controller
      *
      * @OA\Post(
      *     path="/customize-ui",
-     *     summary="Create or update a new setting",
+     *     summary="Create or update a new setting.",
      *     operationId="updateCssSetting",
-     *     tags={"CssSettings"},
+     *     tags={"CSS Settings"},
      *     @OA\RequestBody(
      *       required=true,
      *       @OA\JsonContent(

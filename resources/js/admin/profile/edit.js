@@ -1,4 +1,4 @@
-import Vue from "vue";
-import VuePassword from "vue-password";
+import { Container, ContainerPage } from "SharedComponents";
 
-Vue.component("VuePassword", VuePassword);
+Vue.component("Container", Container);
+Vue.component("ContainerPage", ContainerPage);
