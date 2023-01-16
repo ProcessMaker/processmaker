@@ -40,6 +40,19 @@ class ExportController extends Controller
     }
 
     /**
+     * Return only the manifest
+     */
+    public function manifest(string $type, int $id): JsonResponse
+    {
+        $model = $this->getModel($type)->findOrFail($id);
+
+        $exporter = new Exporter();
+        $exporter->export($model, $this->types[$type][1]);
+
+        return response()->json($exporter->payload(), 200);
+    }
+
+    /**
      * Download the JSON export file.
      */
     public function download(ExportRequest $request, string $type, int $id)
