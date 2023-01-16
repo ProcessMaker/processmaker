@@ -19,9 +19,13 @@
 
 <div id="nav-test">
     <pm-container>
+        Home Content with var: @{{ testSomething }}
         <pm-content header="Item 1">Item 1</pm-content>
-        <pm-content header="Item 2">Item 2</pm-content>
-        <pm-content header="Item 3">Item 3</pm-content>
+        <pm-content header="Item 2">
+            <pm-content header="Item 2 Nested Item 1">Nested item</pm-content>
+            Item 2
+        </pm-content>
+        <pm-content header="Item 3">Item 3 @{{ testSomething }}</pm-content>
     </pm-container>
 </div>
 
