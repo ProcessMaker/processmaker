@@ -147,7 +147,9 @@ class TaskAssignmentByVariableTest extends TestCase
 
         $task = ProcessRequestToken::where([ 'process_request_id' => $requestId, 'status' => 'ACTIVE', ])->firstOrFail();
         $this->assertEquals(1, $task->is_self_service);
-        // as it is self service the user must be null
+        // As it is self service the user must be null
         $this->assertEquals(null, $task->user_id);
+        // The column self_service_groups should have the configured groups and users
+        $this->assertEquals(["users" => [$user->id], "groups" =>[$group->id]], $task->self_service_groups);
     }
 }

@@ -110,6 +110,23 @@ class TokenRepository implements TokenRepositoryInterface
 
         $selfServiceTasks = $token->getInstance()->processVersion->self_service_tasks;
         $token->self_service_groups = $selfServiceTasks && isset($selfServiceTasks[$activity->getId()]) ? $selfServiceTasks[$activity->getId()] : [];
+
+        //tododante if self service task is enabled with the toggle
+        if($token->getSelfServiceAttribute()) {
+            $selfServiceUsers = !empty($token->getDefinition()['assignedUsers']) ? $token->getDefinition()['assignedUsers'] : [];
+            $selfServiceGroups = !empty($token->getDefinition()['assignedGroups']) ? $token->getDefinition()['assignedGroups'] : [];
+            //tododante for each assign type that supports sel service, add the logic here
+            switch ($activity->getProperty('assignment')) {
+                case 'user_group':
+                case 'process_variable':
+                case 'expression??':
+                    $evaluatedUsers = $token->getInstance()->getDataStore()->getData($selfServiceUsers);
+                    $evaluatedGroups = $token->getInstance()->getDataStore()->getData($selfServiceGroups);
+                    $token->self_service_groups = ['users' => $evaluatedUsers, 'groups' => $evaluatedGroups];
+                    break;
+            }
+        }
+
         //Default 3 days of due date
         $due = $activity->getProperty('dueIn', '72');
         $token->due_at = $due ? Carbon::now()->addHours($due) : null;
