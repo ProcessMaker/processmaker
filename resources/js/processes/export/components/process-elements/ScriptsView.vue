@@ -1,9 +1,8 @@
 <template>
     <div class="mb-2">
-        <h2>Export Process: {{ processName }}</h2>
         <hr>
-        <div>
-            <h4>Scripts</h4>
+        <div v-for="(item, i) in items" :key="i">
+            <h4>{{ item.name }}</h4>
             <div v-if="exportAll">
                 <h6>Export Status:
                     <b-badge
@@ -53,7 +52,7 @@
 <script>
 
 export default {
-    props: ["processName","exportAll"],
+    props: ["items"],
     components: {
     },
     mixins: [],

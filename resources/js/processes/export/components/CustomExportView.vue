@@ -1,4 +1,26 @@
 <template>
+    <div>
+    <container ref="container">
+        {{ root }}
+        <container-page ref="home" parent active :link-text="root.name" :header="'header here'">
+            <ProcessesView
+                @processesView="showProcessesView"
+                :processInfo="root"
+                :processName="processName"
+            />
+        </container-page>
+        <container-page v-for="(group, i) in groups" :key="i" :header="group.type" icon="user">
+            <ScriptsView
+                @processesView="showProcessesView"
+                :items="group"
+            />
+        </container-page>
+    </container>
+
+
+
+
+    <hr>
     <div class="custom-export-container container pt-3">
         <b-row>
             <b-col cols="3" class="border-right">
@@ -28,6 +50,7 @@
       <b-col cols="2" />
         </b-row>
     </div>
+    </div>
 </template>
 
 <script>
@@ -39,6 +62,8 @@ import EnvironmentVariablesView from "./process-elements/EnvironmentVariablesVie
 import SignalsView from "./process-elements/SignalsView.vue";
 import DataConnectorsView from "./process-elements/DataConnectorsView.vue";
 import VocabulariesView from "./process-elements/VocabulariesView.vue";
+import { Container, ContainerPage } from "SharedComponents";
+import DataProvider from '../DataProvider';
 
 export default {
     components: {
@@ -50,6 +75,8 @@ export default {
         SignalsView,
         DataConnectorsView,
         VocabulariesView,
+        Container,
+        ContainerPage,
     },
     props: ["processName",
     "processId",
@@ -66,11 +93,17 @@ export default {
             "DataConnectorsView",
             "VocabulariesView"],
             processInfo: {},
+
+            root: {},
+            groups: [],
         }
     },
     methods: {
         showProcessesView() {
-            this.currentProcessElement = ProcessesView;
+            
+            this.$refs.container.goTo(0);
+            // this.$refs.home.setToActive();
+            // this.currentProcessElement = ProcessesView;
         },
         showScriptsView() {
             this.currentProcessElement = ScriptsView;
@@ -92,23 +125,23 @@ export default {
         }
     },
     mounted() {
-        ProcessMaker.apiClient({
-            url: `export/process/tree/${this.processId}`,
-            method: "GET",
-        })
+        DataProvider.getManifest(this.processId)
         .then((response) => {
-            console.log('response', response);
-            let payload = response.data;
-            console.log('payload', payload);
-            let manifest = payload.manifest;
-            console.log('manifest', manifest);
-            let rootUuid = manifest.root;
-            console.log('rootUuid', rootUuid);
-            this.processInfo = manifest.export[rootUuid];
-            console.log(this.processInfo);
+            console.log("OUTPUT from data provider", response);
+            // console.log('response', response);
+            // let payload = response.data;
+            // console.log('payload', payload);
+            // let manifest = payload.manifest;
+            // console.log('manifest', manifest);
+            // let rootUuid = manifest.root;
+            // console.log('rootUuid', rootUuid);
+            // this.processInfo = manifest.export[rootUuid];
+            // console.log(this.processInfo);
+            this.root = response.root;
+            this.groups = response.groups;
         })
         .catch((error) => {
-            ProcessMaker.alert(error.response.data.message, "danger");
+            ProcessMaker.alert(error, "danger");
         });
     }
 }
