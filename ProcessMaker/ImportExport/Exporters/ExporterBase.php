@@ -61,8 +61,14 @@ abstract class ExporterBase implements ExporterInterface
         $this->dependents[] = new Dependent($type, $uuid, $this->manifest, $meta);
     }
 
-    public function getDependents($type)
+    public function getDependents($type = null)
     {
+        if (!$type) {
+            return array_values(
+                array_filter($this->dependents, fn ($d) => !is_null($d->model))
+            );
+        }
+
         return array_values(
             array_filter($this->dependents, fn ($d) => $d->type === $type && !is_null($d->model))
         );
