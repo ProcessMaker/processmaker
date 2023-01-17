@@ -1,20 +1,23 @@
 <template>
     <div>
+    {{ groups.length }}
     <container ref="container">
-        {{ root }}
-        <container-page ref="home" parent active :link-text="root.name" :header="'header here'">
+        <container-page ref="home" parent active :header="rootAsset.name">
             <ProcessesView
                 @processesView="showProcessesView"
-                :processInfo="root"
+                :processInfo="rootAsset"
                 :processName="processName"
             />
         </container-page>
-        <container-page v-for="(group, i) in groups" :key="i" :header="group.type" icon="user">
-            <ScriptsView
+        <template v-for="group in groups">
+        <container-page :header="group.type" icon="user">
+            <!-- <ScriptsView
                 @processesView="showProcessesView"
-                :items="group"
-            />
+                :items="group.items"
+            /> -->
+            foobar
         </container-page>
+        </template>
     </container>
 
 
@@ -94,7 +97,7 @@ export default {
             "VocabulariesView"],
             processInfo: {},
 
-            root: {},
+            rootAsset: {},
             groups: [],
         }
     },
@@ -137,10 +140,11 @@ export default {
             // console.log('rootUuid', rootUuid);
             // this.processInfo = manifest.export[rootUuid];
             // console.log(this.processInfo);
-            this.root = response.root;
+            this.rootAsset = response.root;
             this.groups = response.groups;
         })
         .catch((error) => {
+          console.log(error);
             ProcessMaker.alert(error, "danger");
         });
     }

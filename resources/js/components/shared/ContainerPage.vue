@@ -1,8 +1,10 @@
 <template>
+<div>
   <div class="container-page" v-if="isActive">
     <h3 class="border-bottom">{{ header }}</h3>
     <h4>{{ subheader }}</h4>
     <slot></slot>
+  </div>
   </div>
 </template>
 

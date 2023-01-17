@@ -1,7 +1,7 @@
 <template>
     <div class="mb-2">
         <hr>
-        <div v-for="(item, i) in items" :key="i">
+        <div>
             <h4>{{ item.name }}</h4>
             <div v-if="exportAll">
                 <h6>Export Status:
@@ -30,7 +30,7 @@
             <b-link @click="returnToSummary">Return to Summary</b-link>
         </div>
         <hr>
-        <div>
+        <div v-for="(item, i) in items" :key="i">
             <b-card class="high-elevation">
                 <template #header>
                     <h6 class="mb-0 data-card-header font-weight-bold">[[ Script Name ]]</h6>

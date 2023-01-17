@@ -34,7 +34,9 @@
             </b-form-group>
         </div>
         <hr>
-        <data-card :exportAll="exportAll" />
+        <div>
+            <data-card :exportAll="exportAll" />
+        </div>
         <div class="pt-3 card-footer bg-light" align="right">
             <button type="button" class="btn btn-outline-secondary">
                 {{ $t("Cancel") }}

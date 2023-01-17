@@ -2,6 +2,7 @@
   <div class="container card p-3">
     <div class="row">
       <div class="col-sm-3 col-lg-3 border-right" ref="sidebar">
+        {{ pages }}
         <sidebar-nav @navigate="onNavigate" :header="header" :link-text="linkText" :pages="pages"></sidebar-nav>
       </div>
       <div class="col-sm-9 col-lg-6" ref="content">
@@ -55,6 +56,7 @@
         this.active.setToActive();
       },
       findPages() {
+        console.log(this.$children);
         this.$children.forEach(child => {
           if (child.$options._componentTag == 'container-page') {
             this.pages.push(child);
