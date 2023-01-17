@@ -27,23 +27,24 @@ export default {
       type: String,
       default: null,
     },
-    page: {
-      
-    }
+    // page: { },
+    active: { },
+    parent: { },
+    icon: { },
   },
   data() {
     return {
       component: 'button',
-      active: this.page.active,
-      parent: this.page.parent,
-      icon: this.page.icon,
+      // active: this.page.active,
+      // parent: this.page.parent,
+      // icon: this.page.icon,
     };
   },
   mounted() {
-    if (this.href) {
-      this.component = 'a';
-    }
-    this.page.button = this;
+    // if (this.href) {
+    //   this.component = 'a';
+    // }
+    // this.page.button = this;
   },
   methods: {
     is() {

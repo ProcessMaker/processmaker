@@ -1,58 +1,23 @@
 <template>
     <div>
-    {{ groups.length }}
-    <container ref="container">
-        <container-page ref="home" parent active :header="rootAsset.name">
-            <ProcessesView
-                @processesView="showProcessesView"
-                :processInfo="rootAsset"
-                :processName="processName"
-            />
-        </container-page>
-        <template v-for="group in groups">
-        <container-page :header="group.type" icon="user">
-            <!-- <ScriptsView
-                @processesView="showProcessesView"
-                :items="group.items"
-            /> -->
-            foobar
-        </container-page>
-        </template>
-    </container>
-
-
-
-
-    <hr>
-    <div class="custom-export-container container pt-3">
-        <b-row>
-            <b-col cols="3" class="border-right">
-                <sidebar-navigation 
-                ref="sidebar-navigation" 
-                :processName="processName" 
-                @scriptsView="showScriptsView"
-                @screensView="showScreensView"
-                @environmentVariablesView="showEnvironmentVariablesView"
-                @signalsView="showSignalsView"
-                @dataConnectorsView="showDataConnectorsView"
-                @vocabulariesView="showVocabulariesView"
-                ></sidebar-navigation>
-            </b-col>
-            <b-col cols="7" class="data-container">
-                <div>
-                    <KeepAlive>
-                    <component 
-                        :is="currentProcessElement"
+        <container :sidenav="sidenav">
+            <template v-slot:default="slotProps">
+                <container-page :active="slotProps.activeIndex === 0">
+                    <ProcessesView
                         @processesView="showProcessesView"
-                        :processInfo="processInfo"
+                        :processInfo="rootAsset"
                         :processName="processName"
-                        ></component>
-                    </KeepAlive>
-                </div>
-            </b-col>
-      <b-col cols="2" />
-        </b-row>
-    </div>
+                    />
+                </container-page>
+                <container-page v-for="(group, i) in groups" :key="i" :active="slotProps.activeIndex === i + 1">
+                    <ScriptsView
+                        :type="group.type"
+                        :items="group.items"
+                    />
+                </container-page>
+            </template>
+        </container>
+    
     </div>
 </template>
 
@@ -67,6 +32,11 @@ import DataConnectorsView from "./process-elements/DataConnectorsView.vue";
 import VocabulariesView from "./process-elements/VocabulariesView.vue";
 import { Container, ContainerPage } from "SharedComponents";
 import DataProvider from '../DataProvider';
+
+const ICONS = {
+    User: 'user',
+    Group: 'users',
+};
 
 export default {
     components: {
@@ -127,6 +97,23 @@ export default {
             this.currentProcessElement = VocabulariesView;
         }
     },
+    computed: {
+        sidenav() {
+            console.log("GROUP", this.groups);
+            let items = [
+                { title: this.rootAsset.name, icon: null, },
+            ];
+
+            this.groups.forEach(group => {
+                items.push({
+                    title: group.type,
+                    icon: ICONS[group.type] || null
+                });
+            });
+
+            return items;
+        }
+    },
     mounted() {
         DataProvider.getManifest(this.processId)
         .then((response) => {
@@ -147,7 +134,7 @@ export default {
           console.log(error);
             ProcessMaker.alert(error, "danger");
         });
-    }
+    },
 }
 </script>
 

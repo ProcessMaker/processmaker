@@ -2,7 +2,7 @@
     <div class="mb-2">
         <hr>
         <div>
-            <h4>{{ item.name }}</h4>
+            <h4>{{ type }}</h4>
             <div v-if="exportAll">
                 <h6>Export Status:
                     <b-badge
@@ -33,7 +33,7 @@
         <div v-for="(item, i) in items" :key="i">
             <b-card class="high-elevation">
                 <template #header>
-                    <h6 class="mb-0 data-card-header font-weight-bold">[[ Script Name ]]</h6>
+                    <h6 class="mb-0 data-card-header font-weight-bold">{{ item.name }}</h6>
                 </template>
             <b-card-text>
                 <ul class="process-element-metadata">
@@ -52,13 +52,13 @@
 <script>
 
 export default {
-    props: ["items"],
+    props: ["type", "items"],
     components: {
     },
     mixins: [],
     data() {
         return {
-
+            exportAll: false,
         }
     },
     methods: {

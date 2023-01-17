@@ -1,8 +1,8 @@
 <template>
   <div class="sidebar-nav">
-    <ul v-for="page in pages">
+    <ul v-for="(page, i) in sidenav" :key="i">
       <li>
-        <sidebar-button :page="page" @click="onClick">{{ page.buttonText }}</sidebar-button>
+        <sidebar-button :parent="i === 0" :active="i === active" :icon="page.icon" @click="onClick(i)">{{ page.title }}</sidebar-button>
       </li>
     </ul>
   </div>
@@ -14,9 +14,13 @@
   export default {
     components: { SidebarButton },
     props: {
-      pages: {
+      sidenav: {
         type: Array,
         default: [],
+      },
+      active: {
+        type: Number,
+        default: 0,
       }
     },
     data() {
@@ -27,8 +31,8 @@
     mounted() {
     },
     methods: {
-      onClick(button) {
-        this.$emit('navigate', button);
+      onClick(i) {
+        this.$emit('navigate', i);
       },
     },
   };

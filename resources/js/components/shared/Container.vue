@@ -2,14 +2,12 @@
   <div class="container card p-3">
     <div class="row">
       <div class="col-sm-3 col-lg-3 border-right" ref="sidebar">
-        {{ pages }}
-        <sidebar-nav @navigate="onNavigate" :header="header" :link-text="linkText" :pages="pages"></sidebar-nav>
+        <sidebar-nav @navigate="onNavigate" :sidenav="sidenav" :active="activeIndex"></sidebar-nav>
       </div>
       <div class="col-sm-9 col-lg-6" ref="content">
-        <slot></slot>
+        <slot v-bind:activeIndex="activeIndex"></slot>
       </div>
       <div class="col-sm-0 col-lg-3">
-        
       </div>      
     </div>
   </div>
@@ -34,41 +32,54 @@
         type: String,
         default: null,
       },
+
+      sidenav: {
+        type: Array,
+        default: [],
+      },
     },
     data() {
       return {
-        active: null,
-        pages: [],
+        activeIndex: 0,
+        // pages: [],
       };
     },
     methods: {
-      linkButtonToPage() {
-        console.log('okay');
+      // linkButtonToPage() {
+      //   console.log('okay');
+      // },
+      onNavigate(i) {
+        console.log("ON NAVIGATE Container.vue", i);
+        this.activeIndex = i;
       },
-      onNavigate(button) {
-        this.active.setToInactive();
-        this.active = button.page;
-        this.active.setToActive();
-      },
-      goTo(pageIndex) {
-        this.active.setToInactive();
-        this.active = this.pages[pageIndex];
-        this.active.setToActive();
-      },
-      findPages() {
-        console.log(this.$children);
-        this.$children.forEach(child => {
-          if (child.$options._componentTag == 'container-page') {
-            this.pages.push(child);
-            if (child.active) {
-              this.active = child;
-            }
-          }
-        });
-      },
+      // goTo(pageIndex) {
+      //   this.active.setToInactive();
+      //   this.active = this.pages[pageIndex];
+      //   this.active.setToActive();
+      // },
+    },
+    computed: {
+      // pages() {
+      //   const pages = [];
+      //   this.$children.forEach(child => {
+      //     if (child.$options._componentTag == 'container-page') {
+      //       this.pages.push(child);
+      //       if (child.active) {
+      //         this.active = child;
+      //       }
+      //     }
+      //   });
+      //   return pages;
+      // },
+    },
+    watch: {
+      children() {
+        console.log("Children changed", this.$children);
+      }
     },
     mounted() {
-      this.findPages();
+      // this.findPages();
+      console.log("mounted children", this.$children);
     }
   };
 </script>
