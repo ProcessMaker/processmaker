@@ -27,6 +27,8 @@ export default {
         description: asset.attributes.description || "N/A",
         createdAt: asset.attributes.created_at || "N/A",
         updatedAt: asset.attributes.updated_at || "N/A",
+        processManager: asset.process_manager || "N/A",
+        lastModifiedBy: asset.last_modified_by || "N/A",
       };
 
       if (uuid === rootUuid) {

@@ -1,5 +1,6 @@
 <template>
     <div class="mb-2">
+        <h2>Export Process: {{ processName }}</h2>
         <hr>
         <div>
             <h4>{{ type }}</h4>
@@ -31,7 +32,7 @@
         </div>
         <hr>
         <div v-for="(item, i) in items" :key="i">
-            <b-card class="high-elevation">
+            <b-card class="high-elevation mb-4">
                 <template #header>
                     <h6 class="mb-0 data-card-header font-weight-bold">{{ item.name }}</h6>
                 </template>
@@ -42,7 +43,7 @@
                     <li>Language: </li>
                     <li>Created: </li>
                     <li>Last Modified: </li>
-                </ul>   
+                </ul>
             </b-card-text>
             </b-card>
         </div>
@@ -52,7 +53,7 @@
 <script>
 
 export default {
-    props: ["type", "items"],
+    props: ["type", "items", "processName"],
     components: {
     },
     mixins: [],
