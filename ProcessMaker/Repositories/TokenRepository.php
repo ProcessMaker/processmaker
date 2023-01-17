@@ -5,6 +5,7 @@ namespace ProcessMaker\Repositories;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Exception\InvalidUserAssignmentException;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequest as Instance;
@@ -96,7 +97,6 @@ class TokenRepository implements TokenRepositoryInterface
 
         $token->is_self_service = 0;
         //tododante may be, simplify the logical conditions
-        \Illuminate\Support\Facades\Log::Critical(__LINE__ ."  => " .  __FUNCTION__ ."-> is self service:". print_r($token->is_self_service, true));
         if ($token->getAssignmentRule() === 'self_service' || $token->getSelfServiceAttribute()) {
             if ($user && !$token->getSelfServiceAttribute()) {
                 // A user is already assigned (from assignmentLock) so do not
@@ -106,7 +106,6 @@ class TokenRepository implements TokenRepositoryInterface
                 $token->is_self_service = 1;
             }
         }
-        \Illuminate\Support\Facades\Log::Critical(__LINE__ ."  => " .  __FUNCTION__ ."-> is self service:". print_r($token->is_self_service, true));
 
         $selfServiceTasks = $token->getInstance()->processVersion->self_service_tasks;
         $token->self_service_groups = $selfServiceTasks && isset($selfServiceTasks[$activity->getId()]) ? $selfServiceTasks[$activity->getId()] : [];
@@ -118,12 +117,27 @@ class TokenRepository implements TokenRepositoryInterface
             //tododante for each assign type that supports sel service, add the logic here
             switch ($activity->getProperty('assignment')) {
                 case 'user_group':
-                case 'process_variable':
-                case 'expression??':
-                    $evaluatedUsers = $token->getInstance()->getDataStore()->getData($selfServiceUsers);
-                    $evaluatedGroups = $token->getInstance()->getDataStore()->getData($selfServiceGroups);
+                    // For this assignment type, users and groups arrive as comma separated numbers that
+                    // wee need to convert to arrays for the self_service_groups field
+                    $evaluatedUsers = explode(',', $selfServiceUsers);
+                    $evaluatedGroups = explode(',', $selfServiceGroups);
                     $token->self_service_groups = ['users' => $evaluatedUsers, 'groups' => $evaluatedGroups];
                     break;
+                case 'process_variable':
+                    $evaluatedUsers = $token->getInstance()->getDataStore()->getData($selfServiceUsers);
+                    $evaluatedGroups = $token->getInstance()->getDataStore()->getData($selfServiceGroups);
+                    //tododante helper to arrayrize any value may be there is already a helper for this??
+                    $evaluatedUsers = is_array($evaluatedUsers) ? $evaluatedUsers : [$evaluatedUsers];
+                    $evaluatedGroups = is_array($evaluatedGroups) ? $evaluatedGroups : [$evaluatedGroups];
+                    $token->self_service_groups = ['users' => $evaluatedUsers, 'groups' => $evaluatedGroups];
+                    break;
+                case 'rule_expression':
+                    $assignees = $token->process->getAssigneesFromExpressionRules($activity, $token);
+                    $token->self_service_groups = ['users' => $assignees['users'], 'groups' => $assignees['groups']];
+                    break;
+                default:
+                    $assignmentType = $activity->getProperty('assignment');
+                    throw new InvalidUserAssignmentException("The Assignment Type $assignmentType is not compatible with the Self Service Option");
             }
         }
 
