@@ -3,7 +3,7 @@
         <h2>Export Process: {{ processName }}</h2>
         <hr>
         <div>
-            <h4>{{ group.typePlural }}</h4>
+            <h4>{{ group.typeHumanPlural }}</h4>
             <div v-if="$root.includeAllByGroup[group.type]">
                 <h6>Export Status:
                     <b-badge
@@ -14,7 +14,7 @@
                     Full Export
                     </b-badge>
                 </h6>
-                <p><span class="font-weight-bold">All</span> {{ group.typePlural }} will be included in this export.</p>
+                <p><span class="font-weight-bold">All</span> {{ group.typeHumanPlural }} will be included in this export.</p>
             </div>
             <div v-else>
                 <h6>Export Status:
@@ -26,7 +26,7 @@
                     Not Exporting
                     </b-badge>
                 </h6>
-                <p>All {{ group.typePlural }} will <span class="font-weight-bold">not</span> be included in this export.</p>
+                <p>All {{ group.typeHumanPlural }} will <span class="font-weight-bold">not</span> be included in this export.</p>
             </div>
             <b-link @click="returnToSummaryClick">Return to Summary</b-link>
         </div>

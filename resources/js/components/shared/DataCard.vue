@@ -4,7 +4,7 @@
             <template #header>
                 <div class="header">
                     <i class="text-secondary data-card-header fas nav-icon" :class="'fa-' + info.icon" />
-                    <h5 class="mb-0 data-card-header">{{ info.typePlural }}</h5>
+                    <h5 class="mb-0 data-card-header">{{ info.typeHumanPlural }}</h5>
                     <b-form-checkbox
                         class="data-card-header export-all"
                         v-model="includeAllByGroup"
@@ -33,7 +33,7 @@
                     Not Exporting
                     </b-badge>
                     </li>
-                    <li>Total Elements: {{ info.items.length }} {{ info.type }}</li>
+                    <li>Total Elements: {{ info.items.length }} {{ info.typeHumanPlural }}</li>
                 </ul>
                 <div>
                     <b-link @click="onGroupDetailsClick">
