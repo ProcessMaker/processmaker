@@ -28,19 +28,6 @@ import ProcessesView from "./process-elements/ProcessesView.vue";
 import ScriptsView from "./process-elements/ScriptsView.vue";
 import DataProvider from "../DataProvider";
 
-const ICONS = {
-  User: "user",
-  Group: "users",
-  Screen: "file-alt",
-  Script: "code",
-  Process: "play-circle",
-  Category: "",
-  EnvironmentVariable: "lock",
-  Signal: "bpmn-icon-end-event-signal",
-  DataConnector: "cog",
-  Vocabulary: "book",
-};
-
 export default {
   components: {
     ProcessesView,
@@ -65,9 +52,10 @@ export default {
       ];
 
       this.groups.forEach(group => {
+        console.log("GORUP", group);
         items.push({
           title: group.typePlural,
-          icon: ICONS[group.type] || null
+          icon: group.icon,
         });
       });
 

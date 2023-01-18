@@ -1,3 +1,16 @@
+const ICONS = {
+  User: "user",
+  Group: "users",
+  Screen: "file-alt",
+  Script: "code",
+  Process: "play-circle",
+  Category: "",
+  EnvironmentVariable: "lock",
+  Signal: "bpmn-icon-end-event-signal",
+  DataConnector: "cog",
+  Vocabulary: "book",
+};
+
 export default {
   getManifest(processId) {
     return ProcessMaker.apiClient({
@@ -37,7 +50,6 @@ export default {
     // for (const [uuid, asset] of Object.entries(assets)) {
     Object.entries(assets).forEach(([uuid, asset]) => {
       const type = asset.type;
-
       const info = {
         type,
         typePlural: asset.type_plural,
@@ -63,7 +75,12 @@ export default {
     });
 
     const groupedInfo = Object.entries(groups).map(([key, value]) => {
-      return { type: key, typePlural: value[0].typePlural, items: value };
+      return {
+        type: key, 
+        typePlural: value[0].typePlural,
+        icon: ICONS[key] || 'code',
+        items: value
+      };
     });
 
     return {

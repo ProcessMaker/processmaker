@@ -3,7 +3,7 @@
         <b-card>
             <template #header>
                 <div class="header">
-                    <i class="text-secondary data-card-header fas nav-icon fa-code" />
+                    <i class="text-secondary data-card-header fas nav-icon" :class="'fa-' + info.icon" />
                     <h5 class="mb-0 data-card-header">{{ info.typePlural }}</h5>
                     <b-form-checkbox
                         class="data-card-header export-all"
