@@ -1,117 +1,94 @@
 <template>
-    <div class="custom-export-container container pt-3">
-        <b-row>
-            <b-col cols="3" class="border-right">
-                <sidebar-navigation 
-                ref="sidebar-navigation" 
-                :processName="processName" 
-                @scriptsView="showScriptsView"
-                @screensView="showScreensView"
-                @environmentVariablesView="showEnvironmentVariablesView"
-                @signalsView="showSignalsView"
-                @dataConnectorsView="showDataConnectorsView"
-                @vocabulariesView="showVocabulariesView"
-                ></sidebar-navigation>
-            </b-col>
-            <b-col cols="7" class="data-container">
-                <div>
-                    <KeepAlive>
-                    <component 
-                        :is="currentProcessElement"
-                        @processesView="showProcessesView"
-                        :processInfo="processInfo"
-                        :processName="processName"
-                        ></component>
-                    </KeepAlive>
-                </div>
-            </b-col>
-      <b-col cols="2" />
-        </b-row>
-    </div>
+  <div>
+    <container :sidenav="sidenav">
+      <template v-slot:default="slotProps">
+        <container-page :active="slotProps.activeIndex === 0">
+          <ProcessesView
+            :process-info="rootAsset"
+            :groups="groups"
+            :process-name="rootAsset.name"
+            :process-id="processId"
+          />
+        </container-page>
+        <container-page v-for="(group, i) in groups" :key="i" :active="slotProps.activeIndex === i + 1">
+          <ScriptsView
+            :group="group"
+            :items="group.items"
+            :process-name="rootAsset.name"
+          />
+        </container-page>
+      </template>
+    </container>
+  </div>
 </template>
 
 <script>
-import SidebarNavigation from "../../../components/shared/SidebarNavigation.vue";
+import { Container, ContainerPage } from "SharedComponents";
 import ProcessesView from "./process-elements/ProcessesView.vue";
 import ScriptsView from "./process-elements/ScriptsView.vue";
-import ScreensView from "./process-elements/ScreensView.vue";
-import EnvironmentVariablesView from "./process-elements/EnvironmentVariablesView.vue";
-import SignalsView from "./process-elements/SignalsView.vue";
-import DataConnectorsView from "./process-elements/DataConnectorsView.vue";
-import VocabulariesView from "./process-elements/VocabulariesView.vue";
+import DataProvider from "../DataProvider";
+
+const ICONS = {
+  User: "user",
+  Group: "users",
+  Screen: "file-alt",
+  Script: "code",
+  Process: "play-circle",
+  Category: "",
+  EnvironmentVariable: "lock",
+  Signal: "bpmn-icon-end-event-signal",
+  DataConnector: "cog",
+  Vocabulary: "book",
+};
 
 export default {
-    components: {
-        SidebarNavigation,
-        ProcessesView,
-        ScriptsView,
-        ScreensView,
-        EnvironmentVariablesView,
-        SignalsView,
-        DataConnectorsView,
-        VocabulariesView,
-    },
-    props: ["processName",
+  components: {
+    ProcessesView,
+    ScriptsView,
+    Container,
+    ContainerPage,
+  },
+  props: ["processName",
     "processId",
-    ],
-    mixins: [],
-    data() {
-        return {
-            currentProcessElement: "ProcessesView",
-            processElements: ["ProcessesView",
-            "ScriptsView",
-            "ScreensView",
-            "EnvironmentVariablesView",
-            "SignalsView",
-            "DataConnectorsView",
-            "VocabulariesView"],
-            processInfo: {},
-        }
-    },
-    methods: {
-        showProcessesView() {
-            this.currentProcessElement = ProcessesView;
-        },
-        showScriptsView() {
-            this.currentProcessElement = ScriptsView;
-        },
-        showScreensView() {
-            this.currentProcessElement = ScreensView;
-        },
-        showEnvironmentVariablesView() {
-            this.currentProcessElement = EnvironmentVariablesView;
-        },
-        showSignalsView() {
-            this.currentProcessElement = SignalsView;
-        },
-        showDataConnectorsView() {
-            this.currentProcessElement = DataConnectorsView;
-        },
-        showVocabulariesView() {
-            this.currentProcessElement = VocabulariesView;
-        }
-    },
-    mounted() {
-        ProcessMaker.apiClient({
-            url: `export/process/tree/${this.processId}`,
-            method: "GET",
-        })
-        .then((response) => {
-            console.log('response', response);
-            let payload = response.data;
-            console.log('payload', payload);
-            let manifest = payload.manifest;
-            console.log('manifest', manifest);
-            let rootUuid = manifest.root;
-            console.log('rootUuid', rootUuid);
-            this.processInfo = manifest.export[rootUuid];
-            console.log(this.processInfo);
-        })
-        .catch((error) => {
-            ProcessMaker.alert(error.response.data.message, "danger");
+  ],
+  mixins: [],
+  data() {
+    return {
+      rootAsset: {},
+      groups: [],
+    };
+  },
+  computed: {
+    sidenav() {
+      let items = [
+        { title: this.rootAsset.name, icon: null, },
+      ];
+
+      this.groups.forEach(group => {
+        items.push({
+          title: group.typePlural,
+          icon: ICONS[group.type] || null
         });
-    }
-}
+      });
+
+      return items;
+    },
+  },
+  mounted() {
+    DataProvider.getManifest(this.processId)
+      .then((response) => {
+        this.rootAsset = response.root;
+        this.groups = response.groups;
+        this.$root.setInitialState(response.assets, response.rootUuid);
+      })
+      .catch((error) => {
+        console.log(error);
+        ProcessMaker.alert(error, "danger");
+      });
+  },
+  methods: {
+  },
+};
 </script>
 
 <style lang="scss" scoped>

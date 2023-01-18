@@ -11,6 +11,7 @@ use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ProcessExporter;
 use ProcessMaker\ImportExport\Exporters\ScreenExporter;
 use ProcessMaker\ImportExport\Exporters\ScriptExporter;
+use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
@@ -40,6 +41,19 @@ class ExportController extends Controller
     }
 
     /**
+     * Return only the manifest
+     */
+    public function manifest(string $type, int $id): JsonResponse
+    {
+        $model = $this->getModel($type)->findOrFail($id);
+
+        $exporter = new Exporter();
+        $exporter->export($model, $this->types[$type][1]);
+
+        return response()->json($exporter->payload(), 200);
+    }
+
+    /**
      * Download the JSON export file.
      */
     public function download(ExportRequest $request, string $type, int $id)
@@ -49,7 +63,10 @@ class ExportController extends Controller
         $exporter = new Exporter();
         $exporter->export($model, $this->types[$type][1]);
 
-        $payload = $exporter->payload();
+        $options = new Options($request->input('options'));
+        $password = $request->input('password');
+
+        $payload = $exporter->payload($password, $options);
         $exported = $exporter->exportInfo($payload);
 
         if ($request->password) {

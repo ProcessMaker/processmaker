@@ -83,8 +83,12 @@ class Utils
         $process->bpmn = $definitions->saveXml();
     }
 
-    public static function findScreenDependent(array $config, string $component, string $path)
+    public static function findScreenDependent($config, string $component, string $path)
     {
+        if (!$config) {
+            return [];
+        }
+
         $matches = [];
         foreach ($config as $page => $config) {
             foreach ($config['items'] as $i => $item) {

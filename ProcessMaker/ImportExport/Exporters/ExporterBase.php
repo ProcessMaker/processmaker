@@ -8,6 +8,7 @@ use ProcessMaker\ImportExport\Dependent;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Extension;
 use ProcessMaker\ImportExport\Manifest;
+use ProcessMaker\Models\User;
 use ProcessMaker\Traits\HasVersioning;
 
 abstract class ExporterBase implements ExporterInterface
@@ -24,7 +25,21 @@ abstract class ExporterBase implements ExporterInterface
 
     public $originalId = null;
 
-    public function __construct(Model $model, Manifest $manifest)
+    public $disableEventsWhenImporting = false;
+
+    public static function modelFinder($uuid, $asssetInfo)
+    {
+        return $asssetInfo['model']::where('uuid', $uuid);
+    }
+
+    public static function prepareAttributes($attrs)
+    {
+        unset($attrs['id']);
+
+        return $attrs;
+    }
+
+    public function __construct(?Model $model, Manifest $manifest)
     {
         $this->model = $model;
         $this->manifest = $manifest;
@@ -47,10 +62,16 @@ abstract class ExporterBase implements ExporterInterface
         $this->dependents[] = new Dependent($type, $uuid, $this->manifest, $meta);
     }
 
-    public function getDependents($type)
+    public function getDependents($type = null)
     {
+        if (!$type) {
+            return array_values(
+                array_filter($this->dependents, fn ($d) => !is_null($d->model))
+            );
+        }
+
         return array_values(
-            array_filter($this->dependents, fn ($d) => $d->type === $type)
+            array_filter($this->dependents, fn ($d) => $d->type === $type && !is_null($d->model))
         );
     }
 
@@ -88,7 +109,9 @@ abstract class ExporterBase implements ExporterInterface
     public function getName(): string
     {
         $name = 'unknown';
-        if (isset($this->model->name)) {
+        if (is_a($this->model, User::class)) {
+            $name = $this->model->username;
+        } elseif (isset($this->model->name)) {
             $name = $this->model->name;
         } elseif (isset($this->model->title)) {
             $name = $this->model->title;
@@ -106,16 +129,27 @@ abstract class ExporterBase implements ExporterInterface
 
     public function toArray()
     {
+        $modelClass = get_class($this->model);
+        $type = class_basename($modelClass);
+
         return [
             'exporter' => get_class($this),
             'name' => $this->getName(),
+            'type' => $type,
+            'type_plural' => Str::plural($type),
+            'description' => $this->getDescription(),
             'last_modified_by' => $this->getLastModifiedBy(),
             'process_manager' => $this->getProcessManager(),
-            'model' => get_class($this->model),
+            'model' => $modelClass,
             'attributes' => $this->getExportAttributes(),
             'references' => $this->references,
             'dependents' => array_map(fn ($d) => $d->toArray(), $this->dependents),
         ];
+    }
+
+    public function getDescription()
+    {
+        return $this->model->description || null;
     }
 
     public function getProcessManager(): string

@@ -31,4 +31,9 @@ class UserExporter extends ExporterBase
 
         return true;
     }
+
+    public function getName(): string
+    {
+        return $this->model->username;
+    }
 }

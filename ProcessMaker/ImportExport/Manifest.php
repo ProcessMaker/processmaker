@@ -43,8 +43,9 @@ class Manifest
     {
         $manifest = new self();
         foreach ($array as $uuid => $assetInfo) {
-            list($importMode, $model) = self::getModel($uuid, $assetInfo, $options);
-            $exporter = new $assetInfo['exporter']($model, $manifest);
+            $exporterClass = $assetInfo['exporter'];
+            list($importMode, $model) = self::getModel($uuid, $assetInfo, $options, $exporterClass);
+            $exporter = new $exporterClass($model, $manifest);
             $exporter->importMode = $importMode;
             $exporter->originalId = Arr::get($assetInfo, 'attributes.id');
             $exporter->updateDuplicateAttributes();
@@ -61,15 +62,16 @@ class Manifest
         $this->manifest[$uuid] = $exporter;
     }
 
-    public static function getModel($uuid, $assetInfo, $options)
+    public static function getModel($uuid, $assetInfo, $options, $exporterClass)
     {
         $model = null;
         $class = $assetInfo['model'];
         $mode = $options->get('mode', $uuid);
         $attrs = $assetInfo['attributes'];
-        unset($attrs['id']);
 
-        $modelQuery = $class::where('uuid', $uuid);
+        $modelQuery = $exporterClass::modelFinder($uuid, $assetInfo);
+
+        $attrs = $exporterClass::prepareAttributes($attrs);
 
         // Check if the model has soft deletes
         if (in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses($class))) {
@@ -88,6 +90,12 @@ class Manifest
                 $model->fill($attrs);
                 break;
             case 'discard':
+                $model = null;
+                break;
+            case 'copy':
+                $model = new $class();
+                unset($attrs['uuid']);
+                $model->fill($attrs);
                 break;
             case 'new':
                 $model = new $class();
@@ -95,7 +103,11 @@ class Manifest
                 $model->uuid = $uuid;
                 break;
         }
-        self::handleCasts($model);
+
+        if ($model) {
+            self::handleCasts($model);
+        }
+
         $class::reguard();
 
         return [$mode, $model];
