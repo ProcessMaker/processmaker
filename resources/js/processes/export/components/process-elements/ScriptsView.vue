@@ -14,7 +14,7 @@
                     Full Export
                     </b-badge>
                 </h6>
-                <p><span class="font-weight-bold">All</span> Scripts will be included in this export.</p>
+                <p><span class="font-weight-bold">All</span> {{ group.typePlural }} will be included in this export.</p>
             </div>
             <div v-else>
                 <h6>Export Status:
@@ -26,7 +26,7 @@
                     Not Exporting
                     </b-badge>
                 </h6>
-                <p>All Scripts will <span class="font-weight-bold">not</span> be included in this export.</p>
+                <p>All {{ group.typePlural }} will <span class="font-weight-bold">not</span> be included in this export.</p>
             </div>
             <b-link @click="returnToSummary">Return to Summary</b-link>
         </div>
