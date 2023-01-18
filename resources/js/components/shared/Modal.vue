@@ -6,7 +6,7 @@
     footer-class="pm-modal-footer"
     cancel-variant="outline-secondary"
     :cancel-title="$t('Cancel')"
-    ok-variant="secondary"
+    ok-variant="primary"
     :ok-title="okTitleWithDefault"
     :ok-disabled="okDisabled"
     :ok-only="okOnly"
@@ -21,13 +21,28 @@
     @show="onEvent('show', $event)"
     @shown="onEvent('shown', $event)"
   >
+  <template #modal-title>
+      <h5>{{title}}</h5>
+      <small v-if="subtitle" class="text-muted subtitle">{{subtitle}}</small>
+    </template>
     <slot></slot>
+    <template v-if="setCustomButtons" #modal-footer>
+      <b-button v-for="button in customButtons" 
+        :key="button.content" 
+        @click="executeFunction(button.action)" 
+        :variant="button.variant" 
+        :disabled="button.disabled"
+        :hidden="button.hidden"
+      >
+        {{ button.content }}
+      </b-button>
+    </template>
   </b-modal>
 </template>
 
 <script>
   export default {
-    props: ["id", "title", "okDisabled", "okOnly", "okTitle"],
+    props: ["id", "title", "okDisabled", "okOnly", "okTitle", 'setCustomButtons', 'customButtons', 'subtitle'],
     methods: {
       onEvent(name, event) {
         this.$emit(name, event);
