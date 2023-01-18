@@ -38,11 +38,11 @@
                 </template>
             <b-card-text>
                 <ul class="process-element-metadata">
-                    <li>Description: </li>
-                    <li>Categories: </li>
-                    <li>Language: </li>
-                    <li>Created: </li>
-                    <li>Last Modified: </li>
+                    <li>Description: <span class="process-metadata">{{ item.description }}</span></li>
+                    <li>Categories: <span class="process-metadata">{{ item.categories }}</span></li>
+                    <li>Language: <span class="process-metadata"></span></li>
+                    <li>Created: <span class="process-metadata">{{ item.createdAt }}</span></li>
+                    <li>Last Modified: <span class="process-metadata">{{ item.updatedAt }}</span></li>
                 </ul>
             </b-card-text>
             </b-card>
