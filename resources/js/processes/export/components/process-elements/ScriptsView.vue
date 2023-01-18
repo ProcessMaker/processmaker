@@ -28,7 +28,7 @@
                 </h6>
                 <p>All {{ group.typePlural }} will <span class="font-weight-bold">not</span> be included in this export.</p>
             </div>
-            <b-link @click="returnToSummary">Return to Summary</b-link>
+            <b-link @click="returnToSummaryClick">Return to Summary</b-link>
         </div>
         <hr>
         <div v-for="(item, i) in group.items" :key="i">
@@ -63,8 +63,8 @@ export default {
         }
     },
     methods: {
-        returnToSummary() {
-            this.$emit("processesView");
+        returnToSummaryClick() {
+            window.ProcessMaker.EventBus.$emit("return-to-summary-click");
         },
     },
     mounted() {
