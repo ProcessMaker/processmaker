@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\ImportExport\ExportEncrypted;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 
@@ -15,19 +16,24 @@ class ImportController extends Controller
      */
     public function preview(Request $request): JsonResponse
     {
-        $request->validate([
-            'file' => 'required|file',
-            // 'password' => 'sometimes|string',
-            // 'options' => 'array',
-        ]);
+        $payload = json_decode($request->file('file')->get(), true);
 
-        $payload = $request->file('file')->get();
+        if (isset($payload['encrypted']) && $payload['encrypted']) {
+            $password = $request->input('password');
+            if (!$password) {
+                return response()->json(['password_required' => true], 401);
+            }
+            $payload = (new ExportEncrypted($password))->decrypt($payload['export']);
+        }
+
         $options = new Options([]);
-        $importer = new Importer(json_decode($payload, true), $options);
+        $importer = new Importer($payload, $options);
+
+        $manifest = $importer->previewImport();
 
         return response()->json([
-            'tree' => $importer->tree(),
-            'manifest' => $importer->previewImport(),
+            'manifest' => $manifest,
+            'rootUuid' => $payload['root'],
         ], 200);
     }
 

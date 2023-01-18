@@ -25,6 +25,8 @@ abstract class ExporterBase implements ExporterInterface
 
     public $originalId = null;
 
+    public $importing = false;
+
     public $disableEventsWhenImporting = false;
 
     public static function modelFinder($uuid, $asssetInfo)
@@ -106,15 +108,13 @@ abstract class ExporterBase implements ExporterInterface
         return $this->model->getAttributes();
     }
 
-    public function getName(): string
+    public function getName($model): string
     {
         $name = 'unknown';
-        if (is_a($this->model, User::class)) {
-            $name = $this->model->username;
-        } elseif (isset($this->model->name)) {
-            $name = $this->model->name;
-        } elseif (isset($this->model->title)) {
-            $name = $this->model->title;
+        if (isset($model->name)) {
+            $name = $model->name;
+        } elseif (isset($model->title)) {
+            $name = $model->title;
         }
 
         return $name;
@@ -132,9 +132,9 @@ abstract class ExporterBase implements ExporterInterface
         $modelClass = get_class($this->model);
         $type = class_basename($modelClass);
 
-        return [
+        $attributes = [
             'exporter' => get_class($this),
-            'name' => $this->getName(),
+            'name' => $this->getName($this->model),
             'type' => $type,
             'type_plural' => Str::plural($type),
             'description' => $this->getDescription(),
@@ -145,6 +145,30 @@ abstract class ExporterBase implements ExporterInterface
             'references' => $this->references,
             'dependents' => array_map(fn ($d) => $d->toArray(), $this->dependents),
         ];
+
+        if ($this->importing) {
+            $this->addImportAttributes($attributes);
+        }
+
+        return $attributes;
+    }
+
+    public function addImportAttributes(&$attributes)
+    {
+        $existingAttributes = null;
+        $existingName = null;
+        if ($this->model->id) {
+            $existingModel = $attributes['model']::find($this->model->id);
+            $existingAttributes = $existingModel->getAttributes();
+            $existingName = $this->getName($existingModel);
+        }
+
+        $attributes = array_merge($attributes, [
+            'import_mode' => $this->importMode,
+            'existing_id' => $this->model->id,
+            'existing_attributes' => $existingAttributes,
+            'existing_name' => $existingName,
+        ]);
     }
 
     public function getDescription()

@@ -46,6 +46,7 @@ class Manifest
             $exporterClass = $assetInfo['exporter'];
             list($importMode, $model) = self::getModel($uuid, $assetInfo, $options, $exporterClass);
             $exporter = new $exporterClass($model, $manifest);
+            $exporter->importing = true;
             $exporter->importMode = $importMode;
             $exporter->originalId = Arr::get($assetInfo, 'attributes.id');
             $exporter->updateDuplicateAttributes();

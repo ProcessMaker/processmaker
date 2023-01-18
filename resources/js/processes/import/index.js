@@ -1,5 +1,4 @@
 import Vue from 'vue';
-import ImportManager from './components/ImportManager';
 import ImportManagerView from './components/ImportManagerView';
 import ProcessDetailConfigs from './components/ProcessDetailConfigs';
 
@@ -23,7 +22,7 @@ const routes = [
 
 new Vue({
     router: window.ProcessMaker.Router,
-    components: { ImportManager },
+    components: { },
     data() {
         return {
         }

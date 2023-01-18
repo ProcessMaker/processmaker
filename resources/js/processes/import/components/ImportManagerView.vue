@@ -355,6 +355,9 @@ export default {
             processName: null,
             passwordEnabled: false,
             processExists: false,
+
+            manifest: {},
+            rootUuid: '',
         }
     },
     filters: {
@@ -390,6 +393,18 @@ export default {
                 fullname: this.$t('Process Manager')
             };
         },
+        existingAssets() {
+            return Object.values(this.manifest).filter(asset => {
+                return asset.existing_id !== null;
+            }).map(asset => {
+                return {
+                    type: asset.type,
+                    existingName: asset.existing_name, 
+                    importingName: asset.name,
+                    existingId: asset.existing_id,
+                };
+            });
+        }
     },
     methods: {
         loadUsers(filter, getGroups, type) {
@@ -647,6 +662,8 @@ export default {
                 }
             )
             .then(response => {
+                this.manifest = response.data.manifest;
+                this.rootUuid = response.data.rootUuid;
                 this.fileIsValid = true;
             });
         },
