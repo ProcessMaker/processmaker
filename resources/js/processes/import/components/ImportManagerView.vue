@@ -40,7 +40,7 @@
                                 </b-form-group>
                             </div>
                             <enter-password-modal ref="enter-password-modal" @verified-password="importFile($event)"></enter-password-modal>
-                            <import-process-modal ref="import-process-modal" :processName="processName" :userHasEditPermissions="true" @import-new="onImportAsNew" @update-process="importFile($event)"></import-process-modal>
+                            <import-process-modal ref="import-process-modal" :existingAssets="existingAssets" :processName="processName" :userHasEditPermissions="true" @import-new="onImportAsNew" @update-process="importFile($event)"></import-process-modal>
                         </div>
                         <!-- <div id="during-import" v-if="importing" v-cloak>
                             <h4 class="card-title mt-5 mb-5">
@@ -354,7 +354,7 @@ export default {
             selectedImportOption: "basic",
             processName: null,
             passwordEnabled: false,
-            processExists: false,
+            assetsExist: false,
 
             manifest: {},
             rootUuid: '',
@@ -532,8 +532,11 @@ export default {
         onCancel() {
             window.location = '/processes';
         },
-        importFile(processExists) {
-            this.processExists = processExists;
+        importFile() {
+            if (this.existingAssets.length > 0)
+            {
+                this.assetsExist = true;
+            }
             switch (this.selectedImportOption) {
                 case 'basic':
                     this.handleBasicImport();
@@ -546,7 +549,7 @@ export default {
         },
         handleBasicImport() {
             // TODO: IMPORT/EXPORT check if process already exists. and users have edit permissions
-            if (this.processExists) {
+            if (this.assetsExist) {
                 this.$nextTick(() => {    
                     this.$refs['enter-password-modal'].hide();  
                     this.$refs['import-process-modal'].show();
