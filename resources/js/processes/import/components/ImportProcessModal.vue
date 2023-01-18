@@ -11,14 +11,18 @@
     >
       <template>
         <b-row align-v="start">
-          <b-col class="col-1 p-0 pr-1 text-right">
-            <i class="fas fa-exclamation-triangle text-warning"></i>
-          </b-col>
-          <b-col class="p-0 pl-1">
-            <h5 class="mb-3 fw-semibold">
-              {{$t('Caution: Process Already Exists')}}
-              <div><small class="helper text-muted">{{ $t('This environment contains a process with the same ID.') }}</small></div>
-            </h5>
+          <b-col>
+            <b-row align-v="start" v-for="(asset, index) in existingAssets" :key="index">
+              <b-col class="col-1 p-0 pr-1 text-right">
+                <i class="fas fa-exclamation-triangle text-warning"></i>
+              </b-col>
+              <b-col class="p-0 pl-1">
+                <h5 class="mb-3 fw-semibold">
+                  {{ warningTitle(asset.type) }}
+                  <div><small class="helper text-muted">{{ helperText(asset.type) }}</small></div>
+                </h5>
+              </b-col>
+            </b-row>
             <p v-if="!userHasEditPermissions">{{ $t('You do not have permissions to update the existing process in this environment') }}</p>
             <ul class="pl-3 ml-1">
               <li class="mb-1"><span class="fw-semibold">{{ $t('Import As New') }}</span>{{ $t(' will create a new process in this environment.') }}</li>
@@ -38,7 +42,7 @@
   export default {
     components: { Modal },
     mixins: [ FormErrorsMixin ],
-    props: ['processName', 'userHasEditPermissions'],
+    props: ['existingAssets', 'processName','userHasEditPermissions'],
     data: function() {
       return {
         showModal: false,
@@ -79,7 +83,13 @@
       importNew() {
         this.$emit('import-new');
         this.close();
-      }
+      },
+      warningTitle(assetType) {
+        return this.$t('Caution {{item}} already exists', {item: assetType});
+      },
+      helperText(assetType) {
+        return this.$t('This environment contains a {{ item }} with the same name.', {item: assetType.toLowerCase()});
+      },
     }
   };
 </script>
