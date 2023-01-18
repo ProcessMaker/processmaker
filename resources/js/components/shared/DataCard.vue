@@ -36,7 +36,7 @@
                     <li>Total Elements: {{ info.items.length }} {{ info.type }}</li>
                 </ul>
                 <div>
-                    <b-link>
+                    <b-link @click="onGroupDetailsClick">
                         <i class="fas fa-info-circle fa-fw mr-0"></i>
                         Details
                     </b-link>
@@ -55,7 +55,10 @@ export default {
         return {
         }
     },
-    methods: {      
+    methods: {
+        onGroupDetailsClick() {
+            window.ProcessMaker.EventBus.$emit("group-details-click", this.info.typePlural);
+        }
     },
     mounted() {
     },

@@ -77,6 +77,12 @@
       }
     },
     mounted() {
+        window.ProcessMaker.EventBus.$on("group-details-click", (groupTypePlural) => {
+            const index = this.sidenav.findIndex((element) => element.title === groupTypePlural);
+            if (index) {
+                this.onNavigate(index);
+            }
+        });
     }
   };
 </script>
