@@ -41,7 +41,7 @@
     },
     computed: {
       okTitleWithDefault() {
-        return this.okTitle || $t('Save');
+        return this.okTitle || this.$t('Save');
       }
     }
   };
