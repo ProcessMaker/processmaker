@@ -20,6 +20,8 @@ abstract class DependentType
 
     const GROUPS = 'groups';
 
+    const USERS = 'users';
+
     const USER_ASSIGNMENT = 'user_assignment';
 
     const GROUP_ASSIGNMENT = 'group_assignment';
