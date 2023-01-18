@@ -63,6 +63,7 @@
 import DataCard from "../../../../components/shared/DataCard.vue";
 import SetPasswordModal from "../SetPasswordModal.vue";
 import DataProvider from "../../DataProvider";
+import ExportSuccessModal from "../ExportSuccessModal.vue";
 
 export default {
   props: ["processName",
@@ -71,7 +72,8 @@ export default {
     "processInfo"],
     components: {
         DataCard,
-        SetPasswordModal
+        SetPasswordModal,
+        ExportSuccessModal,
     },
     mixins: [],
     data() {
@@ -97,7 +99,9 @@ export default {
         },
         exportProcess(password = null) {
             DataProvider.exportProcess(this.processId, password, this.$root.exportOptions())
-                .then(() => {
+                .then((exportInfo) => {
+                    this.exportInfo = exportInfo;
+                    this.$refs['export-success-modal'].show();
                     this.$refs["set-password-modal"].hide();
                 })
                 .catch((error) => {

@@ -7,8 +7,9 @@
     cancel-variant="outline-secondary"
     :cancel-title="$t('Cancel')"
     ok-variant="secondary"
-    :ok-title="$t('Save')"
+    :ok-title="okTitleWithDefault"
     :ok-disabled="okDisabled"
+    :ok-only="okOnly"
     no-close-on-backdrop
     centered
     @cancel="onEvent('cancel', $event)"
@@ -26,7 +27,7 @@
 
 <script>
   export default {
-    props: ["id", "title", "ok-disabled"],
+    props: ["id", "title", "okDisabled", "okOnly", "okTitle"],
     methods: {
       onEvent(name, event) {
         this.$emit(name, event);
@@ -36,6 +37,11 @@
       },
       hide() {
         this.$refs.pmModal.hide();
+      }
+    },
+    computed: {
+      okTitleWithDefault() {
+        return this.okTitle || $t('Save');
       }
     }
   };
