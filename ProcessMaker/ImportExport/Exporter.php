@@ -31,20 +31,23 @@ class Exporter
         return $this->export($process, ProcessExporter::class);
     }
 
-    public function payload($password = null, Options $options = null): array
+    public function payload(Options $options = null): array
     {
         $export = $this->manifest->toArray();
 
+        $discarded = [];
         if ($options) {
             $options = $options->options;
-            $export = array_filter($export, function ($uuid) use ($options) {
+            $export = array_filter($export, function ($uuid) use ($options, &$discarded) {
                 if (isset($options[$uuid])) {
                     if ($options[$uuid]['mode'] === 'discard') {
+                        $discarded[] = $uuid;
+
                         return false;
                     }
-
-                    return true;
                 }
+
+                return true;
             }, ARRAY_FILTER_USE_KEY);
         }
 
@@ -54,11 +57,8 @@ class Exporter
             'root' => $this->rootExporter->uuid(),
             'name' => $this->rootExporter->getName(),
             'export' => $export,
+            'discarded' => $discarded,
         ];
-
-        if ($password) {
-            $payload = $this->encrypt($password, $payload);
-        }
 
         return $payload;
     }

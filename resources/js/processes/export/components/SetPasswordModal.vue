@@ -11,7 +11,7 @@
     >
       <template>
         <b-form-group>
-          <div>
+          <div v-if="ask">
             <b-form-checkbox class="pt-2" v-model="passwordProtect" switch>
               Password Protect Export
             </b-form-checkbox>
@@ -50,7 +50,7 @@ export default {
   components: { 
     Modal
     },
-  props: ["processId", "processName"],
+  props: ["processId", "processName", "ask"],
   mixins: [ FormErrorsMixin ],
   data() {
       return {
@@ -98,7 +98,7 @@ export default {
           return false;
       }
       else {
-          this.$emit("verifyPassword");
+          this.$emit("verifyPassword", this.password);
           this.hide();
       }
     },

@@ -10,10 +10,13 @@ export default {
       return d;
     });
   },
-  exportProcess(processId, options) {
+  exportProcess(processId, password, options) {
     return ProcessMaker.apiClient.post(
       `export/process/download/` + processId,
-      options,
+      {
+        options,
+        password
+      }
     ).then(response => {
       console.log("post export response: ", response);
       return response;

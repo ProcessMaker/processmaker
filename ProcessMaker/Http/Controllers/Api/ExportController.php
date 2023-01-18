@@ -5,8 +5,8 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Http\Requests\ImportExport\ExportRequest;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ProcessExporter;
 use ProcessMaker\ImportExport\Exporters\ScreenExporter;
@@ -56,21 +56,21 @@ class ExportController extends Controller
     /**
      * Download the JSON export file.
      */
-    public function download(ExportRequest $request, string $type, int $id)
+    public function download(Request $request, string $type, int $id)
     {
         $model = $this->getModel($type)->findOrFail($id);
+        $post = $request->json()->all();
+        $options = new Options($post['options']);
+        $password = $post['password'];
 
         $exporter = new Exporter();
         $exporter->export($model, $this->types[$type][1]);
 
-        $options = new Options($request->input('options'));
-        $password = $request->input('password');
-
-        $payload = $exporter->payload($password, $options);
+        $payload = $exporter->payload($options);
         $exported = $exporter->exportInfo($payload);
 
-        if ($request->password) {
-            $payload = $exporter->encrypt($request->password, $payload);
+        if ($password) {
+            $payload = $exporter->encrypt($password, $payload);
         }
 
         return response()->streamDownload(
