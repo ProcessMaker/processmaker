@@ -46,6 +46,7 @@
                 {{ $t("Export") }}
             </button>
             <set-password-modal ref="set-password-modal" :processId="processId" :processName="processName" @verifyPassword="exportProcess" />
+            <export-success-modal ref="export-success-modal" :processName="processName" :processId="processId" :exportInfo="exportInfo" />
         </div>
     </div>
 </template>
@@ -80,8 +81,11 @@ export default {
             this.$refs["set-password-modal"].show();
         },
         onExport() {
-            this.showSetPasswordModal();
-            console.log(this.processId);
+            if (!this.passwordProtect) {
+                this.exportProcess();
+            } else {
+                this.showSetPasswordModal();
+            }
         },
         exportProcess() {
             DataProvider.exportProcess(this.processId, this.$root.exportOptions())
