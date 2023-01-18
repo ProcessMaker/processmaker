@@ -55,7 +55,7 @@ class Exporter
             'type' => $this->rootExporter->getType(),
             'version' => '2',
             'root' => $this->rootExporter->uuid(),
-            'name' => $this->rootExporter->getName(),
+            'name' => $this->rootExporter->getName($this->rootExporter->model),
             'export' => $export,
             'discarded' => $discarded,
         ];

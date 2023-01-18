@@ -108,8 +108,12 @@ abstract class ExporterBase implements ExporterInterface
         return $this->model->getAttributes();
     }
 
-    public function getName($model): string
+    public function getName($model) : string
     {
+        if (!$model) {
+            $model = $this->model;
+        }
+
         $name = 'unknown';
         if (isset($model->name)) {
             $name = $model->name;
@@ -131,12 +135,15 @@ abstract class ExporterBase implements ExporterInterface
     {
         $modelClass = get_class($this->model);
         $type = class_basename($modelClass);
+        $human = trim(ucwords(preg_replace('/(?<!\ )[A-Z]/', ' $0', $type)));
 
         $attributes = [
             'exporter' => get_class($this),
             'name' => $this->getName($this->model),
             'type' => $type,
+            'type_human' => $human,
             'type_plural' => Str::plural($type),
+            'type_human_plural' => Str::plural($human),
             'description' => $this->getDescription(),
             'last_modified_by' => $this->getLastModifiedBy(),
             'process_manager' => $this->getProcessManager(),

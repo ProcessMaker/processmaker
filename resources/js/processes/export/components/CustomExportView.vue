@@ -52,7 +52,6 @@ export default {
       ];
 
       this.groups.forEach(group => {
-        console.log("GORUP", group);
         items.push({
           title: group.typePlural,
           icon: group.icon,

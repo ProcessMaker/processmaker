@@ -53,6 +53,8 @@ export default {
       const info = {
         type,
         typePlural: asset.type_plural,
+        typeHuman: asset.type_human,
+        typeHumanPlural: asset.type_human_plural,
         name: asset.name,
         categories: this.getCategories(asset, assets),
         description: asset.attributes.description || "N/A",
@@ -78,6 +80,8 @@ export default {
       return {
         type: key, 
         typePlural: value[0].typePlural,
+        typeHuman: value[0].typeHuman,
+        typeHumanPlural: value[0].typeHumanPlural,
         icon: ICONS[key] || 'code',
         items: value
       };
