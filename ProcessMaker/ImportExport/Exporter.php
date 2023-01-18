@@ -87,6 +87,7 @@ class Exporter
 
         return json_encode([
             'exported' => $exported,
+            'name' => $manifest['name'],
         ]);
     }
 }

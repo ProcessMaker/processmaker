@@ -35,7 +35,7 @@
             <button type="button" class="btn btn-primary ml-2" @click="onExport">
               {{ $t("Export") }}
             </button>
-            <set-password-modal ref="set-password-modal" :processId="processId" :processName="processName" @verifyPassword="exportProcess" />
+            <set-password-modal ref="set-password-modal" :processId="processId" :processName="processName" @verifyPassword="exportProcess" :ask="true" />
             <export-success-modal ref="export-success-modal" :processName="processName" :processId="processId" :exportInfo="exportInfo" />
           </div>
         </div>
@@ -47,6 +47,7 @@
 <script>
 import SetPasswordModal from "./SetPasswordModal.vue";
 import ExportSuccessModal from "./ExportSuccessModal.vue";
+import DataProvider from "../DataProvider";
 
 export default {
   components: {
@@ -86,31 +87,15 @@ export default {
           break;
       }
     },
-    exportProcess() {
-        const params = {
-            password: null,
-            options: [],
-        };
-        ProcessMaker.apiClient({
-            url: `export/process/download/${this.processId}`,
-            data: params,
-            method: "POST",
-            responseType: "blob",
-        })
-        .then((response) => {
-            let header = response.headers['export-info'];
-            this.exportInfo = JSON.parse(header);
+    exportProcess(password) {
+      DataProvider.exportProcess(this.processId, password, [])
+        .then((exportInfo) => {
+            this.exportInfo = exportInfo;
             this.$refs['export-success-modal'].show();
             this.$refs['set-password-modal'].hide();
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", this.processName + ".json");
-            document.body.appendChild(link);
-            link.click();
         })
         .catch((error) => {
-            ProcessMaker.alert(error.response.data.message, "danger");
+            ProcessMaker.alert(error, "danger");
         });
     },
     handleCustomExport() {

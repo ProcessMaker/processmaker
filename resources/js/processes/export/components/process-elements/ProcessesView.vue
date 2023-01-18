@@ -97,6 +97,9 @@ export default {
             DataProvider.exportProcess(this.processId, password, this.$root.exportOptions())
                 .then(() => {
                     this.$refs["set-password-modal"].hide();
+                })
+                .catch((error) => {
+                    ProcessMaker.alert(error, "danger");
                 });
         },
     },

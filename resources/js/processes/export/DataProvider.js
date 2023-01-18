@@ -11,15 +11,24 @@ export default {
     });
   },
   exportProcess(processId, password, options) {
-    return ProcessMaker.apiClient.post(
-      `export/process/download/` + processId,
-      {
+    return ProcessMaker.apiClient({
+      method: 'POST',
+      url: `export/process/download/` + processId,
+      responseType: 'blob',
+      data: {
         options,
         password
       }
-    ).then(response => {
-      console.log("post export response: ", response);
-      return response;
+    }).then(response => {
+      let header = response.headers['export-info'];
+      let exportInfo = JSON.parse(header);
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", exportInfo.name.replace(' ', '_') + ".json");
+      document.body.appendChild(link);
+      link.click();
+      return exportInfo;
     });
   },
   formatAssets(assets, rootUuid) {
