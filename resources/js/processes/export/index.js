@@ -4,6 +4,7 @@ import ExportManager from './components/ExportManager';
 import ExportManagerView from './components/ExportManagerView';
 import CustomExportView from "./components/CustomExportView.vue";
 import Router from "vue-router";
+import State from './state';
 
 Vue.component("VuePassword", VuePassword);
 
@@ -33,6 +34,7 @@ const routes = [
 ];
 
 new Vue({
+    mixins: [State],
     router: window.ProcessMaker.Router,
     components: { ExportManager },
     data() {

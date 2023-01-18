@@ -31,9 +31,22 @@ class Exporter
         return $this->export($process, ProcessExporter::class);
     }
 
-    public function payload($password = null): array
+    public function payload($password = null, Options $options = null): array
     {
         $export = $this->manifest->toArray();
+
+        if ($options) {
+            $options = $options->options;
+            $export = array_filter($export, function ($uuid) use ($options) {
+                if (isset($options[$uuid])) {
+                    if ($options[$uuid]['mode'] === 'discard') {
+                        return false;
+                    }
+
+                    return true;
+                }
+            }, ARRAY_FILTER_USE_KEY);
+        }
 
         $payload = [
             'type' => $this->rootExporter->getType(),

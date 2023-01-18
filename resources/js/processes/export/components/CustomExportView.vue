@@ -5,15 +5,16 @@
         <container-page :active="slotProps.activeIndex === 0">
           <ProcessesView
             :process-info="rootAsset"
-            :process-name="processName"
-            @processesView="showProcessesView"
+            :groups="groups"
+            :process-name="rootAsset.name"
+            :process-id="processId"
           />
         </container-page>
         <container-page v-for="(group, i) in groups" :key="i" :active="slotProps.activeIndex === i + 1">
           <ScriptsView
-            :type="group.type"
+            :group="group"
             :items="group.items"
-            :process-name="processName"
+            :process-name="rootAsset.name"
           />
         </container-page>
       </template>
@@ -53,30 +54,19 @@ export default {
   mixins: [],
   data() {
     return {
-      currentProcessElement: "ProcessesView",
-      processElements: ["ProcessesView",
-        "ScriptsView",
-        "ScreensView",
-        "EnvironmentVariablesView",
-        "SignalsView",
-        "DataConnectorsView",
-        "VocabulariesView"],
-      processInfo: {},
-
       rootAsset: {},
       groups: [],
     };
   },
   computed: {
     sidenav() {
-      console.log("GROUP", this.groups);
       let items = [
         { title: this.rootAsset.name, icon: null, },
       ];
 
       this.groups.forEach(group => {
         items.push({
-          title: group.type,
+          title: group.typePlural,
           icon: ICONS[group.type] || null
         });
       });
@@ -87,19 +77,9 @@ export default {
   mounted() {
     DataProvider.getManifest(this.processId)
       .then((response) => {
-        console.log("OUTPUT from data provider", response);
-        // console.log('response', response);
-        // let payload = response.data;
-        // console.log('payload', payload);
-        // let manifest = payload.manifest;
-        // console.log('manifest', manifest);
-        // let rootUuid = manifest.root;
-        // console.log('rootUuid', rootUuid);
-        // this.processInfo = manifest.export[rootUuid];
-        // console.log(this.processInfo);
         this.rootAsset = response.root;
-        console.log('rootAsset', this.rootAsset);
         this.groups = response.groups;
+        this.$root.setInitialState(response.assets, response.rootUuid);
       })
       .catch((error) => {
         console.log(error);
@@ -107,14 +87,6 @@ export default {
       });
   },
   methods: {
-    showProcessesView() {
-      this.$refs.container.goTo(0);
-      // this.$refs.home.setToActive();
-      // this.currentProcessElement = ProcessesView;
-    },
-    showScriptsView() {
-      this.currentProcessElement = ScriptsView;
-    },
   },
 };
 </script>

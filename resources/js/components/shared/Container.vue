@@ -49,7 +49,6 @@
       //   console.log('okay');
       // },
       onNavigate(i) {
-        console.log("ON NAVIGATE Container.vue", i);
         this.activeIndex = i;
       },
       // goTo(pageIndex) {
@@ -78,8 +77,6 @@
       }
     },
     mounted() {
-      // this.findPages();
-      console.log("mounted children", this.$children);
     }
   };
 </script>

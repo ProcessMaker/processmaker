@@ -4,10 +4,10 @@
             <template #header>
                 <div class="header">
                     <i class="text-secondary data-card-header fas nav-icon fa-code" />
-                    <h5 class="mb-0 data-card-header">Scripts</h5>
+                    <h5 class="mb-0 data-card-header">{{ info.typePlural }}</h5>
                     <b-form-checkbox
                         class="data-card-header export-all"
-                        v-model="exportAll"
+                        v-model="includeAllByGroup"
                     >
                         Export All
                     </b-form-checkbox>
@@ -17,7 +17,7 @@
                 <ul class="data-card-metadata">
                     <li>Status:
                     <b-badge
-                    v-if="exportAll"
+                    v-if="$root.includeAllByGroup[info.type]"
                     pill
                     variant="success"
                     >
@@ -33,7 +33,7 @@
                     Not Exporting
                     </b-badge>
                     </li>
-                    <li>Total Elements: 18 Scripts</li>
+                    <li>Total Elements: {{ info.items.length }} {{ info.type }}</li>
                 </ul>
                 <div>
                     <b-link>
@@ -48,18 +48,27 @@
 
 <script>
 export default {
-    props: [],
+    props: ['info'],
     components: {},
     mixins: [],
     data() {
         return {
-            exportAll: true,
         }
     },
     methods: {      
     },
     mounted() {
     },
+    computed: {
+        includeAllByGroup: {
+            get() {
+                return this.$root.includeAllByGroup[this.info.type];
+            },
+            set(value) {
+                this.$root.setForGroup(this.info.type, value);
+            }
+        }
+    }
 }
 </script>
 
