@@ -4,13 +4,13 @@
         <hr>
         <div>
             <h4>Summary</h4>
-            <ul v-if="processInfo && processInfo.attributes" class="process-summary">
-                <li> Description: <span class="process-metadata">{{ processInfo.attributes.description }}</span></li>
-                <li> Categories: <span class="process-metadata">{{ processInfo.process_category_names }}</span></li>
-                <li> Process Manager: <span class="process-metadata"><b-link>{{ processInfo.process_manager }}</b-link></span></li>
-                <li> Created: <span class="process-metadata">{{ processInfo.attributes.created_at }}</span></li>
-                <li> Last Modified: <span class="process-metadata">{{ processInfo.attributes.updated_at }}</span></li>
-                <li> Modified By: <span class="process-metadata"><b-link>{{ processInfo.last_modified_by }}</b-link></span></li>
+            <ul v-if="processInfo" class="process-summary">
+                <li> Description: <span class="process-metadata">{{ processInfo.description }}</span></li>
+                <li> Categories: <span class="process-metadata">{{ processInfo.categories }}</span></li>
+                <li> Process Manager: <span class="process-metadata"><b-link>{{ processInfo.processManager }}</b-link></span></li>
+                <li> Created: <span class="process-metadata">{{ processInfo.createdAt }}</span></li>
+                <li> Last Modified: <span class="process-metadata">{{ processInfo.updatedAt }}</span></li>
+                <li> Modified By: <span class="process-metadata"><b-link>{{ processInfo.lastModifiedBy }}</b-link></span></li>
             </ul>
         </div>
         <div>
@@ -24,7 +24,8 @@
                 <b-form-text class="process-options-helper-text">Define a password to protect your export file.</b-form-text>
                 </b-form-checkbox>
                 <b-form-checkbox
-                    v-model="exportAllElements"
+                    :checked="$root.includeAll"
+                    @change="change"
                     class="process-metadata"
                     stacked
                 >
@@ -34,7 +35,9 @@
             </b-form-group>
         </div>
         <hr>
-        <data-card :exportAll="exportAll" />
+        <div v-for="group in groups" :key="group.type">
+          <data-card :exportAllElements="exportAllElements" :info="group" />
+        </div>
         <div class="pt-3 card-footer bg-light" align="right">
             <button type="button" class="btn btn-outline-secondary">
                 {{ $t("Cancel") }}
@@ -51,11 +54,12 @@
 
 import DataCard from "../../../../components/shared/DataCard.vue";
 import SetPasswordModal from "../SetPasswordModal.vue";
+import DataProvider from "../../DataProvider";
 
 export default {
   props: ["processName",
+    "groups",
     "processId",
-    "exportAll",
     "processInfo"],
     components: {
         DataCard,
@@ -69,6 +73,9 @@ export default {
         }
     },
     methods: {
+        change(value) {
+            this.$root.setIncludeAll(value);
+        },
         showSetPasswordModal() {
             this.$refs["set-password-modal"].show();
         },
@@ -77,17 +84,15 @@ export default {
             console.log(this.processId);
         },
         exportProcess() {
-        
-    },
+            DataProvider.exportProcess(this.processId, this.$root.exportOptions())
+                .then(() => {
+                    this.$refs["set-password-modal"].hide();
+                });
+        },
     },
     mounted() {
     },
     watch: {
-      exportAllElements() {
-        if (this.exportAllElements === true) {
-            this.exportAll = true;
-        }
-      }
     },
 }
 </script>

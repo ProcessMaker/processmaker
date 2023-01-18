@@ -3,8 +3,8 @@
         <h2>Export Process: {{ processName }}</h2>
         <hr>
         <div>
-            <h4>Scripts</h4>
-            <div v-if="exportAll">
+            <h4>{{ group.typePlural }}</h4>
+            <div v-if="$root.includeAllByGroup[group.type]">
                 <h6>Export Status:
                     <b-badge
                     pill
@@ -31,10 +31,10 @@
             <b-link @click="returnToSummary">Return to Summary</b-link>
         </div>
         <hr>
-        <div>
-            <b-card class="high-elevation">
+        <div v-for="(item, i) in group.items" :key="i">
+            <b-card class="high-elevation mb-4">
                 <template #header>
-                    <h6 class="mb-0 data-card-header font-weight-bold">[[ Script Name ]]</h6>
+                    <h6 class="mb-0 data-card-header font-weight-bold">{{ item.name }}</h6>
                 </template>
             <b-card-text>
                 <ul class="process-element-metadata">
@@ -43,7 +43,7 @@
                     <li>Language: </li>
                     <li>Created: </li>
                     <li>Last Modified: </li>
-                </ul>   
+                </ul>
             </b-card-text>
             </b-card>
         </div>
@@ -53,13 +53,13 @@
 <script>
 
 export default {
-    props: ["processName","exportAll"],
+    props: ["type", "group", "processName"],
     components: {
     },
     mixins: [],
     data() {
         return {
-
+            exportAll: false,
         }
     },
     methods: {

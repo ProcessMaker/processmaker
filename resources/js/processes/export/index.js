@@ -3,6 +3,8 @@ import VuePassword from "vue-password";
 import ExportManager from './components/ExportManager';
 import ExportManagerView from './components/ExportManagerView';
 import CustomExportView from "./components/CustomExportView.vue";
+import Router from "vue-router";
+import State from './state';
 
 Vue.component("VuePassword", VuePassword);
 
@@ -20,7 +22,7 @@ const routes = [
           })
     },
     { 
-        path: '/processes/:processId/export',
+        path: '/processes/:processId/export/custom',
         name: 'export-custom-process',
         component: CustomExportView,
         props: route => ({
@@ -32,6 +34,7 @@ const routes = [
 ];
 
 new Vue({
+    mixins: [State],
     router: window.ProcessMaker.Router,
     components: { ExportManager },
     data() {
