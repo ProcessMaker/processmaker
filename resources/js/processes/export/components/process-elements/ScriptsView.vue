@@ -14,7 +14,7 @@
                     Full Export
                     </b-badge>
                 </h6>
-                <p><span class="font-weight-bold">All</span> Scripts will be included in this export.</p>
+                <p><span class="font-weight-bold">All</span> {{ group.typePlural }} will be included in this export.</p>
             </div>
             <div v-else>
                 <h6>Export Status:
@@ -26,7 +26,7 @@
                     Not Exporting
                     </b-badge>
                 </h6>
-                <p>All Scripts will <span class="font-weight-bold">not</span> be included in this export.</p>
+                <p>All {{ group.typePlural }} will <span class="font-weight-bold">not</span> be included in this export.</p>
             </div>
             <b-link @click="returnToSummary">Return to Summary</b-link>
         </div>
@@ -38,11 +38,11 @@
                 </template>
             <b-card-text>
                 <ul class="process-element-metadata">
-                    <li>Description: </li>
-                    <li>Categories: </li>
-                    <li>Language: </li>
-                    <li>Created: </li>
-                    <li>Last Modified: </li>
+                    <li>Description: <span class="process-metadata">{{ item.description }}</span></li>
+                    <li>Categories: <span class="process-metadata">{{ item.categories }}</span></li>
+                    <li>Language: <span class="process-metadata"></span></li>
+                    <li>Created: <span class="process-metadata">{{ item.createdAt }}</span></li>
+                    <li>Last Modified: <span class="process-metadata">{{ item.updatedAt }}</span></li>
                 </ul>
             </b-card-text>
             </b-card>

@@ -53,6 +53,7 @@
                 :ask="false"
                 :password-protect="passwordProtect"
             />
+            <export-success-modal ref="export-success-modal" :processName="processName" :processId="processId" :exportInfo="exportInfo" />
         </div>
     </div>
 </template>
@@ -77,6 +78,7 @@ export default {
         return {
             passwordProtect: true,
             exportAllElements: true,
+            exportInfo: {},
         }
     },
     methods: {
