@@ -30,11 +30,11 @@
             <template v-else>
               <div class="pt-3">
                 <label for="set-password">Password</label>
-                <vue-password :disable-strength=true disabled />
+                <vue-password :disable-strength=true :disable-toggle=true disabled />
               </div>
               <div class="pt-3">
                 <label for="confirm-set-password">Verify Password</label>
-                <vue-password :disable-strength=true disabled />
+                <vue-password :disable-strength=true :disable-toggle=true disabled />
               </div>
             </template>
         </b-form-group>
@@ -47,28 +47,39 @@
 import { FormErrorsMixin, Modal } from "SharedComponents";
 
 export default {
-  components: { 
-    Modal
-    },
+  components: {
+    Modal,
+  },
   props: ["processId", "processName", "ask"],
   mixins: [ FormErrorsMixin ],
   data() {
-      return {
-        passwordProtect: true,
-        disabled: true,
-        password: '',
-        confirmPassword: '',
-        type: 'password',
-        errors: {
+    return {
+      passwordProtect: true,
+      disabled: true,
+      password: '',
+      confirmPassword: '',
+      type: 'password',
+      errors: {
         'password': null,
-        }
-      }
+      },
+    };
+  },
+  computed: {
+    passwords() {
+      return `${this.password}|${this.confirmPassword}`;
+    },
   },
   watch: {
-    password() {
+    passwords() {
       if (this.passwordProtect === true) {
-        this.disabled = this.password ? false : true;
-      };
+        if (this.password && this.confirmPassword) {
+          this.disabled = false;
+        } else if (this.password && !this.confirmPassword) {
+          this.disabled = true;
+        } else if (!this.password && this.confirmPassword) {
+          this.disabled = true;
+        }
+      }
     },
     passwordProtect() {
       if (this.passwordProtect === false) {
@@ -79,9 +90,9 @@ export default {
       } else {
         this.disabled = this.password ? false : true;
       }
-    }
+    },
   },
-  methods: { 
+  methods: {
     show() {
       this.$bvModal.show('set-password-modal');
     },
@@ -95,11 +106,11 @@ export default {
     },
     verifyPassword() {
       if (this.passwordProtect && !this.validatePassword()) {
-          return false;
+        return false;
       }
       else {
-          this.$emit("verifyPassword", this.password);
-          this.hide();
+        this.$emit("verifyPassword", this.password);
+        this.hide();
       }
     },
     togglePassword(reference) {
@@ -111,26 +122,24 @@ export default {
     },
     validatePassword() {
       if (!this.password && !this.confirmPassword) {
-          return false
+        return false;
       }
 
       if (this.password.trim() === '' && this.confirmPassword.trim() === '') {
-          return false
+        return false;
       }
 
       if (this.password !== this.confirmPassword) {
-          this.errors.password = ['Passwords must match']
-          return false
+        this.errors.password = ['Passwords must match'];
+        return false;
       }
 
-      this.errors.password = null
-      return true
+      this.errors.password = null;
+      return true;
     },
-},     
-  mounted() {
-  }
+  },
+};
 
-}
 </script>
 
 <style>
