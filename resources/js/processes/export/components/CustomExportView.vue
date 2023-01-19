@@ -64,29 +64,10 @@ export default {
   },
   mounted() {
     if (this.$root.isImport) {
-
-        // TESTING
-        // put this.$root.manifest into local storage if it's not null
-        // if (this.$root.rootUuid !== '') {
-        //     localStorage.setItem('manifest', JSON.stringify(this.$root.manifest));
-        //     localStorage.setItem('rootUuid', this.$root.rootUuid);
-        //     localStorage.setItem('ioState', JSON.stringify(this.$root.ioState));
-        // } else {
-        //   this.$root.rootUuid = localStorage.getItem('rootUuid');
-          
-        //   let manifest = localStorage.getItem('manifest');
-        //   if (manifest) {
-        //     this.$root.manifest = JSON.parse(manifest);
-        //   }
-
-        //   let ioState = localStorage.getItem('ioState');
-        //   if (ioState) {
-        //     this.$root.ioState = JSON.parse(ioState);
-        //   }
-
-        // }
-        // console.log('stuff', JSON.stringify(this.$root.rootUuid), JSON.stringify(this.$root.ioState));
-        // END TESTING
+        if (!this.$root.file) {
+          this.$router.push({ name: "main" });
+          return;
+        }
 
         const formatted = DataProvider.formatAssets(this.$root.manifest, this.$root.rootUuid);
         this.rootAsset = formatted.root;
