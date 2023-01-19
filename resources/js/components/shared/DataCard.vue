@@ -14,7 +14,7 @@
                 </div>
             </template>
             <b-card-text>
-                <ul class="data-card-metadata">
+                <ul class="data-card-metadata mb-0">
                     <li>Status:
                     <b-badge
                     v-if="$root.includeAllByGroup[info.type]"
@@ -35,11 +35,7 @@
                     </li>
                 </ul>
                 <template v-if="$root.isImport">
-                    <div>
-                        New Elements: {{ count('copy', info.items) + count('new', info.items) }}
-                        <br />
-                        Updated Elements: {{ count('update', info.items) }}
-                    </div>
+                    <data-tree :data="elementsCount"/>
                 </template>
                 <div>
                     <b-link @click="onGroupDetailsClick">
@@ -53,9 +49,14 @@
 </template>
 
 <script>
+
+import DataTree from "./DataTree.vue";
+
 export default {
+    components: {
+        DataTree,
+    },
     props: ['info'],
-    components: {},
     mixins: [],
     data() {
         return {
@@ -79,6 +80,20 @@ export default {
             set(value) {
                 this.$root.setForGroup(this.info.type, value);
             }
+        },
+        elementsCount() {
+          return {
+              label: `Total Elements:  ${this.info.items.length}`,
+              isRoot: true,
+              children: [
+                {
+                  label: `New Elements:  ${ this.count('copy', this.info.items) + this.count('new', this.info.items) }`,
+                },
+                {
+                  label: `Updated Elements:  ${ this.count('update', this.info.items) }`,
+                },
+              ],
+            };
         }
     }
 }
