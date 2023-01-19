@@ -39,7 +39,7 @@
                                     </b-form-radio>
                                 </b-form-group>
                             </div>
-                            <enter-password-modal ref="enter-password-modal" @verified-password="importFile($event)"></enter-password-modal>
+                            <enter-password-modal ref="enter-password-modal" @password="passwordEntered" :password-error="passwordError"></enter-password-modal>
                             <import-process-modal ref="import-process-modal" :existingAssets="existingAssets" :processName="processName" :userHasEditPermissions="true" @import-new="setCopyAll" @update-process="setUpdateAll"></import-process-modal>
                         </div>
                         <!-- <div id="during-import" v-if="importing" v-cloak>
@@ -358,6 +358,7 @@ export default {
             assetsExist: false,
 
             password: '',
+            passwordError: null,
         }
     },
     filters: {
@@ -667,10 +668,13 @@ export default {
                 this.fileIsValid = true;
                 console.log("ROOT UUID", this.$root.rootUuid);
                 this.$root.setInitialState(this.$root.manifest, this.$root.rootUuid);
+                this.$refs['enter-password-modal'].hide();
 
             }).catch(error => {
-                if (error.message === 'password required') {
-                    // show password field
+                if (error.response.data.error === 'password required') {
+                    this.showEnterPasswordModal();
+                } else if (error.response.data.error === 'incorrect password') {
+                  this.passwordError = "Incorrect Password";
                 } else {
                     const message = error.response?.data?.error || error.message;
                     ProcessMaker.alert(message, 'danger');
@@ -692,6 +696,11 @@ export default {
         setUpdateAll() {
             this.$root.setModeForAll('update');
             this.importFile('update-all');
+        },
+        passwordEntered(password) {
+          this.password = password;
+          this.validateFile();
+          ;
         },
     },
     mounted() {

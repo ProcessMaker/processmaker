@@ -6,13 +6,13 @@
       :subtitle="$t('This file is password protected. Enter the password below to continue with the import.')" 
       :ok-title="$t('Import')"
       :ok-disabled="disabled" 
-      @ok.prevent="verifyPassword" 
+      @ok.prevent="verifyPassword"
       @hidden="onClose"
     >
       <template> 
         <vue-password v-model="password" id="password" :disable-strength="true" :classes="error ? ['invalid', 'form-control'] : 'form-control'" />
-        <small class="form-text text-danger" v-if="error">
-          {{ error }}
+        <small class="form-text text-danger" v-if="passwordError">
+          {{ passwordError }}
         </small>
       </template>
     </modal>
@@ -26,7 +26,7 @@
   export default {
     components: { Modal , VuePassword},
     mixins: [ FormErrorsMixin ],
-    props: [''],
+    props: ['passwordError'],
     data: function() {
       return {
         showModal: false,
@@ -72,11 +72,8 @@
       },
       verifyPassword() {
          // TODO: IMPORT/EXPORT Verify process password
-        if (this.password === 'test') {
-          this.$bvModal.hide('enterPassword');
-          this.$emit('verified-password', true);
-        } else {
-          this.error = this.$t('Invalid Password');
+        if (this.password) {
+          this.$emit('password', this.password);
         }
       },
       resetError() {
