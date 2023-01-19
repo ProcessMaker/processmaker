@@ -85,6 +85,16 @@
         disabled: false,
       };
     },
+    created () {
+      // If it is self service in the old format we transform to the new one
+      if (this.assignment === 'self_service') {
+        const cachedAssignments = {...this.assignments};
+        this.assignment = 'user_group';
+        this.setConfigurableValue (true, 'SELF_SERVICE');
+        this.assignedUserSetter(cachedAssignments.users.join(","));
+        this.assignedGroupSetter(cachedAssignments.groups.join(","));
+      }
+    },
     mounted () {
       this.$root.$on('disable-assignment-settings', (val) => {
         this.disabled = val;

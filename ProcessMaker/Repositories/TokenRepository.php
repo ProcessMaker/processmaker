@@ -137,7 +137,7 @@ class TokenRepository implements TokenRepositoryInterface
                     break;
                 default:
                     $assignmentType = $activity->getProperty('assignment');
-                    throw new InvalidUserAssignmentException("The Assignment Type $assignmentType is not compatible with the Self Service Option");
+                    throw new \Exception("The Assignment Type '$assignmentType' is not compatible with the Self Service Option");
             }
         }
 
