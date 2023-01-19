@@ -533,10 +533,7 @@ export default {
             window.location = '/processes';
         },
         importFile() {
-            if (this.existingAssets.length > 0)
-            {
-                this.assetsExist = true;
-            }
+            this.assetsExist = this.existingAssets.length > 0 ? true : false;
             switch (this.selectedImportOption) {
                 case 'basic':
                     this.handleBasicImport();
@@ -674,7 +671,6 @@ export default {
             this.file = '';
         },
         onImportAsNew() {
-            console.log('ROUTER', this.$router);
             this.$router.push({name: 'import-new-process', params: {file: this.file}})
             // console.log('file', this.file);
             // console.log('route to new vue');
