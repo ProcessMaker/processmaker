@@ -1,6 +1,6 @@
 <template>
     <div class="mb-2">
-        <h2>Export Process: {{ processName }}</h2>
+        <h2>{{ $root.operation }} Process: {{ processName }}</h2>
         <hr>
         <div>
             <h4>{{ group.typeHumanPlural }}</h4>
@@ -17,7 +17,7 @@
                 <p><span class="font-weight-bold">All</span> {{ group.typeHumanPlural }} will be included in this {{ $root.operation.toLowerCase() }}.</p>
             </div>
             <div v-else>
-                <h6>Export Status:
+                <h6>{{ $root.operation }} Status:
                 <b-badge
                     pill
                     variant="warning"
@@ -26,7 +26,7 @@
                     Not {{ $root.operation }}ing
                     </b-badge>
                 </h6>
-                <p>All {{ group.typeHumanPlural }} will <span class="font-weight-bold">not</span> be included in this export.</p>
+                <p>All {{ group.typeHumanPlural }} will <span class="font-weight-bold">not</span> be included in this {{ $root.operation.toLowerCase() }}.</p>
             </div>
             <b-link @click="returnToSummaryClick">Return to Summary</b-link>
         </div>
