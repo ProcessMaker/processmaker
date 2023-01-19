@@ -77,7 +77,9 @@ export default {
         createdAt: asset.attributes.created_at || "N/A",
         updatedAt: asset.attributes.updated_at || "N/A",
         processManager: asset.process_manager || "N/A",
+        processManagerId: asset.process_manager_id || null,
         lastModifiedBy: asset.last_modified_by || "N/A",
+        lastModifiedById: asset.last_modified_by_id || null,
       };
 
       if (uuid === rootUuid) {

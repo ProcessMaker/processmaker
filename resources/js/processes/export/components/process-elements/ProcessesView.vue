@@ -7,10 +7,24 @@
             <ul v-if="processInfo" class="process-summary">
                 <li> Description: <span class="process-metadata">{{ processInfo.description }}</span></li>
                 <li> Categories: <span class="process-metadata">{{ processInfo.categories }}</span></li>
-                <li> Process Manager: <span class="process-metadata"><b-link>{{ processInfo.processManager }}</b-link></span></li>
+                <li> Process Manager:
+                    <span class="process-metadata">
+                        <b-link v-if="processInfo.processManagerId"
+                            :href="`/profile/${processInfo.processManagerId}`"
+                            target="_blank">{{ processInfo.processManager }}</b-link>
+                        <span v-else>{{ processInfo.processManager }}</span>
+                    </span>
+                </li>
                 <li> Created: <span class="process-metadata">{{ processInfo.createdAt }}</span></li>
                 <li> Last Modified: <span class="process-metadata">{{ processInfo.updatedAt }}</span></li>
-                <li> Modified By: <span class="process-metadata"><b-link>{{ processInfo.lastModifiedBy }}</b-link></span></li>
+                <li> Modified By:
+                    <span class="process-metadata">
+                        <b-link v-if="processInfo.lastModifiedById"
+                            :href="`/profile/${processInfo.lastModifiedById}`"
+                            target="_blank">{{ processInfo.lastModifiedBy }}</b-link>
+                        <span v-else>{{ processInfo.lastModifiedBy }}</span>
+                    </span>
+                </li>
             </ul>
         </div>
         <div>

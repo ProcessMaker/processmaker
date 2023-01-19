@@ -147,8 +147,10 @@ abstract class ExporterBase implements ExporterInterface
             'type_plural' => Str::plural($type),
             'type_human_plural' => Str::plural($human),
             'description' => $this->getDescription(),
-            'last_modified_by' => $this->getLastModifiedBy(),
-            'process_manager' => $this->getProcessManager(),
+            'last_modified_by' => $this->getLastModifiedBy()['lastModifiedByName'],
+            'last_modified_by_id' => $this->getLastModifiedBy()['lastModifiedById'],
+            'process_manager' => $this->getProcessManager()['managerName'],
+            'process_manager_id' => $this->getProcessManager()['managerId'],
             'model' => $modelClass,
             'attributes' => $this->getExportAttributes(),
             'references' => $this->references,
@@ -185,27 +187,29 @@ abstract class ExporterBase implements ExporterInterface
         return $this->model->description || null;
     }
 
-    public function getProcessManager(): string
+    public function getProcessManager(): array
     {
-        $managerName = 'Unknown';
-
-        if (isset($this->model->manager->fullname)) {
-            $managerName = $this->model->manager->fullname;
-        }
-
-        return $managerName;
+        return [
+            'managerId' => $this->model->manager?->id ? $this->model->manager->id : null,
+            'managerName' => $this->model->manager?->fullname ? $this->model->manager->fullname : ''
+        ];
     }
 
-    public function getLastModifiedBy()
+    public function getLastModifiedBy() : array
     {
+        $lastModifiedBy = [
+            'lastModifiedByName' => '',
+            'lastModifiedById' => null
+        ];
+
         $versionHistoryClass = '\ProcessMaker\Package\Versions\Models\VersionHistory';
 
         if (!class_exists($versionHistoryClass)) {
-            return '';
+            return $lastModifiedBy;
         }
 
         if (!in_array(HasVersioning::class, class_uses_recursive(get_class($this->model)))) {
-            return '';
+            return $lastModifiedBy;
         }
 
         $version = $this->model->getLatestVersion();
@@ -216,10 +220,13 @@ abstract class ExporterBase implements ExporterInterface
         ])->first();
 
         if (!$versionHistory) {
-            return '';
+            return $lastModifiedBy;
         }
 
-        return $versionHistory->user->getFullName();
+        $lastModifiedBy['lastModifiedByName'] = $versionHistory->user->getFullName();
+        $lastModifiedBy['lastModifiedById'] = $versionHistory->user->id;
+
+        return $lastModifiedBy;
     }
 
     public function updateDuplicateAttributes()
