@@ -80,6 +80,7 @@ export default {
         processManagerId: asset.process_manager_id || null,
         lastModifiedBy: asset.last_modified_by || "N/A",
         lastModifiedById: asset.last_modified_by_id || null,
+        importMode: asset.import_mode || 'update',
       };
 
       if (uuid === rootUuid) {

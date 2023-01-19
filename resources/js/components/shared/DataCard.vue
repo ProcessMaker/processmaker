@@ -33,8 +33,14 @@
                     Not {{ $root.operation }}ing
                     </b-badge>
                     </li>
-                    <li>Total Elements: {{ info.items.length }} {{ info.typeHumanPlural }}</li>
                 </ul>
+                <template v-if="$root.isImport">
+                    <div>
+                        New Elements: {{ count('copy', info.items) + count('new', info.items) }}
+                        <br />
+                        Updated Elements: {{ count('update', info.items) }}
+                    </div>
+                </template>
                 <div>
                     <b-link @click="onGroupDetailsClick">
                         <i class="fas fa-info-circle fa-fw mr-0"></i>
@@ -56,6 +62,9 @@ export default {
         }
     },
     methods: {
+        count(mode, items) {
+            return items.filter(item => item.importMode === mode).length
+        },
         onGroupDetailsClick() {
             window.ProcessMaker.EventBus.$emit("group-details-click", this.info.typePlural);
         }
