@@ -96,9 +96,8 @@ class TokenRepository implements TokenRepositoryInterface
         $token->user_id = $user ? $user->getKey() : null;
 
         $token->is_self_service = 0;
-        //tododante may be, simplify the logical conditions
         if ($token->getAssignmentRule() === 'self_service' || $token->getSelfServiceAttribute()) {
-            if ($user && !$token->getSelfServiceAttribute()) {
+            if ($user) {
                 // A user is already assigned (from assignmentLock) so do not
                 // treat this as a self-service task
                 $token->is_self_service = 0;

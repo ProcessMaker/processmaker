@@ -493,7 +493,6 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             }
         }
 
-
         if (filter_var($assignmentLock, FILTER_VALIDATE_BOOLEAN) === true) {
             $user = $this->getLastUserAssignedToTask($activity->getId(), $token->getInstance()->getId());
             if ($user) {
@@ -663,12 +662,17 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             $assignedGroups = [$assignedGroups];
         }
 
+        // We need to remove inactive users.
+        $users = User::whereIn('id', array_unique($assignedUsers)) ->where('status', 'ACTIVE')->pluck('id')->toArray();
 
-        $users = array_unique($assignedUsers);
         foreach ($assignedGroups as $groupId) {
+            // getConsolidatedUsers already removes inactive users
             $this->getConsolidatedUsers($groupId, $users);
         }
+
+        //tododante this sort is not necessary
         sort($users);
+
 
         $nextAssignee =  $this->getNextUserFromGroupAssignment($activity->getId(), $users);
 

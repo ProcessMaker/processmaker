@@ -78,6 +78,26 @@ class TaskAssignmentByVariableTest extends TestCase
         $this->assertEquals($group1->users->first()->id, $task->user_id);
     }
 
+    public function testProcessVariableAssignmentWithInvalidUsers()
+    {
+        // Create users of a group and a user without group
+        $users = User::factory(2)->create(['status'=>'INACTIVE']);
+        $group1 = $this->createGroup(6, 'INACTIVE');
+        $group2 = $this->createGroup(5, 'INACTIVE');
+        $process = $this->createProcess('process_variable', 'usersVariable', 'groupsVariable', '', false);
+
+        // The first assignment should be to user (is the first created user)
+        $response = $this->startTestProcess($process, [
+            'usersVariable' => $users->pluck('id')->toArray(),
+            'groupsVariable' => [$group1->id, $group2->id]
+        ]);
+
+        $requestId = $response['id'];
+        $assignedTasks = ProcessRequestToken::where([ 'process_request_id' => $requestId, 'status' => 'ACTIVE', ])
+            ->get()
+            ->count();
+        $this->assertEquals(0, $assignedTasks);
+    }
 
     public function testSelfServiceWithProcessVariableAssignment()
     {
@@ -239,9 +259,9 @@ class TaskAssignmentByVariableTest extends TestCase
         return $process;
     }
 
-    private function createGroup($numberOfUsers = 1)
+    private function createGroup($numberOfUsers = 1, $status = 'ACTIVE')
     {
-        $groupUsers = User::factory()->count($numberOfUsers)->create(['status'=>'ACTIVE']);
+        $groupUsers = User::factory()->count($numberOfUsers)->create(['status'=>$status]);
         $group = Group::factory()->create();
         foreach ($groupUsers as $groupUser) {
             GroupMember::factory()->create([
