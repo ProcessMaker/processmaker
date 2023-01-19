@@ -670,10 +670,6 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             $this->getConsolidatedUsers($groupId, $users);
         }
 
-        //tododante this sort is not necessary
-        sort($users);
-
-
         $nextAssignee =  $this->getNextUserFromGroupAssignment($activity->getId(), $users);
 
         return $nextAssignee;
@@ -836,7 +832,14 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         return null;
     }
 
-    //tododante document and find a better name for the method
+    /**
+     * Evaluates each expression rule and returns the list of groups and users
+     * that can be assigned to
+     *
+     * @param $activity
+     * @param $token
+     * @return array
+     */
     public function getAssigneesFromExpressionRules($activity, $token)
     {
         $assignmentRules = $activity->getProperty('assignmentRules', null);
@@ -857,28 +860,21 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                 $formalExp->setBody($item->expression);
                 $eval = $formalExp($instanceData);
                 if ($eval) {
-                    //tododante simplify this switch
-                    switch ($item->type) {
-                        case 'group':
-                            $groups[] = $item->assignee;
-                            break;
-                        case 'user':
-                            $users[] = $item->assignee;
-                            break;
+                    if ($item->type === 'group') {
+                        $groups[] = $item->assignee;
+                    } elseif ($item->type === 'user') {
+                        $users[] = $item->assignee;
                     }
                 }
             }
 
-            // If no rule was applied, use the default
+            // If no rule was applied, use the default configured user/group
             if (empty($users) && empty($groups)) {
                 foreach($default as $item) {
-                    switch ($item->type) {
-                        case 'group':
-                            $groups[] = $item->assignee;
-                            break;
-                        case 'user':
-                            $users[] = $item->assignee;
-                            break;
+                    if ($item->type === 'group') {
+                        $groups[] = $item->assignee;
+                    } elseif ($item->type === 'user') {
+                        $users[] = $item->assignee;
                     }
                 }
             }

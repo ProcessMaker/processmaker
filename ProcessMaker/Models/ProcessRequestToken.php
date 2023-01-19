@@ -745,12 +745,10 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     {
         $activity = $this->getBpmnDefinition()->getBpmnElementInstance();
 
-        //tododante verify if it is ok to store the self service prop inside config
         $config = json_decode($activity->getProperty('config'));
         if (empty($config)) {
             return false;
         }
-        //------
 
         return (property_exists($config, 'selfService')) ? $config->selfService : false;
     }

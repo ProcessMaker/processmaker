@@ -109,15 +109,14 @@ class TokenRepository implements TokenRepositoryInterface
         $selfServiceTasks = $token->getInstance()->processVersion->self_service_tasks;
         $token->self_service_groups = $selfServiceTasks && isset($selfServiceTasks[$activity->getId()]) ? $selfServiceTasks[$activity->getId()] : [];
 
-        //tododante if self service task is enabled with the toggle
         if($token->getSelfServiceAttribute()) {
             $selfServiceUsers = !empty($token->getDefinition()['assignedUsers']) ? $token->getDefinition()['assignedUsers'] : [];
             $selfServiceGroups = !empty($token->getDefinition()['assignedGroups']) ? $token->getDefinition()['assignedGroups'] : [];
-            //tododante for each assign type that supports sel service, add the logic here
+
             switch ($activity->getProperty('assignment')) {
                 case 'user_group':
                     // For this assignment type, users and groups arrive as comma separated numbers that
-                    // wee need to convert to arrays for the self_service_groups field
+                    // we need to convert to arrays for the self_service_groups column
                     $evaluatedUsers = explode(',', $selfServiceUsers);
                     $evaluatedGroups = explode(',', $selfServiceGroups);
                     $token->self_service_groups = ['users' => $evaluatedUsers, 'groups' => $evaluatedGroups];
@@ -125,9 +124,11 @@ class TokenRepository implements TokenRepositoryInterface
                 case 'process_variable':
                     $evaluatedUsers = $token->getInstance()->getDataStore()->getData($selfServiceUsers);
                     $evaluatedGroups = $token->getInstance()->getDataStore()->getData($selfServiceGroups);
-                    //tododante helper to arrayrize any value may be there is already a helper for this??
+
+                    // If we have single values we put it inside an array
                     $evaluatedUsers = is_array($evaluatedUsers) ? $evaluatedUsers : [$evaluatedUsers];
                     $evaluatedGroups = is_array($evaluatedGroups) ? $evaluatedGroups : [$evaluatedGroups];
+
                     $token->self_service_groups = ['users' => $evaluatedUsers, 'groups' => $evaluatedGroups];
                     break;
                 case 'rule_expression':
