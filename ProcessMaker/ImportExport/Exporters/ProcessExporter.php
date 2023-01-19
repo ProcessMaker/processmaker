@@ -75,8 +75,6 @@ class ProcessExporter extends ExporterBase
 
         $this->importAssignments();
 
-        // TODO
-        // Update screenRef
         $process->save();
 
         $process->notification_settings()->delete();

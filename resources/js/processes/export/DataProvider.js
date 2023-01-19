@@ -12,6 +12,23 @@ const ICONS = {
 };
 
 export default {
+  doImport(file, options, password) {
+    let formData = new FormData();
+    const optionsBlob = new Blob([JSON.stringify(options)], {
+        type: 'application/json'
+    });
+  
+    formData.append('file', file);
+    formData.append('options', optionsBlob);
+    formData.append('password', password);
+    
+    return ProcessMaker.apiClient.post('/import/do-import', formData,
+    {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+  },
   getManifest(processId) {
     return ProcessMaker.apiClient({
       url: `export/manifest/process/${processId}`,
@@ -19,8 +36,7 @@ export default {
     }).then((response) => {
       const rootUuid = response.data.root;
       const assets = response.data.export;
-      const d = this.formatAssets(assets, rootUuid);
-      return d;
+      return this.formatAssets(assets, rootUuid);
     });
   },
   exportProcess(processId, password, options) {

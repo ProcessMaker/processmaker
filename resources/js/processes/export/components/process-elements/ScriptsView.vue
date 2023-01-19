@@ -5,16 +5,16 @@
         <div>
             <h4>{{ group.typeHumanPlural }}</h4>
             <div v-if="$root.includeAllByGroup[group.type]">
-                <h6>Export Status:
+                <h6>{{ $root.operation }} Status:
                     <b-badge
                     pill
                     variant="success"
                     >
                     <i class="fas fa-check-circle export-status-label" />
-                    Full Export
+                    Full {{ $root.operation }}
                     </b-badge>
                 </h6>
-                <p><span class="font-weight-bold">All</span> {{ group.typeHumanPlural }} will be included in this export.</p>
+                <p><span class="font-weight-bold">All</span> {{ group.typeHumanPlural }} will be included in this {{ $root.operation.toLowerCase() }}.</p>
             </div>
             <div v-else>
                 <h6>Export Status:
@@ -23,7 +23,7 @@
                     variant="warning"
                     >
                     <i class="fas fa-exclamation-triangle export-status-label" />
-                    Not Exporting
+                    Not {{ $root.operation }}ing
                     </b-badge>
                 </h6>
                 <p>All {{ group.typeHumanPlural }} will <span class="font-weight-bold">not</span> be included in this export.</p>

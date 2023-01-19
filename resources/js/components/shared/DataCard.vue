@@ -9,7 +9,7 @@
                         class="data-card-header export-all"
                         v-model="includeAllByGroup"
                     >
-                        Export All
+                        {{ $root.operation }} All
                     </b-form-checkbox>
                 </div>
             </template>
@@ -22,7 +22,7 @@
                     variant="success"
                     >
                     <i class="fas fa-check-circle export-status-label" />
-                    Full Export
+                    Full {{ $root.operation }}
                     </b-badge>
                     <b-badge
                     v-else
@@ -30,7 +30,7 @@
                     variant="warning"
                     >
                     <i class="fas fa-exclamation-triangle export-status-label" />
-                    Not Exporting
+                    Not {{ $root.operation }}ing
                     </b-badge>
                     </li>
                     <li>Total Elements: {{ info.items.length }} {{ info.typeHumanPlural }}</li>

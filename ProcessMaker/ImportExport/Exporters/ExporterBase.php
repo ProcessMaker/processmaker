@@ -29,6 +29,8 @@ abstract class ExporterBase implements ExporterInterface
 
     public $disableEventsWhenImporting = false;
 
+    public $log = [];
+
     public static function modelFinder($uuid, $asssetInfo)
     {
         return $asssetInfo['model']::where('uuid', $uuid);
@@ -255,6 +257,11 @@ abstract class ExporterBase implements ExporterInterface
     public function handleDuplicateAttributes() : array
     {
         return [];
+    }
+
+    public function log($key, $value)
+    {
+        $this->log[$key] = $value;
     }
 
     protected function incrementString(string $string)

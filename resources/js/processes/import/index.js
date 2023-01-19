@@ -2,6 +2,7 @@ import Vue from 'vue';
 import ImportManagerView from './components/ImportManagerView';
 import ProcessDetailConfigs from './components/ProcessDetailConfigs';
 import State from '../export/state';
+import CustomExportView from "../export/components/CustomExportView";
 
 
 const routes = [
@@ -9,6 +10,11 @@ const routes = [
         path: '/processes/import', 
         name: 'main', 
         component: ImportManagerView
+    },
+    { 
+        path: '/processes/import/custom', 
+        name: 'custom', 
+        component: CustomExportView,
     },
     { 
         path: '/processes/import/new-process', 
@@ -30,6 +36,7 @@ new Vue({
         }
     },
     beforeMount() {
+        this.$root.isImport = true;
         this.$router.addRoutes(routes);
     },
     watch: {

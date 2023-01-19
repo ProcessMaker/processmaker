@@ -42,6 +42,7 @@ class Importer
                     } else {
                         $exporter->model->save();
                     }
+                    $exporter->log('newId', $exporter->model->id);
                 }
             }
             Schema::enableForeignKeyConstraints();
@@ -53,6 +54,8 @@ class Importer
                 }
             }
         });
+
+        return $this->manifest->all();
     }
 
     public function tree()

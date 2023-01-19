@@ -1,6 +1,6 @@
 <template>
     <div class="mb-2">
-        <h2>Export Process: {{ processName }}</h2>
+        <h2>{{ $root.operation }} Process: {{ processName }}</h2>
         <hr>
         <div>
             <h4>Summary</h4>
@@ -16,6 +16,7 @@
         <div>
             <b-form-group>
                 <b-form-checkbox
+                    v-if="!$root.isImport"
                     v-model="passwordProtect"
                     class="process-metadata"
                     stacked
@@ -29,7 +30,7 @@
                     class="process-metadata"
                     stacked
                 >
-                Export All Elements
+                {{ $root.operation }} All Elements
                 <b-form-text class="process-options-helper-text">Include all Process Elements in your export file.</b-form-text>
                 </b-form-checkbox>
             </b-form-group>
@@ -42,7 +43,10 @@
             <button type="button" class="btn btn-outline-secondary">
                 {{ $t("Cancel") }}
             </button>
-            <button type="button" class="btn btn-primary ml-2" @click="onExport">
+            <button v-if="$root.isImport" type="button" class="btn btn-primary ml-2" @click="onImport">
+                {{ $t("Import") }}
+            </button>
+            <button v-else type="button" class="btn btn-primary ml-2" @click="onExport">
                 {{ $t("Export") }}
             </button>
             <set-password-modal
@@ -96,6 +100,9 @@ export default {
             } else {
                 this.exportProcess(null);
             }
+        },
+        onImport() {
+            DataProvider.doImport(this.$root.file, this.$root.exportOptions(), this.$root.password);
         },
         exportProcess(password = null) {
             DataProvider.exportProcess(this.processId, password, this.$root.exportOptions())

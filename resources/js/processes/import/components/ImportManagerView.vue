@@ -5,7 +5,6 @@
                 <div class="card text-center">
                     <div class="card-header bg-light" align="left">
                         <h5 class="mb-0">{{$t('Import Process')}}</h5>
-                        {{ $root.ioState }}
                         <small class="text-muted">{{ $t('Import a Process and its associated assets into this ProcessMaker environment') }}</small>
                     </div>
                     <div class="card-body">
@@ -321,6 +320,7 @@ import DraggableFileUpload from '../../../components/shared/DraggableFileUpload'
 import EnterPasswordModal from '../components/EnterPasswordModal';
 import ImportProcessModal from '../components/ImportProcessModal';
 import { createUniqIdsMixin } from "vue-uniq-ids";
+import DataProvider from '../../export/DataProvider';
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
@@ -357,8 +357,6 @@ export default {
             passwordEnabled: false,
             assetsExist: false,
 
-            manifest: {},
-            rootUuid: '',
             password: '',
         }
     },
@@ -396,7 +394,7 @@ export default {
             };
         },
         existingAssets() {
-            return Object.values(this.manifest).filter(asset => {
+            return Object.values(this.$root.manifest).filter(asset => {
                 return asset.existing_id !== null;
             }).map(asset => {
                 return {
@@ -542,7 +540,9 @@ export default {
                     break;
             
                 default:
-                    // TODO:: IMPORT/EXPORT HANDLE CUSTOM IMPORT
+                    this.$root.file = this.file;
+                    this.$root.password = this.password;
+                    this.$router.push({name: 'custom'});
                     break;
             }
         },
@@ -555,33 +555,19 @@ export default {
                 });
             } else {
                 // this.importing = true;
-                let formData = new FormData();
-                const options = JSON.stringify(this.$root.exportOptions());
-                const optionsBlob = new Blob([options], {
-                    type: 'application/json'
-                });
-              
-                formData.append('file', this.file);
-                formData.append('options', optionsBlob);
-                formData.append('password', this.password);
         
                 if (this.submitted) {
                     return;
                 }
-                this.submitted = true;
-                ProcessMaker.apiClient.post('/import/do-import', formData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                }).then(response => {
+                DataProvider.doImport(this.file, this.$root.exportOptions(), this.password)
+                .then(response => {
                     ProcessMaker.alert(this.$t('Process was successfully imported'), 'success');
                     window.location = '/processes';
-                    console.log('RESPONSE', response);
                 }).catch(error => {
                     ProcessMaker.alert(this.$t('Unable to import the process.')  + (error.response.data.message ? ': ' + error.response.data.message : ''), 'danger');
                     this.submitted = false;
                 });
+                this.submitted = true;
 
                 // ProcessMaker.apiClient.post('/processes/import?queue=1', formData,
                 //     {
@@ -676,11 +662,11 @@ export default {
                 }
             )
             .then(response => {
-                this.manifest = response.data.manifest;
-                this.rootUuid = response.data.rootUuid;
+                this.$root.manifest = response.data.manifest;
+                this.$root.rootUuid = response.data.rootUuid;
                 this.fileIsValid = true;
-
-                this.$root.setInitialState(this.manifest, this.rootUuid);
+                console.log("ROOT UUID", this.$root.rootUuid);
+                this.$root.setInitialState(this.$root.manifest, this.$root.rootUuid);
 
             }).catch(error => {
                 if (error.message === 'password required') {

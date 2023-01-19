@@ -8,6 +8,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\ImportExport\ExportEncrypted;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
+use ProcessMaker\Models\Process;
 
 class PasswordException extends \Exception
 {
@@ -52,9 +53,12 @@ class ImportController extends Controller
         $postOptions = json_decode($options, true);
         $options = new Options($postOptions);
         $importer = new Importer($payload, $options);
-        $importer->doImport();
+        $manifest = $importer->doImport();
 
-        return response()->json([], 200);
+        $rootLog = $manifest[$payload['root']]->log;
+        $processId = $rootLog['newId'];
+
+        return response()->json(['processId' => $processId], 200);
     }
 
     private function handlePasswordDecrypt(Request $request, array $payload)
