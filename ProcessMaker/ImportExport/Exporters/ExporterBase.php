@@ -191,7 +191,7 @@ abstract class ExporterBase implements ExporterInterface
     {
         return [
             'managerId' => $this->model->manager?->id ? $this->model->manager->id : null,
-            'managerName' => $this->model->manager?->fullname ? $this->model->manager->fullname : ''
+            'managerName' => $this->model->manager?->fullname ? $this->model->manager->fullname : '',
         ];
     }
 
@@ -199,7 +199,7 @@ abstract class ExporterBase implements ExporterInterface
     {
         $lastModifiedBy = [
             'lastModifiedByName' => '',
-            'lastModifiedById' => null
+            'lastModifiedById' => null,
         ];
 
         $versionHistoryClass = '\ProcessMaker\Package\Versions\Models\VersionHistory';
