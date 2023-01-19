@@ -131,6 +131,7 @@ export default {
 
       if (this.password !== this.confirmPassword) {
         this.errors.password = ['Passwords must match'];
+        this.disabled = true;
         return false;
       }
 
