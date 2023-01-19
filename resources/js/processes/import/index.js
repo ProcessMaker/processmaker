@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import ImportManagerView from './components/ImportManagerView';
 import ProcessDetailConfigs from './components/ProcessDetailConfigs';
+import State from '../export/state';
 
 
 const routes = [
@@ -21,6 +22,7 @@ const routes = [
 ];
 
 new Vue({
+    mixins: [State],
     router: window.ProcessMaker.Router,
     components: { },
     data() {

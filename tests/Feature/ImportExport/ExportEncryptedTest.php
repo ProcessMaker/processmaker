@@ -25,5 +25,11 @@ class ExportEncryptedTest extends TestCase
 
         $this->assertArrayHasKey('encrypted', $exportEncrypted);
         $this->assertIsString($exportEncrypted['export']);
+
+        $encrypter = new ExportEncrypted($password);
+        $exportEncrypted = $encrypter->decrypt($exportEncrypted);
+
+        // make sure the payload has an empty processes array
+        $this->assertEquals([], $exportEncrypted['export']['processes']);
     }
 }

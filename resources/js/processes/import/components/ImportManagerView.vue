@@ -5,6 +5,7 @@
                 <div class="card text-center">
                     <div class="card-header bg-light" align="left">
                         <h5 class="mb-0">{{$t('Import Process')}}</h5>
+                        {{ $root.ioState }}
                         <small class="text-muted">{{ $t('Import a Process and its associated assets into this ProcessMaker environment') }}</small>
                     </div>
                     <div class="card-body">
@@ -358,6 +359,7 @@ export default {
 
             manifest: {},
             rootUuid: '',
+            password: null,
         }
     },
     filters: {
@@ -555,6 +557,8 @@ export default {
                 // this.importing = true;
                 let formData = new FormData();
                 formData.append('file', this.file);
+                formData.append('options', JSON.stringify(this.$root.exportOptions));
+                formData.append('password', this.password);
         
                 if (this.submitted) {
                     return;
@@ -662,9 +666,15 @@ export default {
                 }
             )
             .then(response => {
+                console.log('validation result', response);
                 this.manifest = response.data.manifest;
                 this.rootUuid = response.data.rootUuid;
                 this.fileIsValid = true;
+
+                this.$root.setInitialState(this.manifest, this.rootUuid);
+
+            }).catch(error => {
+                console.log('error', error);
             });
         },
          removeFile() {
@@ -674,7 +684,13 @@ export default {
             this.$router.push({name: 'import-new-process', params: {file: this.file}})
             // console.log('file', this.file);
             // console.log('route to new vue');
-        }
+        },
+        setCopyAll() {
+            this.$root.setModeForAll('copy');
+        },
+        setUpdateAll() {
+            this.$root.setModeForAll('update');
+        },
     },
     mounted() {
         let received = false;

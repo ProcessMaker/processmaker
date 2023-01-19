@@ -29,4 +29,18 @@ class ExportEncrypted
 
         return $package;
     }
+
+    /**
+     * Decrypt the export key using the given password.
+     */
+    public function decrypt(array $package): array
+    {
+        // decrypt using the cypher
+        $package['export'] = json_decode(
+            $this->encrypter->decrypt($package['export']),
+            true
+        );
+
+        return $package;
+    }
 }
