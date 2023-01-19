@@ -85,7 +85,7 @@
         this.close();
       },
       warningTitle(assetType) {
-        return this.$t('Caution {{item}} already exists', {item: assetType});
+        return this.$t('Caution: {{item}} already exists', {item: assetType});
       },
       helperText(assetType) {
         return this.$t('This environment contains a {{ item }} with the same name.', {item: assetType.toLowerCase()});
