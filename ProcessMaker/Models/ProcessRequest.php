@@ -87,8 +87,6 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     use HideSystemResources;
     use Searchable;
 
-    protected $connection = 'data';
-
     /**
      * The attributes that aren't mass assignable.
      *

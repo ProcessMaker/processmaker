@@ -42,7 +42,7 @@ class ServiceTaskExecutionTest extends TestCase
     /**
      * Initialize the controller tests
      */
-    protected function withUserSetUp()
+    protected function withUserSetup()
     {
         Script::factory()->create([
             'key' => 'EchoConnector',
