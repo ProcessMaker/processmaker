@@ -209,7 +209,7 @@
         return assign.indexOf(this.assignment) !== -1;
       },
       showAssignSelfService () {
-        return ['process_variable', 'user_group', 'rule_expression'].includes(this.assignment);
+        return this.assignmentSupportsSelfService(this.assignment);
       },
       showAssignRuleExpression () {
         return this.assignment === 'rule_expression';
@@ -320,6 +320,9 @@
       assignmentRulesSetter (value) {
         this.$set(this.node, "assignmentRules", JSON.stringify(value));
       },
+      assignmentSupportsSelfService (assignmentType) {
+        return ['process_variable', 'user_group', 'rule_expression'].includes(assignmentType);
+      },
     },
     watch: {
       assigned: {
@@ -335,6 +338,12 @@
         handler (assigned) {
           this.assignments.groups = [];
           this.assignments.users = [];
+
+          //self service toggle must be inactivated with a non supported assignment type
+          if (!this.assignmentSupportsSelfService(assigned)) {
+            this.setConfigurableValue (false, 'SELF_SERVICE');
+          }
+
           let value = "";
           if (assigned === "user") {
             value = this.assignedUserGetter;
