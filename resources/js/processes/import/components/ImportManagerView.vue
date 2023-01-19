@@ -666,9 +666,10 @@ export default {
                 this.$root.manifest = response.data.manifest;
                 this.$root.rootUuid = response.data.rootUuid;
                 this.fileIsValid = true;
-                console.log("ROOT UUID", this.$root.rootUuid);
                 this.$root.setInitialState(this.$root.manifest, this.$root.rootUuid);
                 this.$refs['enter-password-modal'].hide();
+                
+                console.log("tree", this.$root.tree());
 
             }).catch(error => {
                 if (error.response.data.error === 'password required') {
