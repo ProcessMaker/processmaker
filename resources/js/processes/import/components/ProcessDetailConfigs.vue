@@ -65,7 +65,6 @@
 <script>
 import { FormErrorsMixin, Required } from "SharedComponents";
 export default {
-    props: ['file'],
     components: {Required},
     mixins: [FormErrorsMixin],
     data() {
@@ -105,7 +104,9 @@ export default {
         }
     },
     mounted() {
-        console.log('MOUNT file', this.file);
+        if (!this.$root.file) {
+            this.$router.push({ name: 'main' });
+        }
     }
 }
 </script>

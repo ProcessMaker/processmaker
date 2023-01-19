@@ -122,7 +122,13 @@ export default {
             }
         },
         onImport() {
-            DataProvider.doImport(this.$root.file, this.$root.exportOptions(), this.$root.password);
+            DataProvider.doImport(this.$root.file, this.$root.exportOptions(), this.$root.password)
+                .then((response) => {
+                    ProcessMaker.alert(this.$t('Process was successfully imported'), 'success');
+                    if (response.data?.processId) {
+                        window.location.href = `/modeler/${response.data.processId}`;
+                    }
+                })
         },
         exportProcess(password = null) {
             DataProvider.exportProcess(this.processId, password, this.$root.exportOptions())

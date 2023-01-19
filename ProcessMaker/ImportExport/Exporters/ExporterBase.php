@@ -214,6 +214,10 @@ abstract class ExporterBase implements ExporterInterface
 
         $version = $this->model->getLatestVersion();
 
+        if (!$version) {
+            return $lastModifiedBy;
+        }
+
         $versionHistory = $versionHistoryClass::where([
             'versionable_id' => $version->id,
             'versionable_type' => get_class($version),
@@ -231,9 +235,9 @@ abstract class ExporterBase implements ExporterInterface
 
     public function updateDuplicateAttributes()
     {
-        if ($this->importMode !== 'new') {
-            return;
-        }
+        // if ($this->importMode !== 'new') {
+        //     return;
+        // }
 
         $class = get_class($this->model);
 

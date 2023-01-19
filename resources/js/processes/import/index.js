@@ -20,10 +20,6 @@ const routes = [
         path: '/processes/import/new-process', 
         name: 'import-new-process', 
         component: ProcessDetailConfigs,
-        props: route => ({
-            file: route.params.file,
-            routeName: 'import-new-process',
-        })
     },
 ];
 
