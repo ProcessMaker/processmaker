@@ -18,19 +18,30 @@ export default {
         })
         .filter(a => a.uuid !== rootUuid);
     },
+    // used for for export
     setForGroup(group, value) {
+      const mode = value ? null : 'discard';
+      this.setModeForGroup(group, mode);
+    },
+    // used for for import
+    setModeForGroup(group, mode) {
       this.ioState.forEach((asset, i) => {
         if (asset.group === group) {
-          this.ioState[i].mode = value ? null : 'discard';
+          this.ioState[i].mode = mode;
         }
       });
     },
+    // used for for export
     setIncludeAll(value) {
         let set = 'discard';
         if (value) {
           set = null;
         }
-        this.ioState.forEach((_val, i) => this.ioState[i].mode = set)
+        this.setModeForAll(set);
+    },
+    // used for for import
+    setModeForAll(mode) {
+      this.ioState.forEach((_val, i) => this.ioState[i].mode = mode)
     },
     debug(obj) {
       return JSON.parse(JSON.stringify(this.ioState));

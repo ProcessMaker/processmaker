@@ -9,6 +9,10 @@ use ProcessMaker\ImportExport\ExportEncrypted;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 
+class PasswordException extends \Exception
+{
+}
+
 class ImportController extends Controller
 {
     /**
@@ -18,12 +22,10 @@ class ImportController extends Controller
     {
         $payload = json_decode($request->file('file')->get(), true);
 
-        if (isset($payload['encrypted']) && $payload['encrypted']) {
-            $password = $request->input('password');
-            if (!$password) {
-                return response()->json(['password_required' => true], 401);
-            }
-            $payload = (new ExportEncrypted($password))->decrypt($payload['export']);
+        try {
+            $payload = $this->handlePasswordDecrypt($request, $payload);
+        } catch (PasswordException $e) {
+            return response()->json(['error' => $e->getMessage()], 401);
         }
 
         $options = new Options([]);
@@ -39,17 +41,37 @@ class ImportController extends Controller
 
     public function import(Request $request): JsonResponse
     {
-        $request->validate([
-            'file' => 'required|file',
-            // 'password' => 'sometimes|string',
-            // 'options' => 'array',
-        ]);
+        $payload = json_decode($request->file('file')->get(), true);
 
-        $payload = $request->file('file')->get();
-        $options = new Options([]);
-        $importer = new Importer(json_decode($payload, true), $options);
+        try {
+            $payload = $this->handlePasswordDecrypt($request, $payload);
+        } catch (PasswordException $e) {
+            return response()->json(['error' => $e->getMessage()], 401);
+        }
+
+        $postOptions = json_decode($request->input('options'), true);
+        $options = new Options($postOptions);
+        $importer = new Importer($payload, $options);
         $importer->doImport();
 
         return response()->json([], 200);
+    }
+
+    private function handlePasswordDecrypt(Request $request, array $payload)
+    {
+        if (isset($payload['encrypted']) && $payload['encrypted']) {
+            $password = $request->input('password');
+            if (!$password) {
+                throw new PasswordException('password required');
+            }
+
+            $payload = (new ExportEncrypted($password))->decrypt($payload);
+
+            if ($payload['export'] === null) {
+                throw new PasswordException('incorrect required');
+            }
+        }
+
+        return $payload;
     }
 }
