@@ -27,6 +27,10 @@ class ProcessExporter extends ExporterBase
 
         $this->addDependent('user', $process->user, UserExporter::class);
 
+        if ($process->manager) {
+            $this->addDependent('manager', $process->manager, UserExporter::class);
+        }
+
         $this->exportScreens();
 
         $this->exportCategories();
@@ -56,6 +60,10 @@ class ProcessExporter extends ExporterBase
         $process = $this->model;
 
         $process->user_id = $this->getDependents('user')[0]->model->id;
+
+        foreach ($this->getDependents('manager') as $dependent) {
+            $process->manager_id = $dependent->model->id;
+        }
 
         $this->associateCategories(ProcessCategory::class, 'process_category_id');
 
