@@ -12,7 +12,7 @@
     <template>
         <div class="export-successful">
             <h6 class="card-title export-type">
-              <span class="font-weight-bold">{{ processName }}</span>{{ $t(" was successfully exported.") }}
+              <span class="font-weight-bold text-capitalize">{{ processName }}</span>{{ $t(" was successfully exported.") }}
             </h6>
         </div>
         <div class="exported-assets pt-2">

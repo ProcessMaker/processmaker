@@ -23,7 +23,7 @@
     @shown="onEvent('shown', $event)"
   >
   <template #modal-title>
-      <h5>{{title}}</h5>
+      <div>{{title}}</div>
       <small v-if="subtitle" class="text-muted subtitle">{{subtitle}}</small>
     </template>
     <slot></slot>
