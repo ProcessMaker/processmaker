@@ -56,14 +56,15 @@ export default {
     debug(obj) {
       return JSON.parse(JSON.stringify(this.ioState));
     },
-    exportOptions() {
+    exportOptions(rootDefaultMode = null) {
       const ioState = this.ioState.map(asset => {
         return [
           asset.uuid,
           { mode: asset.mode }
         ];
       });
-      ioState.push([this.rootUuid, { mode: this.defaultMode }])
+      
+      ioState.push([this.rootUuid, { mode: rootDefaultMode || this.defaultMode }])
       // ioState.push([this.rootUuid, { mode: 'copy' }])
       return Object.fromEntries(ioState);
     },

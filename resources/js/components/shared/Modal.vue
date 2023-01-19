@@ -9,6 +9,7 @@
     ok-variant="primary"
     :ok-title="okTitleWithDefault"
     :ok-disabled="okDisabled"
+    :size="size"
     :ok-only="okOnly"
     no-close-on-backdrop
     centered
@@ -42,7 +43,7 @@
 
 <script>
   export default {
-    props: ["id", "title", "okDisabled", "okOnly", "okTitle", 'setCustomButtons', 'customButtons', 'subtitle'],
+    props: ["id", "title", "okDisabled", "okOnly", "okTitle", 'setCustomButtons', 'customButtons', 'subtitle', 'size'],
     methods: {
       onEvent(name, event) {
         this.$emit(name, event);
@@ -72,5 +73,9 @@
 <style>
   .pm-modal-footer .btn {
     margin: 0;
+  }
+
+  .subtitle {
+    font-size: 70%;
   }
 </style>

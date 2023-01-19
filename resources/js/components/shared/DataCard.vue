@@ -88,6 +88,7 @@ export default {
           return {
               label: `Total Elements:  ${this.info.items.length}`,
               isRoot: true,
+              icon: "",
               children: [
                 {
                   label: `New Elements:  ${ this.count('copy', this.info.items) + this.count('new', this.info.items) }`,

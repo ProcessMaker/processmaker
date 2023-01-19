@@ -1,14 +1,18 @@
 <template>
   <div>
-    <b-modal id="asset-tree" title="Asset Tree">
-      <pre class="box" v-html="tree()">
-      </pre>
+    <b-modal id="asset-tree" title="Asset Tree" size="lg">
+      <data-tree :data="tree()"/>
     </b-modal>
   </div>
 </template>
 
 <script>
+import DataTree from "./DataTree.vue";
+
 export default {
+  components: {
+    DataTree,
+  },
   data() {
     return {
       treeNodesVisited: new Set(),
@@ -17,6 +21,7 @@ export default {
   methods: {
     tree() {
       const tree = this.treeNode(this.$root.rootUuid);
+      tree.isRoot = true;
       console.log('tree', tree);
       return tree;
     },
