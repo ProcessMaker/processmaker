@@ -37,6 +37,9 @@
                 <template v-if="$root.isImport">
                     <data-tree :data="elementsCount"/>
                 </template>
+                <template v-else>
+                    Total Elements: <span class="process-metadata">{{ info.items.length }} {{ info.typeHumanPlural }}</span>
+                </template>
                 <div>
                     <b-link @click="onGroupDetailsClick">
                         <i class="fas fa-info-circle fa-fw mr-0"></i>
