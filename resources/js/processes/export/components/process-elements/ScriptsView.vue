@@ -26,7 +26,7 @@
                     Not {{ $root.operation }}ing
                     </b-badge>
                 </h6>
-                <small class="text-muted">All {{ group.typeHumanPlural }} will <span class="font-weight-bold">not</span> be included in this {{ $root.operation.toLowerCase() }}.</small>
+                <small class="text-muted">{{ group.typeHumanPlural }} will <span class="font-weight-bold">Not</span> be included in this {{ $root.operation.toLowerCase() }}.</small>
             </div>
             <b-link @click="returnToSummaryClick">Return to Summary</b-link>
         </div>
