@@ -668,13 +668,11 @@ export default {
                 this.fileIsValid = true;
                 this.$root.setInitialState(this.$root.manifest, this.$root.rootUuid);
                 this.$refs['enter-password-modal'].hide();
-                
-                console.log("tree", this.$root.tree());
 
             }).catch(error => {
-                if (error.response.data.error === 'password required') {
+                if (error.response?.data?.error === 'password required') {
                     this.showEnterPasswordModal();
-                } else if (error.response.data.error === 'incorrect password') {
+                } else if (error.response?.data?.error === 'incorrect password') {
                   this.passwordError = "Incorrect Password";
                 } else {
                     const message = error.response?.data?.error || error.message;
