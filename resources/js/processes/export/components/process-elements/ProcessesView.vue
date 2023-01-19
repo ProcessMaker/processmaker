@@ -50,7 +50,7 @@
                     stacked
                 >
                 {{ $root.operation }} All Process Elements
-                <b-form-text v-if="$root.operation === 'export'" class="process-options-helper-text">Include all Process Elements in your export file.</b-form-text>
+                <b-form-text v-if="$root.operation === 'Export'" class="process-options-helper-text">Include all Process Elements in your export file.</b-form-text>
                 <b-form-text v-else class="process-options-helper-text">{{ $t('All elements related to this process will be Imported.') }}</b-form-text>
                 </b-form-checkbox>
             </b-form-group>

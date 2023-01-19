@@ -38,11 +38,16 @@
                     <data-tree :data="elementsCount"/>
                 </template>
                 <template v-else>
-                    Total Elements: <span class="process-metadata">{{ info.items.length }} {{ info.typeHumanPlural }}</span>
+                    Total Elements: 
+                        <span class="process-metadata">
+                            {{ info.items.length }} 
+                            <span v-if="info.items.length > 1">{{ info.typeHumanPlural }}</span>
+                            <span v-else>{{ info.typeHuman }}</span>
+                        </span>
                 </template>
-                <div>
+                <div class="mt-2">
                     <b-link @click="onGroupDetailsClick">
-                        <i class="fas fa-info-circle fa-fw mr-0"></i>
+                        <i class="fas fa-info-circle fa-fw mr-0 pr-0"></i>
                         Details
                     </b-link>
                 </div>
