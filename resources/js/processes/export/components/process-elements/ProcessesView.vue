@@ -1,6 +1,6 @@
 <template>
     <div class="mb-2">
-        <h2>{{ $root.operation }} Process: {{ processName }}</h2>
+        <h2>{{ $root.operation }} Process: <span class="text-capitalize">{{ processName }}</span></h2>
         <hr>
         <div>
             <h4>Summary</h4>
@@ -16,8 +16,9 @@
                     </span>
                 </li>
                 <li> Created: <span class="process-metadata">{{ processInfo.createdAt }}</span></li>
-                <li> Last Modified: <span class="process-metadata">{{ processInfo.updatedAt }}</span></li>
-                <li> Modified By:
+                <li> Last Modified: 
+                    <span class="process-metadata">{{ processInfo.updatedAt }}</span> 
+                    By:
                     <span class="process-metadata">
                         <b-link v-if="processInfo.lastModifiedById"
                             :href="`/profile/${processInfo.lastModifiedById}`"
@@ -25,10 +26,10 @@
                         <span v-else>{{ processInfo.lastModifiedBy }}</span>
                     </span>
                 </li>
-                <li>
+                <!-- <li>
                     <a href="#" v-b-modal:asset-tree>Linked Assets</a>
                     <AssetTreeModal></AssetTreeModal>
-                </li>
+                </li> -->
             </ul>
         </div>
         <div>
@@ -48,8 +49,9 @@
                     class="process-metadata"
                     stacked
                 >
-                {{ $root.operation }} All Elements
-                <b-form-text class="process-options-helper-text">Include all Process Elements in your export file.</b-form-text>
+                {{ $root.operation }} All Process Elements
+                <b-form-text v-if="$root.operation === 'export'" class="process-options-helper-text">Include all Process Elements in your export file.</b-form-text>
+                <b-form-text v-else class="process-options-helper-text">{{ $t('All elements related to this process will be Imported.') }}</b-form-text>
                 </b-form-checkbox>
             </b-form-group>
         </div>

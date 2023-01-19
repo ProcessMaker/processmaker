@@ -4,10 +4,10 @@
       <div class="col-sm-3 col-lg-3 border-right" ref="sidebar">
         <sidebar-nav @navigate="onNavigate" :sidenav="sidenav" :active="activeIndex"></sidebar-nav>
       </div>
-      <div class="col-sm-9 col-lg-6" ref="content">
+      <div class="col-sm-9 col-lg-7" ref="content">
         <slot v-bind:activeIndex="activeIndex"></slot>
       </div>
-      <div class="col-sm-0 col-lg-3">
+      <div class="col-sm-0 col-lg-2">
       </div>      
     </div>
   </div>

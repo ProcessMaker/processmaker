@@ -8,13 +8,13 @@
   >
     <i
       v-if="!parent"
-      class="mr-2 caret-icon"
+      class="mr-2 "
       :class="`fas fa-fw fa-${icon}`"
     ></i>
     <span><slot></slot></span>
     <i
       v-if="parent"
-      class="ml-auto fas fa-chevron-down"
+      class="ml-auto fas fa-chevron-down caret-icon"
     ></i>
   </component>
 </template>
@@ -96,7 +96,7 @@ export default {
     border-radius: 6px;
   }
 
-  &.caret-icon {
+  .caret-icon {
     font-size: 12px;
   }
 }
