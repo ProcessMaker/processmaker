@@ -556,8 +556,13 @@ export default {
             } else {
                 // this.importing = true;
                 let formData = new FormData();
+                const options = JSON.stringify(this.$root.exportOptions());
+                const optionsBlob = new Blob([options], {
+                    type: 'application/json'
+                });
+              
                 formData.append('file', this.file);
-                formData.append('options', JSON.stringify(this.$root.exportOptions));
+                formData.append('options', optionsBlob);
                 formData.append('password', this.password);
         
                 if (this.submitted) {

@@ -48,8 +48,8 @@ class ImportController extends Controller
         } catch (PasswordException $e) {
             return response()->json(['error' => $e->getMessage()], 401);
         }
-
-        $postOptions = json_decode($request->input('options'), true);
+        $options = file_get_contents(utf8_decode($request->file('options')));
+        $postOptions = json_decode($options, true);
         $options = new Options($postOptions);
         $importer = new Importer($payload, $options);
         $importer->doImport();
