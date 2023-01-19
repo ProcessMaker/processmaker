@@ -35,7 +35,7 @@
             v-model="specialAssignments" 
           />
           <div v-for="configurable in optionsConfigurables">
-            <h6 class="font-weight-bold" v-if="configurable.startsWith('SECTION_TITLE:')" v-text="configurableLabel(configurable)"></h6>
+            <h6 class="font-weight-bold mt-3" v-if="configurable.startsWith('SECTION_TITLE:')" v-text="configurableLabel(configurable)"></h6>
             <form-checkbox v-else-if="configurable !== 'SELF_SERVICE' || (configurable === 'SELF_SERVICE' && showAssignSelfService)"
                :key="configurable"
                :label="configurableLabel(configurable)"
