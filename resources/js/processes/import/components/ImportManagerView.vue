@@ -359,6 +359,7 @@ export default {
 
             password: '',
             passwordError: null,
+            rootMode: 'update',
         }
     },
     filters: {
@@ -535,14 +536,14 @@ export default {
         },
         importFile(action) {
             this.assetsExist = this.existingAssets.length > 0 && action !== 'update-all' ? true : false;
+            this.$root.setModeForAll('update');
+            this.rootMode = 'update';
             switch (this.selectedImportOption) {
                 case 'basic':
                     this.handleBasicImport();
                     break;
             
                 default:
-                    this.$root.file = this.file;
-                    this.$root.password = this.password;
                     this.$router.push({name: 'custom'});
                     break;
             }
@@ -560,10 +561,12 @@ export default {
                 if (this.submitted) {
                     return;
                 }
-                DataProvider.doImport(this.file, this.$root.exportOptions(), this.password)
+                DataProvider.doImport(this.file, this.$root.exportOptions(this.rootMode), this.password)
                 .then(response => {
                     ProcessMaker.alert(this.$t('Process was successfully imported'), 'success');
-                    window.location = '/processes';
+                    if (response.data?.processId) {
+                        window.location.href = `/modeler/${response.data.processId}`;
+                    }
                 }).catch(error => {
                     ProcessMaker.alert(this.$t('Unable to import the process.')  + (error.response.data.message ? ': ' + error.response.data.message : ''), 'danger');
                     this.submitted = false;
@@ -589,11 +592,11 @@ export default {
             
         },
         checkForPassword() {
-            if (!this.passwordEnabled) {
-               this.importFile(false);
-            } else {
-                this.showEnterPasswordModal();
-            }
+            // if (!this.passwordEnabled) {
+               this.importFile();
+            // } else {
+            //     this.showEnterPasswordModal();
+            // }
         },
         showEnterPasswordModal() {
             this.$refs['enter-password-modal'].show();
@@ -649,6 +652,8 @@ export default {
             if (!this.file) {
                 return;
             }
+            this.$root.file = this.file;
+
             let formData = new FormData();
             formData.append('file', this.file);
             if (this.password) {
@@ -665,16 +670,15 @@ export default {
             .then(response => {
                 this.$root.manifest = response.data.manifest;
                 this.$root.rootUuid = response.data.rootUuid;
+
                 this.fileIsValid = true;
                 this.$root.setInitialState(this.$root.manifest, this.$root.rootUuid);
                 this.$refs['enter-password-modal'].hide();
-                
-                console.log("tree", this.$root.tree());
 
             }).catch(error => {
-                if (error.response.data.error === 'password required') {
+                if (error.response?.data?.error === 'password required') {
                     this.showEnterPasswordModal();
-                } else if (error.response.data.error === 'incorrect password') {
+                } else if (error.response?.data?.error === 'incorrect password') {
                   this.passwordError = "Incorrect Password";
                 } else {
                     const message = error.response?.data?.error || error.message;
@@ -691,15 +695,20 @@ export default {
             // console.log('route to new vue');
         },
         setCopyAll() {
+            this.assetsExist = false;
             this.$root.setModeForAll('copy');
-            this.importAsNew();
+            this.rootMode = 'copy';
+            this.handleBasicImport();
         },
         setUpdateAll() {
+            this.assetsExist = false;
             this.$root.setModeForAll('update');
-            this.importFile('update-all');
+            this.rootMode = 'update';
+            this.handleBasicImport();
         },
         passwordEntered(password) {
           this.password = password;
+          this.$root.password = password;
           this.validateFile();
           ;
         },

@@ -295,4 +295,11 @@ class ProcessExporter extends ExporterBase
             }
         }
     }
+
+    public function handleDuplicateAttributes() : array
+    {
+        return [
+            'name' => fn ($name) => $this->incrementString($name),
+        ];
+    }
 }

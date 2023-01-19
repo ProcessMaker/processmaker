@@ -25,6 +25,10 @@
                         <span v-else>{{ processInfo.lastModifiedBy }}</span>
                     </span>
                 </li>
+                <li>
+                    <a href="#" v-b-modal:asset-tree>Linked Assets</a>
+                    <AssetTreeModal></AssetTreeModal>
+                </li>
             </ul>
         </div>
         <div>
@@ -79,6 +83,7 @@
 <script>
 
 import DataCard from "../../../../components/shared/DataCard.vue";
+import AssetTreeModal from "../../../../components/shared/AssetTreeModal.vue";
 import SetPasswordModal from "../SetPasswordModal.vue";
 import DataProvider from "../../DataProvider";
 import ExportSuccessModal from "../ExportSuccessModal.vue";
@@ -92,6 +97,7 @@ export default {
         DataCard,
         SetPasswordModal,
         ExportSuccessModal,
+        AssetTreeModal,
     },
     mixins: [],
     data() {
@@ -116,7 +122,13 @@ export default {
             }
         },
         onImport() {
-            DataProvider.doImport(this.$root.file, this.$root.exportOptions(), this.$root.password);
+            DataProvider.doImport(this.$root.file, this.$root.exportOptions(), this.$root.password)
+                .then((response) => {
+                    ProcessMaker.alert(this.$t('Process was successfully imported'), 'success');
+                    if (response.data?.processId) {
+                        window.location.href = `/modeler/${response.data.processId}`;
+                    }
+                })
         },
         exportProcess(password = null) {
             DataProvider.exportProcess(this.processId, password, this.$root.exportOptions())
