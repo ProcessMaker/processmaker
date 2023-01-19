@@ -8,7 +8,7 @@
   >
     <i
       v-if="!parent"
-      class="mr-2"
+      class="mr-2 caret-icon"
       :class="`fas fa-fw fa-${icon}`"
     ></i>
     <span><slot></slot></span>
@@ -94,6 +94,10 @@ export default {
     content: "";
     background-color: #0872c2;
     border-radius: 6px;
+  }
+
+  &.caret-icon {
+    font-size: 12px;
   }
 }
 </style>
