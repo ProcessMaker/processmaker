@@ -35,4 +35,11 @@ class UserExporter extends ExporterBase
     {
         return $model->username;
     }
+
+    public function handleDuplicateAttributes() : array
+    {
+        return [
+            'username' => fn ($name) => $this->incrementString($name),
+        ];
+    }
 }

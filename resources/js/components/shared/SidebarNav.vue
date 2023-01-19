@@ -1,8 +1,8 @@
 <template>
   <div class="sidebar-nav">
-    <ul v-for="(page, i) in sidenav" :key="i">
+    <ul v-for="(page, i) in sidenav" :key="i" class="mb-2">
       <li>
-        <sidebar-button :parent="i === 0" :active="i === active" :icon="page.icon" @click="onClick(i)">{{ formatAssetName(page.title) }}</sidebar-button>
+        <sidebar-button :parent="i === 0" :active="i === active" :icon="page.icon" @click="onClick(i)" class="text-capitalize">{{ formatAssetName(page.title) }}</sidebar-button>
       </li>
     </ul>
   </div>
