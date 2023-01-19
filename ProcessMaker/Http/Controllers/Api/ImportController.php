@@ -25,7 +25,7 @@ class ImportController extends Controller
         try {
             $payload = $this->handlePasswordDecrypt($request, $payload);
         } catch (PasswordException $e) {
-            return response()->json(['error' => $e->getMessage()], 401);
+            return response()->json(['error' => $e->getMessage()], 400);
         }
 
         $options = new Options([]);
@@ -46,7 +46,7 @@ class ImportController extends Controller
         try {
             $payload = $this->handlePasswordDecrypt($request, $payload);
         } catch (PasswordException $e) {
-            return response()->json(['error' => $e->getMessage()], 401);
+            return response()->json(['error' => $e->getMessage()], 400);
         }
         $options = file_get_contents(utf8_decode($request->file('options')));
         $postOptions = json_decode($options, true);
@@ -68,7 +68,7 @@ class ImportController extends Controller
             $payload = (new ExportEncrypted($password))->decrypt($payload);
 
             if ($payload['export'] === null) {
-                throw new PasswordException('incorrect required');
+                throw new PasswordException('incorrect password');
             }
         }
 
