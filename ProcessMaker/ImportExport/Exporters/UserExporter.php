@@ -18,11 +18,10 @@ class UserExporter extends ExporterBase
     public function import() : bool
     {
         $user = $this->model;
-        $user->saveOrFail();
 
         foreach ($this->getDependents(DependentType::GROUPS) as $dependent) {
             $group = $dependent->model;
-            $user->groups()->attach($group->id);
+            $user->groups()->syncWithoutDetaching($group->id);
         }
 
         $permissions = $this->getReference('permissions');
