@@ -77,7 +77,7 @@
         this.$bvModal.hide('importProccess');
       },
       onUpdate() {
-        this.$emit('update-process', false);
+        this.$emit('update-process');
         this.close();
       },
       importNew() {

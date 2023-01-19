@@ -52,7 +52,14 @@
       },
       hide() {
         this.$refs.pmModal.hide();
-      }
+      },
+      executeFunction(callback) {
+        if (typeof eval(`this.$refs.pmModal.${callback}`) === "function") {
+          eval(`this.$refs.pmModal.${callback}`)
+        } else {
+          this.$emit(callback);
+        }
+      },
     },
     computed: {
       okTitleWithDefault() {

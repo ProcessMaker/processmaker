@@ -41,7 +41,7 @@
                                 </b-form-group>
                             </div>
                             <enter-password-modal ref="enter-password-modal" @verified-password="importFile($event)"></enter-password-modal>
-                            <import-process-modal ref="import-process-modal" :existingAssets="existingAssets" :processName="processName" :userHasEditPermissions="true" @import-new="onImportAsNew" @update-process="importFile($event)"></import-process-modal>
+                            <import-process-modal ref="import-process-modal" :existingAssets="existingAssets" :processName="processName" :userHasEditPermissions="true" @import-new="setCopyAll" @update-process="setUpdateAll"></import-process-modal>
                         </div>
                         <!-- <div id="during-import" v-if="importing" v-cloak>
                             <h4 class="card-title mt-5 mb-5">
@@ -534,11 +534,8 @@ export default {
         onCancel() {
             window.location = '/processes';
         },
-        importFile() {
-            if (this.existingAssets.length > 0)
-            {
-                this.assetsExist = true;
-            }
+        importFile(action) {
+            this.assetsExist = this.existingAssets.length > 0 && action !== 'update-all' ? true : false;
             switch (this.selectedImportOption) {
                 case 'basic':
                     this.handleBasicImport();
@@ -690,17 +687,18 @@ export default {
          removeFile() {
             this.file = '';
         },
-        onImportAsNew() {
-            console.log('ROUTER', this.$router);
+        importAsNew() {
             this.$router.push({name: 'import-new-process', params: {file: this.file}})
             // console.log('file', this.file);
             // console.log('route to new vue');
         },
         setCopyAll() {
             this.$root.setModeForAll('copy');
+            this.importAsNew();
         },
         setUpdateAll() {
             this.$root.setModeForAll('update');
+            this.importFile('update-all');
         },
     },
     mounted() {
