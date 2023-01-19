@@ -1,11 +1,11 @@
 <template>
     <div class="mb-2">
-        <h2>{{ $root.operation }} Process: {{ processName }}</h2>
+        <h2>{{ $root.operation }} Process: <span class="text-capitalize">{{ processName }}</span></h2>
         <hr>
         <div>
             <h4>{{ group.typeHumanPlural }}</h4>
-            <div v-if="$root.includeAllByGroup[group.type]">
-                <h6>{{ $root.operation }} Status:
+            <div v-if="$root.includeAllByGroup[group.type]" class="mb-2">
+                <h6 class="mb-0">{{ $root.operation }} Status:
                     <b-badge
                     pill
                     variant="success"
@@ -14,10 +14,10 @@
                     Full {{ $root.operation }}
                     </b-badge>
                 </h6>
-                <p><span class="font-weight-bold">All</span> {{ group.typeHumanPlural }} will be included in this {{ $root.operation.toLowerCase() }}.</p>
+                <small class="text-muted"><span class="font-weight-bold">All</span> {{ group.typeHumanPlural }} will be included in this {{ $root.operation.toLowerCase() }}.</small>
             </div>
-            <div v-else>
-                <h6>{{ $root.operation }} Status:
+            <div v-else class="mb-2">
+                <h6 class="mb-0">{{ $root.operation }} Status:
                 <b-badge
                     pill
                     variant="warning"
@@ -26,7 +26,7 @@
                     Not {{ $root.operation }}ing
                     </b-badge>
                 </h6>
-                <p>All {{ group.typeHumanPlural }} will <span class="font-weight-bold">not</span> be included in this {{ $root.operation.toLowerCase() }}.</p>
+                <small class="text-muted">All {{ group.typeHumanPlural }} will <span class="font-weight-bold">not</span> be included in this {{ $root.operation.toLowerCase() }}.</small>
             </div>
             <b-link @click="returnToSummaryClick">Return to Summary</b-link>
         </div>
@@ -34,15 +34,15 @@
         <div v-for="(item, i) in group.items" :key="i">
             <b-card class="high-elevation mb-4">
                 <template #header>
-                    <h6 class="mb-0 data-card-header font-weight-bold">{{ item.name }}</h6>
+                    <h6 class="mb-0 data-card-header font-weight-bold text-capitalize">{{ item.name }}</h6>
                 </template>
             <b-card-text>
                 <ul class="process-element-metadata">
                     <li>Description: <span class="process-metadata">{{ item.description }}</span></li>
                     <li>Categories: <span class="process-metadata">{{ item.categories }}</span></li>
                     <!-- <li>Language: <span class="process-metadata"></span></li> -->
-                    <li>Created: <span class="process-metadata">{{ item.createdAt }}</span></li>
-                    <li>Last Modified: <span class="process-metadata">{{ item.updatedAt }}</span></li>
+                    <li>Created Date: <span class="process-metadata">{{ item.createdAt }}</span></li>
+                    <li>Last Modified Date: <span class="process-metadata">{{ item.updatedAt }}</span></li>
                 </ul>
             </b-card-text>
             </b-card>
