@@ -359,7 +359,7 @@ export default {
 
             manifest: {},
             rootUuid: '',
-            password: null,
+            password: '',
         }
     },
     filters: {
@@ -660,6 +660,9 @@ export default {
             }
             let formData = new FormData();
             formData.append('file', this.file);
+            if (this.password) {
+                formData.append('password', this.password);
+            }
 
             ProcessMaker.apiClient.post('/processes/import/validation', formData,
                 {
@@ -669,7 +672,6 @@ export default {
                 }
             )
             .then(response => {
-                console.log('validation result', response);
                 this.manifest = response.data.manifest;
                 this.rootUuid = response.data.rootUuid;
                 this.fileIsValid = true;
@@ -677,7 +679,12 @@ export default {
                 this.$root.setInitialState(this.manifest, this.rootUuid);
 
             }).catch(error => {
-                console.log('error', error);
+                if (error.message === 'password required') {
+                    // show password field
+                } else {
+                    const message = error.response?.data?.error || error.message;
+                    ProcessMaker.alert(message, 'danger');
+                }
             });
         },
          removeFile() {

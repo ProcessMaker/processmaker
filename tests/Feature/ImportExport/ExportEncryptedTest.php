@@ -14,7 +14,7 @@ class ExportEncryptedTest extends TestCase
             'type' => 'process_package',
             'version' => 2,
             'export' => [
-                'processes' => [],
+                'processes' => ['foo'],
                 'screens' => [],
                 'scripts' => [],
             ],
@@ -30,6 +30,6 @@ class ExportEncryptedTest extends TestCase
         $exportEncrypted = $encrypter->decrypt($exportEncrypted);
 
         // make sure the payload has an empty processes array
-        $this->assertEquals([], $exportEncrypted['export']['processes']);
+        $this->assertEquals(['foo'], $exportEncrypted['export']['processes']);
     }
 }
