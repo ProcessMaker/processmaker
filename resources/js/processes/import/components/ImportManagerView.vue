@@ -575,6 +575,8 @@ export default {
                         'Content-Type': 'multipart/form-data'
                     }
                 }).then(response => {
+                    ProcessMaker.alert(this.$t('Process was successfully imported'), 'success');
+                    window.location = '/processes';
                     console.log('RESPONSE', response);
                 }).catch(error => {
                     ProcessMaker.alert(this.$t('Unable to import the process.')  + (error.response.data.message ? ': ' + error.response.data.message : ''), 'danger');
