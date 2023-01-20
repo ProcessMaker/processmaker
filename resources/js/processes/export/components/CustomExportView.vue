@@ -1,6 +1,6 @@
 <template>
   <div>
-    <container :sidenav="sidenav">
+    <container :sidenav="sidenav" class="custom-export-container">
       <template v-slot:default="slotProps">
         <container-page :active="slotProps.activeIndex === 0">
           <ProcessesView
@@ -94,10 +94,9 @@ export default {
 @import "../../../../sass/variables";
 
 .custom-export-container {
-    // max-width: 1600px;
+    max-width: 1600px;
+    margin: 0 auto;
     display: block;
-    margin-left: auto;
-    margin-right: auto;
     background-color: $light;
 }
 
