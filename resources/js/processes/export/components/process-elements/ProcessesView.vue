@@ -26,10 +26,10 @@
                         <span v-else>{{ processInfo.lastModifiedBy }}</span>
                     </span>
                 </li>
-                <li>
+                <!-- <li>
                     <a href="#" v-b-modal:asset-tree>Linked Assets</a>
                     <AssetTreeModal></AssetTreeModal>
-                </li>
+                </li> -->
             </ul>
         </div>
         <div>
