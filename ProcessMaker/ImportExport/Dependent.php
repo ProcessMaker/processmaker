@@ -36,11 +36,11 @@ class Dependent
 
     public function __get($property)
     {
-        if ($property == 'model') {
-            return $this->manifest->get($this->uuid)->model;
+        $asset = $this->manifest->get($this->uuid);
+        if (!$asset) {
+            return null;
         }
-        if ($property == 'originalId') {
-            return $this->manifest->get($this->uuid)->originalId;
-        }
+
+        return $asset->$property;
     }
 }

@@ -15,6 +15,8 @@ class ScreenExporter extends ExporterBase
 
     const WATCHER_TYPE_DATA_SOURCE = 'data_source';
 
+    public $handleDuplicatesByIncrementing = ['title'];
+
     /**
      * If the screen was seeded with a key attribute, we want to associate it
      * using key instead of uuid since the uuid will be different but is
@@ -96,13 +98,6 @@ class ScreenExporter extends ExporterBase
         unset($attrs['screen_category_id']);
 
         return $attrs;
-    }
-
-    public function handleDuplicateAttributes() : array
-    {
-        return [
-            'title' => fn ($title) => $this->incrementString($title),
-        ];
     }
 
     private function getNestedScreens() : array

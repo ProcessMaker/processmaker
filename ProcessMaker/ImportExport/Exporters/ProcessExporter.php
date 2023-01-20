@@ -18,6 +18,8 @@ use ProcessMaker\Models\User;
 
 class ProcessExporter extends ExporterBase
 {
+    public $handleDuplicatesByIncrementing = ['name'];
+
     public ExportManager $manager;
 
     public function export() : void
@@ -328,12 +330,5 @@ class ProcessExporter extends ExporterBase
             $path = $dependent->meta['path'];
             Utils::setAttributeAtXPath($this->model, $path, 'pm:scriptRef', $dependent->model->id);
         }
-    }
-
-    public function handleDuplicateAttributes() : array
-    {
-        return [
-            'name' => fn ($name) => $this->incrementString($name),
-        ];
     }
 }

@@ -6,6 +6,8 @@ use ProcessMaker\Models\Screen;
 
 class CategoryExporter extends ExporterBase
 {
+    public $handleDuplicatesByIncrementing = ['name'];
+
     public function export() : void
     {
         // Screen Categories have no dependents
@@ -14,12 +16,5 @@ class CategoryExporter extends ExporterBase
     public function import() : bool
     {
         return $this->model->save();
-    }
-
-    public function handleDuplicateAttributes() : array
-    {
-        return [
-            'name' => fn ($name) => $this->incrementString($name),
-        ];
     }
 }

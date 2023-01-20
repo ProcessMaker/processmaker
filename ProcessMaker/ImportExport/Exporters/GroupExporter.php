@@ -6,6 +6,8 @@ use ProcessMaker\Models\Permission;
 
 class GroupExporter extends ExporterBase
 {
+    public $handleDuplicatesByIncrementing = ['name'];
+
     public function export() : void
     {
         $this->addReference('permissions', $this->model->permissions()->pluck('name')->toArray());

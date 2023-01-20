@@ -397,7 +397,7 @@ export default {
         },
         existingAssets() {
             return Object.values(this.$root.manifest).filter(asset => {
-                return asset.existing_id !== null;
+                return asset.existing_id !== null && asset.import_mode !== 'discard';
             }).map(asset => {
                 return {
                     type: asset.type,
