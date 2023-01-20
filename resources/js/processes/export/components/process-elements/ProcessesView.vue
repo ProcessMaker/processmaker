@@ -26,10 +26,14 @@
                         <span v-else>{{ processInfo.lastModifiedBy }}</span>
                     </span>
                 </li>
-                <!-- <li>
+                <li>
+                    <a href="#" v-b-modal:asset-dependent-tree>Linked Dependent Assets</a>
+                    <AssetDependentTreeModal></AssetDependentTreeModal>
+                </li>
+                <li>
                     <a href="#" v-b-modal:asset-tree>Linked Assets</a>
-                    <AssetTreeModal></AssetTreeModal>
-                </li> -->
+                    <AssetTreeModal :groups="groups"></AssetTreeModal>
+                </li>
             </ul>
         </div>
         <div>
@@ -85,6 +89,7 @@
 <script>
 
 import DataCard from "../../../../components/shared/DataCard.vue";
+import AssetDependentTreeModal from "../../../../components/shared/AssetDependentTreeModal.vue";
 import AssetTreeModal from "../../../../components/shared/AssetTreeModal.vue";
 import SetPasswordModal from "../SetPasswordModal.vue";
 import DataProvider from "../../DataProvider";
@@ -99,6 +104,7 @@ export default {
         DataCard,
         SetPasswordModal,
         ExportSuccessModal,
+        AssetDependentTreeModal,
         AssetTreeModal,
     },
     mixins: [],
