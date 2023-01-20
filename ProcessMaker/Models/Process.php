@@ -480,7 +480,6 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         $properties = $definitions->findElementById($activity->getId())->getBpmnElementInstance()->getProperties();
         $assignmentLock = array_key_exists('assignmentLock', $properties) ? $properties['assignmentLock'] : false;
 
-        //dantetodo verify if it is necessary to have the selfService toggle value inside config or to create a new pm: xml atribute
         $config = array_key_exists('config', $properties) ? json_decode($properties['config'], true) : [];
         $isSelfService = array_key_exists('selfService', $config) ? $config['selfService'] : false;
 
@@ -557,8 +556,6 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      */
     private function checkAssignment(ProcessRequest $request, ActivityInterface $activity, $assignmentType, $escalateToManager, User $user = null)
     {
-
-        //dantetodo have a helper that extract the config of an activity or token
         $config = $activity->getProperty('config') ? json_decode($activity->getProperty('config'), true) : [];
         $selfServiceToggle = array_key_exists('selfService', $config) ? $config['selfService'] : false;
         $isSelfService = $selfServiceToggle || $assignmentType === 'self_service';

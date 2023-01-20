@@ -22,14 +22,15 @@
             :multiple="true" />
 
           <div v-if="showAssignByVariable">
-            <label>{{ $t('Variable Name (Users)') }}</label>
+            <label class="mt-1">{{ $t('Variable Name (Users)') }}</label>
             <b-form-input v-model="assignedUsersVar" />
+            <small class="form-text text-muted">{{$t("Enter the variable containing one or more numeric user IDs")}}</small>
 
-            <label>{{ $t('Variable Name (Groups)') }}</label>
+            <label class="mt-2">{{ $t('Variable Name (Groups)') }}</label>
             <b-form-input v-model="assignedGroupsVar" />
             <small v-if="helper" class="form-text text-muted" >{{ $t(helper) }}</small>
 
-            <small class="form-text text-muted">{{$t("Variables containing the numeric User and Group IDs")}}</small>
+            <small class="form-text text-muted">{{$t("Enter the variable containing one or more numeric group IDs")}}</small>
           </div>
 
           <assign-expression
