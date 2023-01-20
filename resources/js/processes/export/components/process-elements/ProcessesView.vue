@@ -5,21 +5,21 @@
         <div>
             <h4>Summary</h4>
             <ul v-if="processInfo" class="process-summary">
-                <li> Description: <span class="process-metadata">{{ processInfo.description }}</span></li>
-                <li> Categories: <span class="process-metadata">{{ processInfo.categories }}</span></li>
+                <li> Description: <span class="fw-semibold">{{ processInfo.description }}</span></li>
+                <li> Categories: <span class="fw-semibold">{{ processInfo.categories }}</span></li>
                 <li> Process Manager:
-                    <span class="process-metadata">
+                    <span class="fw-semibold">
                         <b-link v-if="processInfo.processManagerId"
                             :href="`/profile/${processInfo.processManagerId}`"
                             target="_blank">{{ processInfo.processManager }}</b-link>
                         <span v-else>{{ processInfo.processManager }}</span>
                     </span>
                 </li>
-                <li> Created: <span class="process-metadata">{{ processInfo.createdAt }}</span></li>
+                <li> Created: <span class="fw-semibold">{{ processInfo.createdAt }}</span></li>
                 <li> Last Modified: 
-                    <span class="process-metadata">{{ processInfo.updatedAt }}</span> 
+                    <span class="fw-semibold">{{ processInfo.updatedAt }}</span> 
                     By:
-                    <span class="process-metadata">
+                    <span class="fw-semibold">
                         <b-link v-if="processInfo.lastModifiedById"
                             :href="`/profile/${processInfo.lastModifiedById}`"
                             target="_blank">{{ processInfo.lastModifiedBy }}</b-link>
@@ -41,7 +41,7 @@
                 <b-form-checkbox
                     v-if="!$root.isImport"
                     v-model="passwordProtect"
-                    class="process-metadata"
+                    class="fw-semibold"
                     stacked
                 >
                 Password Protect Export
@@ -50,7 +50,7 @@
                 <b-form-checkbox
                     :checked="$root.includeAll"
                     @change="change"
-                    class="process-metadata"
+                    class="fw-semibold"
                     stacked
                 >
                 {{ $root.operation }} All Process elements
@@ -161,10 +161,6 @@ export default {
 
 .process-summary {
     padding-left: 0;
-}
-
-.process-metadata {
-    font-weight: 600;
 }
 
 .process-options-helper-text {
