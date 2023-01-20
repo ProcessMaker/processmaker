@@ -35,7 +35,7 @@
                     </li>
                 </ul>
                 <template v-if="$root.isImport">
-                    <data-tree :data="elementsCount" :collapsable="false"/>
+                    <data-tree :data="elementsCount" :collapsable="false" :show-icon="false"/>
                 </template>
                 <template v-else>
                     Total Elements: 

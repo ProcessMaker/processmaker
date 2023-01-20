@@ -1,6 +1,6 @@
 <template>
     <ul class="tree">
-      <data-node :node="data" :collapsable="collapsable"></data-node>
+      <data-node :node="data" :collapsable="collapsable" :show-icon="showIcon" :show-children-icon="showChildrenIcon"></data-node>
     </ul>
 </template>
 
@@ -13,7 +13,7 @@ export default {
     DataNode,
   },
   mixins: [],
-  props: ["data", "collapsable"],
+  props: ["data", "collapsable", "showIcon", "showChildrenIcon"],
   data() {
     return {
     };

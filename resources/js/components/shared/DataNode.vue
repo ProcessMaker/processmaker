@@ -4,12 +4,14 @@
       <span>
         <i v-if="node.children && node.children.length && collapsable" class="fa" 
             :class="showChildren ? 'fa-caret-down' : 'fa-caret-right'"/> 
-        <i v-if="icon" class="text-secondary" :class="'fas fa-' + icon"/> {{ node.label }}
+        <i v-if="showIcon" class="text-secondary" :class="'fas fa-' + node.icon"/> 
+        <span v-if="!node.html || node.html === ''">{{ node.label }}</span>
+        <span v-else v-html="node.html"></span>
       </span>
     </div>
 
     <ul v-if="node.children && node.children.length && (showChildren || !collapsable)" class="tree ml-4">
-      <node v-for="(child, key) in node.children" :key="key" :node="child" :collapsable="collapsable"/>
+      <node v-for="(child, key) in node.children" :key="key" :node="child" :collapsable="collapsable" :show-icon="showIcon" :show-children-icon="showChildrenIcon"/>
     </ul>
   </div>
 
@@ -21,12 +23,14 @@
       <span :class="highlightedNode === node.uuid ? 'mb-1' : 'mb-2'">
         <i v-if="node.children && node.children.length && collapsable" class="fa" 
           :class="showChildren ? 'fa-caret-down' : 'fa-caret-right'"/>
-        <i v-if="icon" class="text-secondary" :class="'fas fa-' + icon"/> {{ node.label }}
+        <i v-if="showChildrenIcon" class="text-secondary" :class="'fas fa-' + node.icon"/>
+        <span v-if="!node.html || node.html === ''">{{ node.label }}</span>
+        <span v-else v-html="node.html"></span>
       </span>
     </div>
 
     <ul v-if="node.children && node.children.length && (showChildren || !collapsable)" class="tree ml-4">
-      <node v-for="(child, key) in node.children" :key="key" :node="child" :collapsable="collapsable"/>
+      <node v-for="(child, key) in node.children" :key="key" :node="child" :collapsable="collapsable" :show-icon="showIcon" :show-children-icon="showChildrenIcon"/>
     </ul>
     <sup v-if="node.link">
       <b-link @click="highlightNode(node.link)" :href="'#' + node.link">
@@ -38,12 +42,12 @@
 
 <script>
 
-import ImportExportIcons from "./ImportExportIcons";
-
 export default {
   name: "node",
   props: {
     collapsable: Boolean,
+    showIcon: Boolean,
+    showChildrenIcon: Boolean,
     node: {
       type: Object,
       default() {
@@ -74,11 +78,6 @@ export default {
 
       this.highlightedNode = link;
     });
-  },
-  computed: {
-    icon() {
-      return ImportExportIcons.ICONS[this.node.objectType];
-    },
   },
   methods: {
     highlightNode(link) {
