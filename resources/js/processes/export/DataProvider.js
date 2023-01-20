@@ -1,15 +1,4 @@
-const ICONS = {
-  User: "user",
-  Group: "users",
-  Screen: "file-alt",
-  Script: "code",
-  Process: "play-circle",
-  Category: "",
-  EnvironmentVariable: "lock",
-  Signal: "bpmn-icon-end-event-signal",
-  DataConnector: "cog",
-  Vocabulary: "book",
-};
+import ImportExportIcons from "../../components/shared/ImportExportIcons";
 
 export default {
   doImport(file, options, password) {
@@ -101,7 +90,7 @@ export default {
         typePlural: value[0].typePlural,
         typeHuman: value[0].typeHuman,
         typeHumanPlural: value[0].typeHumanPlural,
-        icon: ICONS[key] || 'code',
+        icon: ImportExportIcons.ICONS[key] || 'code',
         items: value
       };
     });

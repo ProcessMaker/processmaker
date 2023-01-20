@@ -4,7 +4,7 @@
       <span>
         <i v-if="node.children && node.children.length && collapsable" class="fa" 
             :class="showChildren ? 'fa-caret-down' : 'fa-caret-right'"/> 
-        <i v-if="icon" class="text-secondary" :class="icon"/> {{ node.label }}
+        <i v-if="icon" class="text-secondary" :class="'fas fa-' + icon"/> {{ node.label }}
       </span>
     </div>
 
@@ -21,7 +21,7 @@
       <span :class="highlightedNode === node.uuid ? 'mb-1' : 'mb-2'">
         <i v-if="node.children && node.children.length && collapsable" class="fa" 
           :class="showChildren ? 'fa-caret-down' : 'fa-caret-right'"/>
-        <i v-if="icon" class="text-secondary" :class="icon"/> {{ node.label }}
+        <i v-if="icon" class="text-secondary" :class="'fas fa-' + icon"/> {{ node.label }}
       </span>
     </div>
 
@@ -37,6 +37,9 @@
 </template>
 
 <script>
+
+import ImportExportIcons from "./ImportExportIcons";
+
 export default {
   name: "node",
   props: {
@@ -59,21 +62,6 @@ export default {
     return {
       highlightedNode: "",
       showChildren: false,
-      icons: {
-        Screen: "fas fa-file-alt",
-        CommentConfiguration: "fas fa-comments",
-        DataSource: "fas fa-cog",
-        Collection: "fas fa-database",
-        Vocabulary: "fas fa-book",
-        Group: "fas fa-users",
-        User: "fas fa-user",
-        Process: "fas fa-play-circle",
-        Script: "fas fa-code",
-        SavedSearch: "fas fa-table",
-        SavedSearchChart: "fas fa-chart-line",
-        SavedSearchOption: "fas",
-        SavedSearchReport: "fas fa-clock",
-      },
     };
   },
   created() {
@@ -89,7 +77,7 @@ export default {
   },
   computed: {
     icon() {
-      return this.icons[this.node.objectType];
+      return ImportExportIcons.ICONS[this.node.objectType];
     },
   },
   methods: {
