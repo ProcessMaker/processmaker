@@ -22,12 +22,14 @@
             :multiple="true" />
 
           <div v-if="showAssignByVariable">
-            <label>{{ $t('Variable Name (users)') }}</label>
+            <label>{{ $t('Variable Name (Users)') }}</label>
             <b-form-input v-model="assignedUsersVar" />
 
-            <label>{{ $t('Variable Name (groups)') }}</label>
+            <label>{{ $t('Variable Name (Groups)') }}</label>
             <b-form-input v-model="assignedGroupsVar" />
             <small v-if="helper" class="form-text text-muted" >{{ $t(helper) }}</small>
+
+            <small class="form-text text-muted">{{$t("Variables containing the numeric User and Group IDs")}}</small>
           </div>
 
           <assign-expression
@@ -91,6 +93,15 @@
         const cachedAssignments = {...this.assignments};
         this.assignment = 'user_group';
         this.setConfigurableValue (true, 'SELF_SERVICE');
+        this.assignedUserSetter(cachedAssignments.users.join(","));
+        this.assignedGroupSetter(cachedAssignments.groups.join(","));
+      }
+
+      // If it is user_by_id we update the assignment to an assignment by process_variable
+      if (this.assignment === 'user_by_id') {
+        const cachedAssignments = {...this.assignments};
+        this.assignment = 'process_variable';
+        this.setConfigurableValue (true, 'PROCESS_VARIABLE');
         this.assignedUserSetter(cachedAssignments.users.join(","));
         this.assignedGroupSetter(cachedAssignments.groups.join(","));
       }
