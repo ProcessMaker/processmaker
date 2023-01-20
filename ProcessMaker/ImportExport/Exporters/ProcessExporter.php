@@ -12,6 +12,7 @@ use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\Script;
 use ProcessMaker\Models\SignalData;
 use ProcessMaker\Models\User;
 
@@ -34,6 +35,8 @@ class ProcessExporter extends ExporterBase
         }
 
         $this->exportScreens();
+
+        $this->exportScripts();
 
         $this->exportCategories();
 
@@ -80,6 +83,8 @@ class ProcessExporter extends ExporterBase
         }
 
         $this->importScreens();
+
+        $this->importScripts();
 
         $this->importSubprocesses();
 
@@ -295,6 +300,35 @@ class ProcessExporter extends ExporterBase
                 $path = $interDependent->meta['path'];
                 Utils::setAttributeAtXPath($this->model, $path, 'pm:interstitialScreenRef', $interDependent->model->id);
             }
+        }
+    }
+
+    private function exportScripts()
+    {
+        $tags = [
+            'bpmn:scriptTask',
+        ];
+
+        foreach (Utils::getElementByMultipleTags($this->model->getDefinitions(true), $tags) as $element) {
+            $path = $element->getNodePath();
+            $meta = [
+                'path' => $path,
+            ];
+
+            $scriptId = $element->getAttribute('pm:scriptRef');
+
+            if (is_numeric($scriptId)) {
+                $script = Script::findOrFail($scriptId);
+                $this->addDependent(DependentType::SCRIPTS, $script, ScriptExporter::class, $meta);
+            }
+        }
+    }
+
+    private function importScripts()
+    {
+        foreach ($this->getDependents(DependentType::SCRIPTS) as $dependent) {
+            $path = $dependent->meta['path'];
+            Utils::setAttributeAtXPath($this->model, $path, 'pm:scriptRef', $dependent->model->id);
         }
     }
 }

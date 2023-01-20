@@ -17,6 +17,8 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessNotificationSetting;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\SignalData;
 use ProcessMaker\Models\SignalEventDefinition;
 use ProcessMaker\Models\User;
@@ -226,6 +228,58 @@ class ProcessExporterTest extends TestCase
                 $importedInterstitialScreen = Screen::where('id', $interstitialScreenRef)->firstOrFail();
                 $this->assertEquals($importedInterstitialScreen->title, $taskScreen['interstitialTitle']);
             }
+        }
+    }
+
+    public function testProcessTaskScript()
+    {
+        // Create script
+        $category = ScriptCategory::factory()->create(['name' => 'test category']);
+        $scriptUser = User::factory()->create(['username' => 'scriptuser']);
+        $script = Script::factory()->create([
+            'title' => 'test',
+            'code' => '<?php return [];',
+            'run_as_user_id' => $scriptUser->id,
+        ]);
+        $script->categories()->sync($category);
+
+        // Create process from template
+        $process = $this->createProcess('process-with-task-script', ['name' => 'Process with script task']);
+
+        // Set script on process
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:scriptTask', 'pm:scriptRef', $script->id);
+        $process->save();
+
+        // Export and Import process
+        $this->runExportAndImport($process, ProcessExporter::class, function () use ($process, $script) {
+            $process->forceDelete();
+            $script->forceDelete();
+            $this->assertDatabaseMissing('processes', ['name' => $process->name]);
+            $this->assertDatabaseMissing('scripts', ['title' => $script->title]);
+        });
+
+        // Assert that the process and screen exist in the database
+        $this->assertDatabaseHas('processes', ['name' => $process->name]);
+        $this->assertDatabaseHas('scripts', ['title' => $script->title]);
+
+        // Get imported process
+        $importedProcess = Process::where('name', 'Process with script task')->firstOrFail();
+
+        // Get task config
+        $scriptTasks = [
+            '/bpmn:definitions/bpmn:process/bpmn:scriptTask' => ['title' => $script->title],
+        ];
+
+        // Assert that scripts have been imported properly
+        $definitions = $importedProcess->getDefinitions(true);
+
+        foreach ($scriptTasks as $path => $scriptTask) {
+            $element = Utils::getElementByPath($definitions, $path);
+
+            $scriptRef = $element->getAttribute('pm:scriptRef');
+            $importedScript = Script::where('id', $scriptRef)->firstOrFail();
+
+            $this->assertEquals($importedScript->title, $scriptTask['title']);
         }
     }
 }
