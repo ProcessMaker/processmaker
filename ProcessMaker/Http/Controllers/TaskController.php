@@ -52,7 +52,7 @@ class TaskController extends Controller
         }
 
         //Mark as unread any not read notification for the task
-        Notification::where('data->url', '/' . Request::path())
+        Notification::where('url', '/' . Request::path())
             ->whereNull('read_at')
             ->update(['read_at' => Carbon::now()]);
 
