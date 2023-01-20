@@ -3,6 +3,7 @@
 namespace ProcessMaker\ImportExport\Exporters;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ProcessMaker\ImportExport\Dependent;
 use ProcessMaker\ImportExport\DependentType;
@@ -29,11 +30,18 @@ abstract class ExporterBase implements ExporterInterface
 
     public $disableEventsWhenImporting = false;
 
+    public $handleDuplicatesByIncrementing = [];
+
     public $log = [];
 
     public static function modelFinder($uuid, $asssetInfo)
     {
         return $asssetInfo['model']::where('uuid', $uuid);
+    }
+
+    public static function doNotImport($uuid, $asssetInfo)
+    {
+        return false;
     }
 
     public static function prepareAttributes($attrs)
@@ -102,7 +110,7 @@ abstract class ExporterBase implements ExporterInterface
 
     public function getReference($type)
     {
-        return $this->references[$type];
+        return Arr::get($this->references, $type, null);
     }
 
     protected function getExportAttributes() : array
@@ -235,11 +243,11 @@ abstract class ExporterBase implements ExporterInterface
 
     public function updateDuplicateAttributes()
     {
-        // if ($this->importMode !== 'new') {
-        //     return;
-        // }
-
         $class = get_class($this->model);
+
+        if ($this->importMode === 'update') {
+            return;
+        }
 
         foreach ($this->handleDuplicateAttributes() as $attribute => $handler) {
             $value = $this->model->$attribute;
@@ -267,7 +275,12 @@ abstract class ExporterBase implements ExporterInterface
 
     public function handleDuplicateAttributes() : array
     {
-        return [];
+        $handlers = [];
+        foreach ($this->handleDuplicatesByIncrementing as $attr) {
+            $handlers[$attr] = fn ($name) => $this->incrementString($name);
+        }
+
+        return $handlers;
     }
 
     public function log($key, $value)

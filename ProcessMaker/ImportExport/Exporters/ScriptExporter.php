@@ -6,6 +6,8 @@ use ProcessMaker\Models\ScriptCategory;
 
 class ScriptExporter extends ExporterBase
 {
+    public $handleDuplicatesByIncrementing = ['title'];
+
     public function export() : void
     {
         $this->exportCategories();

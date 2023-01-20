@@ -2,11 +2,15 @@
 
 namespace ProcessMaker\ImportExport\Exporters;
 
+use Illuminate\Support\Arr;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\User;
 
 class UserExporter extends ExporterBase
 {
+    public $handleDuplicatesByIncrementing = ['username'];
+
     public function export() : void
     {
         foreach ($this->model->groups as $group) {
@@ -31,15 +35,31 @@ class UserExporter extends ExporterBase
         return true;
     }
 
+    /**
+     * If it's the admin user or the anonymous user, don't match by UUID
+     */
+    public static function modelFinder($uuid, $assetInfo)
+    {
+        $key = Arr::get($assetInfo, 'attributes.username');
+        if ($key === 'admin' || $key === '_pm4_anon_user') {
+            return User::where('username', $key);
+        }
+
+        return parent::modelFinder($uuid, $assetInfo);
+    }
+
+    public static function doNotImport($uuid, $assetInfo)
+    {
+        $username = Arr::get($assetInfo, 'attributes.username');
+        if ($username === 'admin' || $username === '_pm4_anon_user') {
+            return true;
+        }
+
+        return false;
+    }
+
     public function getName($model): string
     {
         return $model->username;
-    }
-
-    public function handleDuplicateAttributes() : array
-    {
-        return [
-            'username' => fn ($name) => $this->incrementString($name),
-        ];
     }
 }

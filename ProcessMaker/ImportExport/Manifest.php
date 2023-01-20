@@ -16,7 +16,7 @@ class Manifest
 
     public function get($uuid)
     {
-        return $this->manifest[$uuid];
+        return Arr::get($this->manifest, $uuid, null);
     }
 
     public function set($manifest)
@@ -72,6 +72,10 @@ class Manifest
 
         $modelQuery = $exporterClass::modelFinder($uuid, $assetInfo);
 
+        if ($exporterClass::doNotImport($uuid, $assetInfo)) {
+            $mode = 'discard';
+        }
+
         $attrs = $exporterClass::prepareAttributes($attrs);
 
         // Check if the model has soft deletes
@@ -82,7 +86,11 @@ class Manifest
         if ($modelQuery->exists()) {
             $model = $modelQuery->firstOrFail();
         } else {
-            $mode = 'new';
+            if ($mode !== 'discard') {
+                $mode = 'new';
+            } else {
+                $model = new $class(); // Placeholder model for discard
+            }
         }
 
         $class::unguard();
@@ -91,7 +99,7 @@ class Manifest
                 $model->fill($attrs);
                 break;
             case 'discard':
-                $model = null;
+                // Keep the model, just don't save it later in doImport
                 break;
             case 'copy':
                 $model = new $class();
@@ -105,6 +113,8 @@ class Manifest
                 break;
         }
 
+        // dump(get_class($model), $mode);
+
         if ($model) {
             self::handleCasts($model);
         }
@@ -117,6 +127,9 @@ class Manifest
     private static function handleCasts(&$model)
     {
         foreach ($model->getCasts() as $field => $cast) {
+            // if (!is_string($model->$field)) {
+            //     return;
+            // }
             switch ($cast) {
                 case 'array':
                     $model->$field = json_decode($model->$field, true);
