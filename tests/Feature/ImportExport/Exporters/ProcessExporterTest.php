@@ -281,6 +281,5 @@ class ProcessExporterTest extends TestCase
 
             $this->assertEquals($importedScript->title, $scriptTask['title']);
         }
-        
     }
 }
