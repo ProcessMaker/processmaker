@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-modal id="asset-tree" title="Asset Tree" size="lg">
-      <data-tree :data="tree()"/>
+      <data-tree :data="tree()" :collapsable="true"/>
     </b-modal>
   </div>
 </template>

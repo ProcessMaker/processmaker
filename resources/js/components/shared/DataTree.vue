@@ -1,6 +1,6 @@
 <template>
     <ul class="tree">
-      <data-node :node="data"></data-node>
+      <data-node :node="data" :collapsable="collapsable"></data-node>
     </ul>
 </template>
 
@@ -13,7 +13,7 @@ export default {
     DataNode,
   },
   mixins: [],
-  props: ["data"],
+  props: ["data", "collapsable"],
   data() {
     return {
     };
