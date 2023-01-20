@@ -39,7 +39,7 @@
                 </template>
                 <template v-else>
                     Total Elements: 
-                        <span class="process-metadata">
+                        <span class="fw-semibold">
                             {{ info.items.length }} 
                             <span v-if="info.items.length > 1">{{ info.typeHumanPlural }}</span>
                             <span v-else>{{ info.typeHuman }}</span>
