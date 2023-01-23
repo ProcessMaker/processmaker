@@ -156,6 +156,27 @@ class ScreenExporterTest extends TestCase
         return [$screen, $screenCategory1, $screenCategory2, $script, $nestedScreen, $nestedNestedScreen];
     }
 
+    public function testScreenWithScriptWatcher()
+    {
+        $screen = Screen::factory()->create(['title' => 'Screen with script watcher', 'key' => 'foo']);
+        $script = Script::factory()->create(['title' => 'script']);
+        $this->associateScriptWatcher($screen, $script);
+
+        $this->runExportAndImport($screen, ScreenExporter::class, function () use ($script) {
+            Screen::query()->forceDelete();
+            Script::query()->forceDelete();
+            $this->assertEquals(0, Screen::get()->count());
+            $this->assertEquals(0, Script::get()->count());
+        });
+
+        $importedScreen = Screen::where('title', 'Screen with script watcher')->firstOrFail();
+        $importedScript = Script::where('id', Arr::get($importedScreen, 'watchers.0.script_id'))->firstOrFail();
+
+        $this->assertIsString(Arr::get($importedScreen, 'watchers.0.script_id'));
+        $this->assertEquals(Arr::get($importedScreen, 'watchers.0.script.title'), $importedScript->title);
+        $this->assertEquals(Arr::get($importedScreen, 'watchers.0.script_id'), $importedScript->id);
+    }
+
     private function associateNestedScreen($parent, $child)
     {
         $config = $parent->config;

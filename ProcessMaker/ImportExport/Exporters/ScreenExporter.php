@@ -143,11 +143,12 @@ class ScreenExporter extends ExporterBase
     {
         $originalId = $dependent->originalId;
         $newId = $dependent->model->id;
-
         foreach ($watchers as $key => $watcher) {
             if (Arr::get($watchers, "$key.script.id") === $type . '-' . $originalId) {
+                Arr::set($watchers, "$key.script.title", $dependent->model->title);
+                Arr::set($watchers, "$key.script.description", $dependent->model->description);
                 Arr::set($watchers, "$key.script.id", $type . '-' . $newId);
-                Arr::set($watchers, "$key.script_id", $newId);
+                Arr::set($watchers, "$key.script_id", strval($newId));
             }
         }
     }
