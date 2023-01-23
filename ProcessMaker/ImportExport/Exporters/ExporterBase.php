@@ -198,13 +198,7 @@ abstract class ExporterBase implements ExporterInterface
             return null;
         }
 
-        if (!$this->model->description || $this->model->description === '') {
-            return 'N/A';
-        }
-
-        if ($this->model->description) {
-            return $this->model->description;
-        }
+        return $this->model->description;
     }
 
     public function getExtraAttributes($model): array
