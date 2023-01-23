@@ -3,9 +3,13 @@
 namespace Tests\Feature\ImportExport\Exporters;
 
 use Illuminate\Support\Facades\DB;
+use ProcessMaker\ImportExport\Exporters\ProcessExporter;
 use ProcessMaker\ImportExport\Exporters\UserExporter;
+use ProcessMaker\ImportExport\Importer;
+use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
 use Tests\Feature\ImportExport\HelperTrait;
 use Tests\Feature\Shared\RequestHelper;
@@ -37,5 +41,35 @@ class UserExporterTest extends TestCase
         $user = User::where('username', 'testuser')->firstOrFail();
         $this->assertEquals('test group', $user->groups->first()->name);
         $this->assertEquals($permissions, $user->permissions->pluck('name')->toArray());
+    }
+
+    public function testDoNotCopyAdmin()
+    {
+        $this->addGlobalSignalProcess();
+        $bpmn = file_get_contents(base_path('tests/Feature/Api/bpmnPatterns/SimpleTaskProcess.bpmn'));
+        $bpmn = str_replace('pm:screenRef="2"', 'pm:screenRef=""', $bpmn);
+        $user = User::factory()->create(['username' => 'admin', 'email' => 'foo@bar.com']);
+        $group = Group::factory()->create(['name' => 'test group']);
+        $process = Process::factory()->create(['manager_id' => $user->id, 'name' => 'test process', 'bpmn' => $bpmn]);
+        $user->groups()->sync([$group->id]);
+
+        $payload = $this->export($process, ProcessExporter::class);
+        $originalUserCount = User::count();
+
+        // Import
+
+        $options = new Options([
+            $user->uuid => ['mode' => 'copy'],
+            $group->uuid => ['mode' => 'copy'],
+            $process->uuid => ['mode' => 'copy'],
+        ]);
+        $importer = new Importer($payload, $options);
+        $importer->doImport();
+
+        $newProcess = Process::where('name', 'test process 2')->firstOrFail();
+        $newGroup = Group::where('name', 'test group 2')->firstOrFail();
+        $user = User::where('username', 'admin')->firstOrFail();
+
+        $this->assertEquals($originalUserCount, User::count());
     }
 }

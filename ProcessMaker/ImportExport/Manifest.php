@@ -4,6 +4,7 @@ namespace ProcessMaker\ImportExport;
 
 use Illuminate\Support\Arr;
 use ProcessMaker\ImportExport\Exporters\ExporterInterface;
+use stdClass;
 
 class Manifest
 {
@@ -127,15 +128,16 @@ class Manifest
     private static function handleCasts(&$model)
     {
         foreach ($model->getCasts() as $field => $cast) {
-            // if (!is_string($model->$field)) {
-            //     return;
-            // }
             switch ($cast) {
                 case 'array':
-                    $model->$field = json_decode($model->$field, true);
+                    if (!is_array($model->$field)) {
+                        $model->$field = json_decode($model->$field, true);
+                    }
                     break;
                 case 'object':
-                    $model->$field = json_decode($model->$field);
+                    if (!is_object($model->$field)) {
+                        $model->$field = json_decode($model->$field);
+                    }
                     break;
             }
         }

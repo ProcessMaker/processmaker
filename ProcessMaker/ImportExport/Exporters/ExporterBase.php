@@ -262,7 +262,7 @@ abstract class ExporterBase implements ExporterInterface
     {
         $class = get_class($this->model);
 
-        if ($this->importMode === 'update') {
+        if ($this->importMode === 'discard') {
             return;
         }
 
