@@ -4,6 +4,7 @@ namespace ProcessMaker\ImportExport\Exporters;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use ProcessMaker\ImportExport\Dependent;
 use ProcessMaker\ImportExport\DependentType;
@@ -161,6 +162,7 @@ abstract class ExporterBase implements ExporterInterface
             'process_manager_id' => $this->getProcessManager()['managerId'],
             'model' => $modelClass,
             'attributes' => $this->getExportAttributes(),
+            'extraAttributes' => $this->getExtraAttributes($this->model),
             'references' => $this->references,
             'dependents' => array_map(fn ($d) => $d->toArray(), $this->dependents),
         ];
@@ -192,7 +194,22 @@ abstract class ExporterBase implements ExporterInterface
 
     public function getDescription()
     {
-        return $this->model->description || null;
+        if (!Schema::hasColumn($this->model->getTable(), 'description')) {
+            return null;
+        }
+
+        if (!$this->model->description || $this->model->description === '') {
+            return 'N/A';
+        }
+
+        if ($this->model->description) {
+            return $this->model->description;
+        }
+    }
+
+    public function getExtraAttributes($model): array
+    {
+        return [];
     }
 
     public function getProcessManager(): array

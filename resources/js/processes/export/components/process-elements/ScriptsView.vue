@@ -38,8 +38,11 @@
                 </template>
             <b-card-text>
                 <ul class="process-element-metadata">
-                    <li>Description: <span class="process-metadata">{{ item.description }}</span></li>
+                    <li v-if="item.description">Description: <span class="process-metadata">{{ item.description }}</span></li>
                     <li>Categories: <span class="process-metadata">{{ item.categories }}</span></li>
+                    <li v-for="(attribute, i) in item.extraAttributes" :key="i">
+                        {{ i[0].toUpperCase() + i.substring(1) }}: <span class="process-metadata">{{ attribute }}</span>
+                    </li>
                     <!-- <li>Language: <span class="process-metadata"></span></li> -->
                     <li>Created Date: <span class="process-metadata">{{ item.createdAt }}</span></li>
                     <li>Last Modified Date: <span class="process-metadata">{{ item.updatedAt }}</span></li>
