@@ -16,6 +16,7 @@ class EnvironmentVariableExporter extends ExporterBase
     public function import() : bool
     {
         $this->model->value = $this->getReference(DependentType::ENVIRONMENT_VARIABLE_VALUE);
+
         return $this->model->save();
     }
 }

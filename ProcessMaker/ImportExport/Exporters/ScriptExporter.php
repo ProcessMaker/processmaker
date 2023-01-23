@@ -14,7 +14,7 @@ class ScriptExporter extends ExporterBase
     {
         $this->exportCategories();
 
-        foreach($this->getEnvironmentVariables() as $environmentVariable) {
+        foreach ($this->getEnvironmentVariables() as $environmentVariable) {
             $this->addDependent(DependentType::ENVIRONMENT_VARIABLES, $environmentVariable, EnvironmentVariableExporter::class);
         }
 
