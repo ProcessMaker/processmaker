@@ -16,9 +16,6 @@ class ScriptExporterTest extends TestCase
 {
     use HelperTrait;
 
-    /**
-     * @group script
-     */
     public function test()
     {
         DB::beginTransaction();
