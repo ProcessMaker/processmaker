@@ -42,10 +42,14 @@
                     v-if="!$root.isImport"
                     v-model="passwordProtect"
                     class="fw-semibold"
+                    :disabled="passwordRequired.length"
                     stacked
                 >
                 Password Protect Export
                 <b-form-text class="process-options-helper-text">Define a password to protect your export file.</b-form-text>
+                <small v-if="passwordRequired.length" class="text-danger">
+                    Password protect is required because some assets have sensitive data.
+                </small>
                 </b-form-checkbox>
                 <b-form-checkbox
                     :checked="$root.includeAll"
@@ -96,10 +100,13 @@ import DataProvider from "../../DataProvider";
 import ExportSuccessModal from "../ExportSuccessModal.vue";
 
 export default {
-  props: ["processName",
+  props: [
+    "processName",
     "groups",
     "processId",
-    "processInfo"],
+    "passwordRequired",
+    "processInfo",
+    ],
     components: {
         DataCard,
         SetPasswordModal,

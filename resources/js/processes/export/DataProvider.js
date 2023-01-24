@@ -25,7 +25,7 @@ export default {
     }).then((response) => {
       const rootUuid = response.data.root;
       const assets = response.data.export;
-      return this.formatAssets(assets, rootUuid);
+      return this.formatAssets(assets, rootUuid, response.data.passwordRequired);
     });
   },
   exportProcess(processId, password, options) {
@@ -49,7 +49,7 @@ export default {
       return exportInfo;
     });
   },
-  formatAssets(assets, rootUuid) {
+  formatAssets(assets, rootUuid, passwordRequired) {
     const groups = {};
     let root = null;
     // for (const [uuid, asset] of Object.entries(assets)) {
@@ -101,6 +101,7 @@ export default {
       rootUuid,
       assets,
       groups: groupedInfo,
+      passwordRequired,
     };
   },
   // getTypeFromExporter(exporter) {
