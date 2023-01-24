@@ -14,8 +14,20 @@ class CreateNotificationVirtualColumnUrl extends Migration
     public function up()
     {
         Schema::table('notifications', function (Blueprint $table) {
-            $table->string('url')->virtualAs('JSON_UNQUOTE(data->"$.url")')->index();
+            $table->string('url')->nullable()->index();
         });
+
+        DB::table('notifications')->whereNull('read_at')
+            ->lazyById()->each(function ($notification) {
+                
+                $data = json_decode($notification->data, true);
+                $url = $data['url'] ?? null;
+                if ($url) {
+                    DB::table('notifications')
+                    ->where('id', $notification->id)
+                    ->update(['url' => $url]);
+                }
+            });
     }
 
     /**
