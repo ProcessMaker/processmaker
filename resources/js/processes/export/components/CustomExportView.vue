@@ -6,6 +6,7 @@
           <ProcessesView
             :process-info="rootAsset"
             :groups="groups"
+            :password-required="passwordRequired"
             :process-name="rootAsset.name"
             :process-id="processId"
           />
@@ -44,6 +45,7 @@ export default {
     return {
       rootAsset: {},
       groups: [],
+      passwordRequired: [],
     };
   },
   computed: {
@@ -77,6 +79,7 @@ export default {
         .then((response) => {
           this.rootAsset = response.root;
           this.groups = response.groups;
+          this.passwordRequired = response.passwordRequired;
           this.$root.setInitialState(response.assets, response.rootUuid);
         })
         .catch((error) => {
