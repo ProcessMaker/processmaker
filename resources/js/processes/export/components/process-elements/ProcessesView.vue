@@ -1,10 +1,12 @@
 <template>
-    <div class="mb-2">
+    <div>
         <h2>{{ $root.operation }} Process: <span class="text-capitalize">{{ processName }}</span></h2>
         <hr>
-        <div>
+        <div class="mb-2">
             <h4>Summary</h4>
-            <ul v-if="processInfo" class="process-summary">
+        </div>
+        <div class="mb-2">
+            <ul v-if="processInfo" class="process-summary mb-2">
                 <li> Description: <span class="fw-semibold">{{ processInfo.description }}</span></li>
                 <li> Categories: <span class="fw-semibold">{{ processInfo.categories }}</span></li>
                 <li> Process Manager:
@@ -36,7 +38,7 @@
                 </li>
             </ul>
         </div>
-        <div>
+        <div class="mb-2">
             <b-form-group>
                 <b-form-checkbox
                     v-if="!$root.isImport"

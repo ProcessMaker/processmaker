@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <container :sidenav="sidenav" class="custom-export-container">
+  <div class="d-flex justify-content-center">
+    <container :sidenav="sidenav" class="custom-export-container mx-4">
       <template v-slot:default="slotProps">
         <container-page :active="slotProps.activeIndex === 0">
           <ProcessesView
@@ -95,7 +95,6 @@ export default {
 
 .custom-export-container {
     max-width: 1600px;
-    margin: 0 auto;
     display: block;
     background-color: $light;
 }
