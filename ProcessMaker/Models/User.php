@@ -11,6 +11,7 @@ use Illuminate\Session\Store as Session;
 use Illuminate\Validation\Rule;
 use Laravel\Passport\HasApiTokens;
 use ProcessMaker\Models\RequestUserPermission;
+use ProcessMaker\Notifications\ResetPassword as ResetPasswordNotification;
 use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Rules\StringHasAtLeastOneUpperCaseCharacter;
 use ProcessMaker\Rules\StringHasNumberOrSpecialCharacter;
@@ -522,5 +523,16 @@ class User extends Authenticatable implements HasMedia
     public function manager()
     {
         return $this->belongsTo(self::class);
+    }
+
+    /**
+     * Send the password reset notification.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPasswordNotification($token));
     }
 }

@@ -149,10 +149,6 @@ class ProcessRequestController extends Controller
             }
         }
 
-        if (!$user->can('view-all_requests')) {
-            $query->pmql('requester = "' . $user->username . '" OR participant = "' . $user->username . '"');
-        }
-
         $query->nonSystem();
 
         try {
@@ -243,16 +239,17 @@ class ProcessRequestController extends Controller
         }
 
         if ($request->status !== 'ERROR') {
-            throw ValidationException::withMessages([
-                'status' => __('Only requests with ERROR status can be retried'),
-            ]);
+            return response()->json([
+                'message' => __('Only requests with ERROR status can be retried'),
+                'success' => false,
+            ], 422);
         }
 
         $retryRequest = RetryProcessRequest::for($request);
 
         if (!$retryRequest->hasRetriableTasks() || $retryRequest->hasNonRetriableTasks()) {
             return response()->json([
-                'message' => ['No tasks available to retry'],
+                'message' => [__('No tasks available to retry')],
                 'success' => false,
             ]);
         }

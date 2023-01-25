@@ -158,6 +158,7 @@ return [
         ProcessMaker\Providers\BroadcastServiceProvider::class,
         ProcessMaker\Providers\WorkflowServiceProvider::class,
         ProcessMaker\Providers\UpgradeServiceProvider::class,
+        ProcessMaker\Providers\OauthMailServiceProvider::class,
 
     ],
 
@@ -222,6 +223,7 @@ return [
          */
         'ElasticScoutDriver\Factories\SearchRequestFactory' => ProcessMaker\Factories\SearchRequestFactory::class,
 
+        'RequestDevice' => ProcessMaker\Facades\RequestDevice::class,
     ],
 
     'debug_blacklist' => [

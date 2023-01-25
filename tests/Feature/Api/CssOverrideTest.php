@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Group;
+use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
@@ -50,21 +51,34 @@ class CssOverrideTest extends TestCase
     public function testResetCss()
     {
         $this->markTestSkipped('FOUR-6653');
-
-        $data = $this->cssValues('#ff0000');
-        $data['reset'] = true;
+        // Create some css override setting with custom logos
+        $data = $this->cssValues();
         $response = $this->actingAs($this->user, 'api')->call('POST', '/api/1.0/customize-ui', $data);
         $response->assertStatus(201);
+
+        // Assert the setting for css-override was created
+        $this->assertDatabaseHas('settings', ['key' => 'css-override']);
+
+        // Reset the values
+        $data['reset'] = true;
+        $response = $this->actingAs($this->user, 'api')->call('POST', '/api/1.0/customize-ui', $data);
+
+        // Reset values should delete the css-override setting
+        $this->assertDatabaseMissing('settings', ['key' => 'css-override']);
+        $response->assertStatus(200);
     }
 
-    private function cssValues($testColor)
+    private function cssValues()
     {
         return [
             'key' => 'css-override',
+            'fileLoginName' => 'loginLogo.png',
+            'fileLogoName' => 'logo.png',
+            'fileIconName' => 'icon.png',
             'variables' => json_encode([
                 [
                     'id' => '$primary',
-                    'value' => $testColor,
+                    'value' => '#3397e1',
                     'title' => 'Primary',
                 ],
                 [
