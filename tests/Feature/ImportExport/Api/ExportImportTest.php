@@ -5,28 +5,14 @@ namespace Tests\Feature\ImportExport\Api;
 use Illuminate\Http\UploadedFile;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\Models\Screen;
+use Tests\Feature\ImportExport\HelperTrait;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
 class ExportImportTest extends TestCase
 {
     use RequestHelper;
-
-    public function testGetTree()
-    {
-        $screen = Screen::factory()->create();
-
-        $route = route('api.export.tree', [
-            'type' => 'screen',
-            'id' => $screen->id,
-        ]);
-        $response = $this->apiCall('GET', $route);
-
-        $response->assertStatus(200);
-        $data = $response->getData();
-        $this->assertObjectHasAttribute('tree', $data);
-        $this->assertObjectHasAttribute('manifest', $data);
-    }
+    use HelperTrait;
 
     public function testDownloadExportFile()
     {
@@ -66,14 +52,12 @@ class ExportImportTest extends TestCase
 
         $response = $this->apiCall('POST', route('api.import.preview'), [
             'file' => $file,
-            // 'password' => null,
-            // 'options' => [],
         ]);
 
         $response->assertStatus(200);
-        $data = $response->getData();
-        $this->assertObjectHasAttribute('tree', $data);
-        $this->assertObjectHasAttribute('manifest', $data);
+        $json = $response->json();
+
+        $this->assertArrayHasKey('manifest', $json);
     }
 
     public function testImport()
@@ -82,8 +66,8 @@ class ExportImportTest extends TestCase
 
         $response = $this->apiCall('POST', route('api.import.do_import'), [
             'file' => $file,
-            // 'password' => null,
-            // 'options' => [],
+            'password' => null,
+            'options' => $this->makeOptions(),
         ]);
         $response->assertStatus(200);
     }

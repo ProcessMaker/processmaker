@@ -3,6 +3,7 @@
 namespace Tests\Feature\ImportExport;
 
 use Database\Seeders\SignalSeeder;
+use Illuminate\Http\UploadedFile;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
@@ -78,5 +79,13 @@ trait HelperTrait
         $options = new Options([]);
         $importer = new Importer($payload, $options);
         $importer->doImport();
+    }
+
+    public function makeOptions($options = [])
+    {
+        return UploadedFile::fake()->createWithContent(
+            'options.json',
+            json_encode($options)
+        );
     }
 }

@@ -20,36 +20,6 @@ class ManifestTest extends TestCase
 {
     use HelperTrait;
 
-    public function testOrderForImport()
-    {
-        $this->markTestSkipped('Removed sorting');
-        $test = [
-            'A' => $this->mockExporter(['C']),
-            'B' => $this->mockExporter(['C', 'A']),
-            'C' => $this->mockExporter(['D']),
-            'D' => $this->mockExporter([]),
-        ];
-
-        $manifest = new Manifest();
-        $manifest->set($test);
-        $result = $manifest->orderForImport();
-        $this->assertEquals(['D', 'C', 'A', 'B'], $result);
-    }
-
-    public function testOrderForImportCircularDependency()
-    {
-        $this->markTestSkipped('Removed sorting');
-        $test = [
-            'A' => $this->mockExporter(['C']),
-            'B' => $this->mockExporter(['A']),
-            'C' => $this->mockExporter(['B']),
-        ];
-        $manifest = new Manifest();
-        $manifest->set($test);
-        $this->expectException(CircularDependencyException::class);
-        $manifest->orderForImport();
-    }
-
     private function mockExporter($dependents)
     {
         return $this->mock(ScreenExporter::class, function ($mock) use ($dependents) {

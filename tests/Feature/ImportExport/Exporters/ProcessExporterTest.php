@@ -77,7 +77,10 @@ class ProcessExporterTest extends TestCase
         $this->assertEquals($process->category->uuid, Arr::get($tree, '0.dependents.1.uuid'));
         $this->assertEquals($cancelScreen->uuid, Arr::get($tree, '0.dependents.2.uuid'));
         $this->assertEquals($requestDetailScreen->uuid, Arr::get($tree, '0.dependents.3.uuid'));
-        $this->assertEquals($user->groups->first()->uuid, Arr::get($tree, '0.dependents.0.dependents.0.uuid'));
+        $this->assertEquals(
+            $user->groups->first()->uuid,
+            collect($tree[0]['dependents'][0]['dependents'])->firstWhere('type', 'groups')['uuid']
+        );
     }
 
     public function testImport()
