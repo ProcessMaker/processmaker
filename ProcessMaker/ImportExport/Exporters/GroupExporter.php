@@ -12,7 +12,7 @@ class GroupExporter extends ExporterBase
     {
         if ($this->model->users->count() > 0) {
             foreach ($this->model->users as $user) {
-                $this->addDependent('users', $user, GroupExporterExtension::class);
+                $this->addDependent('users', $user, UserExporter::class);
             }
         }
         $this->addReference('permissions', $this->model->permissions()->pluck('name')->toArray());

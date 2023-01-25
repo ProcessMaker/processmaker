@@ -58,7 +58,6 @@ class GroupExporterTest extends TestCase
 
         $this->runExportAndImport($group, GroupExporter::class, function () {
             DB::rollBack(); // Delete all created items since DB::beginTransaction
-            User::query()->forceDelete();
             $this->assertEquals(0, Group::get()->count());
             $this->assertEquals(0, GroupMember::get()->count());
         });
