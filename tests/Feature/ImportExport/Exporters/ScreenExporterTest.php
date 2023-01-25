@@ -98,9 +98,9 @@ class ScreenExporterTest extends TestCase
         $this->assertEquals('script-' . $checkScript->id, Arr::get($checkScreen->watchers, '0.script.id'));
     }
 
-    private function importWithNew($screenMode)
+    private function importWithCopy($screenMode)
     {
-        list($screen, $screenCategory1, $screenCategory2, $script, $nestedScreen, $nestedNestedScreen) =
+        list($screen, $screenCategory1, $screenCategory2) =
             $this->fixtures();
 
         $exporter = new Exporter();
@@ -109,11 +109,12 @@ class ScreenExporterTest extends TestCase
 
         $optionsArray = [];
         $optionsArray[$screen->uuid] = ['mode' => $screenMode];
-        $optionsArray[$screenCategory1->uuid] = ['mode' => 'new'];
-        $optionsArray[$screenCategory2->uuid] = ['mode' => 'new'];
+        $optionsArray[$screenCategory1->uuid] = ['mode' => 'copy'];
+        $optionsArray[$screenCategory2->uuid] = ['mode' => 'copy'];
 
         $options = new Options($optionsArray);
         $importer = new Importer($payload, $options);
+
         $importer->doImport();
 
         return $screen;
@@ -121,7 +122,8 @@ class ScreenExporterTest extends TestCase
 
     public function testImportNewCategoryWithExistingScreen()
     {
-        $screen = $this->importWithNew('update');
+        $screen = $this->importWithCopy('update');
+        $screen->refresh();
         $categories = $screen->refresh()->categories()->pluck('name', 'screen_categories.id as id');
         $this->assertCount(4, $categories);
         $this->assertContains('category 1', $categories);
@@ -132,7 +134,7 @@ class ScreenExporterTest extends TestCase
 
     public function testImportNewCategoryWithNewScreen()
     {
-        $this->importWithNew('new');
+        $this->importWithCopy('copy');
         $screen = Screen::where('title', 'screen 2')->firstOrFail();
         $categories = $screen->refresh()->categories()->pluck('name', 'screen_categories.id as id');
         $this->assertCount(2, $categories);

@@ -89,8 +89,6 @@ class Manifest
         } else {
             if ($mode !== 'discard') {
                 $mode = 'new';
-            } else {
-                $model = new $class(); // Placeholder model for discard
             }
         }
 
@@ -101,6 +99,7 @@ class Manifest
                 break;
             case 'discard':
                 // Keep the model, just don't save it later in doImport
+                $model = new $class();
                 break;
             case 'copy':
                 $model = new $class();
