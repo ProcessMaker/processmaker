@@ -27,6 +27,8 @@ abstract class ExporterBase implements ExporterInterface
 
     public $originalId = null;
 
+    public $forcePasswordProtect = false;
+
     public $importing = false;
 
     public $disableEventsWhenImporting = false;
@@ -165,6 +167,7 @@ abstract class ExporterBase implements ExporterInterface
             'extraAttributes' => $this->getExtraAttributes($this->model),
             'references' => $this->references,
             'dependents' => array_map(fn ($d) => $d->toArray(), $this->dependents),
+            'force_password_protect' => $this->forcePasswordProtect,
         ];
 
         if ($this->importing) {
@@ -198,13 +201,7 @@ abstract class ExporterBase implements ExporterInterface
             return null;
         }
 
-        if (!$this->model->description || $this->model->description === '') {
-            return 'N/A';
-        }
-
-        if ($this->model->description) {
-            return $this->model->description;
-        }
+        return $this->model->description;
     }
 
     public function getExtraAttributes($model): array

@@ -1,11 +1,12 @@
 <template>
-  <div>
-    <container :sidenav="sidenav" class="custom-export-container">
+  <div class="d-flex justify-content-center">
+    <container :sidenav="sidenav" class="custom-export-container mx-4">
       <template v-slot:default="slotProps">
         <container-page :active="slotProps.activeIndex === 0">
           <ProcessesView
             :process-info="rootAsset"
             :groups="groups"
+            :password-required="passwordRequired"
             :process-name="rootAsset.name"
             :process-id="processId"
           />
@@ -44,6 +45,7 @@ export default {
     return {
       rootAsset: {},
       groups: [],
+      passwordRequired: [],
     };
   },
   computed: {
@@ -77,6 +79,7 @@ export default {
         .then((response) => {
           this.rootAsset = response.root;
           this.groups = response.groups;
+          this.passwordRequired = response.passwordRequired;
           this.$root.setInitialState(response.assets, response.rootUuid);
         })
         .catch((error) => {
@@ -95,7 +98,6 @@ export default {
 
 .custom-export-container {
     max-width: 1600px;
-    margin: 0 auto;
     display: block;
     background-color: $light;
 }

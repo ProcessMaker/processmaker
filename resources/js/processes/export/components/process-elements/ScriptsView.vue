@@ -3,9 +3,11 @@
         <h2>{{ $root.operation }} Process: <span class="text-capitalize">{{ processName }}</span></h2>
         <hr>
         <div>
-            <h4>{{ group.typeHumanPlural }}</h4>
+            <div class="mb-2">
+                <h4>{{ group.typeHumanPlural }}</h4>
+            </div>
             <div v-if="$root.includeAllByGroup[group.type]" class="mb-2">
-                <h6 class="mb-0">{{ $root.operation }} Status:
+                <h6 class="mb-0 fw-semibold">{{ $root.operation }} Status:
                     <b-badge
                     pill
                     variant="success"
@@ -17,7 +19,7 @@
                 <small class="text-muted"><span class="font-weight-bold">All</span> {{ group.typeHumanPlural }} will be included in this {{ $root.operation.toLowerCase() }}.</small>
             </div>
             <div v-else class="mb-2">
-                <h6 class="mb-0">{{ $root.operation }} Status:
+                <h6 class="mb-0 fw-semibold">{{ $root.operation }} Status:
                 <b-badge
                     pill
                     variant="warning"
@@ -28,11 +30,13 @@
                 </h6>
                 <small class="text-muted">{{ group.typeHumanPlural }} will <span class="font-weight-bold">Not</span> be included in this {{ $root.operation.toLowerCase() }}.</small>
             </div>
-            <b-link @click="returnToSummaryClick">Return to Summary</b-link>
+            <div class="mb-2">
+                <b-link @click="returnToSummaryClick">Return to Summary</b-link>
+            </div>
         </div>
         <hr>
         <div v-for="(item, i) in group.items" :key="i">
-            <b-card class="high-elevation mb-4">
+            <b-card class="low-elevation mt-4 mb-5">
                 <template #header>
                     <h6 class="mb-0 data-card-header font-weight-bold text-capitalize">{{ item.name }}</h6>
                 </template>

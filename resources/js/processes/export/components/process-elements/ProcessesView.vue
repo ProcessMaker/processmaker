@@ -1,10 +1,12 @@
 <template>
-    <div class="mb-2">
+    <div>
         <h2>{{ $root.operation }} Process: <span class="text-capitalize">{{ processName }}</span></h2>
         <hr>
-        <div>
+        <div class="mb-2">
             <h4>Summary</h4>
-            <ul v-if="processInfo" class="process-summary">
+        </div>
+        <div class="mb-2">
+            <ul v-if="processInfo" class="process-summary mb-2">
                 <li> Description: <span class="fw-semibold">{{ processInfo.description }}</span></li>
                 <li> Categories: <span class="fw-semibold">{{ processInfo.categories }}</span></li>
                 <li> Process Manager:
@@ -36,16 +38,20 @@
                 </li>
             </ul>
         </div>
-        <div>
+        <div class="mb-2">
             <b-form-group>
                 <b-form-checkbox
                     v-if="!$root.isImport"
                     v-model="passwordProtect"
                     class="fw-semibold"
+                    :disabled="passwordRequired.length"
                     stacked
                 >
                 Password Protect Export
                 <b-form-text class="process-options-helper-text">Define a password to protect your export file.</b-form-text>
+                <small v-if="passwordRequired.length" class="text-danger">
+                    Password protect is required because some assets have sensitive data.
+                </small>
                 </b-form-checkbox>
                 <b-form-checkbox
                     :checked="$root.includeAll"
@@ -96,10 +102,13 @@ import DataProvider from "../../DataProvider";
 import ExportSuccessModal from "../ExportSuccessModal.vue";
 
 export default {
-  props: ["processName",
+  props: [
+    "processName",
     "groups",
     "processId",
-    "processInfo"],
+    "passwordRequired",
+    "processInfo",
+    ],
     components: {
         DataCard,
         SetPasswordModal,

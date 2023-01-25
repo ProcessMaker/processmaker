@@ -83,6 +83,7 @@ export default {
   
   &:active,
   &.active {
+    font-weight: 600;
     background: $grey-bg;
   }
   

@@ -5,6 +5,7 @@ namespace Tests\Feature\ImportExport\Exporters;
 use Database\Seeders\CategorySystemSeeder;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\ImportExport\Exporters\ScriptExporter;
+use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
@@ -18,11 +19,14 @@ class ScriptExporterTest extends TestCase
     public function test()
     {
         DB::beginTransaction();
+        $environmentVariable1 = EnvironmentVariable::factory()->create(['name' => 'MY_VAR_1']);
+        $environmentVariable2 = EnvironmentVariable::factory()->create(['name' => 'MY_VAR_2']);
+        $environmentVariable3 = EnvironmentVariable::factory()->create(['name' => 'MY_VAR_3']);
         $category = ScriptCategory::factory()->create(['name' => 'test category']);
         $scriptUser = User::factory()->create(['username' => 'scriptuser']);
         $script = Script::factory()->create([
             'title' => 'test',
-            'code' => '<?php return [];',
+            'code' => '<?php $var1 = getenv(\'MY_VAR_1\'); $var2 = getenv(\'MY_VAR_2\') return [];',
             'run_as_user_id' => $scriptUser->id,
         ]);
         $script->categories()->sync($category);
@@ -35,6 +39,9 @@ class ScriptExporterTest extends TestCase
         $script = Script::where('title', 'test')->firstOrFail();
         $this->assertEquals('test category', $script->categories[0]->name);
         $this->assertEquals('scriptuser', $script->runAsUser->username);
+        $this->assertDatabaseHas('environment_variables', ['name' => $environmentVariable1->name]);
+        $this->assertDatabaseHas('environment_variables', ['name' => $environmentVariable2->name]);
+        $this->assertDatabaseMissing('environment_variables', ['name' => $environmentVariable3->name]);
     }
 
     public function testExportUncategorized()
