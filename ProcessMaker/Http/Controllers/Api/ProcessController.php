@@ -6,6 +6,7 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Facades\WorkflowManager;
@@ -556,22 +557,7 @@ class ProcessController extends Controller
         $orderDirections = explode(',', $request->input('order_direction', 'asc'));
         $include = $this->getRequestInclude($request);
 
-        $query = Process::nonSystem()->with($include)->with('events')
-            ->select('processes.*')
-            ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
-            ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
-            ->where('processes.status', 'ACTIVE')
-            ->where('category.status', 'ACTIVE')
-            ->whereNull('warnings')
-            ->where($where);
-
-        // Add the order by columns
-        foreach ($orderColumns as $key=>$orderColumn) {
-            $orderDirection = array_key_exists($key, $orderDirections) ? $orderDirections[$key] : 'asc';
-            $query->orderBy($orderColumn, $orderDirection);
-        }
-
-        $processes = $query->get();
+        $processes = $this->fetchProcesses($where, $orderColumns, $orderDirections, $include);
 
         foreach ($processes as $key => $process) {
             // filter the start events that can be used manually (no timer start events);
@@ -616,6 +602,84 @@ class ProcessController extends Controller
         }
 
         return new ApiCollection($processes->values()); // TODO use existing resource class
+    }
+
+
+    /**
+     * If the $include parameter contains "processCategory", then a join
+     * is made with "category_assignments" and for each associated
+     * category there will be a collection item.
+     * If not, each process will have only one collection item (default).
+     *
+     * @param array $where
+     * @param array $orderColumns
+     * @param array $orderDirections
+     * @param array $include
+     * @return Process[]|\Illuminate\Database\Eloquent\Collection
+     */
+    protected function fetchProcesses(array $where, array $orderColumns, array $orderDirections, array $include)
+    {
+        if (in_array('processCategory', $include)) {
+            $systemIds = Process::system()->get('id')->pluck('id')->toArray();
+            $query = Process::with($include)
+                ->with('events')
+                ->select(DB::raw('
+                processes.id,
+                processes.uuid,
+                category_assignments.category_id AS process_category_id,
+                category_assignments.category_id AS category_id,
+                processes.user_id,
+                processes.bpmn,
+                processes.description,
+                CONCAT(processes.name, " #", processes.id) as name,
+                processes.cancel_screen_id,
+                processes.request_detail_screen_id,
+                processes.status,
+                processes.is_valid,
+                processes.package_key,
+                processes.pause_timer_start,
+                processes.deleted_at,
+                processes.created_at,
+                processes.updated_at,
+                processes.start_events,
+                processes.warnings,
+                processes.self_service_tasks,
+                processes.svg,
+                processes.signal_events,
+                processes.conditional_events,
+                processes.properties
+            '))
+                ->leftJoin('category_assignments', 'processes.id', '=', DB::raw('
+                 category_assignments.assignable_id 
+                 AND category_assignments.assignable_type = "ProcessMaker\\\Models\\\Process" 
+                 AND category_assignments.category_type = "ProcessMaker\\\Models\\\ProcessCategory"
+            '))
+                ->leftJoin('process_categories as category', 'category_assignments.category_id', '=', 'category.id')
+                ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
+                ->whereNotIn('processes.id', $systemIds)
+                ->where('category.is_system', false)
+                ->where('processes.status', 'ACTIVE')
+                ->where('category.status', 'ACTIVE')
+                ->whereNull('processes.warnings')
+                ->where($where);
+        } else {
+            $query = Process::nonSystem()->with($include)->with('events')
+                ->select('processes.*')
+                ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
+                ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
+                ->where('processes.status', 'ACTIVE')
+                ->where('category.status', 'ACTIVE')
+                ->whereNull('warnings')
+                ->where($where);
+        }
+
+        // Add the order by columns
+        foreach ($orderColumns as $key=>$orderColumn) {
+            $orderDirection = array_key_exists($key, $orderDirections) ? $orderDirections[$key] : 'asc';
+            $query->orderBy($orderColumn, $orderDirection);
+        }
+
+        return $query->get();
     }
 
     /**

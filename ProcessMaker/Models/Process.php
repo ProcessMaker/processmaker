@@ -238,6 +238,16 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     }
 
     /**
+     * Category of the process, retrieved from category_assignments.
+     *
+     * @return BelongsTo
+     */
+    public function processCategory()
+    {
+        return $this->belongsTo(ProcessCategory::class, 'category_id')->withDefault();
+    }
+
+    /**
      * Notification settings of the process.
      *
      * @return HasMany
