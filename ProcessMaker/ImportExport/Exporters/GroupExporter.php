@@ -10,12 +10,22 @@ class GroupExporter extends ExporterBase
 
     public function export() : void
     {
+        if ($this->model->users->count() > 0) {
+            foreach ($this->model->users as $user) {
+                $this->addDependent('users', $user, GroupExporterExtension::class);
+            }
+        }
         $this->addReference('permissions', $this->model->permissions()->pluck('name')->toArray());
     }
 
     public function import() : bool
     {
         $group = $this->model;
+
+        foreach ($this->getDependents('users') as $dependent) {
+            $dependent->model->save();
+            $dependent->model->groups()->syncWithoutDetaching($group->id);
+        }
 
         $permissions = $this->getReference('permissions');
         $permissionIds = Permission::whereIn('name', $permissions)->pluck('id')->toArray();
