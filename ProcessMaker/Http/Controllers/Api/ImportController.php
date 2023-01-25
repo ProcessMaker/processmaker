@@ -4,15 +4,12 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use ProcessMaker\Exception\ImportPasswordException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\ImportExport\ExportEncrypted;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Process;
-
-class PasswordException extends \Exception
-{
-}
 
 class ImportController extends Controller
 {
@@ -25,7 +22,7 @@ class ImportController extends Controller
 
         try {
             $payload = $this->handlePasswordDecrypt($request, $payload);
-        } catch (PasswordException $e) {
+        } catch (ImportPasswordException $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
 
@@ -46,7 +43,7 @@ class ImportController extends Controller
 
         try {
             $payload = $this->handlePasswordDecrypt($request, $payload);
-        } catch (PasswordException $e) {
+        } catch (ImportPasswordException $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
         $options = file_get_contents(utf8_decode($request->file('options')));
@@ -66,13 +63,13 @@ class ImportController extends Controller
         if (isset($payload['encrypted']) && $payload['encrypted']) {
             $password = $request->input('password');
             if (!$password) {
-                throw new PasswordException('password required');
+                throw new ImportPasswordException('password required');
             }
 
             $payload = (new ExportEncrypted($password))->decrypt($payload);
 
             if ($payload['export'] === null) {
-                throw new PasswordException('incorrect password');
+                throw new ImportPasswordException('incorrect password');
             }
         }
 
