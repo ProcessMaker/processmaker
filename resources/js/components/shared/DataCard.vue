@@ -1,6 +1,6 @@
 <template>
   <div class="mt-4 mb-5 data-card-container low-elevation">
-    <b-card>
+    <b-card class="data-card">
       <template #header>
         <div class="header">
           <i class="text-secondary data-card-header fas nav-icon d-inline align-middle" :class="'fa-' + info.icon" />
