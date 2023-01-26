@@ -51,13 +51,6 @@ class Exporter
             }, ARRAY_FILTER_USE_KEY);
         }
 
-        $passwordRequiredAssets = [];
-        foreach ($export as $key => $value) {
-            if ($value['force_password_protect']) {
-                $passwordRequiredAssets[] = $key;
-            }
-        }
-
         $payload = [
             'type' => $this->rootExporter->getType(),
             'version' => '2',
@@ -65,7 +58,6 @@ class Exporter
             'name' => $this->rootExporter->getName($this->rootExporter->model),
             'export' => $export,
             'discarded' => $discarded,
-            'passwordRequired' => $passwordRequiredAssets,
         ];
 
         return $payload;
