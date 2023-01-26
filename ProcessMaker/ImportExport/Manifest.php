@@ -71,6 +71,10 @@ class Manifest
         $mode = $options->get('mode', $uuid);
         $attrs = $assetInfo['attributes'];
 
+        if ($mode === 'new') {
+            throw new \Exception('Mode "new" can only be set by the system.');
+        }
+
         $modelQuery = $exporterClass::modelFinder($uuid, $assetInfo);
 
         if ($exporterClass::doNotImport($uuid, $assetInfo)) {
@@ -87,6 +91,7 @@ class Manifest
         if ($modelQuery->exists()) {
             $model = $modelQuery->firstOrFail();
         } else {
+            $model = new $class();
             if ($mode !== 'discard') {
                 $mode = 'new';
             }
@@ -99,21 +104,22 @@ class Manifest
                 break;
             case 'discard':
                 // Keep the model, just don't save it later in doImport
-                $model = new $class();
+                $model->preventSavingDiscardedModel();
                 break;
             case 'copy':
-                $model = new $class();
+                // Make new copy of the model with a new UUID
                 unset($attrs['uuid']);
                 $model->fill($attrs);
                 break;
             case 'new':
-                $model = new $class();
+                // NOT user settable
+                // Create the model with the same UUID if it doesn't exist on the target instance
                 $model->fill($attrs);
                 $model->uuid = $uuid;
                 break;
+            default:
+                throw new \Exception('Invalid mode: ' + $mode);
         }
-
-        // dump(get_class($model), $mode);
 
         if ($model) {
             self::handleCasts($model);
