@@ -123,6 +123,13 @@ export default {
             exportInfo: {},
         }
     },
+    watch: {
+      "$root.forcePasswordProtect": function (val) {
+        if (val.length) {
+          this.passwordProtect = true;
+        }
+      }
+    },
     methods: {
         change(value) {
             this.$root.setIncludeAll(value);
@@ -159,8 +166,6 @@ export default {
         },
     },
     mounted() {
-    },
-    watch: {
     },
 }
 </script>
