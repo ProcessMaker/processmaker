@@ -44,12 +44,12 @@
                     v-if="!$root.isImport"
                     v-model="passwordProtect"
                     class="fw-semibold"
-                    :disabled="passwordRequired.length"
                     stacked
+                    :disabled="!!$root.forcePasswordProtect.length"
                 >
                 Password Protect Export
                 <b-form-text class="process-options-helper-text">Define a password to protect your export file.</b-form-text>
-                <small v-if="passwordRequired.length" class="text-danger">
+                <small v-if="!!$root.forcePasswordProtect.length" class="text-danger">
                     Password protect is required because some assets have sensitive data.
                 </small>
                 </b-form-checkbox>
@@ -106,7 +106,6 @@ export default {
     "processName",
     "groups",
     "processId",
-    "passwordRequired",
     "processInfo",
     ],
     components: {
