@@ -61,12 +61,24 @@ class ExportController extends Controller
         $model = $this->getModel($type)->findOrFail($id);
         $post = $request->json()->all();
         $options = new Options($post['options']);
-        $password = $post['password'];
+        $password = (isset($post['password']) ? $post['password'] : null);
 
         $exporter = new Exporter();
         $exporter->export($model, $this->types[$type][1]);
 
         $payload = $exporter->payload($options);
+
+        $forcePasswordProtect = false;
+        foreach ($payload['export'] as $asset) {
+            if ($asset['force_password_protect']) {
+                $forcePasswordProtect = true;
+            }
+        }
+
+        if (!$password && $forcePasswordProtect) {
+            return abort(400, 'Password protection required.');
+        }
+
         $exported = $exporter->exportInfo($payload);
 
         if ($password) {

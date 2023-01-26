@@ -27,7 +27,7 @@
             </b-badge>
           </div>
           <div>
-            <small v-if="info.forcePasswordProtect" class="fw-semibold form-text text-danger mt-0">Sensitive data found</small>
+            <small v-if="info.forcePasswordProtect" class="fw-semibold form-text text-danger mt-0">{{ info.typeHumanPlural }} may contain sensitive information.</small>
           </div>
         </div>
         <template v-if="$root.isImport">
