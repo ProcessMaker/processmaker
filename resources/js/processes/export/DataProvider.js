@@ -71,6 +71,7 @@ export default {
         lastModifiedBy: asset.last_modified_by || "N/A",
         lastModifiedById: asset.last_modified_by_id || null,
         importMode: asset.import_mode || 'update',
+        forcePasswordProtect: asset.force_password_protect,
       };
 
       if (uuid === rootUuid) {
@@ -92,7 +93,8 @@ export default {
         typeHuman: value[0].typeHuman,
         typeHumanPlural: value[0].typeHumanPlural,
         icon: ImportExportIcons.ICONS[key] || 'code',
-        items: value
+        items: value,
+        forcePasswordProtect: value[0].forcePasswordProtect,
       };
     });
 
