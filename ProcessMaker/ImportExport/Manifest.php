@@ -109,6 +109,7 @@ class Manifest
             case 'copy':
                 // Make new copy of the model with a new UUID
                 unset($attrs['uuid']);
+                $model = new $class();
                 $model->fill($attrs);
                 break;
             case 'new':
