@@ -45,6 +45,7 @@ class UserExporterTest extends TestCase
 
     public function testDoNotCopyAdmin()
     {
+        DB::beginTransaction();
         $this->addGlobalSignalProcess();
         $bpmn = file_get_contents(base_path('tests/Feature/Api/bpmnPatterns/SimpleTaskProcess.bpmn'));
         $bpmn = str_replace('pm:screenRef="2"', 'pm:screenRef=""', $bpmn);
@@ -71,5 +72,9 @@ class UserExporterTest extends TestCase
         $user = User::where('username', 'admin')->firstOrFail();
 
         $this->assertEquals($originalUserCount, User::count());
+        $this->assertEquals(['test group 2'], $user->groups()->pluck('name')->toArray());
+
+        // Test importing on new instance
+        DB::rollBack(); // Delete all created items since DB::beginTransaction
     }
 }

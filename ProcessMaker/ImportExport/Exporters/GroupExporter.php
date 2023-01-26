@@ -23,7 +23,6 @@ class GroupExporter extends ExporterBase
         $group = $this->model;
 
         foreach ($this->getDependents('users') as $dependent) {
-            $dependent->model->save();
             $dependent->model->groups()->syncWithoutDetaching($group->id);
         }
 
