@@ -147,10 +147,12 @@ abstract class ExporterBase implements ExporterInterface
     public function getClassName(): string
     {
         $modelClass = get_class($this->model);
+
         return class_basename($modelClass);
     }
 
-    public function getTypeHuman($type) {
+    public function getTypeHuman($type)
+    {
         return trim(ucwords(preg_replace('/(?<!\ )[A-Z]/', ' $0', $type)));
     }
 
