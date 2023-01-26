@@ -264,6 +264,7 @@ class ProcessExporter extends ExporterBase
     {
         $tags = [
             'bpmn:task',
+            'bpmn:manualTask',
         ];
 
         foreach (Utils::getElementByMultipleTags($this->model->getDefinitions(true), $tags) as $element) {
