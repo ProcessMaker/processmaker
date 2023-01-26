@@ -16,6 +16,12 @@
       <b-card-text>
         <div class="data-card-metadata mb-1">
           <div>
+            <div>
+              <small v-if="info.forcePasswordProtect" class="fw-semibold form-text text-muted mt-0">
+                <i class="fas fa-exclamation-triangle text-warning p-0"/>
+                {{ info.typeHumanPlural }} may contain sensitive information.
+              </small>
+            </div>
             <span>Status:</span>
             <b-badge v-if="$root.includeAllByGroup[info.type]" pill variant="success">
               <i class="fas fa-check-circle export-status-label" />
@@ -25,9 +31,6 @@
               <i class="fas fa-exclamation-triangle export-status-label" />
               Not {{ $root.operation }}ing
             </b-badge>
-          </div>
-          <div>
-            <small v-if="info.forcePasswordProtect" class="fw-semibold form-text text-danger mt-0">{{ info.typeHumanPlural }} may contain sensitive information.</small>
           </div>
         </div>
         <template v-if="$root.isImport">
