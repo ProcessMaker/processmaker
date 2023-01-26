@@ -257,8 +257,6 @@ abstract class ExporterBase implements ExporterInterface
 
     public function updateDuplicateAttributes()
     {
-        $class = get_class($this->model);
-
         if ($this->importMode === 'discard') {
             return;
         }
@@ -266,7 +264,7 @@ abstract class ExporterBase implements ExporterInterface
         foreach ($this->handleDuplicateAttributes() as $attribute => $handler) {
             $value = $this->model->$attribute;
             $i = 0;
-            while ($this->duplicateExists($class, $attribute, $value)) {
+            while ($this->duplicateExists($attribute, $value)) {
                 if ($i > 100) {
                     throw new \Exception('Can not fix duplicate attribute after 100 iterations');
                 }
@@ -277,12 +275,22 @@ abstract class ExporterBase implements ExporterInterface
         }
     }
 
-    private function duplicateExists($class, $attribute, $value) : bool
+    private function duplicateExists($attribute, $value) : bool
     {
-        // Check the databse for duplicates unrelated to the import
-        if ($class::where($attribute, $value)->exists()) {
+        $class = get_class($this->model);
+
+        // Check the database for duplicates unrelated to the import
+        $query = $class::where($attribute, $value);
+
+        // If this model is persisted, exclude it from the search
+        if ($this->model->exists) {
+            $query = $query->where('id', '!=', $this->model->id);
+        }
+
+        if ($query->exists()) {
             return true;
         }
+
         // Check the manifest to see if any non-saved models exist
         return $this->manifest->modelExists($class, $attribute, $value);
     }
