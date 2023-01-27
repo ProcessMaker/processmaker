@@ -37,6 +37,10 @@ abstract class ExporterBase implements ExporterInterface
 
     public $log = [];
 
+    public $required = false;
+
+    public $showInUI = true;
+
     public static function modelFinder($uuid, $asssetInfo)
     {
         return $asssetInfo['model']::where('uuid', $uuid);
@@ -176,6 +180,8 @@ abstract class ExporterBase implements ExporterInterface
             'references' => $this->references,
             'dependents' => array_map(fn ($d) => $d->toArray(), $this->dependents),
             'force_password_protect' => $this->forcePasswordProtect,
+            'required' => $this->required,
+            'show_in_ui' => $this->showInUI,
         ];
 
         if ($this->importing) {

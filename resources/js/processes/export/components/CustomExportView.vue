@@ -48,14 +48,15 @@ export default {
   },
   computed: {
     sidenav() {
-      let items = [
-        { title: this.rootAsset.name, icon: null, },
+      const items = [
+        { title: this.rootAsset.name, icon: null, showInUI: this.rootAsset.showInUI },
       ];
 
       this.groups.forEach(group => {
         items.push({
           title: group.typePlural,
           icon: group.icon,
+          showInUI: group.showInUI,
         });
       });
 
