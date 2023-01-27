@@ -15,6 +15,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
+use OpenAI\Client;
 
 class ScriptController extends Controller
 {
@@ -468,5 +469,21 @@ class ScriptController extends Controller
         $script->delete();
 
         return response([], 204);
+    }
+
+    public function openAi(\OpenAI\Client $client, Request $request)
+    {
+        $code = $request->input('text');
+        $model = 'code-davinci-002';
+
+        $result = $client->completions()->create([
+            'prompt' => $code,
+            'model' => $model,
+            'max_tokens' => 250,
+        ]);
+
+        $result = ltrim($result->choices[0]->text);
+
+        return response(["result" => $result]);
     }
 }
