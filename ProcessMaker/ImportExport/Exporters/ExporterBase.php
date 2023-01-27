@@ -37,6 +37,10 @@ abstract class ExporterBase implements ExporterInterface
 
     public $log = [];
 
+    public $required = false;
+
+    public $showInUI = true;
+
     public static function modelFinder($uuid, $asssetInfo)
     {
         return $asssetInfo['model']::where('uuid', $uuid);
@@ -144,30 +148,40 @@ abstract class ExporterBase implements ExporterInterface
         return Str::snake("{$basename}_package");
     }
 
-    public function toArray()
+    public function getClassName(): string
     {
         $modelClass = get_class($this->model);
-        $type = class_basename($modelClass);
-        $human = trim(ucwords(preg_replace('/(?<!\ )[A-Z]/', ' $0', $type)));
 
+        return class_basename($modelClass);
+    }
+
+    public function getTypeHuman($type)
+    {
+        return trim(ucwords(preg_replace('/(?<!\ )[A-Z]/', ' $0', $type)));
+    }
+
+    public function toArray()
+    {
         $attributes = [
             'exporter' => get_class($this),
             'name' => $this->getName($this->model),
-            'type' => $type,
-            'type_human' => $human,
-            'type_plural' => Str::plural($type),
-            'type_human_plural' => Str::plural($human),
+            'type' => $this->getClassName(),
+            'type_human' => $this->getTypeHuman($this->getClassName()),
+            'type_plural' => Str::plural($this->getClassName()),
+            'type_human_plural' => Str::plural($this->getTypeHuman($this->getClassName())),
             'description' => $this->getDescription(),
             'last_modified_by' => $this->getLastModifiedBy()['lastModifiedByName'],
             'last_modified_by_id' => $this->getLastModifiedBy()['lastModifiedById'],
             'process_manager' => $this->getProcessManager()['managerName'],
             'process_manager_id' => $this->getProcessManager()['managerId'],
-            'model' => $modelClass,
+            'model' => get_class($this->model),
             'attributes' => $this->getExportAttributes(),
             'extraAttributes' => $this->getExtraAttributes($this->model),
             'references' => $this->references,
             'dependents' => array_map(fn ($d) => $d->toArray(), $this->dependents),
             'force_password_protect' => $this->forcePasswordProtect,
+            'required' => $this->required,
+            'show_in_ui' => $this->showInUI,
         ];
 
         if ($this->importing) {
