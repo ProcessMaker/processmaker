@@ -831,7 +831,7 @@ class ProcessController extends Controller
     public function import(Process $process, Request $request)
     {
         $content = $request->file('file')->get();
-        if (!$this->validateImportedFile($content)) {
+        if (!$this->validateImportedFile($content, $request)) {
             return response(
                 ['message' => __('Invalid Format')],
                 422
