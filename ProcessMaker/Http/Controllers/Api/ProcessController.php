@@ -1219,7 +1219,7 @@ class ProcessController extends Controller
         $hasVersion = $isDecoded && isset($decoded->version) && is_string($decoded->version);
         $validVersion = $hasVersion && method_exists(ImportProcess::class, "parseFileV{$decoded->version}");
 
-        if ((int) $decoded->version === 2) {
+        if (isset($decoded->version) && (int) $decoded->version === 2) {
             return (new ImportController())->preview($request);
         }
 
