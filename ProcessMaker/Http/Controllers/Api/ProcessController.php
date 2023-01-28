@@ -785,14 +785,20 @@ class ProcessController extends Controller
     public function preimportValidation(Process $process, Request $request)
     {
         $content = $request->file('file')->get();
+        $payload = json_decode($content);
+        $version = (int) $payload->version;
+
         if (!$result = $this->validateImportedFile($content, $request)) {
             return response(
                 ['message' => __('The selected file is invalid or not supported for import.')],
                 422
             );
-        } else {
-            return $result;
         }
+
+        return response()->json([
+            'processVersion' => $version,
+            'isValidFile' => $result,
+        ]);
     }
 
     /**
@@ -831,7 +837,7 @@ class ProcessController extends Controller
     public function import(Process $process, Request $request)
     {
         $content = $request->file('file')->get();
-        if (!$this->validateImportedFile($content)) {
+        if (!$this->validateImportedFile($content, $request)) {
             return response(
                 ['message' => __('Invalid Format')],
                 422

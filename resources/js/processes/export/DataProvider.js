@@ -18,6 +18,17 @@ export default {
         }
     });
   },
+  importOlderVersion(file) {
+    let formData = new FormData();
+    formData.append('file', file);
+    
+    return ProcessMaker.apiClient.post('/processes/import?queue=1', formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  },
   getManifest(processId) {
     return ProcessMaker.apiClient({
       url: `export/manifest/process/${processId}`,
