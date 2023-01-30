@@ -10,6 +10,8 @@ use ProcessMaker\ImportExport\Dependent;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Extension;
 use ProcessMaker\ImportExport\Manifest;
+use ProcessMaker\ImportExport\Options;
+use ProcessMaker\ImportExport\Psudomodels\Psudomodel;
 use ProcessMaker\Models\User;
 use ProcessMaker\Traits\HasVersioning;
 
@@ -23,7 +25,9 @@ abstract class ExporterBase implements ExporterInterface
 
     public $manifest = null;
 
-    public $importMode = null;
+    public $mode = null;
+
+    public $options = null;
 
     public $originalId = null;
 
@@ -58,10 +62,12 @@ abstract class ExporterBase implements ExporterInterface
         return $attrs;
     }
 
-    public function __construct(?Model $model, Manifest $manifest)
+    public function __construct(Model|Psudomodel|null $model, Manifest $manifest, Options $options)
     {
         $this->model = $model;
         $this->manifest = $manifest;
+        $this->options = $options;
+        $this->mode = $options->get('mode', $this->model->uuid);
     }
 
     public function uuid() : string
@@ -69,28 +75,37 @@ abstract class ExporterBase implements ExporterInterface
         return $this->model->uuid;
     }
 
-    public function addDependent(string $type, Model $dependentModel, string $exporterClass, $meta = null)
+    public function addDependent(string $type, Model|Psudomodel $dependentModel, string $exporterClass, $meta = null)
     {
         $uuid = $dependentModel->uuid;
 
         if (!$this->manifest->has($uuid)) {
-            $exporter = new $exporterClass($dependentModel, $this->manifest);
+            $exporter = new $exporterClass($dependentModel, $this->manifest, $this->options);
             $this->manifest->push($uuid, $exporter);
             $exporter->runExport();
         }
-        $this->dependents[] = new Dependent($type, $uuid, $this->manifest, $meta);
+        $dependent = new Dependent($type, $uuid, $this->manifest, $meta);
+        $this->dependents[] = $dependent;
+
+        return $dependent;
     }
 
     public function getDependents($type = null)
     {
-        if (!$type) {
-            return array_values(
-                array_filter($this->dependents, fn ($d) => !is_null($d->model))
-            );
-        }
-
         return array_values(
-            array_filter($this->dependents, fn ($d) => $d->type === $type && !is_null($d->model))
+            array_filter($this->dependents, function ($dependent) use ($type) {
+                if ($dependent->mode === 'discard') {
+                    return false;
+                }
+                if ($type && $dependent->type !== $type) {
+                    return false;
+                }
+                if ($dependent->model === null) {
+                    return false;
+                }
+
+                return true;
+            })
         );
     }
 
@@ -160,29 +175,50 @@ abstract class ExporterBase implements ExporterInterface
         return trim(ucwords(preg_replace('/(?<!\ )[A-Z]/', ' $0', $type)));
     }
 
+    // public function getParents()
+    // {
+    //     return array_filter($this->manifest->all(), function($exporter) {
+    //         foreach ($exporter->dependents as $dependent) {
+    //             if ($dependent->uuid === $this->model->uuid) {
+    //                 return true;
+    //             }
+    //         }
+    //     });
+    // }
+
     public function toArray()
     {
         $attributes = [
             'exporter' => get_class($this),
-            'name' => $this->getName($this->model),
             'type' => $this->getClassName(),
             'type_human' => $this->getTypeHuman($this->getClassName()),
             'type_plural' => Str::plural($this->getClassName()),
             'type_human_plural' => Str::plural($this->getTypeHuman($this->getClassName())),
-            'description' => $this->getDescription(),
             'last_modified_by' => $this->getLastModifiedBy()['lastModifiedByName'],
             'last_modified_by_id' => $this->getLastModifiedBy()['lastModifiedById'],
-            'process_manager' => $this->getProcessManager()['managerName'],
-            'process_manager_id' => $this->getProcessManager()['managerId'],
             'model' => get_class($this->model),
-            'attributes' => $this->getExportAttributes(),
-            'extraAttributes' => $this->getExtraAttributes($this->model),
-            'references' => $this->references,
-            'dependents' => array_map(fn ($d) => $d->toArray(), $this->dependents),
             'force_password_protect' => $this->forcePasswordProtect,
             'required' => $this->required,
             'show_in_ui' => $this->showInUI,
+            'dependents' => array_map(fn ($d) => $d->toArray(), $this->dependents),
+            'attributes' => [],
+            'references' => [],
         ];
+
+        if ($this->mode === 'discard') {
+            $attributes['discarded'] = true;
+        } else {
+            $attributes = array_merge($attributes, [
+                'name' => $this->getName($this->model),
+                'description' => $this->getDescription(),
+                'process_manager' => $this->getProcessManager()['managerName'],
+                'process_manager_id' => $this->getProcessManager()['managerId'],
+                'attributes' => $this->getExportAttributes(),
+                'extraAttributes' => $this->getExtraAttributes($this->model),
+                'references' => $this->references,
+                'discarded' => false,
+            ]);
+        }
 
         if ($this->importing) {
             $this->addImportAttributes($attributes);
@@ -202,7 +238,7 @@ abstract class ExporterBase implements ExporterInterface
         }
 
         $attributes = array_merge($attributes, [
-            'import_mode' => $this->importMode,
+            'import_mode' => $this->mode,
             'existing_id' => $this->model->id,
             'existing_attributes' => $existingAttributes,
             'existing_name' => $existingName,
@@ -271,7 +307,7 @@ abstract class ExporterBase implements ExporterInterface
 
     public function updateDuplicateAttributes()
     {
-        if ($this->importMode === 'discard') {
+        if ($this->mode === 'discard') {
             return;
         }
 

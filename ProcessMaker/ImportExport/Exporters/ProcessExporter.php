@@ -4,6 +4,7 @@ namespace ProcessMaker\ImportExport\Exporters;
 
 use Illuminate\Support\Collection;
 use ProcessMaker\ImportExport\DependentType;
+use ProcessMaker\ImportExport\Psudomodels\Signal;
 use ProcessMaker\ImportExport\SignalHelper;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Managers\ExportManager;
@@ -196,38 +197,19 @@ class ProcessExporter extends ExporterBase
 
     private function exportSignals()
     {
-        $signalHelper = app()->make(SignalHelper::class);
-
-        $globalSignalsInProcess = [];
-
-        foreach ($signalHelper->processessReferencedByThrowSignals($this->model) as [$process, $signalId]) {
-            $this->addDependent('signal-process', $process, self::class, $signalId);
+        foreach (Signal::inProcess($this->model) as $signal) {
+            $dependent = $this->addDependent('signal', $signal, SignalExporter::class, $signal->id);
+            if ($dependent->mode === 'discard') {
+                $this->manifest->afterExport(function () use ($signal) {
+                    $signal->removeFromProcess($this->model);
+                });
+            }
         }
-
-        foreach ($signalHelper->globalSignalsInProcess($this->model) as $signalInfo) {
-            $globalSignalsInProcess[$signalInfo['id']] = $signalInfo;
-        }
-        $this->addReference('global-signals', $globalSignalsInProcess);
     }
 
     private function importSignals()
     {
-        // Note: No associations are needed for process signals.
-        // The dependent process has already been saved at this point.
-
-        // Import global signals
-        $signalHelper = app()->make(SignalHelper::class);
-        $globalSignals = $signalHelper->getGlobalSignals();
-        foreach ($this->getReference('global-signals') as $signalData) {
-            if (!$globalSignals->has($signalData['id'])) {
-                $signal = new SignalData($signalData['id'], $signalData['name'], $signalData['detail']);
-                $errors = SignalManager::validateSignal($signal, null);
-                if ($errors) {
-                    throw new \Exception(json_encode($errors));
-                }
-                SignalManager::addSignal($signal);
-            }
-        }
+        // Global added in Signal::save
     }
 
     private function exportAssignments()

@@ -125,22 +125,15 @@ class ProcessExporterTest extends TestCase
             'name' => 'signal process a',
         ]);
 
-        $processB = $this->createProcess('signal-process-b', [
-            'name' => 'signal process b',
-        ]);
-
-        $this->runExportAndImport($processA, ProcessExporter::class, function () use ($processA, $processB) {
+        $this->runExportAndImport($processA, ProcessExporter::class, function () use ($processA) {
             SignalManager::getGlobalSignalProcess()->forceDelete();
             $processA->forceDelete();
-            $processB->forceDelete();
             app()->forgetInstance(SignalHelper::class);
             $this->addGlobalSignalProcess();
         });
 
         $globalSignals = app()->make(SignalHelper::class)->getGlobalSignals()->toArray();
         $this->assertContains('test_global', $globalSignals);
-
-        $this->assertEquals(1, Process::where('name', 'signal process b')->count());
     }
 
     public function testSubprocesses()

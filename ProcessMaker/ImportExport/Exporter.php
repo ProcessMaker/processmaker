@@ -11,10 +11,11 @@ use ProcessMaker\Models\Screen;
 
 class Exporter
 {
-    public function export(Model $model, string $exporterClass)
+    public function export(Model $model, string $exporterClass, $options = null)
     {
+        $options = $options ?: new Options([]);
         $this->manifest = new Manifest();
-        $this->rootExporter = new $exporterClass($model, $this->manifest);
+        $this->rootExporter = new $exporterClass($model, $this->manifest, $options);
         $this->manifest->push($model->uuid, $this->rootExporter);
         $this->rootExporter->runExport();
 
@@ -31,25 +32,25 @@ class Exporter
         return $this->export($process, ProcessExporter::class);
     }
 
-    public function payload(Options $options = null): array
+    public function payload(): array
     {
+        $this->manifest->runAfterExport();
         $export = $this->manifest->toArray();
 
-        $discarded = [];
-        if ($options) {
-            $options = $options->options;
-            $export = array_filter($export, function ($uuid) use ($options, &$discarded) {
-                if (isset($options[$uuid])) {
-                    if ($options[$uuid]['mode'] === 'discard') {
-                        $discarded[] = $uuid;
+        // if ($options) {
+        //     $options = $options->options;
+        //     $export = array_filter($export, function ($uuid) use ($options, &$discarded) {
+        //         if (isset($options[$uuid])) {
+        //             if ($options[$uuid]['mode'] === 'discard') {
+        //                 $discarded[] = $uuid;
 
-                        return false;
-                    }
-                }
+        //                 return false;
+        //             }
+        //         }
 
-                return true;
-            }, ARRAY_FILTER_USE_KEY);
-        }
+        //         return true;
+        //     }, ARRAY_FILTER_USE_KEY);
+        // }
 
         $payload = [
             'type' => $this->rootExporter->getType(),
@@ -57,7 +58,6 @@ class Exporter
             'root' => $this->rootExporter->uuid(),
             'name' => $this->rootExporter->getName($this->rootExporter->model),
             'export' => $export,
-            'discarded' => $discarded,
         ];
 
         return $payload;
