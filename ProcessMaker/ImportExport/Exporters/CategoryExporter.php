@@ -10,6 +10,8 @@ class CategoryExporter extends ExporterBase
 
     public $hidden = true;
 
+    public static $fallbackMatchColumn = 'name';
+
     public function export() : void
     {
         // Screen Categories have no dependents

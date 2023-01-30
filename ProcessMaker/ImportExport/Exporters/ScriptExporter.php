@@ -10,6 +10,8 @@ class ScriptExporter extends ExporterBase
 {
     public $handleDuplicatesByIncrementing = ['title'];
 
+    public static $fallbackMatchColumn = 'title';
+
     public function export() : void
     {
         $this->exportCategories();

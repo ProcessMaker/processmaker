@@ -7,6 +7,8 @@ use ProcessMaker\ImportExport\SignalQuery;
 
 class SignalExporter extends ExporterBase
 {
+    public static $fallbackMatchColumn = 'name';
+
     public function export() : void
     {
     }
