@@ -45,12 +45,17 @@ abstract class ExporterBase implements ExporterInterface
 
     public $hidden = false;
 
-    public static function modelFinder($uuid, $asssetInfo)
+    public static $fallbackMatchColumn = 'null';
+
+    public static function modelFinder($uuid, $assetInfo)
     {
-        return $asssetInfo['model']::where('uuid', $uuid);
+        return $assetInfo['model']::where('uuid', $uuid)
+            ->when(static::$fallbackMatchColumn !== 'null', function ($query) use ($assetInfo){
+                $query->orWhere(static::$fallbackMatchColumn, $assetInfo['attributes'][static::$fallbackMatchColumn]);
+            });
     }
 
-    public static function doNotImport($uuid, $asssetInfo)
+    public static function doNotImport($uuid, $assetInfo)
     {
         return false;
     }
