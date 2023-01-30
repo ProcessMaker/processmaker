@@ -74,9 +74,9 @@ trait HelperTrait
         return $exporter->payload();
     }
 
-    public function import($payload)
+    public function import($payload, $options = null)
     {
-        $options = new Options([]);
+        $options = $options ?: new Options([]);
         $importer = new Importer($payload, $options);
         $importer->doImport();
     }

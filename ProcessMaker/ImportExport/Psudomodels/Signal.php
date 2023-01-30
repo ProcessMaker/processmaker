@@ -105,12 +105,12 @@ class Signal extends Psudomodel
         return $signal;
     }
 
-    public function removeFromProcess(Process $process)
+    public static function removeFromProcess(string $signalId, Process $process)
     {
         $xml = $process->getDefinitions(true);
 
         foreach ($xml->getElementsByTagName('signalEventDefinition') as $element) {
-            if ($element->getAttribute('signalRef') === $this->id) {
+            if ($element->getAttribute('signalRef') === $signalId) {
                 $attributes = $element->attributes;
                 // remove all attributes
                 while ($attributes->length) {
@@ -120,7 +120,7 @@ class Signal extends Psudomodel
         }
 
         foreach ($xml->getElementsByTagName('signal') as $element) {
-            if ($element->getAttribute('id') === $this->id) {
+            if ($element->getAttribute('id') === $signalId) {
                 $element->parentNode->removeChild($element);
             }
         }

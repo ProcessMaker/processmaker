@@ -201,19 +201,31 @@ class ProcessExporter extends ExporterBase
 
     private function exportSignals()
     {
+        $signals = [];
         foreach (Signal::inProcess($this->model) as $signal) {
             $dependent = $this->addDependent('signal', $signal, SignalExporter::class, $signal->id);
+
+            // Keep track of signals. If the user decides to not import them later we need to know
+            // which signals to remove from this process.
+            $signals[] = [$dependent->uuid, $signal->id];
+
             if ($dependent->mode === 'discard') {
                 $this->manifest->afterExport(function () use ($signal) {
-                    $signal->removeFromProcess($this->model);
+                    Signal::removeFromProcess($signal->id, $this->model);
                 });
             }
         }
+
+        $this->addReference('signals', $signals);
     }
 
     private function importSignals()
     {
-        // Global added in Signal::save
+        foreach ($this->getReference('signals') as [$signalUuid, $signalId]) {
+            if ($this->options->get('mode', $signalUuid) === 'discard') {
+                Signal::removeFromProcess($signalId, $this->model);
+            }
+        }
     }
 
     private function exportAssignments()
