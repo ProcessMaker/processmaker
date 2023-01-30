@@ -78,6 +78,7 @@ export default {
       };
 
       if (uuid === rootUuid) {
+        info.hidden = false;
         root = info;
         return;
       }
