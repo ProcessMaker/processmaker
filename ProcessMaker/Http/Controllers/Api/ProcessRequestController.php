@@ -104,11 +104,8 @@ class ProcessRequestController extends Controller
             $user = Auth::user();
         }
 
-        // Update request permissions for the user
-        $user->updatePermissionsToRequests();
-
         // Filter request with user permissions
-        $query = ProcessRequest::requestsThatUserCan('can_view', $user);
+        $query = ProcessRequest::forUser($user);
         $includes = $request->input('include', '');
         foreach (array_filter(explode(',', $includes)) as $include) {
             if (in_array($include, ProcessRequest::$allowedIncludes)) {
@@ -241,7 +238,7 @@ class ProcessRequestController extends Controller
         if ($request->status !== 'ERROR') {
             return response()->json([
                 'message' => __('Only requests with ERROR status can be retried'),
-                'success' => false
+                'success' => false,
             ], 422);
         }
 
