@@ -63,8 +63,8 @@ class ManifestTest extends TestCase
 
         $this->assertEquals('category on target instance', $screen->categories[0]->name);
         $importedScreen = Screen::where('title', 'exported screen')->firstOrFail();
-        // Copied screen should have the same category as the original
-        $this->assertEquals('category on target instance', $importedScreen->categories[0]->name);
+        // Copied screen should NOT have the category on the original
+        $this->assertCount(0, $importedScreen->categories);
         $this->assertNotEquals($screen->uuid, $importedScreen->uuid);
     }
 

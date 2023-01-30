@@ -11,7 +11,7 @@ class Options
             'enum' => [
                 'update' => 'Update the existing asset with the one being imported',
                 'discard' => 'Keep the existing asset and discard the one being imported',
-                'new' => 'Create a new asset and link dependent assets (in this import) to it',
+                'copy' => 'Create a new asset and link dependent assets (in this import) to it',
             ],
             'default' => 'update',
         ],

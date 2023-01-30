@@ -66,10 +66,10 @@ trait HelperTrait
         $this->import($payload);
     }
 
-    public function export($model, $exporterClass)
+    public function export($model, $exporterClass, $options = null)
     {
         $exporter = new Exporter();
-        $exporter->export($model, $exporterClass);
+        $exporter->export($model, $exporterClass, $options);
 
         return $exporter->payload();
     }
