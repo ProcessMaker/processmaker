@@ -67,7 +67,9 @@ class ProcessExporter extends ExporterBase
     {
         $process = $this->model;
 
-        $process->user_id = $this->getDependents('user')[0]->model->id;
+        foreach ($this->getDependents('user') as $dependent) {
+            $process->user_id = $dependent->model->id;
+        }
 
         foreach ($this->getDependents('manager') as $dependent) {
             $process->manager_id = $dependent->model->id;
