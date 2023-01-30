@@ -263,8 +263,10 @@ export default {
                     }
                 }
             )
-            .then(response => {
-                this.$root.manifest = response.data.manifest;
+            .then(response => {               
+                if (response.data.hasOwnProperty('manifest')) {
+                    this.$root.manifest = response.data.manifest;
+                }
                 this.$root.rootUuid = response.data.rootUuid;
                 this.processVersion = response.data.processVersion;
                
