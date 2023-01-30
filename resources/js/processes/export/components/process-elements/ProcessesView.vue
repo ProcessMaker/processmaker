@@ -28,7 +28,7 @@
                         <span v-else>{{ processInfo.lastModifiedBy }}</span>
                     </span>
                 </li>
-                <li>
+                <li v-if="$root.isImport">
                     <a href="#" v-b-modal:asset-dependent-tree>Linked Dependent Assets</a>
                     <AssetDependentTreeModal></AssetDependentTreeModal>
                 </li>
