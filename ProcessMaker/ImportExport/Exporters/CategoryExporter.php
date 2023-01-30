@@ -8,6 +8,8 @@ class CategoryExporter extends ExporterBase
 {
     public $handleDuplicatesByIncrementing = ['name'];
 
+    public $hidden = true;
+
     public function export() : void
     {
         // Screen Categories have no dependents
