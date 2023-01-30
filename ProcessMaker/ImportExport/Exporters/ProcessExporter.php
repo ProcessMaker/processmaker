@@ -21,6 +21,8 @@ class ProcessExporter extends ExporterBase
 {
     public $handleDuplicatesByIncrementing = ['name'];
 
+    public $hidden = true;
+
     public ExportManager $manager;
 
     public function export() : void
@@ -315,5 +317,10 @@ class ProcessExporter extends ExporterBase
             $path = $dependent->meta['path'];
             Utils::setAttributeAtXPath($this->model, $path, 'pm:scriptRef', $dependent->model->id);
         }
+    }
+
+    public function discard(): bool
+    {
+        return true;
     }
 }
