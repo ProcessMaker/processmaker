@@ -9,7 +9,7 @@
     <i
       v-if="!parent"
       class="mr-1"
-      :class="`fas fa-fw fa-${icon}`"
+      :class="`fas fa-fw ${icon}`"
     ></i>
     <span><slot></slot></span>
     <i

@@ -3,7 +3,7 @@
     <b-card>
       <template #header>
         <div class="header">
-          <i class="text-secondary data-card-header fas nav-icon d-inline align-middle" :class="'fa-' + info.icon" />
+          <i class="text-secondary data-card-header fas nav-icon d-inline align-middle" :class="info.icon" />
           <h5 class="mb-0 data-card-header d-inline align-middle">{{ info.typeHumanPlural }}</h5>
           <b-form-checkbox
             class="data-card-header export-all d-inline align-middle fw-semibold"
