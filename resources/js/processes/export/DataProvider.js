@@ -73,7 +73,7 @@ export default {
         importMode: asset.import_mode || 'update',
         forcePasswordProtect: asset.force_password_protect,
         required: asset.required,
-        hidden: asset.show_in_ui,
+        hidden: asset.hidden,
         discard: asset.discard,
       };
 
@@ -95,7 +95,7 @@ export default {
         typePlural: value[0].typePlural,
         typeHuman: value[0].typeHuman,
         typeHumanPlural: value[0].typeHumanPlural,
-        icon: ImportExportIcons.ICONS[key] || 'code',
+        icon: ImportExportIcons.ICONS[key] || 'fa-code',
         items: value,
         forcePasswordProtect: value[0].forcePasswordProtect,
         required: value[0].required,

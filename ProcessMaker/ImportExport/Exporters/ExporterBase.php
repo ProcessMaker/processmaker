@@ -43,7 +43,7 @@ abstract class ExporterBase implements ExporterInterface
 
     public $required = false;
 
-    public $hidden = true;
+    public $hidden = false;
 
     public static function modelFinder($uuid, $asssetInfo)
     {

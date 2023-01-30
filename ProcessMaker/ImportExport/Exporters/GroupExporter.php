@@ -8,7 +8,7 @@ class GroupExporter extends ExporterBase
 {
     public $handleDuplicatesByIncrementing = ['name'];
 
-    public $hidden = false;
+    public $hidden = true;
 
     public function export() : void
     {

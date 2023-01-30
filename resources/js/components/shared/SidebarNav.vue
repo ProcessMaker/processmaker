@@ -1,7 +1,7 @@
 <template>
   <div class="sidebar-nav">
     <ul v-for="(page, i) in sidenav" :key="i" :class="i > 0 ? 'mb-0' : 'mb-2'">
-      <li v-if="page.hidden">
+      <li v-if="!page.hidden">
         <sidebar-button :parent="i === 0" :active="i === active" :icon="page.icon" @click="onClick(i)" class="text-capitalize">{{ formatAssetName(page.title) }}</sidebar-button>
       </li>
     </ul>

@@ -11,7 +11,7 @@ class UserExporter extends ExporterBase
 {
     public $handleDuplicatesByIncrementing = ['username'];
 
-    public $hidden = false;
+    public $hidden = true;
 
     public function export() : void
     {
