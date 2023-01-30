@@ -21,13 +21,11 @@ class ProcessRequestFactory extends Factory
      */
     public function definition()
     {
-        $process = null;
-
         return [
             'name' => $this->faker->sentence(3),
             'data' => [],
             'status' => 'ACTIVE',
-            'callable_id' => function () use (&$process) {
+            'callable_id' => function () {
                 $process = Process::factory()->create();
                 $bpmnProcess = $process->getDefinitions()->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'process')->item(0);
 
@@ -36,7 +34,7 @@ class ProcessRequestFactory extends Factory
             'user_id' => function () {
                 return User::factory()->create()->getKey();
             },
-            'process_id' => function () use (&$process) {
+            'process_id' => function () {
                 $process = Process::factory()->create();
 
                 return $process->getKey();
