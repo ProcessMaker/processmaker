@@ -106,7 +106,7 @@ export default {
             processName: null,
             passwordEnabled: false,
             assetsExist: false,
-            oldProcessVersion: 2,
+            oldProcessVersion: 1,
             processVersion: null,
             password: '',
             passwordError: null,
