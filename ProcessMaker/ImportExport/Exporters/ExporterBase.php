@@ -50,7 +50,7 @@ abstract class ExporterBase implements ExporterInterface
     public static function modelFinder($uuid, $assetInfo)
     {
         return $assetInfo['model']::where('uuid', $uuid)
-            ->when(static::$fallbackMatchColumn !== 'null', function ($query) use ($assetInfo){
+            ->when(static::$fallbackMatchColumn !== 'null', function ($query) use ($assetInfo) {
                 $query->orWhere(static::$fallbackMatchColumn, $assetInfo['attributes'][static::$fallbackMatchColumn]);
             });
     }
