@@ -22,6 +22,7 @@ export default {
             mode: this.defaultMode,
             group: asset.type,
             forcePasswordProtect: asset.force_password_protect,
+            discard: asset.discard,
           };
         })
         .filter(a => a.uuid !== rootUuid);
@@ -58,14 +59,12 @@ export default {
       return JSON.parse(JSON.stringify(this.ioState));
     },
     exportOptions(rootDefaultMode = null) {
-      const ioState = this.ioState.map(asset => {
-        return [
+      const ioState = this.ioState.map((asset) => [
           asset.uuid,
-          { mode: asset.mode }
-        ];
-      });
+          { mode: asset.discard ? "discard" : asset.mode },
+        ]);
 
-      ioState.push([this.rootUuid, { mode: rootDefaultMode || this.defaultMode }])
+      ioState.push([this.rootUuid, { mode: rootDefaultMode || this.defaultMode }]);
       // ioState.push([this.rootUuid, { mode: 'copy' }])
       return Object.fromEntries(ioState);
     },
