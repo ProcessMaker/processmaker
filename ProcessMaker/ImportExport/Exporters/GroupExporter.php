@@ -10,6 +10,8 @@ class GroupExporter extends ExporterBase
 
     public $hidden = true;
 
+    public static $fallbackMatchColumn = 'name';
+
     public function export() : void
     {
         if ($this->model->users->count() > 0) {

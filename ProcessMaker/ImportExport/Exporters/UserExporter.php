@@ -11,6 +11,8 @@ class UserExporter extends ExporterBase
 {
     public $handleDuplicatesByIncrementing = ['username'];
 
+    public static $fallbackMatchColumn = 'email';
+
     public $hidden = true;
 
     public function export() : void

@@ -17,6 +17,8 @@ class ScreenExporter extends ExporterBase
 
     public $handleDuplicatesByIncrementing = ['title'];
 
+    public static $fallbackMatchColumn = 'title';
+
     /**
      * If the screen was seeded with a key attribute, we want to associate it
      * using key instead of uuid since the uuid will be different but is

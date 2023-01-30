@@ -23,6 +23,8 @@ class ProcessExporter extends ExporterBase
 
     public $hidden = true;
 
+    public static $fallbackMatchColumn = 'name';
+
     public ExportManager $manager;
 
     public function export() : void
