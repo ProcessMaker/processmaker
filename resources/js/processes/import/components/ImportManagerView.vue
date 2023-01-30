@@ -25,6 +25,9 @@
                                 </div>
                                 <b-form-group>
                                     <h6>{{ $t('Select Import Type') }}</h6>
+                                    <div class="alert alert-warning" v-if="showWarning">
+                                        {{ $t('The file you are importing was made with an older version of ProcessMaker. Advanced import is not available. All assets will be copied.') }}
+                                    </div>
                                     <b-form-radio 
                                         v-for="(item, index) in importTypeOptions" 
                                         v-model="selectedImportOption" 
@@ -108,6 +111,7 @@ export default {
             password: '',
             passwordError: null,
             rootMode: 'update',
+            showWarning:false,
         }
     },
     filters: {
@@ -265,10 +269,9 @@ export default {
                 this.processVersion = response.data.processVersion;
                
                 if (this.processVersion <= this.oldProcessVersion) {
-                    console.log("Older Version", this.importTypeOptions)
                     // disable 'custom' import type
                     this.importTypeOptions[1].disabled = true;
-                    this.showWarningAlert();
+                    this.showWarning = true;
                 }
                
                 this.fileIsValid = true;
@@ -337,9 +340,6 @@ export default {
             });
             this.submitted = true;
         },
-        showWarningAlert() {
-            ProcessMaker.alert(this.$t('The file you are importing was made with an older version of ProcessMaker. Advanced import is not available. All assets will be copied.'), 'warning');
-        }
     },
     mounted() {
         let received = false;
