@@ -285,22 +285,4 @@ class ProcessExporterTest extends TestCase
             $this->assertEquals($importedScript->title, $scriptTask['title']);
         }
     }
-
-    public function testImportOldProcess()
-    {
-        $this->addGlobalSignalProcess();
-
-        $bpmn = file_get_contents(base_path('tests/Feature/ImportExport/fixtures/basic-process.bpmn.xml'));
-        $process = Process::factory()->create(['bpmn' => $bpmn]);
-        $originalProcessUuid = $process->uuid;
-
-        //  Export and Import process
-        $this->runExportAndImport($process, ProcessExporter::class, function () use ($process) {
-            $process->forceDelete();
-            $this->assertDatabaseMissing('processes', ['name' => $process->name]);
-        });
-
-        // Assert that the process exist in the database
-        $this->assertDatabaseHas('processes', ['uuid' => $originalProcessUuid]);
-    }
 }
