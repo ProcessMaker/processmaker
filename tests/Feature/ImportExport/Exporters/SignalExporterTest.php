@@ -70,6 +70,37 @@ class SignalExporterTest extends TestCase
 
         $this->import($payload);
 
+        $this->assertSignalsNotAdded();
+    }
+
+    public function testImportWithSignalExcluded()
+    {
+        DB::beginTransaction();
+        $this->addGlobalSignalProcess();
+
+        $signal = new SignalData('test_some_global', 'Test Global Signal', 'some global description');
+        SignalManager::addSignal($signal);
+
+        $bpmn = file_get_contents(__DIR__ . '/../fixtures/process-with-signals.bpmn.xml');
+        $processWithSignals = Process::factory()->create(['name' => 'process with signals', 'bpmn' => $bpmn]);
+
+        $payload = $this->export($processWithSignals, ProcessExporter::class);
+
+        DB::rollBack(); // Delete all created items since DB::beginTransaction
+
+        $this->addGlobalSignalProcess();
+
+        // Discard on import
+        $this->import($payload, new Options([
+            'signal-test_some_local' => ['mode' => 'discard'],
+            'signal-test_some_global' => ['mode' => 'discard'],
+        ]));
+
+        $this->assertSignalsNotAdded();
+    }
+
+    private function assertSignalsNotAdded()
+    {
         // Assert that the signalEventDefinition tag inside intermediateCatchEvent has no attributes
         $importedProcess = Process::where('name', 'process with signals')->firstOrFail();
         $definitions = $importedProcess->getDefinitions(true);
