@@ -709,34 +709,6 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     }
 
     /**
-     * Get the process version used by this request
-     *
-     * @return ProcessVersion
-     */
-    public function userPermissions()
-    {
-        return $this->hasMany(RequestUserPermission::class, 'request_id');
-    }
-
-    /**
-     * Filter process started with user
-     *
-     * @param $query
-     *
-     * @param $id User id
-     */
-    public function scopeRequestsThatUserCan($query, $permission, User $user)
-    {
-        if ($permission === 'can_view' && $user->can('view-all_requests')) {
-            return $query;
-        }
-        $query->whereHas('userPermissions', function ($query) use ($permission, $user) {
-            $query->where('user_id', $user->getKey());
-            $query->where($permission, true);
-        });
-    }
-
-    /**
      * Update the current catch events for the requests
      *
      * @param TokenInterface $token

@@ -9,7 +9,6 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestLock;
-use ProcessMaker\Models\RequestUserPermission;
 use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Models\Setting;
 

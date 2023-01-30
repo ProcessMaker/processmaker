@@ -3,7 +3,6 @@
 namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
-use ProcessMaker\Notifications\ResetPassword as ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -11,7 +10,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Session\Store as Session;
 use Illuminate\Validation\Rule;
 use Laravel\Passport\HasApiTokens;
-use ProcessMaker\Models\RequestUserPermission;
+use ProcessMaker\Notifications\ResetPassword as ResetPasswordNotification;
 use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Rules\StringHasAtLeastOneUpperCaseCharacter;
 use ProcessMaker\Rules\StringHasNumberOrSpecialCharacter;

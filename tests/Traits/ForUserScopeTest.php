@@ -11,7 +11,6 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\RequestUserPermission;
 use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Models\User;
 use ProcessMaker\Providers\AuthServiceProvider;
