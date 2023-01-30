@@ -67,7 +67,7 @@
         </div>
         <hr>
         <div v-for="group in groups" :key="group.type">
-          <data-card v-if="group.showInUI" :exportAllElements="exportAllElements" :info="group" />
+          <data-card v-if="group.hidden" :exportAllElements="exportAllElements" :info="group" />
         </div>
         <div class="pt-3 card-footer bg-light" align="right">
             <button type="button" class="btn btn-outline-secondary">

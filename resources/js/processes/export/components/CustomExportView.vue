@@ -49,14 +49,14 @@ export default {
   computed: {
     sidenav() {
       const items = [
-        { title: this.rootAsset.name, icon: null, showInUI: this.rootAsset.showInUI },
+        { title: this.rootAsset.name, icon: null, hidden: this.rootAsset.hidden },
       ];
 
       this.groups.forEach(group => {
         items.push({
           title: group.typePlural,
           icon: group.icon,
-          showInUI: group.showInUI,
+          hidden: group.hidden,
         });
       });
 

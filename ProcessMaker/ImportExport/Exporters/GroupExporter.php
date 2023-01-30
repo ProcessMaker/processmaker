@@ -8,6 +8,8 @@ class GroupExporter extends ExporterBase
 {
     public $handleDuplicatesByIncrementing = ['name'];
 
+    public $hidden = false;
+
     public function export() : void
     {
         if ($this->model->users->count() > 0) {
@@ -30,6 +32,11 @@ class GroupExporter extends ExporterBase
         $permissionIds = Permission::whereIn('name', $permissions)->pluck('id')->toArray();
         $group->permissions()->sync($permissionIds);
 
+        return true;
+    }
+
+    public function discard() : bool
+    {
         return true;
     }
 }

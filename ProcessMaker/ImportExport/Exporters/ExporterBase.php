@@ -39,7 +39,7 @@ abstract class ExporterBase implements ExporterInterface
 
     public $required = false;
 
-    public $showInUI = true;
+    public $hidden = true;
 
     public static function modelFinder($uuid, $asssetInfo)
     {
@@ -181,7 +181,8 @@ abstract class ExporterBase implements ExporterInterface
             'dependents' => array_map(fn ($d) => $d->toArray(), $this->dependents),
             'force_password_protect' => $this->forcePasswordProtect,
             'required' => $this->required,
-            'show_in_ui' => $this->showInUI,
+            'hidden' => $this->hidden,
+            'discard' => $this->discard(),
         ];
 
         if ($this->importing) {
@@ -369,5 +370,10 @@ abstract class ExporterBase implements ExporterInterface
     {
         $exporterClass = static::class;
         app()->make(Extension::class)->register($exporterClass, $class);
+    }
+
+    public function discard() : bool
+    {
+        return false;
     }
 }

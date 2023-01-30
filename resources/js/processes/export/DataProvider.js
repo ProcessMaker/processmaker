@@ -73,7 +73,8 @@ export default {
         importMode: asset.import_mode || 'update',
         forcePasswordProtect: asset.force_password_protect,
         required: asset.required,
-        showInUI: asset.show_in_ui,
+        hidden: asset.show_in_ui,
+        discard: asset.discard,
       };
 
       if (uuid === rootUuid) {
@@ -98,7 +99,8 @@ export default {
         items: value,
         forcePasswordProtect: value[0].forcePasswordProtect,
         required: value[0].required,
-        showInUI: value[0].showInUI,
+        hidden: value[0].hidden,
+        discard: value[0].discard,
       };
     });
 
