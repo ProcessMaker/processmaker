@@ -180,7 +180,7 @@ export default {
                     return;
                 }
 
-                if (this.processVersion >= this.oldProcessVersion) {
+                if (this.processVersion > this.oldProcessVersion) {
                     this.handleImport();
                 } else {
                     this.handleOldVersionImport();
