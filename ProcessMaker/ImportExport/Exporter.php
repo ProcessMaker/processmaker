@@ -74,11 +74,6 @@ class Exporter
         return (new ExportEncrypted($password))->call($payload);
     }
 
-    public function tree(): array
-    {
-        return (new Tree($this->manifest))->tree($this->rootExporter);
-    }
-
     public function exportInfo(array $manifest): string
     {
         $exported = collect($manifest['export'])

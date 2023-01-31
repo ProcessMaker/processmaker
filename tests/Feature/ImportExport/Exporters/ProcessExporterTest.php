@@ -71,16 +71,14 @@ class ProcessExporterTest extends TestCase
 
         $exporter = new Exporter();
         $exporter->exportProcess($process);
-        $tree = $exporter->tree();
+        $payload = $exporter->payload();
 
-        $this->assertEquals($process->uuid, Arr::get($tree, '0.uuid'));
-        $this->assertEquals($process->category->uuid, Arr::get($tree, '0.dependents.1.uuid'));
-        $this->assertEquals($cancelScreen->uuid, Arr::get($tree, '0.dependents.2.uuid'));
-        $this->assertEquals($requestDetailScreen->uuid, Arr::get($tree, '0.dependents.3.uuid'));
-        $this->assertEquals(
-            $user->groups->first()->uuid,
-            collect($tree[0]['dependents'][0]['dependents'])->firstWhere('type', 'groups')['uuid']
-        );
+        $processDependents = Arr::get($payload, 'export.' . $process->uuid . '.dependents');
+        $processDependentUuids = Arr::pluck($processDependents, 'uuid');
+
+        $this->assertContains($process->category->uuid, $processDependentUuids);
+        $this->assertContains($cancelScreen->uuid, $processDependentUuids);
+        $this->assertContains($requestDetailScreen->uuid, $processDependentUuids);
     }
 
     public function testImport()
@@ -106,12 +104,10 @@ class ProcessExporterTest extends TestCase
         $process = Process::where('name', 'Process')->firstOrFail();
         $this->assertEquals(1, Screen::where('title', 'Request Detail Screen')->count());
         $this->assertEquals(1, Screen::where('title', 'Cancel Screen')->count());
-        $this->assertEquals('testuser', $process->user->username);
 
-        $group = $process->user->groups->first();
-        $this->assertEquals('Group', $group->name);
-        $this->assertEquals('My Example Group', $group->description);
-        $this->assertEquals($user->groups->first()->manager->id, $group->manager_id);
+        // No longer exporting users
+        $this->assertNull($process->user);
+        $this->assertDatabaseMissing('groups', ['name' => 'Group']);
 
         $notificationSettings = $process->notification_settings;
         $this->assertCount(2, $notificationSettings);

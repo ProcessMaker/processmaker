@@ -59,11 +59,4 @@ class Importer
 
         return $this->manifest->all();
     }
-
-    public function tree()
-    {
-        $rootExporter = $this->manifest->get($this->payload['root']);
-
-        return (new Tree($this->manifest))->tree($rootExporter);
-    }
 }

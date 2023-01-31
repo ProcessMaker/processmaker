@@ -46,17 +46,26 @@ class ScreenExporterTest extends TestCase
 
         $exporter = new Exporter();
         $exporter->exportScreen($screen);
-        $tree = $exporter->tree();
+        $payload = $exporter->payload();
 
-        $this->assertCount(4, Arr::get($tree, '0.dependents'));
-        $this->assertEquals($screen->uuid, Arr::get($tree, '0.uuid'));
-        $this->assertEquals($screenCategory1->uuid, Arr::get($tree, '0.dependents.0.uuid'));
-        $this->assertEquals($screenCategory2->uuid, Arr::get($tree, '0.dependents.1.uuid'));
-        $this->assertEquals($script->uuid, Arr::get($tree, '0.dependents.2.uuid'));
-        $this->assertEquals($script->category->uuid, Arr::get($tree, '0.dependents.2.dependents.0.uuid'));
-        $this->assertEquals($nestedScreen->uuid, Arr::get($tree, '0.dependents.3.uuid'));
-        $this->assertEquals($nestedNestedScreen->uuid, Arr::get($tree, '0.dependents.3.dependents.1.uuid'));
-        $this->assertEquals($screenCategory1->uuid, Arr::get($tree, '0.dependents.3.dependents.0.uuid'));
+        $screenDependents = Arr::get($payload, 'export.' . $screen->uuid . '.dependents');
+        $this->assertCount(4, $screenDependents);
+        $screenDependentUuids = Arr::pluck($screenDependents, 'uuid');
+        $this->assertContains($screenCategory1->uuid, $screenDependentUuids);
+        $this->assertContains($screenCategory2->uuid, $screenDependentUuids);
+        $this->assertContains($script->uuid, $screenDependentUuids);
+
+        $scriptDependents = Arr::get($payload, 'export.' . $script->uuid . '.dependents');
+        $scriptDependentUuids = Arr::pluck($scriptDependents, 'uuid');
+        $this->assertContains($script->category->uuid, $scriptDependentUuids);
+
+        $this->assertContains($nestedScreen->uuid, $screenDependentUuids);
+
+        $nestedScreenDependents = Arr::get($payload, 'export.' . $nestedScreen->uuid . '.dependents');
+        $nestedScreenDependentUuids = Arr::pluck($nestedScreenDependents, 'uuid');
+
+        $this->assertContains($nestedNestedScreen->uuid, $nestedScreenDependentUuids);
+        $this->assertContains($screenCategory1->uuid, $nestedScreenDependentUuids);
     }
 
     public function testImport()
