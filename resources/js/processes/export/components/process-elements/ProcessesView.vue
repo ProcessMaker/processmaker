@@ -28,14 +28,14 @@
                         <span v-else>{{ processInfo.lastModifiedBy }}</span>
                     </span>
                 </li>
-                <li v-if="$root.isImport">
+                <!-- <li v-if="$root.isImport">
                     <a href="#" v-b-modal:asset-dependent-tree>Linked Dependent Assets</a>
                     <AssetDependentTreeModal></AssetDependentTreeModal>
                 </li>
                 <li>
                     <a href="#" v-b-modal:asset-tree>Linked Assets</a>
                     <AssetTreeModal :groups="groups"></AssetTreeModal>
-                </li>
+                </li> -->
             </ul>
         </div>
         <div class="mb-2">
