@@ -25,6 +25,21 @@ class ProcessRequestPolicyTest extends TestCase
         $this->user = User::factory()->create();
     }
 
+    public function testUserStartedProcessRequest()
+    {
+        $request = ProcessRequest::factory()->create(['user_id' => $this->user->id]);
+        $anotherUser = User::factory()->create();
+        $anotherRequest = ProcessRequest::factory()->create(['user_id' => $anotherUser->id]);
+
+        $route = route('api.requests.show', [$anotherRequest]);
+        $response = $this->apiCall('GET', $route);
+        $response->assertStatus(403);
+
+        $route = route('api.requests.show', [$request]);
+        $response = $this->apiCall('GET', $route);
+        $response->assertStatus(200);
+    }
+
     public function testUserHasParticipated()
     {
         $request = ProcessRequest::factory()->create();
