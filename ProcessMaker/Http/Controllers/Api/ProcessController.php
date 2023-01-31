@@ -786,7 +786,6 @@ class ProcessController extends Controller
     {
         $content = $request->file('file')->get();
         $payload = json_decode($content);
-        $version = (int) $payload->version;
 
         if (!$result = $this->validateImportedFile($content, $request)) {
             return response(
@@ -795,10 +794,7 @@ class ProcessController extends Controller
             );
         }
 
-        return response()->json([
-            'processVersion' => $version,
-            'isValidFile' => $result,
-        ]);
+        return $result;
     }
 
     /**
@@ -859,6 +855,7 @@ class ProcessController extends Controller
             'status' => $import->status,
             'assignable' => $import->assignable,
             'process' => $import->process,
+            'processId' => $import->process->id,
         ]);
     }
 
@@ -1226,7 +1223,7 @@ class ProcessController extends Controller
         $validVersion = $hasVersion && method_exists(ImportProcess::class, "parseFileV{$decoded->version}");
 
         if ((int) $decoded->version === 2) {
-            return (new ImportController())->preview($request);
+            return (new ImportController())->preview($request, $decoded->version);
         }
 
         return $isDecoded && $validType && $validVersion;
