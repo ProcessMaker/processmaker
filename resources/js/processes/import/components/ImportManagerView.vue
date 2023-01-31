@@ -46,7 +46,7 @@
                             <enter-password-modal ref="enter-password-modal" @password="passwordEntered" :password-error="passwordError"></enter-password-modal>
                             <import-process-modal ref="import-process-modal" :existingAssets="existingAssets" :processName="processName" :userHasEditPermissions="true" @import-new="setCopyAll" @update-process="setUpdateAll"></import-process-modal>                            
                         </div>
-                        <old-process-importer v-if="imported" :options="options" :assignable="assignable" :processId="processId"></old-process-importer>
+                        <old-process-importer v-if="showOldImporter" :options="options" :assignable="assignable" :processId="processId"></old-process-importer>
                     </div>
                     <div id="card-footer-pre-import" class="card-footer bg-light" align="right"
                          v-if="! importing && ! imported">
@@ -111,6 +111,7 @@ export default {
             passwordError: null,
             rootMode: 'update',
             showWarning:false,
+            showOldImporter: false,
         }
     },
     filters: {
@@ -206,6 +207,7 @@ export default {
             this.processId = response.data.process.id;
             this.importing = false;
             this.imported = true;
+            this.showOldImporter = true;
 
             if (!response.data.process.id) {
                 ProcessMaker.alert(message, 'danger');
