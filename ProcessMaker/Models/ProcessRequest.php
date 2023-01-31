@@ -20,6 +20,7 @@ use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
 use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Traits\ExtendedPMQL;
+use ProcessMaker\Traits\ForUserScope;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\SqlsrvSupportTrait;
@@ -86,6 +87,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     use SqlsrvSupportTrait;
     use HideSystemResources;
     use Searchable;
+    use ForUserScope;
 
     /**
      * The attributes that aren't mass assignable.
@@ -704,34 +706,6 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     public function processVersion()
     {
         return $this->belongsTo(ProcessVersion::class, 'process_version_id');
-    }
-
-    /**
-     * Get the process version used by this request
-     *
-     * @return ProcessVersion
-     */
-    public function userPermissions()
-    {
-        return $this->hasMany(RequestUserPermission::class, 'request_id');
-    }
-
-    /**
-     * Filter process started with user
-     *
-     * @param $query
-     *
-     * @param $id User id
-     */
-    public function scopeRequestsThatUserCan($query, $permission, User $user)
-    {
-        if ($permission === 'can_view' && $user->can('view-all_requests')) {
-            return $query;
-        }
-        $query->whereHas('userPermissions', function ($query) use ($permission, $user) {
-            $query->where('user_id', $user->getKey());
-            $query->where($permission, true);
-        });
     }
 
     /**

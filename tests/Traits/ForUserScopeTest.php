@@ -11,7 +11,6 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\RequestUserPermission;
 use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Models\User;
 use ProcessMaker\Providers\AuthServiceProvider;
@@ -31,18 +30,25 @@ class ForUserScopeTest extends TestCase
         $this->user = User::factory()->create();
     }
 
+    public function testUserStarted()
+    {
+        $startedByUser = ProcessRequest::factory()->create(['user_id' => $this->user->id]);
+
+        $this->assertEquals([
+            $startedByUser->id,
+        ], $this->requestIds());
+    }
+
     public function testUserHasParticipated()
     {
-        $this->startedbyUser = ProcessRequest::factory()->create(['user_id' => $this->user->id]);
-        $this->userHasParticipated = ProcessRequest::factory()->create();
+        $userHasParticipated = ProcessRequest::factory()->create();
         ProcessRequestToken::factory()->create([
             'user_id' => $this->user->id,
-            'process_request_id' => $this->userHasParticipated->id,
+            'process_request_id' => $userHasParticipated->id,
         ]);
 
         $this->assertEquals([
-            $this->startedbyUser->id,
-            $this->userHasParticipated->id,
+            $userHasParticipated->id,
         ], $this->requestIds());
     }
 
