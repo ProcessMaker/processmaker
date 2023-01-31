@@ -6,16 +6,26 @@
     :class="{'font-weight-bold': parent, 'active': active}"
     @click="onClick"
   >
-    <i
-      v-if="!parent"
-      class="mr-1"
-      :class="`fas fa-fw fa-${icon}`"
-    ></i>
-    <span><slot></slot></span>
-    <i
+    <div
       v-if="parent"
-      class="ml-auto fas fa-chevron-down caret-icon"
-    ></i>
+      class="process-name-sidenav"
+    >
+      <span><slot /></span>
+      <i
+        v-if="parent"
+        class="fa chevron caret-icon"
+        :class="showChildTabs ? 'fa-chevron-down' : 'fa-chevron-right'"
+        @click="onToggleClick"
+      />
+    </div>
+    <div v-if="child">
+      <i
+        v-if="child"
+        class="mr-1"
+        :class="`fas fa-fw fa-${icon}`"
+      />
+      <span><slot /></span>
+    </div>
   </component>
 </template>
 
@@ -30,11 +40,13 @@ export default {
     // page: { },
     active: { },
     parent: { },
+    child: { },
     icon: { },
   },
   data() {
     return {
-      component: 'button',
+      component: "button",
+      showChildTabs: false,
       // active: this.page.active,
       // parent: this.page.parent,
       // icon: this.page.icon,
@@ -49,20 +61,23 @@ export default {
   methods: {
     is() {
       if (this.href) {
-        return 'a';
-      } else {
-        return 'button';
+        return "a";
       }
+      return "button";
     },
     onClick() {
-      this.$emit('click', this);
+      this.$emit("click", this);
     },
     setToActive() {
       this.active = true;
     },
     setToInactive() {
       this.active = false;
-    }
+    },
+    onToggleClick() {
+      this.$emit("toggleClick", this);
+      this.showChildTabs = !this.showChildTabs;
+    },
   },
 };
 </script>
@@ -76,17 +91,17 @@ export default {
   text-align: left;
   text-decoration: none;
   width: 100%;
-  
+
   &:hover {
     background: $grey-bg-light;
   }
-  
+
   &:active,
   &.active {
     font-weight: 600;
     background: $grey-bg;
   }
-  
+
   &.active::before {
     position: absolute;
     left: 6px;
@@ -97,8 +112,16 @@ export default {
     border-radius: 6px;
   }
 
+  .process-name-sidenav {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
   .caret-icon {
     font-size: 12px;
   }
+
 }
 </style>
