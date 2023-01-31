@@ -53,13 +53,18 @@ export default {
       type: Number,
       default: 0,
     },
+    // collapsable: {
+    //   type: Boolean,
+    //   default: true,
+    // },
   },
   data() {
     return {
-      showChildren: false,
+      showChildren: true,
     };
   },
   mounted() {
+    // console.log('pages', this.$children);
   },
   methods: {
     onClick(i) {

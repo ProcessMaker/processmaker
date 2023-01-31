@@ -8,13 +8,13 @@
   >
     <div
       v-if="parent"
-      class="process-name-sidenav"
+      class="parent-name-container"
     >
       <span><slot /></span>
       <i
         v-if="parent"
         class="fa chevron caret-icon"
-        :class="showChildTabs ? 'fa-chevron-down' : 'fa-chevron-right'"
+        :class="showChildTabs ? 'fa-chevron-right' : 'fa-chevron-down'"
         @click="onToggleClick"
       />
     </div>
@@ -112,7 +112,7 @@ export default {
     border-radius: 6px;
   }
 
-  .process-name-sidenav {
+  .parent-name-container {
     width: 100%;
     display: flex;
     justify-content: space-between;
