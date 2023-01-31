@@ -8,8 +8,6 @@ class GroupExporter extends ExporterBase
 {
     public $handleDuplicatesByIncrementing = ['name'];
 
-    public $hidden = true;
-
     public static $fallbackMatchColumn = 'name';
 
     public function export() : void

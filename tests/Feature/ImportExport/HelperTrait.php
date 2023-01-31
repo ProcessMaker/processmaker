@@ -78,6 +78,7 @@ trait HelperTrait
     {
         $options = $options ?: new Options([]);
         $importer = new Importer($payload, $options);
+        $importer->previewImport();
         $importer->doImport();
     }
 

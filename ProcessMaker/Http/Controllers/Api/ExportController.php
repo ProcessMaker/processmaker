@@ -25,22 +25,6 @@ class ExportController extends Controller
     ];
 
     /**
-     * Get the dependency tree and manifest to use in the frontend when exporting.
-     */
-    public function tree(string $type, int $id): JsonResponse
-    {
-        $model = $this->getModel($type)->findOrFail($id);
-
-        $exporter = new Exporter();
-        $exporter->export($model, $this->types[$type][1]);
-
-        return response()->json([
-            'tree' => $exporter->tree(),
-            'manifest' => $exporter->payload(),
-        ], 200);
-    }
-
-    /**
      * Return only the manifest
      */
     public function manifest(string $type, int $id): JsonResponse
@@ -64,9 +48,9 @@ class ExportController extends Controller
         $password = (isset($post['password']) ? $post['password'] : null);
 
         $exporter = new Exporter();
-        $exporter->export($model, $this->types[$type][1]);
+        $exporter->export($model, $this->types[$type][1], $options);
 
-        $payload = $exporter->payload($options);
+        $payload = $exporter->payload();
 
         $forcePasswordProtect = false;
         foreach ($payload['export'] as $asset) {

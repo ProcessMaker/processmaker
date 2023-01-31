@@ -19,5 +19,6 @@ class SignalQuery
 
     public function exists()
     {
+        return false;
     }
 }

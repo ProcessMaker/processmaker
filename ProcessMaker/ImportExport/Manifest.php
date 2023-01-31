@@ -96,11 +96,7 @@ class Manifest
     {
         $model = null;
         $class = $assetInfo['model'];
-        if ($assetInfo['discarded']) {
-            $mode = 'discard';
-        } else {
-            $mode = $options->get('mode', $uuid);
-        }
+        $mode = $options->get('mode', $uuid);
         $attrs = $assetInfo['attributes'];
 
         if ($mode === 'new') {

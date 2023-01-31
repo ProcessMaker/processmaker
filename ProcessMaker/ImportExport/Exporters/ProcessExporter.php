@@ -21,8 +21,6 @@ class ProcessExporter extends ExporterBase
 {
     public $handleDuplicatesByIncrementing = ['name'];
 
-    public $hidden = true;
-
     public static $fallbackMatchColumn = 'name';
 
     public ExportManager $manager;
@@ -107,19 +105,6 @@ class ProcessExporter extends ExporterBase
 
         return true;
     }
-
-    // private function getScreens($process): Collection
-    // {
-    //     $ids = array_merge(
-    //         [
-    //             $process->cancel_screen_id,
-    //             $process->request_detail_screen_id,
-    //         ],
-    //         $this->manager->getDependenciesOfType(Screen::class, $process, [], false)
-    //     );
-
-    //     return Screen::findMany($ids);
-    // }
 
     private function exportSubprocesses()
     {

@@ -180,17 +180,6 @@ abstract class ExporterBase implements ExporterInterface
         return trim(ucwords(preg_replace('/(?<!\ )[A-Z]/', ' $0', $type)));
     }
 
-    // public function getParents()
-    // {
-    //     return array_filter($this->manifest->all(), function($exporter) {
-    //         foreach ($exporter->dependents as $dependent) {
-    //             if ($dependent->uuid === $this->model->uuid) {
-    //                 return true;
-    //             }
-    //         }
-    //     });
-    // }
-
     public function toArray()
     {
         $attributes = [
@@ -207,24 +196,14 @@ abstract class ExporterBase implements ExporterInterface
             'hidden' => $this->hidden,
             'discard' => $this->discard(),
             'dependents' => array_map(fn ($d) => $d->toArray(), $this->dependents),
-            'attributes' => [],
-            'references' => [],
+            'name' => $this->getName($this->model),
+            'description' => $this->getDescription(),
+            'process_manager' => $this->getProcessManager()['managerName'],
+            'process_manager_id' => $this->getProcessManager()['managerId'],
+            'attributes' => $this->getExportAttributes(),
+            'extraAttributes' => $this->getExtraAttributes($this->model),
+            'references' => $this->references,
         ];
-
-        if ($this->mode === 'discard') {
-            $attributes['discarded'] = true;
-        } else {
-            $attributes = array_merge($attributes, [
-                'name' => $this->getName($this->model),
-                'description' => $this->getDescription(),
-                'process_manager' => $this->getProcessManager()['managerName'],
-                'process_manager_id' => $this->getProcessManager()['managerId'],
-                'attributes' => $this->getExportAttributes(),
-                'extraAttributes' => $this->getExtraAttributes($this->model),
-                'references' => $this->references,
-                'discarded' => false,
-            ]);
-        }
 
         if ($this->importing) {
             $this->addImportAttributes($attributes);
@@ -235,10 +214,11 @@ abstract class ExporterBase implements ExporterInterface
 
     public function addImportAttributes(&$attributes)
     {
+        $query = static::modelFinder($this->model->uuid, $attributes);
         $existingAttributes = null;
         $existingName = null;
-        if ($this->model->id) {
-            $existingModel = $attributes['model']::find($this->model->id);
+        if ($query->exists()) {
+            $existingModel = $query->first();
             $existingAttributes = $existingModel->getAttributes();
             $existingName = $this->getName($existingModel);
         }
