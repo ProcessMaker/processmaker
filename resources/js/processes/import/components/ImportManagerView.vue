@@ -106,7 +106,6 @@ export default {
             processName: null,
             passwordEnabled: false,
             assetsExist: false,
-            oldProcessVersion: 1,
             processVersion: null,
             password: '',
             passwordError: null,
@@ -178,9 +177,8 @@ export default {
             } else {
                 if (this.submitted) {
                     return;
-                }
-
-                if (this.processVersion > this.oldProcessVersion) {
+                }             
+                if (this.processVersion) {
                     this.handleImport();
                 } else {
                     this.handleOldVersionImport();
@@ -205,6 +203,7 @@ export default {
             }
 
             this.options = response.data.status;
+            this.processId = response.data.process.id;
             this.importing = false;
             this.imported = true;
 
@@ -263,15 +262,15 @@ export default {
                     }
                 }
             )
-            .then(response => {               
-                if (response.data.hasOwnProperty('manifest')) {
+            .then(response => {   
+                if (typeof response.data === 'object') {
                     this.$root.manifest = response.data.manifest;
-                }
-                this.$root.rootUuid = response.data.rootUuid;
-                this.processVersion = response.data.processVersion;
+                    this.$root.rootUuid = response.data.rootUuid;
+                    this.processVersion = response.data.processVersion;
+                }  
                
-                if (this.processVersion <= this.oldProcessVersion) {
-                    // disable 'custom' import type
+                if (this.processVersion === null) {
+                    // disable 'custom' import type for older process versions
                     this.importTypeOptions[1].disabled = true;
                     this.showWarning = true;
                 }
@@ -296,8 +295,6 @@ export default {
         },
         importAsNew() {
             this.$router.push({name: 'import-new-process', params: {file: this.file}})
-            // console.log('file', this.file);
-            // console.log('route to new vue');
         },
         setCopyAll() {
             this.assetsExist = false;
