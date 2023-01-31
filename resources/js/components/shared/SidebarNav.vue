@@ -11,6 +11,7 @@
             :parent="i === 0"
             :active="i === active"
             :icon="page.icon"
+            :collapsable="collapsable"
             class="text-capitalize"
             @click="onClick(i)"
             @toggleClick="toggleChildren"
@@ -53,10 +54,10 @@ export default {
       type: Number,
       default: 0,
     },
-    // collapsable: {
-    //   type: Boolean,
-    //   default: true,
-    // },
+    collapsable: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {

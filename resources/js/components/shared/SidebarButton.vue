@@ -12,7 +12,7 @@
     >
       <span><slot /></span>
       <i
-        v-if="parent"
+        v-if="parent && collapsable"
         class="fa chevron caret-icon"
         :class="showChildTabs ? 'fa-chevron-right' : 'fa-chevron-down'"
         @click="onToggleClick"
@@ -36,6 +36,10 @@ export default {
     href: {
       type: String,
       default: null,
+    },
+    collapsable: {
+      type: Boolean,
+      default: true,
     },
     // page: { },
     active: { },
