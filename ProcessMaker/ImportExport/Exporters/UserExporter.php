@@ -11,7 +11,7 @@ class UserExporter extends ExporterBase
 {
     public $handleDuplicatesByIncrementing = ['username'];
 
-    public static $fallbackMatchColumn = 'email';
+    public static $fallbackMatchColumn = ['email', 'username'];
 
     public $hidden = true;
 
@@ -37,19 +37,6 @@ class UserExporter extends ExporterBase
         $user->permissions()->sync($permissionIds);
 
         return true;
-    }
-
-    /**
-     * If it's the admin user or the anonymous user, don't match by UUID
-     */
-    public static function modelFinder($uuid, $assetInfo)
-    {
-        $key = Arr::get($assetInfo, 'attributes.username');
-        if ($key === 'admin' || $key === '_pm4_anon_user') {
-            return User::where('username', $key);
-        }
-
-        return parent::modelFinder($uuid, $assetInfo);
     }
 
     public static function doNotImport($uuid, $assetInfo)

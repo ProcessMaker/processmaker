@@ -164,7 +164,7 @@ class ScreenExporterTest extends TestCase
         $existingScreen->refresh();
 
         // If a key attribute exists, use the key to find the model, not the UUID
-        $this->assertNotEquals($exportedScreenUuid, $existingScreen->uuid);
+        $this->assertEquals($exportedScreenUuid, $existingScreen->uuid);
         $this->assertEquals('exported screen', $existingScreen->title);
     }
 

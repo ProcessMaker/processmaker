@@ -274,4 +274,74 @@ class ProcessExporterTest extends TestCase
             $this->assertEquals($importedScript->title, $scriptTask['title']);
         }
     }
+
+    public function testDiscardedAssetLinksOnImportIfItExistsOnTheTargetInstance()
+    {
+        $this->addGlobalSignalProcess();
+
+        $subprocess = Process::factory()->create(['name' => 'subprocess']);
+        $originalSubprocessUuid = $subprocess->uuid;
+        $originalSubprocessId = $subprocess->id;
+
+        $bpmn = file_get_contents(__DIR__ . '/../fixtures/process-with-subprocess.bpmn.xml');
+        $bpmn = str_replace('[SUBPROCESS_ID]', $originalSubprocessId, $bpmn);
+
+        $manager = User::factory()->create(['username' => 'orig-manager', 'email' => 'manager@test.com']);
+        $process = Process::factory()->create(['manager_id' => $manager->id, 'bpmn' => $bpmn]);
+
+        // Note: manager user and subprocess are not exported
+        $payload = $this->export($process, ProcessExporter::class);
+
+        $manager->forceDelete();
+        $subprocess->forceDelete();
+
+        // Create a different manager but with the same email as the original
+        $differentManager = User::factory()->create(['username' => 'new-manager', 'email' => 'manager@test.com']);
+        $subprocessWithSameUUID = Process::factory()->create(['uuid' => $originalSubprocessUuid, 'name' => 'different subprocess']);
+
+        $process->manager_id = $differentManager->id;
+        $process->save();
+
+        $this->import($payload);
+
+        $process->refresh();
+        $this->assertEquals($differentManager->id, $process->manager_id);
+        $this->assertNotEquals($originalSubprocessId, $subprocessWithSameUUID->id);
+
+        $value = Utils::getAttributeAtXPath($process, '*/bpmn:callActivity', 'calledElement');
+        $this->assertEquals('ProcessId-' . $subprocessWithSameUUID->id, $value);
+
+        $pmconfig = json_decode(Utils::getAttributeAtXPath($process, '*/bpmn:callActivity', 'pm:config'), true);
+        $this->assertEquals('ProcessId-' . $subprocessWithSameUUID->id, $pmconfig['calledElement']);
+        $this->assertEquals($subprocessWithSameUUID->id, $pmconfig['processId']);
+    }
+
+    public function testDiscardedAssetDoesNotExistOnTargetInstance()
+    {
+        $this->markTestIncomplete('Need to figure out how to implement this');
+
+        $this->addGlobalSignalProcess();
+
+        $manager = User::factory()->create();
+        $process = Process::factory()->create(['manager_id' => $manager->id, 'name' => 'exported name']);
+        $originalProcessUuid = $process->uuid;
+
+        $payload = $this->export($process, ProcessExporter::class);
+
+        $manager->forceDelete();
+        $process->forceDelete();
+
+        $differentManager = User::factory()->create();
+        $processWithSameUUID = Process::factory()->create([
+            'uuid' => $originalProcessUuid,
+            'manager_id' => $differentManager->id,
+            'name' => 'name on target instance',
+        ]);
+
+        $this->import($payload);
+        $processWithSameUUID->refresh();
+
+        $this->assertEquals('exported name', $processWithSameUUID->name);
+        $this->assertEquals($differentManager->id, $processWithSameUUID->manager_id);
+    }
 }

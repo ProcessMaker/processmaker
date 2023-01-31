@@ -73,7 +73,8 @@ class Manifest
         $manifest = new self();
         foreach ($array as $uuid => $assetInfo) {
             $exporterClass = $assetInfo['exporter'];
-            list($mode, $model) = self::getModel($uuid, $assetInfo, $options, $exporterClass);
+            $modeOption = $options->get('mode', $uuid);
+            list($mode, $model) = self::getModel($uuid, $assetInfo, $modeOption, $exporterClass);
             $exporter = new $exporterClass($model, $manifest, $options);
             $exporter->importing = true;
             $exporter->mode = $mode;
@@ -92,11 +93,10 @@ class Manifest
         $this->manifest[$uuid] = $exporter;
     }
 
-    public static function getModel($uuid, $assetInfo, $options, $exporterClass)
+    public static function getModel($uuid, $assetInfo, $mode, $exporterClass)
     {
         $model = null;
         $class = $assetInfo['model'];
-        $mode = $options->get('mode', $uuid);
         $attrs = $assetInfo['attributes'];
 
         if ($mode === 'new') {

@@ -34,7 +34,7 @@ class ProcessExporter extends ExporterBase
         $this->addDependent('user', $process->user, UserExporter::class);
 
         if ($process->manager) {
-            $this->addDependent('manager', $process->manager, UserExporter::class);
+            $this->addDependent('manager', $process->manager, UserExporter::class, null, ['properties']);
         }
 
         $this->exportScreens();

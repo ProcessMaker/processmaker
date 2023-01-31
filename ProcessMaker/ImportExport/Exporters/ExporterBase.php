@@ -45,14 +45,22 @@ abstract class ExporterBase implements ExporterInterface
 
     public $hidden = false;
 
-    public static $fallbackMatchColumn = 'null';
+    public static $fallbackMatchColumn = null;
 
     public static function modelFinder($uuid, $assetInfo)
     {
-        return $assetInfo['model']::where('uuid', $uuid)
-            ->when(static::$fallbackMatchColumn !== 'null', function ($query) use ($assetInfo) {
-                $query->orWhere(static::$fallbackMatchColumn, $assetInfo['attributes'][static::$fallbackMatchColumn]);
-            });
+        $query = $assetInfo['model']::where('uuid', $uuid);
+
+        if (static::$fallbackMatchColumn) {
+            foreach ((array) static::$fallbackMatchColumn as $column) {
+                $value = Arr::get($assetInfo, 'attributes.' . $column);
+                if ($value) {
+                    $query->orWhere($column, $value);
+                }
+            }
+        }
+
+        return $query;
     }
 
     public static function doNotImport($uuid, $assetInfo)
@@ -62,7 +70,9 @@ abstract class ExporterBase implements ExporterInterface
 
     public static function prepareAttributes($attrs)
     {
-        unset($attrs['id']);
+        if (isset($attrs['id'])) {
+            unset($attrs['id']);
+        }
 
         return $attrs;
     }
@@ -91,7 +101,21 @@ abstract class ExporterBase implements ExporterInterface
                 $exporter->runExport();
             }
         }
-        $dependent = new Dependent($type, $uuid, $this->manifest, $meta);
+
+        $reAssociateUsing = [];
+        foreach ((array) $exporterClass::$fallbackMatchColumn as $column) {
+            $reAssociateUsing[$column] = $dependentModel->$column;
+        }
+
+        $dependent = new Dependent(
+            $type,
+            $uuid,
+            $this->manifest,
+            $meta,
+            $exporterClass,
+            get_class($dependentModel),
+            $reAssociateUsing
+        );
         $this->dependents[] = $dependent;
 
         return $dependent;
@@ -101,9 +125,9 @@ abstract class ExporterBase implements ExporterInterface
     {
         return array_values(
             array_filter($this->dependents, function ($dependent) use ($type) {
-                if ($dependent->mode === 'discard') {
-                    return false;
-                }
+                // if ($dependent->mode === 'discard') {
+                //     return false;
+                // }
                 if ($type && $dependent->type !== $type) {
                     return false;
                 }
