@@ -6,7 +6,6 @@
           <ProcessesView
             :process-info="rootAsset"
             :groups="groups"
-            :password-required="passwordRequired"
             :process-name="rootAsset.name"
             :process-id="processId"
           />
@@ -45,19 +44,19 @@ export default {
     return {
       rootAsset: {},
       groups: [],
-      passwordRequired: [],
     };
   },
   computed: {
     sidenav() {
-      let items = [
-        { title: this.rootAsset.name, icon: null, },
+      const items = [
+        { title: this.rootAsset.name, icon: null, hidden: this.rootAsset.hidden },
       ];
 
       this.groups.forEach(group => {
         items.push({
           title: group.typePlural,
           icon: group.icon,
+          hidden: group.hidden,
         });
       });
 
@@ -79,7 +78,6 @@ export default {
         .then((response) => {
           this.rootAsset = response.root;
           this.groups = response.groups;
-          this.passwordRequired = response.passwordRequired;
           this.$root.setInitialState(response.assets, response.rootUuid);
         })
         .catch((error) => {

@@ -10,6 +10,10 @@ class Manifest
 {
     private $manifest = [];
 
+    private $afterExportCallbacks = [];
+
+    private $afterImportCallbacks = [];
+
     public function has(string $uuid)
     {
         return array_key_exists($uuid, $this->manifest);
@@ -30,6 +34,30 @@ class Manifest
         return $this->manifest;
     }
 
+    public function afterExport($callback)
+    {
+        $this->afterExportCallbacks[] = $callback;
+    }
+
+    public function afterImport($callback)
+    {
+        $this->afterImportCallbacks[] = $callback;
+    }
+
+    public function runAfterExport()
+    {
+        foreach ($this->afterExportCallbacks as $callback) {
+            $callback();
+        }
+    }
+
+    public function runAfterImport()
+    {
+        foreach ($this->afterImportCallbacks as $callback) {
+            $callback();
+        }
+    }
+
     public function toArray()
     {
         $manifest = [];
@@ -45,10 +73,10 @@ class Manifest
         $manifest = new self();
         foreach ($array as $uuid => $assetInfo) {
             $exporterClass = $assetInfo['exporter'];
-            list($importMode, $model) = self::getModel($uuid, $assetInfo, $options, $exporterClass);
-            $exporter = new $exporterClass($model, $manifest);
+            list($mode, $model) = self::getModel($uuid, $assetInfo, $options, $exporterClass);
+            $exporter = new $exporterClass($model, $manifest, $options);
             $exporter->importing = true;
-            $exporter->importMode = $importMode;
+            $exporter->mode = $mode;
             $exporter->originalId = Arr::get($assetInfo, 'attributes.id');
             $exporter->updateDuplicateAttributes();
             $exporter->dependents = Dependent::fromArray($assetInfo['dependents'], $manifest);
@@ -71,6 +99,10 @@ class Manifest
         $mode = $options->get('mode', $uuid);
         $attrs = $assetInfo['attributes'];
 
+        if ($mode === 'new') {
+            throw new \Exception('Mode "new" can only be set by the system.');
+        }
+
         $modelQuery = $exporterClass::modelFinder($uuid, $assetInfo);
 
         if ($exporterClass::doNotImport($uuid, $assetInfo)) {
@@ -87,10 +119,9 @@ class Manifest
         if ($modelQuery->exists()) {
             $model = $modelQuery->firstOrFail();
         } else {
+            $model = new $class();
             if ($mode !== 'discard') {
                 $mode = 'new';
-            } else {
-                $model = new $class(); // Placeholder model for discard
             }
         }
 
@@ -101,20 +132,23 @@ class Manifest
                 break;
             case 'discard':
                 // Keep the model, just don't save it later in doImport
+                $model->preventSavingDiscardedModel();
                 break;
             case 'copy':
-                $model = new $class();
+                // Make new copy of the model with a new UUID
                 unset($attrs['uuid']);
+                $model = new $class();
                 $model->fill($attrs);
                 break;
             case 'new':
-                $model = new $class();
+                // NOT user settable
+                // Create the model with the same UUID if it doesn't exist on the target instance
                 $model->fill($attrs);
                 $model->uuid = $uuid;
                 break;
+            default:
+                throw new \Exception('Invalid mode: ' + $mode);
         }
-
-        // dump(get_class($model), $mode);
 
         if ($model) {
             self::handleCasts($model);

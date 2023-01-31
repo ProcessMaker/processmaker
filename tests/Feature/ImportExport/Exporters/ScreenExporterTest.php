@@ -17,6 +17,28 @@ class ScreenExporterTest extends TestCase
 {
     use HelperTrait;
 
+    private function fixtures()
+    {
+        $screen = $this->createScreen('screen_with_nested_screen', ['title' => 'screen'], 'watchers');
+        $screenCategory1 = ScreenCategory::factory()->create(['name' => 'category 1', 'status' => 'ACTIVE']);
+        $screenCategory2 = ScreenCategory::factory()->create(['name' => 'category 2', 'status' => 'ACTIVE']);
+        $screen->screen_category_id = $screenCategory1->id . ',' . $screenCategory2->id;
+
+        $script = Script::factory()->create(['title' => 'script']);
+        $this->associateScriptWatcher($screen, $script);
+
+        $nestedScreen = $this->createScreen('screen_with_nested_screen', ['title' => 'nested screen']);
+        $nestedScreen->screen_category_id = $screenCategory1->id;
+        $nestedNestedScreen = Screen::factory()->create(['title' => 'nested nested screen', 'config' => []]);
+        $nestedNestedScreen->screen_category_id = $screenCategory2->id;
+        $this->associateNestedScreen($nestedScreen, $nestedNestedScreen);
+        $this->associateNestedScreen($screen, $nestedScreen);
+
+        $screen->save();
+
+        return [$screen, $screenCategory1, $screenCategory2, $script, $nestedScreen, $nestedNestedScreen];
+    }
+
     public function testExport()
     {
         list($screen, $screenCategory1, $screenCategory2, $script, $nestedScreen, $nestedNestedScreen) =
@@ -24,17 +46,26 @@ class ScreenExporterTest extends TestCase
 
         $exporter = new Exporter();
         $exporter->exportScreen($screen);
-        $tree = $exporter->tree();
+        $payload = $exporter->payload();
 
-        $this->assertCount(4, Arr::get($tree, '0.dependents'));
-        $this->assertEquals($screen->uuid, Arr::get($tree, '0.uuid'));
-        $this->assertEquals($screenCategory1->uuid, Arr::get($tree, '0.dependents.0.uuid'));
-        $this->assertEquals($screenCategory2->uuid, Arr::get($tree, '0.dependents.1.uuid'));
-        $this->assertEquals($script->uuid, Arr::get($tree, '0.dependents.2.uuid'));
-        $this->assertEquals($script->category->uuid, Arr::get($tree, '0.dependents.2.dependents.0.uuid'));
-        $this->assertEquals($nestedScreen->uuid, Arr::get($tree, '0.dependents.3.uuid'));
-        $this->assertEquals($nestedNestedScreen->uuid, Arr::get($tree, '0.dependents.3.dependents.1.uuid'));
-        $this->assertEquals($screenCategory1->uuid, Arr::get($tree, '0.dependents.3.dependents.0.uuid'));
+        $screenDependents = Arr::get($payload, 'export.' . $screen->uuid . '.dependents');
+        $this->assertCount(4, $screenDependents);
+        $screenDependentUuids = Arr::pluck($screenDependents, 'uuid');
+        $this->assertContains($screenCategory1->uuid, $screenDependentUuids);
+        $this->assertContains($screenCategory2->uuid, $screenDependentUuids);
+        $this->assertContains($script->uuid, $screenDependentUuids);
+
+        $scriptDependents = Arr::get($payload, 'export.' . $script->uuid . '.dependents');
+        $scriptDependentUuids = Arr::pluck($scriptDependents, 'uuid');
+        $this->assertContains($script->category->uuid, $scriptDependentUuids);
+
+        $this->assertContains($nestedScreen->uuid, $screenDependentUuids);
+
+        $nestedScreenDependents = Arr::get($payload, 'export.' . $nestedScreen->uuid . '.dependents');
+        $nestedScreenDependentUuids = Arr::pluck($nestedScreenDependents, 'uuid');
+
+        $this->assertContains($nestedNestedScreen->uuid, $nestedScreenDependentUuids);
+        $this->assertContains($screenCategory1->uuid, $nestedScreenDependentUuids);
     }
 
     public function testImport()
@@ -51,6 +82,7 @@ class ScreenExporterTest extends TestCase
         $nestedScreen->delete();
         $screenCategory1->update(['name' => 'category name old']);
         $screenCategory2->delete();
+        $nestedNestedScreen->delete();
 
         $this->assertEquals(0, Screen::where('title', 'screen')->count());
         $this->assertEquals(0, Script::where('title', 'script')->count());
@@ -75,9 +107,9 @@ class ScreenExporterTest extends TestCase
         $this->assertEquals('script-' . $checkScript->id, Arr::get($checkScreen->watchers, '0.script.id'));
     }
 
-    private function importWithNew($screenMode)
+    private function importWithCopy($screenMode)
     {
-        list($screen, $screenCategory1, $screenCategory2, $script, $nestedScreen, $nestedNestedScreen) =
+        list($screen, $screenCategory1, $screenCategory2) =
             $this->fixtures();
 
         $exporter = new Exporter();
@@ -86,11 +118,12 @@ class ScreenExporterTest extends TestCase
 
         $optionsArray = [];
         $optionsArray[$screen->uuid] = ['mode' => $screenMode];
-        $optionsArray[$screenCategory1->uuid] = ['mode' => 'new'];
-        $optionsArray[$screenCategory2->uuid] = ['mode' => 'new'];
+        $optionsArray[$screenCategory1->uuid] = ['mode' => 'copy'];
+        $optionsArray[$screenCategory2->uuid] = ['mode' => 'copy'];
 
         $options = new Options($optionsArray);
         $importer = new Importer($payload, $options);
+
         $importer->doImport();
 
         return $screen;
@@ -98,7 +131,8 @@ class ScreenExporterTest extends TestCase
 
     public function testImportNewCategoryWithExistingScreen()
     {
-        $screen = $this->importWithNew('update');
+        $screen = $this->importWithCopy('update');
+        $screen->refresh();
         $categories = $screen->refresh()->categories()->pluck('name', 'screen_categories.id as id');
         $this->assertCount(4, $categories);
         $this->assertContains('category 1', $categories);
@@ -109,7 +143,7 @@ class ScreenExporterTest extends TestCase
 
     public function testImportNewCategoryWithNewScreen()
     {
-        $this->importWithNew('new');
+        $this->importWithCopy('copy');
         $screen = Screen::where('title', 'screen 2')->firstOrFail();
         $categories = $screen->refresh()->categories()->pluck('name', 'screen_categories.id as id');
         $this->assertCount(2, $categories);
@@ -132,28 +166,6 @@ class ScreenExporterTest extends TestCase
         // If a key attribute exists, use the key to find the model, not the UUID
         $this->assertNotEquals($exportedScreenUuid, $existingScreen->uuid);
         $this->assertEquals('exported screen', $existingScreen->title);
-    }
-
-    private function fixtures()
-    {
-        $screen = $this->createScreen('screen_with_nested_screen', ['title' => 'screen'], 'watchers');
-        $screenCategory1 = ScreenCategory::factory()->create(['name' => 'category 1', 'status' => 'ACTIVE']);
-        $screenCategory2 = ScreenCategory::factory()->create(['name' => 'category 2', 'status' => 'ACTIVE']);
-        $screen->screen_category_id = $screenCategory1->id . ',' . $screenCategory2->id;
-
-        $script = Script::factory()->create(['title' => 'script']);
-        $this->associateScriptWatcher($screen, $script);
-
-        $nestedScreen = $this->createScreen('screen_with_nested_screen', ['title' => 'nested screen']);
-        $nestedScreen->screen_category_id = $screenCategory1->id;
-        $nestedNestedScreen = Screen::factory()->create(['title' => 'nested nested screen', 'config' => []]);
-        $nestedNestedScreen->screen_category_id = $screenCategory2->id;
-        $this->associateNestedScreen($nestedScreen, $nestedNestedScreen);
-        $this->associateNestedScreen($screen, $nestedScreen);
-
-        $screen->save();
-
-        return [$screen, $screenCategory1, $screenCategory2, $script, $nestedScreen, $nestedNestedScreen];
     }
 
     public function testScreenWithScriptWatcher()

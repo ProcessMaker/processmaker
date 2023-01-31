@@ -3,7 +3,7 @@
     <b-card class="data-card">
       <template #header>
         <div class="header">
-          <i class="text-secondary data-card-header fas nav-icon d-inline align-middle" :class="'fa-' + info.icon" />
+          <i class="text-secondary data-card-header fas nav-icon d-inline align-middle" :class="info.icon" />
           <h5 class="mb-0 data-card-header d-inline align-middle">{{ info.typeHumanPlural }}</h5>
           <b-form-checkbox
             class="data-card-header export-all d-inline align-middle fw-semibold"
@@ -14,26 +14,25 @@
         </div>
       </template>
       <b-card-text>
-        <ul class="data-card-metadata mb-0">
-          <li>Status:
-            <b-badge
-              v-if="$root.includeAllByGroup[info.type]"
-              pill
-              variant="success"
-            >
+        <div class="data-card-metadata mb-1">
+          <div>
+            <div>
+              <small v-if="info.forcePasswordProtect" class="fw-semibold form-text text-muted mt-0">
+                <i class="fas fa-exclamation-triangle text-warning p-0"/>
+                {{ info.typeHumanPlural }} may contain sensitive information.
+              </small>
+            </div>
+            <span>Status:</span>
+            <b-badge v-if="$root.includeAllByGroup[info.type]" pill variant="success">
               <i class="fas fa-check-circle export-status-label" />
               Full {{ $root.operation }}
             </b-badge>
-            <b-badge
-              v-else
-              pill
-              variant="warning"
-            >
+            <b-badge v-else pill variant="warning">
               <i class="fas fa-exclamation-triangle export-status-label" />
               Not {{ $root.operation }}ing
             </b-badge>
-          </li>
-        </ul>
+          </div>
+        </div>
         <template v-if="$root.isImport">
           <data-tree :data="elementsCount" :collapsable="false" :show-icon="false"/>
         </template>
@@ -45,7 +44,7 @@
             <span v-else>{{ info.typeHuman }}</span>
           </span>
         </template>
-        <div class="mt-2">
+        <div class="mt-3">
           <b-link @click="onGroupDetailsClick">
             <i class="fas fa-info-circle fa-fw mr-0 pr-0"></i>
             Details

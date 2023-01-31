@@ -23,7 +23,6 @@ export default {
     tree() {
       const tree = this.treeNode(this.$root.rootUuid);
       tree.isRoot = true;
-      console.log('tree', tree);
       return tree;
     },
     treeNode(uuid, dependentType = null) {

@@ -11,6 +11,10 @@ class UserExporter extends ExporterBase
 {
     public $handleDuplicatesByIncrementing = ['username'];
 
+    public static $fallbackMatchColumn = 'email';
+
+    public $hidden = true;
+
     public function export() : void
     {
         foreach ($this->model->groups as $group) {
@@ -58,8 +62,13 @@ class UserExporter extends ExporterBase
         return false;
     }
 
-    public function getName($model): string
+    public function getName($model) : string
     {
         return $model->username;
+    }
+
+    public function discard() : bool
+    {
+        return true;
     }
 }

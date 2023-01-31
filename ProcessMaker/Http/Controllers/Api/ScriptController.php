@@ -416,7 +416,7 @@ class ScriptController extends Controller
         $request->validate(Script::rules());
         $newScript = new Script();
 
-        $exclude = ['id', 'created_at', 'updated_at'];
+        $exclude = ['id', 'uuid', 'created_at', 'updated_at'];
         foreach ($script->getAttributes() as $attribute => $value) {
             if (!in_array($attribute, $exclude)) {
                 $newScript->{$attribute} = $script->{$attribute};

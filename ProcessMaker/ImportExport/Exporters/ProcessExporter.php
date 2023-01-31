@@ -4,6 +4,7 @@ namespace ProcessMaker\ImportExport\Exporters;
 
 use Illuminate\Support\Collection;
 use ProcessMaker\ImportExport\DependentType;
+use ProcessMaker\ImportExport\Psudomodels\Signal;
 use ProcessMaker\ImportExport\SignalHelper;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Managers\ExportManager;
@@ -19,6 +20,8 @@ use ProcessMaker\Models\User;
 class ProcessExporter extends ExporterBase
 {
     public $handleDuplicatesByIncrementing = ['name'];
+
+    public static $fallbackMatchColumn = 'name';
 
     public ExportManager $manager;
 
@@ -64,7 +67,9 @@ class ProcessExporter extends ExporterBase
     {
         $process = $this->model;
 
-        $process->user_id = $this->getDependents('user')[0]->model->id;
+        foreach ($this->getDependents('user') as $dependent) {
+            $process->user_id = $dependent->model->id;
+        }
 
         foreach ($this->getDependents('manager') as $dependent) {
             $process->manager_id = $dependent->model->id;
@@ -100,19 +105,6 @@ class ProcessExporter extends ExporterBase
 
         return true;
     }
-
-    // private function getScreens($process): Collection
-    // {
-    //     $ids = array_merge(
-    //         [
-    //             $process->cancel_screen_id,
-    //             $process->request_detail_screen_id,
-    //         ],
-    //         $this->manager->getDependenciesOfType(Screen::class, $process, [], false)
-    //     );
-
-    //     return Screen::findMany($ids);
-    // }
 
     private function exportSubprocesses()
     {
@@ -196,36 +188,29 @@ class ProcessExporter extends ExporterBase
 
     private function exportSignals()
     {
-        $signalHelper = app()->make(SignalHelper::class);
+        $signals = [];
+        foreach (Signal::inProcess($this->model) as $signal) {
+            $dependent = $this->addDependent('signal', $signal, SignalExporter::class, $signal->id);
 
-        $globalSignalsInProcess = [];
+            // Keep track of signals. If the user decides to not import them later we need to know
+            // which signals to remove from this process.
+            $signals[] = [$dependent->uuid, $signal->id];
 
-        foreach ($signalHelper->processessReferencedByThrowSignals($this->model) as [$process, $signalId]) {
-            $this->addDependent('signal-process', $process, self::class, $signalId);
+            if ($dependent->mode === 'discard') {
+                $this->manifest->afterExport(function () use ($signal) {
+                    Signal::removeFromProcess($signal->id, $this->model);
+                });
+            }
         }
 
-        foreach ($signalHelper->globalSignalsInProcess($this->model) as $signalInfo) {
-            $globalSignalsInProcess[$signalInfo['id']] = $signalInfo;
-        }
-        $this->addReference('global-signals', $globalSignalsInProcess);
+        $this->addReference('signals', $signals);
     }
 
     private function importSignals()
     {
-        // Note: No associations are needed for process signals.
-        // The dependent process has already been saved at this point.
-
-        // Import global signals
-        $signalHelper = app()->make(SignalHelper::class);
-        $globalSignals = $signalHelper->getGlobalSignals();
-        foreach ($this->getReference('global-signals') as $signalData) {
-            if (!$globalSignals->has($signalData['id'])) {
-                $signal = new SignalData($signalData['id'], $signalData['name'], $signalData['detail']);
-                $errors = SignalManager::validateSignal($signal, null);
-                if ($errors) {
-                    throw new \Exception(json_encode($errors));
-                }
-                SignalManager::addSignal($signal);
+        foreach ($this->getReference('signals') as [$signalUuid, $signalId]) {
+            if ($this->options->get('mode', $signalUuid) === 'discard') {
+                Signal::removeFromProcess($signalId, $this->model);
             }
         }
     }
@@ -264,6 +249,9 @@ class ProcessExporter extends ExporterBase
     {
         $tags = [
             'bpmn:task',
+            'bpmn:manualTask',
+            'bpmn:startEvent',
+            'bpmn:endEvent',
         ];
 
         foreach (Utils::getElementByMultipleTags($this->model->getDefinitions(true), $tags) as $element) {
@@ -330,5 +318,10 @@ class ProcessExporter extends ExporterBase
             $path = $dependent->meta['path'];
             Utils::setAttributeAtXPath($this->model, $path, 'pm:scriptRef', $dependent->model->id);
         }
+    }
+
+    public function discard(): bool
+    {
+        return true;
     }
 }

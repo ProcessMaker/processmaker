@@ -28,14 +28,14 @@
                         <span v-else>{{ processInfo.lastModifiedBy }}</span>
                     </span>
                 </li>
-                <li>
+                <!-- <li v-if="$root.isImport">
                     <a href="#" v-b-modal:asset-dependent-tree>Linked Dependent Assets</a>
                     <AssetDependentTreeModal></AssetDependentTreeModal>
                 </li>
                 <li>
                     <a href="#" v-b-modal:asset-tree>Linked Assets</a>
                     <AssetTreeModal :groups="groups"></AssetTreeModal>
-                </li>
+                </li> -->
             </ul>
         </div>
         <div class="mb-2">
@@ -44,12 +44,12 @@
                     v-if="!$root.isImport"
                     v-model="passwordProtect"
                     class="fw-semibold"
-                    :disabled="passwordRequired.length"
                     stacked
+                    :disabled="!!$root.forcePasswordProtect.length"
                 >
                 Password Protect Export
                 <b-form-text class="process-options-helper-text">Define a password to protect your export file.</b-form-text>
-                <small v-if="passwordRequired.length" class="text-danger">
+                <small v-if="!!$root.forcePasswordProtect.length" class="text-danger">
                     Password protect is required because some assets have sensitive data.
                 </small>
                 </b-form-checkbox>
@@ -67,7 +67,7 @@
         </div>
         <hr>
         <div v-for="group in groups" :key="group.type">
-          <data-card :exportAllElements="exportAllElements" :info="group" />
+          <data-card v-if="!group.hidden" :exportAllElements="exportAllElements" :info="group" />
         </div>
         <div class="pt-3 card-footer bg-light" align="right">
             <button type="button" class="btn btn-outline-secondary">
@@ -106,7 +106,6 @@ export default {
     "processName",
     "groups",
     "processId",
-    "passwordRequired",
     "processInfo",
     ],
     components: {
@@ -123,6 +122,13 @@ export default {
             exportAllElements: true,
             exportInfo: {},
         }
+    },
+    watch: {
+      "$root.forcePasswordProtect": function (val) {
+        if (val.length) {
+          this.passwordProtect = true;
+        }
+      }
     },
     methods: {
         change(value) {
@@ -160,8 +166,6 @@ export default {
         },
     },
     mounted() {
-    },
-    watch: {
     },
 }
 </script>

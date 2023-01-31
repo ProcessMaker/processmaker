@@ -6,7 +6,7 @@
       :class="i > 0 ? 'mb-0' : 'mb-2'"
     >
       <div v-if="i === 0">
-        <li>
+        <li v-if="!page.hidden">
           <sidebar-button
             :parent="i === 0"
             :active="i === active"
@@ -22,7 +22,7 @@
       </div>
       <div v-else>
         <b-collapse v-model="showChildren">
-          <li>
+          <li v-if="!page.hidden">
             <sidebar-button
               :parent="i === 0"
               :child="i + 1"

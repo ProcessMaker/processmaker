@@ -71,9 +71,14 @@ export default {
         lastModifiedBy: asset.last_modified_by || "N/A",
         lastModifiedById: asset.last_modified_by_id || null,
         importMode: asset.import_mode || 'update',
+        forcePasswordProtect: asset.force_password_protect,
+        required: asset.required,
+        hidden: asset.hidden,
+        discard: asset.discard,
       };
 
       if (uuid === rootUuid) {
+        info.hidden = false;
         root = info;
         return;
       }
@@ -91,8 +96,12 @@ export default {
         typePlural: value[0].typePlural,
         typeHuman: value[0].typeHuman,
         typeHumanPlural: value[0].typeHumanPlural,
-        icon: ImportExportIcons.ICONS[key] || 'code',
-        items: value
+        icon: ImportExportIcons.ICONS[key] || 'fa-code',
+        items: value,
+        forcePasswordProtect: value[0].forcePasswordProtect,
+        required: value[0].required,
+        hidden: value[0].hidden,
+        discard: value[0].discard,
       };
     });
 

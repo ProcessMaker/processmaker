@@ -10,6 +10,8 @@ class ScriptExporter extends ExporterBase
 {
     public $handleDuplicatesByIncrementing = ['title'];
 
+    public static $fallbackMatchColumn = 'title';
+
     public function export() : void
     {
         $this->exportCategories();
@@ -25,8 +27,10 @@ class ScriptExporter extends ExporterBase
     {
         $this->associateCategories(ScriptCategory::class, 'script_category_id');
 
-        $scriptUser = $this->getDependents('user')[0];
-        $this->model->run_as_user_id = $scriptUser->model->id;
+        foreach ($this->getDependents('user') as $user) {
+            $scriptUser = $user;
+            $this->model->run_as_user_id = $scriptUser->model->id;
+        }
 
         return $this->model->save();
     }

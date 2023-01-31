@@ -36,7 +36,7 @@ class Importer
             // First, we save the model so we have IDs set for all assets
             Schema::disableForeignKeyConstraints();
             foreach ($this->manifest->all() as $exporter) {
-                if ($exporter->importMode !== 'discard') {
+                if ($exporter->mode !== 'discard') {
                     if ($exporter->disableEventsWhenImporting) {
                         $exporter->model->saveQuietly();
                     } else {
@@ -49,19 +49,14 @@ class Importer
 
             // Now, run the import method in each Exporter class
             foreach ($this->manifest->all() as $exporter) {
-                if ($exporter->importMode !== 'discard') {
+                if ($exporter->mode !== 'discard') {
                     $exporter->runImport();
                 }
             }
+
+            $this->manifest->runAfterImport();
         });
 
         return $this->manifest->all();
-    }
-
-    public function tree()
-    {
-        $rootExporter = $this->manifest->get($this->payload['root']);
-
-        return (new Tree($this->manifest))->tree($rootExporter);
     }
 }

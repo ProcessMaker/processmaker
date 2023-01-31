@@ -8,6 +8,8 @@ class GroupExporter extends ExporterBase
 {
     public $handleDuplicatesByIncrementing = ['name'];
 
+    public static $fallbackMatchColumn = 'name';
+
     public function export() : void
     {
         if ($this->model->users->count() > 0) {
@@ -23,7 +25,6 @@ class GroupExporter extends ExporterBase
         $group = $this->model;
 
         foreach ($this->getDependents('users') as $dependent) {
-            $dependent->model->save();
             $dependent->model->groups()->syncWithoutDetaching($group->id);
         }
 
@@ -31,6 +32,11 @@ class GroupExporter extends ExporterBase
         $permissionIds = Permission::whereIn('name', $permissions)->pluck('id')->toArray();
         $group->permissions()->sync($permissionIds);
 
+        return true;
+    }
+
+    public function discard() : bool
+    {
         return true;
     }
 }

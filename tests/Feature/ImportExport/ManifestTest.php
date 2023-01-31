@@ -47,20 +47,25 @@ class ManifestTest extends TestCase
         $this->assertEquals('category on target instance', $screenCategory->refresh()->name);
     }
 
-    public function testNewImportOption()
+    public function testCopyImportOption()
     {
         list($payload, $screen, $screenCategory) = $this->createScreen();
 
         $options = new Options([
-            $screen->uuid => ['mode' => 'new'],
+            $screen->uuid => ['mode' => 'copy'],
             $screenCategory->uuid => ['mode' => 'discard'],
         ]);
         (new Importer($payload, $options))->doImport();
 
+        // Does not change
         $this->assertEquals('screen on target instance', $screen->refresh()->title);
-        $this->assertEquals('category on target instance', $screenCategory->refresh()->name);
-        $new = Screen::where('title', 'exported screen')->firstOrFail();
-        $this->assertCount(0, $new->categories);
+        $this->assertDatabaseHas('screens', ['title' => 'exported screen']);
+
+        $this->assertEquals('category on target instance', $screen->categories[0]->name);
+        $importedScreen = Screen::where('title', 'exported screen')->firstOrFail();
+        // Copied screen should NOT have the category on the original
+        $this->assertCount(0, $importedScreen->categories);
+        $this->assertNotEquals($screen->uuid, $importedScreen->uuid);
     }
 
     private function createScreen()

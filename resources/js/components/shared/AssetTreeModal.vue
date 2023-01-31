@@ -38,7 +38,7 @@ export default {
 
       return {
         isRoot: true,
-        icon: `fas fa-${group.icon}`,
+        icon: `${group.icon}`,
         label: group.typeHumanPlural,
         children: formattedGroupChildren,
       };

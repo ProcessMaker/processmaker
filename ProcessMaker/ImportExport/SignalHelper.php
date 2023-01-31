@@ -15,23 +15,23 @@ class SignalHelper
 
     public $allSignals;
 
-    public $globalSignals;
-
     public function getGlobalSignals() : Collection
     {
-        if (!$this->globalSignals) {
-            $globalSignalProcess = SignalManager::getGlobalSignalProcess();
-            $this->globalSignals = SignalManager::getAllSignals(true, [$globalSignalProcess])
-                ->mapWithKeys(fn ($s) => [$s['id'] => $s['name']]);
-        }
+        $globalSignalProcess = SignalManager::getGlobalSignalProcess();
 
-        return $this->globalSignals;
+        return SignalManager::getAllSignals(true, [$globalSignalProcess])
+            ->mapWithKeys(fn ($s) => [$s['id'] => $s['name']]);
+    }
+
+    public function getGlobalSignalIds()
+    {
+        return $this->getGlobalSignal()->keys();
     }
 
     public function globalSignalsInProcess(Process $process)
     {
         $globalSignals = $this->getGlobalSignals();
-        $signalsInProcess = SignalManager::getAllSignals(true, [$process])
+        $signalsInProcess = $this->signalsInProcess($process)
             ->filter(fn ($signalInfo) => $globalSignals->has($signalInfo['id']))
             ->map(function ($signalInfo) {
                 return [
@@ -76,23 +76,34 @@ class SignalHelper
 
     public function throwSignalsInProcess(Process $sourceProcess)
     {
-        $id = $sourceProcess->id;
-        $signalIds = [];
-        foreach ($this->getAllSignals() as $signalInfo) {
-            foreach ($signalInfo['processes'] as $processInfo) {
-                if ($processInfo['id'] === $id) {
-                    foreach ($processInfo['catches'] as $catchInfo) {
-                        if (in_array($catchInfo['type'], self::THROW_TYPES)) {
-                            $signalIds[] = $signalInfo['id'];
-                            break;
-                        }
-                    }
+        $signals = [];
+        foreach ($this->signalsInProcess($sourceProcess) as $signalInfo) {
+            $processInfo = $signalInfo['processes'];
+            foreach ($processInfo['catches'] as $catchInfo) {
+                if (in_array($catchInfo['type'], self::THROW_TYPES)) {
+                    $signals[] = $signalInfo;
                     break;
                 }
             }
         }
 
-        return $signalIds;
+        return $signals;
+    }
+
+    public function signalsInProcess(Process $sourceProcess)
+    {
+        $id = $sourceProcess->id;
+        $signals = [];
+        foreach ($this->getAllSignals() as $signalInfo) {
+            foreach ($signalInfo['processes'] as $processInfo) {
+                if ($processInfo['id'] === $id) {
+                    $signals[] = $signalInfo;
+                    break;
+                }
+            }
+        }
+
+        return collect($signals);
     }
 
     public function getAllSignals()

@@ -72,21 +72,74 @@ class ExportImportTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function testHandleDuplicateAttributes()
+    {
+        [$file, $screen, $nestedScreen] = $this->importFixtures();
+
+        // Test that there is an unsaved screen in the manifest with a duplicate name
+        // so delete it from the target instance here
+        $nestedScreenUuid = $nestedScreen->uuid;
+        $nestedScreen->delete();
+
+        $initialScreenCount = Screen::count();
+
+        // Update the existing screen, no change to title
+        $response = $this->apiCall('POST', route('api.import.do_import'), [
+            'file' => $file,
+            'password' => null,
+            'options' => $this->makeOptions([
+                $screen->uuid => ['mode' => 'copy'],
+                $nestedScreenUuid => ['mode' => 'update'],
+            ]),
+        ]);
+        $response->assertStatus(200);
+
+        // Assert we added the child screen and the copied parent screen
+        $this->assertEquals($initialScreenCount + 2, Screen::count());
+
+        // Original parent screen on target instance
+        $this->assertDatabaseHas('screens', ['title' => 'Exported Screen']);
+        // Imported "copy" parent screen - gets the first auto-increment to 1
+        $this->assertDatabaseHas('screens', ['title' => 'Exported Screen 1']);
+        // Imported nested screen, originally called "Exported Screen 1", gets incremented to 2
+        $this->assertDatabaseHas('screens', ['title' => 'Exported Screen 2']);
+    }
+
     private function importFixtures()
     {
-        $screen = Screen::factory()->create();
+        $nestedScreen = Screen::factory()->create([
+            'title' => 'Exported Screen 1',
+            'description' => 'child',
+            'screen_category_id' => null,
+        ]);
+        $config = [
+            [
+                'items' => [
+                    [
+                        'component' => 'FormNestedScreen',
+                        'config' => [
+                            'screen' => (int) $nestedScreen->id,
+                        ],
+                    ],
+                ],
+            ],
+        ];
+        $screen = Screen::factory()->create([
+            'title' => 'Exported Screen',
+            'config' => $config,
+            'description' => 'parent',
+            'screen_category_id' => null,
+        ]);
         $exporter = new Exporter();
         $exporter->exportScreen($screen);
 
         // Create fake file upload.
         $payload = $exporter->payload();
         $content = json_encode($payload);
-        $fileName = tempnam(sys_get_temp_dir(), $payload['name']);
-        file_put_contents($fileName, $content);
-        $file = new UploadedFile($fileName, $payload['name'] . '.json', null, null, true);
+        $file = UploadedFile::fake()->createWithContent($payload['name'] . '.json', $content);
 
         return [
-            $file,
+            $file, $screen, $nestedScreen,
         ];
     }
 }

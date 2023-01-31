@@ -11,10 +11,17 @@ use ProcessMaker\Models\Screen;
 
 class Exporter
 {
-    public function export(Model $model, string $exporterClass)
+    private $manifest;
+
+    private $options;
+
+    private $rootExporter;
+
+    public function export(Model $model, string $exporterClass, Options $options = null)
     {
+        $this->options = $options ?: new Options([]);
         $this->manifest = new Manifest();
-        $this->rootExporter = new $exporterClass($model, $this->manifest);
+        $this->rootExporter = new $exporterClass($model, $this->manifest, $this->options);
         $this->manifest->push($model->uuid, $this->rootExporter);
         $this->rootExporter->runExport();
 
@@ -31,32 +38,24 @@ class Exporter
         return $this->export($process, ProcessExporter::class);
     }
 
-    public function payload(Options $options = null): array
+    public function payload(): array
     {
+        $this->manifest->runAfterExport();
         $export = $this->manifest->toArray();
 
+        $options = $this->options->options;
         $discarded = [];
-        if ($options) {
-            $options = $options->options;
-            $export = array_filter($export, function ($uuid) use ($options, &$discarded) {
-                if (isset($options[$uuid])) {
-                    if ($options[$uuid]['mode'] === 'discard') {
-                        $discarded[] = $uuid;
+        $export = array_filter($export, function ($uuid) use ($options, &$discarded) {
+            if (isset($options[$uuid])) {
+                if ($options[$uuid]['mode'] === 'discard') {
+                    $discarded[] = $uuid;
 
-                        return false;
-                    }
+                    return false;
                 }
-
-                return true;
-            }, ARRAY_FILTER_USE_KEY);
-        }
-
-        $passwordRequiredAssets = [];
-        foreach ($export as $key => $value) {
-            if ($value['force_password_protect']) {
-                $passwordRequiredAssets[] = $key;
             }
-        }
+
+            return true;
+        }, ARRAY_FILTER_USE_KEY);
 
         $payload = [
             'type' => $this->rootExporter->getType(),
@@ -65,7 +64,6 @@ class Exporter
             'name' => $this->rootExporter->getName($this->rootExporter->model),
             'export' => $export,
             'discarded' => $discarded,
-            'passwordRequired' => $passwordRequiredAssets,
         ];
 
         return $payload;
@@ -74,11 +72,6 @@ class Exporter
     public function encrypt($password, $payload)
     {
         return (new ExportEncrypted($password))->call($payload);
-    }
-
-    public function tree(): array
-    {
-        return (new Tree($this->manifest))->tree($this->rootExporter);
     }
 
     public function exportInfo(array $manifest): string

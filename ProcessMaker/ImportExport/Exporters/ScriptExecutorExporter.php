@@ -4,6 +4,8 @@ namespace ProcessMaker\ImportExport\Exporters;
 
 class ScriptExecutorExporter extends ExporterBase
 {
+    public static $fallbackMatchColumn = 'title';
+
     public function export() : void
     {
     }

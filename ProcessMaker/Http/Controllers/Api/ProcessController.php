@@ -831,7 +831,7 @@ class ProcessController extends Controller
     public function import(Process $process, Request $request)
     {
         $content = $request->file('file')->get();
-        if (!$this->validateImportedFile($content)) {
+        if (!$this->validateImportedFile($content, $request)) {
             return response(
                 ['message' => __('Invalid Format')],
                 422
@@ -1219,7 +1219,7 @@ class ProcessController extends Controller
         $hasVersion = $isDecoded && isset($decoded->version) && is_string($decoded->version);
         $validVersion = $hasVersion && method_exists(ImportProcess::class, "parseFileV{$decoded->version}");
 
-        if ((int) $decoded->version === 2) {
+        if (isset($decoded->version) && (int) $decoded->version === 2) {
             return (new ImportController())->preview($request);
         }
 
