@@ -34,7 +34,9 @@ class ProcessRequestPolicy
     public function view(User $user, ProcessRequest $processRequest)
     {
         // Policy defined in ForUserScope
-        return $processRequest->forUser($user)->exists();
+        return ProcessRequest::forUser($user)
+            ->where('process_requests.id', $processRequest->id)
+            ->exists();
     }
 
     /**
