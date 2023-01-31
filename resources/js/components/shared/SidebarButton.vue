@@ -22,7 +22,7 @@
       <i
         v-if="child"
         class="mr-1"
-        :class="`fas fa-fw fa-${icon}`"
+        :class="`fas fa-fw ${icon}`"
       />
       <span><slot /></span>
     </div>

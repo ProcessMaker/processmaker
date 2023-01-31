@@ -6,7 +6,7 @@
       :class="i > 0 ? 'mb-0' : 'mb-2'"
     >
       <div v-if="i === 0">
-        <li v-if="!page.hidden">
+        <li>
           <sidebar-button
             :parent="i === 0"
             :active="i === active"
