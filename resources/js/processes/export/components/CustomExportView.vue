@@ -95,7 +95,7 @@ export default {
 @import "../../../../sass/variables";
 
 .custom-export-container {
-    max-width: 1600px;
+    max-width: 1100px;
     display: block;
     background-color: $light;
 }
