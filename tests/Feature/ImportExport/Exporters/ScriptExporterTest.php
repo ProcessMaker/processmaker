@@ -38,7 +38,7 @@ class ScriptExporterTest extends TestCase
 
         $script = Script::where('title', 'test')->firstOrFail();
         $this->assertEquals('test category', $script->categories[0]->name);
-        // $this->assertEquals('scriptuser', $script->runAsUser->username);
+        $this->assertEquals('scriptuser', $script->runAsUser->username);
         $this->assertDatabaseHas('environment_variables', ['name' => $environmentVariable1->name]);
         $this->assertDatabaseHas('environment_variables', ['name' => $environmentVariable2->name]);
         $this->assertDatabaseMissing('environment_variables', ['name' => $environmentVariable3->name]);

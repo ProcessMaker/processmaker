@@ -96,10 +96,8 @@ abstract class ExporterBase implements ExporterInterface
 
         if (!$this->manifest->has($uuid)) {
             $exporter = new $exporterClass($dependentModel, $this->manifest, $this->options);
-            if (!$exporter->discard()) {
-                $this->manifest->push($uuid, $exporter);
-                $exporter->runExport();
-            }
+            $this->manifest->push($uuid, $exporter);
+            $exporter->runExport();
         }
 
         $reAssociateUsing = [];

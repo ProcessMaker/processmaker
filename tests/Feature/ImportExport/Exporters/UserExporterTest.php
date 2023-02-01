@@ -39,7 +39,7 @@ class UserExporterTest extends TestCase
         $this->import($payload);
 
         $user = User::where('username', 'testuser')->firstOrFail();
-        // $this->assertEquals('test group', $user->groups->first()->name);
+        $this->assertEquals('test group', $user->groups->first()->name);
         $this->assertEquals($permissions, $user->permissions->pluck('name')->toArray());
     }
 
@@ -71,8 +71,8 @@ class UserExporterTest extends TestCase
         $user = User::where('username', 'admin')->firstOrFail();
 
         $this->assertEquals($originalUserCount, User::count());
-        // Original user's groups was NOT modified
-        $this->assertEquals(['test group'], $user->groups()->pluck('name')->toArray());
+        // Added to original users group
+        $this->assertEquals(['test group', 'test group 2'], $user->groups()->pluck('name')->toArray());
 
         // Test importing on new instance
         DB::rollBack(); // Delete all created items since DB::beginTransaction

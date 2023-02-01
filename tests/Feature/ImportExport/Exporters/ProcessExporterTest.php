@@ -105,9 +105,10 @@ class ProcessExporterTest extends TestCase
         $this->assertEquals(1, Screen::where('title', 'Request Detail Screen')->count());
         $this->assertEquals(1, Screen::where('title', 'Cancel Screen')->count());
 
-        // No longer exporting users
-        $this->assertNull($process->user);
-        $this->assertDatabaseMissing('groups', ['name' => 'Group']);
+        $group = $process->user->groups->first();
+        $this->assertEquals('Group', $group->name);
+        $this->assertEquals('My Example Group', $group->description);
+        $this->assertEquals($user->groups->first()->manager->id, $group->manager_id);
 
         $notificationSettings = $process->notification_settings;
         $this->assertCount(2, $notificationSettings);

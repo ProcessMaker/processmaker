@@ -65,7 +65,11 @@ class GroupExporterTest extends TestCase
         $this->assertEquals(1, Group::where('name', 'test group')->count());
         $newGroup = Group::where('name', 'test group')->firstOrFail();
         $this->assertEquals($permissions, $newGroup->permissions->pluck('name')->toArray());
-        // No longer exporting users
-        $this->assertEquals(0, $newGroup->users->count());
+        $this->assertEquals(5, $newGroup->users->count());
+
+        foreach ($newGroup->users as $newUser) {
+            $groupMember = GroupMember::where(['member_id' => $newUser->id])->firstOrFail();
+            $this->assertEquals($newUser->id, $groupMember->member_id);
+        }
     }
 }

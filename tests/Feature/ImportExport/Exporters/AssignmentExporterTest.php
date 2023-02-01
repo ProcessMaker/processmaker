@@ -130,8 +130,8 @@ class AssignmentExporterTest extends TestCase
         });
 
         // Users are groups are no longer exported
-        $this->assertEquals(0, User::whereIn('username', $users->pluck('username'))->get()->count());
-        $this->assertEquals(0, Group::whereIn('name', $groups->pluck('name'))->get()->count());
+        $this->assertEquals(11, User::whereIn('username', $users->pluck('username'))->get()->count());
+        $this->assertEquals(10, Group::whereIn('name', $groups->pluck('name'))->get()->count());
         $this->assertDatabaseHas('processes', ['name' => $process->name]);
         $process = Process::where('name', $process->name)->firstOrFail();
 
@@ -147,20 +147,18 @@ class AssignmentExporterTest extends TestCase
 
         // Assert the new imported user and groups are correctly assigned to the process
 
-        // User and groups are no longer exported
+        $this->assertEquals("$newUserIds[0],$newUserIds[1],$newUserIds[2]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedUsers'));
+        $this->assertEquals("$newUserIds[3],$newUserIds[4]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[2]', 'pm:assignedUsers'));
+        $this->assertEquals("$newUserIds[5],$newUserIds[6]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[1]', 'pm:assignedUsers'));
+        $this->assertEquals("$newUserIds[7]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[2]', 'pm:assignedUsers'));
+        $this->assertEquals("$newUserIds[8],$newUserIds[9]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[1]', 'pm:assignedUsers'));
+        $this->assertEquals("$newUserIds[10]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]', 'pm:assignedUsers'));
 
-        // $this->assertEquals("$newUserIds[0],$newUserIds[1],$newUserIds[2]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedUsers'));
-        // $this->assertEquals("$newUserIds[3],$newUserIds[4]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[2]', 'pm:assignedUsers'));
-        // $this->assertEquals("$newUserIds[5],$newUserIds[6]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[1]', 'pm:assignedUsers'));
-        // $this->assertEquals("$newUserIds[7]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[2]', 'pm:assignedUsers'));
-        // $this->assertEquals("$newUserIds[8],$newUserIds[9]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[1]', 'pm:assignedUsers'));
-        // $this->assertEquals("$newUserIds[10]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]', 'pm:assignedUsers'));
-
-        // $this->assertEquals("$newGroupIds[0]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedGroups'));
-        // $this->assertEquals("$newGroupIds[1],$newGroupIds[2]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[2]', 'pm:assignedGroups'));
-        // $this->assertEquals("$newGroupIds[3]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[1]', 'pm:assignedGroups'));
-        // $this->assertEquals("$newGroupIds[4],$newGroupIds[5]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[2]', 'pm:assignedGroups'));
-        // $this->assertEquals("$newGroupIds[6],$newGroupIds[7],$newGroupIds[8]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[1]', 'pm:assignedGroups'));
-        // $this->assertEquals("$newGroupIds[9]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]', 'pm:assignedGroups'));
+        $this->assertEquals("$newGroupIds[0]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedGroups'));
+        $this->assertEquals("$newGroupIds[1],$newGroupIds[2]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[2]', 'pm:assignedGroups'));
+        $this->assertEquals("$newGroupIds[3]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[1]', 'pm:assignedGroups'));
+        $this->assertEquals("$newGroupIds[4],$newGroupIds[5]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[2]', 'pm:assignedGroups'));
+        $this->assertEquals("$newGroupIds[6],$newGroupIds[7],$newGroupIds[8]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[1]', 'pm:assignedGroups'));
+        $this->assertEquals("$newGroupIds[9]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]', 'pm:assignedGroups'));
     }
 }
