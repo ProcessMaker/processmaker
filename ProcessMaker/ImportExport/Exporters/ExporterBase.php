@@ -218,7 +218,7 @@ abstract class ExporterBase implements ExporterInterface
             'force_password_protect' => $this->forcePasswordProtect,
             'required' => $this->required,
             'hidden' => $this->hidden,
-            'discard' => $this->discard(),
+            'implicit_discard' => $this->implicitDiscard(),
             'dependents' => array_map(fn ($d) => $d->toArray(), $this->dependents),
             'name' => $this->getName($this->model),
             'description' => $this->getDescription(),
@@ -417,7 +417,7 @@ abstract class ExporterBase implements ExporterInterface
         app()->make(Extension::class)->register($exporterClass, $class);
     }
 
-    public function discard() : bool
+    public function implicitDiscard() : bool
     {
         return false;
     }

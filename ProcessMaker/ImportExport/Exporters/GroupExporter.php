@@ -10,6 +10,8 @@ class GroupExporter extends ExporterBase
 
     public static $fallbackMatchColumn = 'name';
 
+    public $hidden = true;
+
     public function export() : void
     {
         if ($this->model->users->count() > 0) {
@@ -35,7 +37,7 @@ class GroupExporter extends ExporterBase
         return true;
     }
 
-    public function discard() : bool
+    public function implicitDiscard() : bool
     {
         return true;
     }

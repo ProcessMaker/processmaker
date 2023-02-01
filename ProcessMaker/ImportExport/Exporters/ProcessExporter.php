@@ -320,7 +320,7 @@ class ProcessExporter extends ExporterBase
         }
     }
 
-    public function discard(): bool
+    public function implicitDiscard(): bool
     {
         return true;
     }
