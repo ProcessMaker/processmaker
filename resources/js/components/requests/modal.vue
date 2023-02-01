@@ -138,9 +138,9 @@
             this.perPage +
             "&filter=" +
             this.filter +
-            "&order_by=category.name,name" +
+            "&order_by=category.name,processes.name" +
             "&order_direction=asc,asc" +
-            "&include=events,categories" +
+            "&include=events,categories,processCategory" +
             "&without_event_definitions=true"
           )
           .then(response => {
@@ -166,14 +166,22 @@
         // We need to pull out the category name, and if it's available in our processes, append it there
         // if not, create the category in our processes array and then append it
         for (let process of data) {
-          for (let category of process.categories) {
-            // Now determine if we have it defined in our processes list
-            if (typeof this.processes[category.name] == "undefined") {
+          if (typeof process.process_category === 'object' && typeof process.process_category.name === 'string') {
+            if (typeof this.processes[process.process_category.name] == "undefined") {
               // Create it
-              this.processes[category.name] = [];
+              this.processes[process.process_category.name] = [];
             }
-            // Now append
-            this.processes[category.name].push(process);
+            this.processes[process.process_category.name].push(process);
+          } else {
+            for (let category of process.categories) {
+              // Now determine if we have it defined in our processes list
+              if (typeof this.processes[category.name] == "undefined") {
+                // Create it
+                this.processes[category.name] = [];
+              }
+              // Now append
+              this.processes[category.name].push(process);
+            }
           }
         }
       }
