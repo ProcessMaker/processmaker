@@ -11,7 +11,7 @@ class Dependent
         public $meta,
         public string $exporterClass,
         public string $modelClass,
-        public array $reAssociateUsing
+        public array $fallbackMatches
         ) {
     }
 
@@ -23,7 +23,7 @@ class Dependent
             'meta' => $this->meta,
             'exporterClass' => $this->exporterClass,
             'modelClass' => $this->modelClass,
-            'reAssociateUsing' => $this->reAssociateUsing,
+            'fallbackMatches' => $this->fallbackMatches,
         ];
     }
 
@@ -37,7 +37,7 @@ class Dependent
                 $dependent['meta'],
                 $dependent['exporterClass'],
                 $dependent['modelClass'],
-                $dependent['reAssociateUsing']
+                $dependent['fallbackMatches']
             );
         }, $array);
     }
@@ -50,18 +50,15 @@ class Dependent
             // Attempt to reconstruct discarded model if it exists on the target instance
             $assetInfo = [
                 'model' => $this->modelClass,
-                'attributes' => $this->reAssociateUsing,
+                'attributes' => $this->fallbackMatches,
             ];
 
-            list($mode, $model) = Manifest::getModel($this->uuid, $assetInfo, 'discard', $this->exporterClass);
+            list($_, $model) = Manifest::getModel($this->uuid, $assetInfo, 'discard', $this->exporterClass);
 
             // Only return the model if it is persisted in the database
             if ($model && $model->exists) {
                 return $model;
             }
-
-            // TODO: Don't change the attribute on the target instance if the dependent model is not found on the target instance.
-            // and unset it if it's new
         }
 
         if (!$asset) {

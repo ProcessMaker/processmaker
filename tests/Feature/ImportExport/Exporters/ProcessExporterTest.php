@@ -319,15 +319,16 @@ class ProcessExporterTest extends TestCase
 
     public function testDiscardedAssetDoesNotExistOnTargetInstance()
     {
-        $this->markTestIncomplete('Need to figure out how to implement this');
-
         $this->addGlobalSignalProcess();
 
-        $manager = User::factory()->create();
-        $process = Process::factory()->create(['manager_id' => $manager->id, 'name' => 'exported name']);
+        $manager = User::factory()->create(['username' => 'manager']);
+        $user = User::factory()->create(['username' => 'processuser']);
+        $originalManagerId = $manager->id;
+        $process = Process::factory()->create(['user_id' => $user->id, 'manager_id' => $manager->id, 'name' => 'exported name']);
         $originalProcessUuid = $process->uuid;
 
-        $payload = $this->export($process, ProcessExporter::class);
+        $options = new Options([$manager->uuid => ['mode' => 'discard']]);
+        $payload = $this->export($process, ProcessExporter::class, $options);
 
         $manager->forceDelete();
         $process->forceDelete();
@@ -343,6 +344,8 @@ class ProcessExporterTest extends TestCase
         $processWithSameUUID->refresh();
 
         $this->assertEquals('exported name', $processWithSameUUID->name);
-        $this->assertEquals($differentManager->id, $processWithSameUUID->manager_id);
+
+        // Skip it from dependencies it if we can't find it
+        $this->assertEquals($originalManagerId, $processWithSameUUID->manager_id);
     }
 }
