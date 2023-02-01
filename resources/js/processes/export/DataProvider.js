@@ -99,9 +99,9 @@ export default {
         icon: ImportExportIcons.ICONS[key] || 'fa-code',
         items: value,
         forcePasswordProtect: value[0].forcePasswordProtect,
-        required: value[0].required,
-        hidden: value[0].hidden,
-        discard: value[0].discard,
+        required: value.every(i => i.required),
+        hidden: value.every(i => i.hidden),
+        discard: value.every(i => i.discard),
       };
     });
 
