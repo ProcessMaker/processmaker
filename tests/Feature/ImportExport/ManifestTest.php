@@ -13,7 +13,6 @@ use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\User;
-use ProcessMaker\Package\Versions\Models\VersionHistory;
 use Tests\TestCase;
 
 class ManifestTest extends TestCase
@@ -86,6 +85,11 @@ class ManifestTest extends TestCase
 
     public function testLastModifiedBy()
     {
+        $class = \ProcessMaker\Package\Versions\Models\VersionHistory::class;
+        if (!class_exists($class)) {
+            $this->markTestSkipped('VersionHistory class does not exist');
+        }
+
         $this->addGlobalSignalProcess();
         $process = Process::factory()->create();
         $latestProcessVersion = $process->getLatestVersion();
@@ -93,7 +97,7 @@ class ManifestTest extends TestCase
             'firstname'=>'Bob',
             'lastname'=>'The Builder',
         ]);
-        $versionHistory = VersionHistory::factory()->create([
+        $versionHistory = $class::factory()->create([
             'user_id'=>$lastUpdateUser->id,
             'versionable_id'=>$latestProcessVersion->id,
             'versionable_type'=> ProcessVersion::class,
