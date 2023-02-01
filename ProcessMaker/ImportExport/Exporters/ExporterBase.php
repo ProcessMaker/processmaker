@@ -100,9 +100,9 @@ abstract class ExporterBase implements ExporterInterface
             $exporter->runExport();
         }
 
-        $reAssociateUsing = [];
+        $fallbackMatches = [];
         foreach ((array) $exporterClass::$fallbackMatchColumn as $column) {
-            $reAssociateUsing[$column] = $dependentModel->$column;
+            $fallbackMatches[$column] = $dependentModel->$column;
         }
 
         $dependent = new Dependent(
@@ -112,7 +112,7 @@ abstract class ExporterBase implements ExporterInterface
             $meta,
             $exporterClass,
             get_class($dependentModel),
-            $reAssociateUsing
+            $fallbackMatches
         );
         $this->dependents[] = $dependent;
 

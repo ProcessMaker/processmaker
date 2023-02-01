@@ -35,9 +35,8 @@
             </div>
         </div>
         <hr>
-        <div v-for="(item, i) in group.items" :key="i">
-            <!-- <b-card class="low-elevation mt-4 mb-5 data-card"> -->
-            <b-card v-if="showCard(item)" class="low-elevation mt-4 mb-5 data-card">
+        <div v-for="(item, i) in group.items.filter(i => !i.hidden)" :key="i">
+            <b-card class="low-elevation mt-4 mb-5 data-card">
                 <template #header>
                     <h6 class="mb-0 data-card-header font-weight-bold text-capitalize">{{ item.name }}</h6>
                 </template>
