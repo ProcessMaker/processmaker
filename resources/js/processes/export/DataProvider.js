@@ -55,7 +55,9 @@ export default {
     // for (const [uuid, asset] of Object.entries(assets)) {
     Object.entries(assets).forEach(([uuid, asset]) => {
       const type = asset.type;
+
       const info = {
+        uuid,
         type,
         typePlural: asset.type_plural,
         typeHuman: asset.type_human,
@@ -74,7 +76,7 @@ export default {
         forcePasswordProtect: asset.force_password_protect,
         required: asset.required,
         hidden: asset.hidden,
-        discard: asset.discard,
+        implicitDiscard: asset.implicit_discard,
       };
 
       if (uuid === rootUuid) {
@@ -99,9 +101,10 @@ export default {
         icon: ImportExportIcons.ICONS[key] || 'fa-code',
         items: value,
         forcePasswordProtect: value[0].forcePasswordProtect,
-        required: value[0].required,
-        hidden: value[0].hidden,
-        discard: value[0].discard,
+        required: value.every(i => i.required),
+        hidden: value.every(i => i.hidden),
+        discard: value.every(i => i.discard),
+        implicitDiscard: value.every(i => i.implicitDiscard),
       };
     });
 

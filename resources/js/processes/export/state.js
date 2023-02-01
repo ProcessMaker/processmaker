@@ -1,7 +1,7 @@
 const ioState = [];
 
 export default {
-  data: function () {
+  data() {
     return {
       ioState,
       manifest: {},
@@ -10,21 +10,55 @@ export default {
       importMode: 'update',
       file: null,
       password: '',
+      discardedDependents: [],
     }
   },
   methods: {
+    discardDependents(asset) {
+      const { dependents } = asset[1];
+
+      if (asset[1].implicit_discard) {
+        dependents.map((d) => d.implicitDiscard = true);
+      }
+
+      dependents.forEach((dependent) => {
+        if (!(dependent.uuid in this.discardedDependents)) {
+          this.discardedDependents[dependent.uuid] = { implicitDiscard: dependent.implicitDiscard ? dependent.implicitDiscard : false };
+        } else if (this.discardedDependents[dependent.uuid].implicitDiscard === true) {
+          this.discardedDependents[dependent.uuid].implicitDiscard = dependent.implicitDiscard;
+        }
+      });
+    },
     setInitialState(assets, rootUuid) {
       this.rootUuid = rootUuid;
+
+      Object.entries(assets).forEach((asset) => {
+        if (asset.uuid !== rootUuid) {
+          this.discardDependents(asset);
+        }
+      });
+
       this.ioState = Object.entries(assets)
         .map(([uuid, asset]) => {
+          let mode = this.defaultMode;
+
+          if (this.discardedDependents[uuid]) {
+            mode = this.discardedDependents[uuid].implicitDiscard ? "discard" : this.defaultMode;
+          }
+
           return {
             uuid,
-            mode: this.defaultMode,
+            mode,
             group: asset.type,
             forcePasswordProtect: asset.force_password_protect,
           };
         })
         .filter(a => a.uuid !== rootUuid);
+
+        console.log("this.discardedDependents");
+        console.log(this.discardedDependents);
+        console.log("this.ioState");
+        console.log(this.ioState);
     },
     // used for for export
     setForGroup(group, value) {
@@ -60,7 +94,7 @@ export default {
     exportOptions(rootDefaultMode = null) {
       const ioState = this.ioState.map((asset) => [
           asset.uuid,
-          { mode: asset.mode }
+          { mode: asset.discard ? "discard" : asset.mode },
         ]);
 
       ioState.push([this.rootUuid, { mode: rootDefaultMode || this.defaultMode }]);
