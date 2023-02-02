@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\ImportExport\Exporters;
 
+use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\Models\Permission;
 
 class GroupExporter extends ExporterBase
@@ -14,11 +15,10 @@ class GroupExporter extends ExporterBase
 
     public function export() : void
     {
-        if ($this->model->users->count() > 0) {
-            foreach ($this->model->users as $user) {
-                $this->addDependent('users', $user, UserExporter::class);
-            }
+        foreach ($this->model->users as $dependentModel) {
+            $this->addDependent(DependentType::USERS, $dependentModel, UserExporter::class);
         }
+
         $this->addReference('permissions', $this->model->permissions()->pluck('name')->toArray());
     }
 
