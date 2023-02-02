@@ -73,7 +73,8 @@ export default {
         lastModifiedBy: asset.last_modified_by || "N/A",
         lastModifiedById: asset.last_modified_by_id || null,
         forcePasswordProtect: asset.force_password_protect,
-        hidden: asset.hidden
+        hidden: asset.hidden,
+        explicit_discard: asset.explicit_discard,
       };
 
       if (uuid === rootUuid) {

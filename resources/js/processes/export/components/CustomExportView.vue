@@ -10,7 +10,7 @@
             :process-id="processId"
           />
         </p-tab>
-        <p-tab v-for="(group, i) in groups" :key="i" :active="slotProps.activeIndex === i + 1">
+        <p-tab v-for="(group, i) in groupsFiltered" :key="i" :active="slotProps.activeIndex === i + 1">
           <ScriptsView
             :group="group"
             :items="group.items"
@@ -52,16 +52,24 @@ export default {
         { title: this.rootAsset.name, icon: null, hidden: this.rootAsset.hidden },
       ];
 
-      this.groups.forEach(group => {
-        items.push({
-          title: group.typePlural,
-          icon: group.icon,
-          hidden: group.hidden,
+      this.groups.filter((group) => {
+          return this.$root.includeSomeByGroup[group.type];
+        }).forEach(group => {
+          items.push({
+            title: group.typePlural,
+            icon: group.icon,
+            hidden: group.hidden,
+          });
         });
-      });
 
       return items;
     },
+    groupsFiltered()
+    {
+      return this.groups.filter((group) => {
+          return this.$root.includeSomeByGroup[group.type];
+      });
+    }
   },
   mounted() {
     if (this.$root.isImport) {

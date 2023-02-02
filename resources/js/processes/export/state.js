@@ -10,77 +10,62 @@ export default {
       importMode: 'update',
       file: null,
       password: '',
-      discardedDependents: [],
+    }
+  },
+  watch: {
+    ioState: {
+      deep: true,
+      handler() {
+        console.log("ioState", JSON.parse(JSON.stringify(this.ioState)));
+      }
     }
   },
   methods: {
-    // discardDependents(asset) {
-    //   const { dependents } = asset[1];
-
-    //   if (asset[1].implicit_discard) {
-    //     dependents.map((d) => d.implicitDiscard = true);
-    //   }
-
-    //   dependents.forEach((dependent) => {
-    //     if (!(dependent.uuid in this.discardedDependents)) {
-    //       this.discardedDependents[dependent.uuid] = { implicitDiscard: dependent.implicitDiscard ? dependent.implicitDiscard : false };
-    //     } else if (this.discardedDependents[dependent.uuid].implicitDiscard === true) {
-    //       this.discardedDependents[dependent.uuid].implicitDiscard = dependent.implicitDiscard;
-    //     }
-    //   });
-    // },
     setInitialState(assets, rootUuid) {
       this.manifest = assets;
       this.rootUuid = rootUuid;
-
-      // Object.entries(assets).forEach((asset) => {
-      //   if (asset.uuid !== rootUuid) {
-      //     this.discardDependents(asset);
-      //   }
-      // });
 
       // init
       this.ioState = Object.fromEntries(
         Object.entries(assets)
           .map(([uuid, asset]) => {
-            // let mode = asset.explicit_discard ? 'discard' : this.defaultMode;
-
-            // if (this.discardedDependents[uuid]) {
-            //   mode = this.discardedDependents[uuid].implicitDiscard ? "discard" : this.defaultMode;
-            // }
-
+            if (this.isImport) {
+              return [uuid, { mode: this.defaultMode, explicitDiscard: false }];
+            }
             return [uuid, { mode: 'discard', explicitDiscard: true }];
-              // group: asset.type,
-              // forcePasswordProtect: asset.force_password_protect,
-            // };
           })
           .filter(([uuid, _]) => uuid !== rootUuid)
       );
 
 
       // Traverse tree and enable assets
-console.log("Manifest", this.manifest);
-Object.keys(this.ioState).forEach((uuid) => {
-  this.set(uuid, 'update', false);
-})
-      // assets[rootUuid].forEach((asset) => {
-      //   if (asset.explicit_discard) {
-      //     return;
-      //   } else {
-      //     this.ioState[asset.uuid].mode = 'update';
-      //     this.ioState[asset.uuid].explicitDiscard = 'false';
-      //   }
-      //   asset.dependents.forEach((dependent) => {
-      //     const dependent = assets[dependent.uuid];
-      //     // recurse
-      //   })
-      // });
+      if (!this.isImport) {
+        const maxDepth = 20;
+        const enableAsset = (uuid, depth = 0) => {
+          if (depth > maxDepth) {
+            throw new Error('Max depth reached');
+          }
 
+          const asset = assets[uuid];
+          console.log("ASSET 1", asset, uuid);
 
-      console.log("this.discardedDependents");
-      console.log(this.discardedDependents);
-      console.log("this.ioState");
-      console.log(this.ioState);
+          // If depth is 0, it's the root element and alway enable it.
+          if (depth > 0 && asset.explicit_discard) {
+            return;
+
+          } else {
+            if (depth > 0) {
+              this.set(uuid, this.defaultMode, false);
+            }
+            asset.dependents.forEach((dependent) => {
+              const depUuid = dependent.uuid;
+              enableAsset(depUuid, depth + 1);
+            });
+          }
+        };
+        enableAsset(rootUuid);
+      }
+
     },
     // used for for export
     setForGroup(group, value) {
@@ -117,15 +102,11 @@ Object.keys(this.ioState).forEach((uuid) => {
       }
 
     },
-    // updatableAssets([uuid, asset]) {
-    //   // return this.explicitDiscardAssets.has(item.uuid);
-    //   return !this.ioState[uuid].explicitDiscard;
-    // },
     updatableSetting([uuid, setting]) {
       if (uuid === this.rootUuid) {
         return false;
       }
-      return !setting.implicitDiscard;
+      return !setting.explicitDiscard;
     },
     // used for for export
     setIncludeAll(value) {
@@ -159,6 +140,36 @@ Object.keys(this.ioState).forEach((uuid) => {
         ...this.ioState,
       };
     },
+    includeByGroup(method) {
+      const res = Object.fromEntries(
+        Object.entries(this.uuidsByGroup).map(([group, uuids]) => {
+          const groupSettings = Object.entries(this.ioState)
+            .filter(this.updatableSetting)
+            .filter(([uuid, setting]) => {
+              return uuids.includes(uuid)
+            });
+
+          const fn = ([uuid, setting]) => {
+            return setting.mode === this.defaultMode;
+          }
+
+          let result = false;
+          if (method === 'every') {
+            result = groupSettings.every(fn);
+          } else {
+            result = groupSettings.some(fn);
+          }
+
+          return [group, result];
+        })
+      );
+      return res;
+    },
+    hasSomeAvailable(items) {
+        return items.some(item => {
+            return !this.ioState[item.uuid].explicitDiscard;
+        });
+    },
   },
   computed: {
     defaultMode() {
@@ -172,9 +183,11 @@ Object.keys(this.ioState).forEach((uuid) => {
       return "Export";
     },
     includeAll() {
-      return Object.entries(this.ioState).filter(this.updatableSetting).every(([_, setting]) => {
+      const result = Object.entries(this.ioState).filter(this.updatableSetting).every(([uuid, setting]) => {
+        const asset = this.manifest[uuid];
         return setting.mode === this.defaultMode
       });
+      return result;
     },
     uuidsByGroup() {
       return Object.entries(this.manifest).reduce((groups, [uuid, asset]) => {
@@ -185,17 +198,12 @@ Object.keys(this.ioState).forEach((uuid) => {
       }, {});
     },
     includeAllByGroup() {
-      const res = Object.fromEntries(
-        Object.entries(this.uuidsByGroup).map(([group, uuids]) => {
-          const allAreIncluded = Object.entries(this.ioState)
-            .filter(this.updatableSetting)
-            .filter(([uuid, setting]) => {
-              return uuids.includes(uuid)
-            }).every(([uuid, setting]) => setting.mode === this.defaultMode);
-          return [group, allAreIncluded];
-        })
-      );
-      return res;
+      const r = this.includeByGroup('every');
+      return r;
+    },
+    includeSomeByGroup() {
+      const r = this.includeByGroup('some');
+      return r;
     },
     forcePasswordProtect() {
       return Object.entries(this.ioState)
