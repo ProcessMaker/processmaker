@@ -93,7 +93,6 @@ abstract class ExporterBase implements ExporterInterface
     public function addDependent(string $type, Model|Psudomodel $dependentModel, string $exporterClass, $meta = null)
     {
         $uuid = $dependentModel->uuid;
-
         if (!$this->manifest->has($uuid)) {
             $exporter = new $exporterClass($dependentModel, $this->manifest, $this->options);
             $this->manifest->push($uuid, $exporter);
@@ -104,7 +103,6 @@ abstract class ExporterBase implements ExporterInterface
         foreach ((array) $exporterClass::$fallbackMatchColumn as $column) {
             $fallbackMatches[$column] = $dependentModel->$column;
         }
-
 
         $dependent = new Dependent(
             $type,
@@ -320,7 +318,6 @@ abstract class ExporterBase implements ExporterInterface
         if ($this->mode === 'discard') {
             return;
         }
-
         foreach ($this->handleDuplicateAttributes() as $attribute => $handler) {
             $value = $this->model->$attribute;
             $i = 0;
@@ -341,6 +338,11 @@ abstract class ExporterBase implements ExporterInterface
 
         // Check the database for duplicates unrelated to the import
         $query = $class::where($attribute, $value);
+
+        // Check the database for deleted duplicates related to the import
+        if (in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses($class))) {
+            $query->withTrashed();
+        }
 
         // If this model is persisted, exclude it from the search
         if ($this->model->exists) {
