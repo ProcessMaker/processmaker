@@ -3,7 +3,7 @@
     <p-tabs :sidenav="sidenav" class="custom-export-container mx-4">
       <template v-slot:default="slotProps">
         <p-tab :active="slotProps.activeIndex === 0">
-          <ProcessesView
+          <MainAssetView
             :process-info="rootAsset"
             :groups="groups"
             :process-name="rootAsset.name"
@@ -11,7 +11,7 @@
           />
         </p-tab>
         <p-tab v-for="(group, i) in groupsFiltered" :key="i" :active="slotProps.activeIndex === i + 1">
-          <ScriptsView
+          <DependentAssetView
             :group="group"
             :items="group.items"
             :process-name="rootAsset.name"
@@ -24,14 +24,14 @@
 
 <script>
 import { PTabs, PTab } from "SharedComponents";
-import ProcessesView from "./process-elements/ProcessesView.vue";
-import ScriptsView from "./process-elements/ScriptsView.vue";
+import MainAssetView from "./MainAssetView.vue";
+import DependentAssetView from "./DependentAssetView.vue";
 import DataProvider from "../DataProvider";
 
 export default {
   components: {
-    ProcessesView,
-    ScriptsView,
+    MainAssetView,
+    DependentAssetView,
     PTab,
     PTabs,
   },
