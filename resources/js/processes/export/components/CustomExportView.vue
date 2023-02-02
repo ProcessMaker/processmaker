@@ -1,29 +1,29 @@
 <template>
   <div class="d-flex justify-content-center">
-    <container :sidenav="sidenav" class="custom-export-container mx-4">
+    <p-tabs :sidenav="sidenav" class="custom-export-container mx-4">
       <template v-slot:default="slotProps">
-        <container-page :active="slotProps.activeIndex === 0">
+        <p-tab :active="slotProps.activeIndex === 0">
           <ProcessesView
             :process-info="rootAsset"
             :groups="groups"
             :process-name="rootAsset.name"
             :process-id="processId"
           />
-        </container-page>
-        <container-page v-for="(group, i) in groups" :key="i" :active="slotProps.activeIndex === i + 1">
+        </p-tab>
+        <p-tab v-for="(group, i) in groups" :key="i" :active="slotProps.activeIndex === i + 1">
           <ScriptsView
             :group="group"
             :items="group.items"
             :process-name="rootAsset.name"
           />
-        </container-page>
+        </p-tab>
       </template>
-    </container>
+    </p-tabs>
   </div>
 </template>
 
 <script>
-import { Container, ContainerPage } from "SharedComponents";
+import { PTabs, PTab } from "SharedComponents";
 import ProcessesView from "./process-elements/ProcessesView.vue";
 import ScriptsView from "./process-elements/ScriptsView.vue";
 import DataProvider from "../DataProvider";
@@ -32,8 +32,8 @@ export default {
   components: {
     ProcessesView,
     ScriptsView,
-    Container,
-    ContainerPage,
+    PTab,
+    PTabs,
   },
   props: {
     processName: {},

@@ -12,11 +12,11 @@
 </template>
 
 <script>
-  import ContainerPage from "./ContainerPage";
+  import PTab from "./PTab";
   import SidebarNav from "./SidebarNav";
   
   export default {
-    components: { ContainerPage, SidebarNav },
+    components: { PTab, SidebarNav },
     props: {
       header: {
         type: String,
