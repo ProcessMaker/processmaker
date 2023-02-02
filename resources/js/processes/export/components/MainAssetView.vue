@@ -94,12 +94,12 @@
 
 <script>
 
-import DataCard from "../../../../components/shared/DataCard.vue";
-import AssetDependentTreeModal from "../../../../components/shared/AssetDependentTreeModal.vue";
-import AssetTreeModal from "../../../../components/shared/AssetTreeModal.vue";
-import SetPasswordModal from "../SetPasswordModal.vue";
-import DataProvider from "../../DataProvider";
-import ExportSuccessModal from "../ExportSuccessModal.vue";
+import DataCard from "../../../components/shared/DataCard.vue";
+import AssetDependentTreeModal from "../../../components/shared/AssetDependentTreeModal.vue";
+import AssetTreeModal from "../../../components/shared/AssetTreeModal.vue";
+import SetPasswordModal from "./SetPasswordModal.vue";
+import DataProvider from "../DataProvider";
+import ExportSuccessModal from "./ExportSuccessModal.vue";
 
 export default {
   props: [
