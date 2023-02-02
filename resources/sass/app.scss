@@ -459,6 +459,10 @@ label.custom-file-label:focus {
     border: 1px solid $primary !important;
 }
 
+.custom-control-label {
+  cursor: pointer;
+}
+
 .list-group-item.control-item:focus-visible,
 select.pagination-nav-item:focus-visible {
     outline: 0;
