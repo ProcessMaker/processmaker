@@ -45,11 +45,11 @@
                     v-model="passwordProtect"
                     class="fw-semibold"
                     stacked
-                    :disabled="!!$root.forcePasswordProtect.length"
+                    :disabled="$root.forcePasswordProtect"
                 >
                 Password Protect Export
                 <b-form-text class="process-options-helper-text">Define a password to protect your export file.</b-form-text>
-                <small v-if="!!$root.forcePasswordProtect.length" class="text-danger">
+                <small v-if="$root.forcePasswordProtect" class="text-danger">
                     Password protect is required because some assets have sensitive data.
                 </small>
                 </b-form-checkbox>
@@ -125,7 +125,7 @@ export default {
     },
     watch: {
       "$root.forcePasswordProtect": function (val) {
-        if (val.length) {
+        if (val) {
           this.passwordProtect = true;
         }
       }

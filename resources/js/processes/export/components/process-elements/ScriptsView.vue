@@ -74,9 +74,11 @@ export default {
             window.ProcessMaker.EventBus.$emit("return-to-summary-click");
         },
         showCard(item) {
+
             console.log(item);
             console.log(this.$root.ioState.find((i) => i.uuid === item.uuid));
-          return !this.$root.ioState.find((i) => i.uuid === item.uuid).hidden;
+
+            return !this.$root.ioState.find((i) => i.uuid === item.uuid).hidden;
         }
     },
     mounted() {

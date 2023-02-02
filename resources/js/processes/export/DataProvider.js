@@ -97,7 +97,6 @@ export default {
         typeHumanPlural: value[0].typeHumanPlural,
         icon: ImportExportIcons.ICONS[key] || 'fa-code',
         items: value,
-        forcePasswordProtect: value[0].forcePasswordProtect,
         hidden: value.every(i => i.hidden),
         discard: value.every(i => i.discard),
       };
