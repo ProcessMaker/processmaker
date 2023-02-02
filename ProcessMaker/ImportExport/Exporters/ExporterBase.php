@@ -41,9 +41,9 @@ abstract class ExporterBase implements ExporterInterface
 
     public $log = [];
 
-    public $required = false;
-
     public $hidden = false;
+
+    public $discard = false;
 
     public static $fallbackMatchColumn = null;
 
@@ -104,6 +104,7 @@ abstract class ExporterBase implements ExporterInterface
         foreach ((array) $exporterClass::$fallbackMatchColumn as $column) {
             $fallbackMatches[$column] = $dependentModel->$column;
         }
+
 
         $dependent = new Dependent(
             $type,
@@ -216,9 +217,9 @@ abstract class ExporterBase implements ExporterInterface
             'last_modified_by_id' => $this->getLastModifiedBy()['lastModifiedById'],
             'model' => get_class($this->model),
             'force_password_protect' => $this->forcePasswordProtect,
-            'required' => $this->required,
             'hidden' => $this->hidden,
-            'implicit_discard' => $this->implicitDiscard(),
+            'mode' => $this->mode,
+            'explicit_discard' => $this->discard,
             'dependents' => array_map(fn ($d) => $d->toArray(), $this->dependents),
             'name' => $this->getName($this->model),
             'description' => $this->getDescription(),
@@ -248,7 +249,6 @@ abstract class ExporterBase implements ExporterInterface
         }
 
         $attributes = array_merge($attributes, [
-            'import_mode' => $this->mode,
             'existing_id' => $this->model->id,
             'existing_attributes' => $existingAttributes,
             'existing_name' => $existingName,
@@ -415,10 +415,5 @@ abstract class ExporterBase implements ExporterInterface
     {
         $exporterClass = static::class;
         app()->make(Extension::class)->register($exporterClass, $class);
-    }
-
-    public function implicitDiscard() : bool
-    {
-        return false;
     }
 }

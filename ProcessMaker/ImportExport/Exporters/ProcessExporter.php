@@ -25,6 +25,8 @@ class ProcessExporter extends ExporterBase
 
     public ExportManager $manager;
 
+    public $discard = true;
+
     public function export() : void
     {
         $process = $this->model;
@@ -318,10 +320,5 @@ class ProcessExporter extends ExporterBase
             $path = $dependent->meta['path'];
             Utils::setAttributeAtXPath($this->model, $path, 'pm:scriptRef', $dependent->model->id);
         }
-    }
-
-    public function implicitDiscard(): bool
-    {
-        return true;
     }
 }

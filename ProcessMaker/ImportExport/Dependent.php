@@ -11,7 +11,8 @@ class Dependent
         public $meta,
         public string $exporterClass,
         public string $modelClass,
-        public array $fallbackMatches
+        public array $fallbackMatches,
+        public bool $discard = false
         ) {
     }
 
@@ -24,6 +25,7 @@ class Dependent
             'exporterClass' => $this->exporterClass,
             'modelClass' => $this->modelClass,
             'fallbackMatches' => $this->fallbackMatches,
+            'discard' => $this->discard,
         ];
     }
 
@@ -37,7 +39,7 @@ class Dependent
                 $dependent['meta'],
                 $dependent['exporterClass'],
                 $dependent['modelClass'],
-                $dependent['fallbackMatches']
+                $dependent['fallbackMatches'],
             );
         }, $array);
     }

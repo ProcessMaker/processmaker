@@ -43,18 +43,8 @@ class Exporter
         $this->manifest->runAfterExport();
         $export = $this->manifest->toArray();
 
-        $options = $this->options->options;
-        $discarded = [];
-        $export = array_filter($export, function ($uuid) use ($options, &$discarded) {
-            if (isset($options[$uuid])) {
-                if ($options[$uuid]['mode'] === 'discard') {
-                    $discarded[] = $uuid;
-
-                    return false;
-                }
-            }
-
-            return true;
+        $export = array_filter($export, function ($uuid) {
+            return $this->options->get('mode', $uuid) !== 'discard';
         }, ARRAY_FILTER_USE_KEY);
 
         $payload = [
@@ -63,7 +53,7 @@ class Exporter
             'root' => $this->rootExporter->uuid(),
             'name' => $this->rootExporter->getName($this->rootExporter->model),
             'export' => $export,
-            'discarded' => $discarded,
+            // 'discarded' => $discarded,
         ];
 
         return $payload;

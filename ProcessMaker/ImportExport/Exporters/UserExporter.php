@@ -13,7 +13,7 @@ class UserExporter extends ExporterBase
 
     public static $fallbackMatchColumn = ['email', 'username'];
 
-    public $hidden = true;
+    public $discard = true;
 
     public function export() : void
     {
@@ -52,10 +52,5 @@ class UserExporter extends ExporterBase
     public function getName($model) : string
     {
         return $model->username;
-    }
-
-    public function discard() : bool
-    {
-        return true;
     }
 }

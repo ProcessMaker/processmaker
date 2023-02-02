@@ -11,6 +11,7 @@ export default {
       file: null,
       password: '',
       discardedDependents: [],
+      explicitDiscardAssets: new Set(),
     }
   },
   methods: {
@@ -40,7 +41,7 @@ export default {
 
       this.ioState = Object.entries(assets)
         .map(([uuid, asset]) => {
-          let mode = this.defaultMode;
+          let mode = asset.explicit_discard ? 'discard' : this.defaultMode;
 
           if (this.discardedDependents[uuid]) {
             mode = this.discardedDependents[uuid].implicitDiscard ? "discard" : this.defaultMode;
@@ -62,19 +63,19 @@ export default {
     },
     // used for for export
     setForGroup(group, value) {
-      if (this.isImport) {
-        this.importMode
-      }
       const mode = value ? this.defaultMode : 'discard';
       this.setModeForGroup(group, mode);
     },
     // used for for import
     setModeForGroup(group, mode) {
-      this.ioState.forEach((asset, i) => {
+      this.ioState.filter(updatable).forEach((asset, i) => {
         if (asset.group === group) {
           this.ioState[i].mode = mode;
         }
       });
+    },
+    updatable(item) {
+      return this.explicitDiscardAssets.has(item.uuid);
     },
     // used for for export
     setIncludeAll(value) {
@@ -86,7 +87,7 @@ export default {
     },
     // used for for import
     setModeForAll(mode) {
-      this.ioState.forEach((_val, i) => this.ioState[i].mode = mode)
+      this.ioState.filter(updatable).forEach((_val, i) => this.ioState[i].mode = mode)
     },
     debug(obj) {
       return JSON.parse(JSON.stringify(this.ioState));
@@ -103,7 +104,8 @@ export default {
   },
   computed: {
     defaultMode() {
-      return this.isImport ? 'update' : null;
+      // return this.isImport ? 'update' : null;
+      return 'update';
     },
     operation() {
       if (this.isImport) {

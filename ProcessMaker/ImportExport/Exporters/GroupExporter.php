@@ -10,7 +10,7 @@ class GroupExporter extends ExporterBase
 
     public static $fallbackMatchColumn = 'name';
 
-    public $hidden = true;
+    public $discard = true;
 
     public function export() : void
     {
@@ -34,11 +34,6 @@ class GroupExporter extends ExporterBase
         $permissionIds = Permission::whereIn('name', $permissions)->pluck('id')->toArray();
         $group->permissions()->sync($permissionIds);
 
-        return true;
-    }
-
-    public function implicitDiscard() : bool
-    {
         return true;
     }
 }

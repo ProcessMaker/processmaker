@@ -72,11 +72,8 @@ export default {
         processManagerId: asset.process_manager_id || null,
         lastModifiedBy: asset.last_modified_by || "N/A",
         lastModifiedById: asset.last_modified_by_id || null,
-        importMode: asset.import_mode || 'update',
         forcePasswordProtect: asset.force_password_protect,
-        required: asset.required,
-        hidden: asset.hidden,
-        implicitDiscard: asset.implicit_discard,
+        hidden: asset.hidden
       };
 
       if (uuid === rootUuid) {
@@ -101,10 +98,8 @@ export default {
         icon: ImportExportIcons.ICONS[key] || 'fa-code',
         items: value,
         forcePasswordProtect: value[0].forcePasswordProtect,
-        required: value.every(i => i.required),
         hidden: value.every(i => i.hidden),
         discard: value.every(i => i.discard),
-        implicitDiscard: value.every(i => i.implicitDiscard),
       };
     });
 
