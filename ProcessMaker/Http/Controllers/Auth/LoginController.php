@@ -59,7 +59,7 @@ class LoginController extends Controller
         // clear cookie to avoid an issue when logout SLO and then try to login with simple PM login form
         \Cookie::queue(\Cookie::forget(config('session.cookie')));
         // cookie required here because SSO redirect resets the session
-        $cookie = cookie('processmaker_intended', redirect()->intended()->getTargetUrl(), 10, '/');
+        $cookie = cookie('processmaker_intended', redirect()->intended()->getTargetUrl(), 10, null, null, true, true, false, 'none');
         $response = response(view('auth.login', compact('addons', 'block')));
         $response->withCookie($cookie);
 
