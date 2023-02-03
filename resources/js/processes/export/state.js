@@ -16,7 +16,7 @@ export default {
     ioState: {
       deep: true,
       handler() {
-        console.log("ioState", JSON.parse(JSON.stringify(this.ioState)));
+        // console.log("ioState", JSON.parse(JSON.stringify(this.ioState)));
       }
     }
   },
@@ -47,7 +47,6 @@ export default {
           }
 
           const asset = assets[uuid];
-          console.log("ASSET 1", asset, uuid);
 
           // If depth is 0, it's the root element and alway enable it.
           if (depth > 0 && asset.explicit_discard) {
@@ -67,17 +66,41 @@ export default {
       }
 
     },
-    // used for for export
+    // updateChildren(uuid, mode)
+    // {
+    //   const maxDepth = 20;
+    //   const update = (uuid, depth = 0) => {
+
+    //     if (depth > maxDepth) {
+    //       throw new Error('Max depth reached in updateChildren');
+    //     }
+
+    //     const asset = this.getAsset(uuid);
+
+    //     if (depth > 0) {
+    //       console.log("Setting", asset.name, "to", mode);
+    //       this.set(uuid, mode);
+    //     }
+
+    //     asset.dependents.forEach((dependent) => {
+    //       update(dependent.uuid, depth + 1);
+    //     });
+    //   }
+    //   update(uuid);
+    // },
+    // getAsset(uuid) {
+    //   return this.manifest[uuid];
+    // },
     setForGroup(group, value) {
       const mode = value ? this.defaultMode : 'discard';
       this.setModeForGroup(group, mode);
     },
-    // used for for import
     setModeForGroup(group, mode) {
       Object.entries(this.manifest).filter(([uuid, asset]) => {
         return asset.type === group;
       }).forEach(([uuid, _]) => {
         this.set(uuid, mode);
+        // this.updateChildren(uuid, mode);
       });
     },
     set(uuid, mode, explicitDiscard = null) {
@@ -127,18 +150,10 @@ export default {
       return JSON.parse(JSON.stringify(this.ioState));
     },
     exportOptions(rootDefaultMode = null) {
-      // const ioState = this.ioState.map((asset) => [
-      //     asset.uuid,
-      //     { mode: asset.discard ? "discard" : asset.mode },
-      //   ]);
-
-      // ioState.push([this.rootUuid, { mode: rootDefaultMode || this.defaultMode }]);
-      // return Object.fromEntries(ioState);
       const rootUuid = this.rootUuid;
-      return {
-        rootUuid: { mode: rootDefaultMode || this.defaultMode },
-        ...this.ioState,
-      };
+      const options = {};
+      options[rootUuid] = { mode: rootDefaultMode || this.defaultMode };
+      return Object.assign(options, this.ioState);
     },
     includeByGroup(method) {
       const res = Object.fromEntries(
