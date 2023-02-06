@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\ImportExport\Exporters;
 
+use Illuminate\Support\Arr;
 use ProcessMaker\ImportExport\Psudomodels\Signal;
 use ProcessMaker\ImportExport\SignalQuery;
 
@@ -23,7 +24,15 @@ class SignalExporter extends ExporterBase
 
     public static function modelFinder($uuid, $assetInfo)
     {
-        return new SignalQuery($assetInfo);
+        $attrs = $assetInfo['attributes'];
+        if (Arr::get($attrs, 'id', '') === '') {
+            return [null, 'uuid'];
+        }
+
+        $signal = new Signal();
+        $signal->fill($assetInfo['attributes']);
+
+        return [$signal, 'uuid'];
     }
 
     public static function prepareAttributes($attrs)

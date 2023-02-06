@@ -22,6 +22,7 @@ use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\SignalData;
 use ProcessMaker\Models\SignalEventDefinition;
 use ProcessMaker\Models\User;
+use Psy\Command\PsyVersionCommand;
 use Tests\Feature\ImportExport\HelperTrait;
 use Tests\TestCase;
 
@@ -347,5 +348,24 @@ class ProcessExporterTest extends TestCase
 
         // Skip it from dependencies it if we can't find it
         $this->assertEquals($originalManagerId, $processWithSameUUID->manager_id);
+    }
+
+    public function testDiscardOnExport()
+    {
+        $this->addGlobalSignalProcess();
+
+        $user = User::factory()->create(['username' => 'manager']);
+        $process = Process::factory()->create(['user_id' => $user->id]);
+
+        $payload = $this->export($process, ProcessExporter::class, null, false);
+
+        $manifest = $payload['export'];
+        $this->assertArrayNotHasKey($user->uuid, $manifest);
+
+        // Test with ignoreExplicitDiscard
+        $payload = $this->export($process, ProcessExporter::class, null, true);
+
+        $manifest = $payload['export'];
+        $this->assertArrayHasKey($user->uuid, $manifest);
     }
 }

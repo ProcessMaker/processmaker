@@ -17,17 +17,17 @@ use ProcessMaker\Traits\HasVersioning;
 
 abstract class ExporterBase implements ExporterInterface
 {
-    public $model = null;
+    // public $model = null;
 
     public $dependents = [];
 
     public $references = [];
 
-    public $manifest = null;
+    // public $manifest = null;
 
     public $mode = null;
 
-    public $options = null;
+    // public $options = null;
 
     public $originalId = null;
 
@@ -45,22 +45,39 @@ abstract class ExporterBase implements ExporterInterface
 
     public $discard = false;
 
+    // public $ignoreExplicitDiscard = false;
+
     public static $fallbackMatchColumn = null;
 
     public static function modelFinder($uuid, $assetInfo)
     {
-        $query = $assetInfo['model']::where('uuid', $uuid);
+        $class = $assetInfo['model'];
+        $column = 'uuid';
+        $baseQuery = $class::query();
 
-        if (static::$fallbackMatchColumn) {
+        // Check if the model has soft deletes
+        if (in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses($class))) {
+            $baseQuery->withTrashed();
+        }
+
+        $query = clone $baseQuery;
+        $model = $query->where($column, $uuid)->first();
+
+        if (!$model) {
             foreach ((array) static::$fallbackMatchColumn as $column) {
                 $value = Arr::get($assetInfo, 'attributes.' . $column);
-                if ($value) {
-                    $query->orWhere($column, $value);
+                if (!$value) {
+                    continue;
+                }
+                $query = clone $baseQuery;
+                $model = $query->where($column, $value)->first();
+                if ($model) {
+                    break;
                 }
             }
         }
 
-        return $query;
+        return [$model, $column];
     }
 
     public static function doNotImport($uuid, $assetInfo)
@@ -77,11 +94,12 @@ abstract class ExporterBase implements ExporterInterface
         return $attrs;
     }
 
-    public function __construct(Model|Psudomodel|null $model, Manifest $manifest, Options $options)
-    {
-        $this->model = $model;
-        $this->manifest = $manifest;
-        $this->options = $options;
+    public function __construct(
+        public Model|Psudomodel|null $model,
+        public Manifest $manifest,
+        public Options $options,
+        public $ignoreExplicitDiscard
+    ) {
         $this->mode = $options->get('mode', $this->model->uuid);
     }
 
@@ -90,13 +108,26 @@ abstract class ExporterBase implements ExporterInterface
         return $this->model->uuid;
     }
 
+    public function include() : bool
+    {
+        if ($this->discard) { // Explicit Discard (not from passed-in options)
+            if (!$this->ignoreExplicitDiscard) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public function addDependent(string $type, Model|Psudomodel $dependentModel, string $exporterClass, $meta = null)
     {
         $uuid = $dependentModel->uuid;
         if (!$this->manifest->has($uuid)) {
-            $exporter = new $exporterClass($dependentModel, $this->manifest, $this->options);
-            $this->manifest->push($uuid, $exporter);
-            $exporter->runExport();
+            $exporter = new $exporterClass($dependentModel, $this->manifest, $this->options, $this->ignoreExplicitDiscard);
+            if ($exporter->include()) {
+                $this->manifest->push($uuid, $exporter);
+                $exporter->runExport();
+            }
         }
 
         $fallbackMatches = [];
@@ -122,9 +153,6 @@ abstract class ExporterBase implements ExporterInterface
     {
         return array_values(
             array_filter($this->dependents, function ($dependent) use ($type) {
-                // if ($dependent->mode === 'discard') {
-                //     return false;
-                // }
                 if ($type && $dependent->type !== $type) {
                     return false;
                 }
@@ -237,13 +265,13 @@ abstract class ExporterBase implements ExporterInterface
 
     public function addImportAttributes(&$attributes)
     {
-        $query = static::modelFinder($this->model->uuid, $attributes);
         $existingAttributes = null;
         $existingName = null;
-        if ($query->exists()) {
-            $existingModel = $query->first();
-            $existingAttributes = $existingModel->getAttributes();
-            $existingName = $this->getName($existingModel);
+        if ($this->model->exists) {
+            $existingAttributes = $this->model->getOriginal();
+            $class = get_class($this->model);
+            $model = new $class($existingAttributes);
+            $existingName = $this->getName($model);
         }
 
         $attributes = array_merge($attributes, [

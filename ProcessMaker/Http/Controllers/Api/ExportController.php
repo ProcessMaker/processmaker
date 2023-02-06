@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\ImportExport\Exporter;
+use ProcessMaker\ImportExport\Exporters\ExporterBase;
 use ProcessMaker\ImportExport\Exporters\ProcessExporter;
 use ProcessMaker\ImportExport\Exporters\ScreenExporter;
 use ProcessMaker\ImportExport\Exporters\ScriptExporter;
@@ -31,10 +32,10 @@ class ExportController extends Controller
     {
         $model = $this->getModel($type)->findOrFail($id);
 
-        $exporter = new Exporter();
+        $exporter = new Exporter(true);
         $exporter->export($model, $this->types[$type][1]);
 
-        return response()->json($exporter->payload(), 200);
+        return response()->json($exporter->payload(true), 200);
     }
 
     /**

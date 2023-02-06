@@ -58,10 +58,16 @@ class Manifest
         }
     }
 
-    public function toArray()
+    public function toArray($skipHidden = false)
     {
         $manifest = [];
         foreach ($this->manifest as $uuid => $exporter) {
+            if ($exporter->hidden && $skipHidden) {
+                continue;
+            }
+            if ($exporter->mode === 'discard') {
+                continue;
+            }
             $manifest[$uuid] = $exporter->toArray();
         }
 
@@ -75,7 +81,7 @@ class Manifest
             $exporterClass = $assetInfo['exporter'];
             $modeOption = $options->get('mode', $uuid);
             list($mode, $model) = self::getModel($uuid, $assetInfo, $modeOption, $exporterClass);
-            $exporter = new $exporterClass($model, $manifest, $options);
+            $exporter = new $exporterClass($model, $manifest, $options, false);
             $exporter->importing = true;
             $exporter->mode = $mode;
             $exporter->originalId = Arr::get($assetInfo, 'attributes.id');
@@ -103,7 +109,7 @@ class Manifest
             throw new \Exception('Mode "new" can only be set by the system.');
         }
 
-        $modelQuery = $exporterClass::modelFinder($uuid, $assetInfo);
+        [$model, $matchedColumn] = $exporterClass::modelFinder($uuid, $assetInfo);
 
         if ($exporterClass::doNotImport($uuid, $assetInfo)) {
             $mode = 'discard';
@@ -111,14 +117,7 @@ class Manifest
 
         $attrs = $exporterClass::prepareAttributes($attrs);
 
-        // Check if the model has soft deletes
-        if (in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses($class))) {
-            $modelQuery->withTrashed();
-        }
-
-        if ($modelQuery->exists()) {
-            $model = $modelQuery->firstOrFail();
-        } else {
+        if (!$model) {
             $model = new $class();
             if ($mode !== 'discard') {
                 $mode = 'new';

@@ -49,16 +49,13 @@ export default {
   computed: {
     sidenav() {
       const items = [
-        { title: this.rootAsset.name, icon: null, hidden: this.rootAsset.hidden },
+        { title: this.rootAsset.name, icon: null },
       ];
 
-      this.groups.filter((group) => {
-          return this.$root.includeSomeByGroup[group.type];
-        }).forEach(group => {
+      this.groupsFiltered.forEach(group => {
           items.push({
             title: group.typePlural,
             icon: group.icon,
-            hidden: group.hidden,
           });
         });
 
@@ -67,7 +64,7 @@ export default {
     groupsFiltered()
     {
       return this.groups.filter((group) => {
-          return this.$root.includeSomeByGroup[group.type];
+          return this.$root.groupsHaveSomeActive[group.type];
       });
     }
   },

@@ -63,6 +63,14 @@ class Dependent
             }
         }
 
+        if ($property === 'mode') {
+            if ($asset) {
+                return $asset->mode;
+            } else {
+                return 'discard';
+            }
+        }
+
         if (!$asset) {
             return null;
         }

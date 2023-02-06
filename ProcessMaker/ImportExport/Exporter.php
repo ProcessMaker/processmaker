@@ -17,11 +17,17 @@ class Exporter
 
     private $rootExporter;
 
+    public function __construct(
+        public bool $skipHidden = false,
+        public bool $ignoreExplicitDiscard = false)
+    {
+    }
+
     public function export(Model $model, string $exporterClass, Options $options = null)
     {
         $this->options = $options ?: new Options([]);
         $this->manifest = new Manifest();
-        $this->rootExporter = new $exporterClass($model, $this->manifest, $this->options);
+        $this->rootExporter = new $exporterClass($model, $this->manifest, $this->options, $this->ignoreExplicitDiscard);
         $this->manifest->push($model->uuid, $this->rootExporter);
         $this->rootExporter->runExport();
 
@@ -41,11 +47,7 @@ class Exporter
     public function payload(): array
     {
         $this->manifest->runAfterExport();
-        $export = $this->manifest->toArray();
-
-        $export = array_filter($export, function ($uuid) {
-            return $this->options->get('mode', $uuid) !== 'discard';
-        }, ARRAY_FILTER_USE_KEY);
+        $export = $this->manifest->toArray($this->skipHidden);
 
         $payload = [
             'type' => $this->rootExporter->getType(),
