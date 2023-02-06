@@ -5,6 +5,7 @@ namespace Tests\Feature\ImportExport\Api;
 use Illuminate\Http\UploadedFile;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\Jobs\ImportProcess;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
 use Tests\Feature\ImportExport\HelperTrait;
 use Tests\Feature\Shared\RequestHelper;
