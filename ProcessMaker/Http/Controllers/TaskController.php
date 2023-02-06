@@ -5,13 +5,11 @@ namespace ProcessMaker\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Request;
 use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\Jobs\MarkNotificationAsRead;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Comment;
-use ProcessMaker\Models\Notification;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
@@ -51,10 +49,8 @@ class TaskController extends Controller
             $this->authorize('update', $task);
         }
 
-        //Mark as unread any not read notification for the task
-        Notification::where('url', '/' . Request::path())
-            ->whereNull('read_at')
-            ->update(['read_at' => Carbon::now()]);
+        //Mark notification as read
+        MarkNotificationAsRead::dispatch([['url', '=', '/' . Request::path()]], ['read_at' => Carbon::now()]);
 
         $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, $task->getScreenVersion() ? $task->getScreenVersion()->type : 'FORM'));
