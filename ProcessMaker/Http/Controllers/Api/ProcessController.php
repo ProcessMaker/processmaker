@@ -1220,9 +1220,10 @@ class ProcessController extends Controller
         $hasType = $isDecoded && isset($decoded->type) && is_string($decoded->type);
         $validType = $hasType && $decoded->type === 'process_package';
         $hasVersion = $isDecoded && isset($decoded->version) && is_string($decoded->version);
-        $validVersion = $hasVersion && method_exists(ImportProcess::class, "parseFileV{$decoded->version}");
-
-        if ((int) $decoded->version === 2) {
+        $validVersion = $hasVersion && method_exists(ImportProcess::class, "parseFileV{$decoded->version}");        
+        $useNewImporter = $decoded !== null && property_exists($decoded, 'version') &&  (int) $decoded->version === 2;
+        
+        if ($useNewImporter) {
             return (new ImportController())->preview($request, $decoded->version);
         }
 
