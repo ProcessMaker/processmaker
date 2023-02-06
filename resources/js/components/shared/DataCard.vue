@@ -45,7 +45,7 @@
           </span>
         </template>
         <div class="mt-3">
-          <b-link @click="onGroupDetailsClick">
+          <b-link v-if="$root.includeAllByGroup[info.type]" @click="onGroupDetailsClick">
             <i class="fas fa-info-circle fa-fw mr-0 pr-0"></i>
             Details
           </b-link>
