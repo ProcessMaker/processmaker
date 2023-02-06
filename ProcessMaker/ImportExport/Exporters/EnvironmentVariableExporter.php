@@ -8,6 +8,8 @@ class EnvironmentVariableExporter extends ExporterBase
 {
     public $forcePasswordProtect = true;
 
+    public static $fallbackMatchColumn = 'name';
+
     public function export() : void
     {
         $this->addReference(DependentType::ENVIRONMENT_VARIABLE_VALUE, $this->model->value);

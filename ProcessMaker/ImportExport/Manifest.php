@@ -10,6 +10,10 @@ class Manifest
 {
     private $manifest = [];
 
+    private $afterExportCallbacks = [];
+
+    private $afterImportCallbacks = [];
+
     public function has(string $uuid)
     {
         return array_key_exists($uuid, $this->manifest);
@@ -30,6 +34,30 @@ class Manifest
         return $this->manifest;
     }
 
+    public function afterExport($callback)
+    {
+        $this->afterExportCallbacks[] = $callback;
+    }
+
+    public function afterImport($callback)
+    {
+        $this->afterImportCallbacks[] = $callback;
+    }
+
+    public function runAfterExport()
+    {
+        foreach ($this->afterExportCallbacks as $callback) {
+            $callback();
+        }
+    }
+
+    public function runAfterImport()
+    {
+        foreach ($this->afterImportCallbacks as $callback) {
+            $callback();
+        }
+    }
+
     public function toArray()
     {
         $manifest = [];
@@ -45,10 +73,11 @@ class Manifest
         $manifest = new self();
         foreach ($array as $uuid => $assetInfo) {
             $exporterClass = $assetInfo['exporter'];
-            list($importMode, $model) = self::getModel($uuid, $assetInfo, $options, $exporterClass);
-            $exporter = new $exporterClass($model, $manifest);
+            $modeOption = $options->get('mode', $uuid);
+            list($mode, $model) = self::getModel($uuid, $assetInfo, $modeOption, $exporterClass);
+            $exporter = new $exporterClass($model, $manifest, $options);
             $exporter->importing = true;
-            $exporter->importMode = $importMode;
+            $exporter->mode = $mode;
             $exporter->originalId = Arr::get($assetInfo, 'attributes.id');
             $exporter->updateDuplicateAttributes();
             $exporter->dependents = Dependent::fromArray($assetInfo['dependents'], $manifest);
@@ -64,11 +93,10 @@ class Manifest
         $this->manifest[$uuid] = $exporter;
     }
 
-    public static function getModel($uuid, $assetInfo, $options, $exporterClass)
+    public static function getModel($uuid, $assetInfo, $mode, $exporterClass)
     {
         $model = null;
         $class = $assetInfo['model'];
-        $mode = $options->get('mode', $uuid);
         $attrs = $assetInfo['attributes'];
 
         if ($mode === 'new') {

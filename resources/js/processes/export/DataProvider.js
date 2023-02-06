@@ -66,7 +66,9 @@ export default {
     // for (const [uuid, asset] of Object.entries(assets)) {
     Object.entries(assets).forEach(([uuid, asset]) => {
       const type = asset.type;
+
       const info = {
+        uuid,
         type,
         typePlural: asset.type_plural,
         typeHuman: asset.type_human,
@@ -81,13 +83,13 @@ export default {
         processManagerId: asset.process_manager_id || null,
         lastModifiedBy: asset.last_modified_by || "N/A",
         lastModifiedById: asset.last_modified_by_id || null,
-        importMode: asset.import_mode || 'update',
         forcePasswordProtect: asset.force_password_protect,
-        required: asset.required,
-        showInUI: asset.show_in_ui,
+        hidden: asset.hidden,
+        explicit_discard: asset.explicit_discard,
       };
 
       if (uuid === rootUuid) {
+        info.hidden = false;
         root = info;
         return;
       }
@@ -105,11 +107,10 @@ export default {
         typePlural: value[0].typePlural,
         typeHuman: value[0].typeHuman,
         typeHumanPlural: value[0].typeHumanPlural,
-        icon: ImportExportIcons.ICONS[key] || 'code',
+        icon: ImportExportIcons.ICONS[key] || 'fa-code',
         items: value,
-        forcePasswordProtect: value[0].forcePasswordProtect,
-        required: value[0].required,
-        showInUI: value[0].showInUI,
+        hidden: value.every(i => i.hidden),
+        discard: value.every(i => i.discard),
       };
     });
 
@@ -126,7 +127,9 @@ export default {
   //   return match[1] || "N/A";
   // },
   getCategories(asset, allAssets) {
-    const categories = asset.dependents.filter((d) => d.type === "categories").map((category) => allAssets[category.uuid].name);
+    const categories = asset.dependents.filter((d) => d.type === "categories").map((category) => {
+      return allAssets[category.uuid] ? allAssets[category.uuid].name : "Unexported Category"
+    });
     if (categories.length === 0) {
       categories.push("Uncategorized");
     }

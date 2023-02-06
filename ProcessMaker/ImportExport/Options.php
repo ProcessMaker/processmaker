@@ -11,7 +11,7 @@ class Options
             'enum' => [
                 'update' => 'Update the existing asset with the one being imported',
                 'discard' => 'Keep the existing asset and discard the one being imported',
-                'new' => 'Create a new asset and link dependent assets (in this import) to it',
+                'copy' => 'Create a new asset and link dependent assets (in this import) to it',
             ],
             'default' => 'update',
         ],
@@ -25,14 +25,10 @@ class Options
     }
 
     // Name can only equal "mode" for now
-    public function get($name, $uuid = null)
+    public function get($name, $uuid)
     {
-        if ($uuid) {
-            $assetOptions = Arr::get($this->options, $uuid, []);
+        $assetOptions = Arr::get($this->options, $uuid, []);
 
-            return Arr::get($assetOptions, $name, self::IMPORT_OPTIONS[$name]['default']);
-        }
-
-        return Arr::get($this->options, $name, self::IMPORT_OPTIONS[$name]['default']);
+        return Arr::get($assetOptions, $name, self::IMPORT_OPTIONS[$name]['default']);
     }
 }

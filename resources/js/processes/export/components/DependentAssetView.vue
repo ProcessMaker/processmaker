@@ -35,23 +35,23 @@
             </div>
         </div>
         <hr>
-        <div v-for="(item, i) in group.items" :key="i">
-            <b-card class="low-elevation mt-4 mb-5">
+        <div v-for="(item, i) in group.items.filter(i => !i.hidden)" :key="i">
+            <b-card class="low-elevation mt-4 mb-5 data-card">
                 <template #header>
                     <h6 class="mb-0 data-card-header font-weight-bold text-capitalize">{{ item.name }}</h6>
                 </template>
-            <b-card-text>
-                <ul class="process-element-metadata">
-                    <li v-if="item.description">Description: <span class="fw-semibold">{{ item.description }}</span></li>
-                    <li>Categories: <span class="fw-semibold">{{ item.categories }}</span></li>
-                    <li v-for="(attribute, i) in item.extraAttributes" :key="i">
-                        {{ i[0].toUpperCase() + i.substring(1) }}: <span class="fw-semibold">{{ attribute }}</span>
-                    </li>
-                    <!-- <li>Language: <span class="process-metadata"></span></li> -->
-                    <li>Created Date: <span class="fw-semibold">{{ item.createdAt }}</span></li>
-                    <li>Last Modified Date: <span class="fw-semibold">{{ item.updatedAt }}</span></li>
-                </ul>
-            </b-card-text>
+                <b-card-text>
+                    <ul class="process-element-metadata">
+                        <li v-if="item.description">Description: <span class="fw-semibold">{{ item.description }}</span></li>
+                        <li>Categories: <span class="fw-semibold">{{ item.categories }}</span></li>
+                        <li v-for="(attribute, i) in item.extraAttributes" :key="i">
+                            {{ i[0].toUpperCase() + i.substring(1) }}: <span class="fw-semibold">{{ attribute }}</span>
+                        </li>
+                        <!-- <li>Language: <span class="process-metadata"></span></li> -->
+                        <li>Created Date: <span class="fw-semibold">{{ item.createdAt }}</span></li>
+                        <li>Last Modified Date: <span class="fw-semibold">{{ item.updatedAt }}</span></li>
+                    </ul>
+                </b-card-text>
             </b-card>
         </div>
     </div>
@@ -73,6 +73,13 @@ export default {
         returnToSummaryClick() {
             window.ProcessMaker.EventBus.$emit("return-to-summary-click");
         },
+        showCard(item) {
+
+            console.log(item);
+            console.log(this.$root.ioState.find((i) => i.uuid === item.uuid));
+
+            return !this.$root.ioState.find((i) => i.uuid === item.uuid).hidden;
+        }
     },
     mounted() {
     }

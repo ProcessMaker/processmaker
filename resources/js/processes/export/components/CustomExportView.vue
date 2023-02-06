@@ -1,39 +1,39 @@
 <template>
   <div class="d-flex justify-content-center">
-    <container :sidenav="sidenav" class="custom-export-container mx-4">
+    <p-tabs :sidenav="sidenav" class="custom-export-container mx-4">
       <template v-slot:default="slotProps">
-        <container-page :active="slotProps.activeIndex === 0">
-          <ProcessesView
+        <p-tab :active="slotProps.activeIndex === 0">
+          <MainAssetView
             :process-info="rootAsset"
             :groups="groups"
             :process-name="rootAsset.name"
             :process-id="processId"
           />
-        </container-page>
-        <container-page v-for="(group, i) in groups" :key="i" :active="slotProps.activeIndex === i + 1">
-          <ScriptsView
+        </p-tab>
+        <p-tab v-for="(group, i) in groupsFiltered" :key="i" :active="slotProps.activeIndex === i + 1">
+          <DependentAssetView
             :group="group"
             :items="group.items"
             :process-name="rootAsset.name"
           />
-        </container-page>
+        </p-tab>
       </template>
-    </container>
+    </p-tabs>
   </div>
 </template>
 
 <script>
-import { Container, ContainerPage } from "SharedComponents";
-import ProcessesView from "./process-elements/ProcessesView.vue";
-import ScriptsView from "./process-elements/ScriptsView.vue";
+import { PTabs, PTab } from "SharedComponents";
+import MainAssetView from "./MainAssetView.vue";
+import DependentAssetView from "./DependentAssetView.vue";
 import DataProvider from "../DataProvider";
 
 export default {
   components: {
-    ProcessesView,
-    ScriptsView,
-    Container,
-    ContainerPage,
+    MainAssetView,
+    DependentAssetView,
+    PTab,
+    PTabs,
   },
   props: {
     processName: {},
@@ -49,19 +49,27 @@ export default {
   computed: {
     sidenav() {
       const items = [
-        { title: this.rootAsset.name, icon: null, showInUI: this.rootAsset.showInUI },
+        { title: this.rootAsset.name, icon: null, hidden: this.rootAsset.hidden },
       ];
 
-      this.groups.forEach(group => {
-        items.push({
-          title: group.typePlural,
-          icon: group.icon,
-          showInUI: group.showInUI,
+      this.groups.filter((group) => {
+          return this.$root.includeSomeByGroup[group.type];
+        }).forEach(group => {
+          items.push({
+            title: group.typePlural,
+            icon: group.icon,
+            hidden: group.hidden,
+          });
         });
-      });
 
       return items;
     },
+    groupsFiltered()
+    {
+      return this.groups.filter((group) => {
+          return this.$root.includeSomeByGroup[group.type];
+      });
+    }
   },
   mounted() {
     if (this.$root.isImport) {
@@ -95,7 +103,7 @@ export default {
 @import "../../../../sass/variables";
 
 .custom-export-container {
-    max-width: 1600px;
+    max-width: 1100px;
     display: block;
     background-color: $light;
 }

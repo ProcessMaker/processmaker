@@ -4,7 +4,7 @@
       <span>
         <i v-if="node.children && node.children.length && collapsable" class="fa" 
             :class="showChildren ? 'fa-caret-down' : 'fa-caret-right'"/> 
-        <i v-if="showIcon" class="text-secondary" :class="'fas fa-' + node.icon"/> 
+        <i v-if="showIcon" class="text-secondary" :class="'fas ' + node.icon"/> 
         <span v-if="!node.html || node.html === ''">{{ node.label }}</span>
         <span v-else v-html="node.html"></span>
       </span>
@@ -23,7 +23,7 @@
       <span :class="highlightedNode === node.uuid ? 'mb-1' : 'mb-2'">
         <i v-if="node.children && node.children.length && collapsable" class="fa" 
           :class="showChildren ? 'fa-caret-down' : 'fa-caret-right'"/>
-        <i v-if="showChildrenIcon" class="text-secondary" :class="'fas fa-' + node.icon"/>
+        <i v-if="showChildrenIcon" class="text-secondary" :class="'fas ' + node.icon"/>
         <span v-if="!node.html || node.html === ''">{{ node.label }}</span>
         <span v-else v-html="node.html"></span>
       </span>

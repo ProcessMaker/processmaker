@@ -129,7 +129,7 @@ class AssignmentExporterTest extends TestCase
             $this->assertEquals(0, Process::get()->count());
         });
 
-        // 11 from 12 created users should be exported ..
+        // Users are groups are no longer exported
         $this->assertEquals(11, User::whereIn('username', $users->pluck('username'))->get()->count());
         $this->assertEquals(10, Group::whereIn('name', $groups->pluck('name'))->get()->count());
         $this->assertDatabaseHas('processes', ['name' => $process->name]);
@@ -146,6 +146,7 @@ class AssignmentExporterTest extends TestCase
             ->pluck('id');
 
         // Assert the new imported user and groups are correctly assigned to the process
+
         $this->assertEquals("$newUserIds[0],$newUserIds[1],$newUserIds[2]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedUsers'));
         $this->assertEquals("$newUserIds[3],$newUserIds[4]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[2]', 'pm:assignedUsers'));
         $this->assertEquals("$newUserIds[5],$newUserIds[6]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:manualTask[1]', 'pm:assignedUsers'));

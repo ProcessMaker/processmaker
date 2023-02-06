@@ -1,7 +1,7 @@
 const ioState = [];
 
 export default {
-  data: function () {
+  data() {
     return {
       ioState,
       manifest: {},
@@ -12,35 +12,124 @@ export default {
       password: '',
     }
   },
+  watch: {
+    ioState: {
+      deep: true,
+      handler() {
+        // console.log("ioState", JSON.parse(JSON.stringify(this.ioState)));
+      }
+    }
+  },
   methods: {
     setInitialState(assets, rootUuid) {
+      this.manifest = assets;
       this.rootUuid = rootUuid;
-      this.ioState = Object.entries(assets)
-        .map(([uuid, asset]) => {
-          return {
-            uuid,
-            mode: this.defaultMode,
-            group: asset.type,
-            forcePasswordProtect: asset.force_password_protect,
-          };
-        })
-        .filter(a => a.uuid !== rootUuid);
-    },
-    // used for for export
-    setForGroup(group, value) {
-      if (this.isImport) {
-        this.importMode
+
+      // init
+      this.ioState = Object.fromEntries(
+        Object.entries(assets)
+          .map(([uuid, asset]) => {
+            if (this.isImport) {
+              return [uuid, { mode: this.defaultMode, explicitDiscard: false }];
+            }
+            return [uuid, { mode: 'discard', explicitDiscard: true }];
+          })
+          .filter(([uuid, _]) => uuid !== rootUuid)
+      );
+
+
+      // Traverse tree and enable assets
+      if (!this.isImport) {
+        const maxDepth = 20;
+        const enableAsset = (uuid, depth = 0) => {
+          if (depth > maxDepth) {
+            throw new Error('Max depth reached');
+          }
+
+          const asset = assets[uuid];
+
+          // If depth is 0, it's the root element and alway enable it.
+          if (depth > 0 && asset.explicit_discard) {
+            return;
+
+          } else {
+            if (depth > 0) {
+              this.set(uuid, this.defaultMode, false);
+            }
+            asset.dependents.forEach((dependent) => {
+              const depUuid = dependent.uuid;
+              enableAsset(depUuid, depth + 1);
+            });
+          }
+        };
+        enableAsset(rootUuid);
       }
+
+    },
+    // updateChildren(uuid, mode)
+    // {
+    //   const maxDepth = 20;
+    //   const update = (uuid, depth = 0) => {
+
+    //     if (depth > maxDepth) {
+    //       throw new Error('Max depth reached in updateChildren');
+    //     }
+
+    //     const asset = this.getAsset(uuid);
+
+    //     if (depth > 0) {
+    //       console.log("Setting", asset.name, "to", mode);
+    //       this.set(uuid, mode);
+    //     }
+
+    //     asset.dependents.forEach((dependent) => {
+    //       update(dependent.uuid, depth + 1);
+    //     });
+    //   }
+    //   update(uuid);
+    // },
+    // getAsset(uuid) {
+    //   return this.manifest[uuid];
+    // },
+    setForGroup(group, value) {
       const mode = value ? this.defaultMode : 'discard';
       this.setModeForGroup(group, mode);
     },
-    // used for for import
     setModeForGroup(group, mode) {
-      this.ioState.forEach((asset, i) => {
-        if (asset.group === group) {
-          this.ioState[i].mode = mode;
-        }
+      Object.entries(this.manifest).filter(([uuid, asset]) => {
+        return asset.type === group;
+      }).forEach(([uuid, _]) => {
+        this.set(uuid, mode);
+        // this.updateChildren(uuid, mode);
       });
+    },
+    set(uuid, mode, explicitDiscard = null) {
+
+      if (uuid === this.rootUuid) {
+        return;
+      }
+
+      const setting = this.ioState[uuid];
+      if (!setting) {
+        console.log(uuid + " not found in ioState");
+        return;
+      }
+
+      if (explicitDiscard !== null) {
+        setting.explicitDiscard = explicitDiscard;
+      }
+
+      if (!setting.explicitDiscard) {
+        setting.mode = mode;
+        this.$set(this.ioState, uuid, setting);
+      }
+
+    },
+    updatableSetting([uuid, setting]) {
+      if (uuid === this.rootUuid) {
+        return false;
+      }
+      return !setting.explicitDiscard;
     },
     // used for for export
     setIncludeAll(value) {
@@ -52,27 +141,55 @@ export default {
     },
     // used for for import
     setModeForAll(mode) {
-      this.ioState.forEach((_val, i) => this.ioState[i].mode = mode)
+      Object.entries(this.manifest)
+        .forEach(([uuid, asset]) => {
+          this.set(uuid, mode);
+        });
     },
     debug(obj) {
       return JSON.parse(JSON.stringify(this.ioState));
     },
     exportOptions(rootDefaultMode = null) {
-      const ioState = this.ioState.map(asset => {
-        return [
-          asset.uuid,
-          { mode: asset.mode }
-        ];
-      });
+      const rootUuid = this.rootUuid;
+      const options = {};
+      options[rootUuid] = { mode: rootDefaultMode || this.defaultMode };
+      return Object.assign(options, this.ioState);
+    },
+    includeByGroup(method) {
+      const res = Object.fromEntries(
+        Object.entries(this.uuidsByGroup).map(([group, uuids]) => {
+          const groupSettings = Object.entries(this.ioState)
+            .filter(this.updatableSetting)
+            .filter(([uuid, setting]) => {
+              return uuids.includes(uuid)
+            });
 
-      ioState.push([this.rootUuid, { mode: rootDefaultMode || this.defaultMode }])
-      // ioState.push([this.rootUuid, { mode: 'copy' }])
-      return Object.fromEntries(ioState);
+          const fn = ([uuid, setting]) => {
+            return setting.mode === this.defaultMode;
+          }
+
+          let result = false;
+          if (method === 'every') {
+            result = groupSettings.every(fn);
+          } else {
+            result = groupSettings.some(fn);
+          }
+
+          return [group, result];
+        })
+      );
+      return res;
+    },
+    hasSomeAvailable(items) {
+        return items.some(item => {
+            return !this.ioState[item.uuid].explicitDiscard;
+        });
     },
   },
   computed: {
     defaultMode() {
-      return this.isImport ? 'update' : null;
+      // return this.isImport ? 'update' : null;
+      return 'update';
     },
     operation() {
       if (this.isImport) {
@@ -81,25 +198,37 @@ export default {
       return "Export";
     },
     includeAll() {
-      return this.ioState.every(v => v.mode === this.defaultMode);
+      const result = Object.entries(this.ioState).filter(this.updatableSetting).every(([uuid, setting]) => {
+        const asset = this.manifest[uuid];
+        return setting.mode === this.defaultMode
+      });
+      return result;
     },
-    byGroup() {
-      return this.ioState.reduce((groups, item) => {
-        const group = (groups[item.group] || []);
-        group.push(item);
-        groups[item.group] = group;
+    uuidsByGroup() {
+      return Object.entries(this.manifest).reduce((groups, [uuid, asset]) => {
+        const group = (groups[asset.type] || []);
+        group.push(uuid);
+        groups[asset.type] = group;
         return groups;
       }, {});
     },
     includeAllByGroup() {
-      return Object.fromEntries(
-        Object.entries(this.byGroup).map(([group, assets]) => {
-          return [group, assets.every(item => item.mode === this.defaultMode)];
-        })
-      );
+      const r = this.includeByGroup('every');
+      return r;
+    },
+    includeSomeByGroup() {
+      const r = this.includeByGroup('some');
+      return r;
     },
     forcePasswordProtect() {
-      return this.ioState.filter((item) => item.forcePasswordProtect && item.mode !== "discard");
+      return Object.entries(this.ioState)
+        .filter(this.updatableSetting)
+        .filter(([uuid, setting]) => {
+          return setting.mode !== 'discard';
+        }).some(([uuid, item]) => {
+          const asset = this.manifest[uuid];
+          return asset.force_password_protect
+        });
     },
   },
 }

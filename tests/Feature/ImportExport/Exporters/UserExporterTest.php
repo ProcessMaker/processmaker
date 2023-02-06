@@ -68,10 +68,10 @@ class UserExporterTest extends TestCase
         $importer->doImport();
 
         $newProcess = Process::where('name', 'test process 2')->firstOrFail();
-        $newGroup = Group::where('name', 'test group 2')->firstOrFail();
         $user = User::where('username', 'admin')->firstOrFail();
 
         $this->assertEquals($originalUserCount, User::count());
+        // Added to original users group
         $this->assertEquals(['test group', 'test group 2'], $user->groups()->pluck('name')->toArray());
 
         // Test importing on new instance

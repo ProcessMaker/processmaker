@@ -1,9 +1,9 @@
 <template>
   <div class="mt-4 mb-5 data-card-container low-elevation">
-    <b-card>
+    <b-card class="data-card">
       <template #header>
         <div class="header">
-          <i class="text-secondary data-card-header fas nav-icon d-inline align-middle" :class="'fa-' + info.icon" />
+          <i class="text-secondary data-card-header fas nav-icon d-inline align-middle" :class="info.icon" />
           <h5 class="mb-0 data-card-header d-inline align-middle">{{ info.typeHumanPlural }}</h5>
           <b-form-checkbox
             class="data-card-header export-all d-inline align-middle fw-semibold"
@@ -45,7 +45,7 @@
           </span>
         </template>
         <div class="mt-3">
-          <b-link @click="onGroupDetailsClick">
+          <b-link v-if="$root.includeAllByGroup[info.type]" @click="onGroupDetailsClick">
             <i class="fas fa-info-circle fa-fw mr-0 pr-0"></i>
             Details
           </b-link>

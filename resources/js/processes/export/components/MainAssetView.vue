@@ -28,14 +28,14 @@
                         <span v-else>{{ processInfo.lastModifiedBy }}</span>
                     </span>
                 </li>
-                <li>
+                <!-- <li v-if="$root.isImport">
                     <a href="#" v-b-modal:asset-dependent-tree>Linked Dependent Assets</a>
                     <AssetDependentTreeModal></AssetDependentTreeModal>
                 </li>
                 <li>
                     <a href="#" v-b-modal:asset-tree>Linked Assets</a>
                     <AssetTreeModal :groups="groups"></AssetTreeModal>
-                </li>
+                </li> -->
             </ul>
         </div>
         <div class="mb-2">
@@ -45,11 +45,11 @@
                     v-model="passwordProtect"
                     class="fw-semibold"
                     stacked
-                    :disabled="!!$root.forcePasswordProtect.length"
+                    :disabled="$root.forcePasswordProtect"
                 >
                 Password Protect Export
                 <b-form-text class="process-options-helper-text">Define a password to protect your export file.</b-form-text>
-                <small v-if="!!$root.forcePasswordProtect.length" class="text-danger">
+                <small v-if="$root.forcePasswordProtect" class="text-danger">
                     Password protect is required because some assets have sensitive data.
                 </small>
                 </b-form-checkbox>
@@ -67,7 +67,7 @@
         </div>
         <hr>
         <div v-for="group in groups" :key="group.type">
-          <data-card v-if="group.showInUI" :exportAllElements="exportAllElements" :info="group" />
+          <data-card v-if="!group.hidden && $root.hasSomeAvailable(group.items)" :exportAllElements="exportAllElements" :info="group" />
         </div>
         <div class="pt-3 card-footer bg-light" align="right">
             <button type="button" class="btn btn-outline-secondary">
@@ -94,12 +94,12 @@
 
 <script>
 
-import DataCard from "../../../../components/shared/DataCard.vue";
-import AssetDependentTreeModal from "../../../../components/shared/AssetDependentTreeModal.vue";
-import AssetTreeModal from "../../../../components/shared/AssetTreeModal.vue";
-import SetPasswordModal from "../SetPasswordModal.vue";
-import DataProvider from "../../DataProvider";
-import ExportSuccessModal from "../ExportSuccessModal.vue";
+import DataCard from "../../../components/shared/DataCard.vue";
+import AssetDependentTreeModal from "../../../components/shared/AssetDependentTreeModal.vue";
+import AssetTreeModal from "../../../components/shared/AssetTreeModal.vue";
+import SetPasswordModal from "./SetPasswordModal.vue";
+import DataProvider from "../DataProvider";
+import ExportSuccessModal from "./ExportSuccessModal.vue";
 
 export default {
   props: [
@@ -125,7 +125,7 @@ export default {
     },
     watch: {
       "$root.forcePasswordProtect": function (val) {
-        if (val.length) {
+        if (val) {
           this.passwordProtect = true;
         }
       }

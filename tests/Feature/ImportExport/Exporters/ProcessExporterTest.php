@@ -71,16 +71,14 @@ class ProcessExporterTest extends TestCase
 
         $exporter = new Exporter();
         $exporter->exportProcess($process);
-        $tree = $exporter->tree();
+        $payload = $exporter->payload();
 
-        $this->assertEquals($process->uuid, Arr::get($tree, '0.uuid'));
-        $this->assertEquals($process->category->uuid, Arr::get($tree, '0.dependents.1.uuid'));
-        $this->assertEquals($cancelScreen->uuid, Arr::get($tree, '0.dependents.2.uuid'));
-        $this->assertEquals($requestDetailScreen->uuid, Arr::get($tree, '0.dependents.3.uuid'));
-        $this->assertEquals(
-            $user->groups->first()->uuid,
-            collect($tree[0]['dependents'][0]['dependents'])->firstWhere('type', 'groups')['uuid']
-        );
+        $processDependents = Arr::get($payload, 'export.' . $process->uuid . '.dependents');
+        $processDependentUuids = Arr::pluck($processDependents, 'uuid');
+
+        $this->assertContains($process->category->uuid, $processDependentUuids);
+        $this->assertContains($cancelScreen->uuid, $processDependentUuids);
+        $this->assertContains($requestDetailScreen->uuid, $processDependentUuids);
     }
 
     public function testImport()
@@ -106,7 +104,6 @@ class ProcessExporterTest extends TestCase
         $process = Process::where('name', 'Process')->firstOrFail();
         $this->assertEquals(1, Screen::where('title', 'Request Detail Screen')->count());
         $this->assertEquals(1, Screen::where('title', 'Cancel Screen')->count());
-        $this->assertEquals('testuser', $process->user->username);
 
         $group = $process->user->groups->first();
         $this->assertEquals('Group', $group->name);
@@ -125,22 +122,15 @@ class ProcessExporterTest extends TestCase
             'name' => 'signal process a',
         ]);
 
-        $processB = $this->createProcess('signal-process-b', [
-            'name' => 'signal process b',
-        ]);
-
-        $this->runExportAndImport($processA, ProcessExporter::class, function () use ($processA, $processB) {
+        $this->runExportAndImport($processA, ProcessExporter::class, function () use ($processA) {
             SignalManager::getGlobalSignalProcess()->forceDelete();
             $processA->forceDelete();
-            $processB->forceDelete();
             app()->forgetInstance(SignalHelper::class);
             $this->addGlobalSignalProcess();
         });
 
         $globalSignals = app()->make(SignalHelper::class)->getGlobalSignals()->toArray();
         $this->assertContains('test_global', $globalSignals);
-
-        $this->assertEquals(1, Process::where('name', 'signal process b')->count());
     }
 
     public function testSubprocesses()
@@ -284,5 +274,78 @@ class ProcessExporterTest extends TestCase
 
             $this->assertEquals($importedScript->title, $scriptTask['title']);
         }
+    }
+
+    public function testDiscardedAssetLinksOnImportIfItExistsOnTheTargetInstance()
+    {
+        $this->addGlobalSignalProcess();
+
+        $subprocess = Process::factory()->create(['name' => 'subprocess']);
+        $originalSubprocessUuid = $subprocess->uuid;
+        $originalSubprocessId = $subprocess->id;
+
+        $bpmn = file_get_contents(__DIR__ . '/../fixtures/process-with-subprocess.bpmn.xml');
+        $bpmn = str_replace('[SUBPROCESS_ID]', $originalSubprocessId, $bpmn);
+
+        $manager = User::factory()->create(['username' => 'orig-manager', 'email' => 'manager@test.com']);
+        $process = Process::factory()->create(['manager_id' => $manager->id, 'bpmn' => $bpmn]);
+
+        // Note: manager user and subprocess are not exported
+        $payload = $this->export($process, ProcessExporter::class);
+
+        $manager->forceDelete();
+        $subprocess->forceDelete();
+
+        // Create a different manager but with the same email as the original
+        $differentManager = User::factory()->create(['username' => 'new-manager', 'email' => 'manager@test.com']);
+        $subprocessWithSameUUID = Process::factory()->create(['uuid' => $originalSubprocessUuid, 'name' => 'different subprocess']);
+
+        $process->manager_id = $differentManager->id;
+        $process->save();
+
+        $this->import($payload);
+
+        $process->refresh();
+        $this->assertEquals($differentManager->id, $process->manager_id);
+        $this->assertNotEquals($originalSubprocessId, $subprocessWithSameUUID->id);
+
+        $value = Utils::getAttributeAtXPath($process, '*/bpmn:callActivity', 'calledElement');
+        $this->assertEquals('ProcessId-' . $subprocessWithSameUUID->id, $value);
+
+        $pmconfig = json_decode(Utils::getAttributeAtXPath($process, '*/bpmn:callActivity', 'pm:config'), true);
+        $this->assertEquals('ProcessId-' . $subprocessWithSameUUID->id, $pmconfig['calledElement']);
+        $this->assertEquals($subprocessWithSameUUID->id, $pmconfig['processId']);
+    }
+
+    public function testDiscardedAssetDoesNotExistOnTargetInstance()
+    {
+        $this->addGlobalSignalProcess();
+
+        $manager = User::factory()->create(['username' => 'manager']);
+        $user = User::factory()->create(['username' => 'processuser']);
+        $originalManagerId = $manager->id;
+        $process = Process::factory()->create(['user_id' => $user->id, 'manager_id' => $manager->id, 'name' => 'exported name']);
+        $originalProcessUuid = $process->uuid;
+
+        $options = new Options([$manager->uuid => ['mode' => 'discard']]);
+        $payload = $this->export($process, ProcessExporter::class, $options);
+
+        $manager->forceDelete();
+        $process->forceDelete();
+
+        $differentManager = User::factory()->create();
+        $processWithSameUUID = Process::factory()->create([
+            'uuid' => $originalProcessUuid,
+            'manager_id' => $differentManager->id,
+            'name' => 'name on target instance',
+        ]);
+
+        $this->import($payload);
+        $processWithSameUUID->refresh();
+
+        $this->assertEquals('exported name', $processWithSameUUID->name);
+
+        // Skip it from dependencies it if we can't find it
+        $this->assertEquals($originalManagerId, $processWithSameUUID->manager_id);
     }
 }

@@ -4,21 +4,19 @@
       <div class="col-sm-3 col-lg-3 border-right" ref="sidebar">
         <sidebar-nav @navigate="onNavigate" :sidenav="sidenav" :active="activeIndex"></sidebar-nav>
       </div>
-      <div class="col-sm-9 col-lg-6" ref="content">
+      <div class="col-sm-9 col-lg-9" ref="content">
         <slot v-bind:activeIndex="activeIndex"></slot>
-      </div>
-      <div class="col-sm-0 col-lg-3">
-      </div>      
+      </div>    
     </div>
   </div>
 </template>
 
 <script>
-  import ContainerPage from "./ContainerPage";
+  import PTab from "./PTab";
   import SidebarNav from "./SidebarNav";
   
   export default {
-    components: { ContainerPage, SidebarNav },
+    components: { PTab, SidebarNav },
     props: {
       header: {
         type: String,

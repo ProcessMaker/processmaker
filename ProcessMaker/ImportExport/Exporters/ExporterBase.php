@@ -10,6 +10,8 @@ use ProcessMaker\ImportExport\Dependent;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Extension;
 use ProcessMaker\ImportExport\Manifest;
+use ProcessMaker\ImportExport\Options;
+use ProcessMaker\ImportExport\Psudomodels\Psudomodel;
 use ProcessMaker\Models\User;
 use ProcessMaker\Traits\HasVersioning;
 
@@ -23,7 +25,9 @@ abstract class ExporterBase implements ExporterInterface
 
     public $manifest = null;
 
-    public $importMode = null;
+    public $mode = null;
+
+    public $options = null;
 
     public $originalId = null;
 
@@ -37,31 +41,48 @@ abstract class ExporterBase implements ExporterInterface
 
     public $log = [];
 
-    public $required = false;
+    public $hidden = false;
 
-    public $showInUI = true;
+    public $discard = false;
 
-    public static function modelFinder($uuid, $asssetInfo)
+    public static $fallbackMatchColumn = null;
+
+    public static function modelFinder($uuid, $assetInfo)
     {
-        return $asssetInfo['model']::where('uuid', $uuid);
+        $query = $assetInfo['model']::where('uuid', $uuid);
+
+        if (static::$fallbackMatchColumn) {
+            foreach ((array) static::$fallbackMatchColumn as $column) {
+                $value = Arr::get($assetInfo, 'attributes.' . $column);
+                if ($value) {
+                    $query->orWhere($column, $value);
+                }
+            }
+        }
+
+        return $query;
     }
 
-    public static function doNotImport($uuid, $asssetInfo)
+    public static function doNotImport($uuid, $assetInfo)
     {
         return false;
     }
 
     public static function prepareAttributes($attrs)
     {
-        unset($attrs['id']);
+        if (isset($attrs['id'])) {
+            unset($attrs['id']);
+        }
 
         return $attrs;
     }
 
-    public function __construct(?Model $model, Manifest $manifest)
+    public function __construct(Model|Psudomodel|null $model, Manifest $manifest, Options $options)
     {
         $this->model = $model;
         $this->manifest = $manifest;
+        $this->options = $options;
+        $this->mode = $options->get('mode', $this->model->uuid);
     }
 
     public function uuid() : string
@@ -69,28 +90,50 @@ abstract class ExporterBase implements ExporterInterface
         return $this->model->uuid;
     }
 
-    public function addDependent(string $type, Model $dependentModel, string $exporterClass, $meta = null)
+    public function addDependent(string $type, Model|Psudomodel $dependentModel, string $exporterClass, $meta = null)
     {
         $uuid = $dependentModel->uuid;
-
         if (!$this->manifest->has($uuid)) {
-            $exporter = new $exporterClass($dependentModel, $this->manifest);
+            $exporter = new $exporterClass($dependentModel, $this->manifest, $this->options);
             $this->manifest->push($uuid, $exporter);
             $exporter->runExport();
         }
-        $this->dependents[] = new Dependent($type, $uuid, $this->manifest, $meta);
+
+        $fallbackMatches = [];
+        foreach ((array) $exporterClass::$fallbackMatchColumn as $column) {
+            $fallbackMatches[$column] = $dependentModel->$column;
+        }
+
+        $dependent = new Dependent(
+            $type,
+            $uuid,
+            $this->manifest,
+            $meta,
+            $exporterClass,
+            get_class($dependentModel),
+            $fallbackMatches
+        );
+        $this->dependents[] = $dependent;
+
+        return $dependent;
     }
 
     public function getDependents($type = null)
     {
-        if (!$type) {
-            return array_values(
-                array_filter($this->dependents, fn ($d) => !is_null($d->model))
-            );
-        }
-
         return array_values(
-            array_filter($this->dependents, fn ($d) => $d->type === $type && !is_null($d->model))
+            array_filter($this->dependents, function ($dependent) use ($type) {
+                // if ($dependent->mode === 'discard') {
+                //     return false;
+                // }
+                if ($type && $dependent->type !== $type) {
+                    return false;
+                }
+                if ($dependent->model === null) {
+                    return false;
+                }
+
+                return true;
+            })
         );
     }
 
@@ -164,24 +207,25 @@ abstract class ExporterBase implements ExporterInterface
     {
         $attributes = [
             'exporter' => get_class($this),
-            'name' => $this->getName($this->model),
             'type' => $this->getClassName(),
             'type_human' => $this->getTypeHuman($this->getClassName()),
             'type_plural' => Str::plural($this->getClassName()),
             'type_human_plural' => Str::plural($this->getTypeHuman($this->getClassName())),
-            'description' => $this->getDescription(),
             'last_modified_by' => $this->getLastModifiedBy()['lastModifiedByName'],
             'last_modified_by_id' => $this->getLastModifiedBy()['lastModifiedById'],
+            'model' => get_class($this->model),
+            'force_password_protect' => $this->forcePasswordProtect,
+            'hidden' => $this->hidden,
+            'mode' => $this->mode,
+            'explicit_discard' => $this->discard,
+            'dependents' => array_map(fn ($d) => $d->toArray(), $this->dependents),
+            'name' => $this->getName($this->model),
+            'description' => $this->getDescription(),
             'process_manager' => $this->getProcessManager()['managerName'],
             'process_manager_id' => $this->getProcessManager()['managerId'],
-            'model' => get_class($this->model),
             'attributes' => $this->getExportAttributes(),
             'extraAttributes' => $this->getExtraAttributes($this->model),
             'references' => $this->references,
-            'dependents' => array_map(fn ($d) => $d->toArray(), $this->dependents),
-            'force_password_protect' => $this->forcePasswordProtect,
-            'required' => $this->required,
-            'show_in_ui' => $this->showInUI,
         ];
 
         if ($this->importing) {
@@ -193,16 +237,16 @@ abstract class ExporterBase implements ExporterInterface
 
     public function addImportAttributes(&$attributes)
     {
+        $query = static::modelFinder($this->model->uuid, $attributes);
         $existingAttributes = null;
         $existingName = null;
-        if ($this->model->id) {
-            $existingModel = $attributes['model']::find($this->model->id);
+        if ($query->exists()) {
+            $existingModel = $query->first();
             $existingAttributes = $existingModel->getAttributes();
             $existingName = $this->getName($existingModel);
         }
 
         $attributes = array_merge($attributes, [
-            'import_mode' => $this->importMode,
             'existing_id' => $this->model->id,
             'existing_attributes' => $existingAttributes,
             'existing_name' => $existingName,
@@ -271,10 +315,9 @@ abstract class ExporterBase implements ExporterInterface
 
     public function updateDuplicateAttributes()
     {
-        if ($this->importMode === 'discard') {
+        if ($this->mode === 'discard') {
             return;
         }
-
         foreach ($this->handleDuplicateAttributes() as $attribute => $handler) {
             $value = $this->model->$attribute;
             $i = 0;
@@ -295,6 +338,11 @@ abstract class ExporterBase implements ExporterInterface
 
         // Check the database for duplicates unrelated to the import
         $query = $class::where($attribute, $value);
+
+        // Check the database for deleted duplicates related to the import
+        if (in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses($class))) {
+            $query->withTrashed();
+        }
 
         // If this model is persisted, exclude it from the search
         if ($this->model->exists) {
