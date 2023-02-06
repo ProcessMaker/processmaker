@@ -9,7 +9,6 @@ use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestLock;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\RequestUserPermission;
 use ProcessMaker\Models\ScheduledTask;
 
 class ProcessmakerClearRequests extends Command
@@ -44,7 +43,6 @@ class ProcessmakerClearRequests extends Command
             Media::where('model_type', ProcessRequest::class)->delete();
             Comment::where('commentable_type', ProcessRequest::class)->delete();
             Comment::where('commentable_type', ProcessRequestToken::class)->delete();
-            RequestUserPermission::query()->truncate();
             ProcessCollaboration::query()->truncate();
             ProcessRequest::query()->truncate();
         }

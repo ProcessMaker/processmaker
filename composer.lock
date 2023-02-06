@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "35b0a7219337e78ac5e2dfd7296cd4cd",
+    "content-hash": "c4441ab052c598e82665a7ee4dcbf17f",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -5893,16 +5893,16 @@
         },
         {
             "name": "processmaker/docker-executor-node",
-            "version": "1.0.1",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/docker-executor-node.git",
-                "reference": "e61f24090422f890cb227bc94a4461438f3ec9a6"
+                "reference": "a6aaa10ce65e2dcca0167db3da41865f6319132a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-node/zipball/e61f24090422f890cb227bc94a4461438f3ec9a6",
-                "reference": "e61f24090422f890cb227bc94a4461438f3ec9a6",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-node/zipball/a6aaa10ce65e2dcca0167db3da41865f6319132a",
+                "reference": "a6aaa10ce65e2dcca0167db3da41865f6319132a",
                 "shasum": ""
             },
             "type": "library",
@@ -5926,22 +5926,22 @@
             "description": "Javascript script executor for processmaker 4",
             "support": {
                 "issues": "https://github.com/ProcessMaker/docker-executor-node/issues",
-                "source": "https://github.com/ProcessMaker/docker-executor-node/tree/v1.0.1"
+                "source": "https://github.com/ProcessMaker/docker-executor-node/tree/v1.1.0"
             },
-            "time": "2020-07-02T22:53:17+00:00"
+            "time": "2023-02-01T01:24:22+00:00"
         },
         {
             "name": "processmaker/docker-executor-php",
-            "version": "1.0.1",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/docker-executor-php.git",
-                "reference": "fa170f095279f6f0a55361d33ac177a6e0331310"
+                "reference": "7669e9d8e22e43d369160dae6ebe86efaecd1f7f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-php/zipball/fa170f095279f6f0a55361d33ac177a6e0331310",
-                "reference": "fa170f095279f6f0a55361d33ac177a6e0331310",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-php/zipball/7669e9d8e22e43d369160dae6ebe86efaecd1f7f",
+                "reference": "7669e9d8e22e43d369160dae6ebe86efaecd1f7f",
                 "shasum": ""
             },
             "type": "library",
@@ -5965,9 +5965,9 @@
             "description": "PHP script executor for processmaker 4",
             "support": {
                 "issues": "https://github.com/ProcessMaker/docker-executor-php/issues",
-                "source": "https://github.com/ProcessMaker/docker-executor-php/tree/v1.0.1"
+                "source": "https://github.com/ProcessMaker/docker-executor-php/tree/v1.1.0"
             },
-            "time": "2022-07-05T20:26:35+00:00"
+            "time": "2023-02-01T01:24:54+00:00"
         },
         {
             "name": "processmaker/laravel-i18next",
