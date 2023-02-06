@@ -86,7 +86,7 @@ class NotificationController extends Controller
             'data->processName as processName',
             'data->userName as userName',
             'data->request_id as request_id',
-            'data->url as url')
+            'url as url')
             ->where('notifiable_type', User::class)
             ->where('notifiable_id', Auth::user()->id);
 
@@ -308,7 +308,7 @@ class NotificationController extends Controller
 
         Notification::query()
             ->whereIn('id', $messageIds)
-            ->orWhereIn('data->url', $routes)
+            ->orWhereIn('url', $routes)
             ->update(['read_at' => Carbon::now()]);
 
         return response([], 201);
@@ -355,12 +355,12 @@ class NotificationController extends Controller
 
         $updated = Notification::query()
             ->whereIn('id', $messageIds)
-            ->orWhereIn('data->url', $routes)
+            ->orWhereIn('url', $routes)
             ->get();
 
         Notification::query()
             ->whereIn('id', $messageIds)
-            ->orWhereIn('data->url', $routes)
+            ->orWhereIn('url', $routes)
             ->update(['read_at' => null]);
 
         return response($updated, 201);
