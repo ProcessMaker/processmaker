@@ -46,7 +46,7 @@ class TaskReassignmentNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['broadcast', 'database'];
+        return ['broadcast', NotificationChannel::class];
     }
 
     /**
