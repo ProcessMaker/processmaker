@@ -86,7 +86,7 @@ class NotificationController extends Controller
             'data->processName as processName',
             'data->userName as userName',
             'data->request_id as request_id',
-            'url as url')
+            'url')
             ->where('notifiable_type', User::class)
             ->where('notifiable_id', Auth::user()->id);
 
@@ -149,7 +149,7 @@ class NotificationController extends Controller
     public function store(Request $request)
     {
         $data = json_decode($request->data, true);
-        $request->request->add(['url' => $data['url']]);
+        $request->request->add(['url' => $data['url'] ?? null]);
 
         $request->validate(Notification::rules());
         $notification = new Notification();
@@ -230,7 +230,7 @@ class NotificationController extends Controller
     public function update(Notification $notification, Request $request)
     {
         $data = json_decode($request->data, true);
-        $request->request->add(['url' => $data['url']]);
+        $request->request->add(['url' => $data['url'] ?? null]);
 
         $request->validate(Notification::rules($notification));
         $notification->fill($request->input());
