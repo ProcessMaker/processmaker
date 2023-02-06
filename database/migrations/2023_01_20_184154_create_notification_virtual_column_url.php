@@ -19,7 +19,6 @@ class CreateNotificationVirtualColumnUrl extends Migration
 
         DB::table('notifications')->whereNull('read_at')
             ->lazyById()->each(function ($notification) {
-                
                 $data = json_decode($notification->data, true);
                 $url = $data['url'] ?? null;
                 if ($url) {
