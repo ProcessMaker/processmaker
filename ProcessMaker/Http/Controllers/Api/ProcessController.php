@@ -785,14 +785,16 @@ class ProcessController extends Controller
     public function preimportValidation(Process $process, Request $request)
     {
         $content = $request->file('file')->get();
+        $payload = json_decode($content);
+
         if (!$result = $this->validateImportedFile($content, $request)) {
             return response(
                 ['message' => __('The selected file is invalid or not supported for import.')],
                 422
             );
-        } else {
-            return $result;
         }
+
+        return $result;
     }
 
     /**
@@ -853,6 +855,7 @@ class ProcessController extends Controller
             'status' => $import->status,
             'assignable' => $import->assignable,
             'process' => $import->process,
+            'processId' => $import->process->id,
         ]);
     }
 
@@ -1217,10 +1220,11 @@ class ProcessController extends Controller
         $hasType = $isDecoded && isset($decoded->type) && is_string($decoded->type);
         $validType = $hasType && $decoded->type === 'process_package';
         $hasVersion = $isDecoded && isset($decoded->version) && is_string($decoded->version);
-        $validVersion = $hasVersion && method_exists(ImportProcess::class, "parseFileV{$decoded->version}");
-
-        if (isset($decoded->version) && (int) $decoded->version === 2) {
-            return (new ImportController())->preview($request);
+        $validVersion = $hasVersion && method_exists(ImportProcess::class, "parseFileV{$decoded->version}");        
+        $useNewImporter = $decoded !== null && property_exists($decoded, 'version') &&  (int) $decoded->version === 2;
+        
+        if ($useNewImporter) {
+            return (new ImportController())->preview($request, $decoded->version);
         }
 
         return $isDecoded && $validType && $validVersion;

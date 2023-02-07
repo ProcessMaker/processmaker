@@ -4,6 +4,8 @@ namespace Tests\Feature\ImportExport\Api;
 
 use Illuminate\Http\UploadedFile;
 use ProcessMaker\ImportExport\Exporter;
+use ProcessMaker\Jobs\ImportProcess;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
 use Tests\Feature\ImportExport\HelperTrait;
 use Tests\Feature\Shared\RequestHelper;
@@ -141,5 +143,15 @@ class ExportImportTest extends TestCase
         return [
             $file, $screen, $nestedScreen,
         ];
+    }
+
+    public function testImportOldProcess()
+    {
+        $content = file_get_contents(base_path('tests/Feature/ImportExport/fixtures/old-process-payload-41.json'));
+        // Run old process importer job
+        $response = ImportProcess::dispatchNow($content);
+        $process = Process::where('id', $response->process->id)->firstOrFail();
+
+        $this->assertEquals('old_process_test_41', $process->name);
     }
 }
