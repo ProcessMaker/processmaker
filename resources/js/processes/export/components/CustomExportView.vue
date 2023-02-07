@@ -64,7 +64,9 @@ export default {
     groupsFiltered()
     {
       return this.groups.filter((group) => {
-          return this.$root.groupsHaveSomeActive[group.type];
+        return this.$root.groupsHaveSomeActive[group.type];
+      }).filter((group) => {
+        return this.$root.hasSomeNotDiscardedByParent(group.items);
       });
     }
   },

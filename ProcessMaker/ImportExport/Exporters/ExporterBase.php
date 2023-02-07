@@ -116,6 +116,10 @@ abstract class ExporterBase implements ExporterInterface
             }
         }
 
+        if ($this->mode === 'discard') {  // passed in by options
+            return false;
+        }
+
         return true;
     }
 
@@ -212,7 +216,7 @@ abstract class ExporterBase implements ExporterInterface
         return $name;
     }
 
-    public function getType(): string
+    public function getExportType(): string
     {
         $basename = class_basename($this->model);
 

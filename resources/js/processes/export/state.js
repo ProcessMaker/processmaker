@@ -29,39 +29,59 @@ export default {
       this.ioState = Object.fromEntries(
         Object.entries(assets)
           .map(([uuid, asset]) => {
-            // if (this.isImport) {
-            // return [uuid, { mode: this.defaultMode, explicitDiscard: false }];
-            return [uuid, { mode: this.defaultMode }];
-            // }
-            // return [uuid, { mode: 'discard', explicitDiscard: true }];
+            return [uuid, { mode: this.defaultMode, discardedByParent: false }];
           })
           .filter(([uuid, _]) => uuid !== rootUuid)
       );
     },
-    updateChildren(uuid, mode) {
-      // const maxDepth = 20;
-      // const setMode = (uuid, depth = 0) => {
-      //   if (depth > maxDepth) {
-      //     throw new Error('Max depth reached');
-      //   }
+    // Hide the asset from UI if its parent is was discarded AND the
+    // asset is not used by any other non-discarded asset.
+    updateDiscardedByParent() {
 
-      //   const asset = this.manifest[uuid];
-      //   if (!asset) {
-      //     return;
-      //   }
+      // First, we set all discardedByParent to ture.
+      Object.keys(this.ioState).forEach((uuid) => {
+        this.$set(this.ioState[uuid], 'discardedByParent', true);
+      });
+      
+      const maxDepth = 20;
+      const setMode = (uuid, discardedByParent, depth = 0) => {
+        if (depth > maxDepth) {
+          throw new Error('Max depth reached');
+        }
 
-      //   // If depth is 0, it's the first element and it was already set.
-      //   if (depth > 0) {
-      //     this.set(uuid, this.defaultMode, false);
-      //   }
+        const asset = this.manifest[uuid];
+        if (!asset) {
+          // Dependent was not included in the initial payload because it was
+          // marked as hidden or explicitly discarded by the backend.
+          return;
+        }
 
-      //   asset.dependents.forEach((dependent) => {
-      //     const depUuid = dependent.uuid;
-      //     enableAsset(depUuid, depth + 1);
-      //   });
+        let mode = this.defaultMode;
+        
+        // Root (depth 0) is not in this.ioState
+        if (depth > 0) {
+          mode = this.ioState[uuid].mode;
+          console.log("Setting discardedByParent for " + uuid + " to " + discardedByParent);
+          this.$set(this.ioState[uuid], 'discardedByParent', discardedByParent);
+        }
 
-      // };
-      // setMode(uuid);
+        // If this asset's mode is 'discard', set all it's children's discardedByParent to true.
+        // Additionally, if this this asset's parent was discarded, set our children to
+        // discardedByParent = true
+        const setChildrenDiscardedByParent = mode === 'discard' || discardedByParent;
+
+        console.log("Setting all children for " + uuid + " to " + setChildrenDiscardedByParent);
+        console.log(uuid + ' has ' + asset.dependents.length + ' children');
+
+        asset.dependents.forEach((dependent) => {
+          const depUuid = dependent.uuid;
+          console.log("Setting child " + dependent.uuid, dependent);
+          setMode(depUuid, setChildrenDiscardedByParent, depth + 1);
+        });
+
+      };
+      console.log("Starting with", this.rootUuid);
+      setMode(this.rootUuid, false);
     },
     setForGroup(group, value) {
       const mode = value ? this.defaultMode : 'discard';
@@ -73,8 +93,9 @@ export default {
       }).forEach(([uuid, _]) => {
         this.set(uuid, mode);
       });
+      this.updateDiscardedByParent();
     },
-    set(uuid, mode) { //, explicitDiscard = null) {
+    set(uuid, mode, discardedByParent = false) {
 
       if (uuid === this.rootUuid) {
         return;
@@ -86,26 +107,15 @@ export default {
         return;
       }
 
-      // if (explicitDiscard !== null) {
-      //   setting.explicitDiscard = explicitDiscard;
-      // }
-
-      // if (!setting.explicitDiscard) {
       setting.mode = mode;
+      setting.discardedByParent = discardedByParent;
       this.$set(this.ioState, uuid, setting);
-      // }
-
-      // Use nextTicket to wait until all set()'s have been run for this action
-      this.$nextTick(() => {
-        this.updateChildren(uuid, mode);
-      });
 
     },
     updatableSetting([uuid, setting]) {
       if (uuid === this.rootUuid) {
         return false;
       }
-      // return !setting.explicitDiscard;
       return true;
     },
     // used for for export
@@ -157,11 +167,10 @@ export default {
       );
       return res;
     },
-    hasSomeAvailable(items) {
-      // return items.some(item => {
-      //     return !this.ioState[item.uuid].explicitDiscard;
-      // });
-      return true;
+    hasSomeNotDiscardedByParent(items) {
+      return items.some(item => {
+          return !this.ioState[item.uuid].discardedByParent;
+      });
     },
   },
   computed: {
@@ -202,7 +211,7 @@ export default {
       return Object.entries(this.ioState)
         .filter(this.updatableSetting)
         .filter(([uuid, setting]) => {
-          return setting.mode !== 'discard';
+          return setting.mode !== 'discard' && !setting.discardedByParent
         }).some(([uuid, item]) => {
           const asset = this.manifest[uuid];
           return asset.force_password_protect

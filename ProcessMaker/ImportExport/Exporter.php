@@ -50,7 +50,7 @@ class Exporter
         $export = $this->manifest->toArray($this->skipHidden);
 
         $payload = [
-            'type' => $this->rootExporter->getType(),
+            'type' => $this->rootExporter->getExportType(),
             'version' => '2',
             'root' => $this->rootExporter->uuid(),
             'name' => $this->rootExporter->getName($this->rootExporter->model),
