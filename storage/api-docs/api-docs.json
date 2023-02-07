@@ -3772,7 +3772,7 @@
         "/security-logs": {
             "get": {
                 "tags": [
-                    "Security Logs"
+                    "Secuirty Logs"
                 ],
                 "summary": "Returns all security logs",
                 "description": "Get a list of Security Logs.",
@@ -3819,7 +3819,7 @@
         "/security-logs/{securityLog}": {
             "get": {
                 "tags": [
-                    "Security Logs"
+                    "Secuirty Logs"
                 ],
                 "summary": "Get single security log by ID",
                 "description": "Display the specified resource.",
@@ -4350,15 +4350,6 @@
                         "required": true,
                         "schema": {
                             "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "include",
-                        "in": "query",
-                        "description": "include",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
                         }
                     }
                 ],
@@ -5485,9 +5476,6 @@
                         "type": "string"
                     },
                     "request_id": {
-                        "type": "string"
-                    },
-                    "url": {
                         "type": "string"
                     }
                 },
@@ -6776,9 +6764,9 @@
                 "description": "Laravel passport oauth2 security.",
                 "flows": {
                     "authorizationCode": {
-                        "authorizationUrl": "https://192.168.115.132/oauth/authorize",
-                        "tokenUrl": "https://192.168.115.132/oauth/token",
-                        "refreshUrl": "https://192.168.115.132/token/refresh",
+                        "authorizationUrl": "http://localhost/oauth/authorize",
+                        "tokenUrl": "http://localhost/oauth/token",
+                        "refreshUrl": "http://localhost/token/refresh",
                         "scopes": {}
                     }
                 }
