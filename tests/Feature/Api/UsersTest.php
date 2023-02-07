@@ -4,8 +4,6 @@ namespace Tests\Feature\Api;
 
 use Faker\Factory as Faker;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
@@ -46,10 +44,10 @@ class UsersTest extends TestCase
      */
     public function testNotCreatedForParameterRequired()
     {
-        //Post should have the parameter required
+        // Post should have the parameter required
         $response = $this->apiCall('POST', self::API_TEST_URL, []);
 
-        //Validate the header status code
+        // Validate the header status code
         $response->assertStatus(422);
         $this->assertArrayHasKey('message', $response->json());
     }
@@ -59,7 +57,7 @@ class UsersTest extends TestCase
      */
     public function testCreateUser()
     {
-        //Post title duplicated
+        // Post title duplicated
         $faker = Faker::create();
         $url = self::API_TEST_URL;
         $response = $this->apiCall('POST', $url, [
@@ -71,7 +69,7 @@ class UsersTest extends TestCase
             'password' => $faker->sentence(10),
         ]);
 
-        //Validate the header status code
+        // Validate the header status code
         $response->assertStatus(201);
     }
 
@@ -164,7 +162,7 @@ class UsersTest extends TestCase
             'username' => 'mytestusername',
         ]);
 
-        //Post username duplicated
+        // Post username duplicated
         $faker = Faker::create();
         $response = $this->apiCall('POST', self::API_TEST_URL, [
             'username' => 'mytestusername',
@@ -172,7 +170,7 @@ class UsersTest extends TestCase
             'deuserion' => $faker->sentence(10),
         ]);
 
-        //Validate the header status code
+        // Validate the header status code
         $response->assertStatus(422);
         $this->assertArrayHasKey('message', $response->json());
     }
@@ -184,13 +182,11 @@ class UsersTest extends TestCase
     {
         User::query()->delete();
 
-        $faker = Faker::create();
-
         User::factory()->count(10)->create();
 
         $response = $this->apiCall('GET', self::API_TEST_URL);
 
-        //Validate the header status code
+        // Validate the header status code
         $response->assertStatus(200);
 
         // Verify structure
@@ -236,15 +232,15 @@ class UsersTest extends TestCase
             'username' => $username,
         ]);
 
-        //List User with filter option
+        // List User with filter option
         $perPage = Faker::create()->randomDigitNotNull;
         $query = '?page=1&per_page=' . $perPage . '&order_by=firstname&order_direction=DESC&filter=' . $username;
         $response = $this->apiCall('GET', self::API_TEST_URL . $query);
 
-        //Validate the header status code
+        // Validate the header status code
         $response->assertStatus(200);
 
-        //verify structure paginate
+        // verify structure paginate
         $response->assertJsonStructure([
             'data',
             'meta',
@@ -268,10 +264,10 @@ class UsersTest extends TestCase
         $query = '?filter=' . urlencode('test@example.com');
         $response = $this->apiCall('GET', self::API_TEST_URL . $query);
 
-        //Validate the header status code
+        // Validate the header status code
         $response->assertStatus(200);
 
-        //verify structure paginate
+        // verify structure paginate
         $response->assertJsonStructure([
             'data',
             'meta',
@@ -287,50 +283,32 @@ class UsersTest extends TestCase
      */
     public function testGetUser()
     {
-        //get the id from the factory
+        // get the id from the factory
         $user = User::factory()->create()->id;
 
-        //load api
+        // load api
         $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $user);
 
-        //Validate the status is correct
+        // Validate the status is correct
         $response->assertStatus(200);
 
-        //verify structure
+        // verify structure
         $response->assertJsonStructure(self::STRUCTURE);
     }
-
-    /**
-     * Get a user with the memberships
-     */
-    // public function testGetUserIncledMembership()
-    // {
-    //     //get the id from the factory
-    //     $user = User::factory()->create()->id;
-    //
-    //     //load api
-    //     $response = $this->apiCall('GET', self::API_TEST_URL. '/' . $user . '?include=memberships');
-    //
-    //     //Validate the status is correct
-    //     $response->assertStatus(200);
-    //
-    //     //verify structure
-    //     $response->assertJsonFragment(['memberships']);
-    // }
 
     /**
      * Parameters required for update of user
      */
     public function testUpdateUserParametersRequired()
     {
-        //The post must have the required parameters
+        // The post must have the required parameters
         $url = self::API_TEST_URL . '/' . User::factory()->create()->id;
 
         $response = $this->apiCall('PUT', $url, [
             'username' => '',
         ]);
 
-        //Validate the header status code
+        // Validate the header status code
         $response->assertStatus(422);
     }
 
@@ -343,10 +321,10 @@ class UsersTest extends TestCase
 
         $url = self::API_TEST_URL . '/' . User::factory()->create()->id;
 
-        //Load the starting user data
+        // Load the starting user data
         $verify = $this->apiCall('GET', $url);
 
-        //Post saved success
+        // Post saved success
         $response = $this->apiCall('PUT', $url, [
             'username' => 'updatemytestusername',
             'email' => $faker->email,
@@ -367,13 +345,13 @@ class UsersTest extends TestCase
             'force_change_password' => $faker->boolean,
         ]);
 
-        //Validate the header status code
+        // Validate the header status code
         $response->assertStatus(204);
 
-        //Load the updated user data
+        // Load the updated user data
         $verify_new = $this->apiCall('GET', $url);
 
-        //Check that it has changed
+        // Check that it has changed
         $this->assertNotEquals($verify, $verify_new);
     }
 
@@ -386,7 +364,7 @@ class UsersTest extends TestCase
 
         $url = self::API_TEST_URL . '/' . User::factory()->create()->id;
 
-        //Post saved success
+        // Post saved success
         $response = $this->apiCall('PUT', $url, [
             'username' => 'updatemytestusername',
             'email' => $faker->email,
@@ -397,10 +375,10 @@ class UsersTest extends TestCase
             'force_change_password' => 0,
         ]);
 
-        //Validate the header status code
+        // Validate the header status code
         $response->assertStatus(204);
 
-        //Validate Flag force_change_password was changed
+        // Validate Flag force_change_password was changed
         $this->assertDatabaseHas('users', [
             'force_change_password' => 0,
         ]);
@@ -422,7 +400,7 @@ class UsersTest extends TestCase
         $response = $this->apiCall('PUT', $url, [
             'username' => 'MyUserName',
         ]);
-        //Validate the header status code
+        // Validate the header status code
         $response->assertStatus(422);
         $response->assertSeeText('The Username has already been taken');
     }
@@ -432,11 +410,11 @@ class UsersTest extends TestCase
      */
     public function testDeleteUser()
     {
-        //Remove user
+        // Remove user
         $url = self::API_TEST_URL . '/' . User::factory()->create()->id;
         $response = $this->apiCall('DELETE', $url);
 
-        //Validate the header status code
+        // Validate the header status code
         $response->assertStatus(204);
     }
 
@@ -445,11 +423,11 @@ class UsersTest extends TestCase
      */
     public function testDeleteUserNotExist()
     {
-        //User not exist
+        // User not exist
         $url = self::API_TEST_URL . '/' . User::factory()->make()->id;
         $response = $this->apiCall('DELETE', $url);
 
-        //Validate the header status code
+        // Validate the header status code
         $response->assertStatus(405);
     }
 
@@ -458,22 +436,22 @@ class UsersTest extends TestCase
      */
     public function testUpdateUserAvatar()
     {
-        //Create a new user
+        // Create a new user
         $user = User::factory()->create([
             'username' => 'AvatarUser',
         ]);
 
-        //Set our API url for this users
+        // Set our API url for this users
         $url = self::API_TEST_URL . '/' . $user->id;
 
-        //Create a fake image and encode it to base64
+        // Create a fake image and encode it to base64
         $fakeImage = UploadedFile::fake()
                                  ->image('avatar.jpg', 1200, 1200)
                                  ->size(1500)
                                  ->get();
         $avatar = 'data:image/png;base64,' . base64_encode($fakeImage);
 
-        //Update the user with the fake image as an avatar
+        // Update the user with the fake image as an avatar
         $putResponse = $this->apiCall('PUT', $url, [
             'username' => $user->username,
             'firstname' => 'name',
@@ -483,20 +461,20 @@ class UsersTest extends TestCase
             'avatar' => $avatar,
         ]);
 
-        //Validate the header status code
+        // Validate the header status code
         $putResponse->assertStatus(204);
 
-        //Request the user from the API
+        // Request the user from the API
         $getResponse = $this->apiCall('GET', $url);
 
-        //Assert that the 'avatar' key exists
+        // Assert that the 'avatar' key exists
         $getResponse->assertJsonStructure(['avatar']);
 
-        //Assert that the file was saved
+        // Assert that the file was saved
         $json = $getResponse->json();
         $path = parse_url($json['avatar'], PHP_URL_PATH);
         $media = $user->getMedia('profile')[0];
-        $this->assertEquals("/storage/profile/$media->id/img.png", $path);
+        $this->assertEquals("/storage/profile/{$media->id}/img.png", $path);
         $this->assertFileExists($media->getPath());
     }
 
@@ -664,7 +642,7 @@ class UsersTest extends TestCase
                 'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
                 'password' => $faker->sentence(10),
             ]);
-            //Validate the header status code
+            // Validate the header status code
             $response->assertStatus(201);
         }
 
@@ -694,7 +672,7 @@ class UsersTest extends TestCase
                 'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
                 'password' => $faker->sentence(10),
             ]);
-            //Validate the header status code
+            // Validate the header status code
             $response->assertStatus(422);
         }
     }
