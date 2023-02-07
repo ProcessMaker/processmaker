@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use Faker\Factory as Faker;
 use Illuminate\Http\UploadedFile;
+use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
@@ -109,47 +110,47 @@ class UsersTest extends TestCase
         putenv('DATE_FORMAT=m/d/Y H:i');
         putenv('APP_LANG=en');
 
-        // Create a user without setting fields that have default
+        // Create a user without setting fields that have default.
         $faker = Faker::create();
         $url = self::API_TEST_URL;
         $response = $this->apiCall('POST', $url, [
             'username' => 'username1',
-            'firstname' => 'name',
-            'lastname' => 'name',
+            'firstname' => $faker->firstName,
+            'lastname' => $faker->lastName,
             'email' => $faker->email,
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->sentence(10),
+            'password' => $faker->password(8, 20),
         ]);
 
         $response->assertStatus(201);
 
-        // Validate that the created user has the correct default values
+        // Validate that the created user has the correct default values.
         $createdUser = $response->json();
         $this->assertEquals(getenv('APP_TIMEZONE'), $createdUser['timezone']);
         $this->assertEquals(getenv('DATE_FORMAT'), $createdUser['datetime_format']);
         $this->assertEquals(getenv('APP_LANG'), $createdUser['language']);
 
-        // Create a user setting fields that have default
-        $timeZone = 'Test/Test';
+        // Create a user setting fields that have default.
+        $setting = Setting::factory()->create([
+            'key' => 'users.timezone',
+            'format' => 'text',
+            'config' => 'America/New_York',
+        ]);
         $dateFormat = 'testFormat';
-        $faker = Faker::create();
-        $url = self::API_TEST_URL;
         $response = $this->apiCall('POST', $url, [
             'username' => 'username2',
-            'firstname' => 'name',
-            'lastname' => 'name',
+            'firstname' => $faker->firstName,
+            'lastname' => $faker->lastName,
             'email' => $faker->email,
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->sentence(10),
-            'timezone' => $timeZone,
+            'password' => $faker->password(8, 20),
             'datetime_format' => $dateFormat,
         ]);
 
+        // Validate that the created user has the correct values.
         $response->assertStatus(201);
-
-        // Validate that the created user has the correct values
         $createdUser = $response->json();
-        $this->assertEquals($createdUser['timezone'], $timeZone);
+        $this->assertEquals($createdUser['timezone'], $setting->config);
         $this->assertEquals($createdUser['datetime_format'], $dateFormat);
     }
 

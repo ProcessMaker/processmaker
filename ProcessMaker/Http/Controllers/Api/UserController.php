@@ -158,6 +158,7 @@ class UserController extends Controller
             $fields['password'] = Hash::make($fields['password']);
         }
 
+        $user->setTimezoneAttribute();
         $user->fill($fields);
         $user->saveOrFail();
 
