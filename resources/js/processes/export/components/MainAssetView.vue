@@ -66,6 +66,9 @@
             </b-form-group>
         </div>
         <hr>
+        <div class="pb-2" v-if="groups.length === 0">
+            <p class="fw-semibold"> This process contains no dependent assets to {{ $root.operation.toLowerCase() }}. </p>
+        </div>
         <div v-for="group in groups" :key="group.type">
           <data-card v-if="!group.hidden && $root.hasSomeNotDiscardedByParent(group.items)" :exportAllElements="exportAllElements" :info="group" />
         </div>
