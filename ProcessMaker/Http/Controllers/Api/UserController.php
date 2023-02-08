@@ -158,7 +158,6 @@ class UserController extends Controller
             $fields['password'] = Hash::make($fields['password']);
         }
 
-        $user->setTimezoneAttribute();
         $user->fill($fields);
         $user->saveOrFail();
 
@@ -371,10 +370,10 @@ class UserController extends Controller
      */
     private function uploadAvatar(User $user, Request $request)
     {
-        //verify data
+        // verify data
         $data = $request->all();
 
-        //if the avatar is an url (neither page nor file) we do not update the avatar
+        // if the avatar is an url (neither page nor file) we do not update the avatar
         if (filter_var($data['avatar'], FILTER_VALIDATE_URL)) {
             return;
         }
