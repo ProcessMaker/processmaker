@@ -91,14 +91,17 @@ class NotificationController extends Controller
             ->where('notifiable_id', Auth::user()->id);
 
         $filter = $request->input('filter', '');
-        if (!empty($filter)) {
+        if ($filter === 'read') {
+            $query->whereNotNull('read_at');
+        } else if ($filter === 'unread') {
+            $query->whereNull('read_at');
+        } else if (!empty($filter)) {
             $filter = addslashes($filter);
             $subsearch = '%' . $filter . '%';
             $query->where(function ($query) use ($subsearch, $filter) {
                 $query->Where('data->name', 'like', $subsearch)
                     ->orWhere('data->userName', 'like', $subsearch)
-                    ->orWhere('data->processName', 'like', $subsearch)
-                    ->orWhereRaw("case when read_at is null then 'unread' else 'read' end like '$filter%'");
+                    ->orWhere('data->processName', 'like', $subsearch);
             });
         }
 
