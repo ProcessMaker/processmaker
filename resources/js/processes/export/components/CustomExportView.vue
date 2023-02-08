@@ -46,7 +46,6 @@ export default {
     return {
       formattedRoot: {},
       formattedGroups: [],
-
     };
   },
   computed: {
@@ -61,7 +60,6 @@ export default {
             icon: group.icon,
           });
         });
-
       return items;
     },
     groupsFiltered()
@@ -79,16 +77,12 @@ export default {
           this.$router.push({ name: "main" });
           return;
         }
-
+    }
       const formattedRoot = this.rootAsset;
       const formattedGroups = this.groups;
       const formatted = DataProvider.formatAssets(this.$root.manifest, this.$root.rootUuid);
       this.formattedRoot = formatted.root;
       this.formattedGroups = formatted.groups;
-
-      console.log('formatted root', this.formattedRoot);
-      console.log('formatted groups', this.formattedGroups);
-    }
   },
   methods: {
   },
