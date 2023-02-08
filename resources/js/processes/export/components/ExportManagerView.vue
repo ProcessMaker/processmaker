@@ -35,7 +35,7 @@
             <button type="button" class="btn btn-primary ml-2" @click="onExport">
               {{ $t("Export") }}
             </button>
-            <set-password-modal ref="set-password-modal" :processId="processId" :processName="processName" @verifyPassword="exportProcess" :ask="true" />
+            <set-password-modal ref="set-password-modal" :processId="processId" :processName="processName" @verifyPassword="exportProcess" :ask="true" :force-password="$root.forcePasswordProtect" />
             <export-success-modal ref="export-success-modal" :processName="processName" :processId="processId" :exportInfo="exportInfo" />
           </div>
         </div>
@@ -64,6 +64,8 @@ export default {
       ],
       selectedExportOption: "basic",
       exportInfo: {},
+      rootAsset: null,
+      groups: [],
       // processInfo: {},
     };
   },
@@ -99,9 +101,21 @@ export default {
         });
     },
     handleCustomExport() {
-      this.$router.push({ name: "export-custom-process" });
+      this.$router.push({ name: "export-custom-process", params: { rootAsset: this.rootAsset, groups: this.groups } });
     },
-  }
+  },
+  mounted() {
+    DataProvider.getManifest(this.processId)
+        .then((response) => {
+          this.rootAsset = response.root;
+          this.groups = response.groups;
+          this.$root.setInitialState(response.assets, response.rootUuid);
+        })
+        .catch((error) => {
+          console.log(error);
+          ProcessMaker.alert(error, "danger");
+        });
+  },
 }   
 </script>
     

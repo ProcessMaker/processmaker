@@ -12,9 +12,12 @@
       <template>
         <b-form-group>
           <div v-if="ask">
-            <b-form-checkbox class="pt-2" v-model="passwordProtect" switch>
+            <b-form-checkbox class="pt-2" v-model="passwordProtect" switch :disabled="forcePassword">
               Password Protect Export
             </b-form-checkbox>
+            <small v-if="forcePassword === true" class="text-danger">
+                    Password protect is required because some assets have sensitive data.
+            </small>
           </div>
             <template v-if="passwordProtect === true">
               <div class="pt-3">
@@ -50,7 +53,7 @@ export default {
   components: {
     Modal,
   },
-  props: ["processId", "processName", "ask"],
+  props: ["processId", "processName", "ask", "forcePassword"],
   mixins: [ FormErrorsMixin ],
   data() {
     return {

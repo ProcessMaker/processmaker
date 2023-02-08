@@ -4,9 +4,9 @@
       <template v-slot:default="slotProps">
         <p-tab :active="slotProps.activeIndex === 0">
           <MainAssetView
-            :process-info="rootAsset"
-            :groups="groups"
-            :process-name="rootAsset.name"
+            :process-info="formattedRoot"
+            :groups="formattedGroups"
+            :process-name="formattedRoot.name"
             :process-id="processId"
           />
         </p-tab>
@@ -14,7 +14,7 @@
           <DependentAssetView
             :group="group"
             :items="group.items"
-            :process-name="rootAsset.name"
+            :process-name="formattedRoot.name"
           />
         </p-tab>
       </template>
@@ -38,18 +38,21 @@ export default {
   props: {
     processName: {},
     processId: {},
+    rootAsset: {},
+    groups: [],
   },
   mixins: [],
   data() {
     return {
-      rootAsset: {},
-      groups: [],
+      formattedRoot: {},
+      formattedGroups: [],
+
     };
   },
   computed: {
     sidenav() {
       const items = [
-        { title: this.rootAsset.name, icon: null },
+        { title: this.formattedRoot.name, icon: null },
       ];
 
       this.groupsFiltered.forEach(group => {
@@ -63,12 +66,12 @@ export default {
     },
     groupsFiltered()
     {
-      return this.groups.filter((group) => {
+      return this.formattedGroups.filter((group) => {
         return this.$root.groupsHaveSomeActive[group.type];
       }).filter((group) => {
         return this.$root.hasSomeNotDiscardedByParent(group.items);
       });
-    }
+    },
   },
   mounted() {
     if (this.$root.isImport) {
@@ -77,20 +80,14 @@ export default {
           return;
         }
 
-        const formatted = DataProvider.formatAssets(this.$root.manifest, this.$root.rootUuid);
-        this.rootAsset = formatted.root;
-        this.groups = formatted.groups;
-    } else {
-      DataProvider.getManifest(this.processId)
-        .then((response) => {
-          this.rootAsset = response.root;
-          this.groups = response.groups;
-          this.$root.setInitialState(response.assets, response.rootUuid);
-        })
-        .catch((error) => {
-          console.log(error);
-          ProcessMaker.alert(error, "danger");
-        });
+      const formattedRoot = this.rootAsset;
+      const formattedGroups = this.groups;
+      const formatted = DataProvider.formatAssets(this.$root.manifest, this.$root.rootUuid);
+      this.formattedRoot = formatted.root;
+      this.formattedGroups = formatted.groups;
+
+      console.log('formatted root', this.formattedRoot);
+      console.log('formatted groups', this.formattedGroups);
     }
   },
   methods: {

@@ -29,6 +29,8 @@ const routes = [
             routeName: 'export-custom-process',
             processName: processName,
             processId: route.params.processId,
+            rootAsset: route.params.rootAsset,
+            groups: route.params.groups,
           }),
     },
 ];
