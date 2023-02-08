@@ -106,7 +106,7 @@ class UsersTest extends TestCase
 
     public function testDefaultValuesOfUser()
     {
-        putenv('APP_TIMEZONE=America/Los_Angeles');
+        config()->set('app.timezone', 'America/Los_Angeles');
         putenv('DATE_FORMAT=m/d/Y H:i');
         putenv('APP_LANG=en');
 
@@ -126,7 +126,7 @@ class UsersTest extends TestCase
 
         // Validate that the created user has the correct default values.
         $createdUser = $response->json();
-        $this->assertEquals(getenv('APP_TIMEZONE'), $createdUser['timezone']);
+        $this->assertEquals(config()->get('app.timezone'), $createdUser['timezone']);
         $this->assertEquals(getenv('DATE_FORMAT'), $createdUser['datetime_format']);
         $this->assertEquals(getenv('APP_LANG'), $createdUser['language']);
 
