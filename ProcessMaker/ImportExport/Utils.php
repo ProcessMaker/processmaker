@@ -29,13 +29,19 @@ class Utils
 
     public static function getElementByPath($document, $path)
     {
-        $xpath = new DOMXPath($document);
-        $elements = $xpath->query($path);
+        $elements = self::getElementsByPath($document, $path);
         if ($elements->count() !== 1) {
             throw new \Exception('Invalid xpath');
         }
 
         return $elements->item(0);
+    }
+
+    public static function getElementsByPath($document, $path)
+    {
+        $xpath = new DOMXPath($document);
+
+        return $xpath->query($path);
     }
 
     public static function getElementByMultipleTags($document, array $tags = [])

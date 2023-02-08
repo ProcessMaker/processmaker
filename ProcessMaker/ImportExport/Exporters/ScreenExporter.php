@@ -3,6 +3,7 @@
 namespace ProcessMaker\ImportExport\Exporters;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use ProcessMaker\Assets\ScreensInScreen;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\Models\Screen;
@@ -117,6 +118,10 @@ class ScreenExporter extends ExporterBase
         foreach ($watchers as $key => $watcher) {
             if (Arr::get($watchers, "$key.script.id") === $type . '-' . $originalId) {
                 Arr::set($watchers, "$key.script.title", $dependent->model->title);
+                $watcherType = Arr::get($watchers, "$key.script.id");
+                if (Str::contains($watcherType, 'data_source')) {
+                    Arr::set($watchers, "$key.script.title", $dependent->model->name);
+                }
                 Arr::set($watchers, "$key.script.description", $dependent->model->description);
                 Arr::set($watchers, "$key.script.id", $type . '-' . $newId);
                 Arr::set($watchers, "$key.script_id", strval($newId));
