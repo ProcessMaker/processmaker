@@ -19,7 +19,7 @@ If you are new to ProcessMaker 4 and would like to load the software locally, we
 * [PHP ImageMagick Extension](https://www.php.net/manual/en/book.imagick.php)
 * [PHP IMAP Extension](https://www.php.net/manual/en/imap.setup.php)
 * [Nginx](https://nginx.org/)
-* [MySql 5.7](https://dev.mysql.com/downloads/mysql/5.7.html)
+* [MySql 8.0](https://dev.mysql.com/downloads/mysql/8.0.html)
 * [Redis](https://redis.io/)
 * [Docker](https://docs.docker.com/get-docker/)
 
