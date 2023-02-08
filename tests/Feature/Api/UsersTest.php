@@ -133,8 +133,8 @@ class UsersTest extends TestCase
         // Create a user setting fields that have default.
         $setting = Setting::factory()->create([
             'key' => 'users.timezone',
-            'format' => 'text',
-            'config' => 'America/New_York',
+            'format' => 'object',
+            'config' => ['timezone' => 'America/New_York'],
         ]);
         $dateFormat = 'testFormat';
         $response = $this->apiCall('POST', $url, [
@@ -150,7 +150,7 @@ class UsersTest extends TestCase
         // Validate that the created user has the correct values.
         $response->assertStatus(201);
         $createdUser = $response->json();
-        $this->assertEquals($createdUser['timezone'], $setting->config);
+        $this->assertEquals($createdUser['timezone'], $setting->config->timezone);
         $this->assertEquals($createdUser['datetime_format'], $dateFormat);
     }
 

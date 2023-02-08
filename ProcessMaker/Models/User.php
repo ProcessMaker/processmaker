@@ -335,7 +335,9 @@ class User extends Authenticatable implements HasMedia
             return config('app.timezone');
         }
 
-        return $setting->config;
+        $config = (object) $setting->config;
+
+        return $config->timezone;
     }
 
     /**
