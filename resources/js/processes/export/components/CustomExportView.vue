@@ -4,9 +4,9 @@
       <template v-slot:default="slotProps">
         <p-tab :active="slotProps.activeIndex === 0">
           <MainAssetView
-            :process-info="formattedRoot"
-            :groups="formattedGroups"
-            :process-name="formattedRoot.name"
+            :process-info="$root.rootAsset"
+            :groups="$root.groups"
+            :process-name="$root.rootAsset.name"
             :process-id="processId"
           />
         </p-tab>
@@ -14,7 +14,7 @@
           <DependentAssetView
             :group="group"
             :items="group.items"
-            :process-name="formattedRoot.name"
+            :process-name="$root.rootAsset.name"
           />
         </p-tab>
       </template>
@@ -38,35 +38,29 @@ export default {
   props: {
     processName: {},
     processId: {},
-    rootAsset: {},
-    groups: [],
   },
   mixins: [],
   data() {
     return {
-      formattedRoot: {},
-      formattedGroups: [],
-
     };
   },
   computed: {
     sidenav() {
       const items = [
-        { title: this.formattedRoot.name, icon: null },
+        { title: this.$root.rootAsset.name, icon: null },
       ];
 
-      this.groupsFiltered.forEach(group => {
-          items.push({
-            title: group.typePlural,
-            icon: group.icon,
-          });
+      this.groupsFiltered.forEach((group) => {
+        items.push({
+          title: group.typePlural,
+          icon: group.icon,
         });
+      });
 
       return items;
     },
-    groupsFiltered()
-    {
-      return this.formattedGroups.filter((group) => {
+    groupsFiltered() {
+      return this.$root.groups.filter((group) => {
         return this.$root.groupsHaveSomeActive[group.type];
       }).filter((group) => {
         return this.$root.hasSomeNotDiscardedByParent(group.items);
@@ -75,19 +69,18 @@ export default {
   },
   mounted() {
     if (this.$root.isImport) {
-        if (!this.$root.file) {
-          this.$router.push({ name: "main" });
-          return;
-        }
+      if (!this.$root.file) {
+        this.$router.push({ name: "main" });
+        return;
+      }
 
-      const formattedRoot = this.rootAsset;
-      const formattedGroups = this.groups;
       const formatted = DataProvider.formatAssets(this.$root.manifest, this.$root.rootUuid);
-      this.formattedRoot = formatted.root;
-      this.formattedGroups = formatted.groups;
-
-      console.log('formatted root', this.formattedRoot);
-      console.log('formatted groups', this.formattedGroups);
+      this.$root.rootAsset = formatted.root;
+      this.$root.groups = formatted.groups;
+    } else if (!Object.entries(this.$root.manifest).length) {
+      // If manifest was not loaded, we try to get it again (if the page is reloaded
+      // in custom export, the manifest is empty, so we need to retrieve it again)
+      this.$root.getManifest(this.processId);
     }
   },
   methods: {

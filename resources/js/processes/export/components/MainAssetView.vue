@@ -66,11 +66,14 @@
             </b-form-group>
         </div>
         <hr>
+        <div class="pb-2" v-if="groups.length === 0">
+            <p class="fw-semibold"> This process contains no dependent assets to {{ $root.operation.toLowerCase() }}. </p>
+        </div>
         <div v-for="group in groups" :key="group.type">
           <data-card v-if="!group.hidden && $root.hasSomeNotDiscardedByParent(group.items)" :exportAllElements="exportAllElements" :info="group" />
         </div>
-        <div class="pt-3 card-footer bg-light" align="right">
-            <button type="button" class="btn btn-outline-secondary">
+        <div class="p-0 pt-3 pb-3 card-footer bg-light" align="right">
+            <button type="button" class="btn btn-outline-secondary" @click="onCancel">
                 {{ $t("Cancel") }}
             </button>
             <button v-if="$root.isImport" type="button" class="btn btn-primary ml-2" @click="onImport">
@@ -159,6 +162,9 @@ export default {
         },
         showSetPasswordModal() {
             this.$refs["set-password-modal"].show();
+        },
+        onCancel() {
+            window.location = "/processes";
         },
         onExport() {
             if (this.passwordProtect) {

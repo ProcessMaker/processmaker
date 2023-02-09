@@ -1,3 +1,5 @@
+import DataProvider from "./DataProvider";
+
 const ioState = [];
 
 export default {
@@ -6,6 +8,8 @@ export default {
       ioState,
       manifest: {},
       rootUuid: '',
+      rootAsset: {},
+      groups: [],
       isImport: false,
       importMode: 'update',
       file: null,
@@ -175,6 +179,18 @@ export default {
           return !this.ioState[item.uuid].discardedByParent;
       });
     },
+    getManifest(processId) {
+      DataProvider.getManifest(processId)
+        .then((response) => {
+          this.rootAsset = response.root;
+          this.groups = response.groups;
+          this.setInitialState(response.assets, response.rootUuid);
+        })
+        .catch((error) => {
+          console.log(error);
+          ProcessMaker.alert(error, "danger");
+        });
+    },
   },
   computed: {
     defaultMode() {
@@ -221,4 +237,4 @@ export default {
         });
     },
   },
-}
+};

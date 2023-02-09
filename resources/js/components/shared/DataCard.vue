@@ -17,7 +17,7 @@
         <div class="data-card-metadata mb-1">
           <div>
             <div>
-              <small v-if="info.forcePasswordProtect" class="fw-semibold form-text text-muted mt-0">
+              <small v-if="hasSomeForcePasswordProtectAsset(info.items)" class="fw-semibold form-text text-muted mt-0">
                 <i class="fas fa-exclamation-triangle text-warning p-0"/>
                 {{ info.typeHumanPlural }} may contain sensitive information.
               </small>
@@ -75,7 +75,10 @@ export default {
     },
     onGroupDetailsClick() {
       window.ProcessMaker.EventBus.$emit("group-details-click", this.info.typePlural);
-    }
+    },
+    hasSomeForcePasswordProtectAsset(items) {
+      return items.some((item) => item.forcePasswordProtect);
+    },
   },
   mounted() {
   },
