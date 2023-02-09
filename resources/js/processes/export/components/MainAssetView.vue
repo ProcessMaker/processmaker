@@ -72,7 +72,7 @@
         <div v-for="group in groups" :key="group.type">
           <data-card v-if="!group.hidden && $root.hasSomeNotDiscardedByParent(group.items)" :exportAllElements="exportAllElements" :info="group" />
         </div>
-        <div class="pt-3 card-footer bg-light" align="right">
+        <div class="p-0 pt-3 pb-3 card-footer bg-light" align="right">
             <button type="button" class="btn btn-outline-secondary">
                 {{ $t("Cancel") }}
             </button>
