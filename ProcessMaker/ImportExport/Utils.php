@@ -22,7 +22,7 @@ class Utils
         return $serviceTasks;
     }
 
-    public static function getPmConfig(BpmnElement $element) : array
+    public static function getPmConfig(BpmnElement $element)
     {
         return json_decode($element->getAttribute('pm:config'), true);
     }
@@ -60,7 +60,7 @@ class Utils
 
     public static function setPmConfigValue(BpmnElement &$element, string $path, $value) : void
     {
-        $config = json_decode($element->getAttribute('pm:config'), true);
+        $config = self::getPmConfig($element);
         Arr::set($config, $path, $value);
         $element->setAttribute('pm:config', json_encode($config));
     }
