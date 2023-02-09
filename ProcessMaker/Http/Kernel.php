@@ -20,6 +20,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \ProcessMaker\Http\Middleware\TrustProxies::class,
         \ProcessMaker\Http\Middleware\BrowserCache::class,
+        \ProcessMaker\Http\Middleware\CSP::class,
     ];
 
     /**
