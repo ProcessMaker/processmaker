@@ -73,7 +73,7 @@
           <data-card v-if="!group.hidden && $root.hasSomeNotDiscardedByParent(group.items)" :exportAllElements="exportAllElements" :info="group" />
         </div>
         <div class="p-0 pt-3 pb-3 card-footer bg-light" align="right">
-            <button type="button" class="btn btn-outline-secondary">
+            <button type="button" class="btn btn-outline-secondary" @click="onCancel">
                 {{ $t("Cancel") }}
             </button>
             <button v-if="$root.isImport" type="button" class="btn btn-primary ml-2" @click="onImport">
@@ -139,6 +139,9 @@ export default {
         },
         showSetPasswordModal() {
             this.$refs["set-password-modal"].show();
+        },
+        onCancel() {
+            window.location = "/processes";
         },
         onExport() {
             if (this.passwordProtect) {
