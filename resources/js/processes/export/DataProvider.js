@@ -86,6 +86,7 @@ export default {
         forcePasswordProtect: asset.force_password_protect,
         hidden: asset.hidden,
         explicit_discard: asset.explicit_discard,
+        importMode: asset.mode,
       };
 
       if (uuid === rootUuid) {

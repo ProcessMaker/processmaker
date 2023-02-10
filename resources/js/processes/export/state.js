@@ -14,6 +14,7 @@ export default {
       importMode: 'update',
       file: null,
       password: '',
+      rootMode: 'update',
     }
   },
   watch: {
@@ -132,18 +133,20 @@ export default {
     },
     // used for for import
     setModeForAll(mode) {
-      Object.entries(this.manifest)
-        .forEach(([uuid, asset]) => {
+      Object.entries(this.manifest).filter(([uuid, asset]) => {
+        const settings = this.ioState[uuid];
+        return settings && settings.mode !== 'discard' && !settings.discardedByParent;
+      }).forEach(([uuid, asset]) => {
           this.set(uuid, mode);
         });
     },
     debug(obj) {
       return JSON.parse(JSON.stringify(this.ioState));
     },
-    exportOptions(rootDefaultMode = null) {
+    exportOptions() {
       const rootUuid = this.rootUuid;
       const options = {};
-      options[rootUuid] = { mode: rootDefaultMode || this.defaultMode };
+      options[rootUuid] = { mode: this.rootMode };
       return Object.assign(options, this.ioState);
     },
     includeByGroup(method) {
@@ -156,7 +159,7 @@ export default {
             });
 
           const fn = ([uuid, setting]) => {
-            return setting.mode === this.defaultMode;
+            return setting.mode !== 'discard';
           }
 
           let result = false;
