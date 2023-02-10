@@ -300,13 +300,11 @@ export default {
         setCopyAll() {
             this.assetsExist = false;
             this.$root.setModeForAll('copy');
-            this.$root.rootMode = 'copy';
             this.handleBasicImport();
         },
         setUpdateAll() {
             this.assetsExist = false;
             this.$root.setModeForAll('update');
-            this.$root.rootMode = 'update';
             this.handleBasicImport();
         },
         passwordEntered(password) {
