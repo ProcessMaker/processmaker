@@ -73,7 +73,7 @@
           <data-card v-if="!group.hidden && $root.hasSomeNotDiscardedByParent(group.items)" :exportAllElements="exportAllElements" :info="group" />
         </div>
         <div class="p-0 pt-3 pb-3 card-footer bg-light" align="right">
-            <button type="button" class="btn btn-outline-secondary">
+            <button type="button" class="btn btn-outline-secondary" @click="onCancel">
                 {{ $t("Cancel") }}
             </button>
             <button v-if="$root.isImport" type="button" class="btn btn-primary ml-2" @click="onImport">
@@ -90,6 +90,7 @@
                 :ask="false"
                 :password-protect="passwordProtect"
             />
+            <import-process-modal ref="import-process-modal" :existingAssets="existingAssets" :processName="processName" :userHasEditPermissions="true" @import-new="setCopyAll" @update-process="setUpdateAll"></import-process-modal>                            
             <export-success-modal ref="export-success-modal" :processName="processName" :processId="processId" :exportInfo="exportInfo" />
         </div>
     </div>
@@ -100,6 +101,7 @@
 import DataCard from "../../../components/shared/DataCard.vue";
 import AssetDependentTreeModal from "../../../components/shared/AssetDependentTreeModal.vue";
 import AssetTreeModal from "../../../components/shared/AssetTreeModal.vue";
+import ImportProcessModal from '../../import/components/ImportProcessModal';
 import SetPasswordModal from "./SetPasswordModal.vue";
 import DataProvider from "../DataProvider";
 import ExportSuccessModal from "./ExportSuccessModal.vue";
@@ -117,6 +119,7 @@ export default {
         ExportSuccessModal,
         AssetDependentTreeModal,
         AssetTreeModal,
+        ImportProcessModal,
     },
     mixins: [],
     data() {
@@ -124,6 +127,26 @@ export default {
             passwordProtect: true,
             exportAllElements: true,
             exportInfo: {},
+            assetsExist:false,
+        }
+    },
+    computed: {
+        existingAssets() {
+            if (this.$root.manifest) {
+                return Object.entries(this.$root.ioState).filter(([uuid, settings]) => {
+                    const asset = this.$root.manifest[uuid];           
+                    return asset && asset.existing_id !== null && settings.mode !== 'discard' && !settings.discardedByParent;
+                }).map(([uuid, _]) => {
+                    const asset = this.$root.manifest[uuid];  
+                    return {
+                        type: asset.type,
+                        existingName: asset.existing_name, 
+                        importingName: asset.name,
+                        existingId: asset.existing_id,
+                    };
+                });
+            }
+            return [];
         }
     },
     watch: {
@@ -140,6 +163,9 @@ export default {
         showSetPasswordModal() {
             this.$refs["set-password-modal"].show();
         },
+        onCancel() {
+            window.location = "/processes";
+        },
         onExport() {
             if (this.passwordProtect) {
                 this.showSetPasswordModal();
@@ -148,13 +174,12 @@ export default {
             }
         },
         onImport() {
-            DataProvider.doImport(this.$root.file, this.$root.exportOptions(), this.$root.password)
-                .then((response) => {
-                    ProcessMaker.alert(this.$t('Process was successfully imported'), 'success');
-                    if (response.data?.processId) {
-                        window.location.href = `/modeler/${response.data.processId}`;
-                    }
-                })
+            this.checkForExistingAssets();
+            if (this.assetsExist) {
+                this.$refs['import-process-modal'].show();
+            } else {
+                this.handleImport();
+            }
         },
         exportProcess(password = null) {
             DataProvider.exportProcess(this.processId, password, this.$root.exportOptions())
@@ -167,6 +192,30 @@ export default {
                     ProcessMaker.alert(error, "danger");
                 });
         },
+        checkForExistingAssets() {
+            this.assetsExist = this.existingAssets.length > 0 ? true : false; 
+        },
+        setCopyAll() {
+            this.assetsExist = false;
+            this.$root.setModeForAll('copy');           
+            this.$root.rootMode = 'copy';
+            this.handleImport();
+        },
+        setUpdateAll() {
+            this.assetsExist = false;
+            this.$root.setModeForAll('update');
+            this.$root.rootMode = 'update';
+            this.handleImport();
+        },
+        handleImport() {
+            DataProvider.doImport(this.$root.file, this.$root.exportOptions(), this.$root.password)
+            .then((response) => {
+                ProcessMaker.alert(this.$t('Process was successfully imported'), 'success');
+                if (response.data?.processId) {
+                    window.location.href = `/modeler/${response.data.processId}`;
+                }
+            });
+        }
     },
     mounted() {
     },

@@ -109,7 +109,6 @@ export default {
             processVersion: null,
             password: '',
             passwordError: null,
-            rootMode: 'update',
             showWarning:false,
             showOldImporter: false,
         }
@@ -133,9 +132,11 @@ export default {
     computed: {
         existingAssets() {
             if (this.$root.manifest) {
-                    return Object.values(this.$root.manifest).filter(asset => {
-                    return asset.existing_id !== null && asset.import_mode !== 'discard';
-                }).map(asset => {
+                return Object.entries(this.$root.ioState).filter(([uuid, settings]) => {
+                    const asset = this.$root.manifest[uuid];           
+                    return asset && asset.existing_id !== null && settings.mode !== 'discard' && !settings.discardedByParent;
+                }).map(([uuid, _]) => {
+                    const asset = this.$root.manifest[uuid];  
                     return {
                         type: asset.type,
                         existingName: asset.existing_name, 
@@ -157,8 +158,6 @@ export default {
         },
         importFile(action) {
             this.assetsExist = this.existingAssets.length > 0 && action !== 'update-all' ? true : false;
-            this.$root.setModeForAll('update');
-            this.rootMode = 'update';
             switch (this.selectedImportOption) {
                 case 'basic':
                     this.handleBasicImport();
@@ -302,13 +301,13 @@ export default {
         setCopyAll() {
             this.assetsExist = false;
             this.$root.setModeForAll('copy');
-            this.rootMode = 'copy';
+            this.$root.rootMode = 'copy';
             this.handleBasicImport();
         },
         setUpdateAll() {
             this.assetsExist = false;
             this.$root.setModeForAll('update');
-            this.rootMode = 'update';
+            this.$root.rootMode = 'update';
             this.handleBasicImport();
         },
         passwordEntered(password) {
@@ -330,7 +329,7 @@ export default {
             });
         },
         handleImport() {
-            DataProvider.doImport(this.file, this.$root.exportOptions(this.rootMode), this.password)
+            DataProvider.doImport(this.file, this.$root.exportOptions(), this.password)
             .then(response => {
                 ProcessMaker.alert(this.$t('Process was successfully imported'), 'success');
                 if (response.data?.processId) {
