@@ -372,7 +372,6 @@ class ExportImportTest extends TestCase
 
     private function assertAssetsInExportFile($scenario, $exportData)
     {
-        // We do not export users for now
         $this->assertCount(1, $exportData['processes']);
         $this->assertCount(4, $exportData['screens']);
         $this->assertCount(4, $exportData['screen_categories']);
@@ -385,7 +384,6 @@ class ExportImportTest extends TestCase
         $this->assertCount(1, $exportData['process_categories']);
         $this->assertCount(1, $exportData['signals']);
 
-        // We do not export users for now
         $this->assertContains($scenario['process']->id, $exportData['processes']);
         $this->assertContains($scenario['formTaskScreen']->id, $exportData['screens']);
         $this->assertContains($scenario['weAssociatedScreen']->id, $exportData['screens']);
@@ -411,7 +409,6 @@ class ExportImportTest extends TestCase
 
     private function assertAssetsRemovedFromDB($scenario)
     {
-        // We do not export users for now
         $this->assertEquals(0, Process::where('name', $scenario['process']->name)->count());
         $this->assertEquals(0, Screen::where('title', $scenario['formTaskScreen']->title)->count());
         $this->assertEquals(0, ScreenCategory::where('name', $scenario['screenCategory']->name)->count());
@@ -430,7 +427,6 @@ class ExportImportTest extends TestCase
 
     private function assertAssetsWasImported($scenario)
     {
-        // We do not export/import users for now
         $this->assertDatabaseHas('processes', ['name' => $scenario['process']->name]);
         $this->assertDatabaseHas('screens', ['title' => $scenario['formTaskScreen']->title]);
         $this->assertDatabaseHas('screen_categories', ['name' => $scenario['screenCategory']->name]);
