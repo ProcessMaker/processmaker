@@ -80,10 +80,11 @@ class Manifest
         foreach ($array as $uuid => $assetInfo) {
             $exporterClass = $assetInfo['exporter'];
             $modeOption = $options->get('mode', $uuid);
-            list($mode, $model) = self::getModel($uuid, $assetInfo, $modeOption, $exporterClass);
+            list($mode, $model, $matchedBy) = self::getModel($uuid, $assetInfo, $modeOption, $exporterClass);
             $exporter = new $exporterClass($model, $manifest, $options, false);
             $exporter->importing = true;
             $exporter->mode = $mode;
+            $exporter->matchedBy = $matchedBy;
             $exporter->originalId = Arr::get($assetInfo, 'attributes.id');
             $exporter->updateDuplicateAttributes();
             $exporter->dependents = Dependent::fromArray($assetInfo['dependents'], $manifest);
@@ -109,7 +110,7 @@ class Manifest
             throw new \Exception('Mode "new" can only be set by the system.');
         }
 
-        [$model, $matchedColumn] = $exporterClass::modelFinder($uuid, $assetInfo);
+        [$model, $matchedBy] = $exporterClass::modelFinder($uuid, $assetInfo);
 
         if ($exporterClass::doNotImport($uuid, $assetInfo)) {
             $mode = 'discard';
@@ -155,7 +156,7 @@ class Manifest
 
         $class::reguard();
 
-        return [$mode, $model];
+        return [$mode, $model, $matchedBy];
     }
 
     private static function handleCasts(&$model)
