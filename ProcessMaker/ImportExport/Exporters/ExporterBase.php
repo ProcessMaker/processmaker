@@ -49,6 +49,8 @@ abstract class ExporterBase implements ExporterInterface
 
     public static $fallbackMatchColumn = null;
 
+    public $matchedBy = null;
+
     public static function modelFinder($uuid, $assetInfo)
     {
         $class = $assetInfo['model'];
@@ -269,6 +271,7 @@ abstract class ExporterBase implements ExporterInterface
 
     public function addImportAttributes(&$attributes)
     {
+        $existingId = null;
         $existingAttributes = null;
         $existingName = null;
         if ($this->model->exists) {
@@ -276,12 +279,14 @@ abstract class ExporterBase implements ExporterInterface
             $class = get_class($this->model);
             $model = new $class($existingAttributes);
             $existingName = $this->getName($model);
+            $existingId = $existingAttributes['id'];
         }
 
         $attributes = array_merge($attributes, [
-            'existing_id' => $this->model->id,
+            'existing_id' => $existingId,
             'existing_attributes' => $existingAttributes,
             'existing_name' => $existingName,
+            'matched_by' => $this->matchedBy,
         ]);
     }
 

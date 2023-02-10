@@ -19,7 +19,7 @@
               <b-col class="p-0 pl-1">
                 <h5 class="mb-3 fw-semibold">
                   {{ warningTitle(asset.type) }}
-                  <div><small class="helper text-muted">{{ helperText(asset.type) }}</small></div>
+                  <div><small class="helper text-muted">{{ helperText(asset) }}</small></div>
                 </h5>
               </b-col>
             </b-row>
@@ -85,10 +85,28 @@
         this.close();
       },
       warningTitle(assetType) {
-        return this.$t('Caution: {{item}} Already Exists', {item: assetType});
+        return this.$t('Caution: {{type}} Already Exists', {type: assetType});
       },
-      helperText(assetType) {
-        return this.$t('This environment contains a {{ item }} with the same name.', {item: assetType.toLowerCase()});
+      helperText(asset) {
+        let text = this.$t('This environment contains a {{ item }} with the same name', {
+          item: asset.type.toLowerCase()
+        });
+
+        text += ': ' + asset.existingName + '.';
+
+        if (asset.matchedBy !== 'uuid') {
+          text += ' ' + this.$t('We found it by its {{ matchedBy }}.', {
+            matchedBy: asset.matchedBy
+          });
+        }
+
+        if (asset.existingName !== asset.importingName) {
+          text += ' ' + this.$t('Its name is {{ name }} in the file you are importing.', {
+            name: asset.importingName
+          });
+        }
+
+        return text;
       },
     }
   };
