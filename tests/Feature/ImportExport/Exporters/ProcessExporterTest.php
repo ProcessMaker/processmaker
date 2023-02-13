@@ -22,7 +22,6 @@ use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\SignalData;
 use ProcessMaker\Models\SignalEventDefinition;
 use ProcessMaker\Models\User;
-use Psy\Command\PsyVersionCommand;
 use Tests\Feature\ImportExport\HelperTrait;
 use Tests\TestCase;
 
