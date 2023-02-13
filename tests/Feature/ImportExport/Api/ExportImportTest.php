@@ -461,6 +461,7 @@ class ExportImportTest extends TestCase
     {
         $this->assertEquals(1, Process::where('name', $scenario['process']->name)->count());
         $this->assertEquals(1, Screen::where('title', $scenario['formTaskScreen']->title)->count());
+        $this->assertEquals(1, Screen::where('title', $scenario['formTaskNestedScreen']->title)->count());
         $this->assertEquals(1, ScreenCategory::where('name', $scenario['screenCategory']->name)->count());
         $this->assertEquals(1, Screen::where('title', $scenario['weAssociatedScreen']->title)->count());
         $this->assertEquals(1, Screen::where('title', $scenario['weCompletedScreen']->title)->count());
