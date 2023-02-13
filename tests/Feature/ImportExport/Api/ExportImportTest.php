@@ -21,6 +21,7 @@ use ProcessMaker\Package\PackageVocabularies\Models\Vocabulary;
 use ProcessMaker\Package\WebEntry\ImportExport\WebEntryUtils;
 use ProcessMaker\Packages\Connectors\DataSources\Models\DataSource;
 use ProcessMaker\Packages\Connectors\DataSources\Models\DataSourceCategory;
+use ProcessMaker\Packages\Connectors\DataSources\Models\Webhook;
 use ProcessMaker\Plugins\Collections\Models\Collection;
 use Tests\Feature\ImportExport\HelperTrait;
 use Tests\Feature\Shared\RequestHelper;
@@ -240,9 +241,19 @@ class ExportImportTest extends TestCase
         // Create a screen category
         $screenCategory = ScreenCategory::factory()->create(['name' => 'Screen category', 'status' => 'ACTIVE']);
 
+        // Create a signal
+        $signal = new SignalData(
+            $this->faker->unique()->word(),
+            $this->faker->sentence(),
+            $this->faker->sentence()
+        );
+
         // Create an external data source for data connector 2
         $dataSourceCategory = DataSourceCategory::factory()->create(['status' => 'ACTIVE', 'is_system' => false]);
         $dataSource = DataSource::factory()->create(['data_source_category_id' => $dataSourceCategory->id]);
+
+        // Create a data source webhook
+        $webhook = Webhook::factory()->create(['name' => $signal->getId() . ' webhook', 'config' => ['event' => $signal->getId()]]);
 
         // Create a display screen for connector PDF
         $pdfScreen = Screen::factory()->create(['title' => 'Connector PDF screen', 'type' => 'DISPLAY', 'config' => $config]);
@@ -263,13 +274,6 @@ class ExportImportTest extends TestCase
             'run_as_user_id' => $user->id,
         ]);
 
-        // Create a signal
-        $signal = new SignalData(
-            $this->faker->unique()->word(),
-            $this->faker->sentence(),
-            $this->faker->sentence()
-        );
-
         // Assign
         $script->categories()->sync($scriptCategory);
         $formTaskScreen->screen_category_id = $screenCategory->id;
@@ -287,6 +291,7 @@ class ExportImportTest extends TestCase
             'weCompletedScreen' => $weCompletedScreen,
             'dataSourceCategory' => $dataSourceCategory,
             'dataSource' => $dataSource,
+            'webhook' => $webhook,
             'pdfScreen' => $pdfScreen,
             'vocabulary1' => $vocabulary1,
             'vocabulary2' => $vocabulary2,
@@ -383,6 +388,7 @@ class ExportImportTest extends TestCase
         $this->assertCount(1, $exportData['environment_variables']);
         $this->assertCount(1, $exportData['process_categories']);
         $this->assertCount(1, $exportData['signals']);
+        $this->assertCount(1, $exportData['webhooks']);
 
         $this->assertContains($scenario['process']->id, $exportData['processes']);
         $this->assertContains($scenario['formTaskScreen']->id, $exportData['screens']);
@@ -405,6 +411,7 @@ class ExportImportTest extends TestCase
         $this->assertContains($scenario['environmentVariable']->id, $exportData['environment_variables']);
         $this->assertContains($scenario['process']->id, $exportData['process_categories']);
         $this->assertContains($scenario['signal']->getId(), $exportData['signals']);
+        $this->assertContains($scenario['webhook']->id, $exportData['webhooks']);
     }
 
     private function assertAssetsRemovedFromDB($scenario)
@@ -423,6 +430,7 @@ class ExportImportTest extends TestCase
         $this->assertEquals(0, EnvironmentVariable::where('name', $scenario['environmentVariable']->name)->count());
         $this->assertEquals(0, Script::where('title', $scenario['script']->title)->count());
         $this->assertEquals(0, ScriptCategory::where('name', $scenario['scriptCategory']->name)->count());
+        $this->assertEquals(0, Webhook::where('name', $scenario['signal']->getId() . ' webhook')->count());
     }
 
     private function assertAssetsWasImported($scenario)
@@ -446,6 +454,7 @@ class ExportImportTest extends TestCase
         $this->assertDatabaseHas('vocabularies', ['title' => $scenario['vocabulary1']->title]);
         $this->assertDatabaseHas('vocabularies', ['title' => $scenario['vocabulary2']->title]);
         $this->assertDatabaseHas('vocabularies', ['title' => $scenario['vocabulary3']->title]);
+        $this->assertDatabaseHas('data_source_webhooks', ['name' => $scenario['signal']->getId() . ' webhook']);
 
         // Assert signal
         $importedProcess = Process::where('name', $scenario['process']->name)->firstOrFail();
