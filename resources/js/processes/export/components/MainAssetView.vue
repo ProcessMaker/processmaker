@@ -193,18 +193,16 @@ export default {
                 });
         },
         checkForExistingAssets() {
-            this.assetsExist = this.existingAssets.length > 0 ? true : false; 
+            this.assetsExist = this.existingAssets.length > 0 ? true : false;
         },
         setCopyAll() {
             this.assetsExist = false;
             this.$root.setModeForAll('copy');           
-            this.$root.rootMode = 'copy';
             this.handleImport();
         },
         setUpdateAll() {
             this.assetsExist = false;
             this.$root.setModeForAll('update');
-            this.$root.rootMode = 'update';
             this.handleImport();
         },
         handleImport() {

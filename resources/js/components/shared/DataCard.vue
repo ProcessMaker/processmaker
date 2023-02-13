@@ -92,8 +92,10 @@ export default {
       }
     },
     elementsCount() {
+      const type = this.info.items.length === 1 ? this.info.type : this.info.typePlural;
+      const label = 'Total Elements: ' +  this.info.items.length  + ' ' + type;
       return {
-        label: `Total Elements:  ${this.info.items.length}`,
+        label: label,
         isRoot: true,
         icon: "",
         children: [

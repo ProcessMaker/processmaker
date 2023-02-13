@@ -38,7 +38,13 @@
         <div v-for="(item, i) in group.items.filter(i => !i.hidden)" :key="i">
             <b-card class="low-elevation mt-4 mb-5 data-card">
                 <template #header>
-                    <h6 class="mb-0 data-card-header font-weight-bold text-capitalize">{{ item.name }}</h6>
+                    <h6 class="mb-0 data-card-header font-weight-bold text-capitalize">
+                        {{ item.name }}
+                        <b-badge pill variant="primary" class="text-capitalize">
+                            <span v-if="item.importMode === 'update'">{{ $t('Updated') }}</span>
+                            <span v-if="item.importMode === 'copy'">{{ $t('New') }}</span>
+                        </b-badge>
+                    </h6>
                 </template>
                 <b-card-text>
                     <ul class="process-element-metadata">

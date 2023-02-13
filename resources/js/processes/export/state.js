@@ -14,7 +14,6 @@ export default {
       importMode: 'update',
       file: null,
       password: '',
-      rootMode: 'update',
     }
   },
   watch: {
@@ -36,7 +35,6 @@ export default {
           .map(([uuid, asset]) => {
             return [uuid, { mode: this.defaultMode, discardedByParent: false }];
           })
-          .filter(([uuid, _]) => uuid !== rootUuid)
       );
     },
     // Hide the asset from UI if its parent is was discarded AND the
@@ -63,29 +61,20 @@ export default {
 
         let mode = this.defaultMode;
         
-        // Root (depth 0) is not in this.ioState
-        if (depth > 0) {
-          mode = this.ioState[uuid].mode;
-          console.log("Setting discardedByParent for " + uuid + " to " + discardedByParent);
-          this.$set(this.ioState[uuid], 'discardedByParent', discardedByParent);
-        }
+        mode = this.ioState[uuid].mode;
+        this.$set(this.ioState[uuid], 'discardedByParent', discardedByParent);
 
         // If this asset's mode is 'discard', set all it's children's discardedByParent to true.
         // Additionally, if this this asset's parent was discarded, set our children to
         // discardedByParent = true
         const setChildrenDiscardedByParent = mode === 'discard' || discardedByParent;
 
-        console.log("Setting all children for " + uuid + " to " + setChildrenDiscardedByParent);
-        console.log(uuid + ' has ' + asset.dependents.length + ' children');
-
         asset.dependents.forEach((dependent) => {
           const depUuid = dependent.uuid;
-          console.log("Setting child " + dependent.uuid, dependent);
           setMode(depUuid, setChildrenDiscardedByParent, depth + 1);
         });
 
       };
-      console.log("Starting with", this.rootUuid);
       setMode(this.rootUuid, false);
     },
     setForGroup(group, value) {
@@ -101,10 +90,6 @@ export default {
       this.updateDiscardedByParent();
     },
     set(uuid, mode, discardedByParent = false) {
-
-      if (uuid === this.rootUuid) {
-        return;
-      }
 
       const setting = this.ioState[uuid];
       if (!setting) {
@@ -129,16 +114,19 @@ export default {
       if (value) {
         set = this.defaultMode;
       }
-      this.setModeForAll(set);
+      this.setModeForAll(set, false);
     },
     // used for for import
-    setModeForAll(mode) {
-      Object.entries(this.manifest).filter(([uuid, asset]) => {
-        const settings = this.ioState[uuid];
-        return settings && settings.mode !== 'discard' && !settings.discardedByParent;
+    setModeForAll(mode, includeRoot = true) {
+      console.log('setModeForAll', mode);
+      Object.entries(this.ioState).filter(([uuid, settings]) => {
+        return settings.mode !== 'discard' && !settings.discardedByParent;
       }).forEach(([uuid, asset]) => {
-          this.set(uuid, mode);
-        });
+        if (uuid === this.rootUuid && !includeRoot) {
+          return;
+        }
+        this.set(uuid, mode);
+      });
     },
     debug(obj) {
       return JSON.parse(JSON.stringify(this.ioState));
@@ -146,7 +134,6 @@ export default {
     exportOptions() {
       const rootUuid = this.rootUuid;
       const options = {};
-      options[rootUuid] = { mode: this.rootMode };
       return Object.assign(options, this.ioState);
     },
     includeByGroup(method) {
