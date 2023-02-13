@@ -37,13 +37,7 @@ class CSP
     public static function getRules()
     {
         $parsed = new Parser(request()->headers->get('user-agent'));
-        $rules = [
-            'connect-src' => "*",
-            'script-src' => "* 'unsafe-inline' 'unsafe-eval'",
-            'object-src' => "'self' 'unsafe-inline' blob: data:",
-            'child-src' => "'self' blob:",
-            'worker-src' => "'self' blob:",
-        ];
+        $rules = config('csp.rules');
 
         //Recommended by logrocket.
         //Compatible from version 15
