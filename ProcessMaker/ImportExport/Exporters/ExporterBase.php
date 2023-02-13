@@ -435,7 +435,7 @@ abstract class ExporterBase implements ExporterInterface
 
     protected function associateCategories($categoryClass, $property)
     {
-        $categories = $this->model->categories;
+        $categories = collect([]);
         foreach ($this->getDependents(DependentType::CATEGORIES) as $dependent) {
             $categories->push($categoryClass::findOrFail($dependent->model->id));
         }

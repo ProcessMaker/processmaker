@@ -4,7 +4,7 @@ namespace ProcessMaker\ImportExport;
 
 use Illuminate\Support\Arr;
 use ProcessMaker\ImportExport\Exporters\ExporterInterface;
-use stdClass;
+use ReflectionClass;
 
 class Manifest
 {
@@ -13,6 +13,8 @@ class Manifest
     private $afterExportCallbacks = [];
 
     private $afterImportCallbacks = [];
+
+    public static $parents = null;
 
     public function has(string $uuid)
     {
@@ -76,6 +78,8 @@ class Manifest
 
     public static function fromArray(array $array, Options $options)
     {
+        self::buildParentModeMap($array, $options);
+
         $manifest = new self();
         foreach ($array as $uuid => $assetInfo) {
             $exporterClass = $assetInfo['exporter'];
@@ -111,6 +115,13 @@ class Manifest
         }
 
         [$model, $matchedBy] = $exporterClass::modelFinder($uuid, $assetInfo);
+
+        if (self::isHidden($exporterClass)) {
+            $parentMode = self::parentMode($uuid);
+            if ($parentMode) {
+                $mode = $parentMode;
+            }
+        }
 
         if ($exporterClass::doNotImport($uuid, $assetInfo)) {
             $mode = 'discard';
@@ -188,5 +199,52 @@ class Manifest
         }
 
         return false;
+    }
+
+    public static function isHidden($exporterClass)
+    {
+        $reflection = new ReflectionClass($exporterClass);
+        $props = $reflection->getDefaultProperties();
+        if (isset($props['hidden']) && $props['hidden']) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static function buildParentModeMap(array $import, Options $options)
+    {
+        self::$parents = [];
+        foreach ($import as $parentUuid => $assetInfo) {
+            foreach ($assetInfo['dependents'] as $dependent) {
+                $dependentUuid = $dependent['uuid'];
+
+                if (!isset(self::$parents[$parentUuid])) {
+                    self::$parents[$parentUuid] = [];
+                }
+
+                $mode = $options->get('mode', $parentUuid);
+                self::$parents[$dependentUuid][$parentUuid] = $mode;
+            }
+        }
+    }
+
+    public static function parentMode(string $uuid)
+    {
+        if (self::$parents === null) {
+            throw new \Exception('Parents mode map has not been built yet.');
+        }
+
+        $parentMode = null;
+        if (isset(self::$parents[$uuid])) {
+            foreach (self::$parents[$uuid] as $parentUuid => $mode) {
+                if ($mode) {
+                    $parentMode = $mode;
+                    break;
+                }
+            }
+        }
+
+        return $parentMode;
     }
 }

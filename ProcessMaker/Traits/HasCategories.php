@@ -33,15 +33,11 @@ trait HasCategories
         if ($value) {
             $value = explode(',', $value);
             $this->attributes[$singleColumn] = $value[0];
-            if ($this->getKey()) {
-                $this->categories()->sync($value);
-            } else {
-                self::created(function ($model) use ($value) {
-                    if ($model->getKey() === $this->getKey()) {
-                        $this->categories()->sync($value);
-                    }
-                });
-            }
+            self::saved(function ($model) use ($value) {
+                if ($model->getKey() === $this->getKey()) {
+                    $this->categories()->sync($value);
+                }
+            });
         } else {
             $this->attributes[$singleColumn] = $value;
         }

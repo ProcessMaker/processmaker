@@ -38,12 +38,12 @@ class ManifestTest extends TestCase
 
         $options = new Options([
             $screen->uuid => ['mode' => 'update'],
-            $screenCategory->uuid => ['mode' => 'discard'],
+            $screenCategory->uuid => ['mode' => 'discard'], // Ignored. Uses the screen's mode.
         ]);
         (new Importer($payload, $options))->doImport();
 
         $this->assertEquals('exported screen', $screen->refresh()->title);
-        $this->assertEquals('category on target instance', $screenCategory->refresh()->name);
+        $this->assertEquals('exported category', $screenCategory->refresh()->name);
     }
 
     public function testCopyImportOption()
