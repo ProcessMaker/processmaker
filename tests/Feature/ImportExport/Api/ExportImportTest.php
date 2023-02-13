@@ -174,7 +174,7 @@ class ExportImportTest extends TestCase
 
     /**
      * @group agustin
-     *
+     * @dataProvider importType
      * There are some assets that are not tested because we are not exporting for now:
      * - Users
      * - Groups
@@ -182,9 +182,8 @@ class ExportImportTest extends TestCase
      *
      * Not yet implemented
      * - Collections
-     * - Datasource Webhooks
      */
-    public function testExportImportFull()
+    public function testExportImportFull($importType)
     {
         DB::beginTransaction();
         $this->addGlobalSignalProcess();
@@ -202,11 +201,16 @@ class ExportImportTest extends TestCase
         // Assert assets in export file
         $this->assertAssetsInExportFile($scenario, $exportData);
 
-        // Clear database
-        DB::rollBack();
+        if ($importType == 'create') {
+            // Clear database
+            DB::rollBack();
 
-        // Assert assets does not exists anymore in database
-        $this->assertAssetsRemovedFromDB($scenario);
+            // Assert assets does not exists anymore in database
+            $this->assertAssetsRemovedFromDB($scenario);
+        } else {
+            // Assert assets still in database
+            $this->assertAssetsStillInDB($scenario);
+        }
 
         // Do import
         $importResponse = $this->runFullProcessImport($exportResponse);
@@ -214,6 +218,14 @@ class ExportImportTest extends TestCase
 
         // Assert elements was correctly imported
         $this->assertAssetsWasImported($scenario);
+    }
+
+    public function importType()
+    {
+        return [
+            ['update'],
+            ['create'],
+        ];
     }
 
     private function prepareScenariosForExportImportFull()
@@ -229,8 +241,10 @@ class ExportImportTest extends TestCase
 
         // Create a form screen for form task 1
         $formTaskScreen = $this->createScreen('screen_with_nested_screen', ['title' => 'screen'], 'watchers');
+        $formTaskNestedScreen = Screen::factory()->create(['title' => 'nested screen', 'config' => []]);
         $watcherScript = Script::factory()->create(['title' => 'script']);
         $this->associateScriptWatcher($formTaskScreen, $watcherScript);
+        $this->associateNestedScreen($formTaskScreen, $formTaskNestedScreen);
 
         $config = [['items' => []]];
 
@@ -286,6 +300,7 @@ class ExportImportTest extends TestCase
             'user' => $user,
             'process' => $process,
             'formTaskScreen' => $formTaskScreen,
+            'formTaskNestedScreen' => $formTaskNestedScreen,
             'screenCategory' => $screenCategory,
             'weAssociatedScreen' => $weAssociatedScreen,
             'weCompletedScreen' => $weCompletedScreen,
@@ -345,6 +360,14 @@ class ExportImportTest extends TestCase
         $screen->saveOrFail();
     }
 
+    private function associateNestedScreen($parent, $child)
+    {
+        $config = $parent->config;
+        Arr::set($config, '0.items.2.config.screen', $child->id);
+        $parent->config = $config;
+        $parent->saveOrFail();
+    }
+
     private function runFullProcessExport($process)
     {
         $route = route('api.export.download', ['type' => 'process', 'id' => $process->id]);
@@ -378,8 +401,8 @@ class ExportImportTest extends TestCase
     private function assertAssetsInExportFile($scenario, $exportData)
     {
         $this->assertCount(1, $exportData['processes']);
-        $this->assertCount(4, $exportData['screens']);
-        $this->assertCount(4, $exportData['screen_categories']);
+        $this->assertCount(5, $exportData['screens']);
+        $this->assertCount(5, $exportData['screen_categories']);
         $this->assertCount(1, $exportData['data_sources']);
         $this->assertCount(1, $exportData['data_source_categories']);
         $this->assertCount(3, $exportData['vocabularies']);
@@ -392,6 +415,7 @@ class ExportImportTest extends TestCase
 
         $this->assertContains($scenario['process']->id, $exportData['processes']);
         $this->assertContains($scenario['formTaskScreen']->id, $exportData['screens']);
+        $this->assertContains($scenario['formTaskNestedScreen']->id, $exportData['screens']);
         $this->assertContains($scenario['weAssociatedScreen']->id, $exportData['screens']);
         $this->assertContains($scenario['weCompletedScreen']->id, $exportData['screens']);
         $this->assertContains($scenario['pdfScreen']->id, $exportData['screens']);
@@ -433,10 +457,30 @@ class ExportImportTest extends TestCase
         $this->assertEquals(0, Webhook::where('name', $scenario['signal']->getId() . ' webhook')->count());
     }
 
+    private function assertAssetsStillInDB($scenario)
+    {
+        $this->assertEquals(1, Process::where('name', $scenario['process']->name)->count());
+        $this->assertEquals(1, Screen::where('title', $scenario['formTaskScreen']->title)->count());
+        $this->assertEquals(1, ScreenCategory::where('name', $scenario['screenCategory']->name)->count());
+        $this->assertEquals(1, Screen::where('title', $scenario['weAssociatedScreen']->title)->count());
+        $this->assertEquals(1, Screen::where('title', $scenario['weCompletedScreen']->title)->count());
+        $this->assertEquals(1, DataSourceCategory::where('name', $scenario['dataSourceCategory']->name)->count());
+        $this->assertEquals(1, DataSource::where('name', $scenario['dataSource']->name)->count());
+        $this->assertEquals(1, Screen::where('title', $scenario['pdfScreen']->title)->count());
+        $this->assertEquals(1, Vocabulary::where('title', $scenario['vocabulary1']->title)->count());
+        $this->assertEquals(1, Vocabulary::where('title', $scenario['vocabulary2']->title)->count());
+        $this->assertEquals(1, Vocabulary::where('title', $scenario['vocabulary3']->title)->count());
+        $this->assertEquals(1, EnvironmentVariable::where('name', $scenario['environmentVariable']->name)->count());
+        $this->assertEquals(1, Script::where('title', $scenario['script']->title)->count());
+        $this->assertEquals(1, ScriptCategory::where('name', $scenario['scriptCategory']->name)->count());
+        $this->assertEquals(1, Webhook::where('name', $scenario['signal']->getId() . ' webhook')->count());
+    }
+
     private function assertAssetsWasImported($scenario)
     {
         $this->assertDatabaseHas('processes', ['name' => $scenario['process']->name]);
         $this->assertDatabaseHas('screens', ['title' => $scenario['formTaskScreen']->title]);
+        $this->assertDatabaseHas('screens', ['title' => $scenario['formTaskNestedScreen']->title]);
         $this->assertDatabaseHas('screen_categories', ['name' => $scenario['screenCategory']->name]);
         $this->assertDatabaseHas('screens', ['title' => $scenario['weAssociatedScreen']->title]);
         $this->assertDatabaseHas('screens', ['title' => $scenario['weCompletedScreen']->title]);
