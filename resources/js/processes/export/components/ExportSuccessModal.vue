@@ -23,13 +23,13 @@
                <i class="fas fa-check-circle text-success"></i>{{formatAssetValue(value) }} {{ formatAssetName(key) }}
             </li>
         </ul>
-        <template v-if="advancedExport">
+        <template v-if="this.$root.includeAll === false">
             <div class="non-exported-assets">
                 <h5 class="card-title export-type">{{ $t("Not Exported") }}</h5>
             </div>
             <ul class="pl-0">
-                <li v-for="(value, key) in nonExportedAssets" :key="value">
-                <i class="fas fa-minus-circle"></i> {{ value }} {{ key }}
+                <li v-for="(key, value) in filterNonExported" :key="value">
+                <i class="fas fa-minus-circle"></i> {{ key.items.length }} {{ key.typeHuman }}
                 </li>
             </ul>
         </template>
@@ -43,18 +43,22 @@ import { Modal } from "SharedComponents";
 
 export default {
   components: { Modal },
-  props: ["processId", "processName", "exportInfo"],
+  props: ["processId", "processName", "exportInfo", "info"],
   mixins: [],
   data() {
       return {
         disabled: false,
-        advancedExport: false,
         nonExportedAssets: {},
       }
   },
   computed: {
+    filterNonExported() {
+      const nonExportedAssets = Object.entries(this.$root.includeAllByGroup).filter(([key, value]) => !value);
+      const filterNonExported = nonExportedAssets.map((item) => item[0]);
+      const result = this.info.filter(item => filterNonExported.includes(item.type));
+      return result;
+    },
   },
-
   watch: {
     exportInfo() {
         if (!this.exportInfo) {
@@ -83,9 +87,8 @@ export default {
     },
     formatAssetValue(value) {
         return value.length;
-    }
+    },
   },
-
 }
 </script>
 
