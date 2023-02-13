@@ -70,7 +70,7 @@
             <p class="fw-semibold"> This process contains no dependent assets to {{ $root.operation.toLowerCase() }}. </p>
         </div>
         <div v-for="group in groups" :key="group.type">
-          <data-card v-if="!group.hidden && $root.hasSomeNotDiscardedByParent(group.items)" :exportAllElements="exportAllElements" :info="group" />
+            <data-card v-if="!group.hidden" :info="group" :isEnabled="$root.hasSomeNotDiscardedByParent(group.items)" :class="!$root.hasSomeNotDiscardedByParent(group.items) ? 'card-disabled' : ''"/>
         </div>
         <div class="p-0 pt-3 pb-3 card-footer bg-light" align="right">
             <button type="button" class="btn btn-outline-secondary" @click="onCancel">
@@ -229,6 +229,10 @@ export default {
 .process-options-helper-text {
     margin-top: 0;
     margin-bottom: 2px;
+}
+
+.card-disabled {
+    opacity: 0.5;
 }
 
 </style>
