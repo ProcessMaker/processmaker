@@ -7,6 +7,7 @@
           <h5 class="mb-0 data-card-header d-inline align-middle">{{ info.typeHumanPlural }}</h5>
           <b-form-checkbox
             class="data-card-header export-all d-inline align-middle fw-semibold"
+            :disabled="disabled"
             v-model="includeAllByGroup"
           >
             {{ $root.operation }} All
@@ -63,7 +64,7 @@ export default {
   components: {
     DataTree,
   },
-  props: ['info'],
+  props: ['info', 'isEnabled'],
   mixins: [],
   data() {
     return {
@@ -107,6 +108,9 @@ export default {
           },
         ],
       };
+    },
+    disabled() {
+      return !this.includeAllByGroup && !this.isEnabled;
     }
   }
 }

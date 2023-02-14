@@ -10,7 +10,7 @@
             :process-id="processId"
           />
         </p-tab>
-        <p-tab v-for="(group, i) in groupsFiltered" :key="i" :active="slotProps.activeIndex === i + 1">
+        <p-tab v-for="(group, i) in $root.groups" :key="i" :active="slotProps.activeIndex === i + 1">
           <DependentAssetView
             :group="group"
             :items="group.items"
@@ -50,7 +50,7 @@ export default {
         { title: this.$root.rootAsset.name, icon: null },
       ];
 
-      this.groupsFiltered.forEach((group) => {
+      this.$root.groups.forEach((group) => {
         items.push({
           title: group.typePlural,
           icon: group.icon,
@@ -58,13 +58,6 @@ export default {
       });
 
       return items;
-    },
-    groupsFiltered() {
-      return this.$root.groups.filter((group) => {
-        return this.$root.groupsHaveSomeActive[group.type];
-      }).filter((group) => {
-        return this.$root.hasSomeNotDiscardedByParent(group.items);
-      });
     },
   },
   mounted() {
