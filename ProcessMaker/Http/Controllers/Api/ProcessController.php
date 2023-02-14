@@ -1199,17 +1199,4 @@ class ProcessController extends Controller
             $node->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'config', json_encode($config));
         }
     }
-
-    public function getDoNotSanitizeFields($process)
-    {
-        $manager = app(ExportManager::class);
-        $screenIds = $manager->getDependenciesOfType(Screen::class, $process, []);
-        $doNotSanitizeFields = [];
-        foreach ($screenIds as $screenId) {
-            $doNotSanitizeFieldsForScreen = SanitizeHelper::getDoNotSanitizeFields($screenId);
-            $doNotSanitizeFields = array_unique(array_merge($doNotSanitizeFieldsForScreen, $doNotSanitizeFields));
-        }
-
-        return $doNotSanitizeFields;
-    }
 }
