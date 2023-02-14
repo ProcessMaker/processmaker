@@ -5,6 +5,7 @@ namespace ProcessMaker\WebServices;
 use DOMDocument;
 use DOMXPath;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Helpers\StringHelper;
 use ProcessMaker\WebServices\Contracts\SoapClientInterface;
 use SimpleXMLElement;
 use SoapClient;
@@ -18,6 +19,8 @@ class NativeSoapClient implements SoapClientInterface
     private $services = [];
 
     private $debug = false;
+
+    private $options;
 
     public function __construct(string $wsdl, array $options)
     {
@@ -41,6 +44,7 @@ class NativeSoapClient implements SoapClientInterface
             ];
         }
         $this->debug = $options['debug_mode'] ?? false;
+        $this->options = $options;
         // Add Soap Auth Headers
         $this->addSoapAuthHeaders($options);
     }
@@ -98,7 +102,12 @@ class NativeSoapClient implements SoapClientInterface
                 }
             }
 
-            Log::channel('data-source')->info($label . $doc->saveXML());
+            $connectorName = StringHelper::friendlyFileName($this->options['datasource_name']) . '_(' . $this->options['datasource_id'] . ')';
+            Log::build([
+                'driver' => 'daily',
+                'path' => storage_path("logs/data-sources/$connectorName.log"),
+                'days' => env('DATA_SOURCE_CLEAR_LOG', 21),
+            ])->info($label . $doc->saveXML());
         } catch (\Throwable $th) {
             if ($label === 'Request Headers: ') {
                 $newLog = '';

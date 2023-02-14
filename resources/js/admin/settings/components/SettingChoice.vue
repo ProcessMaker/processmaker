@@ -5,6 +5,10 @@
     </div>
     <div v-else>
       {{ display }}
+       <b-badge v-if="hasAuthorizedBadge" pill :variant="setting.ui.authorizedBadge ? 'success' : 'secondary'">
+         <span v-if="setting.ui.authorizedBadge">{{ $t('Authorized') }}</span>
+         <span v-else>{{ $t('Not Authorized') }}</span>
+       </b-badge>
     </div>
     <b-modal class="setting-object-modal" v-model="showModal" size="lg" @hidden="onModalHidden">
       <template v-slot:modal-header class="d-block">
@@ -69,6 +73,14 @@ export default {
         return this.input;
       }
     },
+    hasAuthorizedBadge() {
+      if (!this.setting) {
+        return false;
+      }
+      // Prevent authorization badge from showing on 'standard' authentication
+      const hasAuthorizedBadge = _.has(this.setting, 'ui.authorizedBadge') && this.setting.config !== '0' ? true : false;
+      return hasAuthorizedBadge;
+    }
   },
   watch: {
     value: {

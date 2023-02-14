@@ -9,6 +9,7 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use ProcessMaker\Facades\RequestDevice;
 use ProcessMaker\Models\User;
 use Session;
 
@@ -59,6 +60,10 @@ class SessionStarted implements ShouldBroadcastNow
                         ? 'Number.MAX_SAFE_INTEGER'
                         : config('session.lifetime');
 
-        return ['lifetime' => $lifetime];
+        return [
+            'lifetime' => $lifetime,
+            'device_id' => RequestDevice::getId(),
+            'device_variable' => RequestDevice::getVariableName()
+        ];
     }
 }

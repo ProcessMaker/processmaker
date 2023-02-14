@@ -11,7 +11,7 @@ If you are new to ProcessMaker 4 and would like to load the software locally, we
 ## System Requirements
 
 * [Composer 2](https://getcomposer.org/)
-* [Node.js 16.15](https://nodejs.org/en/)
+* [Node.js 16.18.1](https://nodejs.org/en/)
 * [NPM 8.9](https://www.npmjs.com/package/npm)
 * [PHP 8.1](https://php.net)
 * [PHP-FPM](https://www.php.net/manual/en/install.fpm.php)
@@ -19,7 +19,7 @@ If you are new to ProcessMaker 4 and would like to load the software locally, we
 * [PHP ImageMagick Extension](https://www.php.net/manual/en/book.imagick.php)
 * [PHP IMAP Extension](https://www.php.net/manual/en/imap.setup.php)
 * [Nginx](https://nginx.org/)
-* [MySql 5.7](https://dev.mysql.com/downloads/mysql/5.7.html)
+* [MySql 8.0](https://dev.mysql.com/downloads/mysql/8.0.html)
 * [Redis](https://redis.io/)
 * [Docker](https://docs.docker.com/get-docker/)
 
@@ -153,7 +153,7 @@ You can develop ProcessMaker as well as ProcessMaker packages locally. In order 
 * [PHP 8.1](https://php.net) or above
   * Windows users can install [XAMPP](https://www.apachefriends.org/index.html)
 * [Composer 2](https://getcomposer.org/)
-* [Node.js 16.15](https://nodejs.org/en/) or above
+* [Node.js 16.18.1](https://nodejs.org/en/) or above
 
 **Steps for Development Installation**
 

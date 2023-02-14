@@ -104,11 +104,8 @@ class ProcessRequestController extends Controller
             $user = Auth::user();
         }
 
-        // Update request permissions for the user
-        $user->updatePermissionsToRequests();
-
         // Filter request with user permissions
-        $query = ProcessRequest::requestsThatUserCan('can_view', $user);
+        $query = ProcessRequest::forUser($user);
         $includes = $request->input('include', '');
         foreach (array_filter(explode(',', $includes)) as $include) {
             if (in_array($include, ProcessRequest::$allowedIncludes)) {
@@ -147,10 +144,6 @@ class ProcessRequestController extends Controller
             } catch (PmqlMethodException $e) {
                 return response(['message' => $e->getMessage(), 'field' => $e->getField()], 400);
             }
-        }
-
-        if (!$user->can('view-all_requests')) {
-            $query->pmql('requester = "' . $user->username . '" OR participant = "' . $user->username . '"');
         }
 
         $query->nonSystem();
@@ -243,16 +236,17 @@ class ProcessRequestController extends Controller
         }
 
         if ($request->status !== 'ERROR') {
-            throw ValidationException::withMessages([
-                'status' => __('Only requests with ERROR status can be retried'),
-            ]);
+            return response()->json([
+                'message' => __('Only requests with ERROR status can be retried'),
+                'success' => false,
+            ], 422);
         }
 
         $retryRequest = RetryProcessRequest::for($request);
 
         if (!$retryRequest->hasRetriableTasks() || $retryRequest->hasNonRetriableTasks()) {
             return response()->json([
-                'message' => ['No tasks available to retry'],
+                'message' => [__('No tasks available to retry')],
                 'success' => false,
             ]);
         }

@@ -1,6 +1,23 @@
 <template>
   <div class="settings-listing data-table">
-    <basic-search class="mb-3" @submit="onSearch"></basic-search>
+    <div class="d-flex mb-3">
+      <basic-search @submit="onSearch"></basic-search>
+      <div v-if="topButtons" class="d-flex">
+        <b-button
+            v-for="(btn,index) in topButtons"
+            :ref="formatGroupName(btn.group)"
+            :key="`btn-${index}`"
+            class="ml-2 nowrap"
+            v-bind="btn.ui.props"
+            @click="handler(btn)"
+            :disabled="false"
+            >
+            <b-spinner small ref="b-spinner" :hidden="true"></b-spinner>
+            <i v-if="btn.ui.props.icon" :class="btn.ui.props.icon"></i>
+            {{btn.name}}
+        </b-button>
+      </div>
+    </div>
     <div class="card card-body table-card">
       <b-table
         class="settings-table table table-responsive-lg text-break m-0 h-100 w-100"
@@ -16,7 +33,7 @@
         responsive
       >
         <template v-slot:cell(name)="row">
-          <div v-if="row.item.name" v-uni-id="row.item.id.toString()">{{ $t(row.item.name) }}</div>
+          <div v-if="row.item.name" v-uni-id="row.item.id.toString()" class="capitalize">{{ $t(row.item.name) }}</div>
           <div v-else v-uni-id="row.item.id.toString()">{{ row.item.key }}</div>
           <b-form-text v-if="row.item.helper">{{ $t(row.item.helper) }}</b-form-text>
         </template>
@@ -34,8 +51,8 @@
                 :disabled="row.item.readonly" 
                 @click="onEdit(row)" 
                 variant="link" 
-                size="lg">
-                  <i class="fa fa-pen-square"></i>
+               >
+                  <i class="fa-lg fas fa-edit"></i>
                 </b-button>
             </span>
             <b-button 
@@ -43,10 +60,9 @@
               v-uni-aria-describedby="row.item.id.toString()"
               @click="onCopy(row)"
               variant="link"
-              size="lg"
               v-b-tooltip.hover
               :title="$t('Copy to Clipboard')">
-                <i class="fa fa-paste"></i>
+                <i class="fa-lg fas fa-copy"></i>
               </b-button>
 
             <span v-b-tooltip.hover v-if="!['boolean', 'object', 'button'].includes(row.item.format)" :title="$t('Clear')">
@@ -56,8 +72,8 @@
               :disabled="row.item.readonly" 
               @click="onClear(row)" 
               variant="link" 
-              size="lg">
-                <i class="fas fa-trash-alt"></i>
+             >
+                <i class="fa-lg fas fa-trash-alt"></i>
               </b-button>
             </span>
             <span v-else class="invisible">
@@ -79,7 +95,7 @@
       </b-table>
       <div class="text-right p-2">
         <b-button
-          v-for="(btn,index) in buttons"
+          v-for="(btn,index) in bottomButtons"
           :ref="formatGroupName(btn.group)"
           :key="`btn-${index}`"
           class="ml-2"
@@ -88,41 +104,10 @@
           :disabled="false"
           >
           <b-spinner small ref="b-spinner" :hidden="true"></b-spinner>
+          <span v-html="btn.icon"></span>
+          <i v-if="btn.ui.props.icon" :class="btn.ui.props.icon"></i>
           {{btn.name}}
-          </b-button>
-      </div>
-      <div v-if="totalRows" class="settings-table-footer text-secondary d-flex align-items-center p-2 w-100">
-        <div class="flex-grow-1">
-          <span v-if="totalRows">
-            <span v-if="from == to">
-              {{from}}
-            </span>
-            <span v-else>
-              {{from}} - {{to}}
-            </span>
-            of {{totalRows}}
-            <span v-if="totalRows == 1">
-              {{ $t('Setting') }}
-            </span>
-            <span v-else>
-              {{ $t('Settings') }}
-            </span>
-          </span>
-        </div>
-        <b-pagination
-          class="m-0"
-          v-model="currentPage"
-          :total-rows="totalRows"
-          :per-page="perPage"
-          hide-ellipsis
-          limit="3"
-          :aria-label="$t('Pagination')"
-        >
-          <template v-slot:first-text><i class="fas fa-step-backward fa-sm"></i></template>
-          <template v-slot:last-text><i class="fas fa-step-forward fa-sm"></i></template>
-          <template v-slot:prev-text><i class="fas fa-caret-left fa-lg" style="padding-top: 9px;"></i></template>
-          <template v-slot:next-text><i class="fas fa-caret-right fa-lg" style="padding-top: 9px;"></i></template>
-        </b-pagination>
+        </b-button>
       </div>
     </div>
   </div>
@@ -166,7 +151,8 @@ export default {
   data() {
     return {
       tableKey: 0,
-      buttons: [],
+      bottomButtons: [],
+      topButtons: [],
       currentPage: 1,
       fields: [],
       filter: '',
@@ -208,7 +194,7 @@ export default {
       key: "name",
       label: "Setting",
       sortable: true,
-      tdClass: "td-name",
+      tdClass: "align-middle td-name",
     });
 
     this.fields.push({
@@ -222,16 +208,18 @@ export default {
       key: "actions",
       label: "",
       sortable: false,
-      tdClass: "text-right",
+      tdClass: "align-middle text-right",
     });
-
-    this.loadButtons();
   },
   methods: {
     loadButtons() {
       ProcessMaker.apiClient.get(`/settings/group/${this.group}/buttons`)
         .then((response) => {
-          this.buttons = response.data;
+          if (!response.data) {
+            return;
+          }
+          this.filterTopButtons(response.data);
+          this.filterBottomButtons(response.data);
         });
     },
     apiGet() {
@@ -279,6 +267,9 @@ export default {
         this.totalRows = response.data.meta.total;
         this.from = response.data.meta.from;
         this.to = response.data.meta.to;
+
+        this.loadButtons();
+
         if (this.orderBy !== this.orderByPrevious || this.orderDesc !== this.orderDescPrevious) {
           callback([]);
         }
@@ -382,12 +373,76 @@ export default {
     },
     formatGroupName(name)  {
       return name.toLowerCase().replaceAll(" ", '-');
+    },
+    filterTopButtons(buttons) {
+      if (!this.settings) {
+        return;
+      }
+
+      const sortedButtons = this.sortButtons(buttons);
+      const groupData = this.getGroupData(this.settings);
+
+      this.topButtons = sortedButtons.filter(btn => {
+        if (this.group === 'Email Default Settings' || this.group.includes('Email Server')) {
+          return this.filterEmailServerButtons(this.group, groupData, btn);
+        } else if (this.group === 'Actions By Email') {
+          return this.filterAbeButtons(groupData, btn);
+        }
+
+        if (btn.ui.props.hasOwnProperty('position')) {
+          return btn.ui.props.position === 'top';
+        } else {
+          return btn;
+        }
+      });
+    },
+    filterBottomButtons(buttons) {
+      const sortedButtons = this.sortButtons(buttons);
+      this.bottomButtons = sortedButtons.filter(btn => {
+        return btn.ui.props.position === 'bottom';
+      })
+    },
+    getGroupData(settings) {
+      return settings.filter(setting => {
+        return setting.group === this.group;
+      });
+    },
+    filterEmailServerButtons(groupName, groupData, btn) {
+      const authMethod = groupData.find(data => data.key.includes("EMAIL_CONNECTOR_MAIL_AUTH_METHOD"));
+      const selectedAuthMethod = authMethod ? authMethod.ui.options[authMethod.config] : null;
+      const showAuthAccBtn = selectedAuthMethod && selectedAuthMethod !== 'standard' ? true : false;
+
+      if (groupName.includes('Email Server') && !showAuthAccBtn)  {
+        // Returns all 'top' position buttons except the '+ Mail Server' and 'Authorize Account' button for email server tabs
+        return btn.ui.props.position === 'top' && !btn.key.includes('EMAIL_CONNECTOR_ADD_MAIL_SERVER_') && !btn.key.includes('EMAIL_CONNECTOR_AUTHORIZE_ACCOUNT');
+      }
+      if (showAuthAccBtn) {
+        // Returns all 'top' position buttons except the '+ Mail Server' button for email server tabs
+        return btn.ui.props.position === 'top' && !btn.key.includes('EMAIL_CONNECTOR_ADD_MAIL_SERVER_');
+      } 
+      // Returns all 'top' position buttons except the 'Authorize Account' button for email default settings tab
+      return btn.ui.props.position === 'top' && !btn.key.includes('EMAIL_CONNECTOR_AUTHORIZE_ACCOUNT');
+    },
+    filterAbeButtons(groupData, btn) {
+      const authMethod = groupData.find(data => data.key.includes("abe_imap_auth_method"));
+      const selectedAuthMethod = authMethod ? authMethod.ui.options[authMethod.config] : null;
+      const showAuthAccBtn = selectedAuthMethod && selectedAuthMethod !== 'standard' ? true : false;
+      
+      if (showAuthAccBtn) {
+        // Returns all 'top' position buttons
+        return btn.ui.props.position === 'top';
+      }
+      // Returns all 'top' position buttons except the 'Authorize Account' button
+      return btn.ui.props.position === 'top' && !btn.key.includes('abe_authorize_account');
+    },
+    sortButtons(buttons) {
+      return buttons.sort((a,b) => (a.ui.props.order > b.ui.props.order) ? 1 : -1);
     }
   }
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import '../../../../sass/colors';
 
 .preview-renderer {
@@ -397,44 +452,11 @@ export default {
   }
 }
 
-.b-pagination {
-  .page-item {
-    .page-link {
-      background-color: lighten($secondary, 44%);
-      border-radius: 2px;
-      color: $secondary;
-      cursor: pointer;
-      font-size: 12px;
-      height: 29px;
-      line-height: 29px;
-      margin: 1px;
-      padding: 0;
-      text-align: center;
-      width: 29px;
-    }
-    &:hover {
-      .page-link {
-        background-color: lighten($secondary, 40%);
-      }
-    }
-    &.disabled {
-      cursor: not-allowed;
-      opacity: .5;
-      .page-link {
-        background-color: lighten($secondary, 44%);
-      }
-    }
-    &.active {
-      .page-link {
-        background-color: lighten($secondary, 15%);
-        color: white;
-      }
-      &:hover {
-        .page-link {
-          background-color: lighten($secondary, 11%);
-        }
-      }
-    }
-  }
+.capitalize {
+  text-transform: capitalize;
+}
+
+.nowrap {
+  white-space: nowrap;
 }
 </style>

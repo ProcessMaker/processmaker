@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use ProcessMaker\Events\Logout;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\LoginManager;
 use ProcessMaker\Models\User;
@@ -42,7 +43,7 @@ class LoginController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest')->except(['logout', 'keepAlive']);
+        $this->middleware('guest')->except(['logout', 'beforeLogout', 'keepAlive']);
     }
 
     /**
@@ -56,9 +57,9 @@ class LoginController extends Controller
         $addons = $manager->list();
         $block = $manager->getBlock();
         // clear cookie to avoid an issue when logout SLO and then try to login with simple PM login form
-        \Cookie::queue(\Cookie::forget('processmaker_session'));
+        \Cookie::queue(\Cookie::forget(config('session.cookie')));
         // cookie required here because SSO redirect resets the session
-        $cookie = cookie('processmaker_intended', redirect()->intended()->getTargetUrl(), 10, '/');
+        $cookie = cookie('processmaker_intended', redirect()->intended()->getTargetUrl(), 10, null, null, true, true, false, 'none');
         $response = response(view('auth.login', compact('addons', 'block')));
         $response->withCookie($cookie);
 
@@ -118,6 +119,15 @@ class LoginController extends Controller
         if (env('LOGOUT_OTHER_DEVICES', false)) {
             Auth::logoutOtherDevices($request->input('password'));
         }
+    }
+
+    public function beforeLogout(Request $request)
+    {
+        if (Auth::check()) {
+            event(new Logout(Auth::user()));
+        }
+
+        return $this->logout($request);
     }
 
     public function loggedOut(Request $request)

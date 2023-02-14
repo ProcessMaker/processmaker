@@ -252,6 +252,15 @@ class TaskController extends Controller
      *           type="integer",
      *         )
      *     ),
+     *     @OA\Parameter(
+     *         description="include",
+     *         in="query",
+     *         name="include",
+     *         required=false,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="success",
@@ -375,7 +384,7 @@ class TaskController extends Controller
             return $tasksList;
         }
 
-        $requestQuery = DB::connection('data')->table('process_requests');
+        $requestQuery = ProcessRequest::query();
 
         foreach ($requestColumns as $column) {
             $columnName = trim(explode('.', $column)[1]);

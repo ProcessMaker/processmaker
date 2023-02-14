@@ -199,6 +199,7 @@ class MakeHttpRequestTest extends TestCase
         $testStub = $this->getObjectForTrait(MakeHttpRequests::class);
         $testStub->endpoints = json_decode('{"create":{"url":"https://fake.server.com/users/{{userIdParam}}","body":"{\n    \"name\":\"{{nameParam}}\",\n    \"age\":\"{{ageParam}}\"\n}","view":false,"method":"PUT","params":[{"id":0,"key":"queryStringParam","value":null,"required":false}],"headers":[{"id":0,"key":"headerParam","value":null,"required":false}],"purpose":"create","updated":"2022-05-30 12:38:48","testData":"{\n    \"nameParam\":\"Dante\",\n    \"ageParam\": 12,\n    \"userIdParam\": 4\n}","body_type":"json","outboundConfig":[]}}', true);
         $testStub->authtype = 'BASIC';
+        $testStub->debug_mode = false;
         $testStub->credentials = ['verify_certificate' => false, 'username' => 'test', 'password' => 'test'];
 
         // This is the configuration that is created when configuring a connector in modeler
@@ -252,6 +253,7 @@ class MakeHttpRequestTest extends TestCase
         $testStub->endpoints = json_decode('{"create":{"url":"https://fake.server.com/users/{{userIdParam}}","body":"{\n    \"name\":\"{{nameParam}}\",\n    \"age\":\"{{ageParam}}\"\n}","view":false,"method":"PUT","params":[{"id":0,"key":"queryStringParam","value":null,"required":false}],"headers":[{"id":0,"key":"headerParam","value":null,"required":false}],"purpose":"create","updated":"2022-05-30 12:38:48","testData":"{\n    \"nameParam\":\"Dante\",\n    \"ageParam\": 12,\n    \"userIdParam\": 4\n}","body_type":"json","outboundConfig":[]}}', true);
         $testStub->authtype = 'BASIC';
         $testStub->credentials = ['verify_certificate' => false, 'username' => 'test', 'password' => 'test'];
+        $testStub->debug_mode = false;
 
         // This is the configuration that is created when configuring a connector in modeler
         $connectorConfig = [
@@ -327,6 +329,7 @@ class MakeHttpRequestTest extends TestCase
         $testStub = $this->getObjectForTrait(MakeHttpRequests::class);
         $testStub->endpoints = json_decode('{"create":{"url":"https://fake.server.com/users/{{userIdParam}}","body":"{\n    \"name\":\"{{nameParam}}\",\n    \"age\":\"{{ageParam}}\"\n}","view":false,"method":"PUT","params":[{"id":0,"key":"queryStringParam","value":null,"required":false}],"headers":[{"id":0,"key":"headerParam","value":null,"required":false}],"purpose":"create","updated":"2022-05-30 12:38:48","testData":"{\n    \"nameParam\":\"Dante\",\n    \"ageParam\": 12,\n    \"userIdParam\": 4\n}","body_type":"json","outboundConfig":[]}}', true);
         $testStub->authtype = 'NONE';
+        $testStub->debug_mode = false;
         // This is the configuration that is created when configuring a connector in modeler
         $endpointConfig = [
             'dataSource' => 1,
