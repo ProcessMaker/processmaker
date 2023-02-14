@@ -23,7 +23,7 @@
               <div class="pt-3">
                 <label for="set-password">Password</label>
                 <vue-password v-model="password" id="set-password" :disable-strength=true />
-                <small v-if="errors.length === true" class="text-danger">{{ 'Password must be at least 8 characters.' }}</small>
+                <small v-if="errors.length === true" class="text-danger">{{ 'Password must have at least 8 characters.' }}</small>
               </div>
               <div class="pt-3">
                 <label for="confirm-set-password">Verify Password</label>
