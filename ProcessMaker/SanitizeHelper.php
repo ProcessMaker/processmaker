@@ -158,9 +158,12 @@ class SanitizeHelper
             return $except;
         }
         $config = $screen->config;
-        foreach ($config as $page) {
-            if (isset($page['items']) && is_array($page['items'])) {
-                $except = array_merge($except, self::getRichTextElements($page['items']));
+
+        if ($config) {
+            foreach ($config as $page) {
+                if (isset($page['items']) && is_array($page['items'])) {
+                    $except = array_merge($except, self::getRichTextElements($page['items']));
+                }
             }
         }
 
