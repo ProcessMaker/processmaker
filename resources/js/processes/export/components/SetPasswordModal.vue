@@ -23,11 +23,12 @@
               <div class="pt-3">
                 <label for="set-password">Password</label>
                 <vue-password v-model="password" id="set-password" :disable-strength=true />
+                <small v-if="errors.length === true" class="text-danger">{{ 'Password must be at least 8 characters.' }}</small>
               </div>
               <div class="pt-3">
                 <label for="confirm-set-password">Verify Password</label>
                 <vue-password v-model="confirmPassword" id="confirm-password" :disable-strength=true :class="errors.password ? 'invalid' : ''" />
-                <small v-if="errors && errors.password && errors.password.length" class="text-danger">{{ 'Must match password entered above.' }}</small>
+                <small v-if="errors && errors.password" class="text-danger">{{ 'Must match password entered above.' }}</small>
               </div>
             </template>
             <template v-else>
@@ -64,6 +65,7 @@ export default {
       type: 'password',
       errors: {
         'password': null,
+        'length': null,
       },
     };
   },
@@ -75,7 +77,7 @@ export default {
   watch: {
     passwords() {
       if (this.passwordProtect === true) {
-        if (this.password && this.confirmPassword) {
+        if (this.password.length >= 8 && this.confirmPassword) {
           this.disabled = false;
         } else if (this.password && !this.confirmPassword) {
           this.disabled = true;
@@ -92,6 +94,13 @@ export default {
         this.errors.password = "";
       } else {
         this.disabled = this.password ? false : true;
+      }
+    },
+    password() {
+      if (this.password && this.password.length < 8) {
+        this.errors.length = true;
+      } else if (this.password && this.password.length >= 8) {
+        this.errors.length = false;
       }
     },
   },
@@ -129,6 +138,10 @@ export default {
       }
 
       if (this.password.trim() === '' && this.confirmPassword.trim() === '') {
+        return false;
+      }
+
+      if (this.password.length < 8) {
         return false;
       }
 
