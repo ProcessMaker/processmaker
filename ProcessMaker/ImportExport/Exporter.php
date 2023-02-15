@@ -70,12 +70,16 @@ class Exporter
     {
         $exported = collect($manifest['export'])
             ->groupBy(function ($item) {
-                $model = Str::afterLast($item['model'], '\\');
-
-                return Str::snake(Str::pluralStudly($model));
+                return $item['type'];
             })
             ->map(function ($group) {
-                return $group->pluck('attributes.id');
+                $item = $group[0];
+
+                return [
+                    'name' => $item['type_human'],
+                    'name_plural' => $item['type_human_plural'],
+                    'ids' => $group->pluck('attributes.id'),
+                ];
             });
 
         return json_encode([

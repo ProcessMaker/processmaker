@@ -70,14 +70,18 @@
             <p class="fw-semibold"> This process contains no dependent assets to {{ $root.operation.toLowerCase() }}. </p>
         </div>
         <div v-for="group in groups" :key="group.type">
-          <data-card v-if="!group.hidden && $root.hasSomeNotDiscardedByParent(group.items)" :exportAllElements="exportAllElements" :info="group" />
+            <data-card v-if="!group.hidden" :info="group" :isEnabled="$root.hasSomeNotDiscardedByParent(group.items)" :class="!$root.hasSomeNotDiscardedByParent(group.items) ? 'card-disabled' : ''"/>
         </div>
         <div class="p-0 pt-3 pb-3 card-footer bg-light" align="right">
             <button type="button" class="btn btn-outline-secondary" @click="onCancel">
                 {{ $t("Cancel") }}
             </button>
-            <button v-if="$root.isImport" type="button" class="btn btn-primary ml-2" @click="onImport">
-                {{ $t("Import") }}
+            <button v-if="$root.isImport" type="button" class="btn btn-primary ml-2" @click="onImport"
+                :class="{'disabled': loading}" 
+                :disabled="fileIsValid === false || loading" >
+                    <span v-if="!loading">{{$t('Import')}}</span>
+                    <i v-if="loading" class="fas fa-spinner fa-spin p-0" />
+                    <span v-if="loading">{{$t('Importing')}}</span>
             </button>
             <button v-else-if="$root.canExport" type="button" class="btn btn-primary ml-2" @click="onExport">
                 {{ $t("Export") }}
@@ -91,7 +95,7 @@
                 :password-protect="passwordProtect"
             />
             <import-process-modal ref="import-process-modal" :existingAssets="existingAssets" :processName="processName" :userHasEditPermissions="true" @import-new="setCopyAll" @update-process="setUpdateAll"></import-process-modal>                            
-            <export-success-modal ref="export-success-modal" :processName="processName" :processId="processId" :exportInfo="exportInfo" />
+            <export-success-modal ref="export-success-modal" :processName="processName" :processId="processId" :exportInfo="exportInfo" :info="groups"/>
         </div>
     </div>
 </template>
@@ -128,6 +132,7 @@ export default {
             exportAllElements: true,
             exportInfo: {},
             assetsExist:false,
+            loading: false,
         }
     },
     computed: {
@@ -206,12 +211,14 @@ export default {
             this.handleImport();
         },
         handleImport() {
+            this.loading = true;
             DataProvider.doImport(this.$root.file, this.$root.exportOptions(), this.$root.password)
             .then((response) => {
                 ProcessMaker.alert(this.$t('Process was successfully imported'), 'success');
                 if (response.data?.processId) {
                     window.location.href = `/modeler/${response.data.processId}`;
                 }
+                this.loading = false;
             });
         }
     },
@@ -229,6 +236,10 @@ export default {
 .process-options-helper-text {
     margin-top: 0;
     margin-bottom: 2px;
+}
+
+.card-disabled {
+    opacity: 0.5;
 }
 
 </style>

@@ -53,8 +53,10 @@
                         <button type="button" class="btn btn-outline-secondary" @click="onCancel">
                             {{$t('Cancel')}}
                         </button>
-                        <button type="button" class="btn btn-primary ml-2" @click="checkForPassword" :disabled="fileIsValid === false">
-                            {{$t('Import')}}
+                        <button type="button" class="btn btn-primary ml-2" :class="{'disabled': loading}" @click="checkForPassword" :disabled="fileIsValid === false || loading">
+                            <span v-if="!loading">{{$t('Import')}}</span>
+                            <i v-if="loading" class="fas fa-spinner fa-spin p-0" /> 
+                            <span v-if="loading">{{$t('Importing')}}</span>
                         </button>
                     </div>
                 </div>
@@ -96,6 +98,7 @@ export default {
             importingCode: importingCode ? importingCode[1] : null,
             dataSources: [],
             dataSourcesInstalled: true,
+            loading: false,
             status: 'ACTIVE',
             importTypeOptions: [
                 {"value": "basic", "content": "Basic", "helper": "Import all assets from the uploaded package.", "disabled": false},
@@ -327,15 +330,18 @@ export default {
             });
         },
         handleImport() {
+            this.loading = true;
             DataProvider.doImport(this.file, this.$root.exportOptions(), this.password)
             .then(response => {
                 ProcessMaker.alert(this.$t('Process was successfully imported'), 'success');
                 if (response.data?.processId) {
                     window.location.href = `/modeler/${response.data.processId}`;
                 }
+                this.loading = false;
             }).catch(error => {
                 ProcessMaker.alert(this.$t('Unable to import the process.')  + (error.response.data.message ? ': ' + error.response.data.message : ''), 'danger');
                 this.submitted = false;
+                this.loading = false;
             });
             this.submitted = true;
         },

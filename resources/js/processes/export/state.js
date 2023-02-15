@@ -118,7 +118,6 @@ export default {
     },
     // used for for import
     setModeForAll(mode, includeRoot = true) {
-      console.log('setModeForAll', mode);
       Object.entries(this.ioState).filter(([uuid, settings]) => {
         return settings.mode !== 'discard' && !settings.discardedByParent;
       }).forEach(([uuid, asset]) => {
@@ -146,7 +145,7 @@ export default {
             });
 
           const fn = ([uuid, setting]) => {
-            return setting.mode !== 'discard';
+            return setting.mode !== 'discard' && !setting.discardedByParent;
           }
 
           let result = false;

@@ -59,10 +59,10 @@ class ExportImportTest extends TestCase
 
         $headers = $response->headers;
         $exportInfo = json_decode($headers->get('export-info'), true)['exported'];
-        $this->assertCount(1, $exportInfo['screens']);
-        $this->assertEquals($screen->id, $exportInfo['screens'][0]);
-        $this->assertCount(1, $exportInfo['screen_categories']);
-        $this->assertEquals($screen->categories[0]->id, $exportInfo['screen_categories'][0]);
+        $this->assertCount(1, $exportInfo['Screen']['ids']);
+        $this->assertEquals($screen->id, $exportInfo['Screen']['ids'][0]);
+        $this->assertCount(1, $exportInfo['ScreenCategory']['ids']);
+        $this->assertEquals($screen->categories[0]->id, $exportInfo['ScreenCategory']['ids'][0]);
     }
 
     public function testImportPreview()
