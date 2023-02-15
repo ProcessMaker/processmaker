@@ -76,8 +76,12 @@
             <button type="button" class="btn btn-outline-secondary" @click="onCancel">
                 {{ $t("Cancel") }}
             </button>
-            <button v-if="$root.isImport" type="button" class="btn btn-primary ml-2" @click="onImport">
-                {{ $t("Import") }}
+            <button v-if="$root.isImport" type="button" class="btn btn-primary ml-2" @click="onImport"
+                :class="{'disabled': loading}" 
+                :disabled="fileIsValid === false || loading" >
+                    <span v-if="!loading">{{$t('Import')}}</span>
+                    <i v-if="loading" class="fas fa-spinner fa-spin p-0" />
+                    <span v-if="loading">{{$t('Importing')}}</span>
             </button>
             <button v-else type="button" class="btn btn-primary ml-2" @click="onExport">
                 {{ $t("Export") }}
@@ -128,6 +132,7 @@ export default {
             exportAllElements: true,
             exportInfo: {},
             assetsExist:false,
+            loading: false,
         }
     },
     computed: {
@@ -206,12 +211,14 @@ export default {
             this.handleImport();
         },
         handleImport() {
+            this.loading = true;
             DataProvider.doImport(this.$root.file, this.$root.exportOptions(), this.$root.password)
             .then((response) => {
                 ProcessMaker.alert(this.$t('Process was successfully imported'), 'success');
                 if (response.data?.processId) {
                     window.location.href = `/modeler/${response.data.processId}`;
                 }
+                this.loading = false;
             });
         }
     },
