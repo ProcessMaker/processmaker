@@ -180,6 +180,9 @@ export default {
     },
   },
   computed: {
+    canExport() {
+      return this.rootUuid && this.rootUuid !== '';
+    },
     defaultMode() {
       // return this.isImport ? 'update' : null;
       return 'update';

@@ -37,6 +37,12 @@ export default {
       const rootUuid = response.data.root;
       const assets = response.data.export;
       return this.formatAssets(assets, rootUuid, response.data.passwordRequired);
+    }).catch((error) => {
+      let message = error.response?.data?.message;
+      if (!message) {
+        message = error.message;
+      }
+      throw new Error(message);
     });
   },
   exportProcess(processId, password, options) {

@@ -79,7 +79,7 @@
             <button v-if="$root.isImport" type="button" class="btn btn-primary ml-2" @click="onImport">
                 {{ $t("Import") }}
             </button>
-            <button v-else type="button" class="btn btn-primary ml-2" @click="onExport">
+            <button v-else-if="$root.canExport" type="button" class="btn btn-primary ml-2" @click="onExport">
                 {{ $t("Export") }}
             </button>
             <set-password-modal

@@ -3,9 +3,11 @@
 namespace ProcessMaker\ImportExport\Exporters;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use ProcessMaker\Exception\ExportModelNotFoundException;
 use ProcessMaker\ImportExport\Dependent;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Extension;
@@ -173,10 +175,14 @@ abstract class ExporterBase implements ExporterInterface
 
     public function runExport()
     {
-        $extensions = app()->make(Extension::class);
-        $extensions->runExtensions($this, 'preExport');
-        $this->export();
-        $extensions->runExtensions($this, 'postExport');
+        try {
+            $extensions = app()->make(Extension::class);
+            $extensions->runExtensions($this, 'preExport');
+            $this->export();
+            $extensions->runExtensions($this, 'postExport');
+        } catch (ModelNotFoundException $e) {
+            throw new ExportModelNotFoundException($e, $this);
+        }
     }
 
     public function runImport()
