@@ -15,6 +15,9 @@
           - {{ $t('or') }} -
         </div>
         <uploader-btn id="submitFile" class="text-primary">{{ $t('Select file from computer') }}</uploader-btn>
+        <div v-if="$refs.uploader && inProgress">
+          <i class="fas fa-spinner fa-spin p-0" />
+        </div>
       </uploader-drop>
 
       <uploader-list v-if="displayUploaderList">
