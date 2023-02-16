@@ -53,10 +53,13 @@
                         <button type="button" class="btn btn-outline-secondary" @click="onCancel">
                             {{$t('Cancel')}}
                         </button>
-                        <button type="button" class="btn btn-primary ml-2" :class="{'disabled': loading}" @click="checkForPassword" :disabled="fileIsValid === false || loading">
-                            <span v-if="!loading">{{$t('Import')}}</span>
-                            <i v-if="loading" class="fas fa-spinner fa-spin p-0" /> 
-                            <span v-if="loading">{{$t('Importing')}}</span>
+                        <button type="button" class="btn btn-primary ml-2"
+                            :class="{'disabled': loading}"
+                            :disabled="fileIsValid === false || loading"
+                            @click="checkForPassword">
+                                <span v-if="!loading">{{$t('Import')}}</span>
+                                <i v-if="loading" class="fas fa-spinner fa-spin p-0" />
+                                <span v-if="loading">{{$t('Importing')}}</span>
                         </button>
                     </div>
                 </div>
@@ -336,8 +339,9 @@ export default {
                 ProcessMaker.alert(this.$t('Process was successfully imported'), 'success');
                 if (response.data?.processId) {
                     window.location.href = `/modeler/${response.data.processId}`;
+                } else {
+                    this.loading = false;
                 }
-                this.loading = false;
             }).catch(error => {
                 ProcessMaker.alert(this.$t('Unable to import the process.')  + (error.response.data.message ? ': ' + error.response.data.message : ''), 'danger');
                 this.submitted = false;
