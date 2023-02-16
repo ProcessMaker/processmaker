@@ -47,9 +47,14 @@ export default {
       });
       
       const maxDepth = 20;
+
       const setMode = (uuid, discardedByParent, depth = 0) => {
         if (depth > maxDepth) {
           throw new Error('Max depth reached');
+        }
+
+        if (discardedByParent === true) {
+          return;
         }
 
         const asset = this.manifest[uuid];
@@ -59,9 +64,7 @@ export default {
           return;
         }
 
-        let mode = this.defaultMode;
-        
-        mode = this.ioState[uuid].mode;
+        let mode = this.ioState[uuid].mode;
         this.$set(this.ioState[uuid], 'discardedByParent', discardedByParent);
 
         // If this asset's mode is 'discard', set all it's children's discardedByParent to true.
