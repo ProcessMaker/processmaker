@@ -116,4 +116,44 @@ class SignalExporterTest extends TestCase
         $globalSignals = app()->make(SignalHelper::class)->getGlobalSignals();
         $this->assertArrayNotHasKey('test_some_global', $globalSignals);
     }
+
+    public function testCopySignal()
+    {
+        $this->addGlobalSignalProcess();
+
+        $signal = new SignalData('test_some_global', 'Test Global Signal', 'some global description');
+        SignalManager::addSignal($signal);
+
+        $bpmn = file_get_contents(__DIR__ . '/../fixtures/process-with-signals.bpmn.xml');
+        $processWithSignals = Process::factory()->create(['name' => 'process with signals', 'bpmn' => $bpmn]);
+
+        $payload = $this->export($processWithSignals, ProcessExporter::class);
+
+        $this->import($payload, new Options([
+            'signal-test_some_local' => ['mode' => 'update'],
+            'signal-test_some_global' => ['mode' => 'update'],
+        ]));
+
+        $signals = app()->make(SignalHelper::class)->getGlobalSignals();
+        $this->assertEquals('Test Global Signal', $signals['test_some_global']);
+        $this->assertArrayNotHasKey('test_some_global_2', $signals);
+
+        $this->import($payload, new Options([
+            'signal-test_some_local' => ['mode' => 'copy'],
+            'signal-test_some_global' => ['mode' => 'copy'],
+        ]));
+
+        $signals = app()->make(SignalHelper::class)->getGlobalSignals();
+        $this->assertEquals('Test Global Signal', $signals['test_some_global_2']);
+
+        $importedProcess = Process::where('name', 'process with signals')->firstOrFail();
+        $definitions = $importedProcess->getDefinitions(true);
+        $signalEventDefinitions = $definitions->getElementsByTagName('signalEventDefinition');
+        $this->assertEquals('test_some_global_2', $signalEventDefinitions[0]->getAttribute('signalRef'));
+        $this->assertEquals('test_some_local_2', $signalEventDefinitions[1]->getAttribute('signalRef'));
+
+        $signalElements = $definitions->getElementsByTagName('signal');
+        $this->assertEquals('test_some_global_2', $signalElements[0]->getAttribute('id'));
+        $this->assertEquals('test_some_local_2', $signalElements[1]->getAttribute('id'));
+    }
 }

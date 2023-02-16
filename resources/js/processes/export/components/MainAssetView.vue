@@ -84,7 +84,7 @@
                     <i v-if="loading" class="fas fa-spinner fa-spin p-0" />
                     <span v-if="loading">{{$t('Importing')}}</span>
             </button>
-            <button v-else type="button" class="btn btn-primary ml-2" @click="onExport">
+            <button v-else-if="$root.canExport" type="button" class="btn btn-primary ml-2" @click="onExport">
                 {{ $t("Export") }}
             </button>
             <set-password-modal

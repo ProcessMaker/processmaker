@@ -3,9 +3,11 @@
 namespace ProcessMaker\ImportExport\Exporters;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use ProcessMaker\Exception\ExportModelNotFoundException;
 use ProcessMaker\ImportExport\Dependent;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Extension;
@@ -50,6 +52,8 @@ abstract class ExporterBase implements ExporterInterface
     public static $fallbackMatchColumn = null;
 
     public $matchedBy = null;
+
+    public $incrementStringSeparator = ' ';
 
     public static function modelFinder($uuid, $assetInfo)
     {
@@ -173,10 +177,14 @@ abstract class ExporterBase implements ExporterInterface
 
     public function runExport()
     {
-        $extensions = app()->make(Extension::class);
-        $extensions->runExtensions($this, 'preExport');
-        $this->export();
-        $extensions->runExtensions($this, 'postExport');
+        try {
+            $extensions = app()->make(Extension::class);
+            $extensions->runExtensions($this, 'preExport');
+            $this->export();
+            $extensions->runExtensions($this, 'postExport');
+        } catch (ModelNotFoundException $e) {
+            throw new ExportModelNotFoundException($e, $this);
+        }
     }
 
     public function runImport()
@@ -369,7 +377,7 @@ abstract class ExporterBase implements ExporterInterface
         }
     }
 
-    private function duplicateExists($attribute, $value) : bool
+    protected function duplicateExists($attribute, $value) : bool
     {
         $class = get_class($this->model);
 
@@ -411,14 +419,18 @@ abstract class ExporterBase implements ExporterInterface
 
     protected function incrementString(string $string)
     {
-        if (preg_match('/\s(\d+)$/', $string, $matches)) {
+        if (preg_match('/' . $this->incrementStringSeparator . '(\d+)$/', $string, $matches)) {
             $num = (int) $matches[1];
             $new = $num + 1;
 
-            return preg_replace('/\d+$/', (string) $new, $string);
+            return preg_replace(
+                '/' . $this->incrementStringSeparator . '\d+$/',
+                $this->incrementStringSeparator . (string) $new,
+                $string
+            );
         }
 
-        return $string . ' 2';
+        return $string . $this->incrementStringSeparator . '2';
     }
 
     protected function exportCategories()

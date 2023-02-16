@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\ImportExport\Exporters;
 
+use DOMXPath;
 use Illuminate\Support\Collection;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Psudomodels\Signal;
@@ -210,11 +211,32 @@ class ProcessExporter extends ExporterBase
 
     private function importSignals()
     {
+        // Remove discarded signals from process
         foreach ($this->getReference('signals') as [$signalUuid, $signalId]) {
             if ($this->options->get('mode', $signalUuid) === 'discard') {
                 Signal::removeFromProcess($signalId, $this->model);
             }
         }
+
+        // Update signals if the ID changed (signal was copied)
+        $xml = $this->model->getDefinitions(true);
+        $xpath = new DOMXPath($xml);
+        foreach ($this->getDependents('signal') as $dependent) {
+            $oldSignalId = $dependent->meta;
+            $newSignalId = $dependent->model->id;
+
+            $signalEventDefinitions = $xpath->query('//bpmn:signalEventDefinition[@signalRef="' . $oldSignalId . '"]');
+            foreach ($signalEventDefinitions as $signalEventDefinition) {
+                $signalEventDefinition->setAttribute('signalRef', $newSignalId);
+            }
+
+            $signals = $xpath->query('//bpmn:signal[@id="' . $oldSignalId . '"]');
+            foreach ($signals as $signalElement) {
+                $signalElement->setAttribute('id', $newSignalId);
+            }
+        }
+
+        $this->model->bpmn = $xml->saveXML();
     }
 
     private function exportAssignments()
