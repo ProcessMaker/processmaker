@@ -62,9 +62,6 @@ class Signal extends Psudomodel
                 $signal = new SignalData($this->id, $this->name, $this->detail);
                 SignalManager::addSignal($signal);
             }
-        // TODO: call replaceSignal on global if exists?
-        } else {
-            // TODO: call replaceSignal if exists?
         }
     }
 

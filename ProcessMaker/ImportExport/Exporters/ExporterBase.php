@@ -53,6 +53,8 @@ abstract class ExporterBase implements ExporterInterface
 
     public $matchedBy = null;
 
+    public $incrementStringSeparator = ' ';
+
     public static function modelFinder($uuid, $assetInfo)
     {
         $class = $assetInfo['model'];
@@ -375,7 +377,7 @@ abstract class ExporterBase implements ExporterInterface
         }
     }
 
-    private function duplicateExists($attribute, $value) : bool
+    protected function duplicateExists($attribute, $value) : bool
     {
         $class = get_class($this->model);
 
@@ -417,14 +419,18 @@ abstract class ExporterBase implements ExporterInterface
 
     protected function incrementString(string $string)
     {
-        if (preg_match('/\s(\d+)$/', $string, $matches)) {
+        if (preg_match('/' . $this->incrementStringSeparator . '(\d+)$/', $string, $matches)) {
             $num = (int) $matches[1];
             $new = $num + 1;
 
-            return preg_replace('/\d+$/', (string) $new, $string);
+            return preg_replace(
+                '/' . $this->incrementStringSeparator . '\d+$/',
+                $this->incrementStringSeparator . (string) $new,
+                $string
+            );
         }
 
-        return $string . ' 2';
+        return $string . $this->incrementStringSeparator . '2';
     }
 
     protected function exportCategories()

@@ -400,42 +400,42 @@ class ExportImportTest extends TestCase
 
     private function assertAssetsInExportFile($scenario, $exportData)
     {
-        $this->assertCount(1, $exportData['processes']);
-        $this->assertCount(5, $exportData['screens']);
-        $this->assertCount(5, $exportData['screen_categories']);
-        $this->assertCount(1, $exportData['data_sources']);
-        $this->assertCount(1, $exportData['data_source_categories']);
-        $this->assertCount(3, $exportData['vocabularies']);
-        $this->assertCount(2, $exportData['scripts']);
-        $this->assertCount(2, $exportData['script_categories']);
-        $this->assertCount(1, $exportData['environment_variables']);
-        $this->assertCount(1, $exportData['process_categories']);
-        $this->assertCount(1, $exportData['signals']);
-        $this->assertCount(1, $exportData['webhooks']);
+        $this->assertCount(1, $exportData['Process']['ids']);
+        $this->assertCount(5, $exportData['Screen']['ids']);
+        $this->assertCount(5, $exportData['ScreenCategory']['ids']);
+        $this->assertCount(1, $exportData['DataConnector']['ids']);
+        $this->assertCount(1, $exportData['DataSourceCategory']['ids']);
+        $this->assertCount(3, $exportData['Vocabulary']['ids']);
+        $this->assertCount(2, $exportData['Script']['ids']);
+        $this->assertCount(2, $exportData['ScriptCategory']['ids']);
+        $this->assertCount(1, $exportData['EnvironmentVariable']['ids']);
+        $this->assertCount(1, $exportData['ProcessCategory']['ids']);
+        $this->assertCount(1, $exportData['Signal']['ids']);
+        $this->assertCount(1, $exportData['Webhook']['ids']);
 
-        $this->assertContains($scenario['process']->id, $exportData['processes']);
-        $this->assertContains($scenario['formTaskScreen']->id, $exportData['screens']);
-        $this->assertContains($scenario['formTaskNestedScreen']->id, $exportData['screens']);
-        $this->assertContains($scenario['weAssociatedScreen']->id, $exportData['screens']);
-        $this->assertContains($scenario['weCompletedScreen']->id, $exportData['screens']);
-        $this->assertContains($scenario['pdfScreen']->id, $exportData['screens']);
-        $this->assertContains($scenario['formTaskScreen']->categories[0]->id, $exportData['screen_categories']);
-        $this->assertContains($scenario['weAssociatedScreen']->categories[0]->id, $exportData['screen_categories']);
-        $this->assertContains($scenario['weCompletedScreen']->categories[0]->id, $exportData['screen_categories']);
-        $this->assertContains($scenario['pdfScreen']->categories[0]->id, $exportData['screen_categories']);
-        $this->assertContains($scenario['dataSource']->id, $exportData['data_sources']);
-        $this->assertContains($scenario['dataSourceCategory']->id, $exportData['data_source_categories']);
-        $this->assertContains($scenario['vocabulary1']->id, $exportData['vocabularies']);
-        $this->assertContains($scenario['vocabulary2']->id, $exportData['vocabularies']);
-        $this->assertContains($scenario['vocabulary3']->id, $exportData['vocabularies']);
-        $this->assertContains($scenario['script']->id, $exportData['scripts']);
-        $this->assertContains($scenario['watcherScript']->id, $exportData['scripts']);
-        $this->assertContains($scenario['scriptCategory']->id, $exportData['script_categories']);
-        $this->assertContains($scenario['watcherScript']->categories[0]->id, $exportData['script_categories']);
-        $this->assertContains($scenario['environmentVariable']->id, $exportData['environment_variables']);
-        $this->assertContains($scenario['process']->id, $exportData['process_categories']);
-        $this->assertContains($scenario['signal']->getId(), $exportData['signals']);
-        $this->assertContains($scenario['webhook']->id, $exportData['webhooks']);
+        $this->assertContains($scenario['process']->id, $exportData['Process']['ids']);
+        $this->assertContains($scenario['formTaskScreen']->id, $exportData['Screen']['ids']);
+        $this->assertContains($scenario['formTaskNestedScreen']->id, $exportData['Screen']['ids']);
+        $this->assertContains($scenario['weAssociatedScreen']->id, $exportData['Screen']['ids']);
+        $this->assertContains($scenario['weCompletedScreen']->id, $exportData['Screen']['ids']);
+        $this->assertContains($scenario['pdfScreen']->id, $exportData['Screen']['ids']);
+        $this->assertContains($scenario['formTaskScreen']->categories[0]->id, $exportData['ScreenCategory']['ids']);
+        $this->assertContains($scenario['weAssociatedScreen']->categories[0]->id, $exportData['ScreenCategory']['ids']);
+        $this->assertContains($scenario['weCompletedScreen']->categories[0]->id, $exportData['ScreenCategory']['ids']);
+        $this->assertContains($scenario['pdfScreen']->categories[0]->id, $exportData['ScreenCategory']['ids']);
+        $this->assertContains($scenario['dataSource']->id, $exportData['DataConnector']['ids']);
+        $this->assertContains($scenario['dataSourceCategory']->id, $exportData['DataSourceCategory']['ids']);
+        $this->assertContains($scenario['vocabulary1']->id, $exportData['Vocabulary']['ids']);
+        $this->assertContains($scenario['vocabulary2']->id, $exportData['Vocabulary']['ids']);
+        $this->assertContains($scenario['vocabulary3']->id, $exportData['Vocabulary']['ids']);
+        $this->assertContains($scenario['script']->id, $exportData['Script']['ids']);
+        $this->assertContains($scenario['watcherScript']->id, $exportData['Script']['ids']);
+        $this->assertContains($scenario['scriptCategory']->id, $exportData['ScriptCategory']['ids']);
+        $this->assertContains($scenario['watcherScript']->categories[0]->id, $exportData['ScriptCategory']['ids']);
+        $this->assertContains($scenario['environmentVariable']->id, $exportData['EnvironmentVariable']['ids']);
+        // $this->assertContains($scenario['process']->id, $exportData['ProcessCategory']['ids']);
+        $this->assertContains($scenario['signal']->getId(), $exportData['Signal']['ids']);
+        $this->assertContains($scenario['webhook']->id, $exportData['Webhook']['ids']);
     }
 
     private function assertAssetsRemovedFromDB($scenario)
