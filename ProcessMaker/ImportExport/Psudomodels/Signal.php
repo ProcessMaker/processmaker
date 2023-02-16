@@ -108,11 +108,7 @@ class Signal extends Psudomodel
 
         foreach ($xml->getElementsByTagName('signalEventDefinition') as $element) {
             if ($element->getAttribute('signalRef') === $signalId) {
-                $attributes = $element->attributes;
-                // remove all attributes
-                while ($attributes->length) {
-                    $element->removeAttribute($attributes->item(0)->name);
-                }
+                $element->removeAttribute('signalRef');
             }
         }
 
