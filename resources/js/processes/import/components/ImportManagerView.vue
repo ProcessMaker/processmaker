@@ -293,7 +293,7 @@ export default {
                 } else if (error.response?.data?.error === 'incorrect password') {
                   this.passwordError = "Incorrect Password";
                 } else {
-                    const message = error.response?.data?.error || error.message;
+                    const message = error.response?.data?.error || error.response?.data?.message || error.message;
                     ProcessMaker.alert(message, 'danger');
                 }
             });

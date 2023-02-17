@@ -3,6 +3,7 @@
 namespace ProcessMaker\ImportExport;
 
 use Illuminate\Support\Arr;
+use ProcessMaker\Exception\PackageNotInstalledException;
 use ProcessMaker\ImportExport\Exporters\ExporterInterface;
 use ReflectionClass;
 
@@ -83,6 +84,7 @@ class Manifest
         $manifest = new self();
         foreach ($array as $uuid => $assetInfo) {
             $exporterClass = $assetInfo['exporter'];
+            self::checkClass($exporterClass);
             $modeOption = $options->get('mode', $uuid);
             list($mode, $model, $matchedBy) = self::getModel($uuid, $assetInfo, $modeOption, $exporterClass);
             $exporter = new $exporterClass($model, $manifest, $options, false);
@@ -97,6 +99,17 @@ class Manifest
         }
 
         return $manifest;
+    }
+
+    public static function checkClass($exporterClass)
+    {
+        if (!class_exists($exporterClass)) {
+            if (preg_match('/.*\\\\(.+)\\\\ImportExport/', $exporterClass, $matches)) {
+                $package = trim(preg_replace('/(?!^)[A-Z]{2,}(?=[A-Z][a-z])|[A-Z][a-z]/', ' $0', $matches[1]));
+                throw new PackageNotInstalledException("Can not import because $package is not installed.");
+            }
+            throw new PackageNotInstalledException("$exporterClass not found");
+        }
     }
 
     public function push(string $uuid, ExporterInterface $exporter)
