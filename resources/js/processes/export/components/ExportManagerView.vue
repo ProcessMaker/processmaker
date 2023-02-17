@@ -26,13 +26,18 @@
                     </div>
                 </b-form-radio>
             </b-form-group>
+            <div v-if="!$root.canExport">
+              <div class="form-group medium-font mt-3 text-center">
+                <i class="fas fa-spin fa-spinner p-0 mr-2"></i>{{ $t("Retrieving manifest for export please wait...")}}
+              </div>
             </div>
+          </div>
           </div>
           <div class="card-footer bg-light" align="right">
             <button type="button" class="btn btn-outline-secondary" @click="onCancel">
               {{ $t("Cancel") }}
             </button>
-            <button v-if="$root.canExport" type="button" class="btn btn-primary ml-2" @click="onExport">
+            <button :disabled="!$root.canExport" type="button" class="btn btn-primary ml-2" @click="onExport">
               {{ $t("Export") }}
             </button>
             <set-password-modal ref="set-password-modal" :processId="processId" :processName="processName" @verifyPassword="exportProcess" :ask="true" />
