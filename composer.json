@@ -94,7 +94,7 @@
         "processmaker": {
             "build": "a480bd35",
             "custom": {
-                "package-ellucian-ethos": "1.10.0"
+                "package-ellucian-ethos": "1.11.0"
             },
             "enterprise": {
                 "connector-docusign": "1.1.0",
