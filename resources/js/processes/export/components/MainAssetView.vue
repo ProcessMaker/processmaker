@@ -50,7 +50,7 @@
                 Password Protect Export
                 <b-form-text class="process-options-helper-text">Define a password to protect your export file.</b-form-text>
                 <small v-if="$root.forcePasswordProtect" class="text-danger">
-                    Password protect is required because some assets have sensitive data.
+                    Password protect is required because some assets may have sensitive data.
                 </small>
                 </b-form-checkbox>
                 <b-form-checkbox
@@ -60,8 +60,8 @@
                     stacked
                 >
                 {{ $root.operation }} All Process elements
-                <b-form-text v-if="$root.operation === 'Export'" class="process-options-helper-text">Include all Process Elements in your export file.</b-form-text>
-                <b-form-text v-else class="process-options-helper-text">{{ $t('All elements related to this process will be Imported.') }}</b-form-text>
+                <b-form-text v-if="$root.operation === 'Export'" class="process-options-helper-text">Include all elements related to this process in your export file.</b-form-text>
+                <b-form-text v-else class="process-options-helper-text">{{ $t('All elements related to this process will be imported.') }}</b-form-text>
                 </b-form-checkbox>
             </b-form-group>
         </div>

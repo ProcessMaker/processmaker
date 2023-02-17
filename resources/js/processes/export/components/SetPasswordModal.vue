@@ -16,7 +16,7 @@
               Password Protect Export
             </b-form-checkbox>
             <small v-if="$root.forcePasswordProtect" class="text-danger">
-              Password protect is required because some assets have sensitive data.
+              Password protect is required because some assets may have sensitive data.
             </small>
           </div>
             <template v-if="passwordProtect === true">
