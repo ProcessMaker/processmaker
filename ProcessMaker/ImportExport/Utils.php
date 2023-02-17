@@ -22,20 +22,26 @@ class Utils
         return $serviceTasks;
     }
 
-    public static function getPmConfig(BpmnElement $element) : array
+    public static function getPmConfig(BpmnElement $element)
     {
         return json_decode($element->getAttribute('pm:config'), true);
     }
 
     public static function getElementByPath($document, $path)
     {
-        $xpath = new DOMXPath($document);
-        $elements = $xpath->query($path);
+        $elements = self::getElementsByPath($document, $path);
         if ($elements->count() !== 1) {
             throw new \Exception('Invalid xpath');
         }
 
         return $elements->item(0);
+    }
+
+    public static function getElementsByPath($document, $path)
+    {
+        $xpath = new DOMXPath($document);
+
+        return $xpath->query($path);
     }
 
     public static function getElementByMultipleTags($document, array $tags = [])
@@ -54,7 +60,7 @@ class Utils
 
     public static function setPmConfigValue(BpmnElement &$element, string $path, $value) : void
     {
-        $config = json_decode($element->getAttribute('pm:config'), true);
+        $config = self::getPmConfig($element);
         Arr::set($config, $path, $value);
         $element->setAttribute('pm:config', json_encode($config));
     }

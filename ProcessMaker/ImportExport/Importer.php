@@ -22,7 +22,7 @@ class Importer
 
     public function previewImport()
     {
-        return $this->manifest->toArray();
+        return $this->manifest->toArray(true);
     }
 
     public function loadManifest()

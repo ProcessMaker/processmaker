@@ -21,15 +21,22 @@ class ScriptExporter extends ExporterBase
         }
 
         $this->addDependent('user', $this->model->runAsUser, UserExporter::class);
+
+        $this->addDependent('executor', $this->model->scriptExecutor, ScriptExecutorExporter::class);
     }
 
     public function import() : bool
     {
         $this->associateCategories(ScriptCategory::class, 'script_category_id');
 
-        foreach ($this->getDependents('user') as $user) {
-            $scriptUser = $user;
-            $this->model->run_as_user_id = $scriptUser->model->id;
+        foreach ($this->getDependents('user') as $dependent) {
+            $scriptUser = $dependent->model;
+            $this->model->run_as_user_id = $scriptUser->id;
+        }
+
+        foreach ($this->getDependents('executor') as $dependent) {
+            $executor = $dependent->model;
+            $this->model->script_executor_id = $executor->id;
         }
 
         return $this->model->save();

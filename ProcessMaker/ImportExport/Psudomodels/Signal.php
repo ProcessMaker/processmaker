@@ -62,9 +62,6 @@ class Signal extends Psudomodel
                 $signal = new SignalData($this->id, $this->name, $this->detail);
                 SignalManager::addSignal($signal);
             }
-        // TODO: call replaceSignal on global if exists?
-        } else {
-            // TODO: call replaceSignal if exists?
         }
     }
 
@@ -111,11 +108,7 @@ class Signal extends Psudomodel
 
         foreach ($xml->getElementsByTagName('signalEventDefinition') as $element) {
             if ($element->getAttribute('signalRef') === $signalId) {
-                $attributes = $element->attributes;
-                // remove all attributes
-                while ($attributes->length) {
-                    $element->removeAttribute($attributes->item(0)->name);
-                }
+                $element->removeAttribute('signalRef');
             }
         }
 

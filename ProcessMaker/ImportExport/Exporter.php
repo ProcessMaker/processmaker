@@ -17,11 +17,17 @@ class Exporter
 
     private $rootExporter;
 
+    public function __construct(
+        public bool $skipHidden = false,
+        public bool $ignoreExplicitDiscard = false)
+    {
+    }
+
     public function export(Model $model, string $exporterClass, Options $options = null)
     {
         $this->options = $options ?: new Options([]);
         $this->manifest = new Manifest();
-        $this->rootExporter = new $exporterClass($model, $this->manifest, $this->options);
+        $this->rootExporter = new $exporterClass($model, $this->manifest, $this->options, $this->ignoreExplicitDiscard);
         $this->manifest->push($model->uuid, $this->rootExporter);
         $this->rootExporter->runExport();
 
@@ -41,14 +47,10 @@ class Exporter
     public function payload(): array
     {
         $this->manifest->runAfterExport();
-        $export = $this->manifest->toArray();
-
-        $export = array_filter($export, function ($uuid) {
-            return $this->options->get('mode', $uuid) !== 'discard';
-        }, ARRAY_FILTER_USE_KEY);
+        $export = $this->manifest->toArray($this->skipHidden);
 
         $payload = [
-            'type' => $this->rootExporter->getType(),
+            'type' => $this->rootExporter->getExportType(),
             'version' => '2',
             'root' => $this->rootExporter->uuid(),
             'name' => $this->rootExporter->getName($this->rootExporter->model),
@@ -68,12 +70,16 @@ class Exporter
     {
         $exported = collect($manifest['export'])
             ->groupBy(function ($item) {
-                $model = Str::afterLast($item['model'], '\\');
-
-                return Str::snake(Str::pluralStudly($model));
+                return $item['type'];
             })
             ->map(function ($group) {
-                return $group->pluck('attributes.id');
+                $item = $group[0];
+
+                return [
+                    'name' => $item['type_human'],
+                    'name_plural' => $item['type_human_plural'],
+                    'ids' => $group->pluck('attributes.id'),
+                ];
             });
 
         return json_encode([

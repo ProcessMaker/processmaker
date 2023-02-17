@@ -66,9 +66,9 @@ trait HelperTrait
         $this->import($payload);
     }
 
-    public function export($model, $exporterClass, $options = null)
+    public function export($model, $exporterClass, $options = null, $ignoreExplicitExport = true)
     {
-        $exporter = new Exporter();
+        $exporter = new Exporter(false, $ignoreExplicitExport);
         $exporter->export($model, $exporterClass, $options);
 
         return $exporter->payload();

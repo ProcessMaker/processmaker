@@ -118,8 +118,8 @@ class ScreenExporterTest extends TestCase
 
         $optionsArray = [];
         $optionsArray[$screen->uuid] = ['mode' => $screenMode];
-        $optionsArray[$screenCategory1->uuid] = ['mode' => 'copy'];
-        $optionsArray[$screenCategory2->uuid] = ['mode' => 'copy'];
+        $optionsArray[$screenCategory1->uuid] = ['mode' => 'copy']; // Ignored. Uses the screen's mode
+        $optionsArray[$screenCategory2->uuid] = ['mode' => 'copy']; // Ignored. Uses the screen's mode
 
         $options = new Options($optionsArray);
         $importer = new Importer($payload, $options);
@@ -134,11 +134,11 @@ class ScreenExporterTest extends TestCase
         $screen = $this->importWithCopy('update');
         $screen->refresh();
         $categories = $screen->refresh()->categories()->pluck('name', 'screen_categories.id as id');
-        $this->assertCount(4, $categories);
+
+        // Not touched. Categories use the screen's mode (update)
+        $this->assertCount(2, $categories);
         $this->assertContains('category 1', $categories);
         $this->assertContains('category 2', $categories);
-        $this->assertContains('category 3', $categories);
-        $this->assertContains('category 4', $categories);
     }
 
     public function testImportNewCategoryWithNewScreen()

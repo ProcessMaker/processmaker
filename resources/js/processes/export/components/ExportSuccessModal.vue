@@ -19,17 +19,21 @@
             <h5 class="card-title export-type">{{ $t("Exported Assets") }}</h5>
         </div>
         <ul class="pl-0">
-            <li v-for="(value, key) in this.exportInfo.exported" :key="key">
-               <i class="fas fa-check-circle text-success"></i>{{formatAssetValue(value) }} {{ formatAssetName(key) }}
+            <li v-for="(value, key) in exportInfo.exported" :key="key">
+               <i class="fas fa-check-circle text-success"></i>{{ value.ids.length }}
+               <span v-if="value.ids.length > 1">{{ value.name_plural }}</span>
+               <span v-else>{{ value.name }}</span>
             </li>
         </ul>
-        <template v-if="advancedExport">
+        <template v-if="$root.includeAll === false">
             <div class="non-exported-assets">
                 <h5 class="card-title export-type">{{ $t("Not Exported") }}</h5>
             </div>
             <ul class="pl-0">
-                <li v-for="(value, key) in nonExportedAssets" :key="value">
-                <i class="fas fa-minus-circle"></i> {{ value }} {{ key }}
+                <li v-for="(value, key) in filterNonExported" :key="key">
+                <i class="fas fa-minus-circle"></i>{{ value.ids.length }}
+                <span v-if="value.ids.length > 1">{{ value.firstAsset.type_human_plural }}</span>
+                <span v-else>{{ value.firstAsset.type_human }}</span>
                 </li>
             </ul>
         </template>
@@ -43,18 +47,33 @@ import { Modal } from "SharedComponents";
 
 export default {
   components: { Modal },
-  props: ["processId", "processName", "exportInfo"],
+  props: ["processId", "processName", "exportInfo", "info"],
   mixins: [],
   data() {
       return {
         disabled: false,
-        advancedExport: false,
-        nonExportedAssets: {},
       }
   },
   computed: {
-  },
+    filterNonExported() {
+      return Object.entries(this.$root.ioState).filter(([uuid, setting]) => {
+        return setting.mode === 'discard';
+      }).map(([uuid, setting]) => {
+        return this.$root.manifest[uuid];
+      }).reduce((groups, asset) => {
+        console.log(asset);
 
+        if(!(asset.type in groups)) {
+          groups[asset.type] = {
+            firstAsset: asset,
+            ids: [],
+          };
+        }
+        groups[asset.type].ids.push(asset.attributes.id);
+        return groups;
+      }, {});
+    },
+  },
   watch: {
     exportInfo() {
         if (!this.exportInfo) {
@@ -73,19 +92,7 @@ export default {
     hide() {
       this.$bvModal.hide('exportSuccessModal');
     },
-    formatAssetName(string) {
-        let newString = string.replaceAll('_', ' ');
-        let assetString = newString.split(' ');
-        for (let i = 0; i < assetString.length; i++) {
-            assetString[i] = assetString[i].charAt(0).toUpperCase() + assetString[i].slice(1);
-        }
-        return assetString.join(' ');
-    },
-    formatAssetValue(value) {
-        return value.length;
-    }
   },
-
 }
 </script>
 

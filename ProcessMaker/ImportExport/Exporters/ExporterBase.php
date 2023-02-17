@@ -3,9 +3,11 @@
 namespace ProcessMaker\ImportExport\Exporters;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use ProcessMaker\Exception\ExportModelNotFoundException;
 use ProcessMaker\ImportExport\Dependent;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Extension;
@@ -17,17 +19,17 @@ use ProcessMaker\Traits\HasVersioning;
 
 abstract class ExporterBase implements ExporterInterface
 {
-    public $model = null;
+    // public $model = null;
 
     public $dependents = [];
 
     public $references = [];
 
-    public $manifest = null;
+    // public $manifest = null;
 
     public $mode = null;
 
-    public $options = null;
+    // public $options = null;
 
     public $originalId = null;
 
@@ -45,22 +47,43 @@ abstract class ExporterBase implements ExporterInterface
 
     public $discard = false;
 
+    // public $ignoreExplicitDiscard = false;
+
     public static $fallbackMatchColumn = null;
+
+    public $matchedBy = null;
+
+    public $incrementStringSeparator = ' ';
 
     public static function modelFinder($uuid, $assetInfo)
     {
-        $query = $assetInfo['model']::where('uuid', $uuid);
+        $class = $assetInfo['model'];
+        $column = 'uuid';
+        $baseQuery = $class::query();
 
-        if (static::$fallbackMatchColumn) {
+        // Check if the model has soft deletes
+        if (in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses($class))) {
+            $baseQuery->withTrashed();
+        }
+
+        $query = clone $baseQuery;
+        $model = $query->where($column, $uuid)->first();
+
+        if (!$model) {
             foreach ((array) static::$fallbackMatchColumn as $column) {
                 $value = Arr::get($assetInfo, 'attributes.' . $column);
-                if ($value) {
-                    $query->orWhere($column, $value);
+                if (!$value) {
+                    continue;
+                }
+                $query = clone $baseQuery;
+                $model = $query->where($column, $value)->first();
+                if ($model) {
+                    break;
                 }
             }
         }
 
-        return $query;
+        return [$model, $column];
     }
 
     public static function doNotImport($uuid, $assetInfo)
@@ -77,11 +100,12 @@ abstract class ExporterBase implements ExporterInterface
         return $attrs;
     }
 
-    public function __construct(Model|Psudomodel|null $model, Manifest $manifest, Options $options)
-    {
-        $this->model = $model;
-        $this->manifest = $manifest;
-        $this->options = $options;
+    public function __construct(
+        public Model|Psudomodel|null $model,
+        public Manifest $manifest,
+        public Options $options,
+        public $ignoreExplicitDiscard
+    ) {
         $this->mode = $options->get('mode', $this->model->uuid);
     }
 
@@ -90,13 +114,30 @@ abstract class ExporterBase implements ExporterInterface
         return $this->model->uuid;
     }
 
+    public function include() : bool
+    {
+        if ($this->discard) { // Explicit Discard (not from passed-in options)
+            if (!$this->ignoreExplicitDiscard) {
+                return false;
+            }
+        }
+
+        if ($this->mode === 'discard') {  // passed in by options
+            return false;
+        }
+
+        return true;
+    }
+
     public function addDependent(string $type, Model|Psudomodel $dependentModel, string $exporterClass, $meta = null)
     {
         $uuid = $dependentModel->uuid;
         if (!$this->manifest->has($uuid)) {
-            $exporter = new $exporterClass($dependentModel, $this->manifest, $this->options);
-            $this->manifest->push($uuid, $exporter);
-            $exporter->runExport();
+            $exporter = new $exporterClass($dependentModel, $this->manifest, $this->options, $this->ignoreExplicitDiscard);
+            if ($exporter->include()) {
+                $this->manifest->push($uuid, $exporter);
+                $exporter->runExport();
+            }
         }
 
         $fallbackMatches = [];
@@ -122,9 +163,6 @@ abstract class ExporterBase implements ExporterInterface
     {
         return array_values(
             array_filter($this->dependents, function ($dependent) use ($type) {
-                // if ($dependent->mode === 'discard') {
-                //     return false;
-                // }
                 if ($type && $dependent->type !== $type) {
                     return false;
                 }
@@ -139,10 +177,14 @@ abstract class ExporterBase implements ExporterInterface
 
     public function runExport()
     {
-        $extensions = app()->make(Extension::class);
-        $extensions->runExtensions($this, 'preExport');
-        $this->export();
-        $extensions->runExtensions($this, 'postExport');
+        try {
+            $extensions = app()->make(Extension::class);
+            $extensions->runExtensions($this, 'preExport');
+            $this->export();
+            $extensions->runExtensions($this, 'postExport');
+        } catch (ModelNotFoundException $e) {
+            throw new ExportModelNotFoundException($e, $this);
+        }
     }
 
     public function runImport()
@@ -184,7 +226,7 @@ abstract class ExporterBase implements ExporterInterface
         return $name;
     }
 
-    public function getType(): string
+    public function getExportType(): string
     {
         $basename = class_basename($this->model);
 
@@ -237,19 +279,22 @@ abstract class ExporterBase implements ExporterInterface
 
     public function addImportAttributes(&$attributes)
     {
-        $query = static::modelFinder($this->model->uuid, $attributes);
+        $existingId = null;
         $existingAttributes = null;
         $existingName = null;
-        if ($query->exists()) {
-            $existingModel = $query->first();
-            $existingAttributes = $existingModel->getAttributes();
-            $existingName = $this->getName($existingModel);
+        if ($this->model->exists) {
+            $existingAttributes = $this->model->getOriginal();
+            $class = get_class($this->model);
+            $model = new $class($existingAttributes);
+            $existingName = $this->getName($model);
+            $existingId = $existingAttributes['id'];
         }
 
         $attributes = array_merge($attributes, [
-            'existing_id' => $this->model->id,
+            'existing_id' => $existingId,
             'existing_attributes' => $existingAttributes,
             'existing_name' => $existingName,
+            'matched_by' => $this->matchedBy,
         ]);
     }
 
@@ -332,7 +377,7 @@ abstract class ExporterBase implements ExporterInterface
         }
     }
 
-    private function duplicateExists($attribute, $value) : bool
+    protected function duplicateExists($attribute, $value) : bool
     {
         $class = get_class($this->model);
 
@@ -374,14 +419,18 @@ abstract class ExporterBase implements ExporterInterface
 
     protected function incrementString(string $string)
     {
-        if (preg_match('/\s(\d+)$/', $string, $matches)) {
+        if (preg_match('/' . $this->incrementStringSeparator . '(\d+)$/', $string, $matches)) {
             $num = (int) $matches[1];
             $new = $num + 1;
 
-            return preg_replace('/\d+$/', (string) $new, $string);
+            return preg_replace(
+                '/' . $this->incrementStringSeparator . '\d+$/',
+                $this->incrementStringSeparator . (string) $new,
+                $string
+            );
         }
 
-        return $string . ' 2';
+        return $string . $this->incrementStringSeparator . '2';
     }
 
     protected function exportCategories()
@@ -398,7 +447,7 @@ abstract class ExporterBase implements ExporterInterface
 
     protected function associateCategories($categoryClass, $property)
     {
-        $categories = $this->model->categories;
+        $categories = collect([]);
         foreach ($this->getDependents(DependentType::CATEGORIES) as $dependent) {
             $categories->push($categoryClass::findOrFail($dependent->model->id));
         }

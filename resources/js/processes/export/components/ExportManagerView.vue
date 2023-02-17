@@ -32,7 +32,7 @@
             <button type="button" class="btn btn-outline-secondary" @click="onCancel">
               {{ $t("Cancel") }}
             </button>
-            <button type="button" class="btn btn-primary ml-2" @click="onExport">
+            <button v-if="$root.canExport" type="button" class="btn btn-primary ml-2" @click="onExport">
               {{ $t("Export") }}
             </button>
             <set-password-modal ref="set-password-modal" :processId="processId" :processName="processName" @verifyPassword="exportProcess" :ask="true" />
@@ -66,6 +66,9 @@ export default {
       exportInfo: {},
       // processInfo: {},
     };
+  },
+  mounted() {
+    this.$root.getManifest(this.processId);
   },
   methods: {
     onCancel() {

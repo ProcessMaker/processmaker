@@ -5,6 +5,7 @@ namespace Tests\Feature\ImportExport\Exporters;
 use Database\Seeders\CategorySystemSeeder;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\ImportExport\Exporters\ScriptExporter;
+use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
@@ -63,5 +64,51 @@ class ScriptExporterTest extends TestCase
 
         $script = Script::where('title', 'test')->firstOrFail();
         $this->assertEquals($script->categories->first()->uuid, $existingUuid);
+    }
+
+    public function testHiddenUsesParentMode()
+    {
+        $scriptCategory1 = ScriptCategory::factory()->create(['name' => 'test category A']);
+        $scriptCategory2 = ScriptCategory::factory()->create(['name' => 'test category B']);
+        $script = Script::factory()->create([
+            'title' => 'test',
+            'script_category_id' => $scriptCategory1->id . ',' . $scriptCategory2->id,
+        ]);
+        $originalCategoryCount = ScriptCategory::count();
+
+        $payload = $this->export($script, ScriptExporter::class);
+
+        $options = new Options([
+            $script->uuid => ['mode' => 'update'],
+        ]);
+        $this->import($payload, $options);
+
+        // Assert nothing changed
+        $this->assertEquals($originalCategoryCount, ScriptCategory::count());
+        $this->assertDatabaseHas('script_categories', ['name' => 'test category A']);
+        $this->assertDatabaseHas('script_categories', ['name' => 'test category B']);
+
+        $options = new Options([
+            $script->uuid => ['mode' => 'copy'],
+            $scriptCategory1->uuid => ['mode' => 'update'], // should be ignored and set to copy
+            $scriptCategory2->uuid => ['mode' => 'update'], // should be ignored and set to copy
+        ]);
+        $this->import($payload, $options);
+
+        // Check originals are unchanged
+        $this->assertEquals('test', $script->refresh()->title);
+        $this->assertEquals(2, $script->categories->count());
+        $category1 = $script->categories[0];
+        $category2 = $script->categories[1];
+        $this->assertEquals('test category A', $category1->name);
+        $this->assertEquals('test category B', $category2->name);
+
+        // Check copied script has new copied categories
+        $newScript = Script::where('title', 'test 2')->firstOrFail();
+        $newCategory1 = $newScript->categories[0];
+        $newCategory2 = $newScript->categories[1];
+        $this->assertEquals(2, $newScript->categories->count());
+        $this->assertEquals('test category A 2', $newCategory1->name);
+        $this->assertEquals('test category B 2', $newCategory2->name);
     }
 }

@@ -7,6 +7,7 @@
           <h5 class="mb-0 data-card-header d-inline align-middle">{{ info.typeHumanPlural }}</h5>
           <b-form-checkbox
             class="data-card-header export-all d-inline align-middle fw-semibold"
+            :disabled="disabled"
             v-model="includeAllByGroup"
           >
             {{ $root.operation }} All
@@ -17,7 +18,7 @@
         <div class="data-card-metadata mb-1">
           <div>
             <div>
-              <small v-if="info.forcePasswordProtect" class="fw-semibold form-text text-muted mt-0">
+              <small v-if="hasSomeForcePasswordProtectAsset(info.items)" class="fw-semibold form-text text-muted mt-0">
                 <i class="fas fa-exclamation-triangle text-warning p-0"/>
                 {{ info.typeHumanPlural }} may contain sensitive information.
               </small>
@@ -45,7 +46,7 @@
           </span>
         </template>
         <div class="mt-3">
-          <b-link @click="onGroupDetailsClick">
+          <b-link v-if="$root.includeAllByGroup[info.type]" @click="onGroupDetailsClick">
             <i class="fas fa-info-circle fa-fw mr-0 pr-0"></i>
             Details
           </b-link>
@@ -63,7 +64,7 @@ export default {
   components: {
     DataTree,
   },
-  props: ['info'],
+  props: ['info', 'isEnabled'],
   mixins: [],
   data() {
     return {
@@ -75,7 +76,10 @@ export default {
     },
     onGroupDetailsClick() {
       window.ProcessMaker.EventBus.$emit("group-details-click", this.info.typePlural);
-    }
+    },
+    hasSomeForcePasswordProtectAsset(items) {
+      return items.some((item) => item.forcePasswordProtect);
+    },
   },
   mounted() {
   },
@@ -89,8 +93,10 @@ export default {
       }
     },
     elementsCount() {
+      const type = this.info.items.length === 1 ? this.info.type : this.info.typePlural;
+      const label = 'Total Elements: ' +  this.info.items.length  + ' ' + type;
       return {
-        label: `Total Elements:  ${this.info.items.length}`,
+        label: label,
         isRoot: true,
         icon: "",
         children: [
@@ -102,6 +108,9 @@ export default {
           },
         ],
       };
+    },
+    disabled() {
+      return !this.includeAllByGroup && !this.isEnabled;
     }
   }
 }

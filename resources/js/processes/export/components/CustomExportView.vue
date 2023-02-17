@@ -4,17 +4,17 @@
       <template v-slot:default="slotProps">
         <p-tab :active="slotProps.activeIndex === 0">
           <MainAssetView
-            :process-info="rootAsset"
-            :groups="groups"
-            :process-name="rootAsset.name"
+            :process-info="$root.rootAsset"
+            :groups="$root.groups"
+            :process-name="$root.rootAsset.name"
             :process-id="processId"
           />
         </p-tab>
-        <p-tab v-for="(group, i) in groupsFiltered" :key="i" :active="slotProps.activeIndex === i + 1">
+        <p-tab v-for="(group, i) in $root.groups" :key="i" :active="slotProps.activeIndex === i + 1">
           <DependentAssetView
             :group="group"
             :items="group.items"
-            :process-name="rootAsset.name"
+            :process-name="$root.rootAsset.name"
           />
         </p-tab>
       </template>
@@ -42,56 +42,38 @@ export default {
   mixins: [],
   data() {
     return {
-      rootAsset: {},
-      groups: [],
     };
   },
   computed: {
     sidenav() {
       const items = [
-        { title: this.rootAsset.name, icon: null, hidden: this.rootAsset.hidden },
+        { title: this.$root.rootAsset.name, icon: null },
       ];
 
-      this.groups.filter((group) => {
-          return this.$root.includeSomeByGroup[group.type];
-        }).forEach(group => {
-          items.push({
-            title: group.typePlural,
-            icon: group.icon,
-            hidden: group.hidden,
-          });
+      this.$root.groups.forEach((group) => {
+        items.push({
+          title: group.typePlural,
+          icon: group.icon,
         });
+      });
 
       return items;
     },
-    groupsFiltered()
-    {
-      return this.groups.filter((group) => {
-          return this.$root.includeSomeByGroup[group.type];
-      });
-    }
   },
   mounted() {
     if (this.$root.isImport) {
-        if (!this.$root.file) {
-          this.$router.push({ name: "main" });
-          return;
-        }
+      if (!this.$root.file) {
+        this.$router.push({ name: "main" });
+        return;
+      }
 
-        const formatted = DataProvider.formatAssets(this.$root.manifest, this.$root.rootUuid);
-        this.rootAsset = formatted.root;
-        this.groups = formatted.groups;
-    } else {
-      DataProvider.getManifest(this.processId)
-        .then((response) => {
-          this.rootAsset = response.root;
-          this.groups = response.groups;
-          this.$root.setInitialState(response.assets, response.rootUuid);
-        })
-        .catch((error) => {
-          console.log(error);
-          ProcessMaker.alert(error, "danger");
-        });
+      const formatted = DataProvider.formatAssets(this.$root.manifest, this.$root.rootUuid);
+      this.$root.rootAsset = formatted.root;
+      this.$root.groups = formatted.groups;
+    } else if (!Object.entries(this.$root.manifest).length) {
+      // If manifest was not loaded, we try to get it again (if the page is reloaded
+      // in custom export, the manifest is empty, so we need to retrieve it again)
+      this.$root.getManifest(this.processId);
     }
   },
   methods: {

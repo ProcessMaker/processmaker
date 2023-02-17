@@ -16,7 +16,7 @@ class ImportController extends Controller
     /**
      * Returns the manifest and dependency tree.
      */
-    public function preview(Request $request): JsonResponse
+    public function preview(Request $request, $version = null): JsonResponse
     {
         $payload = json_decode($request->file('file')->get(), true);
 
@@ -34,6 +34,7 @@ class ImportController extends Controller
         return response()->json([
             'manifest' => $manifest,
             'rootUuid' => $payload['root'],
+            'processVersion' => (int) $version,
         ], 200);
     }
 

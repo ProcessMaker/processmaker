@@ -3,8 +3,9 @@
 namespace ProcessMaker\ImportExport;
 
 use Illuminate\Support\Arr;
+use ProcessMaker\Exception\PackageNotInstalledException;
 use ProcessMaker\ImportExport\Exporters\ExporterInterface;
-use stdClass;
+use ReflectionClass;
 
 class Manifest
 {
@@ -13,6 +14,8 @@ class Manifest
     private $afterExportCallbacks = [];
 
     private $afterImportCallbacks = [];
+
+    public static $parents = null;
 
     public function has(string $uuid)
     {
@@ -58,10 +61,16 @@ class Manifest
         }
     }
 
-    public function toArray()
+    public function toArray($skipHidden = false)
     {
         $manifest = [];
         foreach ($this->manifest as $uuid => $exporter) {
+            if ($exporter->hidden && $skipHidden) {
+                continue;
+            }
+            if ($exporter->mode === 'discard') {
+                continue;
+            }
             $manifest[$uuid] = $exporter->toArray();
         }
 
@@ -70,14 +79,18 @@ class Manifest
 
     public static function fromArray(array $array, Options $options)
     {
+        self::buildParentModeMap($array, $options);
+
         $manifest = new self();
         foreach ($array as $uuid => $assetInfo) {
             $exporterClass = $assetInfo['exporter'];
+            self::checkClass($exporterClass);
             $modeOption = $options->get('mode', $uuid);
-            list($mode, $model) = self::getModel($uuid, $assetInfo, $modeOption, $exporterClass);
-            $exporter = new $exporterClass($model, $manifest, $options);
+            list($mode, $model, $matchedBy) = self::getModel($uuid, $assetInfo, $modeOption, $exporterClass);
+            $exporter = new $exporterClass($model, $manifest, $options, false);
             $exporter->importing = true;
             $exporter->mode = $mode;
+            $exporter->matchedBy = $matchedBy;
             $exporter->originalId = Arr::get($assetInfo, 'attributes.id');
             $exporter->updateDuplicateAttributes();
             $exporter->dependents = Dependent::fromArray($assetInfo['dependents'], $manifest);
@@ -86,6 +99,17 @@ class Manifest
         }
 
         return $manifest;
+    }
+
+    public static function checkClass($exporterClass)
+    {
+        if (!class_exists($exporterClass)) {
+            if (preg_match('/.*\\\\(.+)\\\\ImportExport/', $exporterClass, $matches)) {
+                $package = trim(preg_replace('/(?!^)[A-Z]{2,}(?=[A-Z][a-z])|[A-Z][a-z]/', ' $0', $matches[1]));
+                throw new PackageNotInstalledException("Can not import because $package is not installed.");
+            }
+            throw new PackageNotInstalledException("$exporterClass not found");
+        }
     }
 
     public function push(string $uuid, ExporterInterface $exporter)
@@ -103,7 +127,14 @@ class Manifest
             throw new \Exception('Mode "new" can only be set by the system.');
         }
 
-        $modelQuery = $exporterClass::modelFinder($uuid, $assetInfo);
+        [$model, $matchedBy] = $exporterClass::modelFinder($uuid, $assetInfo);
+
+        if (self::isHidden($exporterClass)) {
+            $parentMode = self::parentMode($uuid);
+            if ($parentMode) {
+                $mode = $parentMode;
+            }
+        }
 
         if ($exporterClass::doNotImport($uuid, $assetInfo)) {
             $mode = 'discard';
@@ -111,14 +142,7 @@ class Manifest
 
         $attrs = $exporterClass::prepareAttributes($attrs);
 
-        // Check if the model has soft deletes
-        if (in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses($class))) {
-            $modelQuery->withTrashed();
-        }
-
-        if ($modelQuery->exists()) {
-            $model = $modelQuery->firstOrFail();
-        } else {
+        if (!$model) {
             $model = new $class();
             if ($mode !== 'discard') {
                 $mode = 'new';
@@ -156,7 +180,7 @@ class Manifest
 
         $class::reguard();
 
-        return [$mode, $model];
+        return [$mode, $model, $matchedBy];
     }
 
     private static function handleCasts(&$model)
@@ -188,5 +212,52 @@ class Manifest
         }
 
         return false;
+    }
+
+    public static function isHidden($exporterClass)
+    {
+        $reflection = new ReflectionClass($exporterClass);
+        $props = $reflection->getDefaultProperties();
+        if (isset($props['hidden']) && $props['hidden']) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static function buildParentModeMap(array $import, Options $options)
+    {
+        self::$parents = [];
+        foreach ($import as $parentUuid => $assetInfo) {
+            foreach ($assetInfo['dependents'] as $dependent) {
+                $dependentUuid = $dependent['uuid'];
+
+                if (!isset(self::$parents[$parentUuid])) {
+                    self::$parents[$parentUuid] = [];
+                }
+
+                $mode = $options->get('mode', $parentUuid);
+                self::$parents[$dependentUuid][$parentUuid] = $mode;
+            }
+        }
+    }
+
+    public static function parentMode(string $uuid)
+    {
+        if (self::$parents === null) {
+            throw new \Exception('Parents mode map has not been built yet.');
+        }
+
+        $parentMode = null;
+        if (isset(self::$parents[$uuid])) {
+            foreach (self::$parents[$uuid] as $parentUuid => $mode) {
+                if ($mode) {
+                    $parentMode = $mode;
+                    break;
+                }
+            }
+        }
+
+        return $parentMode;
     }
 }

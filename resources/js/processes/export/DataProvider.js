@@ -18,6 +18,17 @@ export default {
         }
     });
   },
+  importOlderVersion(file) {
+    let formData = new FormData();
+    formData.append('file', file);
+    
+    return ProcessMaker.apiClient.post('/processes/import?queue=1', formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  },
   getManifest(processId) {
     return ProcessMaker.apiClient({
       url: `export/manifest/process/${processId}`,
@@ -26,6 +37,12 @@ export default {
       const rootUuid = response.data.root;
       const assets = response.data.export;
       return this.formatAssets(assets, rootUuid, response.data.passwordRequired);
+    }).catch((error) => {
+      let message = error.response?.data?.message;
+      if (!message) {
+        message = error.message;
+      }
+      throw new Error(message);
     });
   },
   exportProcess(processId, password, options) {
@@ -75,6 +92,7 @@ export default {
         forcePasswordProtect: asset.force_password_protect,
         hidden: asset.hidden,
         explicit_discard: asset.explicit_discard,
+        importMode: asset.mode,
       };
 
       if (uuid === rootUuid) {

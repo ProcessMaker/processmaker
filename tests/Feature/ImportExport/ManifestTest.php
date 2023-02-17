@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\ImportExport;
 
+use ProcessMaker\Exception\PackageNotInstalledException;
 use ProcessMaker\ImportExport\Dependent;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ScreenExporter;
@@ -38,12 +39,12 @@ class ManifestTest extends TestCase
 
         $options = new Options([
             $screen->uuid => ['mode' => 'update'],
-            $screenCategory->uuid => ['mode' => 'discard'],
+            $screenCategory->uuid => ['mode' => 'discard'], // Ignored. Uses the screen's mode.
         ]);
         (new Importer($payload, $options))->doImport();
 
         $this->assertEquals('exported screen', $screen->refresh()->title);
-        $this->assertEquals('category on target instance', $screenCategory->refresh()->name);
+        $this->assertEquals('exported category', $screenCategory->refresh()->name);
     }
 
     public function testCopyImportOption()
@@ -129,5 +130,45 @@ class ManifestTest extends TestCase
 
         $processManager = $payload['export'][$process->uuid]['process_manager'];
         $this->assertEquals('John Doe', $processManager);
+    }
+
+    /**
+     * @dataProvider exporterClassProvider
+     */
+    public function testExceptionThrownIfPackageNotInstalled(string $exporterClass)
+    {
+        $this->expectException(PackageNotInstalledException::class);
+        $this->expectExceptionMessage('Can not import because My Foo Package is not installed.');
+
+        $payload = [
+            '123abc' => [
+                'exporter' => $exporterClass,
+                'dependents' => [],
+            ],
+        ];
+        Manifest::fromArray($payload, new Options([]));
+    }
+
+    public function exporterClassProvider(): array
+    {
+        return [
+            ['ProcessMaker\Packages\Connectors\MyFooPackage\ImportExport\SomeExporter'],
+            ['ProcessMaker\Package\MyFooPackage\ImportExport\SomeExporter'],
+            ['ProcessMaker\Plugins\MyFooPackage\ImportExport\SomeExporter'],
+        ];
+    }
+
+    public function testExceptionThrownIfUnknownPackageMatch()
+    {
+        $this->expectException(PackageNotInstalledException::class);
+        $this->expectExceptionMessage('Some\Other\Class not found');
+
+        $payload = [
+            '123abc' => [
+                'exporter' => 'Some\Other\Class',
+                'dependents' => [],
+            ],
+        ];
+        Manifest::fromArray($payload, new Options([]));
     }
 }
