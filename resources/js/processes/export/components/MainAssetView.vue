@@ -149,6 +149,7 @@ export default {
                         existingName: asset.existing_name, 
                         importingName: asset.name,
                         existingId: asset.existing_id,
+                        matchedBy: asset.matched_by,
                     };
                 });
             }
