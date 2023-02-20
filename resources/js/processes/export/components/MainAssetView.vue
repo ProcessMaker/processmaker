@@ -29,13 +29,13 @@
                     </span>
                 </li>
                 <!-- <li v-if="$root.isImport">
-                    <a href="#" v-b-modal:asset-dependent-tree>Linked Dependent Assets</a>
+                    <a href="#" v-b-modal:asset-dependent-tree>{{ $t('Linked Dependent Assets') }}</a>
                     <AssetDependentTreeModal></AssetDependentTreeModal>
-                </li>
-                <li>
-                    <a href="#" v-b-modal:asset-tree>Linked Assets</a>
-                    <AssetTreeModal :groups="groups"></AssetTreeModal>
                 </li> -->
+                <li>
+                    <a href="#" v-b-modal:linked-assets-modal>{{ $t('Linked Assets') }}</a>
+                    <AssetTreeModal :groups="groups" :asset-name="processName"></AssetTreeModal>
+                </li>
             </ul>
         </div>
         <div class="mb-2">
@@ -84,7 +84,7 @@
                     <i v-if="loading" class="fas fa-spinner fa-spin p-0" />
                     <span v-if="loading">{{$t('Importing')}}</span>
             </button>
-            <button v-else-if="$root.canExport" type="button" class="btn btn-primary ml-2" @click="onExport">
+            <button v-else :disabled="!$root.canExport" type="button" class="btn btn-primary ml-2" @click="onExport">
                 {{ $t("Export") }}
             </button>
             <set-password-modal
@@ -149,6 +149,7 @@ export default {
                         existingName: asset.existing_name, 
                         importingName: asset.name,
                         existingId: asset.existing_id,
+                        matchedBy: asset.matched_by,
                     };
                 });
             }
