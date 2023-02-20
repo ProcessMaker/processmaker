@@ -29,13 +29,13 @@
                     </span>
                 </li>
                 <!-- <li v-if="$root.isImport">
-                    <a href="#" v-b-modal:asset-dependent-tree>Linked Dependent Assets</a>
+                    <a href="#" v-b-modal:asset-dependent-tree>{{ $t('Linked Dependent Assets') }}</a>
                     <AssetDependentTreeModal></AssetDependentTreeModal>
-                </li>
-                <li>
-                    <a href="#" v-b-modal:asset-tree>Linked Assets</a>
-                    <AssetTreeModal :groups="groups"></AssetTreeModal>
                 </li> -->
+                <li>
+                    <a href="#" v-b-modal:linked-assets-modal>{{ $t('Linked Assets') }}</a>
+                    <AssetTreeModal :groups="groups" :asset-name="processName"></AssetTreeModal>
+                </li>
             </ul>
         </div>
         <div class="mb-2">

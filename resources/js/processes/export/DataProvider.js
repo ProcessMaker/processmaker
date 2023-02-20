@@ -93,6 +93,7 @@ export default {
         hidden: asset.hidden,
         explicit_discard: asset.explicit_discard,
         importMode: asset.mode,
+        assetLink: this.getAssetLink(asset),
       };
 
       if (uuid === rootUuid) {
@@ -141,5 +142,35 @@ export default {
       categories.push("Uncategorized");
     }
     return categories.join(", ");
+  },
+  getAssetLink(asset) {
+    let route = "";
+    switch (asset.type) {
+      case "Screen":
+        route = `/designer/screen-builder/${asset.attributes.id}/edit`;
+        break;
+      case "DataConnector":
+        route = `/designer/data-sources/${asset.attributes.id}/edit`;
+        break;
+      case "Vocabulary":
+        route = `/designer/vocabularies/${asset.attributes.id}/edit`;
+        break;
+      case "Script":
+        route = `/designer/scripts/${asset.attributes.id}/builder`;
+        break;
+      case "EnvironmentVariable":
+        route = `/designer/environment-variables/${asset.attributes.id}/edit`;
+        break;
+      case "Signal":
+        route = `/designer/signals/${asset.attributes.name.replace(/\s/g, "")}/edit`;
+        break;
+      case "Collection":
+        route = `/collections/${asset.attributes.name.replace(/\s/g, "")}`;
+        break;
+      default:
+        route = null;
+        break;
+    }
+    return route;
   },
 };
