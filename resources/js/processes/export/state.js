@@ -1,3 +1,4 @@
+import _ from "lodash";
 import DataProvider from "./DataProvider";
 
 const ioState = [];
@@ -45,7 +46,7 @@ export default {
       Object.keys(this.ioState).forEach((uuid) => {
         this.$set(this.ioState[uuid], 'discardedByParent', true);
       });
-      
+
       const maxDepth = 20;
 
       const setMode = (uuid, discardedByParent, depth = 0) => {
@@ -64,19 +65,26 @@ export default {
           return;
         }
 
-        let mode = this.ioState[uuid].mode;
-        this.$set(this.ioState[uuid], 'discardedByParent', discardedByParent);
+        this.$set(this.ioState[uuid], 'discardedByParent', false);
 
         // If this asset's mode is 'discard', set all it's children's discardedByParent to true.
         // Additionally, if this this asset's parent was discarded, set our children to
         // discardedByParent = true
-        const setChildrenDiscardedByParent = mode === 'discard' || discardedByParent;
+        let mode = this.ioState[uuid].mode;
+        const setChildrenDiscardedByParent = mode === 'discard';
+
+        if (setChildrenDiscardedByParent === true) {
+          return;
+        }
 
         asset.dependents.forEach((dependent) => {
           const depUuid = dependent.uuid;
-          setMode(depUuid, setChildrenDiscardedByParent, depth + 1);
-        });
+          const dependentDiscardedByParent = _.get(this.ioState, depUuid + '.discardedByParent', false);
 
+          if (dependentDiscardedByParent === true) {
+            setMode(depUuid, false, depth + 1);
+          }
+        });
       };
       setMode(this.rootUuid, false);
     },
