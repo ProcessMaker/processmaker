@@ -1,5 +1,7 @@
 import ImportExportIcons from "../../components/shared/ImportExportIcons";
 
+let isImport;
+
 export default {
   doImport(file, options, password) {
     let formData = new FormData();
@@ -145,27 +147,37 @@ export default {
   },
   getAssetLink(asset) {
     let route = "";
+    let id = asset.attributes.id;
+
+    if (isImport) {
+      id = asset.existing_id;
+    }
+
+    if (!id && asset.type !== "Signal") {
+      return null;
+    }
+
     switch (asset.type) {
       case "Screen":
-        route = `/designer/screen-builder/${asset.attributes.id}/edit`;
+        route = `/designer/screen-builder/${id}/edit`;
         break;
       case "DataConnector":
-        route = `/designer/data-sources/${asset.attributes.id}/edit`;
+        route = `/designer/data-sources/${id}/edit`;
         break;
       case "Vocabulary":
-        route = `/designer/vocabularies/${asset.attributes.id}/edit`;
+        route = `/designer/vocabularies/${id}/edit`;
         break;
       case "Script":
-        route = `/designer/scripts/${asset.attributes.id}/builder`;
+        route = `/designer/scripts/${id}/builder`;
         break;
       case "EnvironmentVariable":
-        route = `/designer/environment-variables/${asset.attributes.id}/edit`;
+        route = `/designer/environment-variables/${id}/edit`;
         break;
       case "Signal":
         route = `/designer/signals/${asset.attributes.name.replace(/\s/g, "")}/edit`;
         break;
       case "Collection":
-        route = `/collections/${asset.attributes.name.replace(/\s/g, "")}`;
+        route = `/collections/${id}`;
         break;
       default:
         route = null;

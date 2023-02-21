@@ -25,6 +25,9 @@ export default {
       }
     }
   },
+  mounted() {
+    DataProvider.isImport = this.isImport;
+  },
   methods: {
     setInitialState(assets, rootUuid) {
       this.manifest = assets;
