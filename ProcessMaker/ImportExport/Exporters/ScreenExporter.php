@@ -27,7 +27,8 @@ class ScreenExporter extends ExporterBase
         // Script Watchers. Data source watchers are are handled in the data-sources package.
         foreach ((array) $this->model->watchers as $watcher) {
             if ($this->watcherType($watcher) === self::WATCHER_TYPE_SCRIPT) {
-                $this->addDependent(DependentType::SCRIPTS, Script::find($watcher['script_id']), ScriptExporter::class);
+                $id = $watcher['script_id'];
+                $this->addDependent(DependentType::SCRIPTS, Script::find($id), ScriptExporter::class, $id);
             }
         }
 
@@ -50,7 +51,8 @@ class ScreenExporter extends ExporterBase
                     $this->associateNestedScreen($dependent, $config);
                     break;
                 case DependentType::SCRIPTS:
-                    $this->associateWatchers(self::WATCHER_TYPE_SCRIPT, $dependent, $watchers);
+                    $originalId = $dependent->meta;
+                    $this->associateWatchers(self::WATCHER_TYPE_SCRIPT, $dependent, $watchers, $originalId);
                     break;
             }
         }
@@ -111,9 +113,8 @@ class ScreenExporter extends ExporterBase
         }
     }
 
-    private function associateWatchers($type, $dependent, &$watchers) : void
+    private function associateWatchers($type, $dependent, &$watchers, $originalId) : void
     {
-        $originalId = $dependent->originalId;
         $newId = $dependent->model->id;
         foreach ($watchers as $key => $watcher) {
             if (Arr::get($watchers, "$key.script.id") === $type . '-' . $originalId) {
