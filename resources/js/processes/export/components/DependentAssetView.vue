@@ -34,7 +34,7 @@
                 <template #header>
                     <h6 class="mb-0 data-card-header font-weight-bold text-capitalize">
                         {{ item.name }}
-                        <b-badge pill variant="primary" class="text-capitalize">
+                        <b-badge v-if="$root.isImport" pill variant="primary" class="text-capitalize">
                             <span v-if="item.importMode === 'update'">{{ $t('Updated') }}</span>
                             <span v-if="item.importMode === 'copy' ||  item.importMode === 'new'">{{ $t('New') }}</span>
                         </b-badge>
