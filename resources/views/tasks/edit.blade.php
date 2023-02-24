@@ -361,7 +361,7 @@
               })
               .then(response => {
                 this.fieldsToUpdate.splice(0);
-                ProcessMaker.alert("{{__('The request data was saved.')}}", "success");
+                ProcessMaker.alert(this.$t('The request data was saved.'), "success");
               });
           },
           saveJsonData () {

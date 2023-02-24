@@ -125,7 +125,7 @@
                     this.disabled = true;
                     ProcessMaker.apiClient.post('signals', this.formData)
                         .then(response => {
-                            ProcessMaker.alert("{{__('The signal was created.')}}", 'success');
+                            ProcessMaker.alert(this.$t('The signal was created.'), 'success');
                             //redirect list signal
                             window.location = '/designer/signals';
                         })
