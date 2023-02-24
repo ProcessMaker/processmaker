@@ -2,12 +2,14 @@
 
 namespace ProcessMaker\Http\Resources;
 
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Screen as ScreenResource;
 use ProcessMaker\Http\Resources\ScreenVersion as ScreenVersionResource;
 use ProcessMaker\Http\Resources\Users;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\GroupMember;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use StdClass;
@@ -38,6 +40,10 @@ class Task extends ApiResource
         if (in_array('processRequest', $include)) {
             $array['process_request'] = new Users($this->processRequest);
         }
+
+        $parentProcessRequest = $this->processRequest->parentRequest;
+        $array['can_view_parent_request'] = $parentProcessRequest && $request->user()->can('view', $parentProcessRequest);
+
         if (in_array('component', $include)) {
             $array['component'] = $this->getScreenVersion() ? $this->getScreenVersion()->parent->renderComponent() : null;
         }
@@ -73,6 +79,9 @@ class Task extends ApiResource
             $array['allow_interstitial'] = $interstitial['allow_interstitial'];
             $array['interstitial_screen'] = $interstitial['interstitial_screen'];
         }
+        if (in_array('userRequestPermission', $include)) {
+            $array['user_request_permission'] = $this->loadUserRequestPermission($this->processRequest, Auth::user(), []);
+        }
         /**
          * @deprecated since 4.1 Use instead `/api/1.0/users`
          */
@@ -102,6 +111,20 @@ class Task extends ApiResource
         }
 
         return $array;
+    }
+
+    private function loadUserRequestPermission(ProcessRequest $request, User $user = null, array $permissions)
+    {
+        $permissions[] = [
+            'process_request_id' => $request->id,
+            'allowed' => $user ? $user->can('view', $request) : false
+        ];
+
+        if ($request->parentRequest && $user) {
+            $permissions = $this->loadUserRequestPermission($request->parentRequest, $user, $permissions);
+        }
+
+        return $permissions;
     }
 
     private function addUser($data, $user)

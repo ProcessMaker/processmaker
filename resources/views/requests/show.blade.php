@@ -110,6 +110,7 @@
 							 :class="{ active: activePending }" id="pending" role="tabpanel"
 							 aria-labelledby="pending-tab">
 							<request-detail ref="pending" :process-request-id="requestId" status="ACTIVE"
+											:is-process-manager="{{$isProcessManager ? 'true' : 'false'}}"
 											:is-admin="{{Auth::user()->is_administrator ? 'true' : 'false'}}">
 							</request-detail>
 						</div>
@@ -535,7 +536,7 @@
               data: data,
             }).then(response => {
               this.fieldsToUpdate.splice(0);
-              ProcessMaker.alert("{{__('The request data was saved.')}}", 'success');
+              ProcessMaker.alert(this.$t('The request data was saved.'), 'success');
             });
           },
           saveJsonData() {

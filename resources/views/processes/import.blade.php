@@ -575,7 +575,7 @@
               });
           },
           importReady(response) {
-            let message = '{{__("Unable to import the process.")}}';
+            let message = this.$t("Unable to import the process.");
             if (!response.data.status) {
               ProcessMaker.alert(message, 'danger');
               return;

@@ -52,7 +52,7 @@
                     ProcessMaker.apiClient.post('processes/' + this.processId + '/export')
                         .then(response => {
                             window.location = response.data.url;
-                            ProcessMaker.alert('{{__('The process was exported.')}}', 'success');
+                            ProcessMaker.alert(this.$t('The process was exported.'), 'success');
                         })
                         .catch(error => {
                             ProcessMaker.alert(error.response.data.message, 'danger');

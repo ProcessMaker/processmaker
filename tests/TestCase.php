@@ -3,9 +3,13 @@
 namespace Tests;
 
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
+use Illuminate\Database\DatabaseManager;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Artisan;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestLock;
+use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Models\Setting;
 
 abstract class TestCase extends BaseTestCase

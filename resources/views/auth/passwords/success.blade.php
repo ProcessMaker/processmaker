@@ -3,7 +3,8 @@
 @section('content')
 <div align="center">
   <div class="formContainer">
-    <img src="/img/processmaker_login.png">
+    @component('components.logo')
+    @endcomponent
     <div class="form" align="center">
       <div class="form-group">
         <small>

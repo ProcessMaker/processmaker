@@ -23,6 +23,7 @@ class NotificationFactory extends Factory
             'notifiable_type' => $this->faker->word(),
             'notifiable_id' => $this->faker->numberBetween(1),
             'data' => '[]',
+            'url' => '',
         ];
     }
 }
