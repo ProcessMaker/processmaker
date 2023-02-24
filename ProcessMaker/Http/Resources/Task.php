@@ -40,6 +40,10 @@ class Task extends ApiResource
         if (in_array('processRequest', $include)) {
             $array['process_request'] = new Users($this->processRequest);
         }
+
+        $parentProcessRequest = $this->processRequest->parentRequest;
+        $array['can_view_parent_request'] = $parentProcessRequest && $request->user()->can('view', $parentProcessRequest);
+
         if (in_array('component', $include)) {
             $array['component'] = $this->getScreenVersion() ? $this->getScreenVersion()->parent->renderComponent() : null;
         }
