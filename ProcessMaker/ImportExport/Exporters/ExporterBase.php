@@ -59,6 +59,7 @@ abstract class ExporterBase implements ExporterInterface
     {
         $class = $assetInfo['model'];
         $column = 'uuid';
+        $matchedBy = null;
         $baseQuery = $class::query();
 
         // Check if the model has soft deletes
@@ -78,12 +79,15 @@ abstract class ExporterBase implements ExporterInterface
                 $query = clone $baseQuery;
                 $model = $query->where($column, $value)->first();
                 if ($model) {
+                    $matchedBy = $column;
                     break;
                 }
             }
+        } else {
+            $matchedBy = $column;
         }
 
-        return [$model, $column];
+        return [$model, $matchedBy];
     }
 
     public static function doNotImport($uuid, $assetInfo)
@@ -283,6 +287,8 @@ abstract class ExporterBase implements ExporterInterface
         $existingAttributes = null;
         $existingName = null;
         if ($this->model->exists) {
+            // dd($this->model);
+            // dd('get original', $this->model->getOriginal());
             $existingAttributes = $this->model->getOriginal();
             $class = get_class($this->model);
             $model = new $class($existingAttributes);

@@ -1,5 +1,7 @@
 import ImportExportIcons from "../../components/shared/ImportExportIcons";
 
+let isImport;
+
 export default {
   doImport(file, options, password) {
     let formData = new FormData();
@@ -85,14 +87,22 @@ export default {
         description: asset.description || null,
         createdAt: asset.attributes.created_at || "N/A",
         updatedAt: asset.attributes.updated_at || "N/A",
+         // TODO: Complete Changelog
+        // created_at: asset.attributes.created_at || "N/A",
+        // updated_at: asset.attributes.updated_at || "N/A",
         processManager: asset.process_manager || "N/A",
         processManagerId: asset.process_manager_id || null,
         lastModifiedBy: asset.last_modified_by || "N/A",
         lastModifiedById: asset.last_modified_by_id || null,
         forcePasswordProtect: asset.force_password_protect,
+        // TODO: Complete Changelog
+        // last_modified_by: asset.last_modified_by || "N/A",
+        // last_modified_by_id: asset.last_modified_by_id || null,
+        // force_password_protect: asset.force_password_protect,
         hidden: asset.hidden,
         explicit_discard: asset.explicit_discard,
         importMode: asset.mode,
+        assetLink: this.getAssetLink(asset),
       };
 
       if (uuid === rootUuid) {
@@ -141,5 +151,45 @@ export default {
       categories.push("Uncategorized");
     }
     return categories.join(", ");
+  },
+  getAssetLink(asset) {
+    let route = "";
+    let id = asset.attributes.id;
+
+    if (isImport) {
+      id = asset.existing_id;
+    }
+
+    if (!id && asset.type !== "Signal") {
+      return null;
+    }
+
+    switch (asset.type) {
+      case "Screen":
+        route = `/designer/screen-builder/${id}/edit`;
+        break;
+      case "DataConnector":
+        route = `/designer/data-sources/${id}/edit`;
+        break;
+      case "Vocabulary":
+        route = `/designer/vocabularies/${id}/edit`;
+        break;
+      case "Script":
+        route = `/designer/scripts/${id}/builder`;
+        break;
+      case "EnvironmentVariable":
+        route = `/designer/environment-variables/${id}/edit`;
+        break;
+      case "Signal":
+        route = `/designer/signals/${asset.attributes.name.replace(/\s/g, "")}/edit`;
+        break;
+      case "Collection":
+        route = `/collections/${id}`;
+        break;
+      default:
+        route = null;
+        break;
+    }
+    return route;
   },
 };

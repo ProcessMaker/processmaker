@@ -17,9 +17,9 @@
                         <span v-else>{{ processInfo.processManager }}</span>
                     </span>
                 </li>
-                <li> Created: <span class="fw-semibold">{{ processInfo.createdAt }}</span></li>
+                <li> Created: <span class="fw-semibold">{{ processInfo.created_at }}</span></li>
                 <li> Last Modified: 
-                    <span class="fw-semibold">{{ processInfo.updatedAt }}</span> 
+                    <span class="fw-semibold">{{ processInfo.updated_at }}</span> 
                     By:
                     <span class="fw-semibold">
                         <b-link v-if="processInfo.lastModifiedById"
@@ -29,13 +29,13 @@
                     </span>
                 </li>
                 <!-- <li v-if="$root.isImport">
-                    <a href="#" v-b-modal:asset-dependent-tree>Linked Dependent Assets</a>
+                    <a href="#" v-b-modal:asset-dependent-tree>{{ $t('Linked Dependent Assets') }}</a>
                     <AssetDependentTreeModal></AssetDependentTreeModal>
-                </li>
-                <li>
-                    <a href="#" v-b-modal:asset-tree>Linked Assets</a>
-                    <AssetTreeModal :groups="groups"></AssetTreeModal>
                 </li> -->
+                <li>
+                    <a href="#" v-b-modal:linked-assets-modal>{{ $t('Linked Assets') }}</a>
+                    <AssetTreeModal :groups="groups" :asset-name="processName"></AssetTreeModal>
+                </li>
             </ul>
         </div>
         <div class="mb-2">
@@ -117,6 +117,7 @@ export default {
     "groups",
     "processId",
     "processInfo",
+    "existingAssets"
     ],
     components: {
         DataCard,
@@ -137,23 +138,23 @@ export default {
         }
     },
     computed: {
-        existingAssets() {
-            if (this.$root.manifest) {
-                return Object.entries(this.$root.ioState).filter(([uuid, settings]) => {
-                    const asset = this.$root.manifest[uuid];           
-                    return asset && asset.existing_id !== null && settings.mode !== 'discard' && !settings.discardedByParent;
-                }).map(([uuid, _]) => {
-                    const asset = this.$root.manifest[uuid];  
-                    return {
-                        type: asset.type,
-                        existingName: asset.existing_name, 
-                        importingName: asset.name,
-                        existingId: asset.existing_id,
-                    };
-                });
-            }
-            return [];
-        }
+    //     existingAssets() {
+    //         if (this.$root.manifest) {
+    //             return Object.entries(this.$root.ioState).filter(([uuid, settings]) => {
+    //                 const asset = this.$root.manifest[uuid];           
+    //                 return asset && asset.existing_id !== null && settings.mode !== 'discard' && !settings.discardedByParent;
+    //             }).map(([uuid, _]) => {
+    //                 const asset = this.$root.manifest[uuid];  
+    //                 return {
+    //                     type: asset.type,
+    //                     existingName: asset.existing_name, 
+    //                     importingName: asset.name,
+    //                     existingId: asset.existing_id,
+    //                 };
+    //             });
+    //         }
+    //         return [];
+    //     }
     },
     watch: {
       "$root.forcePasswordProtect": function (val) {

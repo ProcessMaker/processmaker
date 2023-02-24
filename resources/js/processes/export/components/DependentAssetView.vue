@@ -57,6 +57,8 @@
                         <li>Created Date: <span class="fw-semibold">{{ item.createdAt }}</span></li>
                         <li>Last Modified Date: <span class="fw-semibold">{{ item.updatedAt }}</span></li>
                     </ul>
+                    <!-- TODO: Complete Change Log-->
+                    <!-- <change-log :existingData="existingAssets" :newData="item"></change-log> -->
                 </b-card-text>
             </b-card>
         </div>
@@ -64,10 +66,12 @@
 </template>
 
 <script>
+import ChangeLog from "../../../components/shared/ChangeLog.vue";
 
 export default {
-    props: ["type", "group", "processName"],
+    props: ["type", "group", "processName", "existingAssets"],
     components: {
+        ChangeLog
     },
     mixins: [],
     data() {
@@ -80,12 +84,8 @@ export default {
             window.ProcessMaker.EventBus.$emit("return-to-summary-click");
         },
         showCard(item) {
-
-            console.log(item);
-            console.log(this.$root.ioState.find((i) => i.uuid === item.uuid));
-
             return !this.$root.ioState.find((i) => i.uuid === item.uuid).hidden;
-        }
+        },
     },
     mounted() {
     }

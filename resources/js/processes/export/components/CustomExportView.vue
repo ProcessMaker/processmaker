@@ -9,6 +9,14 @@
             :process-name="$root.rootAsset.name"
             :process-id="processId"
           />
+          <!-- TODO: Complete Changelog -->
+          <!-- <MainAssetView
+            :process-info="$root.rootAsset"
+            :groups="$root.groups"
+            :process-name="$root.rootAsset.name"
+            :process-id="processId"
+            :existingAssets="existingAssets"
+          /> -->
         </p-tab>
         <p-tab v-for="(group, i) in $root.groups" :key="i" :active="slotProps.activeIndex === i + 1">
           <DependentAssetView
@@ -16,6 +24,13 @@
             :items="group.items"
             :process-name="$root.rootAsset.name"
           />
+          <!-- TODO: Complete Changelog -->
+          <!-- <DependentAssetView
+            :group="group"
+            :items="group.items"
+            :process-name="$root.rootAsset.name"
+            :existingAssets="existingAssets"
+          /> -->
         </p-tab>
       </template>
     </p-tabs>
@@ -59,6 +74,33 @@ export default {
 
       return items;
     },
+    // TODO: Complete Changelog
+  //   groupsFiltered() {
+  //     return this.$root.groups.filter((group) => {
+  //       return this.$root.groupsHaveSomeActive[group.type];
+  //     }).filter((group) => {
+  //       return this.$root.hasSomeNotDiscardedByParent(group.items);
+  //     });
+  //   },
+  //   existingAssets() {
+  //     if (this.$root.manifest) {
+  //       return Object.entries(this.$root.ioState).filter(([uuid, settings]) => {
+  //         const asset = this.$root.manifest[uuid];           
+  //         return asset && asset.existing_id !== null && settings.mode !== 'discard' && !settings.discardedByParent;
+  //       }).map(([uuid, _]) => {
+  //         const asset = this.$root.manifest[uuid];
+  //         return {
+  //           type: asset.type,
+  //           existingName: asset.existing_name, 
+  //           importingName: asset.name,
+  //           existingId: asset.existing_id,
+  //           existingAttributes: asset.existing_attributes,
+  //           uuid: asset.attributes.uuid,
+  //         };
+  //       });
+  //     }
+  //     return [];
+  //   }
   },
   mounted() {
     if (this.$root.isImport) {

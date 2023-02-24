@@ -25,6 +25,9 @@ export default {
       }
     }
   },
+  mounted() {
+    DataProvider.isImport = this.isImport;
+  },
   methods: {
     setInitialState(assets, rootUuid) {
       this.manifest = assets;
@@ -129,9 +132,7 @@ export default {
     },
     // used for for import
     setModeForAll(mode, includeRoot = true) {
-      Object.entries(this.ioState).filter(([uuid, settings]) => {
-        return settings.mode !== 'discard' && !settings.discardedByParent;
-      }).forEach(([uuid, asset]) => {
+      Object.entries(this.ioState).forEach(([uuid, asset]) => {
         if (uuid === this.rootUuid && !includeRoot) {
           return;
         }

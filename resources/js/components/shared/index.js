@@ -1,4 +1,5 @@
 import BasicSearch from "./BasicSearch";
+import ChangeLog from "./ChangeLog";
 import ColorSchemeSelector from "./ColorSchemeSelector";
 import Column from "./Column";
 import ColumnChooser from "./ColumnChooser";
@@ -18,6 +19,7 @@ import SidebarNav from "./SidebarNav";
 
 export {
   BasicSearch,
+  ChangeLog,
   ColorSchemeSelector,
   Column,
   ColumnChooser,
