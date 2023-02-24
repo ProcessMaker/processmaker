@@ -31,6 +31,7 @@ use Ramsey\Uuid\Uuid;
  *   @OA\Property(property="processName", type="string"),
  *   @OA\Property(property="userName", type="string"),
  *   @OA\Property(property="request_id", type="string"),
+ *   @OA\Property(property="url", type="string"),
  * ),
  * @OA\Schema(
  *   schema="Notification",
@@ -59,6 +60,7 @@ class Notification extends ProcessMakerModel
         'notifiable_id',
         'data',
         'read_at',
+        'url',
     ];
 
     /**
