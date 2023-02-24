@@ -7,7 +7,8 @@
 @section('content')
 <div align="center">
   <div class="formContainer">
-    <img src="/img/processmaker_login.png">
+    @component('components.logo')
+    @endcomponent
     <h3>{{__('Reset Your Password')}}</h3>
     <form role="form" class="form" method="POST" action="{{ url('/password/reset') }}">
       {{ csrf_field() }}
