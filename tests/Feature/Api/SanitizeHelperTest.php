@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use ProcessMaker\Jobs\ImportScreen;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -305,6 +306,34 @@ class SanitizeHelperTest extends TestCase
         $this->assertEquals('<p><strong>Inside table do not sanitize</strong></p>', $processRequestData['form_text_area_1']);
         $this->assertEquals('<p><strong>Inside loop inside table 1 </strong><strong>do not sanitize</strong></p>', $processRequestData['loop_2'][0]['form_text_area_4']);
         $this->assertEquals('<p><strong>Inside loop inside table 2 </strong><strong>do not sanitize</strong></p>', $processRequestData['loop_2'][1]['form_text_area_4']);
+    }
+
+    public function testSanitizeDataForScreen()
+    {
+        $content = file_get_contents(__DIR__ . '/../../Fixtures/sanitize_nested_screen.json');
+        (new ImportScreen($content))->handle();
+        $screen = Screen::where('title', 'simple')->firstOrFail();
+
+        $data = [
+            'input' => '<h1>foo</h1>',
+            'richtext' => '<h1>bar</h1>',
+            'child' => [
+                'input' => '<h1>foo</h1>',
+                'richtext' => '<h1>bar</h1>',
+            ],
+        ];
+
+        $exceptions = SanitizeHelper::getExceptionsForScreen($screen);
+        $result = SanitizeHelper::sanitizeWithExceptions($data, $exceptions);
+
+        $this->assertEquals([
+            'input' => 'foo',
+            'richtext' => '<h1>bar</h1>',
+            'child' => [
+                'input' => 'foo',
+                'richtext' => '<h1>bar</h1>',
+            ],
+        ], $result);
     }
 
     private function createScreen($screenConfigFilePath)

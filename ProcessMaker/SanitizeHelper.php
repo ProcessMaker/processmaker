@@ -131,7 +131,23 @@ class SanitizeHelper
         return self::sanitizeWithExceptions($data, $except);
     }
 
-    private static function sanitizeWithExceptions(array $data, array $except, $parent = null)
+    /**
+     * Get exceptions for a screen. Used for web entry start events when no task exists yet.
+     *
+     * @param Screen $screen
+     *
+     * @return array
+     */
+    public static function getExceptionsForScreen(Screen $screen)
+    {
+        $screens = collect([$screen]);
+        $nestedScreens = collect($screen->nestedScreenIds())->map(fn ($id) => Screen::findOrFail($id));
+        $screens = $screens->concat($nestedScreens);
+
+        return $screens->flatMap(fn ($screen) => self::getExceptions($screen))->toArray();
+    }
+
+    public static function sanitizeWithExceptions(array $data, array $except, $parent = null)
     {
         foreach ($data as $key => $value) {
             if (!is_int($key)) {
