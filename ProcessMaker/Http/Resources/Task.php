@@ -117,7 +117,7 @@ class Task extends ApiResource
     {
         $permissions[] = [
             'process_request_id' => $request->id,
-            'allowed' => $user ? $user->can('view', $request) : false
+            'allowed' => $user ? $user->can('view', $request) : false,
         ];
 
         if ($request->parentRequest && $user) {

@@ -295,8 +295,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
     }
 
-    protected static function extendDrivers(): void{
-        Facades\Hash::extend('pm', function() {
+    protected static function extendDrivers(): void
+    {
+        Facades\Hash::extend('pm', function () {
             return resolve(PmHash::class);
         });
     }

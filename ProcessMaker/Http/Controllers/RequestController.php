@@ -121,7 +121,7 @@ class RequestController extends Controller
                 !$retry->isChildRequest();
         }
 
-        $files = $request->getMedia();
+        $files = \ProcessMaker\Models\Media::getFilesRequest($request);
 
         $canPrintScreens = $this->canUserPrintScreen($request);
         $screenRequested = $canPrintScreens ? $request->getScreensRequested() : [];
@@ -181,13 +181,14 @@ class RequestController extends Controller
         return false;
     }
 
-    public function downloadFiles(ProcessRequest $request, Media $media)
+    public function downloadFiles(ProcessRequest $request, $media)
     {
-        $ids = $request->getMedia()->pluck('id');
-        if (!$ids->contains($media->id)) {
-            abort(403);
+        $file = $request->downloadFile($media);
+
+        if ($file) {
+            return response()->download($file);
         }
 
-        return response()->download($media->getPath(), $media->file_name);
+        return abort(response(__('File ID does not exist'), 404));
     }
 }

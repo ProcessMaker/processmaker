@@ -1,11 +1,9 @@
 <?php
 
 namespace ProcessMaker\Helpers;
+
 use Illuminate\Contracts\Hashing\Hasher as HasherContract;
 
-/**
- *
- */
 class PmHash implements HasherContract
 {
     /**
@@ -18,9 +16,6 @@ class PmHash implements HasherContract
      */
     protected $defaultAlgo = 'sha1';
 
-    /**
-     *
-     */
     public function __construct()
     {
         $priority = [
@@ -34,7 +29,7 @@ class PmHash implements HasherContract
             'sha1',
         ];
         $algos = hash_algos();
-        foreach ($priority as $algo){
+        foreach ($priority as $algo) {
             if (in_array($algo, $algos)) {
                 $this->algo = $algo;
                 break;
@@ -50,7 +45,7 @@ class PmHash implements HasherContract
     public function info($hashedValue)
     {
         return [
-          'algo' => $this->algo
+            'algo' => $this->algo,
         ];
     }
 
@@ -81,9 +76,10 @@ class PmHash implements HasherContract
             return false;
         }
         $match = true;
-        for ($i = 0; isset($fresh[$i]); $i++){
+        for ($i = 0; isset($fresh[$i]); $i++) {
             $match = $match && $fresh[$i] === $hashedValue[$i];
         }
+
         return $match;
     }
 

@@ -16,7 +16,7 @@ class StringHelper
 
     public static function friendlyFileName($string)
     {
-        return strtolower(preg_replace('/[^\w\.!@#$^+=-]/','_', $string));
+        return strtolower(preg_replace('/[^\w\.!@#$^+=-]/', '_', $string));
     }
 
     public static function unSnakeSlug($string)
