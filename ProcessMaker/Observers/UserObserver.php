@@ -10,6 +10,14 @@ use ProcessMaker\Models\User;
 class UserObserver
 {
     /**
+     * Handle the user "creating" event.
+     */
+    public function creating(User $user)
+    {
+        $user->setTimezoneAttribute();
+    }
+
+    /**
      * Handle the user "deleting" event.
      *
      * @param User $user
@@ -17,14 +25,14 @@ class UserObserver
      */
     public function deleting(User $user)
     {
-        //Validate if the user has Request processes assigned
-        //An user can not be deleted if it has requests
+        // Validate if the user has Request processes assigned
+        // An user can not be deleted if it has requests
         $query = ProcessRequest::where('user_id', $user->id);
         $count = $query->count();
         if ($count > 0) {
             throw new ReferentialIntegrityException($user, $query->first());
         }
-        //Remove comments
+        // Remove comments
         Comment::query()
             ->where('user_id', $user->id)
             ->delete();
