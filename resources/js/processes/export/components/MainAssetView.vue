@@ -138,23 +138,24 @@ export default {
         }
     },
     computed: {
-    //     existingAssets() {
-    //         if (this.$root.manifest) {
-    //             return Object.entries(this.$root.ioState).filter(([uuid, settings]) => {
-    //                 const asset = this.$root.manifest[uuid];           
-    //                 return asset && asset.existing_id !== null && settings.mode !== 'discard' && !settings.discardedByParent;
-    //             }).map(([uuid, _]) => {
-    //                 const asset = this.$root.manifest[uuid];  
-    //                 return {
-    //                     type: asset.type,
-    //                     existingName: asset.existing_name, 
-    //                     importingName: asset.name,
-    //                     existingId: asset.existing_id,
-    //                 };
-    //             });
-    //         }
-    //         return [];
-    //     }
+        existingAssets() {
+            if (this.$root.manifest) {
+                return Object.entries(this.$root.ioState).filter(([uuid, settings]) => {
+                    const asset = this.$root.manifest[uuid];           
+                    return asset && asset.existing_id !== null && settings.mode !== 'discard' && !settings.discardedByParent;
+                }).map(([uuid, _]) => {
+                    const asset = this.$root.manifest[uuid];  
+                    return {
+                        type: asset.type,
+                        existingName: asset.existing_name, 
+                        importingName: asset.name,
+                        existingId: asset.existing_id,
+                        matchedBy: asset.matched_by,
+                    };
+                });
+            }
+            return [];
+        }
     },
     watch: {
       "$root.forcePasswordProtect": function (val) {

@@ -8,25 +8,19 @@
             </div>
             <div v-if="$root.includeAllByGroup[group.type]" class="mb-2">
                 <h6 class="mb-0 fw-semibold">{{ $root.operation }} Status:
-                    <b-badge
-                    pill
-                    variant="success"
-                    >
-                    <i class="fas fa-check-circle export-status-label" />
-                    Full {{ $root.operation }}
+                    <b-badge pill variant="success">
+                      <i class="fas fa-check-circle export-status-label" />
+                      Full {{ $root.operation }}
                     </b-badge>
                 </h6>
                 <small class="text-muted"><span class="font-weight-bold">All</span> {{ group.typeHumanPlural }} will be included in this {{ $root.operation.toLowerCase() }}.</small>
             </div>
             <div v-else class="mb-2">
                 <h6 class="mb-0 fw-semibold">{{ $root.operation }} Status:
-                <b-badge
-                    pill
-                    variant="warning"
-                    >
-                    <i class="fas fa-exclamation-triangle export-status-label" />
-                    Not {{ $root.operation }}ing
-                    </b-badge>
+                <b-badge pill variant="warning">
+                  <i class="fas fa-exclamation-triangle export-status-label" />
+                  Not {{ $root.operation }}ing
+                </b-badge>
                 </h6>
                 <small class="text-muted">{{ group.typeHumanPlural }} will <span class="font-weight-bold">Not</span> be included in this {{ $root.operation.toLowerCase() }}.</small>
             </div>
@@ -40,9 +34,9 @@
                 <template #header>
                     <h6 class="mb-0 data-card-header font-weight-bold text-capitalize">
                         {{ item.name }}
-                        <b-badge pill variant="primary" class="text-capitalize">
+                        <b-badge v-if="$root.isImport" pill variant="primary" class="text-capitalize">
                             <span v-if="item.importMode === 'update'">{{ $t('Updated') }}</span>
-                            <span v-if="item.importMode === 'copy'">{{ $t('New') }}</span>
+                            <span v-if="item.importMode === 'copy' ||  item.importMode === 'new'">{{ $t('New') }}</span>
                         </b-badge>
                     </h6>
                 </template>
