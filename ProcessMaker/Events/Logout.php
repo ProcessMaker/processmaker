@@ -55,7 +55,7 @@ class Logout implements ShouldBroadcastNow
     {
         return [
             'device_id' => RequestDevice::getId(),
-            'device_variable' => RequestDevice::getVariableName()
+            'device_variable' => RequestDevice::getVariableName(),
         ];
     }
 }

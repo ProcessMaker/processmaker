@@ -4,10 +4,10 @@ namespace ProcessMaker\Jobs;
 
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use ProcessMaker\Models\Notification;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use ProcessMaker\Models\Notification;
 
 class MarkNotificationAsRead implements ShouldQueue
 {
@@ -16,6 +16,7 @@ class MarkNotificationAsRead implements ShouldQueue
         Queueable;
 
     public $conditions;
+
     public $updates;
 
     /**
@@ -23,7 +24,7 @@ class MarkNotificationAsRead implements ShouldQueue
      *
      * @param array $conditions
      * @param array $updates
-     * 
+     *
      * @return void
      */
     public function __construct($conditions, $updates)
@@ -38,5 +39,4 @@ class MarkNotificationAsRead implements ShouldQueue
             ->whereNull('read_at')
             ->update($this->updates);
     }
-    
 }

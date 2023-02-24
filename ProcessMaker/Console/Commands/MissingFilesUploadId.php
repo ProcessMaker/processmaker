@@ -56,17 +56,17 @@ class MissingFilesUploadId extends Command
                 if (Arr::has($data, $file->getCustomProperty('data_name')) && !is_array(Arr::get($data, $file->getCustomProperty('data_name')))) {
                     $modify = true;
                     Arr::set($data, $file->getCustomProperty('data_name'), $file->id);
-                } else if (Arr::has($data, $file->getCustomProperty('data_name')) && is_array(Arr::get($data, $file->getCustomProperty('data_name')))) {
+                } elseif (Arr::has($data, $file->getCustomProperty('data_name')) && is_array(Arr::get($data, $file->getCustomProperty('data_name')))) {
                     if ($aux != '' && $aux != $file->getCustomProperty('data_name')) {
                         Arr::set($data, $aux, $dataAux);
                         $dataAux = [];
                         $modify = true;
                     }
                     $aux = $file->getCustomProperty('data_name');
-                    $dataAux[] = (object)['file' => $file->id];
+                    $dataAux[] = (object) ['file' => $file->id];
                 }
             }
-            if (count($dataAux)> 0) {
+            if (count($dataAux) > 0) {
                 Arr::set($data, $aux, $dataAux);
                 $modify = true;
             }

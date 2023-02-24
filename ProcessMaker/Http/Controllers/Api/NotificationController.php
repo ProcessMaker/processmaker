@@ -93,9 +93,9 @@ class NotificationController extends Controller
         $filter = $request->input('filter', '');
         if ($filter === 'read') {
             $query->whereNotNull('read_at');
-        } else if ($filter === 'unread') {
+        } elseif ($filter === 'unread') {
             $query->whereNull('read_at');
-        } else if (!empty($filter)) {
+        } elseif (!empty($filter)) {
             $filter = addslashes($filter);
             $subsearch = '%' . $filter . '%';
             $query->where(function ($query) use ($subsearch, $filter) {

@@ -63,7 +63,7 @@ class SessionStarted implements ShouldBroadcastNow
         return [
             'lifetime' => $lifetime,
             'device_id' => RequestDevice::getId(),
-            'device_variable' => RequestDevice::getVariableName()
+            'device_variable' => RequestDevice::getVariableName(),
         ];
     }
 }
