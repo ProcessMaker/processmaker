@@ -5,6 +5,7 @@ namespace ProcessMaker;
 use Illuminate\Http\File;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Models\ProcessRequest;
 use Spatie\MediaLibrary\FileManipulator;
 use Spatie\MediaLibrary\Filesystem\Filesystem;
 use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;

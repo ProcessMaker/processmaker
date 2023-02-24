@@ -99,15 +99,15 @@
               }
             ).then(response => {
               if (!response.data.status) {
-                ProcessMaker.alert('{{__('Unable to import the screen.')}}', 'danger');
+                ProcessMaker.alert(this.$t('Unable to import the screen.'), 'danger');
                 return;
               }
               this.options = response.data.status;
-              let message = '{{__('The screen was imported.')}}';
+              let message = this.$t('The screen was imported.');
               let variant = 'success';
               for (let item in this.options) {
                 if (!this.options[item].success) {
-                  message = '{{__('The screen was imported, but with errors.')}}';
+                  message = this.$t('The screen was imported, but with errors.');
                   variant = 'warning'
                 }
               }

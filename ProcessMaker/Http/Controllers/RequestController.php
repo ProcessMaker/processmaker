@@ -121,7 +121,7 @@ class RequestController extends Controller
                 !$retry->isChildRequest();
         }
 
-        $files = $request->getMedia();
+        $files = \ProcessMaker\Models\Media::getFilesRequest($request);
 
         $canPrintScreens = $this->canUserPrintScreen($request);
         $screenRequested = $canPrintScreens ? $request->getScreensRequested() : [];
@@ -131,8 +131,10 @@ class RequestController extends Controller
 
         $addons = $this->getPluginAddons('edit', compact(['request']));
 
+        $isProcessManager = $request->process?->manager_id === Auth::user()->id;
+
         return view('requests.show', compact(
-            'request', 'files', 'canCancel', 'canViewComments', 'canManuallyComplete', 'canRetry', 'manager', 'canPrintScreens', 'screenRequested', 'addons'
+            'request', 'files', 'canCancel', 'canViewComments', 'canManuallyComplete', 'canRetry', 'manager', 'canPrintScreens', 'screenRequested', 'addons', 'isProcessManager'
         ));
     }
 
@@ -179,13 +181,14 @@ class RequestController extends Controller
         return false;
     }
 
-    public function downloadFiles(ProcessRequest $request, Media $media)
+    public function downloadFiles(ProcessRequest $request, $media)
     {
-        $ids = $request->getMedia()->pluck('id');
-        if (!$ids->contains($media->id)) {
-            abort(403);
+        $file = $request->downloadFile($media);
+
+        if ($file) {
+            return response()->download($file);
         }
 
-        return response()->download($media->getPath(), $media->file_name);
+        return abort(response(__('File ID does not exist'), 404));
     }
 }

@@ -2,12 +2,10 @@
 
 namespace ProcessMaker\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Session\Store as Session;
 use Illuminate\Validation\Rule;
 use Laravel\Passport\HasApiTokens;
 use ProcessMaker\Notifications\ResetPassword as ResetPasswordNotification;
@@ -36,10 +34,10 @@ class User extends Authenticatable implements HasMedia
 
     protected $connection = 'processmaker';
 
-    //Disk
+    // Disk
     public const DISK_PROFILE = 'profile';
 
-    //collection media library
+    // collection media library
     public const COLLECTION_PROFILE = 'profile';
 
     // Session key to save request ids that the user started
@@ -320,6 +318,29 @@ class User extends Authenticatable implements HasMedia
     }
 
     /**
+     * Set the user's timezone.
+     */
+    public function setTimezoneAttribute(string $value = ''): void
+    {
+        $this->attributes['timezone'] = $value ?: $this->getDefaultTimezone();
+    }
+
+    /**
+     * Get default timezone for new users.
+     */
+    public function getDefaultTimezone(): string
+    {
+        $setting = Setting::byKey('users.timezone');
+        if ($setting === null) {
+            return config('app.timezone');
+        }
+
+        $config = (object) $setting->config;
+
+        return $config->timezone;
+    }
+
+    /**
      * Returns the list of notifications not read by the user
      *
      * @return \Illuminate\Support\Collection
@@ -402,12 +423,10 @@ class User extends Authenticatable implements HasMedia
         if (array_key_exists('users', $task->self_service_groups) && in_array(\Auth::user()->id, $task->self_service_groups['users'])) {
             return true;
         } elseif (array_key_exists('groups', $task->self_service_groups)) {
-            $groups = collect($task->self_service_groups['groups'])
+            return collect($task->self_service_groups['groups'])
                 ->intersect(
                     $this->groups()->pluck('groups.id')
                 )->count() > 0;
-
-            return $groups;
         } else {
             // For older processes
             return collect($task->self_service_groups)

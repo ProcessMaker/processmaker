@@ -3,7 +3,6 @@
 namespace ProcessMaker\Models;
 
 use Exception;
-use ProcessMaker\Jobs\CopyRequestFiles;
 use ProcessMaker\Nayra\Bpmn\ActivitySubProcessTrait;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityClosedEvent;

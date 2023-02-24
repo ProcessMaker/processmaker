@@ -69,7 +69,7 @@
               <b-button 
               :aria-label="$t('Clear')"
               v-uni-aria-describedby="row.item.id.toString()"
-              :disabled="row.item.readonly" 
+              :disabled="disableClear(row.item)" 
               @click="onClear(row)" 
               variant="link" 
              >
@@ -437,6 +437,9 @@ export default {
     },
     sortButtons(buttons) {
       return buttons.sort((a,b) => (a.ui.props.order > b.ui.props.order) ? 1 : -1);
+    },
+    disableClear(item) {
+      return item.readonly || item.format === 'choice' ? true : false;
     }
   }
 };
