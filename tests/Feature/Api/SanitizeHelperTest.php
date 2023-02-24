@@ -2,17 +2,13 @@
 
 namespace Tests\Feature\Api;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Jobs\ImportScreen;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenVersion;
-use ProcessMaker\Models\User;
-use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\SanitizeHelper;
 use Tests\Feature\Shared\ProcessTestingTrait;
 use Tests\Feature\Shared\RequestHelper;
@@ -159,39 +155,6 @@ class SanitizeHelperTest extends TestCase
 
         $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequestData['loop_1'][0]['form_text_area_4']);
         $this->assertEquals('Sanitize', $processRequestData['loop_1'][0]['form_input_1']);
-    }
-
-    public function testPreloadExceptionForDifferentScreenSanitization()
-    {
-        $this->markTestSkipped('FOUR-6653');
-
-        // Prepare scenario ..
-        $this->createScreen('tests/Fixtures/sanitize_single_rich_text_screen.json');
-        $this->createProcess('tests/Fixtures/sanitize_single_task.bpmn');
-        $this->createProcessRequest();
-        // Setup do_not_sanitize variable with some form_text_area from previous screen ..
-        $this->processRequest->do_not_sanitize = ['form_text_area_20'];
-        $this->processRequest->save();
-        $task = $this->createTask($this->process->id, $this->screenVersion->id, $this->processRequest->id, 'node_9');
-        $data = $this->dataTwoTask();
-
-        // Call api and do sanitization ..
-        $route = route('api.tasks.update', $task->id);
-        $response = $this->apiCall('PUT', $route, ['status' => 'COMPLETED', 'data' => $data]);
-        $this->assertStatus(200, $response);
-
-        // Assert do_not_sanitize was updated successfully ..
-        $response->assertJsonFragment([
-            'do_not_sanitize' => ['form_text_area_1', 'form_text_area_20'],
-        ]);
-
-        // Assert data was sanitized or not if rich text ..
-        $processRequestData = ProcessRequest::findOrFail($this->processRequest->id)->data;
-
-        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequestData['form_text_area_1']);
-        $this->assertEquals('<p><strong>Do not sanitize<\/strong><\/p>', $processRequestData['form_text_area_20']);
-        $this->assertEquals('Sanitize', $processRequestData['form_text_area_10']);
-        $this->assertEquals('Sanitize', $processRequestData['input_1']);
     }
 
     public function testSingleRichTextTwoPagesSanitization()
@@ -369,6 +332,7 @@ class SanitizeHelperTest extends TestCase
             'callable_id' => 'ProcessId',
             'user_id' => $this->user->id,
             'process_id' => $this->process->getKey(),
+            'do_not_sanitize' => SanitizeHelper::getDoNotSanitizeFields($this->process),
             'process_collaboration_id' => null,
         ]);
     }

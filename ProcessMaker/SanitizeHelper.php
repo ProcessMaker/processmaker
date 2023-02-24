@@ -2,16 +2,15 @@
 
 namespace ProcessMaker;
 
-use function GuzzleHttp\json_decode;
 use Illuminate\Support\Facades\Validator;
-use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Models\Screen;
 
 class SanitizeHelper
 {
     /**
      * The tags that should always be sanitized, even
-     * when the controller specifies doNotSanitize
+     * when the controller specifies doNotSanitize.
      *
      * @var array
      */
@@ -95,38 +94,39 @@ class SanitizeHelper
     /**
      * Sanitize each element of an array. Do not sanitize rich text elements
      *
-     * @param string $tag
+     * @param array $data
+     * @param Task $task
+     * @param array $except
      *
-     * @return string
+     * @return array
      */
-    public static function sanitizeData($data, $task)
+    public static function sanitizeData($data, $task = null, $except = [])
     {
-        // Get current and nested screens IDs ..
-        $currentScreenExceptions = [];
-        $currentScreenAndNestedIds = $task->getScreenAndNestedIds();
-        foreach ($currentScreenAndNestedIds as $id) {
-            // Find the screen version ..
-            $screen = Screen::findOrFail($id);
-            $screen = $screen->versionFor($task->processRequest)->toArray();
-            // Get exceptions ..
-            $exceptions = self::getExceptions((object) $screen);
-            if (count($exceptions)) {
-                $currentScreenExceptions = array_unique(array_merge($exceptions, $currentScreenExceptions));
+        if ($task) {
+            // Get current and nested screens IDs ..
+            $currentScreenExceptions = [];
+            $currentScreenAndNestedIds = $task->getScreenAndNestedIds();
+            foreach ($currentScreenAndNestedIds as $id) {
+                // Find the screen version ..
+                $screen = Screen::findOrFail($id);
+                $screen = $screen->versionFor($task->processRequest)->toArray();
+                // Get exceptions ..
+                $exceptions = self::getExceptions((object) $screen);
+                if (count($exceptions)) {
+                    $currentScreenExceptions = array_unique(array_merge($exceptions, $currentScreenExceptions));
+                }
             }
+
+            // Get process request exceptions stored in do_not_sanitize column ..
+            $processRequestExceptions = $task->processRequest->do_not_sanitize;
+            if (!$processRequestExceptions) {
+                $processRequestExceptions = [];
+            }
+
+            // Merge (nestedSreensExceptions and currentScreenExceptions) with processRequestExceptions ..
+            $exceptTask = array_unique(array_merge($processRequestExceptions, $currentScreenExceptions));
+            $except = array_unique(array_merge($except, $exceptTask));
         }
-
-        // Get process request exceptions stored in do_not_sanitize column ..
-        $processRequestExceptions = $task->processRequest->do_not_sanitize;
-        if (!$processRequestExceptions) {
-            $processRequestExceptions = [];
-        }
-
-        // Merge (nestedSreensExceptions and currentScreenExceptions) with processRequestExceptions ..
-        $except = array_unique(array_merge($processRequestExceptions, $currentScreenExceptions));
-
-        // Update database with all the exceptions ..
-        $task->processRequest->do_not_sanitize = $except;
-        $task->processRequest->save();
 
         return self::sanitizeWithExceptions($data, $except);
     }
@@ -174,9 +174,12 @@ class SanitizeHelper
             return $except;
         }
         $config = $screen->config;
-        foreach ($config as $page) {
-            if (isset($page['items']) && is_array($page['items'])) {
-                $except = array_merge($except, self::getRichTextElements($page['items']));
+
+        if ($config) {
+            foreach ($config as $page) {
+                if (isset($page['items']) && is_array($page['items'])) {
+                    $except = array_merge($except, self::getRichTextElements($page['items']));
+                }
             }
         }
 
@@ -223,7 +226,7 @@ class SanitizeHelper
     public static function sanitizeEmail($email)
     {
         $validator = Validator::make(['email' => $email], [
-            'email'=>'required|email',
+            'email' => 'required|email',
         ]);
         if ($validator->fails()) {
             return '';
@@ -251,5 +254,30 @@ class SanitizeHelper
         ];
 
         return str_replace(array_keys($codes), array_values($codes), $string);
+    }
+
+    public static function getDoNotSanitizeFields($process)
+    {
+        $manager = app(ExportManager::class);
+        $screenIds = $manager->getDependenciesOfType(Screen::class, $process, []);
+        $doNotSanitizeFields = [];
+
+        foreach ($screenIds as $screenId) {
+            $doNotSanitizeFieldsForScreen = self::findFieldsInScreen($screenId);
+            $doNotSanitizeFields = array_unique(array_merge($doNotSanitizeFieldsForScreen, $doNotSanitizeFields));
+        }
+
+        return $doNotSanitizeFields;
+    }
+
+    public static function findFieldsInScreen($screenId)
+    {
+        $screen = Screen::find($screenId);
+        $doNotSanitizeFields = [];
+        if ($screen) {
+            $doNotSanitizeFields = self::getExceptions((object) $screen);
+        }
+
+        return $doNotSanitizeFields;
     }
 }
