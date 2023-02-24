@@ -131,8 +131,10 @@ class RequestController extends Controller
 
         $addons = $this->getPluginAddons('edit', compact(['request']));
 
+        $isProcessManager = $request->process?->manager_id === Auth::user()->id;
+
         return view('requests.show', compact(
-            'request', 'files', 'canCancel', 'canViewComments', 'canManuallyComplete', 'canRetry', 'manager', 'canPrintScreens', 'screenRequested', 'addons'
+            'request', 'files', 'canCancel', 'canViewComments', 'canManuallyComplete', 'canRetry', 'manager', 'canPrintScreens', 'screenRequested', 'addons', 'isProcessManager'
         ));
     }
 

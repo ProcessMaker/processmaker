@@ -113,7 +113,7 @@
                             <h5>{{__('Assigned To')}}</h5>
                             <avatar-image v-if="task.user" size="32" class="d-inline-flex pull-left align-items-center"
                                           :input-data="task.user"></avatar-image>
-                          <div v-if="task.definition.allowReassignment === 'true' || userIsAdmin ">
+                          <div v-if="task.definition.allowReassignment === 'true' || userIsAdmin || userIsProcessManager">
                             <br>
                             <span>
                                 <button v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'" type="button" class="btn btn-outline-secondary btn-block"
@@ -223,6 +223,7 @@
     const task = @json($task);
     const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
+    const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
 
   </script>
     @foreach($manager->getScripts() as $script)
@@ -259,6 +260,7 @@
           formData: {},
           submitting: false,
           userIsAdmin,
+          userIsProcessManager,
         },
         watch: {
           task: {
