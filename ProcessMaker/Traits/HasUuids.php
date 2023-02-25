@@ -15,7 +15,9 @@ trait HasUuids
     {
         // TODO: Remove call in collections package src/Observers/RecordObserver.php
         static::creating(function ($model) {
-            $model->uuid = self::generateUuid();
+            if (!$model->uuid) {
+                $model->uuid = self::generateUuid();
+            }
         });
     }
 

@@ -751,6 +751,54 @@ class ProcessController extends Controller
     }
 
     /**
+     * Validate the specified process before importing.
+     *
+     * @param $process
+     *
+     * @return Response
+     *
+     * @OA\Post(
+     *     path="/processes/import/validation",
+     *     summary="Validate a import",
+     *     operationId="validateImport",
+     *     tags={"Processes"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/ProcessImport")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="file",
+     *                     description="file to import",
+     *                     type="string",
+     *                     format="binary",
+     *                 ),
+     *             )
+     *         )
+     *     ),
+     * )
+     */
+    public function preimportValidation(Process $process, Request $request)
+    {
+        $content = $request->file('file')->get();
+        $payload = json_decode($content);
+
+        if (!$result = $this->validateImportedFile($content, $request)) {
+            return response(
+                ['message' => __('The selected file is invalid or not supported for import.')],
+                422
+            );
+        }
+
+        return $result;
+    }
+
+    /**
      * Import the specified process.
      *
      * @param $process
@@ -786,7 +834,7 @@ class ProcessController extends Controller
     public function import(Process $process, Request $request)
     {
         $content = $request->file('file')->get();
-        if (!$this->validateImportedFile($content)) {
+        if (!$this->validateImportedFile($content, $request)) {
             return response(
                 ['message' => __('Invalid Format')],
                 422
@@ -808,6 +856,7 @@ class ProcessController extends Controller
             'status' => $import->status,
             'assignable' => $import->assignable,
             'process' => $import->process,
+            'processId' => $import->process->id,
         ]);
     }
 
@@ -1165,7 +1214,7 @@ class ProcessController extends Controller
      *
      * @return bool
      */
-    private function validateImportedFile($content)
+    private function validateImportedFile($content, $request)
     {
         $decoded = substr($content, 0, 1) === '{' ? json_decode($content) : (($content = base64_decode($content)) && substr($content, 0, 1) === '{' ? json_decode($content) : null);
         $isDecoded = $decoded && is_object($decoded);
@@ -1173,6 +1222,11 @@ class ProcessController extends Controller
         $validType = $hasType && $decoded->type === 'process_package';
         $hasVersion = $isDecoded && isset($decoded->version) && is_string($decoded->version);
         $validVersion = $hasVersion && method_exists(ImportProcess::class, "parseFileV{$decoded->version}");
+        $useNewImporter = $decoded !== null && property_exists($decoded, 'version') && (int) $decoded->version === 2;
+
+        if ($useNewImporter) {
+            return (new ImportController())->preview($request, $decoded->version);
+        }
 
         return $isDecoded && $validType && $validVersion;
     }

@@ -82,8 +82,8 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
 
     Route::get('processes', [ProcessController::class, 'index'])->name('processes.index');
     Route::get('processes/{process}/edit', [ProcessController::class, 'edit'])->name('processes.edit')->middleware('can:edit-processes');
-    Route::get('processes/{process}/export', [ProcessController::class, 'export'])->name('processes.export')->middleware('can:export-processes');
-    Route::get('processes/import', [ProcessController::class, 'import'])->name('processes.import')->middleware('can:import-processes');
+    Route::get('processes/{process}/export/{page?}', [ProcessController::class, 'export'])->name('processes.export')->middleware('can:export-processes');
+    Route::get('processes/import/{page?}', [ProcessController::class, 'import'])->name('processes.import')->middleware('can:import-processes');
     Route::get('processes/{process}/download/{key}', [ProcessController::class, 'download'])->name('processes.download')->middleware('can:export-processes');
     Route::get('processes/create', [ProcessController::class, 'create'])->name('processes.create')->middleware('can:create-processes');
     Route::post('processes', [ProcessController::class, 'store'])->name('processes.store')->middleware('can:edit-processes');
