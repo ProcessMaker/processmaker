@@ -35,6 +35,7 @@
                 v-b-tooltip.hover
                 :title="$t('Restore User')"
                 v-uni-aria-describedby="props.rowData.id.toString()"
+                :aria-label="$t('Restore') + ' ' + props.rowData.fullname.toString()"
               >
                 <i class="fas fa-trash-restore fa-lg fa-fw"></i>
               </b-btn>

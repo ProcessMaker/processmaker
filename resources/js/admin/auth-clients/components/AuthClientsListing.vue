@@ -33,6 +33,7 @@
                 v-b-tooltip.hover
                 :title="$t('Edit')"
                 v-uni-aria-describedby="props.rowData.id.toString()"
+                :aria-label="$t('Edit') + ' ' + props.rowData.name.toString()"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
               </b-btn>
@@ -42,6 +43,7 @@
                 v-b-tooltip.hover
                 :title="$t('Remove')"
                 v-uni-aria-describedby="props.rowData.id.toString()"
+                :aria-label="$t('Remove') + ' ' + props.rowData.name.toString()"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
               </b-btn>
