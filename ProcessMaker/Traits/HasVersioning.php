@@ -2,17 +2,43 @@
 
 namespace ProcessMaker\Traits;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Models\ProcessRequest;
 
 trait HasVersioning
 {
     /**
-     * Save a version every time the model is saved
+     * The "boot" method of HasVersioning.
      */
     public static function bootHasVersioning()
     {
+        static::addGlobalScope('published', function (Builder $builder) {
+            $builder->published();
+        });
+
+        // Save a version every time the model is saved.
         static::saved([static::class, 'saveNewVersion']);
+    }
+
+    /**
+     * Get the published for the model.
+     */
+    public function scopePublished($query)
+    {
+        $query->whereHas('versions', static function ($query) {
+            $query->where('draft', false);
+        });
+    }
+
+    /**
+     * Get the drafts for the model.
+     */
+    public function scopeDraft($query)
+    {
+        $query->whereHas('versions', static function ($query) {
+            $query->where('draft', true);
+        });
     }
 
     /**
