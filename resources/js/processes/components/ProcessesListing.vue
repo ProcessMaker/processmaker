@@ -111,6 +111,15 @@
               </b-btn>
               <b-btn
                       variant="link"
+                      @click="onAction('create-template', props.rowData, props.rowIndex)"
+                      v-b-tooltip.hover
+                      :title="$t('Convert to Template')"
+                      v-uni-aria-describedby="props.rowData.id.toString()"
+              >
+                <i class="fas fa-tools fa-lg fa-fw"></i>
+              </b-btn>
+              <b-btn
+                      variant="link"
                       @click="onAction('remove-item', props.rowData, props.rowIndex)"
                       v-b-tooltip.hover
                       :title="$t('Archive')"
@@ -129,6 +138,7 @@
               >
                 <i class="fas fa-upload fa-lg fa-fw"></i>
               </b-btn>
+              <template-exists-modal ref="template-exists-modal" :processName="props.rowData.name" />
             </div>
           </div>
         </template>
@@ -150,11 +160,14 @@
   import datatableMixin from "../../components/common/mixins/datatable";
   import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
   import { createUniqIdsMixin } from "vue-uniq-ids";
+  import TemplateExistsModal from "../templates/components/TemplateExistsModal.vue";
+
   const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
+    components: { TemplateExistsModal },
     mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
-    props: ["filter", "id", "status", "permission", "isDocumenterInstalled"],
+    props: ["filter", "id", "status", "permission", "isDocumenterInstalled", "processName"],
     data() {
       return {
         orderBy: "name",
@@ -211,6 +224,9 @@
       });
     },
     methods: {
+      showTemplateExistsModal() {
+        this.$refs["template-exists-modal"].show();
+      },
       goToEdit(data) {
         window.location = "/processes/" + data + "/edit";
       },
@@ -264,6 +280,9 @@
             break;
           case "export-item":
             this.goToExport(data.id);
+            break;
+          case "create-template":
+            this.showTemplateExistsModal();
             break;
           case "restore-item":
             ProcessMaker.apiClient
