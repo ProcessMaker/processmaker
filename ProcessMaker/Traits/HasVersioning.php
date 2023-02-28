@@ -4,6 +4,7 @@ namespace ProcessMaker\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\ProcessRequest;
 
 trait HasVersioning
@@ -26,8 +27,12 @@ trait HasVersioning
      */
     public function scopePublished($query)
     {
-        $query->whereHas('versions', static function ($query) {
-            $query->where('draft', false);
+        $query->whereHas('versions', function ($query) {
+            // Avoid migration errors when 'draft' column does not exist.
+            $hasDraftColumn = Schema::hasColumn($query->getModel()->getTable(), 'draft');
+            $query->when($hasDraftColumn, function ($query) {
+                $query->where('draft', false);
+            });
         });
     }
 
@@ -36,7 +41,7 @@ trait HasVersioning
      */
     public function scopeDraft($query)
     {
-        $query->whereHas('versions', static function ($query) {
+        $query->whereHas('versions', function ($query) {
             $query->where('draft', true);
         });
     }
