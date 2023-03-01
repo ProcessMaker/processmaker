@@ -27,6 +27,7 @@
     @component('components.categorized_resource', [
             'tabs' => [
             __('Processes'),
+            __('Templates'),
             __('Categories'),
             __('Archived Processes'),
         ],
@@ -35,6 +36,11 @@
     ])
         @slot('itemList')
             @component('processes.list', ['config' => $listConfig])
+            @endcomponent
+        @endslot
+
+         @slot('templatesList')
+            @component('processes.templatesList', ['config' => $listConfig])
             @endcomponent
         @endslot
 
