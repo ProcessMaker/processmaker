@@ -16,7 +16,7 @@
 
 <script>
 import TemplateSelectCard from "./TemplateSelectCard.vue";
-import BasicSearch from "../../../components/shared/BasicSearch.vue";
+import BasicSearch from "../shared/BasicSearch.vue";
 
 export default {
   components: { TemplateSelectCard, BasicSearch },

@@ -160,7 +160,7 @@
   import datatableMixin from "../../components/common/mixins/datatable";
   import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
   import { createUniqIdsMixin } from "vue-uniq-ids";
-  import TemplateExistsModal from "../templates/components/TemplateExistsModal.vue";
+  import TemplateExistsModal from "../../components/templates/TemplateExistsModal.vue";
 
   const uniqIdsMixin = createUniqIdsMixin();
 

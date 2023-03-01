@@ -92,7 +92,7 @@
 
 <script>
   import { FormErrorsMixin, Modal, Required } from "SharedComponents";
-  import TemplateSearch from "../templates/components/TemplateSearch.vue";
+  import TemplateSearch from "../../components/templates/TemplateSearch.vue";
 
   export default {
     components: { Modal, Required, TemplateSearch },
