@@ -19,7 +19,7 @@
 
     <div class="container-fluid">
         <templates-listing
-            ref="processlistinging"
+            ref="processListing"
             :filter="filter"
             {{-- status="archived" --}}
             v-on:reload="reload"
