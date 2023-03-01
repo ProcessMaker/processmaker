@@ -53,7 +53,7 @@ trait HasVersioning
         $this->versions()->create($attributes);
 
         // Delete draft version.
-        $this->versions()->draft()->delete();
+        $this->deleteDraft();
     }
 
     /**
@@ -67,6 +67,11 @@ trait HasVersioning
         $this->versions()->updateOrCreate([
             'draft' => true,
         ], $attributes);
+    }
+
+    public function deleteDraft()
+    {
+        $this->versions()->draft()->delete();
     }
 
     private function getModelAttributes(): array

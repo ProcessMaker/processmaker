@@ -309,10 +309,7 @@ class ProcessController extends Controller
         // Catch errors to send more specific status
         try {
             if ($request->input('is_draft', false)) {
-                $process->withoutEvents(function () use ($process) {
-                    $process->saveOrFail();
-                    $process->saveDraft();
-                });
+                $process->saveDraft();
             } else {
                 $process->saveOrFail();
             }
@@ -1259,5 +1256,12 @@ class ProcessController extends Controller
             $config['web_entry']['webentryRouteConfig']['entryUrl'] = $newEntryUrl;
             $node->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'config', json_encode($config));
         }
+    }
+
+    public function close(Process $process)
+    {
+        $process->deleteDraft();
+
+        return new Resource($process);
     }
 }

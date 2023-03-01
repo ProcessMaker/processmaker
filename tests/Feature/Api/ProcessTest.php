@@ -1158,4 +1158,28 @@ class ProcessTest extends TestCase
         // Delete the draft after the item is published.
         $this->assertEquals(0, $process->versions()->draft()->count());
     }
+
+    public function testDiscardDraft()
+    {
+        $process = Process::factory()->create();
+        $url = route('api.processes.update', ['process' => $process]);
+        $params = [
+            'name' => 'Process',
+            'description' => 'Description',
+            'is_draft' => true,
+        ];
+
+        $response = $this->apiCall('PUT', $url, $params);
+        $response->assertStatus(200);
+
+        // Assert draft version is created.
+        $this->assertEquals(1, $process->versions()->draft()->count());
+
+        // Discard the draft.
+        $url = route('api.processes.close', ['process' => $process]);
+        $response = $this->apiCall('POST', $url, $params);
+
+        // Assert draft version is deleted.
+        $this->assertEquals(0, $process->versions()->draft()->count());
+    }
 }
