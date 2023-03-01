@@ -16,8 +16,7 @@
       <template v-if="countCategories">
         <b-row>
           <b-col cols="8" class="search-column">
-            <template-search-bar></template-search-bar>
-            <template-select></template-select>
+            <template-search></template-search>
           </b-col>
           <b-col>
         <required></required>
@@ -58,6 +57,13 @@
           name="category"
         ></category-select>
         <b-form-group
+          :label="$t('Process Manager')"
+        >
+          <select-user
+            :multiple="false"
+          ></select-user>
+        </b-form-group>
+        <!-- <b-form-group
           :label="$t('Upload BPMN File (optional)')"
           :invalid-feedback="errorMessage('bpmn', addError)"
           :state="errorState('bpmn', addError)"
@@ -70,7 +76,7 @@
             @change="onFileChange"
             :state="errorState('bpmn', addError)"
           ></b-form-file>
-        </b-form-group>
+        </b-form-group> -->
           </b-col>
         </b-row>
       </template>
@@ -86,11 +92,10 @@
 
 <script>
   import { FormErrorsMixin, Modal, Required } from "SharedComponents";
-  import TemplateSearchBar from "../templates/components/TemplateSearchBar.vue";
-  import TemplateSelect from "../templates/components/TemplateSelect.vue";
+  import TemplateSearch from "../templates/components/TemplateSearch.vue";
 
   export default {
-    components: { Modal, Required, TemplateSearchBar, TemplateSelect },
+    components: { Modal, Required, TemplateSearch },
     mixins: [ FormErrorsMixin ],
     props: ["countCategories"],
     data: function() {
