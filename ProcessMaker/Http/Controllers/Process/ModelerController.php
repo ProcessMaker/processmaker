@@ -26,6 +26,11 @@ class ModelerController extends Controller
          */
         event(new ModelerStarting($manager));
 
+        $draft = $process->versions()->where('draft', true)->first();
+        if ($draft) {
+            $process->fill($draft->only(['svg', 'bpmn']));
+        }
+
         return view('processes.modeler.index', [
             'process' => $process->append('notifications', 'task_notifications'),
             'manager' => $manager,
