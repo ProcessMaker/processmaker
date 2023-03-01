@@ -52,7 +52,7 @@ class ProcessTest extends TestCase
         // Create some processes
         $countProcesses = 20;
         Process::factory()->count($countProcesses)->create();
-        //Get a page of processes
+        // Get a page of processes
         $page = 2;
         $perPage = 10;
         $this->assertCorrectModelListing(
@@ -89,7 +89,7 @@ class ProcessTest extends TestCase
         $process = Process::factory()->create(['bpmn' => $bpmn]);
         $process->usersCanStart('StartEventUID')->attach($this->user->id);
 
-        //Get a page of processes
+        // Get a page of processes
         $page = 1;
         $perPage = 10;
         $this->assertCorrectModelListing(
@@ -115,7 +115,7 @@ class ProcessTest extends TestCase
             'is_administrator' => false,
         ]);
 
-        //Create default All Users group
+        // Create default All Users group
         $group = Group::factory()->create([
             'name' => 'Test Group',
             'status' => 'ACTIVE',
@@ -123,7 +123,7 @@ class ProcessTest extends TestCase
         $group->save();
         $group->refresh();
 
-        //Add user to group
+        // Add user to group
         GroupMember::factory()->create([
             'member_id' => $this->user->id,
             'member_type' => User::class,
@@ -143,7 +143,7 @@ class ProcessTest extends TestCase
         $process = Process::factory()->create(['bpmn' => $bpmn]);
         $process->groupsCanStart('StartEventUID')->attach($group->id);
 
-        //Get a page of processes
+        // Get a page of processes
         $page = 1;
         $perPage = 10;
         $this->assertCorrectModelListing(
@@ -165,7 +165,7 @@ class ProcessTest extends TestCase
     {
         ProcessRequest::query()->delete();
 
-        //get process with start event
+        // get process with start event
         $file = Process::getProcessTemplatesPath() . '/SingleTask.bpmn';
         $bpmn = file_get_contents($file);
 
@@ -202,7 +202,7 @@ class ProcessTest extends TestCase
     {
         ProcessRequest::query()->delete();
 
-        //get process with start event
+        // get process with start event
         $startSingleEventFile = Process::getProcessTemplatesPath() . '/StartSingleEvent.bpmn';
         $startTimerEventFile = Process::getProcessTemplatesPath() . '/StartTimerEvent.bpmn';
         $startConditionalEventFile = Process::getProcessTemplatesPath() . '/StartConditionalEvent.bpmn';
@@ -254,7 +254,7 @@ class ProcessTest extends TestCase
     {
         ProcessRequest::query()->delete();
 
-        //get process with start event
+        // get process with start event
         $startSingleEventFile = Process::getProcessTemplatesPath() . '/StartSingleEvent.bpmn';
         $startTimerEventFile = Process::getProcessTemplatesPath() . '/StartTimerEvent.bpmn';
         $startConditionalEventFile = Process::getProcessTemplatesPath() . '/StartConditionalEvent.bpmn';
@@ -329,7 +329,7 @@ class ProcessTest extends TestCase
 
         $responseData = $response->getData()->data;
 
-        //just the process with assignment as process manager and the process assigned to the user should be returned
+        // just the process with assignment as process manager and the process assigned to the user should be returned
         $this->assertEquals(count($responseData), 2);
         $this->assertTrue(in_array($responseData[0]->id, [$processWithManager->id, $processAssigned->id]));
         $this->assertTrue(in_array($responseData[1]->id, [$processWithManager->id, $processAssigned->id]));
@@ -499,7 +499,7 @@ class ProcessTest extends TestCase
         Process::factory()->count($processInactive['num'])->create(['status' => $processInactive['status']]);
         Process::factory()->count($processArchived['num'])->create(['status' => $processArchived['status']]);
 
-        //Get active processes
+        // Get active processes
         $response = $this->assertCorrectModelListing(
             '?status=active&include=category&per_page=' . $perPage,
             [
@@ -508,10 +508,10 @@ class ProcessTest extends TestCase
                 'per_page' => $perPage,
             ]
         );
-        //verify include
+        // verify include
         $response->assertJsonStructure(['*' => ['category']], $response->json('data'));
 
-        //Get active processes
+        // Get active processes
         $response = $this->assertCorrectModelListing(
             '?status=archived&include=category,user&per_page=' . $perPage,
             [
@@ -520,7 +520,7 @@ class ProcessTest extends TestCase
                 'per_page' => $perPage,
             ]
         );
-        //verify include
+        // verify include
         $response->assertJsonStructure(['*' => ['category', 'user']], $response->json('data'));
     }
 
@@ -539,17 +539,17 @@ class ProcessTest extends TestCase
             'description' => 'yyyyy',
         ]);
 
-        //Test the list sorted by name returns as first row {"name": "aaaaaa"}
+        // Test the list sorted by name returns as first row {"name": "aaaaaa"}
         $this->assertModelSorting('?order_by=name&order_direction=asc', [
             'name' => 'aaaaaa',
         ]);
 
-        //Test the list sorted desc returns as first row {"name": "zzzzz"}
+        // Test the list sorted desc returns as first row {"name": "zzzzz"}
         $this->assertModelSorting('?order_by=name&order_direction=DESC', [
             'name' => 'zzzzz',
         ]);
 
-        //Test the list sorted by description in desc returns as first row {"description": "yyyyy"}
+        // Test the list sorted by description in desc returns as first row {"description": "yyyyy"}
         $this->assertModelSorting('?order_by=description&order_direction=desc', [
             'description' => 'yyyyy',
         ]);
@@ -583,7 +583,7 @@ class ProcessTest extends TestCase
      */
     public function testProcessCreation()
     {
-        //Create a process without category
+        // Create a process without category
         $this->assertModelCreationFails(
             Process::class,
             [
@@ -592,7 +592,7 @@ class ProcessTest extends TestCase
             ]
         );
 
-        //Create a process without sending the category
+        // Create a process without sending the category
         $this->assertCorrectModelCreation(
             Process::class,
             [
@@ -602,7 +602,7 @@ class ProcessTest extends TestCase
             ]
         );
 
-        //Create a process with a category
+        // Create a process with a category
         $category = ProcessCategory::factory()->create();
         $this->assertCorrectModelCreation(
             Process::class,
@@ -625,7 +625,7 @@ class ProcessTest extends TestCase
             'process_category_id' => static::$DO_NOT_SEND,
         ]);
         $array = array_diff($base->toArray(), [static::$DO_NOT_SEND]);
-        //Add a bpmn content
+        // Add a bpmn content
         $array['bpmn'] = trim(Process::getProcessTemplate('OnlyStartElement.bpmn'));
         $response = $this->apiCall('POST', $route, $array);
         $response->assertStatus(201);
@@ -640,7 +640,7 @@ class ProcessTest extends TestCase
      */
     public function testCreateProcessFieldsValidation()
     {
-        //Test to create a process with an empty name
+        // Test to create a process with an empty name
         $this->assertModelCreationFails(
             Process::class,
             [
@@ -648,13 +648,13 @@ class ProcessTest extends TestCase
                 'user_id' => static::$DO_NOT_SEND,
                 'process_category_id' => static::$DO_NOT_SEND,
             ],
-            //Fields that should fail
+            // Fields that should fail
             [
                 'name',
             ]
         );
 
-        //Test to create a process with duplicate name
+        // Test to create a process with duplicate name
         $name = 'Some name';
         Process::factory()->create(['name' => $name]);
         $this->assertModelCreationFails(
@@ -664,20 +664,20 @@ class ProcessTest extends TestCase
                 'user_id' => static::$DO_NOT_SEND,
                 'process_category_id' => static::$DO_NOT_SEND,
             ],
-            //Fields that should fail
+            // Fields that should fail
             [
                 'name',
             ]
         );
 
-        //Test to create a process with a process category id that does not exist
+        // Test to create a process with a process category id that does not exist
         $this->assertModelCreationFails(
             Process::class,
             [
                 'user_id' => static::$DO_NOT_SEND,
                 'process_category_id' => 'id-not-exists',
             ],
-            //Fields that should fail
+            // Fields that should fail
             [
                 'process_category_id',
             ]
@@ -695,10 +695,10 @@ class ProcessTest extends TestCase
             'process_category_id' => static::$DO_NOT_SEND,
         ]);
         $array = array_diff($base->toArray(), [static::$DO_NOT_SEND]);
-        //Add a bpmn content
+        // Add a bpmn content
         $array['bpmn'] = trim(Process::getProcessTemplate('ProcessWithErrors.bpmn'));
         $response = $this->apiCall('POST', $route, $array);
-        //A validation error should be displayed
+        // A validation error should be displayed
         $response->assertStatus(422);
     }
 
@@ -713,10 +713,10 @@ class ProcessTest extends TestCase
             'process_category_id' => static::$DO_NOT_SEND,
         ]);
         $array = array_diff($base->toArray(), [static::$DO_NOT_SEND]);
-        //Add a bpmn content
+        // Add a bpmn content
         $array['bpmn'] = 'foo';
         $response = $this->apiCall('POST', $route, $array);
-        //A validation error should be displayed
+        // A validation error should be displayed
         $response->assertStatus(422);
     }
 
@@ -727,22 +727,22 @@ class ProcessTest extends TestCase
     {
         $this->markTestSkipped('FOUR-6653');
 
-        //Create a new process without category
+        // Create a new process without category
         $process = Process::factory()->create([
             'process_category_id' => null,
         ]);
 
-        //Test that is correctly displayed
+        // Test that is correctly displayed
         $this->assertModelShow($process->id, []);
 
-        //Test that is correctly displayed with null category
+        // Test that is correctly displayed with null category
         $this->assertModelShow($process->id, ['category'])
             ->assertJsonFragment(['category' => []]);
 
-        //Create a new process with category
+        // Create a new process with category
         $process = Process::factory()->create();
 
-        //Test that is correctly displayed including category and user
+        // Test that is correctly displayed including category and user
         $this->assertModelShow($process->id, ['category', 'user']);
     }
 
@@ -751,10 +751,10 @@ class ProcessTest extends TestCase
      */
     public function testUpdateProcess()
     {
-        //Seeder Permissions
+        // Seeder Permissions
         (new PermissionSeeder())->run($this->user);
 
-        //Test to update name process
+        // Test to update name process
         $name = $this->faker->sentence(3);
         $this->assertModelUpdate(
             Process::class,
@@ -772,10 +772,10 @@ class ProcessTest extends TestCase
      */
     public function testUpdateProcessWithCategoryNull()
     {
-        //Seeder Permissions
+        // Seeder Permissions
         (new PermissionSeeder())->run($this->user);
 
-        //Test update process category to null
+        // Test update process category to null
         $this->assertModelUpdateFails(
             Process::class,
             [
@@ -792,10 +792,10 @@ class ProcessTest extends TestCase
      */
     public function testUpdateProcessWithCategory()
     {
-        //Seeder Permissions
+        // Seeder Permissions
         (new PermissionSeeder())->run($this->user);
 
-        //Test update process category
+        // Test update process category
         $this->assertModelUpdate(
             Process::class,
             [
@@ -812,7 +812,7 @@ class ProcessTest extends TestCase
      */
     public function testUpdateProcessFails()
     {
-        //Test to update name and description if required
+        // Test to update name and description if required
         $this->assertModelUpdateFails(
             Process::class,
             [
@@ -827,7 +827,7 @@ class ProcessTest extends TestCase
             ]
         );
 
-        //Test update process category of null
+        // Test update process category of null
         $this->assertModelUpdateFails(
             Process::class,
             [
@@ -839,7 +839,7 @@ class ProcessTest extends TestCase
             ]
         );
 
-        //Test validate name is unique
+        // Test validate name is unique
         $name = 'Some name';
         Process::factory()->create(['name' => $name]);
         $this->assertModelUpdateFails(
@@ -860,7 +860,7 @@ class ProcessTest extends TestCase
      */
     public function testUpdateBPMN()
     {
-        //Seeder Permissions
+        // Seeder Permissions
         (new PermissionSeeder())->run($this->user);
 
         $process = Process::factory()->create([
@@ -874,7 +874,7 @@ class ProcessTest extends TestCase
             'description' => 'test description',
             'bpmn' => $newBpmn,
         ]);
-        //validate status
+        // validate status
         $this->assertStatus(200, $response);
         $response->assertJsonStructure($this->structure);
         $updatedProcess = Process::where('id', $id)->first();
@@ -893,7 +893,7 @@ class ProcessTest extends TestCase
         $response = $this->apiCall('PUT', $route, [
             'bpmn' => $newBpmn,
         ]);
-        //validate status
+        // validate status
         $this->assertStatus(422, $response);
         $response->assertJsonStructure($this->errorStructure);
     }
@@ -1056,7 +1056,7 @@ class ProcessTest extends TestCase
             'process_category_id' => static::$DO_NOT_SEND,
         ]);
         $array = array_diff($base->toArray(), [static::$DO_NOT_SEND]);
-        //Add a bpmn content
+        // Add a bpmn content
         $array['bpmn'] = file_get_contents(__DIR__ . '/processes/C.4.0-export.bpmn');
         $response = $this->apiCall('POST', $route, $array);
         $response->assertStatus(422);

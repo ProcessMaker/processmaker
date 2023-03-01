@@ -181,7 +181,7 @@ class ProcessController extends Controller
     {
         $request->validate(Process::rules());
         $data = $request->all();
-        //Validate if exists file bpmn
+        // Validate if exists file bpmn
         if ($request->has('file')) {
             $data['bpmn'] = $request->file('file')->get();
             $request->request->add(['bpmn' => $data['bpmn']]);
@@ -200,7 +200,7 @@ class ProcessController extends Controller
         $process = new Process();
         $process->fill($data);
 
-        //set current user
+        // set current user
         $process->user_id = Auth::user()->id;
 
         if (isset($data['bpmn'])) {
@@ -265,7 +265,7 @@ class ProcessController extends Controller
     {
         $request->validate(Process::rules($process));
 
-        //bpmn validation
+        // bpmn validation
         if ($schemaErrors = $this->validateBpmn($request)) {
             $warnings = [];
             foreach ($schemaErrors as $error) {
@@ -286,22 +286,22 @@ class ProcessController extends Controller
             $process->manager_id = $request->input('manager_id', null);
         }
 
-        //If we are specifying cancel assignments...
+        // If we are specifying cancel assignments...
         if ($request->has('cancel_request')) {
             $this->cancelRequestAssignment($process, $request);
         }
 
-        //If we are specifying edit data assignments...
+        // If we are specifying edit data assignments...
         if ($request->has('edit_data')) {
             $this->editDataAssignments($process, $request);
         }
 
-        //Save any request notification settings...
+        // Save any request notification settings...
         if ($request->has('notifications')) {
             $this->saveRequestNotifications($process, $request);
         }
 
-        //Save any task notification settings...
+        // Save any task notification settings...
         if ($request->has('task_notifications')) {
             $this->saveTaskNotifications($process, $request);
         }
@@ -324,13 +324,13 @@ class ProcessController extends Controller
     {
         $cancelRequest = $request->input('cancel_request');
 
-        //Adding method to users array
+        // Adding method to users array
         $cancelUsers = [];
         foreach ($cancelRequest['users'] as $item) {
             $cancelUsers[$item] = ['method' => 'CANCEL'];
         }
 
-        //Adding method to groups array
+        // Adding method to groups array
         $cancelGroups = [];
         foreach ($cancelRequest['groups'] as $item) {
             $cancelGroups[$item] = ['method' => 'CANCEL'];
@@ -344,45 +344,45 @@ class ProcessController extends Controller
             }
         }
 
-        //Syncing users and groups that can cancel this process
+        // Syncing users and groups that can cancel this process
         $process->usersCanCancel()->sync($cancelUsers, ['method' => 'CANCEL']);
         $process->groupsCanCancel()->sync($cancelGroups, ['method' => 'CANCEL']);
     }
 
     private function editDataAssignments(Process $process, Request $request)
     {
-        //Adding method to users array
+        // Adding method to users array
         $editDataUsers = [];
         foreach ($request->input('edit_data')['users'] as $item) {
             $editDataUsers[$item] = ['method' => 'EDIT_DATA'];
         }
 
-        //Adding method to groups array
+        // Adding method to groups array
         $editDataGroups = [];
         foreach ($request->input('edit_data')['groups'] as $item) {
             $editDataGroups[$item] = ['method' => 'EDIT_DATA'];
         }
 
-        //Syncing users and groups that can cancel this process
+        // Syncing users and groups that can cancel this process
         $process->usersCanEditData()->sync($editDataUsers, ['method' => 'EDIT_DATA']);
         $process->groupsCanEditData()->sync($editDataGroups, ['method' => 'EDIT_DATA']);
     }
 
     private function saveRequestNotifications($process, $request)
     {
-        //Retrieve input
+        // Retrieve input
         $input = $request->input('notifications');
 
-        //For each notifiable type...
+        // For each notifiable type...
         foreach ($process->requestNotifiableTypes as $notifiable) {
-            //And for each notification type...
+            // And for each notification type...
             foreach ($process->requestNotificationTypes as $notification) {
-                //If this input has been set
+                // If this input has been set
                 if (isset($input[$notifiable][$notification])) {
-                    //Determine if this notification is wanted
+                    // Determine if this notification is wanted
                     $notificationWanted = filter_var($input[$notifiable][$notification], FILTER_VALIDATE_BOOLEAN);
 
-                    //If we want the notification, find or create it
+                    // If we want the notification, find or create it
                     if ($notificationWanted === true) {
                         $process->notification_settings()->firstOrCreate([
                             'element_id' => null,
@@ -391,7 +391,7 @@ class ProcessController extends Controller
                         ]);
                     }
 
-                    //If we do not want the notification, delete it
+                    // If we do not want the notification, delete it
                     if ($notificationWanted === false) {
                         $process->notification_settings()
                             ->whereNull('element_id')
@@ -465,21 +465,21 @@ class ProcessController extends Controller
 
     private function saveTaskNotifications($process, $request)
     {
-        //Retrieve input
+        // Retrieve input
         $inputs = $request->input('task_notifications');
 
-        //For each node...
+        // For each node...
         foreach ($inputs as $nodeId => $input) {
-            //For each notifiable type...
+            // For each notifiable type...
             foreach ($process->taskNotifiableTypes as $notifiable) {
-                //And for each notification type...
+                // And for each notification type...
                 foreach ($process->taskNotificationTypes as $notification) {
-                    //If this input has been set
+                    // If this input has been set
                     if (isset($input[$notifiable][$notification])) {
-                        //Determine if this notification is wanted
+                        // Determine if this notification is wanted
                         $notificationWanted = filter_var($input[$notifiable][$notification], FILTER_VALIDATE_BOOLEAN);
 
-                        //If we want the notification, find or create it
+                        // If we want the notification, find or create it
                         if ($notificationWanted === true) {
                             $process->notification_settings()->firstOrCreate([
                                 'element_id' => $nodeId,
@@ -488,7 +488,7 @@ class ProcessController extends Controller
                             ]);
                         }
 
-                        //If we do not want the notification, delete it
+                        // If we do not want the notification, delete it
                         if ($notificationWanted === false) {
                             $process->notification_settings()
                                 ->where('element_id', $nodeId)
@@ -949,11 +949,11 @@ class ProcessController extends Controller
      */
     public function importAssignments(Process $process, Request $request)
     {
-        //If we are specifying assignments...
+        // If we are specifying assignments...
         if ($request->has('assignable')) {
             $assignable = $request->input('assignable');
 
-            //Update assignments in scripts
+            // Update assignments in scripts
             $xmlAssignable = [];
             $callActivity = [];
             $watcherDataSources = [];
@@ -970,7 +970,7 @@ class ProcessController extends Controller
                 }
             }
 
-            //Update assignments in start Events, task, user Tasks
+            // Update assignments in start Events, task, user Tasks
             $definitions = $process->getDefinitions();
             $tags = ['startEvent', 'task', 'userTask', 'manualTask'];
             foreach ($tags as $tag) {
@@ -1000,7 +1000,7 @@ class ProcessController extends Controller
                 }
             }
 
-            //Update assignments call Activity
+            // Update assignments call Activity
             if ($callActivity) {
                 $elements = $definitions->getElementsByTagName('callActivity');
                 foreach ($elements as $element) {
@@ -1031,22 +1031,22 @@ class ProcessController extends Controller
             $process->bpmn = $definitions->saveXML();
         }
 
-        //If we are specifying cancel assignments...
+        // If we are specifying cancel assignments...
         if ($request->has('cancel_request')) {
             $this->cancelRequestAssignment($process, $request);
         }
 
-        //If we are specifying edit data assignments...
+        // If we are specifying edit data assignments...
         if ($request->has('edit_data')) {
             $this->editDataAssignments($process, $request);
         }
 
-        //If we are specifying a manager id
+        // If we are specifying a manager id
         if ($request->has('manager_id')) {
             $process->manager_id = $request->input('manager_id');
         }
 
-        //If we are specifying a status
+        // If we are specifying a status
         if ($request->has('status')) {
             $process->status = $request->input('status');
         }
@@ -1106,7 +1106,7 @@ class ProcessController extends Controller
      */
     public function triggerStartEvent(Process $process, Request $request)
     {
-        //Get the event BPMN element
+        // Get the event BPMN element
         $id = $request->query('event');
         if (!$id) {
             return abort(404);
