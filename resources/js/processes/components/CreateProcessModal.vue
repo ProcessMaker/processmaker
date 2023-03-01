@@ -3,8 +3,23 @@
     <b-button :aria-label="$t('Create Process')" v-b-modal.createProcess class="mb-3 mb-md-0 ml-md-2">
       <i class="fas fa-plus"></i> {{ $t('Process') }}
     </b-button>
-    <modal id="createProcess" :title="$t('Create Process')" :ok-disabled="disabled" @ok.prevent="onSubmit" @hidden="onClose">
+    <modal 
+      id="createProcess"
+      size="huge"
+      :title="$t('Create Process')"
+      :ok-disabled="disabled"
+      :setCustomButtons="true"
+      :customButtons="customModalButtons"
+      @ok.prevent="onSubmit"
+      @hidden="onClose"
+    >
       <template v-if="countCategories">
+        <b-row>
+          <b-col cols="8" class="search-column">
+            <template-search-bar></template-search-bar>
+            <template-select></template-select>
+          </b-col>
+          <b-col>
         <required></required>
         <b-form-group
           required
@@ -56,6 +71,8 @@
             :state="errorState('bpmn', addError)"
           ></b-form-file>
         </b-form-group>
+          </b-col>
+        </b-row>
       </template>
       <template v-else>
         <div>{{ $t('Categories are required to create a process') }}</div>
@@ -69,9 +86,11 @@
 
 <script>
   import { FormErrorsMixin, Modal, Required } from "SharedComponents";
+  import TemplateSearchBar from "../templates/components/TemplateSearchBar.vue";
+  import TemplateSelect from "../templates/components/TemplateSelect.vue";
 
   export default {
-    components: { Modal, Required },
+    components: { Modal, Required, TemplateSearchBar, TemplateSelect },
     mixins: [ FormErrorsMixin ],
     props: ["countCategories"],
     data: function() {
@@ -85,7 +104,11 @@
         addError: {},
         status: "",
         bpmn: "",
-        disabled: false
+        disabled: false,
+        customModalButtons: [
+            {'content': 'Cancel', 'action': 'hide()', 'variant': 'outline-secondary', 'disabled': false, 'hidden': false},
+            {'content': 'Create', 'action': 'createTemplate', 'variant': 'primary', 'disabled': false, 'hidden': false},
+        ],
       }
     },
     methods: {
@@ -154,3 +177,9 @@
     }
   };
 </script>
+
+<style scoped>
+  .search-column {
+    border-right: 1px solid #b6bfc6;
+  }
+</style>
