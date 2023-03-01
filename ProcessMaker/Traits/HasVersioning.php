@@ -37,29 +37,39 @@ trait HasVersioning
     }
 
     /**
-     * Get the drafts for the model.
-     */
-    public function scopeDraft($query)
-    {
-        $query->whereHas('versions', function ($query) {
-            $query->where('draft', true);
-        });
-    }
-
-    /**
      * Save a new version of a model
-     *
-     * @param Model $model
      */
-    public static function saveNewVersion($model)
+    public static function saveNewVersion(Model $model)
     {
         $model->saveVersion();
     }
 
     /**
-     * Save a version of the model
+     * Save a published version of the model.
      */
     public function saveVersion()
+    {
+        $attributes = $this->getModelAttributes();
+        $this->versions()->create($attributes);
+
+        // Delete draft version.
+        $this->versions()->where('draft', true)->delete();
+    }
+
+    /**
+     * Save a draft version of the model
+     */
+    public function saveDraft()
+    {
+        $attributes = $this->getModelAttributes();
+        $attributes['draft'] = true;
+
+        $this->versions()->updateOrCreate([
+            'draft' => true,
+        ], $attributes);
+    }
+
+    private function getModelAttributes(): array
     {
         $attributes = $this->attributesToArray();
         foreach ($this->hidden as $field) {
@@ -70,7 +80,8 @@ trait HasVersioning
             $attributes['updated_at'],
             $attributes['created_at'],
             $attributes['has_timer_start_events']);
-        $this->versions()->create($attributes);
+
+        return $attributes;
     }
 
     /**

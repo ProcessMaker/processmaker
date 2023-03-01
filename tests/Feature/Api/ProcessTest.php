@@ -1130,4 +1130,32 @@ class ProcessTest extends TestCase
         $process->refresh();
         $this->assertFalse($process->properties['manager_can_cancel_request']);
     }
+
+    public function testUpdateProcessVersions()
+    {
+        $process = Process::factory()->create();
+        $url = route('api.processes.update', ['process' => $process]);
+        $params = [
+            'name' => 'Process',
+            'description' => 'Description',
+            'is_draft' => true,
+        ];
+
+        $response = $this->apiCall('PUT', $url, $params);
+        $response->assertStatus(200);
+
+        // Assert draft version is created.
+        $this->assertEquals(1, $process->versions()->where('draft', true)->count());
+
+        // Publish.
+        $params = [
+            'name' => 'Process',
+            'description' => 'Description',
+            'is_draft' => false,
+        ];
+        $response = $this->apiCall('PUT', $url, $params);
+
+        // Delete the draft after the item is published.
+        $this->assertEquals(0, $process->versions()->where('draft', true)->count());
+    }
 }

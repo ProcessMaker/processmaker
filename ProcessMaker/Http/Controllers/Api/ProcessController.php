@@ -281,7 +281,7 @@ class ProcessController extends Controller
             $process->warnings = null;
         }
 
-        $process->fill($request->except('notifications', 'task_notifications', 'notification_settings', 'cancel_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id'));
+        $process->fill($request->except('notifications', 'task_notifications', 'notification_settings', 'cancel_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id', 'is_draft'));
         if ($request->has('manager_id')) {
             $process->manager_id = $request->input('manager_id', null);
         }
@@ -308,7 +308,14 @@ class ProcessController extends Controller
 
         // Catch errors to send more specific status
         try {
-            $process->saveOrFail();
+            if ($request->input('is_draft', false)) {
+                $process->withoutEvents(function () use ($process) {
+                    $process->saveOrFail();
+                    $process->saveDraft();
+                });
+            } else {
+                $process->saveOrFail();
+            }
         } catch (TaskDoesNotHaveUsersException $e) {
             return response(
                 ['message' => $e->getMessage(),
