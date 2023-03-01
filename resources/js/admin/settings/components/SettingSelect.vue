@@ -2,14 +2,14 @@
     <div class="setting-text">
       <div v-if="input === null || !input.length" class="font-italic text-black-50">
         Empty
-        <b-badge v-if="hasAuthorizedBadge" pill :variant="setting.ui.authorizedBadge ? 'success' : 'secondary'">
+        <b-badge v-if="hasAuthorizedBadge" pill :variant="setting.ui.authorizedBadge ? 'success' : 'warning'">
            <span v-if="setting.ui.authorizedBadge">{{ $t('Authorized') }}</span>
            <span v-else>{{ $t('Not Authorized') }}</span>
          </b-badge>
       </div>
       <div v-else>
         {{ display }}
-         <b-badge v-if="hasAuthorizedBadge" pill :variant="setting.ui.authorizedBadge ? 'success' : 'secondary'">
+         <b-badge v-if="hasAuthorizedBadge" pill :variant="setting.ui.authorizedBadge ? 'success' : 'warning'">
            <span v-if="setting.ui.authorizedBadge">{{ $t('Authorized') }}</span>
            <span v-else>{{ $t('Not Authorized') }}</span>
          </b-badge>
