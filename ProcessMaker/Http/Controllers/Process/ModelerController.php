@@ -26,7 +26,7 @@ class ModelerController extends Controller
          */
         event(new ModelerStarting($manager));
 
-        $draft = $process->versions()->where('draft', true)->first();
+        $draft = $process->versions()->draft()->first();
         if ($draft) {
             $process->fill($draft->only(['svg', 'bpmn']));
         }

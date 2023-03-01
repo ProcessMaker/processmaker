@@ -1145,7 +1145,7 @@ class ProcessTest extends TestCase
         $response->assertStatus(200);
 
         // Assert draft version is created.
-        $this->assertEquals(1, $process->versions()->where('draft', true)->count());
+        $this->assertEquals(1, $process->versions()->draft()->count());
 
         // Publish.
         $params = [
@@ -1156,6 +1156,6 @@ class ProcessTest extends TestCase
         $response = $this->apiCall('PUT', $url, $params);
 
         // Delete the draft after the item is published.
-        $this->assertEquals(0, $process->versions()->where('draft', true)->count());
+        $this->assertEquals(0, $process->versions()->draft()->count());
     }
 }

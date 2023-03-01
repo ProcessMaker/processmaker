@@ -1265,14 +1265,6 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     }
 
     /**
-     * Get the latest version of the process
-     */
-    public function getLatestVersion()
-    {
-        return $this->versions()->orderBy('id', 'desc')->first();
-    }
-
-    /**
      * Check if process is valid for execution
      *
      * @return bool

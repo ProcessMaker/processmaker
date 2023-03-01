@@ -53,7 +53,7 @@ trait HasVersioning
         $this->versions()->create($attributes);
 
         // Delete draft version.
-        $this->versions()->where('draft', true)->delete();
+        $this->versions()->draft()->delete();
     }
 
     /**
@@ -89,7 +89,7 @@ trait HasVersioning
      */
     public function getLatestVersion()
     {
-        return $this->versions()->orderBy('id', 'desc')->first();
+        return $this->versions()->orderBy('id', 'desc')->published()->first();
     }
 
     /**
