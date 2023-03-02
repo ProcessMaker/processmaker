@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+
 class ScriptExecutorVersion extends ProcessMakerModel
 {
     protected $fillable = [
