@@ -5,20 +5,12 @@
     </b-button>
     <modal 
       id="createProcess"
-      size="huge"
       :title="$t('Create Process')"
       :ok-disabled="disabled"
-      :setCustomButtons="true"
-      :customButtons="customModalButtons"
       @ok.prevent="onSubmit"
       @hidden="onClose"
     >
       <template v-if="countCategories">
-        <b-row>
-          <b-col cols="8" class="search-column">
-            <template-search></template-search>
-          </b-col>
-          <b-col>
         <required></required>
         <b-form-group
           required
@@ -57,13 +49,6 @@
           name="category"
         ></category-select>
         <b-form-group
-          :label="$t('Process Manager')"
-        >
-          <select-user
-            :multiple="false"
-          ></select-user>
-        </b-form-group>
-        <!-- <b-form-group
           :label="$t('Upload BPMN File (optional)')"
           :invalid-feedback="errorMessage('bpmn', addError)"
           :state="errorState('bpmn', addError)"
@@ -76,9 +61,7 @@
             @change="onFileChange"
             :state="errorState('bpmn', addError)"
           ></b-form-file>
-        </b-form-group> -->
-          </b-col>
-        </b-row>
+        </b-form-group>
       </template>
       <template v-else>
         <div>{{ $t('Categories are required to create a process') }}</div>
