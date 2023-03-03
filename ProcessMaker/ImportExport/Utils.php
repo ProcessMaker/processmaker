@@ -89,28 +89,41 @@ class Utils
         $process->bpmn = $definitions->saveXml();
     }
 
-    public static function findScreenDependent($config, string $component, string $path)
+    public static function findScreenDependent($screenConfig, string $component, string $valuePath)
     {
-        if (!$config) {
+        if (!$screenConfig) {
             return [];
         }
 
         $matches = [];
-        foreach ($config as $page => $config) {
-            foreach ($config['items'] as $i => $item) {
-                if ($item['component'] === $component) {
-                    $value = Arr::get($item, $path);
-                    if ($value) {
-                        $matches[] = [
-                            'value' => $value,
-                            'path' => "${page}.items.${i}.${path}",
-                        ];
-                    }
-                }
-            }
+        foreach ($screenConfig as $page => $config) {
+            self::findItems($config['items'], $component, $valuePath, "{$page}.items", $matches);
         }
 
         return $matches;
+    }
+
+    private static function findItems($items, $component, $valuePath, $path, &$matches = [])
+    {
+        foreach ($items as $i => $item) {
+            $componentPath = "{$path}.{$i}";
+            if ($item['component'] === $component) {
+                $value = Arr::get($item, $valuePath);
+                if ($value) {
+                    $matches[] = [
+                        'value' => $value,
+                        'path' => "{$componentPath}.{$valuePath}",
+                        'component_path' => $componentPath,
+                    ];
+                }
+            } elseif ($item['component'] === 'FormMultiColumn') {
+                foreach ($item['items'] as $mci => $mcItems) {
+                    self::findItems($mcItems, $component, $valuePath, "{$componentPath}.items.{$mci}", $matches);
+                }
+            } elseif ($item['component'] === 'FormLoop') {
+                self::findItems($item['items'], $component, $valuePath, "{$componentPath}.items", $matches);
+            }
+        }
     }
 
     public static function getAssignments($model, $tags): array

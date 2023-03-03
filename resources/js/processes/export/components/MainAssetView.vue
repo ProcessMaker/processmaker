@@ -117,7 +117,6 @@ export default {
     "groups",
     "processId",
     "processInfo",
-    "existingAssets"
     ],
     components: {
         DataCard,
