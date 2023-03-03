@@ -10,6 +10,7 @@ use ProcessMaker\Http\Controllers\Api\FileController;
 use ProcessMaker\Http\Controllers\Api\GroupController;
 use ProcessMaker\Http\Controllers\Api\GroupMemberController;
 use ProcessMaker\Http\Controllers\Api\NotificationController;
+use ProcessMaker\Http\Controllers\Api\OpenAIController;
 use ProcessMaker\Http\Controllers\Api\PermissionController;
 use ProcessMaker\Http\Controllers\Api\ProcessCategoryController;
 use ProcessMaker\Http\Controllers\Api\ProcessController;
@@ -98,7 +99,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('scripts/{script}/preview', [ScriptController::class, 'preview'])->name('scripts.preview')->middleware('can:view-scripts');
     Route::post('scripts/execute/{script_id}/{script_key?}', [ScriptController::class, 'execute'])->name('scripts.execute');
     Route::get('scripts/execution/{key}', [ScriptController::class, 'execution'])->name('scripts.execution');
-    Route::post('scripts/openAi', [ScriptController::class, 'openAi'])->name('scripts.openAi');
+    Route::post('openai/npl-to-pmql', [OpenAIController::class, 'NPLToPMQL'])->name('openai.npl-to-pmql');
 
     // Script Categories
     Route::get('script_categories', [ScriptCategoryController::class, 'index'])->name('script_categories.index')->middleware('can:view-script-categories');
