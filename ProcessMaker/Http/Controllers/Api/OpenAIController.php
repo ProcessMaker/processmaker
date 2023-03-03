@@ -9,7 +9,6 @@ use ProcessMaker\OpenAI\OpenAIHelper;
 
 class OpenAIController extends Controller
 {
-
     public function NPLToPMQL(Client $client, Request $request)
     {
         $question = $request->input('question');

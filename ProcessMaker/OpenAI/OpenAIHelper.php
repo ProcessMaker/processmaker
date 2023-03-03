@@ -11,6 +11,7 @@ class OpenAIHelper
     public static function readPromptFromFile($fileName)
     {
         $promptContent = file_get_contents(self::PROMPTS_PATH . '/Prompts/' . $fileName);
+
         return $promptContent;
     }
 
@@ -25,7 +26,7 @@ class OpenAIHelper
 
     public static function getNPLToPMQLConfig(String $prompt, String $question)
     {
-        $stop = "END_";
+        $stop = 'END_';
         $prompt = self::formatPromptForNPLToPMQL($prompt, $question, $stop);
         $model = 'code-davinci-002';
 
@@ -36,7 +37,7 @@ class OpenAIHelper
             'temperature' => 0,
             'top_p' => 1,
             'n' => 1,
-            'stop' => $stop
+            'stop' => $stop,
         ];
     }
 
@@ -47,7 +48,7 @@ class OpenAIHelper
         $result = explode('Question:', $result)[0];
         $result = rtrim(rtrim(str_replace("\n", '', $result)));
         $result = str_replace('\'', '', $result);
+
         return $result;
     }
-
 }
