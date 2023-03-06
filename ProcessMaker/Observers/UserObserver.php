@@ -10,17 +10,8 @@ use ProcessMaker\Models\User;
 class UserObserver
 {
     /**
-     * Handle the user "creating" event.
-     */
-    public function creating(User $user)
-    {
-        $user->setTimezoneAttribute();
-    }
-
-    /**
      * Handle the user "deleting" event.
      *
-     * @param User $user
      * @throws ReferentialIntegrityException
      */
     public function deleting(User $user)
