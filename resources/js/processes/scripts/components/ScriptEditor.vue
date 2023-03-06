@@ -6,18 +6,6 @@
       <b-card-body class="overflow-hidden p-4" ref="editorContainer">
         <b-row class="h-100">
           <b-col cols="9" class="h-100 p-0">
-
-            <div class="input-group mb-3">
-                <input type="text" class="form-control" v-model="openAiText" placeholder="Enter a human term">
-                <div class="input-group-append">
-                    <button class="btn btn-primary" type="button" @click="runOpenAi">RUN AI</button>
-                </div>
-            </div>
-
-            <h5 class="text-center pt-0 pb-2" v-if="loading">
-                <i class="fas fa-cog fa-spin text-secondary"></i> The AI is thinking for you...
-            </h5>
-
             <monaco-editor
               :options="monacoOptions"
               v-model="code"
@@ -165,8 +153,6 @@ export default {
     ];
 
     return {
-      openAiText: "",
-      loading: false,
       executionKey: null,
       resizing: false,
       monacoOptions: {
@@ -231,15 +217,6 @@ export default {
       const domNode = this.editorReference.getDomNode();
       const clientHeight =  this.$refs.editorContainer.clientHeight;
       domNode.style.height = clientHeight.toString() + 'px';
-    },
-    runOpenAi() {
-      this.loading = true;
-      ProcessMaker.apiClient.post("scripts/openAi", {
-        text: this.openAiText,
-      }).then((response) => {
-        this.code = `<?php \n\n${response.data.result}`;
-        this.loading = false;
-      });
     },
     outputResponse(response) {
       if (response.nonce !== this.nonce) {
