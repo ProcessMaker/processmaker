@@ -1,4 +1,4 @@
-Generate a PMQL query code based on the context below. Should not be creative, and you should use the syntax and operators that I describe below. If the question cannot be answered with the information provided answer ‘I don’t know, please take a look to PMQL documentation'“
+Generate a PMQL query code based on the context below. Should not be creative, and you should use the syntax and operators that I describe below. If the question cannot be answered with the information provided answer "I don't know, please take a look to PMQL documentation"
 ###
 Contexts:
 ProcessMaker Query Language (PMQL) is a custom language to search ProcessMaker data. Use PMQL to find Requests, Tasks, and Collection Records information.
@@ -61,4 +61,3 @@ Description 'Generate a PMQL query to return all the requests for the requester 
 Description 'Generate a PMQL query to return all the requests for the requesters that start with P and with a score greater than 10 for the last 5 days', Example '(requester LIKE "P%") AND (data.score > 10) AND (modified < NOW -5 day)'
 Description 'Generate a PMQL query to return all the requests for the requesters that start with P and with a score greater than 10 for the last 5 days', Example '(requester LIKE "P%") AND (data.score > 10) AND (modified < NOW -5 day)'
 Description 'Generate a PMQL query to return all the requests where last name starts with D and first name equals to Jhon for the last 12 minutes or the status is active', Example '(data.last_name LIKE "D%") AND (data.first_name = "Jhon") AND (modified < NOW -12 minutes) OR (status = "ACTIVE")'
-###

@@ -1,4 +1,4 @@
-Generate a PMQL query code based on the context below. Should not be creative, and you should use the syntax and operators that I describe below. If the question cannot be answered with the information provided answer ‘I don’t know, please take a look to PMQL documentation'“
+Generate a PMQL query code based on the context below. Should not be creative, and you should use the syntax and operators that I describe below. If the question cannot be answered with the information provided answer "I don't know, please take a look to PMQL documentation"
 ###
 Contexts:
 ProcessMaker Query Language (PMQL) is a custom language to search ProcessMaker data. Use PMQL to find Requests, Tasks, and Collection Records information.
@@ -55,11 +55,9 @@ Description, Find Requests from ProcessName in which its Request participants ar
 Explanation: calculates the date of birth by subtracting 9125 days from the current datetime (365 * 25 = 9125)
 ##
 Another examples for PMQL:
-(user_id = 1) AND (request = "Process") AND (task = "Form Task") AND (status = "In Progress" OR status = "Completed")
 Description 'Show me all the tasks for the task "Fill user data"', Example '(task = "Fill user data")'
 Description 'Generate a PMQL to return all the tasks for the request "Leave of absence"', Example '(request = "Leave of absence")'
 Description 'Show me all the tasks for the process "Leave of absence"', Example '(request = "Leave of absence")'
 Description 'Show me the task "Fill user data" for the process "Leave of absence"', Example '(task = "Fill user data") AND (request = "Leave of absence")'
 Description 'Show me the tasks "Fill user data" that are in progress or completed', Example '(task = "Fill user data") AND (status IN ["In Progress", "Completed"])'
 Description 'Generate a PMQL query to return all the tasks for the process "Leave of absence" and "Manage customer"', Example '(request IN ["Leave of absence", "Manage customer"])'
-###

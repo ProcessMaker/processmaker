@@ -1,4 +1,4 @@
-Generate a PMQL query code based on the context below. Should not be creative, and you should use the syntax and operators that I describe below. If the question cannot be answered with the information provided answer ‘I don’t know, please take a look to PMQL documentation'“
+Generate a PMQL query code based on the context below. Should not be creative, and you should use the syntax and operators that I describe below. If the question cannot be answered with the information provided answer "I don't know, please take a look to PMQL documentation"
 
 
 ###
@@ -47,25 +47,25 @@ PMQL operators such as AND, OR, and LIKE are not case-sensitive. PMQL operators 
 
 Spaces are allowed between operators. Example: data.last_name = "Due"
 
-Description ‘Equal to’, Syntax '=', Example 'data.last_name = "Due"'
+Description 'Equal to', Syntax '=', Example 'data.last_name = "Due"'
 
-Description ‘Not equal to’, Syntax '!=', Example 'data.last_name != "Due"'
+Description 'Not equal to', Syntax '!=', Example 'data.last_name != "Due"'
 
-Description ‘Less than’, Syntax '<', Example 'data.score < 10'
+Description 'Less than', Syntax '<', Example 'data.score < 10'
 
-Description ‘Greater than’, Syntax '>', Example 'data.score > 10'
+Description 'Greater than', Syntax '>', Example 'data.score > 10'
 
-Description ‘Less than or equal to’, Syntax '<=', Example 'data.score <= 10'
+Description 'Less than or equal to', Syntax '<=', Example 'data.score <= 10'
 
-Description ‘Greater than or equal to’, Syntax '>=', Example 'data.score >= 10'
+Description 'Greater than or equal to', Syntax '>=', Example 'data.score >= 10'
 
-Description ‘Search multiple required properties (logical operator)’, Syntax 'AND', Example 'data.last_name = "Due" AND data.score > 2'
+Description 'Search multiple required properties (logical operator)', Syntax 'AND', Example 'data.last_name = "Due" AND data.score > 2'
 
-Description ‘Search for any of multiple properties (logical operator)’, Syntax 'OR', Example 'data.last_name = "Due" OR data.score > 2'
+Description 'Search for any of multiple properties (logical operator)', Syntax 'OR', Example 'data.last_name = "Due" OR data.score > 2'
 
-Description ‘Group multiple logical operators using parentheses’, Syntax '()', Example '(data.job_title = "product manager" OR data.job_title = "project manager") AND data.experience > 5'
+Description 'Group multiple logical operators using parentheses', Syntax '()', Example '(data.job_title = "product manager" OR data.job_title = "project manager") AND data.experience > 5'
 
-You can use the LIKE operator as pattern matching. Use the LIKE operator, then include wildcards % or _ within the quotation marks “ of your search parameter. Example ‘data.last_name LIKE "D%"' will return all records with last name starting with D. Example 'data.last_name LIKE "D__" will return all records with exactly 3 characters starting with D’
+You can use the LIKE operator as pattern matching. Use the LIKE operator, then include wildcards % or _ within the quotation marks " of your search parameter. Example 'data.last_name LIKE "D%"' will return all records with last name starting with D. Example 'data.last_name LIKE "D__" will return all records with exactly 3 characters starting with D'
 
 ##
 
@@ -136,16 +136,16 @@ Example 2, find Requests from ProcessName in which its Request participants are 
 
 Here are some examples on how to use PMQL:
 
-Example 1: Show me all the requests for requester Admin: '(requester = “Admin“)’
+Example 1: Show me all the requests for requester Admin: '(requester = "Admin")'
 
-Example 2: Generate a PMQL to return all the requests for the requester Admin: '(requester = “Admin“)’
+Example 2: Generate a PMQL to return all the requests for the requester Admin: '(requester = "Admin")'
 
-Example 3: Generate a PMQL query to return all the requests for the requester Admin and with a score greater than 10: '(requester = “Admin“) AND (data.score > 10)’
+Example 3: Generate a PMQL query to return all the requests for the requester Admin and with a score greater than 10: '(requester = "Admin") AND (data.score > 10)'
 
-Example 4: Generate a PMQL query to return all the requests for the requesters that start with P and with a score greater than 10 for the last 5 days: '(requester LIKE “P%) AND (data.score > 10) AND (modified < NOW -5 day)’
+Example 4: Generate a PMQL query to return all the requests for the requesters that start with P and with a score greater than 10 for the last 5 days: '(requester LIKE "P%") AND (data.score > 10) AND (modified < NOW -5 day)'
 
-Example 5: Generate a PMQL query to return all the requests for the requesters that start with P and with a score greater than 10 for the last 5 days: '(requester LIKE “P%) AND (data.score > 10) AND (modified < NOW -5 day)’
+Example 5: Generate a PMQL query to return all the requests for the requesters that start with P and with a score greater than 10 for the last 5 days: '(requester LIKE "P%") AND (data.score > 10) AND (modified < NOW -5 day)'
 
-Example 5: Generate a PMQL query to return all the requests where last name starts with D and first name equals to Jhon for the last 12 minutes or the status is active: '(data.last_name LIKE “D%) AND (data.first_name = "Jhon") AND (modified < NOW -12 minutes) OR (status = "ACTIVE")’
+Example 5: Generate a PMQL query to return all the requests where last name starts with D and first name equals to Jhon for the last 12 minutes or the status is active: '(data.last_name LIKE "D%") AND (data.first_name = "Jhon") AND (modified < NOW -12 minutes) OR (status = "ACTIVE")'
 
 ###
