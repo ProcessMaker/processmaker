@@ -111,6 +111,15 @@
               </b-btn>
               <b-btn
                       variant="link"
+                      @click="onAction('save-as-template', props.rowData, props.rowIndex)"
+                      v-b-tooltip.hover
+                      :title="$t('Save as Template')"
+                      v-uni-aria-describedby="props.rowData.id.toString()"
+              >
+                <i class="fas fa-file-export fa-lg fa-fw"></i>
+              </b-btn>
+              <b-btn
+                      variant="link"
                       @click="onAction('remove-item', props.rowData, props.rowIndex)"
                       v-b-tooltip.hover
                       :title="$t('Archive')"
@@ -223,6 +232,21 @@
       goToExport(data) {
         window.location = "/processes/" + data + "/export";
       },
+      saveAsTemplate(id) {
+        let data = [];
+        let formData = new FormData();
+        formData.append("process_id", id);
+        formData.append("name", "TEMPLATE NAME");
+        formData.append("description", "TEMPLATE DESCRIPTION");
+        formData.append("mode", 'saveAll');
+        formData.append("options", 'copy');
+        formData.append("template_category_id", 1);
+      
+        ProcessMaker.apiClient.post("template/process/" + id, formData)
+        .then(response => {
+          console.log('RESPONSE', response);
+        }); 
+      },
       onAction(action, data, index) {
         let putData = {
           name: data.name,
@@ -264,6 +288,9 @@
             break;
           case "export-item":
             this.goToExport(data.id);
+            break;
+          case "save-as-template":
+            this.saveAsTemplate(data.id)
             break;
           case "restore-item":
             ProcessMaker.apiClient
