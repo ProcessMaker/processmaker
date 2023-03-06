@@ -45,9 +45,9 @@ class ExportManager
      *
      * @return array
      */
-    public function getDependenciesOfType($modelClass, $owner, array $references = [])
+    public function getDependenciesOfType($modelClass, $owner, array $references = [], $recursive = true)
     {
-        $references = $this->reviewDependenciesOf($owner, $references);
+        $references = $this->reviewDependenciesOf($owner, $references, [], $recursive);
         $ids = [];
         foreach ($references as $ref) {
             list($class, $id) = $ref;
@@ -82,12 +82,14 @@ class ExportManager
         }
         $newReferences = $this->uniqueDiff($newReferences, $references);
         $references = array_merge($references, $newReferences);
-        // Find recurcively dependencies
-        foreach ($newReferences as $ref) {
-            list($class, $id) = $ref;
-            $nextOwner = $class::find($id);
-            if ($nextOwner) {
-                $references = $this->reviewDependenciesOf($nextOwner, $references, $reviewed);
+        // Find recursively dependencies
+        if ($recursive) {
+            foreach ($newReferences as $ref) {
+                list($class, $id) = $ref;
+                $nextOwner = $class::find($id);
+                if ($nextOwner) {
+                    $references = $this->reviewDependenciesOf($nextOwner, $references, $reviewed, $recursive);
+                }
             }
         }
 

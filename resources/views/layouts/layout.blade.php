@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta http-equiv="Content-Security-Policy" content="script-src * 'unsafe-inline' 'unsafe-eval'; object-src 'none';"> 
+    <meta http-equiv="Content-Security-Policy" content="script-src * 'unsafe-inline' 'unsafe-eval'; object-src 'none';">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="app-url" content="{{ config('app.url') }}">
@@ -31,6 +31,7 @@
     @endif
 
     <title>@yield('title',__('Welcome')) - {{ __('ProcessMaker') }}</title>
+
     <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="{{ mix('css/sidebar.css') }}" rel="stylesheet">
@@ -41,7 +42,7 @@
       window.Processmaker = {
         csrfToken: "{{csrf_token()}}",
         userId: "{{\Auth::user()->id}}",
-        messages: @json(\Auth::user()->activeNotifications()),
+        messages: [],
         apiTimeout: {{config('app.api_timeout')}}
       };
       @if(config('broadcasting.default') == 'redis')
@@ -72,10 +73,10 @@
             @endif
         @endforeach
     @endisset
-    
+
     @if (config('global_header'))
         <!-- Start Global Header -->
-        {!! config('global_header') !!} 
+        {!! config('global_header') !!}
         <!-- End Global Header -->
     @endif
 </head>

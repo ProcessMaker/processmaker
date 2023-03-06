@@ -86,19 +86,22 @@ class NotificationController extends Controller
             'data->processName as processName',
             'data->userName as userName',
             'data->request_id as request_id',
-            'data->url as url')
+            'url')
             ->where('notifiable_type', User::class)
             ->where('notifiable_id', Auth::user()->id);
 
         $filter = $request->input('filter', '');
-        if (!empty($filter)) {
+        if ($filter === 'read') {
+            $query->whereNotNull('read_at');
+        } elseif ($filter === 'unread') {
+            $query->whereNull('read_at');
+        } elseif (!empty($filter)) {
             $filter = addslashes($filter);
             $subsearch = '%' . $filter . '%';
             $query->where(function ($query) use ($subsearch, $filter) {
                 $query->Where('data->name', 'like', $subsearch)
                     ->orWhere('data->userName', 'like', $subsearch)
-                    ->orWhere('data->processName', 'like', $subsearch)
-                    ->orWhereRaw("case when read_at is null then 'unread' else 'read' end like '$filter%'");
+                    ->orWhere('data->processName', 'like', $subsearch);
             });
         }
 
@@ -148,6 +151,9 @@ class NotificationController extends Controller
      */
     public function store(Request $request)
     {
+        $data = json_decode($request->data, true);
+        $request->request->add(['url' => $data['url'] ?? null]);
+
         $request->validate(Notification::rules());
         $notification = new Notification();
         $notification->fill($request->input());
@@ -226,6 +232,9 @@ class NotificationController extends Controller
      */
     public function update(Notification $notification, Request $request)
     {
+        $data = json_decode($request->data, true);
+        $request->request->add(['url' => $data['url'] ?? null]);
+
         $request->validate(Notification::rules($notification));
         $notification->fill($request->input());
         $notification->saveOrFail();
@@ -308,7 +317,7 @@ class NotificationController extends Controller
 
         Notification::query()
             ->whereIn('id', $messageIds)
-            ->orWhereIn('data->url', $routes)
+            ->orWhereIn('url', $routes)
             ->update(['read_at' => Carbon::now()]);
 
         return response([], 201);
@@ -355,12 +364,12 @@ class NotificationController extends Controller
 
         $updated = Notification::query()
             ->whereIn('id', $messageIds)
-            ->orWhereIn('data->url', $routes)
+            ->orWhereIn('url', $routes)
             ->get();
 
         Notification::query()
             ->whereIn('id', $messageIds)
-            ->orWhereIn('data->url', $routes)
+            ->orWhereIn('url', $routes)
             ->update(['read_at' => null]);
 
         return response($updated, 201);

@@ -121,7 +121,7 @@
             this.disabled = true;
             ProcessMaker.apiClient.post('groups', this.formData)
               .then(response => {
-                ProcessMaker.alert('{{__('The group was created.')}}', 'success');
+                ProcessMaker.alert(this.$t('The group was created.'), 'success');
                 //redirect show group
                 window.location = "/admin/groups/" + response.data.id + "/edit"
               })

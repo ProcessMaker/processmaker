@@ -424,11 +424,14 @@ export default {
           });
       },
       getInitials(firstname, lastname) {
+          let initials = "";
           if (firstname) {
-            return firstname.match(/./u)[0] + lastname.match(/./u)[0]
-          } else {
-            return null;
+              initials += firstname.match(/./u)[0];
           }
+          if (lastname) {
+              initials += lastname.match(/./u)[0];
+          }
+          return initials || null;
       },
       allLoading(value) {
         this.isLoading.process = value;

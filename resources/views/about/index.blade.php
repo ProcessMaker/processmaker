@@ -44,6 +44,8 @@
           @endforeach
         </ul>
         @endif
+        <div><strong>{{ __('Indexed Search') }}</strong>: {{ $indexedSearch ? __('Enabled') : __('Disabled') }}</div>
+        <hr>
         &copy; {{date('Y')}} - {{__('All Rights Reserved')}}
         @if($commit_hash)<br><small>Build #{{ $commit_hash }}</small>@endif
       </div>

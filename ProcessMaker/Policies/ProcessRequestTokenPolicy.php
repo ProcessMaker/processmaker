@@ -36,7 +36,9 @@ class ProcessRequestTokenPolicy
      */
     public function view(User $user, ProcessRequestToken $processRequestToken)
     {
-        if ($processRequestToken->user_id == $user->id) {
+        if ($processRequestToken->user_id == $user->id ||
+            $processRequestToken->process?->manager_id === $user->id
+        ) {
             return true;
         }
         if ($user->canSelfServe($processRequestToken)) {
@@ -55,7 +57,8 @@ class ProcessRequestTokenPolicy
     {
         if (
             $processRequestToken->user_id === $user->id ||
-            $processRequestToken->user_id === app(AnonymousUser::class)->id
+            $processRequestToken->user_id === app(AnonymousUser::class)->id ||
+            $processRequestToken->process?->manager_id === $user->id
         ) {
             return true;
         }

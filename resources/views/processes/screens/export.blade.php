@@ -57,7 +57,7 @@
             ProcessMaker.apiClient.post('screens/' + this.screenId + '/export')
               .then(response => {
                 window.location = response.data.url;
-                ProcessMaker.alert('{{__('The screen was exported.')}}', 'success');
+                ProcessMaker.alert(this.$t('The screen was exported.'), 'success');
               })
               .catch(error => {
                 ProcessMaker.alert(error.response.data.message, 'danger');

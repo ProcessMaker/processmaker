@@ -28,7 +28,8 @@ Broadcast::channel('ProcessMaker.Models.ProcessRequest.{id}', function ($user, $
 
     $request = ProcessRequest::find($id);
 
-    return !empty($request->participants()->where('users.id', $user->getKey())->first());
+    return !empty($request->participants()->where('users.id', $user->getKey())->first())
+        || $request->process?->manager_id === $user->id;
 });
 
 Broadcast::channel('ProcessMaker.Models.ProcessRequestToken.{id}', function ($user, $id) {

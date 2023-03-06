@@ -4,7 +4,8 @@ namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
 use DB;
-use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Laravel\Scout\Searchable;
 use Log;
@@ -20,6 +21,7 @@ use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
 use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Traits\ExtendedPMQL;
+use ProcessMaker\Traits\ForUserScope;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\SqlsrvSupportTrait;
@@ -86,6 +88,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     use SqlsrvSupportTrait;
     use HideSystemResources;
     use Searchable;
+    use ForUserScope;
 
     /**
      * The attributes that aren't mass assignable.
@@ -707,34 +710,6 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     }
 
     /**
-     * Get the process version used by this request
-     *
-     * @return ProcessVersion
-     */
-    public function userPermissions()
-    {
-        return $this->hasMany(RequestUserPermission::class, 'request_id');
-    }
-
-    /**
-     * Filter process started with user
-     *
-     * @param $query
-     *
-     * @param $id User id
-     */
-    public function scopeRequestsThatUserCan($query, $permission, User $user)
-    {
-        if ($permission === 'can_view' && $user->can('view-all_requests')) {
-            return $query;
-        }
-        $query->whereHas('userPermissions', function ($query) use ($permission, $user) {
-            $query->where('user_id', $user->getKey());
-            $query->where($permission, true);
-        });
-    }
-
-    /**
      * Update the current catch events for the requests
      *
      * @param TokenInterface $token
@@ -875,7 +850,9 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      */
     public function requestFiles(bool $includeToken = false)
     {
-        return (object) $this->getMedia()->mapToGroups(function ($file) use ($includeToken) {
+        $media = \ProcessMaker\Models\Media::getFilesRequest($this);
+
+        return (object) $media->mapToGroups(function ($file) use ($includeToken) {
             $dataName = $file->getCustomProperty('data_name');
             $info = [
                 'id' => $file->id,
@@ -888,5 +865,30 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
 
             return [$dataName => $info];
         })->toArray();
+    }
+
+    public function downloadFile($fileId)
+    {
+        // Get all files for process and all subprocesses ..
+        $media = Media::getFilesRequest($this);
+
+        $filtered = $media->filter(function ($value) use ($fileId) {
+            return $value->id == $fileId;
+        })->first();
+
+        if (!$filtered) {
+            return null;
+        }
+
+        $path = Storage::disk('public')->getAdapter()->getPathPrefix() .
+            $filtered['id'] . '/' .
+            $filtered['file_name'];
+
+        return $path;
+    }
+
+    public function getMedia(string $collectionName = 'default', $filters = []): Collection
+    {
+        return \ProcessMaker\Models\Media::getFilesRequest($this);
     }
 }

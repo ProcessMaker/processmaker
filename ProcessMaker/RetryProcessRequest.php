@@ -2,11 +2,11 @@
 
 namespace ProcessMaker;
 
-use ProcessMaker\Facades\WorkflowManager;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Jobs\RunServiceTask;
 use ProcessMaker\Models\Comment;
@@ -16,8 +16,8 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\Models\ScriptTask;
 use ProcessMaker\Nayra\Bpmn\Models\ServiceTask;
-use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
+use ProcessMaker\Repositories\BpmnDocument;
 
 class RetryProcessRequest
 {

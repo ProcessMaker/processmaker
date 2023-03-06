@@ -414,6 +414,36 @@ class TasksTest extends TestCase
         $response->assertJsonStructure(['user' => ['id', 'email'], 'definition' => []]);
     }
 
+    public function testShowTaskWithParentRequest()
+    {
+        $this->user = User::factory()->create();
+        $parent = ProcessRequest::factory()->create();
+        $request = ProcessRequest::factory()->create([
+            'parent_request_id' => $parent->id,
+        ]);
+
+        $token = ProcessRequestToken::factory()->create([
+            'process_request_id' => $request->id,
+            'user_id' => $this->user->id,
+        ]);
+
+        //Test that is correctly displayed
+        $route = route('api.' . $this->resource . '.show', [$token->id, 'include' => 'processRequestParent']);
+        $response = $this->apiCall('GET', $route);
+        //Check the status
+        $this->assertStatus(200, $response);
+        //Check the structure
+        $json = $response->json();
+        $this->assertFalse($json['can_view_parent_request']);
+
+        $parent->user_id = $this->user->id;
+        $parent->save();
+
+        $response = $this->apiCall('GET', $route);
+        $json = $response->json();
+        $this->assertTrue($json['can_view_parent_request']);
+    }
+
     public function testUpdateTask()
     {
         $this->user = User::factory()->create(); // normal user

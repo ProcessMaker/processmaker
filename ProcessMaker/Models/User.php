@@ -2,16 +2,13 @@
 
 namespace ProcessMaker\Models;
 
-use Carbon\Carbon;
-use ProcessMaker\Notifications\ResetPassword as ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Session\Store as Session;
 use Illuminate\Validation\Rule;
 use Laravel\Passport\HasApiTokens;
-use ProcessMaker\Models\RequestUserPermission;
+use ProcessMaker\Notifications\ResetPassword as ResetPasswordNotification;
 use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Rules\StringHasAtLeastOneUpperCaseCharacter;
 use ProcessMaker\Rules\StringHasNumberOrSpecialCharacter;
@@ -37,10 +34,10 @@ class User extends Authenticatable implements HasMedia
 
     protected $connection = 'processmaker';
 
-    //Disk
+    // Disk
     public const DISK_PROFILE = 'profile';
 
-    //collection media library
+    // collection media library
     public const COLLECTION_PROFILE = 'profile';
 
     // Session key to save request ids that the user started
@@ -321,6 +318,29 @@ class User extends Authenticatable implements HasMedia
     }
 
     /**
+     * Set the user's timezone.
+     */
+    public function setTimezoneAttribute(string $value = ''): void
+    {
+        $this->attributes['timezone'] = $value ?: $this->getDefaultTimezone();
+    }
+
+    /**
+     * Get default timezone for new users.
+     */
+    public function getDefaultTimezone(): string
+    {
+        $setting = Setting::byKey('users.timezone');
+        if ($setting === null) {
+            return config('app.timezone');
+        }
+
+        $config = (object) $setting->config;
+
+        return $config->timezone;
+    }
+
+    /**
      * Returns the list of notifications not read by the user
      *
      * @return \Illuminate\Support\Collection
@@ -403,73 +423,16 @@ class User extends Authenticatable implements HasMedia
         if (array_key_exists('users', $task->self_service_groups) && in_array(\Auth::user()->id, $task->self_service_groups['users'])) {
             return true;
         } elseif (array_key_exists('groups', $task->self_service_groups)) {
-            $groups = collect($task->self_service_groups['groups'])
+            return collect($task->self_service_groups['groups'])
                 ->intersect(
                     $this->groups()->pluck('groups.id')
                 )->count() > 0;
-
-            return $groups;
         } else {
             // For older processes
             return collect($task->self_service_groups)
                 ->intersect(
                     $this->groups()->pluck('groups.id')
                 )->count() > 0;
-        }
-    }
-
-    public function updatePermissionsToRequests()
-    {
-        // Update existing request_user_permissions
-        $permissions = RequestUserPermission::with('request')
-            ->select('request_user_permissions.*')
-            ->leftJoin('process_requests', 'request_user_permissions.request_id', '=', 'process_requests.id')
-            ->where('request_user_permissions.user_id', $this->getKey())
-            ->whereRaw('process_requests.updated_at > request_user_permissions.updated_at')
-            ->get();
-
-        foreach ($permissions as $permission) {
-            $permission->can_view = $this->can('view', $permission->request);
-            $permission->save();
-        }
-
-        // Add new request_user_permissions
-
-        // Declare these variables once for the sake of speed
-        $timestamp = Carbon::now()->toDateTimeString();
-        $userId = $this->getKey();
-
-        // Find requests without permissions entries for this user
-        // while limiting the select clause to save memory
-        $query = ProcessRequest::whereRaw(
-            'id not in (select request_id from request_user_permissions where user_id=?)',
-            [$this->getKey()]
-        )->select(
-            'id', 'process_id', 'user_id', 'parent_request_id', 'callable_id', 'process_version_id'
-        );
-
-        // Process the results in chunks
-        $query->limit(500);
-        while ($query->count() > 0) {
-            // Retrieve this chunk
-            $requests = $query->get();
-
-            // Declare our batch array
-            $batch = [];
-
-            // Process each request
-            foreach ($requests as $request) {
-                $batch[] = [
-                    'request_id' => $request->id,
-                    'user_id' => $userId,
-                    'can_view' => $this->can('view', $request),
-                    'created_at' => $timestamp,
-                    'updated_at' => $timestamp,
-                ];
-            }
-
-            // Batch insert the new permissions
-            RequestUserPermission::query()->insert($batch);
         }
     }
 

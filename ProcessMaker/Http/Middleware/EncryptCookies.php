@@ -19,6 +19,6 @@ class EncryptCookies extends BaseEncrypter
         /**
          * Add any cookie names where we should not encrypt it's data here
          */
-        'device_id'
+        'device_id',
     ];
 }

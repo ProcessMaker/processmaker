@@ -46,7 +46,7 @@
             },
             afterSave() {
                 this.onClose();
-                ProcessMaker.alert('The screen was created.', 'success');
+                ProcessMaker.alert(this.$t('The screen was created.'), 'success');
                 this.$emit('reload');
             }
         }
