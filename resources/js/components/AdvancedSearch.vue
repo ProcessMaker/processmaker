@@ -202,7 +202,6 @@
                             required>
                             <label class="float-label">
                                 <i v-if="assistantLoading" class="fa fa-spinner fa-spin mr-1"></i> 
-                                <span v-if="assistantLoading">Please wait ... </span>
                                 <span v-html="searchInputLabel"></span>
                             </label>
                         </div>
@@ -299,14 +298,14 @@ export default {
         }
       },
       runNLPToPMQL() {
-        let params = { question: this.pmql };
+        let params = { question: this.pmql, type: this.type };
 
         this.assistantLoading = true
         this.searchInputLabel = "Generating PMQL query for: " + "<i>"  + this.pmql + "</i>";
 
         ProcessMaker.apiClient.post("/openai/npl-to-pmql", params).then(response => {
             this.assistantEnabled = false;
-            this.searchInputLabel = this.pmql;
+            this.searchInputLabel = '<i class="fa fa-check text-success"></i> ' + this.pmql;
             this.pmql = response.data.result;
             this.assistantLoading = false;
             this.runSearch(true);
@@ -324,9 +323,9 @@ export default {
                   break;
           } 
       },
-      buildRequestPmql() {          
+      buildRequestPmql() {
         let clauses = [];
-        
+
         //Parse process
         if (this.process.length) {
           let string = '';
