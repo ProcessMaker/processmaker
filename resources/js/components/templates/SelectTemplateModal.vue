@@ -10,28 +10,35 @@
       :subtitle="$t('Start a new [[type]] from a blank canvas or select a template')"
       :hide-footer="true"
       @ok.prevent="onSubmit"
+      @click="showTemplateDetailsModal"
     >
       <b-button :aria-label="$t('Create Blank [[Type]]')" class="mb-3 blank-template-btn">
         <i class="fas fa-plus" /> {{ $t('Blank [[Type]]') }}
       </b-button>
       <template-search />
     </modal>
+    <template-details-modal />
   </div>
 </template>
 
 <script>
   import { Modal } from "SharedComponents";
   import TemplateSearch from "./TemplateSearch.vue";
+  import TemplateDetailsModal from "./TemplateDetailsModal.vue";
 
   export default {
-    components: { Modal, TemplateSearch },
+    components: { Modal, TemplateSearch, TemplateDetailsModal },
     mixins: [ ],
     props: [],
     data: function() {
       return {
       }
     },
-    methods: {}
+    methods: {
+        showTemplateDetailsModal() {
+        this.$bvModal.show('templateDetails');
+      },
+    }
   };
 </script>
 
