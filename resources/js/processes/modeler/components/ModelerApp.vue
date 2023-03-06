@@ -96,6 +96,7 @@ export default {
     });
     window.ProcessMaker.EventBus.$on("modeler-change", () => {
       this.refreshSession();
+      this.autoSaveProcess();
       window.ProcessMaker.EventBus.$emit("new-changes");
     });
   },
@@ -188,6 +189,44 @@ export default {
         if (typeof onError === "function") {
           onError(err);
         }
+      };
+
+      ProcessMaker.apiClient.put(`/processes/${this.process.id}`, data)
+        .then(savedSuccessfully)
+        .catch(saveFailed);
+    },
+    async autoSaveProcess() {
+      const svg = document.querySelector(".mini-paper svg");
+      const css = "text { font-family: sans-serif; }";
+      const style = document.createElement("style");
+      style.textContent = css;
+      svg.appendChild(style);
+
+      const svgString = new XMLSerializer().serializeToString(svg);
+      const xml = await this.$refs.modeler.getXmlFromDiagram();
+
+      const data = {
+        name: this.process.name,
+        description: this.process.description,
+        task_notifications: this.getTaskNotifications(),
+        bpmn: xml,
+        svg: svgString,
+        is_draft: true,
+      };
+
+      const savedSuccessfully = (response) => {
+        this.process.updated_at = response.data.updated_at;
+        ProcessMaker.alert(this.$t("The process was saved."), "success");
+        window.ProcessMaker.EventBus.$emit("save-changes");
+        this.$set(this, "warnings", response.data.warnings || []);
+        if (response.data.warnings && response.data.warnings.length > 0) {
+          this.$refs.validationStatus.autoValidate = true;
+        }
+      };
+
+      const saveFailed = (error) => {
+        const { message } = error.response.data;
+        ProcessMaker.alert(message, "danger");
       };
 
       ProcessMaker.apiClient.put(`/processes/${this.process.id}`, data)
