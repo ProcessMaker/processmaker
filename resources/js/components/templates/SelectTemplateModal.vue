@@ -8,6 +8,7 @@
       size="huge"
       :title="$t('New [[Type]]')"
       :subtitle="$t('Start a new [[type]] from a blank canvas or select a template')"
+      :hide-footer="true"
       @ok.prevent="onSubmit"
     >
       <b-button :aria-label="$t('Create Blank [[Type]]')" class="mb-3 blank-template-btn">
