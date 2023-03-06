@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Mockery\Exception;
-use OpenAI\Client;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Script as ScriptResource;
@@ -469,21 +468,5 @@ class ScriptController extends Controller
         $script->delete();
 
         return response([], 204);
-    }
-
-    public function openAi(Client $client, Request $request)
-    {
-        $code = $request->input('text');
-        $model = 'code-davinci-002';
-
-        $result = $client->completions()->create([
-            'prompt' => $code,
-            'model' => $model,
-            'max_tokens' => 250,
-        ]);
-
-        $result = ltrim($result->choices[0]->text);
-
-        return response(['result' => $result]);
     }
 }
