@@ -3,6 +3,7 @@
 namespace ProcessMaker\Templates;
 
 use Illuminate\Http\Response;
+use Illuminate\Support\Arr;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
@@ -26,11 +27,15 @@ class ProcessTemplate implements TemplateInterface
 
         // Discard ALL assets/dependents
         if ($mode === 'discard') {
-            // Get dependents
-            $dependents = $export->$root->dependents;
+            $manifest = json_decode(json_encode($manifest), true);
+            $rootExport = Arr::first($manifest['original']['export'], function ($value, $key) use ($rootUuid) {
+                return $key === $rootUuid;
+            });
+            data_set($rootExport, 'dependents.*.discard', true);
+            data_set($manifest, 'original.export', $rootExport);
         }
 
-        $template = Templates::firstOrCreate([
+        $model = Templates::firstOrCreate([
             'name' => $name,
             'description' => $description,
             'manifest' => json_encode($manifest),
@@ -38,29 +43,8 @@ class ProcessTemplate implements TemplateInterface
             'process_id' => $processId,
             'process_template_category_id' => null,
         ]);
-        // TODO:: Error when running tests. (vendor/bin/phpunit tests/Feature/Templates/Api/TemplateTest.php) template is not found on 'test' database
-        if ($template) {
-            return response(['id' => $template->id], 200);
-        }
 
-        return response(500);
-
-        // $model = $this->getModel($type)->findOrFail($processId);
-        // //$options = $request->options;
-        // $mode = $request->mode;
-
-        // //$options = new Options([$screen->uuid => ['mode' => 'discard']]);
-        // $options = new Options($request->options);
-        // // dd($request->options);
-        // $exporter = new Exporter();
-        // // dd('HERE');
-        // dd($options);
-        // $exporter->export($model, $this->types[$type][1], $options);
-        // dd('here');
-        // $response = (new ExportController)->manifest($type, $id);
-        // $manifest = $response->getData();
-
-        // Export the request
+        return response(['model' => $model]);
     }
 
     public function view() : bool

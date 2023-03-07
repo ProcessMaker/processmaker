@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Templates\Api;
 
-use DB;
 use Exception;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
@@ -114,12 +114,11 @@ class TemplateTest extends TestCase
         $this->assertDatabaseHas('process_templates', ['name' => 'Test Template']);
 
         $template = ProcessTemplates::where('name', 'Test Template')->firstOrFail();
-        $org = $data_get($template->manifest, 'original');
-        dd($org);
-        $this->assertEquals($process->id, $template->process_id);
+        $dependents = data_get(json_decode($template->manifest, true), 'original.export.dependents');
 
-        //$this->assertArraySubset(["uuid" => $process->uuid], $template->manifest->)
-        // dd(json_decode($template->manifest, true));
-        // $this->assertCount(1, json_decode($template->manifest, true));
+        $this->assertEquals($process->id, $template->process_id);
+        foreach ($dependents as $dependent) {
+            $this->assertEquals(true, $dependent['discard']);
+        }
     }
 }
