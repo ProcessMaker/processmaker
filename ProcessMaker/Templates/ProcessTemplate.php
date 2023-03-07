@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Templates;
 
+use Illuminate\Http\Response;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
@@ -9,7 +10,7 @@ use ProcessMaker\Models\Template;
 
 class ProcessTemplate implements TemplateInterface
 {
-    public function save($request) : JsonResponse
+    public function save($request) : Response
     {
         $processId = $request->id;
         $name = $request->name;
@@ -32,7 +33,7 @@ class ProcessTemplate implements TemplateInterface
         $template = Template::firstOrCreate([
             'name' => $name,
             'description' => $description,
-            'manifest' => $manifest,
+            'manifest' => json_encode($manifest),
             'svg' => $svg,
             'process_id' => $processId,
             'process_template_category_id' => null,

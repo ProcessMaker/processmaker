@@ -2,9 +2,11 @@
 
 namespace ProcessMaker\Templates;
 
+use Illuminate\Http\Response;
+
 interface TemplateInterface
 {
-    public function save($request) : JsonResponse;
+    public function save($request) : Response;
 
     public function view() : bool;
 
