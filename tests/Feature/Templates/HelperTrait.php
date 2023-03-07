@@ -2,9 +2,12 @@
 
 namespace Tests\Feature\Templates;
 
+use Database\Seeders\SignalSeeder;
+use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\SignalData;
 
 trait HelperTrait
 {
@@ -38,5 +41,13 @@ trait HelperTrait
                 ],
             ]
         );
+    }
+
+    public function addGlobalSignalProcess()
+    {
+        ProcessCategory::factory()->create(['is_system'=> true]);
+        (new SignalSeeder())->run();
+        $this->globalSignal = new SignalData('test_global', 'test_global', '');
+        SignalManager::addSignal($this->globalSignal);
     }
 }

@@ -5,8 +5,11 @@ namespace Tests\Feature\Templates\Api;
 use DB;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Arr;
+use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ScreenCategory;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Templates\HelperTrait;
 use Tests\TestCase;
@@ -19,16 +22,22 @@ class TemplateTest extends TestCase
 
     public function testSaveModelTemplate()
     {
-        $process = $this->createProcess('process-with-task-screen', [
-            'name' => 'Test Process',
-        ]);
+        $this->addGlobalSignalProcess();
+
         // TODO: Create Process Screens
-        $screen = $this->createProcess('process-with-task-screen', [
-            'name' => 'Test Process',
-        ]);
+        $screen = $this->createScreen('basic-form-screen', ['title' => 'Test Screen']);
+        $screenCategory = ScreenCategory::factory()->create(['name' => 'screen category', 'status' => 'ACTIVE']);
+        $screen->screen_category_id = $screenCategory->id;
+        $screen->save();
+
+        $process = $this->createProcess('process-with-task-screen', ['name' => 'Test Process']);
+        $processCategory = ProcessCategory::factory()->create(['name' => 'process category', 'status' => 'ACTIVE']);
+        $process->process_category_id = $processCategory->id;
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:screenRef', $screen->id);
+        $process->save();
 
         // TODO: Export Process Model
-        $options = new Options([$manager->uuid => ['mode' => 'discard']]);
+        //$options = new Options([$screen->uuid => ['mode' => 'discard']]);
 
         $response = $this->apiCall(
             'POST',
@@ -39,7 +48,7 @@ class TemplateTest extends TestCase
             [
                 'name' => 'Test Template',
                 'description' => 'Test template description',
-                'template_category_id' => 1,
+                'process_template_category_id' => 1,
                 'options' => ['copy'],
                 'mode' => 'saveAll',
             ]
