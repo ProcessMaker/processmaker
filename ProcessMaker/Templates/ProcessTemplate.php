@@ -6,7 +6,7 @@ use Illuminate\Http\Response;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
-use ProcessMaker\Models\Template;
+use ProcessMaker\Models\ProcessTemplate as Template;
 
 class ProcessTemplate implements TemplateInterface
 {

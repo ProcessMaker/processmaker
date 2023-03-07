@@ -10,8 +10,6 @@ class Template extends ProcessMakerModel
 {
     use HasFactory;
 
-    protected $table = 'process_templates';
-
     /**
      * The attributes that aren't mass assignable.
      *
