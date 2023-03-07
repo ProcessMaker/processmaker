@@ -19,7 +19,7 @@ class CreateProcessTemplatesTable extends Migration
             $table->string('name')->unique();
             $table->text('description');
             $table->json('manifest');
-            $table->integer('file_id');
+            $table->longText('svg');
             $table->unsignedInteger('process_template_category_id')->nullable();
             $table->timestamps();
         });
