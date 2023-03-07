@@ -20,7 +20,7 @@ class TemplateTest extends TestCase
     use HelperTrait;
     use WithFaker;
 
-    public function testSaveModelTemplate()
+    public function testSaveProcessTemplate()
     {
         $this->addGlobalSignalProcess();
 
@@ -49,12 +49,12 @@ class TemplateTest extends TestCase
                 'name' => 'Test Template',
                 'description' => 'Test template description',
                 'process_template_category_id' => 1,
-                'options' => ['copy'],
-                'mode' => 'saveAll',
+                'mode' => 'copy',
             ]
         );
 
-        dd($response);
+        // Validate the header status code
+        $response->assertStatus(200);
 
         // $screen = Screen::factory()->create(['title' => 'Screen']);
 

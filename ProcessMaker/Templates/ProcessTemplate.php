@@ -2,33 +2,47 @@
 
 namespace ProcessMaker\Templates;
 
+use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\Template;
 
 class ProcessTemplate implements TemplateInterface
 {
-    public function save($request) : bool
+    public function save($request) : JsonResponse
     {
-        // Save Process Templates
-        dd('PROCESS TEMPLATES SAVE', $request);
-        //dd('STORE');
-    //     $processId = $request->id;
-    //     $name = $request->name;
-    //     $description = $request->description;
-    //     $category = $request->template_category_id;
+        $processId = $request->id;
+        $name = $request->name;
+        $description = $request->description;
+        $category = $request->process_template_category_id;
+        $mode = $request->mode;
 
-    //     $svg = Process::select('svg')->where('id', $processId)->firstOrFail();
-    //     $response = (new ExportController)->manifest($type, $processId);
-    //     $dependents = $response->getData('dependents');
-    //     $manifest = $response->getData();
-        //   // dd('he');
-    //     Template::create([
-    //         'name' => $name,
-    //         'description' => $description,
-    //         'manifest' => $manifest,
-    //        'svg' => $svg,
-    //     ]);
-    //     dd('HERE');
+        // Get process manifest
+        $manifest = $this->getManifest('process', $processId);
+        $rootUuid = $manifest->getData()->root;
+        $export = $manifest->getData()->export;
+        $svg = $export->$rootUuid->attributes->svg;
+
+        // Discard ALL assets/dependents
+        if ($mode === 'discard') {
+            // Get dependents
+            $dependents = $export->$root->dependents;
+        }
+
+        $template = Template::firstOrCreate([
+            'name' => $name,
+            'description' => $description,
+            'manifest' => $manifest,
+            'svg' => $svg,
+            'process_id' => $processId,
+            'process_template_category_id' => null,
+        ]);
+        // TODO:: Error when running tests. (vendor/bin/phpunit tests/Feature/Templates/Api/TemplateTest.php) template is not found on 'test' database
+        if ($template) {
+            return response(['id' => $template->id], 200);
+        }
+
+        return response(500);
 
         // $model = $this->getModel($type)->findOrFail($processId);
         // //$options = $request->options;
@@ -61,5 +75,13 @@ class ProcessTemplate implements TemplateInterface
     public function destroy() : bool
     {
         dd('PROCESS TEMPLATE DESTROY');
+    }
+
+    public function getManifest(string $type, int $id) : object
+    {
+        $response = (new ExportController)->manifest($type, $id);
+        // $manifest = $response->getData();
+
+        return $response;
     }
 }
