@@ -62,7 +62,6 @@ class Template extends ProcessMakerModel
         return [
             'name' => ['required', $unique, 'alpha_spaces'],
             'description' => 'required',
-            'status' => 'in:ACTIVE,INACTIVE,ARCHIVED',
             'template_category_id' => 'exists:template_categories,id',
             'process_id' => 'required',
             'manifest' => 'required',
