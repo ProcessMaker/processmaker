@@ -6,7 +6,7 @@ use Illuminate\Http\Response;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
-use ProcessMaker\Models\ProcessTemplate as Template;
+use ProcessMaker\Models\ProcessTemplates as Templates;
 
 class ProcessTemplate implements TemplateInterface
 {
@@ -30,7 +30,7 @@ class ProcessTemplate implements TemplateInterface
             $dependents = $export->$root->dependents;
         }
 
-        $template = Template::firstOrCreate([
+        $template = Templates::firstOrCreate([
             'name' => $name,
             'description' => $description,
             'manifest' => json_encode($manifest),

@@ -7,7 +7,7 @@ use ProcessMaker\Models\ProcessMakerModel;
 use ProcessMaker\Models\Template;
 use ProcessMaker\Models\TemplateCategory;
 
-class ProcessTemplate extends Template
+class ProcessTemplates extends Template
 {
     use HasFactory;
 
