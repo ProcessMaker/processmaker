@@ -234,4 +234,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     })->name('fallback');
 
     Route::get('/test_acknowledgement', [TestStatusController::class, 'testAcknowledgement'])->name('test.acknowledgement');
+
+    // OpenAI
+    Route::post('openai/nlq-to-pmql', [OpenAIController::class, 'NLQToPMQL'])->name('openai.nlq-to-pmql');
 });
