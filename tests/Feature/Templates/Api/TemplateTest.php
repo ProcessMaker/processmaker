@@ -3,6 +3,7 @@
 namespace Tests\Feature\Templates\Api;
 
 use DB;
+use Exception;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Arr;
 use ProcessMaker\ImportExport\Utils;
@@ -56,5 +57,24 @@ class TemplateTest extends TestCase
         $response->assertStatus(200);
         // Assert that our database has the process we need
         $this->assertDatabaseHas('process_templates', ['name' => 'Test Template']);
+    }
+
+    public function testNotAllowingToSaveDuplicateTemplateWithTheSameName()
+    {
+        $this->addGlobalSignalProcess();
+        ProcessTemplates::factory()->create(['name' => 'Test Duplicate Name Template']);
+
+        try {
+            // creating template with same name
+            ProcessTemplates::factory()->create(['name' => 'Test Duplicate Name Template']);
+        } catch (Exception $e) {
+            // Assertions about the Exception
+            $this->assertStringContainsString('Test Duplicate Name Template', $e->getMessage());
+            $this->expectException(\InvalidArgumentException::class);
+            $this->assertDatabaseCount('process_templates', 1);
+            throw new \InvalidArgumentException();
+        }
+        // And if there was no exception thrown, let's catch that, too
+        $this->fail('Template name is unique');
     }
 }
