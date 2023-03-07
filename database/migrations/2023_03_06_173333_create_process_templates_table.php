@@ -16,7 +16,7 @@ class CreateProcessTemplatesTable extends Migration
         Schema::create('process_templates', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique()->nullable();
-            $table->string('name')->unique();
+            $table->string('name');
             $table->text('description');
             $table->foreignId('process_id');
             $table->json('manifest');
