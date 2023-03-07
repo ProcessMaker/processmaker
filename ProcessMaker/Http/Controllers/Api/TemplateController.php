@@ -7,10 +7,11 @@ use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ProcessExporter;
+use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Template;
-use ProcessMaker\Templates\ProcessTemplates;
 //use ProcessMaker\Http\Controllers\Api\ExportController;
+use ProcessMaker\Templates\ProcessTemplates;
 use ProcessMaker\Templates\TemplateBase;
 
 class TemplateController extends Controller
@@ -42,11 +43,15 @@ class TemplateController extends Controller
         $description = $request->description;
         $category = $request->template_category_id;
         $model = $this->getModel($type)->findOrFail($processId);
-        $options = $request->options;
+        //$options = $request->options;
         $mode = $request->mode;
-        dd($request->options);
+        $options = new Options($request->options);
+        // dd($request->options);
         $exporter = new Exporter();
+        // dd('HERE');
+        dd($options);
         $exporter->export($model, $this->types[$type][1], $options);
+        dd('here');
         // $response = (new ExportController)->manifest($type, $id);
         // $manifest = $response->getData();
 
