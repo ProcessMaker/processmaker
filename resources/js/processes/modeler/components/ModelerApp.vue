@@ -96,7 +96,7 @@ export default {
     });
     window.ProcessMaker.EventBus.$on("modeler-change", () => {
       this.refreshSession();
-      this.autoSaveProcess();
+      this.autosaveProcess();
       window.ProcessMaker.EventBus.$emit("new-changes");
     });
   },
@@ -195,7 +195,7 @@ export default {
         .then(savedSuccessfully)
         .catch(saveFailed);
     },
-    async autoSaveProcess() {
+    async autosaveProcess() {
       const svg = document.querySelector(".mini-paper svg");
       const css = "text { font-family: sans-serif; }";
       const style = document.createElement("style");
@@ -229,9 +229,15 @@ export default {
         ProcessMaker.alert(message, "danger");
       };
 
-      ProcessMaker.apiClient.put(`/processes/${this.process.id}`, data)
-        .then(savedSuccessfully)
-        .catch(saveFailed);
+      if (this.debounceTimeout) {
+        clearTimeout(this.debounceTimeout);
+      }
+
+      this.debounceTimeout = setTimeout(() => {
+        ProcessMaker.apiClient.put(`/processes/${this.process.id}`, data)
+          .then(savedSuccessfully)
+          .catch(saveFailed);
+      }, 5000);
     },
   },
 };
