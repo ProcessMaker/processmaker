@@ -138,14 +138,16 @@ Here are some examples on how to use PMQL:
 
 Example 1: Show me all the requests for requester Admin: '(requester = "Admin")'
 
-Example 2: Generate a PMQL to return all the requests for the requester Admin: '(requester = "Admin")'
+Example 2: Show me all the requests that are opened: '(status = "In Progress")'
 
-Example 3: Generate a PMQL query to return all the requests for the requester Admin and with a score greater than 10: '(requester = "Admin") AND (data.score > 10)'
+Example 3: Generate a PMQL to return all the requests for the requester Admin: '(requester = "Admin")'
 
-Example 4: Generate a PMQL query to return all the requests for the requesters that start with P and with a score greater than 10 for the last 5 days: '(requester LIKE "P%") AND (data.score > 10) AND (modified < NOW -5 day)'
+Example 4: Generate a PMQL query to return all the requests for the requester Admin and with a score greater than 10: '(requester = "Admin") AND (data.score > 10)'
 
 Example 5: Generate a PMQL query to return all the requests for the requesters that start with P and with a score greater than 10 for the last 5 days: '(requester LIKE "P%") AND (data.score > 10) AND (modified < NOW -5 day)'
 
-Example 5: Generate a PMQL query to return all the requests where last name starts with D and first name equals to Jhon for the last 12 minutes or the status is active: '(data.last_name LIKE "D%") AND (data.first_name = "Jhon") AND (modified < NOW -12 minutes) OR (status = "ACTIVE")'
+Example 6: Generate a PMQL query to return all the requests for the requesters that start with P and with a score greater than 10 for the last 5 days: '(requester LIKE "P%") AND (data.score > 10) AND (modified < NOW -5 day)'
+
+Example 7: Generate a PMQL query to return all the requests where last name starts with D and first name equals to Jhon for the last 12 minutes or the status is active: '(data.last_name LIKE "D%") AND (data.first_name = "Jhon") AND (modified < NOW -12 minutes) OR (status = "ACTIVE")'
 
 ###

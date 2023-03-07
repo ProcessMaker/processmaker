@@ -60,4 +60,5 @@ Description 'Generate a PMQL to return all the tasks for the request "Leave of a
 Description 'Show me all the tasks for the process "Leave of absence"', Example '(request = "Leave of absence")'
 Description 'Show me the task "Fill user data" for the process "Leave of absence"', Example '(task = "Fill user data") AND (request = "Leave of absence")'
 Description 'Show me the tasks "Fill user data" that are in progress or completed', Example '(task = "Fill user data") AND (status IN ["In Progress", "Completed"])'
+Description 'Show me all the tasks that are opened', Example '(status = "In Progress")'
 Description 'Generate a PMQL query to return all the tasks for the process "Leave of absence" and "Manage customer"', Example '(request IN ["Leave of absence", "Manage customer"])'

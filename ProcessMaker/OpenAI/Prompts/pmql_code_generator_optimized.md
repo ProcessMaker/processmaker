@@ -55,6 +55,7 @@ Description, Find Requests from ProcessName in which its Request participants ar
 Explanation: calculates the date of birth by subtracting 9125 days from the current datetime (365 * 25 = 9125)
 ##
 Another examples for PMQL:
+Description 'Show me all the requests that are opened', Example '(status = "In Progress")'
 Description 'Show me all the requests for requester Admin', Example '(requester = "Admin")'
 Description 'Generate a PMQL to return all the requests for the requester Admin', Example '(requester = "Admin")'
 Description 'Generate a PMQL query to return all the requests for the requester Admin and with a score greater than 10', Example '(requester = "Admin") AND (data.score > 10)'
