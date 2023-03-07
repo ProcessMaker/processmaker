@@ -18,6 +18,7 @@ class CreateProcessTemplatesTable extends Migration
             $table->uuid('uuid')->unique()->nullable();
             $table->string('name')->unique();
             $table->text('description');
+            $table->foreignId('process_id');
             $table->json('manifest');
             $table->longText('svg');
             $table->unsignedInteger('process_template_category_id')->nullable();
