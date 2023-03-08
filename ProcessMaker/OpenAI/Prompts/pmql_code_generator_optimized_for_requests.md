@@ -31,7 +31,7 @@ LOWER function to disregard case sensitivity in Strings and request variables mo
 ##
 LIKE Operator for Wildcard Pattern Matching. Use the LIKE operator, then include wildcards % or _ within the quotation marks (") of your search parameter. The % wildcard represents zero, one, or more characters. The _ wildcard represents exactly one character.
 Description 'Find Requests associated with all Processes that begin with P', Example 'request LIKE "P%"'
-Description 'Find Requests with both Completed and Canceled statuses', Example 'status LIKE "c%"'
+Description 'Find Requests where status starts with c', Example 'status LIKE "c%"'
 Description 'Find all values from Requests that begin with Ca and those that match three following characters in the last_name Request variable', Example 'data.last_name LIKE "Ca%"'
 Description, 'Find all Tasks that begin with T', Example 'task LIKE "T%"'
 Description, 'Find all Requests where requester begin with A and have exactly 5 characters following', Example 'requester LIKE "A____"'
