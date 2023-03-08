@@ -23,7 +23,11 @@ class OpenAIController extends Controller
             $promptFile = OpenAIHelper::readPromptFromFile('pmql_code_generator_optimized_for_tasks.md');
         }
 
-        if ($type != 'requests' && $type != 'tasks') {
+        if ($type === 'settings') {
+            $promptFile = OpenAIHelper::readPromptFromFile('pmql_code_generator_optimized_for_settings.md');
+        }
+
+        if ($type != 'requests' && $type != 'tasks' && $type != 'settings') {
             $promptFile = OpenAIHelper::readPromptFromFile('pmql_code_generator.md');
         }
 
