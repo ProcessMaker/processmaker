@@ -7,7 +7,9 @@ use Illuminate\Support\Arr;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\ProcessTemplates as Templates;
+use SebastianBergmann\CodeUnit\Exception;
 
 class ProcessTemplate implements TemplateInterface
 {
@@ -33,6 +35,10 @@ class ProcessTemplate implements TemplateInterface
             });
             data_set($rootExport, 'dependents.*.discard', true);
             data_set($manifest, 'original.export', $rootExport);
+        }
+
+        if (ProcessTemplates::where('name', $name)->exists()) {
+            throw new \Exception('Process Template with the same name already exists');
         }
 
         $model = Templates::firstOrCreate([

@@ -5,10 +5,12 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Models\ProcessMakerModel;
 use ProcessMaker\Models\TemplateCategory;
+use ProcessMaker\Traits\HasUuids;
 
 class Template extends ProcessMakerModel
 {
     use HasFactory;
+    use HasUuids;
 
     /**
      * The attributes that aren't mass assignable.
