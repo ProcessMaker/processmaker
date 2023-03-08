@@ -111,12 +111,12 @@
               </b-btn>
               <b-btn
                       variant="link"
-                      @click="onAction('save-as-template', props.rowData, props.rowIndex)"
+                      @click="onAction('create-template', props.rowData, props.rowIndex)"
                       v-b-tooltip.hover
-                      :title="$t('Save as Template')"
+                      :title="$t('Convert to Template')"
                       v-uni-aria-describedby="props.rowData.id.toString()"
               >
-                <i class="fas fa-file-export fa-lg fa-fw"></i>
+                <i class="fas fa-tools fa-lg fa-fw"></i>
               </b-btn>
               <b-btn
                       variant="link"
@@ -138,6 +138,7 @@
               >
                 <i class="fas fa-upload fa-lg fa-fw"></i>
               </b-btn>
+              <template-exists-modal ref="template-exists-modal" :processName="props.rowData.name" />
             </div>
           </div>
         </template>
@@ -159,11 +160,14 @@
   import datatableMixin from "../../components/common/mixins/datatable";
   import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
   import { createUniqIdsMixin } from "vue-uniq-ids";
+  import TemplateExistsModal from "../../components/templates/TemplateExistsModal.vue";
+
   const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
+    components: { TemplateExistsModal },
     mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
-    props: ["filter", "id", "status", "permission", "isDocumenterInstalled"],
+    props: ["filter", "id", "status", "permission", "isDocumenterInstalled", "processName"],
     data() {
       return {
         orderBy: "name",
@@ -220,6 +224,9 @@
       });
     },
     methods: {
+      showTemplateExistsModal() {
+        this.$refs["template-exists-modal"].show();
+      },
       goToEdit(data) {
         window.location = "/processes/" + data + "/edit";
       },
@@ -232,19 +239,22 @@
       goToExport(data) {
         window.location = "/processes/" + data + "/export";
       },
-      saveAsTemplate(id) {
-        let data = [];
+      createTemplate(id) {        
         let formData = new FormData();
+        // TODO: Display create template form/model
         formData.append("process_id", id);
         formData.append("name", "TEMPLATE NAME");
         formData.append("description", "TEMPLATE DESCRIPTION");
-        formData.append("mode", 'saveAll');
+        formData.append("mode", 'copy');
         formData.append("options", 'copy');
         formData.append("template_category_id", 1);
       
         ProcessMaker.apiClient.post("template/process/" + id, formData)
         .then(response => {
           console.log('RESPONSE', response);
+          ProcessMaker.alert( this.$t("Template successfully created"),"success");
+        }).catch(error => {
+          ProcessMaker.alert(error,"danger");
         }); 
       },
       onAction(action, data, index) {
@@ -289,8 +299,9 @@
           case "export-item":
             this.goToExport(data.id);
             break;
-          case "save-as-template":
-            this.saveAsTemplate(data.id)
+          case "create-template":
+            this.createTemplate(data.id);
+            //this.showTemplateExistsModal();
             break;
           case "restore-item":
             ProcessMaker.apiClient
