@@ -17,7 +17,8 @@
           :decorations="decorations"
           @validate="validationErrors = $event"
           @warnings="warnings = $event"
-          @saveBpmn="emitRegisteredEvents"
+          @saveBpmn="emitSaveEvent"
+          @close="emitCloseEvent"
           @set-xml-manager="xmlManager = $event"
         />
       </b-card-body>
@@ -99,6 +100,9 @@ export default {
       this.autosaveProcess();
       window.ProcessMaker.EventBus.$emit("new-changes");
     });
+    window.ProcessMaker.EventBus.$on("modeler-close", () => {
+      this.close();
+    });
   },
   methods: {
     updateBpmnValidations() {
@@ -118,12 +122,10 @@ export default {
             });
           }
         });
-        const hasErrors = JSON.stringify(bpmnWarnings) !== JSON.stringify(this.$refs.modeler.validationErrors.bpmn);
-        if (hasErrors) {
+        const errorsChanged = JSON.stringify(bpmnWarnings) !== JSON.stringify(this.$refs.modeler.validationErrors.bpmn)
+          || JSON.stringify(bpmnWarnings) !== JSON.stringify(this.validationErrors.bpmn);
+        if (errorsChanged) {
           this.$refs.modeler.$set(this.$refs.modeler.validationErrors, "bpmn", bpmnWarnings);
-        }
-        const hasValidationErrors = JSON.stringify(bpmnWarnings) !== JSON.stringify(this.validationErrors.bpmn);
-        if (hasValidationErrors) {
           this.$set(this.validationErrors, "bpmn", bpmnWarnings);
         }
       }
@@ -148,16 +150,29 @@ export default {
       });
       return notifications;
     },
-    emitRegisteredEvents({ xml, svg }) {
+    emitSaveEvent({ xml, svg }) {
       this.dataXmlSvg.xml = xml;
       this.dataXmlSvg.svg = svg;
 
-      this.externalEmit.forEach((item) => {
-        window.ProcessMaker.EventBus.$emit(item);
-      });
-      if (!this.externalEmit.length) {
-        window.ProcessMaker.EventBus.$emit("modeler-save");
+      if (this.externalEmit.includes("open-modal-versions")) {
+        window.ProcessMaker.EventBus.$emit("open-modal-versions");
+        return;
       }
+      window.ProcessMaker.EventBus.$emit("modeler-save");
+    },
+    emitCloseEvent() {
+      if (this.externalEmit.includes("open-close-versions")) {
+        window.ProcessMaker.EventBus.$emit("open-close-versions");
+        return;
+      }
+      window.ProcessMaker.EventBus.$emit("modeler-close");
+    },
+    close() {
+      ProcessMaker.apiClient
+        .post(`/processes/${this.process.id}/close`)
+        .then(() => {
+          window.location.reload();
+        });
     },
     saveProcess(onSuccess, onError) {
       const data = {
