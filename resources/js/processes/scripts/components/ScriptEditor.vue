@@ -1,31 +1,52 @@
 <template>
   <b-container class="h-100">
-    <b-card no-body class="h-100">
-      <top-menu ref="menuScript" :options="optionsMenu"/>
+    <b-card
+      no-body
+      class="h-100"
+    >
+      <top-menu
+        ref="menuScript"
+        :options="optionsMenu"
+      />
 
-      <b-card-body class="overflow-hidden p-4" ref="editorContainer">
+      <b-card-body
+        ref="editorContainer"
+        class="overflow-hidden p-4"
+      >
         <b-row class="h-100">
-          <b-col cols="9" class="h-100 p-0">
+          <b-col
+            cols="9"
+            class="h-100 p-0"
+          >
             <monaco-editor
-              :options="monacoOptions"
               v-model="code"
+              :options="monacoOptions"
               :language="language"
               class="h-100"
               :class="{hidden: resizing}"
             />
           </b-col>
-          <b-col cols="3" class="h-100">
-            <b-card no-body class="h-100">
+          <b-col
+            cols="3"
+            class="h-100"
+          >
+            <b-card
+              no-body
+              class="h-100"
+            >
               <b-card-header class="light-gray-background">
                 <b-row class="d-flex align-items-center">
                   <b-col>{{ $t('Debugger') }}</b-col>
 
-                  <b-col align-self="end" class="text-right">
+                  <b-col
+                    align-self="end"
+                    class="text-right"
+                  >
                     <b-button
                       class="text-capitalize pl-3 pr-3"
                       :disabled="preview.executing"
-                      @click="execute"
                       size="sm"
+                      @click="execute"
                     >
                       <i class="fas fa-caret-square-right" />
                       {{ $t('Run') }}
@@ -42,7 +63,11 @@
                         <i class="fas fa-cog" />
                         {{ $t('Configuration') }}
                       </b-col>
-                      <b-col align-self="end" cols="1" class="mr-2">
+                      <b-col
+                        align-self="end"
+                        cols="1"
+                        class="mr-2"
+                      >
                         <i class="fas fa-chevron-down accordion-icon" />
                       </b-col>
                     </b-row>
@@ -50,8 +75,8 @@
                   <b-list-group-item class="p-0 border-left-0 border-right-0 border-top-0 mb-0">
                     <b-collapse id="configuration">
                       <monaco-editor
-                        :options="{ ...monacoOptions, minimap: { enabled: false } }"
                         v-model="preview.config"
+                        :options="{ ...monacoOptions, minimap: { enabled: false } }"
                         language="json"
                         class="editor-inspector"
                       />
@@ -64,7 +89,11 @@
                         <i class="fas fa-sign-in-alt" />
                         {{ $t('Sample Input') }}
                       </b-col>
-                      <b-col align-self="end" cols="1" class="mr-2">
+                      <b-col
+                        align-self="end"
+                        cols="1"
+                        class="mr-2"
+                      >
                         <i class="fas fa-chevron-down accordion-icon" />
                       </b-col>
                     </b-row>
@@ -72,8 +101,8 @@
                   <b-list-group-item class="p-0 border-left-0 border-right-0 border-top-0 mb-0">
                     <b-collapse id="input">
                       <monaco-editor
-                        :options="{ ...monacoOptions, minimap: { enabled: false } }"
                         v-model="preview.data"
+                        :options="{ ...monacoOptions, minimap: { enabled: false } }"
                         language="json"
                         class="editor-inspector"
                       />
@@ -91,18 +120,33 @@
                         <i class="far fa-caret-square-right" />
                         {{ $t('Output') }}
                       </b-col>
-                      <b-col align-self="end" cols="1" class="mr-2">
+                      <b-col
+                        align-self="end"
+                        cols="1"
+                        class="mr-2"
+                      >
                         <i class="fas fa-chevron-down accordion-icon" />
                       </b-col>
                     </b-row>
                   </b-list-group-item>
                   <b-list-group-item class="p-0 border-left-0 border-right-0 border-top-0 mb-0">
-                    <b-collapse id="output" class="bg-dark" :visible="outputOpen">
+                    <b-collapse
+                      id="output"
+                      class="bg-dark"
+                      :visible="outputOpen"
+                    >
                       <div class="output text-white">
-                        <pre v-if="preview.success" class="text-white"><samp>{{ preview.output }}</samp></pre>
+                        <pre
+                          v-if="preview.success"
+                          class="text-white"
+                        ><samp>{{ preview.output }}</samp></pre>
                         <div v-if="preview.failure">
-                          <div class="text-light bg-danger">{{preview.error.exception}}</div>
-                          <div class="text-light text-monospace small">{{preview.error.message}}</div>
+                          <div class="text-light bg-danger">
+                            {{ preview.error.exception }}
+                          </div>
+                          <div class="text-light text-monospace small">
+                            {{ preview.error.message }}
+                          </div>
                         </div>
                       </div>
                     </b-collapse>
@@ -120,9 +164,18 @@
           <span class="text-uppercase">{{ language }}</span>
         </span>
         <span class="ml-auto">
-          <i v-if="preview.executing" class="fas fa-spinner fa-spin"></i>
-          <i v-if="preview.success" class="fas fa-check text-success"></i>
-          <i v-if="preview.failure" class="fas fa-times-circle text-danger"></i>
+          <i
+            v-if="preview.executing"
+            class="fas fa-spinner fa-spin"
+          />
+          <i
+            v-if="preview.success"
+            class="fas fa-check text-success"
+          />
+          <i
+            v-if="preview.failure"
+            class="fas fa-times-circle text-danger"
+          />
         </span>
       </b-card-footer>
     </b-card>
@@ -132,11 +185,27 @@
 <script>
 import MonacoEditor from "vue-monaco";
 import _ from "lodash";
-import customFilters from "../customFilters";
-import TopMenu from "../../../components/Menu";
+import TopMenu from "../../../components/Menu.vue";
 
 export default {
-  props: ["process", "script", "scriptExecutor", "testData"],
+  components: {
+    MonacoEditor,
+    TopMenu,
+  },
+  props: {
+    script: {
+      type: Object,
+      required: true,
+    },
+    scriptExecutor: {
+      type: Object,
+      required: true,
+    },
+    testData: {
+      type: String,
+      default: "{}",
+    },
+  },
   data() {
     const options = [
       {
@@ -148,50 +217,43 @@ export default {
         icon: "fas fa-save",
         action: () => {
           ProcessMaker.EventBus.$emit("save-script");
-        }
-      }
+        },
+      },
     ];
 
     return {
       executionKey: null,
       resizing: false,
       monacoOptions: {
-        automaticLayout: true
+        automaticLayout: true,
       },
       code: this.script.code,
       preview: {
         error: {
-          exception: '',
-          message: ''
+          exception: "",
+          message: "",
         },
         executing: false,
         data: this.testData ? this.testData : "{}",
         config: "{}",
         output: "",
         success: false,
-        failure: false
+        failure: false,
       },
       outputOpen: true,
       optionsMenu: options,
-      boilerPlateTemplate: this.$t(` \r Welcome to ProcessMaker 4 Script Editor \r To access Environment Variables use {accessEnvVar} \r To access Request Data use {dataVariable} \r To access Configuration Data use {configVariable} \r To preview your script, click the Run button using the provided input and config data \r Return an array and it will be merged with the processes data \r Example API to retrieve user email by their ID {apiExample} \r API Documentation {apiDocsUrl} \r `),
+      // eslint-disable-next-line max-len
+      boilerPlateTemplate: this.$t(" \r Welcome to ProcessMaker 4 Script Editor \r To access Environment Variables use {accessEnvVar} \r To access Request Data use {dataVariable} \r To access Configuration Data use {configVariable} \r To preview your script, click the Run button using the provided input and config data \r Return an array and it will be merged with the processes data \r Example API to retrieve user email by their ID {apiExample} \r API Documentation {apiDocsUrl} \r "),
       nonce: null,
     };
-  },
-  watch: {
-    "preview.output"(output) {
-      if (output && !this.outputOpen) {
-        this.outputOpen = true;
-      }
-    }
-  },
-  components: {
-    MonacoEditor,
-    TopMenu,
   },
   computed: {
     language() {
       return this.scriptExecutor.language;
-    }
+    },
+  },
+  watch: {
+    "preview.output": "handlePreviewOutputChange",
   },
   mounted() {
     ProcessMaker.EventBus.$emit("script-builder-init", this);
@@ -200,23 +262,28 @@ export default {
     });
 
     window.addEventListener("resize", this.handleResize);
-    let userID = document.head.querySelector('meta[name="user-id"]');
+    const userID = document.head.querySelector("meta[name=\"user-id\"]");
     window.Echo.private(
-      `ProcessMaker.Models.User.${userID.content}`
-    ).listen('.ProcessMaker\\Events\\ScriptResponseEvent', response => {
+      `ProcessMaker.Models.User.${userID.content}`,
+    ).listen(".ProcessMaker\\Events\\ScriptResponseEvent", (response) => {
       this.outputResponse(response);
     });
-    this.loadBoilerplateTemplate();    
+    this.loadBoilerplateTemplate();
   },
-  beforeDestroy: function() {
+  beforeDestroy() {
     window.removeEventListener("resize", this.handleResize);
   },
 
   methods: {
     resizeEditor() {
       const domNode = this.editorReference.getDomNode();
-      const clientHeight =  this.$refs.editorContainer.clientHeight;
-      domNode.style.height = clientHeight.toString() + 'px';
+      const { clientHeight } = this.$refs.editorContainer;
+      domNode.style.height = `${clientHeight.toString()}px`;
+    },
+    handlePreviewOutputChange(output) {
+      if (output && !this.outputOpen) {
+        this.outputOpen = true;
+      }
     },
     outputResponse(response) {
       if (response.nonce !== this.nonce) {
@@ -226,16 +293,16 @@ export default {
       if (this.executionKey && this.executionKey !== response.data.watcher) {
         return;
       }
-      ProcessMaker.apiClient.get("scripts/execution/" + response.response.key).then((response) => {
-        if (response.data.exception) {
+      ProcessMaker.apiClient.get(`scripts/execution/${response.response.key}`).then((r) => {
+        if (r.data.exception) {
           this.preview.executing = false;
           this.preview.failure = true;
-          this.preview.error.exception = response.data.exception;
-          this.preview.error.message = response.data.message;
+          this.preview.error.exception = r.data.exception;
+          this.preview.error.message = r.data.message;
         } else {
           this.preview.executing = false;
           this.preview.success = true;
-          this.preview.output = response.data;
+          this.preview.output = r.data;
         }
       });
 
@@ -246,9 +313,8 @@ export default {
         this.preview.error.message = response.response;
       }
     },
-    stopResizing: _.debounce(function() {
+    stopResizing: _.debounce(() => {
       this.resizing = false;
-      //this.resizeEditor();
     }, 50),
     handleResize() {
       this.resizing = true;
@@ -261,7 +327,7 @@ export default {
       this.preview.output = undefined;
       // Attempt to execute a script, using our temp variables
       this.nonce = Math.random().toString(36);
-      ProcessMaker.apiClient.post("scripts/" + this.script.id + "/preview", {
+      ProcessMaker.apiClient.post(`scripts/${this.script.id}/preview`, {
         code: this.code,
         data: this.preview.data,
         config: this.preview.config,
@@ -276,52 +342,52 @@ export default {
     },
     save(onSuccess, onError) {
       ProcessMaker.apiClient
-        .put("scripts/" + this.script.id, {
+        .put(`scripts/${this.script.id}`, {
           code: this.code,
           title: this.script.title,
           description: this.script.description,
           script_executor_id: this.script.script_executor_id,
           run_as_user_id: this.script.run_as_user_id,
           timeout: this.script.timeout,
-          description: this.script.description
         })
-        .then(response => {
+        .then((response) => {
           ProcessMaker.alert(this.$t("The script was saved."), "success");
           if (typeof onSuccess === "function") {
             onSuccess(response);
           }
-        }).catch(err => {
+        }).catch((err) => {
           if (typeof onError === "function") {
             onError(err);
           }
         });
     },
     loadBoilerplateTemplate() {
-      if (this.script.code === `[]`) {
-      switch(this.script.language) {
-        case 'php':
-          this.code = Vue.filter('php')(this.boilerPlateTemplate);
-          break;
-        case 'lua':
-          this.code = Vue.filter('lua')(this.boilerPlateTemplate);
-          break; 
-        case 'javascript':
-          this.code = Vue.filter('javascript')(this.boilerPlateTemplate);
-          break;
-        case 'csharp':
-          this.code = Vue.filter('csharp')(this.boilerPlateTemplate);
-          break;
-        case 'java':
-          this.code = Vue.filter('java')(this.boilerPlateTemplate);
-          break;
-        case 'python':
-          this.code = Vue.filter('python')(this.boilerPlateTemplate);
-          break;
+      if (this.script.code === "[]") {
+        switch (this.script.language) {
+          case "php":
+            this.code = Vue.filter("php")(this.boilerPlateTemplate);
+            break;
+          case "lua":
+            this.code = Vue.filter("lua")(this.boilerPlateTemplate);
+            break;
+          case "javascript":
+            this.code = Vue.filter("javascript")(this.boilerPlateTemplate);
+            break;
+          case "csharp":
+            this.code = Vue.filter("csharp")(this.boilerPlateTemplate);
+            break;
+          case "java":
+            this.code = Vue.filter("java")(this.boilerPlateTemplate);
+            break;
+          case "python":
+            this.code = Vue.filter("python")(this.boilerPlateTemplate);
+            break;
+          default:
+            break;
         }
-
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
