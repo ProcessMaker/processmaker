@@ -21,6 +21,7 @@
                         </div>
                     @endcan
                     @can('create-processes')
+                        <select-template-modal></select-template-modal>
                         <create-process-modal :count-categories="@json($config->countCategories)"></create-process-modal>
                     @endcan
                 </div>

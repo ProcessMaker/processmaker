@@ -9,6 +9,7 @@
     ok-variant="primary"
     :ok-title="okTitleWithDefault"
     :ok-disabled="okDisabled"
+    :hide-footer="hideFooter"
     :size="size"
     :ok-only="okOnly"
     no-close-on-backdrop
@@ -43,7 +44,7 @@
 
 <script>
   export default {
-    props: ["id", "title", "okDisabled", "okOnly", "okTitle", 'setCustomButtons', 'customButtons', 'subtitle', 'size'],
+    props: ["id", "title", "okDisabled", "okOnly", "okTitle", 'setCustomButtons', 'customButtons', 'subtitle', 'size', "hideFooter"],
     methods: {
       onEvent(name, event) {
         this.$emit(name, event);

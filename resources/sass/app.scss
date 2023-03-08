@@ -395,6 +395,12 @@ button:focus.navbar-toggler {
   @extend .mr-2;
 }
 
+.modal .modal-huge {
+  max-width: 947px;
+  width: 947px;
+  height: 746px;
+}
+
 select.pagination-nav-item {
     border: 0;
 }
