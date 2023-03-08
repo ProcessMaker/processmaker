@@ -36,7 +36,7 @@
           </i>
           <span v-uni-id="props.rowData.id.toString()">{{props.rowData.name}}</span>
         </template>
-
+        <ellipsis-menu />
         <template slot="owner" slot-scope="props">
           <avatar-image
                   class="d-inline-flex pull-left align-items-center"
@@ -45,8 +45,11 @@
                   hide-name="true"
           ></avatar-image>
         </template>
-
         <template slot="actions" slot-scope="props">
+          <ellipsis-menu :actions="actions" />
+        </template>
+
+        <!-- <template slot="actions" slot-scope="props">
           <div class="actions">
             <div class="popout">
               <b-btn
@@ -131,7 +134,7 @@
               </b-btn>
             </div>
           </div>
-        </template>
+        </template> -->
       </vuetable>
 
       <pagination
@@ -150,13 +153,29 @@
   import datatableMixin from "../../components/common/mixins/datatable";
   import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
   import { createUniqIdsMixin } from "vue-uniq-ids";
+  import TemplateExistsModal from "../../components/templates/TemplateExistsModal.vue";
+import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
+
   const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
+    components: { TemplateExistsModal, EllipsisMenu },
     mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
     props: ["filter", "id", "status", "permission", "isDocumenterInstalled"],
     data() {
       return {
+        actions: [
+        {"value": "unpause-start-timer", "content": "Unpause Start Timer Events",},
+        {"value": "pause-start-timer", "content": "Pause Start Timer Events", },
+        {"value": "edit-designer", "content": "Edit",},
+        {"value": "edit-item", "content": "Configure", },
+        {"value": "view-documentation", "content": "View Documentation", },
+        {"value": "export-item", "content": "Export", },
+        {"value": "create-template", "content": "Create Template", },
+        {"value": "remove-item", "content": "Archive", },
+        {"value": "restore-item", "content": "Restore", },
+
+      ],
         orderBy: "name",
         sortOrder: [
           {
@@ -206,6 +225,7 @@
       };
     },
     created () {
+      console.log(this.actions);
       ProcessMaker.EventBus.$on("api-data-process", (val) => {
         this.fetch();
       });
