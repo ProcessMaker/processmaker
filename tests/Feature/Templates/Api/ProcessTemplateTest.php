@@ -17,7 +17,7 @@ use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Templates\HelperTrait;
 use Tests\TestCase;
 
-class TemplateTest extends TestCase
+class ProcessTemplateTest extends TestCase
 {
     use RequestHelper;
     use HelperTrait;
@@ -55,6 +55,7 @@ class TemplateTest extends TestCase
         );
 
         // Validate the header status code
+        // dd($response);
         $response->assertStatus(200);
         // Assert that our database has the process we need
         $this->assertDatabaseHas('process_templates', ['name' => 'Test Template']);
@@ -63,19 +64,19 @@ class TemplateTest extends TestCase
     public function testNotAllowingToSaveDuplicateTemplateWithTheSameName()
     {
         $this->addGlobalSignalProcess();
-        ProcessTemplates::factory()->create(['name' => 'Test Duplicate Name Template']);
 
         // Create Process Screens
         $screen = $this->createScreen('basic-form-screen', ['title' => 'Test Screen']);
         $screenCategory = ScreenCategory::factory()->create(['name' => 'screen category', 'status' => 'ACTIVE']);
         $screen->screen_category_id = $screenCategory->id;
         $screen->save();
-
+        
         $process = $this->createProcess('process-with-task-screen', ['name' => 'Test Process']);
         $processCategory = ProcessCategory::factory()->create(['name' => 'process category', 'status' => 'ACTIVE']);
         $process->process_category_id = $processCategory->id;
         Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:screenRef', $screen->id);
         $process->save();
+        ProcessTemplates::factory()->create(['name' => 'Test Duplicate Name Template', 'process_id' => $process->id]);
 
         $response = $this->apiCall(
             'POST',
@@ -90,12 +91,10 @@ class TemplateTest extends TestCase
                 'mode' => 'new',
             ]
         );
+        
 
-        try {
-            $response->assertStatus(500);
-        } catch (Exception $e) {
-            $this->assertEquals($e->getMessage(), 'Process Template with the same name already exists');
-        }
+        $response->assertStatus(409);
+        $this->assertEquals('Process Template with the same name already exists', $response->getOriginalContent()['message']);
     }
 
     public function testSaveProcessModelAsTemplate()
@@ -112,7 +111,7 @@ class TemplateTest extends TestCase
         $process->process_category_id = $processCategory->id;
         Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:screenRef', $screen->id);
         $process->save();
-
+        
         $response = $this->apiCall(
             'POST',
             route('api.template.store', [

@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Templates;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use ProcessMaker\Http\Controllers\Api\ExportController;
@@ -11,9 +12,30 @@ use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\ProcessTemplates as Templates;
 use SebastianBergmann\CodeUnit\Exception;
 
+/**
+ * Summary of ProcessTemplate
+ */
 class ProcessTemplate implements TemplateInterface
 {
-    public function save($request) : Response
+    public function existingTemplate($request)
+    {
+        $processId = $request->id;
+        $name = $request->name;
+
+        if (ProcessTemplates::where(['name' => $name, 'process_id' => $request->id])->exists()) {
+            // TODO: If same asset has been Saved as Template previously, offer to choose between “Update Template” and “Save as New Template”
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Summary of save
+     * @param mixed $request
+     * @return JsonResponse
+     */
+    public function save($request) : JsonResponse
     {
         $processId = $request->id;
         $name = $request->name;
@@ -37,11 +59,6 @@ class ProcessTemplate implements TemplateInterface
             data_set($manifest, 'original.export', $rootExport);
         }
 
-        if (ProcessTemplates::where('name', $name)->exists()) {
-            // TODO: If same asset has been Saved as Template previously, offer to choose between “Update Template” and “Save as New Template”
-            throw new \Exception('Process Template with the same name already exists');
-        }
-
         $model = Templates::firstOrCreate([
             'name' => $name,
             'description' => $description,
@@ -51,7 +68,7 @@ class ProcessTemplate implements TemplateInterface
             'process_template_category_id' => null,
         ]);
 
-        return response(['model' => $model]);
+        return response()->json(['model' => $model]);
     }
 
     public function view() : bool

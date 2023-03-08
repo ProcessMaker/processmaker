@@ -2,11 +2,19 @@
 
 namespace ProcessMaker\Templates;
 
-use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
 
+/**
+ * Summary of TemplateInterface
+ */
 interface TemplateInterface
 {
-    public function save($request) : Response;
+    /**
+     * Summary of save
+     * @param mixed $request
+     * @return JsonResponse
+     */
+    public function save($request) : JsonResponse;
 
     public function view() : bool;
 

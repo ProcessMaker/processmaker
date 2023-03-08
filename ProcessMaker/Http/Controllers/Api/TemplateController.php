@@ -34,11 +34,17 @@ class TemplateController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(string $type, Request $request)
     {
-        (new $this->types[$type][1])->save($request);
+        $existingTemplate = (new $this->types[$type][1])->existingTemplate($request);
+
+        if ($existingTemplate) {
+            return response()->json(['message' => ucfirst($type) . ' Template with the same name already exists'], 409);
+        } else {
+            (new $this->types[$type][1])->save($request);
+        }
 
         //dd('STORE');
     //     $processId = $request->id;
