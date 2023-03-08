@@ -20,10 +20,10 @@
           >
             <monaco-editor
               v-model="code"
-              :options="monacoOptions"
-              :language="language"
               class="h-100"
               :class="{hidden: resizing}"
+              :options="monacoOptions"
+              :language="language"
             />
           </b-col>
           <b-col
@@ -254,6 +254,7 @@ export default {
   },
   watch: {
     "preview.output": "handlePreviewOutputChange",
+    code: "handleAutosave",
   },
   mounted() {
     ProcessMaker.EventBus.$emit("script-builder-init", this);
@@ -279,6 +280,13 @@ export default {
       const domNode = this.editorReference.getDomNode();
       const { clientHeight } = this.$refs.editorContainer;
       domNode.style.height = `${clientHeight.toString()}px`;
+    },
+    stopResizing: _.debounce(() => {
+      this.resizing = false;
+    }, 50),
+    handleResize() {
+      this.resizing = true;
+      this.stopResizing();
     },
     handlePreviewOutputChange(output) {
       if (output && !this.outputOpen) {
@@ -313,13 +321,6 @@ export default {
         this.preview.error.message = response.response;
       }
     },
-    stopResizing: _.debounce(() => {
-      this.resizing = false;
-    }, 50),
-    handleResize() {
-      this.resizing = true;
-      this.stopResizing();
-    },
     execute() {
       this.preview.executing = true;
       this.preview.success = false;
@@ -336,9 +337,6 @@ export default {
       }).then((response) => {
         this.executionKey = response.data.key;
       });
-    },
-    onClose() {
-      window.location.href = "/designer/scripts";
     },
     save(onSuccess, onError) {
       ProcessMaker.apiClient
@@ -360,6 +358,26 @@ export default {
             onError(err);
           }
         });
+    },
+    handleAutosave() {
+      if (this.debounceTimeout) {
+        clearTimeout(this.debounceTimeout);
+      }
+
+      this.debounceTimeout = setTimeout(() => {
+        ProcessMaker.apiClient
+          .put(`scripts/${this.script.id}/draft`, {
+            code: this.code,
+            title: this.script.title,
+            description: this.script.description,
+            script_executor_id: this.script.script_executor_id,
+            run_as_user_id: this.script.run_as_user_id,
+            timeout: this.script.timeout,
+          })
+          .then(() => {
+            ProcessMaker.alert(this.$t("The script was saved."), "success");
+          });
+      }, 5000);
     },
     loadBoilerplateTemplate() {
       if (this.script.code === "[]") {

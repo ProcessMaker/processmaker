@@ -95,6 +95,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('scripts/{script}', [ScriptController::class, 'show'])->name('scripts.show')->middleware('can:view-scripts');
     Route::post('scripts', [ScriptController::class, 'store'])->name('scripts.store')->middleware('can:create-scripts');
     Route::put('scripts/{script}', [ScriptController::class, 'update'])->name('scripts.update')->middleware('can:edit-scripts');
+    Route::put('scripts/{script}/draft', [ScriptController::class, 'draft'])->name('scripts.draft')->middleware('can:edit-scripts');
     Route::put('scripts/{script}/duplicate', [ScriptController::class, 'duplicate'])->name('scripts.duplicate')->middleware('can:create-scripts');
     Route::delete('scripts/{script}', [ScriptController::class, 'destroy'])->name('scripts.destroy')->middleware('can:delete-scripts');
     Route::post('scripts/{script}/preview', [ScriptController::class, 'preview'])->name('scripts.preview')->middleware('can:view-scripts');
