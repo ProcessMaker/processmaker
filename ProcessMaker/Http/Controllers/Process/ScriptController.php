@@ -70,6 +70,11 @@ class ScriptController extends Controller
             '_request' => $processRequestAttributes,
         ];
 
+        $draft = $script->versions()->draft()->first();
+        if ($draft) {
+            $script->fill($draft->only(['code']));
+        }
+
         /**
          * Emit the ScriptBuilderStarting event, passing in our ScriptBuilderManager instance. This will
          * allow packages to add additional javascript for Script Builder initialization which

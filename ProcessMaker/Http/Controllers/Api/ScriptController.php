@@ -410,6 +410,7 @@ class ScriptController extends Controller
     {
         $request->validate(Script::rules($script));
 
+        $script->fill(['code' => $request->code]);
         $script->saveDraft();
 
         return response($request, 204);
