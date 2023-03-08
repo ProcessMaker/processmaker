@@ -12,6 +12,7 @@ use ProcessMaker\Http\Controllers\Api\GroupController;
 use ProcessMaker\Http\Controllers\Api\GroupMemberController;
 use ProcessMaker\Http\Controllers\Api\ImportController;
 use ProcessMaker\Http\Controllers\Api\NotificationController;
+use ProcessMaker\Http\Controllers\Api\OpenAIController;
 use ProcessMaker\Http\Controllers\Api\PermissionController;
 use ProcessMaker\Http\Controllers\Api\ProcessCategoryController;
 use ProcessMaker\Http\Controllers\Api\ProcessController;
