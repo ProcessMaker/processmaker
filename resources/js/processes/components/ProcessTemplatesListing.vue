@@ -21,7 +21,7 @@
                 :noDataTemplate="$t('No Data Available')"
         >
           <template slot="name" slot-scope="props">
-            <i tabindex="0"
+            <!-- <i tabindex="0"
               v-b-tooltip
               :title="props.rowData.warningMessages.join(' ')"
               class="text-warning fa fa-exclamation-triangle"
@@ -33,7 +33,7 @@
               :title="props.rowData.status"
               class="mr-2"
               :class="{ 'fas fa-check-circle text-success': props.rowData.status == 'ACTIVE', 'far fa-circle': props.rowData.status == 'INACTIVE' }">
-            </i>
+            </i> -->
             <span v-uni-id="props.rowData.id.toString()">{{props.rowData.name}}</span>
           </template>
   
@@ -320,7 +320,7 @@
                   this.orderBy +
                   "&order_direction=" +
                   this.orderDirection +
-                  "&include"
+                  "&include=user"
                   //"&include=categories,category,user"
               )
               .then(response => {
