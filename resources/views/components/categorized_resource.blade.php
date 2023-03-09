@@ -25,7 +25,7 @@
         </li>
         <li class="nav-item">
             <a class="{{$secondTab}}" id="nav-templates-tab" data-toggle="tab" href="#nav-templates"
-               role="tab" onclick="loadCategory()" aria-controls="nav-templates" aria-selected="true">
+               role="tab" onclick="loadTemplates()" aria-controls="nav-templates" aria-selected="true">
                 {{ $tabs[1] ?? __('Templates') }}
             </a>
         </li>
@@ -83,6 +83,9 @@
       loadProcess = function () {
         ProcessMaker.EventBus.$emit("api-data-process");
       };
+      loadTemplates = function () {
+        ProcessMaker.EventBus.$emit("api-data-process-template");
+      }
       if ({{$listConfig->countCategories}} === 0) loadCategory();
     </script>
 @append

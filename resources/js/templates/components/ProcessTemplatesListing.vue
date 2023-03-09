@@ -69,21 +69,21 @@
                 >
                   <i class="fas fa-file-export fa-lg fa-fw"></i>
                 </b-btn>
-                <b-btn
+                <!-- <b-btn
                         variant="link"
                         @click="onAction('edit-designer', props.rowData, props.rowIndex)"
                         v-b-tooltip.hover
-                        :title="$t('Configure Template')"
+                        :title="$t('Edit Template')"
                         v-if="permission.includes('edit-processes')"
                         v-uni-aria-describedby="props.rowData.id.toString()"
                 >
                   <i class="fas fa-pen-square fa-lg fa-fw"></i>
-                </b-btn>
+                </b-btn> -->
                 <b-btn
                         variant="link"
-                        @click="onAction('edit-item', props.rowData, props.rowIndex)"
+                        @click="onAction('configure-item', props.rowData, props.rowIndex)"
                         v-b-tooltip.hover
-                        :title="$t('Edit Template')"
+                        :title="$t('Configure Template')"
                         v-if="permission.includes('edit-processes')"
                         v-uni-aria-describedby="props.rowData.id.toString()"
                 >
@@ -163,13 +163,16 @@
         };
       },
       created () {
-        ProcessMaker.EventBus.$on("api-data-process", (val) => {
+        ProcessMaker.EventBus.$on("api-data-process-template", (val) => {
           this.fetch();
         });
       },
       methods: {
-        goToEdit(data) {
-          window.location = "/template/process" + data + "/edit";
+        goToEdit(data) {          
+          window.location = "/template/process/" + data + "/edit";
+        },
+        goToConfigure(data) {
+          window.location = "/template/process/" + data + "/configure";
         },
         goToDocumentation(processId) {
           window.location = `/modeler/${processId}/print`;
@@ -215,7 +218,10 @@
               break;
             case "edit-item":
               this.goToEdit(data.id);
-              break;
+            break;
+            case "configure-item":
+              this.goToConfigure(data.id);
+            break;
             case "view-documentation":
               this.goToDocumentation(data.id);
               break;

@@ -1,4 +1,4 @@
-<div class="page-content mb-0" id="processTemplatesListing">
+<div class="page-content mb-0" id="templatesIndex">
     <div id="search-bar" class="search mb-3" vcloak>
         <div class="d-flex flex-column flex-md-row">
             <div class="flex-grow-1">
@@ -19,7 +19,7 @@
 
     <div class="container-fluid">
         <process-templates-listing
-            ref="processTemplatesListing"
+            ref="templateListing"
             :filter="filter"
             {{-- status="archived" --}}
             v-on:reload="reload"
@@ -30,5 +30,5 @@
 </div>
 
 @section('js')
-    <script src="{{mix('js/processes/templates.js')}}"></script>
+    <script src="{{mix('js/templates/index.js')}}"></script>
 @append

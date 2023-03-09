@@ -40,7 +40,7 @@
         @endslot
 
          @slot('templatesList')
-            @component('processes.templatesList', ['config' => $listConfig])
+            @component('templates.list', ['config' => $listConfig])
             @endcomponent
         @endslot
 
