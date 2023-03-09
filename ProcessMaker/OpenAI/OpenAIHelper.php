@@ -19,16 +19,14 @@ class OpenAIHelper
     {
         $question = "Question: $question \n";
         $stopSequence = "$stop \n";
-        $prompt = "$prompt \n $question $stopSequence Response:";
-
+        $prompt = $prompt . $stopSequence . $question . $stopSequence . 'Response:' . "\n";
         return $prompt;
     }
 
-    public static function getNLQToPMQLConfig(String $prompt, String $question)
+    public static function getNLQToPMQLConfig(String $prompt, String $question, String $model)
     {
         $stop = 'END_';
         $prompt = self::formatPromptForNLQToPMQL($prompt, $question, $stop);
-        $model = 'code-davinci-002';
 
         return [
             'prompt' => $prompt,
