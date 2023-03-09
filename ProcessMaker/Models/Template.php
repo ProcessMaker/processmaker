@@ -69,10 +69,10 @@ class Template extends ProcessMakerModel
      */
     public static function rules($existing = null)
     {
-        //$unique = Rule::unique('templates')->ignore($existing);
+        $unique = Rule::unique('templates')->ignore($existing);
 
         return [
-            'name' => ['required', 'alpha_spaces'],
+            'name' => ['required', $unique, 'alpha_spaces'],
             'description' => 'required',
             'template_category_id' => 'exists:template_categories,id',
             'process_id' => 'required',

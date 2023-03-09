@@ -219,7 +219,7 @@ class ProcessTemplate implements TemplateInterface
         $processId = $request->id;
         $name = $request->name;
 
-        if (ProcessTemplates::where(['name' => $name, 'process_id' => $request->id])->exists()) {
+        if (ProcessTemplates::where(['name' => $name])->exists()) {
             // If same asset has been Saved as Template previously, offer to choose between “Update Template” and “Save as New Template”
             return true;
         }
