@@ -12,7 +12,7 @@
         <template>
           <b-row align-v="start">
             <b-col>
-                <p>{{ $t(`This will create a re-usuable template based on the ${this.assetName}`) }}</p>
+                <p>{{ $t(`This will create a re-usuable template based on the ${this.assetName} ${this.assetType}`) }}</p>
                 <required></required>
                 <b-form-group
                     required
