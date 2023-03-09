@@ -227,6 +227,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('import/do-import', [ImportController::class, 'import'])->name('import.do_import')->middleware('can:export-processes');
 
     // Templates
+    Route::get('templates/{type}', [TemplateController::class, 'index'])->name('template.index');
     Route::post('template/{type}/{id}', [TemplateController::class, 'store'])->name('template.store');
 
     // debugging javascript errors

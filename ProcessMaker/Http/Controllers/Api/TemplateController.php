@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Http\Resources\TemplateCollection;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ProcessExporter;
 use ProcessMaker\ImportExport\Options;
@@ -21,13 +22,49 @@ class TemplateController extends Controller
     ];
 
     /**
-     * Display a listing of the resource.
+     * Get list Process Templates
      *
-     * @return \Illuminate\Http\Response
+     * @param string $type
+     * @param Request $request
+     *
+     * @return ApiCollection
+     *
+     * @OA\Get(
+     *     path="/templates/{type}",
+     *     summary="Returns all processes templates that the user has access to",
+     *     operationId="getProcessTemplates",
+     *     tags={"Process Templates"},
+     *     @OA\Parameter(ref="#/components/parameters/filter"),
+     *     @OA\Parameter(ref="#/components/parameters/order_by"),
+     *     @OA\Parameter(ref="#/components/parameters/order_direction"),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(ref="#/components/parameters/status"),
+     *     @OA\Parameter(ref="#/components/parameters/include"),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="list of process templates",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/Process"),
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 ref="#/components/schemas/metadata",
+     *             ),
+     *         ),
+     *     ),
+     * )
      */
-    public function index()
+    public function index(string $type, Request $request)
     {
-        //
+        $templates = (new $this->types[$type][1])->index($request);
+
+        return new TemplateCollection($templates);
     }
 
     /**
@@ -45,42 +82,6 @@ class TemplateController extends Controller
         } else {
             (new $this->types[$type][1])->save($request);
         }
-
-        //dd('STORE');
-    //     $processId = $request->id;
-    //     $name = $request->name;
-    //     $description = $request->description;
-    //     $category = $request->template_category_id;
-
-    //     $svg = Process::select('svg')->where('id', $processId)->firstOrFail();
-    //     $response = (new ExportController)->manifest($type, $processId);
-    //     $dependents = $response->getData('dependents');
-    //     $manifest = $response->getData();
-        //   // dd('he');
-    //     Template::create([
-    //         'name' => $name,
-    //         'description' => $description,
-    //         'manifest' => $manifest,
-    //        'svg' => $svg,
-    //     ]);
-    //     dd('HERE');
-
-        // $model = $this->getModel($type)->findOrFail($processId);
-        // //$options = $request->options;
-        // $mode = $request->mode;
-
-        // //$options = new Options([$screen->uuid => ['mode' => 'discard']]);
-        // $options = new Options($request->options);
-        // // dd($request->options);
-        // $exporter = new Exporter();
-        // // dd('HERE');
-        // dd($options);
-        // $exporter->export($model, $this->types[$type][1], $options);
-        // dd('here');
-        // $response = (new ExportController)->manifest($type, $id);
-        // $manifest = $response->getData();
-
-        // Export the request
     }
 
     /**
@@ -127,14 +128,4 @@ class TemplateController extends Controller
     {
         //
     }
-
-    // private function getModel(string $type): Model
-    // {
-    //     if (isset($this->types[$type])) {
-    //         $modelClass = current($this->types[$type]);
-
-    //         return new $modelClass;
-    //     }
-    //     throw new Exception("Type {$type} not found", 404);
-    // }
 }

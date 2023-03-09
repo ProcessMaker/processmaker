@@ -3,13 +3,14 @@
 namespace ProcessMaker\Templates;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ProcessTemplateCategory;
 use ProcessMaker\Models\ProcessTemplates;
-use ProcessMaker\Models\ProcessTemplates as Templates;
 use SebastianBergmann\CodeUnit\Exception;
 
 /**
@@ -17,13 +18,35 @@ use SebastianBergmann\CodeUnit\Exception;
  */
 class ProcessTemplate implements TemplateInterface
 {
+    public function index(Request $request)
+    {
+        $orderBy = $this->getRequestSortBy($request, 'name');
+        $perPage = $this->getPerPage($request);
+        $include = $this->getRequestInclude($request);
+
+        $templates = ProcessTemplates::with($include);
+        $filter = $request->input('filter');
+
+        $templates = $templates->select('process_templates.*')
+            ->orderBy(...$orderBy)
+            ->where(function ($query) use ($filter) {
+                $query->where('process_templates.name', 'like', '%' . $filter . '%')
+                    ->orWhere('process_templates.description', 'like', '%' . $filter . '%')
+                    ->orWhere('user.firstname', 'like', '%' . $filter . '%')
+                    ->orWhere('user.lastname', 'like', '%' . $filter . '%');
+            })
+            ->get();
+
+        return $templates;
+    }
+
     public function existingTemplate($request)
     {
         $processId = $request->id;
         $name = $request->name;
 
         if (ProcessTemplates::where(['name' => $name, 'process_id' => $request->id])->exists()) {
-            // TODO: If same asset has been Saved as Template previously, offer to choose between “Update Template” and “Save as New Template”
+            // If same asset has been Saved as Template previously, offer to choose between “Update Template” and “Save as New Template”
             return true;
         }
 
@@ -86,11 +109,87 @@ class ProcessTemplate implements TemplateInterface
         dd('PROCESS TEMPLATE DESTROY');
     }
 
+    /**
+     * Get process manifest.
+     *
+     * @param string $type
+     *
+     * @param Request $request
+     *
+     * @return JSON
+     */
     public function getManifest(string $type, int $id) : object
     {
         $response = (new ExportController)->manifest($type, $id);
-        // $manifest = $response->getData();
 
         return $response;
+    }
+
+    /**
+     * Get the where array to filter the resources.
+     *
+     * @param Request $request
+     * @param array $searchableColumns
+     *
+     * @return array
+     */
+    protected function getRequestFilterBy(Request $request, array $searchableColumns)
+    {
+        $where = [];
+        $filter = $request->input('filter');
+        if ($filter) {
+            foreach ($searchableColumns as $column) {
+                // for other columns, it can match a substring
+                $sub_search = '%';
+                if (array_search('status', explode('.', $column), true) !== false) {
+                    // filtering by status must match the entire string
+                    $sub_search = '';
+                }
+                $where[] = [$column, 'like', $sub_search . $filter . $sub_search, 'or'];
+            }
+        }
+
+        return $where;
+    }
+
+    /**
+     * Get included relationships.
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    protected function getRequestSortBy(Request $request, $default)
+    {
+        $column = $request->input('order_by', $default);
+        $direction = $request->input('order_direction', 'asc');
+
+        return [$column, $direction];
+    }
+
+    /**
+     * Get included relationships.
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    protected function getRequestInclude(Request $request)
+    {
+        $include = $request->input('include');
+
+        return $include ? explode(',', $include) : [];
+    }
+
+    /**
+     * Get the size of the page.
+     * per_page=# (integer, the page requested) (Default: 10).
+     *
+     * @param Request $request
+     * @return type
+     */
+    protected function getPerPage(Request $request)
+    {
+        return $request->input('per_page', 10);
     }
 }

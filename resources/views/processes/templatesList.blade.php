@@ -1,4 +1,4 @@
-<div class="page-content mb-0" id="templatesListing">
+<div class="page-content mb-0" id="processTemplatesListing">
     <div id="search-bar" class="search mb-3" vcloak>
         <div class="d-flex flex-column flex-md-row">
             <div class="flex-grow-1">
@@ -18,13 +18,13 @@
 
 
     <div class="container-fluid">
-        <templates-listing
-            ref="processListing"
+        <process-templates-listing
+            ref="processTemplatesListing"
             :filter="filter"
             {{-- status="archived" --}}
             v-on:reload="reload"
             :permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"
-        ></templates-listing>
+        ></process-templates-listing>
     </div>
 </div>
 

@@ -1,19 +1,22 @@
 import Vue from "vue";
-import ProcessesListing from "./components/ProcessesListing";
+import ProcessTemplatesListing from "./components/ProcessTemplatesListing";
 
-Vue.component("TemplatesListing", ProcessesListing);
+Vue.component("ProcessTemplatesListing", ProcessTemplatesListing);
 
 new Vue({
-  el: "#templatesListing",
+  el: "#processTemplatesListing",
   data: {
     filter: "",
   },
   methods: {
     reload() {
-      this.$refs.processListing.dataManager([{
-        field: "updated_at",
-        direction: "desc",
-      }]);
+     // console.log('RELOAD TEMPLATES.JS');
+      //this.$refs.processTemplatesListing.fetch();
+      // console.log("TEMPLATE.JS RELOAD");
+      // this.$refs.processListing.dataManager([{
+      //   field: "updated_at",
+      //   direction: "desc",
+      // }]);
     },
   },
 });
