@@ -628,4 +628,60 @@ class ScriptsTest extends TestCase
 
         Carbon::setTestNow();
     }
+
+    public function testUpdateDraftScript()
+    {
+        $faker = Faker::create();
+        $user = User::factory()->create(['is_administrator' => true]);
+
+        $script = Script::factory()->create([
+            'description' => $faker->sentence(10),
+            'created_at' => now()->yesterday(),
+        ]);
+        $originalAttributes = $script->getAttributes();
+
+        $url = route('api.scripts.draft', ['script' => $script->id]);
+        $response = $this->apiCall('PUT', $url, [
+            'title' => $script->title,
+            'language' => 'lua',
+            'description' => 'jdbsdfkj',
+            'code' => $script->code,
+            'run_as_user_id' => $user->id,
+            'script_category_id' => $script->script_category_id,
+        ]);
+
+        $response->assertStatus(204);
+
+        // assert it creates a draft script version.
+        $script->refresh();
+        $draft = $script->versions()->draft()->first();
+        $this->assertEquals($draft->key, $script->key);
+        $this->assertEquals($draft->title, $originalAttributes['title']);
+        $this->assertEquals($draft->language, $originalAttributes['language']);
+        $this->assertEquals($draft->code, $originalAttributes['code']);
+        $this->assertLessThan(3, $draft->updated_at->diffInSeconds($script->updated_at));
+    }
+
+    public function testCloseDraftScript()
+    {
+        $user = User::factory()->create(['is_administrator' => true]);
+        $script = Script::factory()->create();
+
+        // Create a draft.
+        $url = route('api.scripts.draft', ['script' => $script->id]);
+        $response = $this->apiCall('PUT', $url, [
+            'title' => $script->title,
+            'language' => 'lua',
+            'description' => 'jdbsdfkj',
+            'code' => $script->code,
+            'run_as_user_id' => $user->id,
+            'script_category_id' => $script->script_category_id,
+        ]);
+        $response->assertStatus(204);
+
+        // Close the draft.
+        $response = $this->apiCall('POST', route('api.scripts.close', ['script' => $script->id]));
+        $response->assertStatus(204);
+        $this->assertTrue($script->versions()->draft()->doesntExist());
+    }
 }
