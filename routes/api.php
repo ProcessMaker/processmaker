@@ -229,6 +229,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // Templates
     Route::get('templates/{type}', [TemplateController::class, 'index'])->name('template.index');
     Route::post('template/{type}/{id}', [TemplateController::class, 'store'])->name('template.store');
+    Route::put('template/{type}/{id}', [TemplateController::class, 'update'])->name('template.update');
 
     // debugging javascript errors
     Route::post('debug', [DebugController::class, 'store'])->name('debug.store')->middleware('throttle');
