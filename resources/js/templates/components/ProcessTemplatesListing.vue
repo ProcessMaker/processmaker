@@ -34,7 +34,9 @@
               class="mr-2"
               :class="{ 'fas fa-check-circle text-success': props.rowData.status == 'ACTIVE', 'far fa-circle': props.rowData.status == 'INACTIVE' }">
             </i> -->
-            <span v-uni-id="props.rowData.id.toString()">{{props.rowData.name}}</span>
+            <span v-uni-id="props.rowData.id.toString()">{{props.rowData.name}}
+              <small class="muted d-block">{{ props.rowData.description }}</small>
+            </span>
           </template>
   
           <template slot="owner" slot-scope="props">
@@ -49,7 +51,7 @@
           <template slot="actions" slot-scope="props">
             <div class="actions">
               <div class="popout">
-                <b-btn
+                <!-- <b-btn
                         variant="link"
                         @click="onAction('view-documentation', props.rowData, props.rowIndex)"
                         v-b-tooltip.hover
@@ -58,8 +60,8 @@
                         v-uni-aria-describedby="props.rowData.id.toString()"
                 >
                   <i class="fas fa-map-signs fa-lg fa-fw"></i>
-                </b-btn>
-                <b-btn
+                </b-btn> -->
+                <!-- <b-btn
                         variant="link"
                         @click="onAction('export-item', props.rowData, props.rowIndex)"
                         v-b-tooltip.hover
@@ -68,7 +70,7 @@
                         v-uni-aria-describedby="props.rowData.id.toString()"
                 >
                   <i class="fas fa-file-export fa-lg fa-fw"></i>
-                </b-btn>
+                </b-btn> -->
                 <!-- <b-btn
                         variant="link"
                         @click="onAction('edit-designer', props.rowData, props.rowIndex)"
