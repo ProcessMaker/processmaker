@@ -34,8 +34,10 @@ class Template extends ProcessMakerModel
         'template_category_id',
         'name',
         'description',
+        'user_id',
         'manifest',
         'svg',
+        'is_system',
         'created_at',
         'updated_at',
     ];
