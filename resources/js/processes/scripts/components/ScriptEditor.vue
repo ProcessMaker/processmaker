@@ -382,7 +382,16 @@ export default {
             timeout: this.script.timeout,
           })
           .then(() => {
-            ProcessMaker.alert(this.$t("The script was saved."), "success");
+            // Display saved notification.
+            this.$refs.menuScript.unshiftItem({
+              id: "SavedNotification",
+              type: "SavedNotification",
+              section: "right",
+            });
+            // Hide the notification after 2 seconds.
+            setTimeout(() => {
+              this.$refs.menuScript.shiftItem();
+            }, 2000);
           });
       }, this.autoSaveDelay);
     },
