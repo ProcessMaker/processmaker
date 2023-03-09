@@ -11,27 +11,15 @@ class OpenAIController extends Controller
 {
     public function NLQToPMQL(Client $client, Request $request)
     {
-        $question = $request->input('question');
+        /**
+         * Types: requests, tasks, collections, settings, security_logs
+         **/
         $type = $request->input('type');
-        $promptFile = '';
+        $question = $request->input('question');
+        $model = 'text-davinci-003';
 
-        if ($type === 'requests') {
-            $promptFile = OpenAIHelper::readPromptFromFile('pmql_code_generator_optimized.md');
-        }
-
-        if ($type === 'tasks') {
-            $promptFile = OpenAIHelper::readPromptFromFile('pmql_code_generator_optimized_for_tasks.md');
-        }
-
-        if ($type === 'settings') {
-            $promptFile = OpenAIHelper::readPromptFromFile('pmql_code_generator_optimized_for_settings.md');
-        }
-
-        if ($type != 'requests' && $type != 'tasks' && $type != 'settings') {
-            $promptFile = OpenAIHelper::readPromptFromFile('pmql_code_generator.md');
-        }
-
-        $config = OpenAIHelper::getNLQToPMQLConfig($promptFile, $question);
+        $prompt = OpenAIHelper::readPromptFromFile('pmql_code_generator_optimized_for_' . $type . '.md');
+        $config = OpenAIHelper::getNLQToPMQLConfig($prompt, $question, $model);
         $result = OpenAIHelper::getNLQToPMQL($client, $config);
 
         return response()->json(['result' => $result]);
