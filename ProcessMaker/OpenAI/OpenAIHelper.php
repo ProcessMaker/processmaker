@@ -39,14 +39,15 @@ class OpenAIHelper
         ];
     }
 
-    public static function getNLQToPMQL(Client $client, $config)
+    public static function runNLQToPMQL(Client $client, $config)
     {
         $result = $client->completions()->create($config);
+        $usage = $result->usage;
         $result = ltrim($result->choices[0]->text);
         $result = explode('Question:', $result)[0];
         $result = rtrim(rtrim(str_replace("\n", '', $result)));
         $result = str_replace('\'', '', $result);
 
-        return $result;
+        return [$result, $usage];
     }
 }
