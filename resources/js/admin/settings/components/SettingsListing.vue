@@ -2,6 +2,13 @@
   <div class="settings-listing data-table">
     <div class="d-flex mb-3">
       <basic-search @submit="onSearch"></basic-search>
+      <pmql-input 
+        :search-type="'settings'"
+        :value="pmql"
+        :ai-enabled="true"
+        :aria-label="$t('Advanced Search (PMQL)')"
+        :search-label="$t('Search using natural language or PMQL')"
+        @submit="onNLQConversion"></pmql-input>
       <div v-if="topButtons" class="d-flex">
         <b-button
             v-for="(btn,index) in topButtons"
@@ -117,6 +124,7 @@
 <script>
 import { BasicSearch } from "SharedComponents";
 import isPMQL from "../../../modules/isPMQL";
+import PmqlInput from "../../../components/shared/PmqlInput";
 import SettingBoolean from './SettingBoolean';
 import SettingCheckboxes from './SettingCheckboxes';
 import SettingChoice from './SettingChoice';
@@ -134,6 +142,7 @@ const uniqIdsMixin = createUniqIdsMixin();
 export default {
   components: {
     BasicSearch,
+    PmqlInput,
     SettingBoolean,
     SettingChoice,
     SettingCheckboxes,
@@ -221,6 +230,9 @@ export default {
           this.filterTopButtons(response.data);
           this.filterBottomButtons(response.data);
         });
+    },
+    onNLQConversion(pqml) {
+      this.searchQuery = pqml;
     },
     apiGet() {
       return ProcessMaker.apiClient.get(this.pageUrl(this.currentPage));
