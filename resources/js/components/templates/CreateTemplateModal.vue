@@ -91,7 +91,12 @@
         },
         close() {
           this.$bvModal.hide('createTemplate');
+          this.clear();
           this.errors = {};
+        },
+        clear() {
+          this.name = '';
+          this.description = '';
         },
         onUpdate() {
           this.$emit('update-template');
