@@ -92,7 +92,9 @@
         </b-navbar-nav>
 
         <b-navbar-nav class="d-flex align-items-center ml-auto">
+            @if (shouldShow('requestButton'))
             <component v-bind:is="'request-modal'" url="{{ route('processes.index') }}" v-bind:permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"></component>
+            @endif
 
             @can('view-notifications')
                 <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages">
