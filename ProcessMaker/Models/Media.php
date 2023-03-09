@@ -173,4 +173,22 @@ class Media extends MediaLibraryModel
             ]);
         }
     }
+
+    /**
+     * getFilesRequest
+     *
+     * @param  ProcessRequest $request
+     * @return Media files
+     */
+    public static function getFilesRequest(ProcessRequest $request)
+    {
+        $requestTokenIds = [$request->id];
+        if ($request->collaboration && $request->collaboration->requests()) {
+            // Get all processes and subprocesses request token id's ..
+            $requestTokenIds = $request->collaboration->requests->pluck('id');
+        }
+
+        // Get all files for process and all subprocesses ..
+        return self::whereIn('model_id', $requestTokenIds)->get();
+    }
 }

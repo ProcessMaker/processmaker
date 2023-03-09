@@ -6,7 +6,6 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
@@ -21,10 +20,8 @@ use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
-use ProcessMaker\Nayra\Bpmn\Models\TimerEventDefinition;
 use ProcessMaker\Nayra\Exceptions\ElementNotFoundException;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
-use ProcessMaker\Nayra\Storage\BpmnElement;
 use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 use ProcessMaker\Rules\BPMNValidation;
@@ -161,6 +158,7 @@ class ProcessController extends Controller
      * @param Request $request
      *
      * @return \Illuminate\Http\JsonResponse
+     *
      * @throws \Illuminate\Validation\ValidationException
      *
      * @OA\Post(
@@ -230,11 +228,12 @@ class ProcessController extends Controller
     }
 
     /**
-     * Updates the current element
+     * Updates the current element.
      *
      * @param Request $request
      * @param Process $process
      * @return ResponseFactory|Response
+     *
      * @throws \Throwable
      *
      * @OA\Put(
@@ -407,7 +406,7 @@ class ProcessController extends Controller
 
     /**
      * Validates the Bpmn content that comes in the request.
-     * Returns the list of errors found
+     * Returns the list of errors found.
      *
      * @param Request $request
      * @return array|null
@@ -431,7 +430,7 @@ class ProcessController extends Controller
                 $schemaErrors[] = $e->getMessage();
             }
             $schemaErrors = $this->validateOnlyOneDiagram($document, $schemaErrors);
-            $rulesValidation = new BPMNValidation;
+            $rulesValidation = new BPMNValidation();
             if (!$rulesValidation->passes('document', $document)) {
                 $errors = $rulesValidation->errors('document', $document)->getMessages();
                 $schemaErrors[] = [
@@ -446,7 +445,7 @@ class ProcessController extends Controller
     }
 
     /**
-     * Validate the bpmn has only one BPMNDiagram
+     * Validate the bpmn has only one BPMNDiagram.
      *
      * @param BpmnDocument $document
      * @param array $schemaErrors
@@ -566,7 +565,7 @@ class ProcessController extends Controller
             ->where($where);
 
         // Add the order by columns
-        foreach ($orderColumns as $key=>$orderColumn) {
+        foreach ($orderColumns as $key => $orderColumn) {
             $orderDirection = array_key_exists($key, $orderDirections) ? $orderDirections[$key] : 'asc';
             $query->orderBy($orderColumn, $orderDirection);
         }
@@ -619,11 +618,12 @@ class ProcessController extends Controller
     }
 
     /**
-     * Reverses the soft delete of the element
+     * Reverses the soft delete of the element.
      *
      * @param Request $request
      * @param Process $process
      * @return ResponseFactory|Response
+     *
      * @throws \Throwable
      *
      * @OA\Put(
@@ -672,6 +672,7 @@ class ProcessController extends Controller
      * @param Process $process
      *
      * @return ResponseFactory|Response
+     *
      * @throws \Illuminate\Validation\ValidationException
      *
      * @OA\Delete(
@@ -750,6 +751,54 @@ class ProcessController extends Controller
     }
 
     /**
+     * Validate the specified process before importing.
+     *
+     * @param $process
+     *
+     * @return Response
+     *
+     * @OA\Post(
+     *     path="/processes/import/validation",
+     *     summary="Validate a import",
+     *     operationId="validateImport",
+     *     tags={"Processes"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/ProcessImport")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="file",
+     *                     description="file to import",
+     *                     type="string",
+     *                     format="binary",
+     *                 ),
+     *             )
+     *         )
+     *     ),
+     * )
+     */
+    public function preimportValidation(Process $process, Request $request)
+    {
+        $content = $request->file('file')->get();
+        $payload = json_decode($content);
+
+        if (!$result = $this->validateImportedFile($content, $request)) {
+            return response(
+                ['message' => __('The selected file is invalid or not supported for import.')],
+                422
+            );
+        }
+
+        return $result;
+    }
+
+    /**
      * Import the specified process.
      *
      * @param $process
@@ -785,7 +834,7 @@ class ProcessController extends Controller
     public function import(Process $process, Request $request)
     {
         $content = $request->file('file')->get();
-        if (!$this->validateImportedFile($content)) {
+        if (!$this->validateImportedFile($content, $request)) {
             return response(
                 ['message' => __('Invalid Format')],
                 422
@@ -807,6 +856,7 @@ class ProcessController extends Controller
             'status' => $import->status,
             'assignable' => $import->assignable,
             'process' => $import->process,
+            'processId' => $import->process->id,
         ]);
     }
 
@@ -870,8 +920,8 @@ class ProcessController extends Controller
      * @param Request $request
      *
      * @return resource
-     * @throws \Throwable
      *
+     * @throws \Throwable
      *
      * @OA\Post(
      *     path="/processes/{process_id}/import/assignments",
@@ -1147,7 +1197,7 @@ class ProcessController extends Controller
 
     /**
      * Get the size of the page.
-     * per_page=# (integer, the page requested) (Default: 10)
+     * per_page=# (integer, the page requested) (Default: 10).
      *
      * @param Request $request
      * @return type
@@ -1158,13 +1208,13 @@ class ProcessController extends Controller
     }
 
     /**
-     * Verify if the file is valid to be imported
+     * Verify if the file is valid to be imported.
      *
      * @param string $content
      *
      * @return bool
      */
-    private function validateImportedFile($content)
+    private function validateImportedFile($content, $request)
     {
         $decoded = substr($content, 0, 1) === '{' ? json_decode($content) : (($content = base64_decode($content)) && substr($content, 0, 1) === '{' ? json_decode($content) : null);
         $isDecoded = $decoded && is_object($decoded);
@@ -1172,6 +1222,11 @@ class ProcessController extends Controller
         $validType = $hasType && $decoded->type === 'process_package';
         $hasVersion = $isDecoded && isset($decoded->version) && is_string($decoded->version);
         $validVersion = $hasVersion && method_exists(ImportProcess::class, "parseFileV{$decoded->version}");
+        $useNewImporter = $decoded !== null && property_exists($decoded, 'version') && (int) $decoded->version === 2;
+
+        if ($useNewImporter) {
+            return (new ImportController())->preview($request, $decoded->version);
+        }
 
         return $isDecoded && $validType && $validVersion;
     }

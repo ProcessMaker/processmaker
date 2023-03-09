@@ -320,7 +320,7 @@
         mounted() {
           let created = (new URLSearchParams(window.location.search)).get('created');
           if (created) {
-            ProcessMaker.alert('{{__('The user was successfully created')}}', 'success');
+            ProcessMaker.alert(this.$t('The user was successfully created'), 'success');
           }
         },
         watch: {
@@ -415,7 +415,7 @@
             if (!this.validatePassword()) return false;
             ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
               .then(response => {
-                ProcessMaker.alert('{{__('User Updated Successfully ')}}', 'success');
+                ProcessMaker.alert(this.$t('User Updated Successfully '), 'success');
                 if (this.formData.id == window.ProcessMaker.user.id) {
                   window.ProcessMaker.events.$emit('update-profile-avatar');
                 }
@@ -431,9 +431,9 @@
               user_id: this.formData.id
             })
               .then(response => {
-                ProcessMaker.alert('{{__('User Permissions Updated Successfully')}}', 'success');
+                ProcessMaker.alert(this.$t('User Permissions Updated Successfully'), 'success');
                 if (this.userId === this.currentUserId) {
-                  ProcessMaker.alert('{{__('Please logout and login again to reflect permission changes')}}', 'warning');
+                  ProcessMaker.alert(this.$t('Please logout and login again to reflect permission changes'), 'warning');
                 }
               })
           },
@@ -480,7 +480,7 @@
                 groups: groups
             })
             .then(response => {
-              ProcessMaker.alert('{{__('Groups Updated Successfully ')}}', 'success');
+              ProcessMaker.alert(this.$t('Groups Updated Successfully '), 'success');
             })
             .catch(error => {
               this.errors = error.response.data.errors;

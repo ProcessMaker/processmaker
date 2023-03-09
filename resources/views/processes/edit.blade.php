@@ -381,7 +381,7 @@
             this.formData.manager_id = this.formatValueScreen(this.manager);
             ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
               .then(response => {
-                ProcessMaker.alert('{{__('The process was saved.')}}', 'success', 5, true);
+                ProcessMaker.alert(this.$t('The process was saved.'), 'success', 5, true);
                 that.onClose();
               })
               .catch(error => {

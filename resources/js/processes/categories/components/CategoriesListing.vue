@@ -177,7 +177,7 @@
               () => {
                 ProcessMaker.apiClient.delete(`${this.apiRoute}/${data.id}`)
                   .then(() => {
-                    ProcessMaker.alert("The category was deleted.", "success");
+                    ProcessMaker.alert(this.$t("The category was deleted."), "success");
                     this.$emit("reload");
                   });
 

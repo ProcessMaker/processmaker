@@ -166,11 +166,12 @@ class NotificationControlsTest extends TestCase
             'notifiable_type' => 'NOTIFIABLE/TEST',
             'data' => json_encode(['url' => $taskUrl]),
             'notifiable_id' => 1,
+            'url' => $taskUrl,
         ]);
         $response->assertStatus(201);
 
         // Verify that there is one notification for the tasK:
-        $beforeCount = Notification::where('data->url', $taskUrl)
+        $beforeCount = Notification::where('url', $taskUrl)
                     ->whereNull('read_at')
                     ->get()
                     ->count();
@@ -178,7 +179,7 @@ class NotificationControlsTest extends TestCase
 
         // Goto to the edit task screen and verify that the notification is read
         $response = $this->webCall('GET', $taskUrl);
-        $afterCount = Notification::where('data->url', $taskUrl)
+        $afterCount = Notification::where('url', $taskUrl)
             ->whereNull('read_at')
             ->get()
             ->count();

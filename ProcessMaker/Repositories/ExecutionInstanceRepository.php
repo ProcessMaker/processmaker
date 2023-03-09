@@ -11,6 +11,7 @@ use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\ExecutionInstanceRepositoryInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\StorageInterface;
 use ProcessMaker\Nayra\RepositoryTrait;
+use ProcessMaker\SanitizeHelper;
 
 /**
  * Execution Instance Repository.
@@ -111,6 +112,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->name = $definition->name;
         $instance->status = 'ACTIVE';
         $instance->initiated_at = Carbon::now();
+        $instance->do_not_sanitize = SanitizeHelper::getDoNotSanitizeFields($definition);
         $instance->data = $data;
         $instance->saveOrFail();
         $instance->setId($instance->getKey());
@@ -217,7 +219,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     }
 
     /**
-     * Persist current collaboration
+     * Persist current collaboration.
      *
      * @param ProcessRequest $instance
      * @return void

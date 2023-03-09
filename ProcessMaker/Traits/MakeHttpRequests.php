@@ -440,7 +440,7 @@ trait MakeHttpRequests
             $this->log('Request Headers: ', var_export($headers, true));
         }
 
-        $response =  $client->send($request, $options);
+        $response = $client->send($request, $options);
 
         if ($this->debug_mode) {
             $this->log('Response: ', var_export($response, true));
@@ -644,16 +644,16 @@ trait MakeHttpRequests
         if (empty($this->name)) {
             return;
         }
-        $cleanedLog = preg_replace('/(Authorization.+Bearer\s+)(.+?)([\'"])/mi', "$1*******$3", $log);
-        $cleanedLog = preg_replace('/(Authorization.+Basic\s+)(.+?)([\'"])/mi', "$1*******$3", $cleanedLog);
+        $cleanedLog = preg_replace('/(Authorization.+Bearer\s+)(.+?)([\'"])/mi', '$1*******$3', $log);
+        $cleanedLog = preg_replace('/(Authorization.+Basic\s+)(.+?)([\'"])/mi', '$1*******$3', $cleanedLog);
 
         //oauth password sends security information in the body. As this request is our own,
         //it is the only case in which we can obfuscate parts of the body as we know its structure
         if ($this->authtype === 'OAUTH2_PASSWORD') {
-            $cleanedLog = preg_replace('/(body.+?)(username[\'"]\s*:\s*[\'"])(.+?)([\'"])/mi', "$1$2*******$4", $cleanedLog);
-            $cleanedLog = preg_replace('/(body.+?)(password[\'"]\s*:\s*[\'"])(.+?)([\'"])/mi', "$1$2*******$4", $cleanedLog);
-            $cleanedLog = preg_replace('/(body.+?)(client_id[\'"]\s*:\s*[\'"])(.+?)([\'"])/mi', "$1$2*******$4", $cleanedLog);
-            $cleanedLog = preg_replace('/(body.+?)(client_secret[\'"]\s*:\s*[\'"])(.+?)([\'"])/mi', "$1$2*******$4", $cleanedLog);
+            $cleanedLog = preg_replace('/(body.+?)(username[\'"]\s*:\s*[\'"])(.+?)([\'"])/mi', '$1$2*******$4', $cleanedLog);
+            $cleanedLog = preg_replace('/(body.+?)(password[\'"]\s*:\s*[\'"])(.+?)([\'"])/mi', '$1$2*******$4', $cleanedLog);
+            $cleanedLog = preg_replace('/(body.+?)(client_id[\'"]\s*:\s*[\'"])(.+?)([\'"])/mi', '$1$2*******$4', $cleanedLog);
+            $cleanedLog = preg_replace('/(body.+?)(client_secret[\'"]\s*:\s*[\'"])(.+?)([\'"])/mi', '$1$2*******$4', $cleanedLog);
         }
 
         try {
@@ -663,10 +663,8 @@ trait MakeHttpRequests
                 'path' => storage_path("logs/data-sources/$connectorName.log"),
                 'days' => env('DATA_SOURCE_CLEAR_LOG', 21),
             ])->info($label . str_replace(["\n", "\t", "\r"], '', $cleanedLog));
-        }
-        catch(\Throwable $e) {
+        } catch(\Throwable $e) {
             Log::error($e->getMessage());
         }
     }
-
 }

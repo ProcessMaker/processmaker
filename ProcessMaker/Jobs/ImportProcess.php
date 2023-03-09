@@ -660,7 +660,7 @@ class ImportProcess implements ShouldQueue
         try {
             $this->prepareStatus('process', true);
             $new = new Process;
-            $new->process_category_id = array_shift($this->new['process_categories'])->id;
+            $new->process_category_id = collect($this->new['process_categories'])->pluck('id')->join(',');
             $new->user_id = $this->currentUser()->id;
             $new->bpmn = $process->bpmn;
             $new->description = $process->description;
@@ -671,8 +671,6 @@ class ImportProcess implements ShouldQueue
             $new->properties = isset($process->properties) ? (array) $process->properties : null;
             $new->save();
             $this->newProcessId = $new->id;
-
-            $new->categories()->saveMany($this->new['process_categories']);
 
             if (property_exists($process, 'notifications')) {
                 foreach ($process->notifications as $notifiable => $notificationTypes) {
@@ -825,6 +823,10 @@ class ImportProcess implements ShouldQueue
             'assignable' => $this->assignable,
             'process' => $this->new['process'],
         ];
+    }
+
+    private function parseFileV2()
+    {
     }
 
     /**
