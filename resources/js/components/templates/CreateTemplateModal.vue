@@ -5,6 +5,7 @@
         :title="title" 
         @update="onUpdate"
         @saveTemplate="saveTemplate"
+        @close="close"
         :setCustomButtons="true"
         :customButtons="customModalButtons"
         size="md"
@@ -14,6 +15,7 @@
             <b-col>
                 <p>{{ $t(`This will create a re-usuable template based on the ${this.assetName} ${this.assetType}`) }}</p>
                 <required></required>
+                <p class="mb-3" v-if="showWarning"><i class="fas fa-exclamation-triangle text-warning"></i> {{ $t('There is already a template with this name') }}</p>
                 <b-form-group
                     required
                     :label="$t('Template Name')"
@@ -67,9 +69,10 @@
           description: '',
           showModal: false,
           disabled: true,
+          showWarning: false,
           mode: 'copy',
           customModalButtons: [
-              {'content': 'Cancel', 'action': 'hide()', 'variant': 'outline-secondary', 'disabled': false, 'hidden': false},
+              {'content': 'Cancel', 'action': 'close', 'variant': 'outline-secondary', 'disabled': false, 'hidden': false},
               {'content': 'Publish', 'action': 'saveTemplate', 'variant': 'secondary', 'disabled': false, 'hidden': false},
           ],
         }
@@ -97,6 +100,7 @@
         clear() {
           this.name = '';
           this.description = '';
+          this.showWarning = false;
         },
         onUpdate() {
           this.$emit('update-template');
@@ -117,8 +121,10 @@
             }).catch(error => {
                 const message = error.response.data.message;
                 if (message === this.assetExistsError) {
-                    this.$emit('templateExists', formData);
-                    this.close();
+                    this.showWarning = true;
+                   // this.errors = {'name':  };
+                   // this.$emit('templateExists', formData);
+                   // this.close();
                 } else {
                     ProcessMaker.alert(message,"danger");
                 }

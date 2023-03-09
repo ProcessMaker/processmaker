@@ -142,8 +142,8 @@
           </div>
         </template>
       </vuetable>
-      <create-template-modal id="create-template-modal" ref="create-template-modal" assetType="process" :currentUserId="currentUserId" :assetName="processTemplateName" :assetId="processId" @templateExists="showTemplateExistsModal"/>
-      <template-exists-modal ref="template-exists-modal" :assetData="processData" />
+      <create-template-modal id="create-template-modal" ref="create-template-modal" assetType="process" :currentUserId="currentUserId" :assetName="processTemplateName" :assetId="processId"/>
+      <!-- <template-exists-modal ref="template-exists-modal" :assetData="processData" /> -->
       <pagination
               :single="$t('Process')"
               :plural="$t('Processes')"
@@ -227,12 +227,7 @@
         this.fetch();
       });
     },
-    methods: {
-      showTemplateExistsModal(data) {
-        this.processData = data;
-        console.log('data', data);
-        this.$refs["template-exists-modal"].show();
-      },
+    methods: {      
       showCreateTemplateModal(name, id) {        
         this.processId = id;
         this.processTemplateName = name;
