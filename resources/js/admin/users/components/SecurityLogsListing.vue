@@ -1,6 +1,13 @@
 <template>
   <div>
     <basic-search class="mb-3" v-model="query" @submit="runSearch"></basic-search>
+    <pmql-input 
+        :search-type="'security_logs'"
+        :value="pmql"
+        :ai-enabled="true"
+        :aria-label="$t('Advanced Search (PMQL)')"
+        :search-label="$t('Search using natural language or PMQL')"
+        @submit="onNLQConversion"></pmql-input>
     <div class="data-table">
       <div class="card card-body table-card">
         <vuetable
@@ -51,9 +58,10 @@
   import datatableMixin from "../../../components/common/mixins/datatable";
   import { BasicSearch } from "SharedComponents";
   import isPMQL from "../../../modules/isPMQL";
+  import PmqlInput from "../../../components/shared/PmqlInput";
 
   export default {
-    components: { BasicSearch },
+    components: { BasicSearch, PmqlInput },
     mixins: [datatableMixin],
     props: ["userId"],
     computed: {
@@ -142,7 +150,10 @@
       },
       runSearch() {
         this.fetch();
-      }
+      },
+      onNLQConversion(pqml) {
+        this.pmql = pqml;
+      },
     }
   }
 
