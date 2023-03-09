@@ -48,6 +48,18 @@
                     name="description"
                     ></b-form-textarea>
                 </b-form-group>
+
+                <b-form-group>
+                    <b-form-radio v-model="saveMode" 
+                        name="save-mode-options" 
+                        value="copy">{{ $t('Save all assets') }}
+                    </b-form-radio>
+
+                    <b-form-radio v-model="saveMode" 
+                        name="save-mode-options" 
+                        value="discard">{{ $t(`Save ${assetType} modal only`) }}
+                    </b-form-radio>
+                </b-form-group>
             </b-col>
           </b-row>
         </template>
@@ -70,7 +82,7 @@
           showModal: false,
           disabled: true,
           showWarning: false,
-          mode: 'copy',
+          saveMode: 'copy',
           customModalButtons: [
               {'content': 'Cancel', 'action': 'close', 'variant': 'outline-secondary', 'disabled': false, 'hidden': false},
               {'content': 'Publish', 'action': 'saveTemplate', 'variant': 'secondary', 'disabled': false, 'hidden': false},
@@ -101,6 +113,7 @@
           this.name = '';
           this.description = '';
           this.showWarning = false;
+          this.saveMode = 'copy';
         },
         onUpdate() {
           this.$emit('update-template');
@@ -112,7 +125,7 @@
             formData.append("name", this.name);
             formData.append("description", this.description);
             formData.append("user_id", this.currentUserId);
-            formData.append("mode", this.mode);
+            formData.append("mode", this.saveMode);
             formData.append("template_category_id", null);
             ProcessMaker.apiClient.post("template/" + this.assetType + '/' + this.assetId, formData)
             .then(response => {
@@ -122,6 +135,7 @@
                 const message = error.response.data.message;
                 if (message === this.assetExistsError) {
                     this.showWarning = true;
+                    //this.showHiddenButtons();
                    // this.errors = {'name':  };
                    // this.$emit('templateExists', formData);
                    // this.close();
