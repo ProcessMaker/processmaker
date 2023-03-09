@@ -205,6 +205,10 @@ export default {
       type: String,
       default: "{}",
     },
+    autoSaveDelay: {
+      type: Number,
+      default: 5000,
+    },
   },
   data() {
     const options = [
@@ -380,7 +384,7 @@ export default {
           .then(() => {
             ProcessMaker.alert(this.$t("The script was saved."), "success");
           });
-      }, 5000);
+      }, this.autoSaveDelay);
     },
     close() {
       ProcessMaker.apiClient

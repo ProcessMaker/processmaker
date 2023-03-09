@@ -68,6 +68,7 @@ export default {
         borderOutline: {},
       },
       process: window.ProcessMaker.modeler.process,
+      autoSaveDelay: window.ProcessMaker.modeler.autoSaveDelay,
       validationErrors: {},
       warnings: [],
       xmlManager: null,
@@ -252,7 +253,7 @@ export default {
         ProcessMaker.apiClient.put(`/processes/${this.process.id}`, data)
           .then(savedSuccessfully)
           .catch(saveFailed);
-      }, 5000);
+      }, this.autoSaveDelay);
     },
   },
 };

@@ -82,7 +82,12 @@ class ScriptController extends Controller
          */
         event(new ScriptBuilderStarting($manager));
 
-        return view('processes.scripts.builder', compact('script', 'testData', 'manager'));
+        return view('processes.scripts.builder', [
+            'script' => $script,
+            'manager' => $manager,
+            'testData' => $testData,
+            'autoSaveDelay' => config('versions.delay.script', 5000),
+        ]);
     }
 
     private function getProcessRequestAttributes()
