@@ -40,7 +40,7 @@ class TemplateController extends Controller
         $existingTemplate = (new $this->types[$type][1])->existingTemplate($request);
 
         if ($existingTemplate) {
-            return response()->json(['message' => ucfirst($type) . ' Template with the same name already exists'], 409);
+            return response()->json(['name' => ['The template name must be unique.']], 409);
         }
 
         (new $this->types[$type][1])->save($request);

@@ -13,6 +13,7 @@ use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\Templates;
+use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Templates\HelperTrait;
 use Tests\TestCase;
@@ -26,6 +27,9 @@ class ProcessTemplateTest extends TestCase
     public function testSaveProcessAssetsAsTemplate()
     {
         $this->addGlobalSignalProcess();
+
+        // Create User
+        $user = User::factory()->create();
 
         // Create process screens
         $screen = $this->createScreen('basic-form-screen', ['title' => 'Test Screen']);
@@ -47,6 +51,7 @@ class ProcessTemplateTest extends TestCase
                 'id' => $process->id,
             ]),
             [
+                'user_id' => $user->id,
                 'name' => 'Test Template',
                 'description' => 'Test template description',
                 'process_template_category_id' => 1,
@@ -64,6 +69,9 @@ class ProcessTemplateTest extends TestCase
     public function testNotAllowingToSaveDuplicateTemplateWithTheSameName()
     {
         $this->addGlobalSignalProcess();
+
+        // Create User
+        $user = User::factory()->create();
 
         // Create Process Screens
         $screen = $this->createScreen('basic-form-screen', ['title' => 'Test Screen']);
@@ -85,6 +93,7 @@ class ProcessTemplateTest extends TestCase
                 'id' => $process->id,
             ]),
             [
+                'user_id' => $user->id,
                 'name' => 'Test Duplicate Name Template',
                 'description' => 'Test template description',
                 'process_template_category_id' => 1,
@@ -93,12 +102,15 @@ class ProcessTemplateTest extends TestCase
         );
 
         $response->assertStatus(409);
-        $this->assertEquals('Process Template with the same name already exists', $response->getOriginalContent()['message']);
+        $this->assertEquals('The template name must be unique.', $response->getOriginalContent()['name'][0]);
     }
 
     public function testSaveProcessModelAsTemplate()
     {
         $this->addGlobalSignalProcess();
+
+        // Create User
+        $user = User::factory()->create();
 
         $screen = $this->createScreen('basic-form-screen', ['title' => 'Test Screen']);
         $screenCategory = ScreenCategory::factory()->create(['name' => 'screen category', 'status' => 'ACTIVE']);
@@ -118,6 +130,7 @@ class ProcessTemplateTest extends TestCase
                 'id' => $process->id,
             ]),
             [
+                'user_id' => $user->id,
                 'name' => 'Test Template',
                 'description' => 'Test template description',
                 'process_template_category_id' => 1,
