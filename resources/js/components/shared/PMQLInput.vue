@@ -11,7 +11,11 @@
           <span v-html="searchInputLabel"></span>
         </label>
 
-        <label class="badge badge-primary badge-pill usage-label">{{ usage.totalTokens }} tokens</label>
+        <label class="badge badge-primary badge-pill usage-label"
+          v-b-tooltip.hover :title="'Prompt tokens: ' + usage.promptTokens + ' - Completion tokens: ' + usage.completionTokens + ' - Total: ' + usage.totalTokens + ' tokens'">
+          {{ usage.totalTokens }} tokens
+          <i class="fa fa-info-circle ml-1"></i>
+        </label>
     </div>
   </div>
 </template>
