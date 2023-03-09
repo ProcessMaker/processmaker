@@ -54,8 +54,7 @@
   </template>
   
   <script>
-    import { restElement } from "@babel/types";
-import { FormErrorsMixin, Modal, Required } from "SharedComponents";
+    import { FormErrorsMixin, Modal, Required } from "SharedComponents";
   
     export default {
       components: { Modal, Required },
@@ -118,13 +117,6 @@ import { FormErrorsMixin, Modal, Required } from "SharedComponents";
                 } else {
                     ProcessMaker.alert(message,"danger");
                 }
-               
-            //     errors.forEach(error => {
-            //         console.log('error', error);
-            //     });
-            //     // this.errors = {name: [error.message]};
-            //     // console.log('ERROR', error.response.data);
-            //   //ProcessMaker.alert(error.message,"danger");
             }); 
             //this.close();
         },
