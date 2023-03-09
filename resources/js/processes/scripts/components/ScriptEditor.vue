@@ -261,6 +261,9 @@ export default {
     ProcessMaker.EventBus.$on("save-script", (onSuccess, onError) => {
       this.save(onSuccess, onError);
     });
+    ProcessMaker.EventBus.$on("script-close", () => {
+      this.close();
+    });
 
     window.addEventListener("resize", this.handleResize);
     const userID = document.head.querySelector("meta[name=\"user-id\"]");
@@ -378,6 +381,13 @@ export default {
             ProcessMaker.alert(this.$t("The script was saved."), "success");
           });
       }, 5000);
+    },
+    close() {
+      ProcessMaker.apiClient
+        .post(`/scripts/${this.script.id}/close`)
+        .then(() => {
+          window.location.reload();
+        });
     },
     loadBoilerplateTemplate() {
       if (this.script.code === "[]") {

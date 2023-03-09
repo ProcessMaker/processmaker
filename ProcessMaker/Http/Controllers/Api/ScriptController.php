@@ -507,4 +507,11 @@ class ScriptController extends Controller
 
         return response([], 204);
     }
+
+    public function close(Script $script)
+    {
+        $script->deleteDraft();
+
+        return response([], 204);
+    }
 }
