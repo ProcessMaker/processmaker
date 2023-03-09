@@ -1,8 +1,8 @@
 <template>
   <div>
-    <b-button :aria-label="$t('Create Process')" v-b-modal.templateDetails class="mb-3 mb-md-0 ml-md-2">
+    <!-- <b-button :aria-label="$t('Create Process')" v-b-modal.templateDetails class="mb-3 mb-md-0 ml-md-2">
       <i class="fas fa-plus"/> {{ $t('Process') }}
-    </b-button>
+    </b-button> -->
     <modal
       id="templateDetails"
       size="huge"
