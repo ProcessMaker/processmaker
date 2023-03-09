@@ -75,7 +75,7 @@
     export default {
       components: { Modal, Required },
       mixins: [ FormErrorsMixin ],
-      props: ['existingAssets', 'assetName','userHasEditPermissions', 'assetType', 'assetId', 'currentUserId'],
+      props: ['assetName', 'assetType', 'assetId', 'currentUserId'],
       data: function() {
         return {
           errors: {},
@@ -87,7 +87,7 @@
           saveMode: 'copy',
           customModalButtons: [
               {'content': 'Cancel', 'action': 'close', 'variant': 'outline-secondary', 'disabled': false, 'hidden': false},
-              {'content': 'Publish', 'action': 'saveTemplate', 'variant': 'primary', 'disabled': false, 'hidden': false},
+              {'content': 'Publish', 'action': 'saveTemplate', 'variant': 'primary', 'disabled': true, 'hidden': false},
               {'content': 'Update', 'action': 'updateTemplate', 'variant': 'secondary', 'disabled': false, 'hidden': true},
               {'content': 'Save as New', 'action': 'saveNewTemplate', 'variant': 'primary', 'disabled': false, 'hidden': true},
           ],
@@ -104,6 +104,14 @@
             return asset + ' Template with the same name already exists';
         }
       },
+      watch: {
+        description() {
+         this.validateFields();
+        },
+        name() {
+         this.validateFields();
+        }
+      },  
       methods: {
         show() {
           this.$bvModal.show('createTemplate');
@@ -181,6 +189,17 @@
           this.customModalButtons[1].hidden = true;
           this.customModalButtons[2].hidden = false;
           this.customModalButtons[3].hidden = false;
+        },
+        validateFields() {
+          if (!_.isEmpty(this.description) && !_.isEmpty(this.name)) {
+            this.customModalButtons[1].disabled = false;
+            this.customModalButtons[2].disabled = false;
+            this.customModalButtons[3].disabled = false;
+          } else {
+            this.customModalButtons[1].disabled = true;
+            this.customModalButtons[2].disabled = true;
+            this.customModalButtons[3].disabled = true;
+          }
         }
       },
     };
