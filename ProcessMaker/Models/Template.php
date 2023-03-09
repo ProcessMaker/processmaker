@@ -53,6 +53,14 @@ class Template extends ProcessMakerModel
     }
 
     /**
+     * Get the creator/author of this template.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
      * Validation rules.
      *
      * @param null $existing
