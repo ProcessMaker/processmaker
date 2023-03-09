@@ -6,11 +6,13 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
+use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplateCategory;
 use ProcessMaker\Models\ProcessTemplates;
+use ProcessMaker\Traits\HasControllerAddons;
 use SebastianBergmann\CodeUnit\Exception;
 
 /**
@@ -18,10 +20,11 @@ use SebastianBergmann\CodeUnit\Exception;
  */
 class ProcessTemplate implements TemplateInterface
 {
+    use HasControllerAddons;
+
     public function index(Request $request)
     {
         $orderBy = $this->getRequestSortBy($request, 'name');
-        $perPage = $this->getPerPage($request);
         $include = $this->getRequestInclude($request);
 
         $templates = ProcessTemplates::with($include);
@@ -39,19 +42,6 @@ class ProcessTemplate implements TemplateInterface
             ->get();
 
         return $templates;
-    }
-
-    public function existingTemplate($request)
-    {
-        $processId = $request->id;
-        $name = $request->name;
-
-        if (ProcessTemplates::where(['name' => $name, 'process_id' => $request->id])->exists()) {
-            // If same asset has been Saved as Template previously, offer to choose between “Update Template” and “Save as New Template”
-            return true;
-        }
-
-        return false;
     }
 
     /**
@@ -102,9 +92,49 @@ class ProcessTemplate implements TemplateInterface
         dd('PROCESS TEMPLATE VIEW');
     }
 
-    public function edit() : bool
+    public function edit($template) : JsonResponse
     {
         dd('PROCESS TEMPLATE EDIT');
+    }
+
+    public function update($request) : JsonResponse
+    {
+        $id = $request->id;
+        $template = ProcessTemplates::where('id', $id)->firstOrFail();
+        $template->fill($request->except('id'));
+
+        // Catch errors to send more specific status
+        try {
+            $template->saveOrFail();
+        } catch (Exception $e) {
+            return response(
+                ['message' => $e->getMessage(),
+                    'errors' => ['bpmn' => $e->getMessage()], ],
+                422
+            );
+        }
+
+        return response()->json();
+    }
+
+    public function configure(int $id) : array
+    {
+        $template = (object) [];
+
+        $query = ProcessTemplates::select(['name', 'description'])->where('id', $id)->firstOrFail();
+
+        $template->id = $id;
+        $template->name = $query->name;
+        $template->description = $query->description;
+
+        $categories = ProcessTemplateCategory::orderBy('name')
+            ->where('status', 'ACTIVE')
+            ->get()
+            ->pluck('name', 'id')
+            ->toArray();
+        $addons = $this->getPluginAddons('edit', compact(['template']));
+
+        return [$template, $addons];
     }
 
     public function destroy() : bool
@@ -184,15 +214,16 @@ class ProcessTemplate implements TemplateInterface
         return $include ? explode(',', $include) : [];
     }
 
-    /**
-     * Get the size of the page.
-     * per_page=# (integer, the page requested) (Default: 10).
-     *
-     * @param Request $request
-     * @return type
-     */
-    protected function getPerPage(Request $request)
+    public function existingTemplate($request)
     {
-        return $request->input('per_page', 10);
+        $processId = $request->id;
+        $name = $request->name;
+
+        if (ProcessTemplates::where(['name' => $name, 'process_id' => $request->id])->exists()) {
+            // If same asset has been Saved as Template previously, offer to choose between “Update Template” and “Save as New Template”
+            return true;
+        }
+
+        return false;
     }
 }
