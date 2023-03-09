@@ -24,6 +24,7 @@
             {{-- status="archived" --}}
             v-on:reload="reload"
             :permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"
+            is-documenter-installed="{{\ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled()}}"
         ></process-templates-listing>
     </div>
 </div>
