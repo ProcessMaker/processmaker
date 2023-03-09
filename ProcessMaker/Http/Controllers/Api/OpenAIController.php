@@ -20,8 +20,8 @@ class OpenAIController extends Controller
 
         $prompt = OpenAIHelper::readPromptFromFile('pmql_code_generator_optimized_for_' . $type . '.md');
         $config = OpenAIHelper::getNLQToPMQLConfig($prompt, $question, $model);
-        $result = OpenAIHelper::getNLQToPMQL($client, $config);
+        [ $result, $usage ] = OpenAIHelper::runNLQToPMQL($client, $config);
 
-        return response()->json(['result' => $result]);
+        return response()->json(['result' => $result, 'usage' => $usage]);
     }
 }

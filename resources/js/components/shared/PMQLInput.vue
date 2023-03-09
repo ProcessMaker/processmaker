@@ -10,6 +10,8 @@
           <i v-if="aiLoading" class="fa fa-spinner fa-spin mr-1"></i> 
           <span v-html="searchInputLabel"></span>
         </label>
+
+        <label class="badge badge-primary badge-pill usage-label">{{ usage.totalTokens }} tokens</label>
     </div>
   </div>
 </template>
@@ -25,6 +27,11 @@ export default {
       searchInputLabel: "",
       inputAreaLabel: "",
       pmql: "",
+      usage: {
+        completionTokens: 0,
+        promptTokens: 0,
+        totalTokens: 0,
+      },
     };
   },
 
@@ -57,6 +64,7 @@ export default {
       ProcessMaker.apiClient.post("/openai/nlq-to-pmql", params).then(response => {
         this.searchInputLabel = `<i class="fa fa-check text-success"></i> ${this.pmql}`;
         this.pmql = response.data.result;
+        this.usage = response.data.usage;
         this.$emit("submit", this.pmql);
         this.aiLoading = false;
       });
@@ -104,5 +112,15 @@ input.search-input:focus ~ label, input.search-input:valid ~ label {
     padding: 0.1rem 0.75rem;
     top: 10px;
     transition: 300ms ease all;
+}
+
+.usage-label {
+    background: #dfdfdf;
+    color: #212529;
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin: 0.5rem 0.5rem;
+    font-weight: 300;
 }
 </style>
