@@ -193,7 +193,14 @@
                     </div>
                 </div>
                 <div class="search-bar-advanced d-flex w-100" v-if="advanced">
-                    <div class="search-bar-inputs flex-grow w-100">
+                    <pmql-input 
+                      :search-type="type"
+                      :value="pmql"
+                      :ai-enabled="true"
+                      :aria-label="$t('Advanced Search (PMQL)')"
+                      :search-label="$t('Search using natural language or PMQL')"
+                      @submit="onNLQConversion"></pmql-input>
+                    <!-- <div class="search-bar-inputs flex-grow w-100">
                         <div class="group">
                             <input ref="search_input" type="text" class="search-input"
                             :aria-label="$t('Advanced Search (PMQL)')" 
@@ -205,7 +212,7 @@
                                 <span v-html="searchInputLabel"></span>
                             </label>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="search-bar-actions d-flex flex-shrink btn-search-advanced">
                         <b-btn class="btn-search-toggle pl-3 pr-3" variant="success" @click="toggleAdvanced" v-b-tooltip.hover :title="$t('Basic Mode')"><i class="fas fa-ellipsis-h"></i></b-btn>
                         <b-btn class="btn-search-run pl-3 pr-3" variant="primary" @click="runSearch(true)" v-b-tooltip.hover :title="$t('Search')"><i class="fas fa-search"></i></b-btn>
@@ -226,8 +233,10 @@
 <script>
 
 import isPMQL from "../modules/isPMQL";
+import PmqlInput from "../components/shared/PmqlInput";
 
 export default {
+  components: { PmqlInput },
   props: ["type", "paramProcess", "paramStatus", "paramRequester", "paramParticipants", "paramRequest", "paramName", "permission"],
   data() {
     return {
@@ -270,13 +279,17 @@ export default {
     });
   },
   methods: {
+      onNLQConversion(pmql) {
+        this.pmql = pmql;
+        this.runSearch(true);
+      },
       toggleAdvanced() {
         if (this.advanced) {
           this.advanced = false;
         } else {
           this.advanced = true;
           Vue.nextTick().then(() => {
-            this.$refs.search_input.focus();
+            // this.$refs.search_input.focus();
           });
         }
       },
