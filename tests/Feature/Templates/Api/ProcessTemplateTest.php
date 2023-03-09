@@ -70,7 +70,7 @@ class ProcessTemplateTest extends TestCase
         $screenCategory = ScreenCategory::factory()->create(['name' => 'screen category', 'status' => 'ACTIVE']);
         $screen->screen_category_id = $screenCategory->id;
         $screen->save();
-        
+
         $process = $this->createProcess('process-with-task-screen', ['name' => 'Test Process']);
         $processCategory = ProcessCategory::factory()->create(['name' => 'process category', 'status' => 'ACTIVE']);
         $process->process_category_id = $processCategory->id;
@@ -91,7 +91,6 @@ class ProcessTemplateTest extends TestCase
                 'mode' => 'new',
             ]
         );
-        
 
         $response->assertStatus(409);
         $this->assertEquals('Process Template with the same name already exists', $response->getOriginalContent()['message']);
@@ -111,7 +110,7 @@ class ProcessTemplateTest extends TestCase
         $process->process_category_id = $processCategory->id;
         Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:screenRef', $screen->id);
         $process->save();
-        
+
         $response = $this->apiCall(
             'POST',
             route('api.template.store', [
