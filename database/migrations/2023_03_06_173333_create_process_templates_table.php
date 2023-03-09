@@ -19,9 +19,11 @@ class CreateProcessTemplatesTable extends Migration
             $table->string('name');
             $table->text('description');
             $table->foreignId('process_id');
+            $table->foreignId('user_id');
             $table->json('manifest');
             $table->longText('svg')->nullable();
             $table->unsignedInteger('process_template_category_id')->nullable();
+            $table->boolean('is_system')->default(false);
             $table->timestamps();
         });
     }
