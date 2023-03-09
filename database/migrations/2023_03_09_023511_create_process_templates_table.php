@@ -18,13 +18,16 @@ class CreateProcessTemplatesTable extends Migration
             $table->uuid('uuid')->unique()->nullable();
             $table->string('name');
             $table->text('description');
-            $table->foreignId('process_id');
-            $table->foreignId('user_id');
+            $table->unsignedInteger('process_id');
+            $table->unsignedInteger('user_id');
             $table->json('manifest');
             $table->longText('svg')->nullable();
             $table->unsignedInteger('process_template_category_id')->nullable();
             $table->boolean('is_system')->default(false);
             $table->timestamps();
+
+            $table->foreign('process_id')->references('id')->on('processes')->onDelete('restrict');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('restrict');
         });
     }
 
