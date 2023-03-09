@@ -64,6 +64,7 @@ class ProcessTemplate implements TemplateInterface
         $processId = $request->id;
         $name = $request->name;
         $description = $request->description;
+        $userId = $request->user_id;
         $category = $request->process_template_category_id;
         $mode = $request->mode;
 
@@ -83,9 +84,10 @@ class ProcessTemplate implements TemplateInterface
             data_set($manifest, 'original.export', $rootExport);
         }
 
-        $model = Templates::firstOrCreate([
+        $model = ProcessTemplates::firstOrCreate([
             'name' => $name,
             'description' => $description,
+            'user_id' => $userId,
             'manifest' => json_encode($manifest),
             'svg' => $svg,
             'process_id' => $processId,

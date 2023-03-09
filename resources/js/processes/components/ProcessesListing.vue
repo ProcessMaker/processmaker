@@ -167,7 +167,7 @@
   export default {
     components: { TemplateExistsModal },
     mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
-    props: ["filter", "id", "status", "permission", "isDocumenterInstalled", "processName"],
+    props: ["filter", "id", "status", "permission", "isDocumenterInstalled", "processName", "currentUserId"],
     data() {
       return {
         orderBy: "name",
@@ -245,10 +245,9 @@
         formData.append("process_id", id);
         formData.append("name", "TEMPLATE NAME");
         formData.append("description", "TEMPLATE DESCRIPTION");
+        formData.append("user_id", this.currentUserId);
         formData.append("mode", 'copy');
-        formData.append("options", 'copy');
-        formData.append("template_category_id", 1);
-      
+        formData.append("template_category_id", null);
         ProcessMaker.apiClient.post("template/process/" + id, formData)
         .then(response => {
           console.log('RESPONSE', response);
