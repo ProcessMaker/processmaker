@@ -28,6 +28,7 @@ class ProcessTemplate implements TemplateInterface
         $filter = $request->input('filter');
 
         $templates = $templates->select('process_templates.*')
+            ->leftJoin('users as user', 'process_templates.user_id', '=', 'user.id')
             ->orderBy(...$orderBy)
             ->where(function ($query) use ($filter) {
                 $query->where('process_templates.name', 'like', '%' . $filter . '%')
