@@ -137,13 +137,13 @@
                       v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-upload fa-lg fa-fw"></i>
-              </b-btn>
-              <template-exists-modal ref="template-exists-modal" :processName="props.rowData.name" />
+              </b-btn>             
             </div>
           </div>
         </template>
       </vuetable>
-
+      <create-template-modal id="create-template-modal" ref="create-template-modal" assetType="process" :currentUserId="currentUserId" :assetName="processTemplateName" :assetId="processId" @templateExists="showTemplateExistsModal"/>
+      <template-exists-modal ref="template-exists-modal" :assetData="processData" />
       <pagination
               :single="$t('Process')"
               :plural="$t('Processes')"
@@ -161,16 +161,20 @@
   import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
   import { createUniqIdsMixin } from "vue-uniq-ids";
   import TemplateExistsModal from "../../components/templates/TemplateExistsModal.vue";
+  import CreateTemplateModal from "../../components/templates/CreateTemplateModal.vue";
 
   const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
-    components: { TemplateExistsModal },
+    components: { TemplateExistsModal, CreateTemplateModal },
     mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
     props: ["filter", "id", "status", "permission", "isDocumenterInstalled", "processName", "currentUserId"],
     data() {
       return {
         orderBy: "name",
+        processId: null,
+        processTemplateName: '',
+        processData: {},
         sortOrder: [
           {
             field: "name",
@@ -224,8 +228,15 @@
       });
     },
     methods: {
-      showTemplateExistsModal() {
+      showTemplateExistsModal(data) {
+        this.processData = data;
+        console.log('data', data);
         this.$refs["template-exists-modal"].show();
+      },
+      showCreateTemplateModal(name, id) {        
+        this.processId = id;
+        this.processTemplateName = name;
+        this.$refs["create-template-modal"].show();
       },
       goToEdit(data) {
         window.location = "/processes/" + data + "/edit";
@@ -238,24 +249,7 @@
       },
       goToExport(data) {
         window.location = "/processes/" + data + "/export";
-      },
-      createTemplate(id) {        
-        let formData = new FormData();
-        // TODO: Display create template form/model
-        formData.append("process_id", id);
-        formData.append("name", "TEMPLATE NAME");
-        formData.append("description", "TEMPLATE DESCRIPTION");
-        formData.append("user_id", this.currentUserId);
-        formData.append("mode", 'copy');
-        formData.append("template_category_id", null);
-        ProcessMaker.apiClient.post("template/process/" + id, formData)
-        .then(response => {
-          console.log('RESPONSE', response);
-          ProcessMaker.alert( this.$t("Template successfully created"),"success");
-        }).catch(error => {
-          ProcessMaker.alert(error,"danger");
-        }); 
-      },
+      },      
       onAction(action, data, index) {
         let putData = {
           name: data.name,
@@ -299,7 +293,8 @@
             this.goToExport(data.id);
             break;
           case "create-template":
-            this.createTemplate(data.id);
+            this.showCreateTemplateModal(data.name, data.id);
+            //this.createTemplate(data.name, data.id);
             //this.showTemplateExistsModal();
             break;
           case "restore-item":

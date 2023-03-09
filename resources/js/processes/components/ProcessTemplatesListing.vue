@@ -110,12 +110,11 @@
     import datatableMixin from "../../components/common/mixins/datatable";
     import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
     import { createUniqIdsMixin } from "vue-uniq-ids";
-    import TemplateExistsModal from "../../components/templates/TemplateExistsModal.vue";
   
     const uniqIdsMixin = createUniqIdsMixin();
   
     export default {
-      components: { TemplateExistsModal },
+      components: {},
       mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
       props: ["filter", "id", "status", "permission", "isDocumenterInstalled", "processName"],
       data() {
@@ -225,7 +224,6 @@
               break;
             case "create-template":
               this.createTemplate(data.id);
-              //this.showTemplateExistsModal();
               break;
             case "restore-item":
               ProcessMaker.apiClient

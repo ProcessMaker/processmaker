@@ -1,0 +1,144 @@
+<template>
+    <div>
+      <modal
+        id="createTemplate"
+        :title="title" 
+        @update="onUpdate"
+        @saveTemplate="saveTemplate"
+        :setCustomButtons="true"
+        :customButtons="customModalButtons"
+        size="md"
+      >
+        <template>
+          <b-row align-v="start">
+            <b-col>
+                <p>{{ $t(`This will create a re-usuable template based on the ${this.assetName}`) }}</p>
+                <required></required>
+                <b-form-group
+                    required
+                    :label="$t('Template Name')"
+                    :description="formDescription('The template name must be unique.', 'name', errors)"
+                    :invalid-feedback="errorMessage('name', errors)"
+                    :state="errorState('name', errors)"
+                >
+                    <b-form-input
+                    required
+                    autofocus
+                    v-model="name"
+                    autocomplete="off"
+                    :state="errorState('name', errors)"
+                    name="name"
+                    ></b-form-input>
+                </b-form-group>
+
+                <b-form-group
+                    required
+                    :label="$t('Description')"
+                    :invalid-feedback="errorMessage('description', errors)"
+                    :state="errorState('description', errors)"
+                >
+                    <b-form-textarea
+                    required
+                    v-model="description"
+                    autocomplete="off"
+                    rows="3"
+                    :state="errorState('description', errors)"
+                    name="description"
+                    ></b-form-textarea>
+                </b-form-group>
+            </b-col>
+          </b-row>
+        </template>
+      </modal>
+    </div>
+  </template>
+  
+  <script>
+    import { restElement } from "@babel/types";
+import { FormErrorsMixin, Modal, Required } from "SharedComponents";
+  
+    export default {
+      components: { Modal, Required },
+      mixins: [ FormErrorsMixin ],
+      props: ['existingAssets', 'assetName','userHasEditPermissions', 'assetType', 'assetId', 'currentUserId'],
+      data: function() {
+        return {
+          errors: {},
+          name: '',
+          description: '',
+          showModal: false,
+          disabled: true,
+          mode: 'copy',
+          customModalButtons: [
+              {'content': 'Cancel', 'action': 'hide()', 'variant': 'outline-secondary', 'disabled': false, 'hidden': false},
+              {'content': 'Publish', 'action': 'saveTemplate', 'variant': 'secondary', 'disabled': false, 'hidden': false},
+          ],
+        }
+      },
+      computed: {
+        title() {
+          return this.$t('Publish Template');
+        },
+        assetExistsError() {
+            const capFirst = this.assetType[0].toUpperCase();
+            const reset =  this.assetType.slice(1);
+            const asset = capFirst + reset;
+            return asset + ' Template with the same name already exists';
+        }
+      },
+      methods: {
+        show() {
+          this.$bvModal.show('createTemplate');
+        },
+        close() {
+          this.$bvModal.hide('createTemplate');
+          this.errors = {};
+        },
+        onUpdate() {
+          this.$emit('update-template');
+          this.close();
+        },
+        saveTemplate() {    
+            let formData = new FormData();
+            formData.append("asset_id", this.assetId);
+            formData.append("name", this.name);
+            formData.append("description", this.description);
+            formData.append("user_id", this.currentUserId);
+            formData.append("mode", this.mode);
+            formData.append("template_category_id", null);
+            ProcessMaker.apiClient.post("template/" + this.assetType + '/' + this.assetId, formData)
+            .then(response => {
+              ProcessMaker.alert( this.$t("Template successfully created"),"success");
+              this.close();
+            }).catch(error => {
+                const message = error.response.data.message;
+                if (message === this.assetExistsError) {
+                    this.$emit('templateExists', formData);
+                    this.close();
+                } else {
+                    ProcessMaker.alert(message,"danger");
+                }
+               
+            //     errors.forEach(error => {
+            //         console.log('error', error);
+            //     });
+            //     // this.errors = {name: [error.message]};
+            //     // console.log('ERROR', error.response.data);
+            //   //ProcessMaker.alert(error.message,"danger");
+            }); 
+            //this.close();
+        },
+      },
+    };
+  </script>
+  
+  <style scoped>
+    .descriptions {
+      list-style: inherit;
+    }
+    .overflow-modal {
+      max-height: 30vh;
+      overflow-y: auto;
+    }
+  </style>
+  
