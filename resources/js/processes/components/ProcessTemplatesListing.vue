@@ -89,9 +89,6 @@
                 >
                   <i class="fas fa-cog fa-lg fa-fw"></i>
                 </b-btn>                
-               
-
-              
               </div>
             </div>
           </template>
@@ -183,24 +180,6 @@
         },
         goToExport(data) {
           window.location = "/processes/" + data + "/export";
-        },
-        createTemplate(id) {        
-          let formData = new FormData();
-          // TODO: Display create template form/model
-          formData.append("process_id", id);
-          formData.append("name", "TEMPLATE NAME");
-          formData.append("description", "TEMPLATE DESCRIPTION");
-          formData.append("mode", 'copy');
-          formData.append("options", 'copy');
-          formData.append("template_category_id", 1);
-        
-          ProcessMaker.apiClient.post("template/process/" + id, formData)
-          .then(response => {
-            console.log('RESPONSE', response);
-            ProcessMaker.alert( this.$t("Template successfully created"),"success");
-          }).catch(error => {
-            ProcessMaker.alert(error,"danger");
-          }); 
         },
         onAction(action, data, index) {
           let putData = {
