@@ -56,6 +56,7 @@
                               :initial-request-id="{{ $task->process_request_id }}"
                               :user-id="{{ Auth::user()->id }}"
                               csrf-token="{{ csrf_token() }}"
+                              initial-loop-context="{{ $task->getLoopContext() }}"
                               @task-updated="taskUpdated"
                               @submit="submit"
                               @completed="completed"
