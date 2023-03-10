@@ -85,6 +85,7 @@
           disabled: true,
           showWarning: false,
           saveMode: 'copy',
+          existingAssetId: null,
           customModalButtons: [
               {'content': 'Cancel', 'action': 'close', 'variant': 'outline-secondary', 'disabled': false, 'hidden': false},
               {'content': 'Publish', 'action': 'saveTemplate', 'variant': 'primary', 'disabled': true, 'hidden': false},
@@ -120,6 +121,7 @@
           this.$bvModal.hide('createTemplate');
           this.clear();
           this.errors = {};
+          this.toggleButtons();
         },
         clear() {
           this.name = '';
@@ -147,48 +149,47 @@
                 const name = error.response.data.name[0];
                 if (name) {
                     this.showWarning = true;
-                    this.showHiddenButtons();
+                    this.toggleButtons();
                     this.errors = error.response.data;
+                    this.existingAssetId = error.response.data.id;
                 } else {
                     ProcessMaker.alert(error,"danger");
                 }
             }); 
             //this.close();
-        },
-        updateTemplate() {    
-          console.log("UPDATE TEMPLATE");
-          // let formData = new FormData();
-          // formData.append("asset_id", this.assetId);
-          // formData.append("name", this.name);
-          // formData.append("description", this.description);
-          // formData.append("user_id", this.currentUserId);
-          // formData.append("mode", this.saveMode);
-          // formData.append("template_category_id", null);
-          // ProcessMaker.apiClient.post("template/" + this.assetType + '/' + this.assetId, formData)
-          // .then(response => {
-          //   ProcessMaker.alert( this.$t("Template successfully created"),"success");
-          //   this.close();
-          // }).catch(error => {
-          //     const message = error.response.data.message;
-          //     if (message === this.assetExistsError) {
-          //         this.showWarning = true;
-          //         this.showHiddenButtons();
-          //         // this.errors = {'name':  };
-          //         // this.$emit('templateExists', formData);
-          //         // this.close();
-          //     } else {
-          //         ProcessMaker.alert(message,"danger");
-          //     }
-          // }); 
-          // //this.close();
+        },  
+        updateTemplate() {   
+          let putData = {
+            name: this.name,
+            description: this.description,
+            user_id: this.currentUserId,
+            mode: this.saveMode,
+            process_id: this.assetId,
+            template_category_id: null,
+          }; 
+          ProcessMaker.apiClient.put("template/" + this.assetType + '/' + this.existingAssetId, putData)
+          .then(response => {
+            ProcessMaker.alert( this.$t("Template successfully updated"),"success");
+            this.close();
+          }).catch(error => {
+              const message = error.response.data.message;
+              if (message === this.assetExistsError) {
+                  this.showWarning = true;
+                  this.toggleButtons();
+                  this.errors = error.response.data;
+                  this.existingAssetId = error.response.data.id;
+              } else {
+                  ProcessMaker.alert(message,"danger");
+              }
+          }); 
         },
         saveNewTemplate() {
           console.log('SAVE NEW TEMPLATE');
         },
-        showHiddenButtons() {
-          this.customModalButtons[1].hidden = true;
-          this.customModalButtons[2].hidden = false;
-          this.customModalButtons[3].hidden = false;
+        toggleButtons() {
+          this.customModalButtons[1].hidden = !this.customModalButtons[1].hidden;
+          this.customModalButtons[2].hidden = !this.customModalButtons[2].hidden;
+          this.customModalButtons[3].hidden = !this.customModalButtons[3].hidden;
         },
         validateFields() {
           if (!_.isEmpty(this.description) && !_.isEmpty(this.name)) {

@@ -99,9 +99,36 @@ class ProcessTemplate implements TemplateInterface
 
     public function update($request) : JsonResponse
     {
-        $id = $request->id;
+        $id = (int) $request->id;
         $template = ProcessTemplates::where('id', $id)->firstOrFail();
-        $template->fill($request->except('id'));
+        if (!isset($request->process_id)) {
+            // This is an update from the template configs page
+            $template->fill($request->except('id'));
+        } else {
+            // This is an update from a the process designer
+            // Get process manifest
+            $processId = $request->process_id;
+            $mode = $request->mode;
+
+            $manifest = $this->getManifest('process', $processId);
+            $rootUuid = $manifest->getData()->root;
+            $export = $manifest->getData()->export;
+            $svg = $export->$rootUuid->attributes->svg;
+
+            // Discard ALL assets/dependents
+            if ($mode === 'discard') {
+                $manifest = json_decode(json_encode($manifest), true);
+                $rootExport = Arr::first($manifest['original']['export'], function ($value, $key) use ($rootUuid) {
+                    return $key === $rootUuid;
+                });
+                data_set($rootExport, 'dependents.*.discard', true);
+                data_set($manifest, 'original.export', $rootExport);
+            }
+
+            $template->fill($request->except('id'));
+            $template->svg = $svg;
+            $template->manifest = json_encode($manifest);
+        }
 
         // Catch errors to send more specific status
         try {
@@ -219,11 +246,11 @@ class ProcessTemplate implements TemplateInterface
         $processId = $request->id;
         $name = $request->name;
 
-        if (ProcessTemplates::where(['name' => $name])->exists()) {
+        $template = ProcessTemplates::where(['name' => $name])->first();
+        if ($template !== null) {
             // If same asset has been Saved as Template previously, offer to choose between “Update Template” and “Save as New Template”
-            return true;
+            return $template->id;
         }
 
-        return false;
     }
 }

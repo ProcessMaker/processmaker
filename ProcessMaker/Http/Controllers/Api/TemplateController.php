@@ -37,10 +37,13 @@ class TemplateController extends Controller
      */
     public function store(string $type, Request $request)
     {
-        $existingTemplate = (new $this->types[$type][1])->existingTemplate($request);
+        $existingTemplateId = (new $this->types[$type][1])->existingTemplate($request);
 
-        if ($existingTemplate) {
-            return response()->json(['name' => ['The template name must be unique.']], 409);
+        if ($existingTemplateId) {
+            return response()->json([
+                'name' => ['The template name must be unique.'],
+                'id' => $existingTemplateId,
+            ], 409);
         }
 
         (new $this->types[$type][1])->save($request);
@@ -55,13 +58,16 @@ class TemplateController extends Controller
      */
     public function update(string $type, Request $request)
     {
-        $existingTemplate = (new $this->types[$type][1])->existingTemplate($request);
+        if (!isset($request->process_id)) {
+            // This is an update from the template configs page. We need to check if the template name was updated and already exists
+            $existingTemplate = (new $this->types[$type][1])->existingTemplate($request);
 
-        if ($existingTemplate) {
-            return response()->json(['message' => ucfirst($type) . ' Template with the same name already exists'], 409);
-        } else {
-            (new $this->types[$type][1])->update($request);
+            if ($existingTemplate) {
+                return response()->json(['message' => ucfirst($type) . ' Template with the same name already exists'], 409);
+            }
         }
+        // This is an update from the process designer page. This will overwrite the template with new data. We do not need to check for existing templates
+        (new $this->types[$type][1])->update($request);
     }
 
     /**
