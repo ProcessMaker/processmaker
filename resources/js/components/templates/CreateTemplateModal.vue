@@ -192,7 +192,7 @@
           this.customModalButtons[3].hidden = !this.customModalButtons[3].hidden;
         },
         validateDescription() {
-          if (!_.isEmpty(this.description)) {
+          if (!_.isEmpty(this.description) && !_.isEmpty(this.name)) {
             this.customModalButtons[1].disabled = false;
             if (this.showWarning) {
               if (this.name !== this.existingAssetName) {
@@ -213,7 +213,7 @@
           }
         },
         validateName(newName, oldName) {
-          if (!_.isEmpty(this.name)) {
+          if (!_.isEmpty(this.name) && !_.isEmpty(this.description)) {
             this.customModalButtons[1].disabled = false;         
             if (this.showWarning) {
               if (newName !== oldName && newName !== this.existingAssetName) {
