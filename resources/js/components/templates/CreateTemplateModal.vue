@@ -7,7 +7,7 @@
         @saveTemplate="saveTemplate"
         @close="close"
         @updateTemplate="updateTemplate"
-        @saveNewTemplate="saveNewTemplate"
+        @saveNewTemplate="saveTemplate"
         :setCustomButtons="true"
         :customButtons="customModalButtons"
         size="md"
@@ -185,9 +185,6 @@
                   ProcessMaker.alert(message,"danger");
               }
           }); 
-        },
-        saveNewTemplate() {
-          console.log('SAVE NEW TEMPLATE');
         },
         toggleButtons() {
           this.customModalButtons[1].hidden = !this.customModalButtons[1].hidden;
