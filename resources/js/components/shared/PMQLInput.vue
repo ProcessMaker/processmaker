@@ -50,6 +50,10 @@ export default {
 
   methods: {
     runSearch() {
+      if (this.pmql === "") {
+        return;
+      }
+
       if (this.pmql.isPMQL()) {
         this.$emit("submit", this.pmql);
       } else if (this.aiEnabled) {
