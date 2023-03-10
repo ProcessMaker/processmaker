@@ -17,6 +17,9 @@
 $form-control-border-color: #b6bfc6;
 $form-control-border-radius: 2px;
 $focus-border-opacity: .5;
+$ellipsis-menu-btn-color: #ffffff;
+$ellipsis-menu-btn-hover: #ebeef2;
+$ellipsis-menu-btn-active: #104a75;
 
 body,
 html {
@@ -866,4 +869,17 @@ nav {
   width:1px;
   height:1px;
   overflow:hidden;
+}
+
+//Ellipsis menu styling
+.dropdown-menu {
+  border-radius: 4px;
+  border: 0px;
+  box-shadow: 0px 8px 10px 1px rgb(0 0 0 / 14%), 0px 3px 14px 2px rgb(0 0 0 / 12%), 0px 5px 5px -3px rgb(0 0 0 / 20%);
+  margin-top: 5px;
+  margin-right: 5px;
+}
+
+.btn-ellipsis {
+  @include button-variant($ellipsis-menu-btn-color, $ellipsis-menu-btn-color, $ellipsis-menu-btn-hover, $ellipsis-menu-btn-hover, $ellipsis-menu-btn-active, $ellipsis-menu-btn-active)
 }
