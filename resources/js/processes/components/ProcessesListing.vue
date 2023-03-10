@@ -46,7 +46,8 @@
           ></avatar-image>
         </template>
         <template slot="actions" slot-scope="props">
-          <ellipsis-menu :actions="actions" />
+          <!-- {{props.rowData}} -->
+          <ellipsis-menu @navigate="onNavigate" :actions="actions" :permission="permission" :data="props.rowData"/>
         </template>
 
         <!-- <template slot="actions" slot-scope="props">
@@ -175,15 +176,15 @@ import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
     data() {
       return {
         actions: [
-        {"value": "unpause-start-timer", "content": "Unpause Start Timer Events",},
-        {"value": "pause-start-timer", "content": "Pause Start Timer Events", },
-        {"value": "edit-designer", "content": "Edit",},
-        {"value": "edit-item", "content": "Configure", },
-        {"value": "view-documentation", "content": "View Documentation", },
-        {"value": "export-item", "content": "Export", },
-        {"value": "create-template", "content": "Create Template", },
-        {"value": "remove-item", "content": "Archive", },
-        {"value": "restore-item", "content": "Restore", },
+        // { value: "unpause-start-timer", content: "Unpause Start Timer Events", permissions: "", icon: "" },
+        // { value: "pause-start-timer", content: "Pause Start Timer Events", permissions: "", icon: "" },
+        { value: "edit-designer", content: "Edit Process", permission: "edit-processes", icon: "fas fa-edit" },
+        { value: "edit-item", content: "Configure", permissios: "edit-processes", icon: "fas fa-cog" },
+        { value: "view-documentation", content: "View Documentation", permission: "view-processes", icon: "fas fa-sign" },
+        { value: "export-item", content: "Export", permission: "export-processes", icon: "fas fa-file-export" },
+        { value: "create-template", content: "Create Template", permission: "create-templates", icon: "fas fa-layer-group" },
+        { value: "remove-item", content: "Archive", permission: "archive-processes", icon: "fas fa-download" },
+        // { value: "restore-item", content: "Restore", permissions: "archive-processes", icon: "" },
 
       ],
         orderBy: "name",
@@ -235,7 +236,6 @@ import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
       };
     },
     created () {
-      console.log(this.actions);
       ProcessMaker.EventBus.$on("api-data-process", (val) => {
         this.fetch();
       });
@@ -256,12 +256,16 @@ import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
       goToExport(data) {
         window.location = "/processes/" + data + "/export";
       },
-      onAction(action, data, index) {
+      onNavigate(action, data, index) {
         let putData = {
           name: data.name,
           description: data.description,
         };
-        switch (action) {
+        console.log('data', data);
+        // console.log('data id', this.data.id);
+        console.log('onNavigate action received', action);
+        console.log('action.value', action.value);
+        switch (action.value) {
           case "unpause-start-timer":
             putData.pause_timer_start = false;
             ProcessMaker.apiClient
@@ -419,6 +423,9 @@ import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
         });
         return data;
       },
+    },
+    mounted() {
+      // console.log('rowData', this.props);
     },
     computed: {}
   };
