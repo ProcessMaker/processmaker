@@ -193,12 +193,16 @@
         validateFields() {
           if (!_.isEmpty(this.description) && !_.isEmpty(this.name)) {
             this.customModalButtons[1].disabled = false;
-            this.customModalButtons[2].disabled = false;
-            this.customModalButtons[3].disabled = false;
+            if (this.showWarning) {
+              this.customModalButtons[2].disabled = false;
+              this.customModalButtons[3].disabled = false;
+            }
           } else {
             this.customModalButtons[1].disabled = true;
-            this.customModalButtons[2].disabled = true;
-            this.customModalButtons[3].disabled = true;
+            if (this.showWarning) {
+              this.customModalButtons[2].disabled = true;
+              this.customModalButtons[3].disabled = true;
+            }
           }
         }
       },
