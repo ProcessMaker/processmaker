@@ -1,21 +1,23 @@
 <template>
   <div class="dropdown-container">
     <b-dropdown
-      variant="light"
+      variant="ellipsis"
       no-caret
       no-flip
       lazy
+      class="ellipsis-dropdown-main"
     >
       <template #button-content>
         <i class="fas fa-ellipsis-h" />
       </template>
       <b-dropdown-item
         v-for="action in filterPermissions"
+        v-show="action.conditional ? action.conditional : true"
         :key="action.value"
-        class="dropdown-item pl-0 mb-1 mx-auto"
+        class="ellipsis-dropdown-item pl-0 mb-1 mx-auto"
         @click="onClick(action, data)"
       >
-        <div class="dropdown-content">
+        <div class="ellipsis-dropdown-content">
         <i class="pr-1" :class="action.icon"/>
         <span>{{ action.content }}</span>
         </div>
@@ -25,66 +27,49 @@
 </template>
 
 <script>
-//   import datatableMixin from "../../components/common/mixins/datatable";
-//   import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
-//   import { createUniqIdsMixin } from "vue-uniq-ids";
-//   const uniqIdsMixin = createUniqIdsMixin();
-
 export default {
   components: { },
   filters: { },
   mixins: [],
-  props: ["actions", "permission", "data"],
+  props: ["actions", "permission", "data", "isDocumenterInstalled"],
   data() {
     return {
-
+        active: false,
     };
   },
   computed: {
     filterPermissions() {
     const allActions = this.actions;
-    //   console.log('allActions', allActions);
-      const userPermissions = this.permission;
-    //   console.log('userPermissions', userPermissions);
-      const result = allActions.filter(item => userPermissions.includes(item.permission));
-    //   console.log('result', result);
-      return result;
+    const userPermissions = this.permission;
+    const result = allActions.filter(item => userPermissions.includes(item.permission));
+    return result;
     }
   },
   created() {
   },
   mounted() {
-    // console.log('data in menu', this.data);
   },
   methods: {
     onClick(action, data) {
-    //   console.log('action', action);
-    //   console.log('data in button', data);
       this.$emit("navigate", action, data);
     },
   },
 };
 </script>
 
-<style lang="scss" scoped>
-.hover-class {
-    color: #6C757D;
-    background-color: #EBEEF2;
+<style lang="scss">
+@import "../../../sass/colors";
+
+.ellipsis-dropdown-main {
+  float: right;
 }
 
-.active-class {
-    color: #FFFFFF;
-    background-color: #104A75;
-}
-
-.dropdown-item {
+.ellipsis-dropdown-item {
     border-radius: 4px;
     width: 95%;
 }
 
-.dropdown-content {
-    // margin-left: 0;
-    // padding-left: 0;
+.ellipsis-dropdown-content {
     color: #42526E;
     font-size: 14px;
     margin-left: -15px;
