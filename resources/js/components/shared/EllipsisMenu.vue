@@ -119,6 +119,10 @@ export default {
     onClick(action, data) {
       this.$emit("navigate", action, data);
     },
+    evaluateConditional(data, expression) {
+      console.log('DATA', data);
+      console.log('EXPRESSION', expression);
+    }
   },
 };
 </script>
