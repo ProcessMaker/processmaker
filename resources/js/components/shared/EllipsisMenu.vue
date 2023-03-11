@@ -11,7 +11,7 @@
         <i class="fas fa-ellipsis-h" />
       </template>
       <b-dropdown-item
-        v-for="action in filterPermissions"
+        v-for="action in filterActions"
         v-show="action.conditional ? action.conditional : true"
         :key="action.value"
         class="ellipsis-dropdown-item pl-0 mb-1 mx-auto"
@@ -27,6 +27,8 @@
 </template>
 
 <script>
+import { Parser } from "expr-eval";
+
 export default {
   components: { },
   filters: { },
@@ -38,12 +40,32 @@ export default {
     };
   },
   computed: {
-    filterPermissions() {
-    const allActions = this.actions;
-    const userPermissions = this.permission;
-    const result = allActions.filter(item => userPermissions.includes(item.permission));
-    return result;
-    }
+    filterActions() {
+      // Check for permissions first
+      let btns = this.actions.filter(action => {
+        if (!action.hasOwnProperty('permission') || action.hasOwnProperty('permission') && this.permission.includes(action.permission)) {
+          return action;
+        } 
+      });
+      // This might not need to be separated
+      btns = btns.filter(btn => {     
+        // See if you can write a if() conditional for the isDocumenterInstalled variable
+        // https://www.npmjs.com/package/expr-eval-ex?activeTab=readme
+        if (btn.hasOwnProperty('conditional') && btn.conditional === "isDocumenterInstalled") {
+          if (this.isDocumenterInstalled) {
+              return btn;
+          }
+        } else if (btn.hasOwnProperty('conditional')) {
+          const result = Parser.evaluate(btn.conditional, this.data);
+          if (result) {
+            return btn;
+          }
+        } else {
+          return btn;
+        }
+      });
+      return btns;
+    },
   },
   created() {
   },
@@ -53,6 +75,10 @@ export default {
     onClick(action, data) {
       this.$emit("navigate", action, data);
     },
+    evaluateConditional(data, expression) {
+      console.log('DATA', data);
+      console.log('EXPRESSION', expression);
+    }
   },
 };
 </script>

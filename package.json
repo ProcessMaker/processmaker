@@ -33,6 +33,7 @@
         "eslint-plugin-import": "^2.25.2",
         "eslint-plugin-jest": "^26.1.5",
         "eslint-plugin-vue": "^7.20.0",
+        "expr-eval": "^2.0.2",
         "js-yaml-loader": "^1.2.2",
         "laravel-mix": "^6.0.49",
         "moment": "^2.29.1",
