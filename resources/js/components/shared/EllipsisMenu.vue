@@ -47,7 +47,7 @@ export default {
           return action;
         } 
       });
-      // This might not need to be separated
+      // This might not need to be separated can probably be done in the filter method above
       btns = btns.filter(btn => {     
         // See if you can write a if() conditional for the isDocumenterInstalled variable
         // https://www.npmjs.com/package/expr-eval-ex?activeTab=readme
