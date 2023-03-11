@@ -166,8 +166,10 @@ import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
     data() {
       return {
         actions: [
-        { value: "unpause-start-timer", content: "Unpause Start Timer Events", permissions: "", icon: "fas fa-play", conditional: "data.has_timer_start_events && data.pause_timer_start" },
-        { value: "pause-start-timer", content: "Pause Start Timer Events", permissions: "", icon: "fas fa-pause", conditional: "data.has_timer_start_events && !data.pause_timer_start"},
+        // conditionals use expr-eval expressions 
+        // https://www.npmjs.com/package/expr-eval-ex?activeTab=readme
+        { value: "unpause-start-timer", content: "Unpause Start Timer Events", icon: "fas fa-play", conditional: "if(has_timer_start_events and pause_timer_start, true, false)" },
+        { value: "pause-start-timer", content: "Pause Start Timer Events", icon: "fas fa-pause", conditional: "if(has_timer_start_events and not(pause_timer_start), true, false)"},
         { value: "edit-designer", content: "Edit Process", permission: "edit-processes", icon: "fas fa-edit" },
         { value: "edit-item", content: "Configure", permission: "edit-processes", icon: "fas fa-cog" },
         { value: "view-documentation", content: "View Documentation", permission: "view-processes", icon: "fas fa-sign", conditional: "isDocumenterInstalled" },
