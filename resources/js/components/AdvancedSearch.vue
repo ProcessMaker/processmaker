@@ -194,28 +194,16 @@
                 </div>
                 <div class="search-bar-advanced d-flex w-100" v-if="advanced">
                     <pmql-input 
+                      ref="pmql_input"
                       :search-type="type"
                       :value="pmql"
                       :ai-enabled="true"
                       :aria-label="$t('Advanced Search (PMQL)')"
                       :search-label="$t('Search using natural language or PMQL')"
                       @submit="onNLQConversion"></pmql-input>
-                    <!-- <div class="search-bar-inputs flex-grow w-100">
-                        <div class="group">
-                            <input ref="search_input" type="text" class="search-input"
-                            :aria-label="$t('Advanced Search (PMQL)')" 
-                            v-model="pmql" 
-                            @keyup.enter="runSearch(true)"
-                            required>
-                            <label class="float-label">
-                                <i v-if="assistantLoading" class="fa fa-spinner fa-spin mr-1"></i> 
-                                <span v-html="searchInputLabel"></span>
-                            </label>
-                        </div>
-                    </div> -->
                     <div class="search-bar-actions d-flex flex-shrink btn-search-advanced">
                         <b-btn class="btn-search-toggle pl-3 pr-3" variant="success" @click="toggleAdvanced" v-b-tooltip.hover :title="$t('Basic Mode')"><i class="fas fa-ellipsis-h"></i></b-btn>
-                        <b-btn class="btn-search-run pl-3 pr-3" variant="primary" @click="runSearch(true)" v-b-tooltip.hover :title="$t('Search')"><i class="fas fa-search"></i></b-btn>
+                        <b-btn class="btn-search-run pl-3 pr-3" variant="primary" @click="$refs.pmql_input.runSearch()" v-b-tooltip.hover :title="$t('Search')"><i class="fas fa-search"></i></b-btn>
                         <div class="search-bar-additions">
                           <div v-for="addition in additions">
                             <component :is="addition" :permission="permission"></component>
@@ -223,9 +211,7 @@
                         </div>
                     </div>
                 </div>
-                
             </div>
-            
         </div>
     </div>
 </template>
@@ -304,26 +290,7 @@ export default {
           this.buildPmql();
         }
 
-        if (this.pmql.isPMQL()) {
-            this.$emit('submit');
-        } else {
-            this.runNLPToPMQL();
-        }
-      },
-      runNLPToPMQL() {
-        let params = { question: this.pmql, type: this.type };
-
-        this.assistantLoading = true
-        this.searchInputLabel = "Generating PMQL query for: " + "<i>"  + this.pmql + "</i>";
-
-        ProcessMaker.apiClient.post("/openai/nlq-to-pmql", params).then(response => {
-            this.assistantEnabled = false;
-            this.searchInputLabel = '<i class="fa fa-check text-success"></i> ' + this.pmql;
-            this.pmql = response.data.result;
-            this.assistantLoading = false;
-            this.runSearch(true);
-            setTimeout(3000)
-        });
+        this.$emit('submit');
       },
 
       buildPmql() {
