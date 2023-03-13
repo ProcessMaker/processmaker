@@ -61,16 +61,16 @@
                 >
                   <i class="fas fa-map-signs fa-lg fa-fw"></i>
                 </b-btn> -->
-                <!-- <b-btn
-                        variant="link"
-                        @click="onAction('export-item', props.rowData, props.rowIndex)"
-                        v-b-tooltip.hover
-                        :title="$t('Export Template')"
-                        v-if="permission.includes('export-processes')"
-                        v-uni-aria-describedby="props.rowData.id.toString()"
+                <b-btn
+                  variant="link"
+                  @click="onAction('export-item', props.rowData, props.rowIndex)"
+                  v-b-tooltip.hover
+                  :title="$t('Export Template')"
+                  v-if="permission.includes('export-processes')"
+                  v-uni-aria-describedby="props.rowData.id.toString()"
                 >
                   <i class="fas fa-file-export fa-lg fa-fw"></i>
-                </b-btn> -->
+                </b-btn>
                 <!-- <b-btn
                         variant="link"
                         @click="onAction('edit-designer', props.rowData, props.rowIndex)"
@@ -82,12 +82,12 @@
                   <i class="fas fa-pen-square fa-lg fa-fw"></i>
                 </b-btn> -->
                 <b-btn
-                        variant="link"
-                        @click="onAction('configure-item', props.rowData, props.rowIndex)"
-                        v-b-tooltip.hover
-                        :title="$t('Configure Template')"
-                        v-if="permission.includes('edit-processes')"
-                        v-uni-aria-describedby="props.rowData.id.toString()"
+                  variant="link"
+                  @click="onAction('configure-item', props.rowData, props.rowIndex)"
+                  v-b-tooltip.hover
+                  :title="$t('Configure Template')"
+                  v-if="permission.includes('edit-processes')"
+                  v-uni-aria-describedby="props.rowData.id.toString()"
                 >
                   <i class="fas fa-cog fa-lg fa-fw"></i>
                 </b-btn>                
@@ -97,12 +97,12 @@
         </vuetable>
   
         <pagination
-                :single="$t('Template')"
-                :plural="$t('Templates')"
-                :perPageSelectEnabled="true"
-                @changePerPage="changePerPage"
-                @vuetable-pagination:change-page="onPageChange"
-                ref="pagination"
+          :single="$t('Template')"
+          :plural="$t('Templates')"
+          :perPageSelectEnabled="true"
+          @changePerPage="changePerPage"
+          @vuetable-pagination:change-page="onPageChange"
+          ref="pagination"
         ></pagination>
       </div>
     </div>
@@ -182,8 +182,25 @@
         goToDesigner(data) {
           window.location = "/modeler/" + data;
         },
-        goToExport(data) {
-          window.location = "/processes/" + data + "/export";
+        exportTemplate(template) {
+          ProcessMaker.apiClient({
+            method: 'POST',
+            url: `export/process_templates/download/` + template.id,
+            responseType: 'blob',
+            data: {
+              template,
+            }
+          }).then(response => {
+            let header = response.headers['export-info'];
+            let exportInfo = JSON.parse(header);
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", exportInfo.name.replace(' ', '_') + ".json");
+            document.body.appendChild(link);
+            link.click();
+            Processmaker.alert('The template exported', 'success');
+          });
         },
         onAction(action, data, index) {
           let putData = {
@@ -228,7 +245,7 @@
               this.goToDocumentation(data.id);
               break;
             case "export-item":
-              this.goToExport(data.id);
+              this.exportTemplate(data);
               break;
             case "create-template":
               this.createTemplate(data.id);
