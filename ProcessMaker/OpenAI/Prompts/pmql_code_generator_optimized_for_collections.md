@@ -47,3 +47,5 @@ Question: Show me all the invoices where the total is over than 4000 usd for the
 Response: '(data.total > 4000) AND (data.item.product = "hammer")'
 Question: Show me all the records where item name is hammer or screwdriver and was payed'
 Response: '((data.item.name = "hammer") OR (data.item.name = "screwdriver")) AND (data.status = "Payed")'
+Question: Return all records
+Response: 'id >= 0'

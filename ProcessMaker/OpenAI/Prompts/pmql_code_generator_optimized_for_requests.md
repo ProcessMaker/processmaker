@@ -51,3 +51,5 @@ Question: Generate a PMQL query to return all the requests for the requesters th
 Response: '(requester LIKE "P%") AND (data.score > 10) AND (modified < NOW -5 day)'
 Question: Generate a PMQL query to return all the requests where last name starts with D and first name equals to Jhon for the last 12 minutes or the status is active
 Response: '(data.last_name LIKE "D%") AND (data.first_name = "Jhon") AND (modified < NOW -12 minutes) OR (status = "ACTIVE")'
+Question: Return all the requests
+Response: 'id >= 0'

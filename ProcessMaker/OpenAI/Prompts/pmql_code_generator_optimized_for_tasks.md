@@ -49,3 +49,5 @@ Question: Show me all the tasks that are opened
 Response: '(status = "In Progress")'
 Question: Generate a PMQL query to return all the tasks for the process "Leave of absence" and "Manage customer"
 Response: '(request IN ["Leave of absence", "Manage customer"])'
+Question: Return all the tasks
+Response: 'id >= 0'
