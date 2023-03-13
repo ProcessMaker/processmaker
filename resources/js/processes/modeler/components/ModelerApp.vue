@@ -98,7 +98,7 @@ export default {
     });
     window.ProcessMaker.EventBus.$on("modeler-change", () => {
       this.refreshSession();
-      this.autosaveProcess();
+      this.autoSaveProcess();
       window.ProcessMaker.EventBus.$emit("new-changes");
     });
     window.ProcessMaker.EventBus.$on("modeler-close", () => {
@@ -211,7 +211,7 @@ export default {
         .then(savedSuccessfully)
         .catch(saveFailed);
     },
-    async autosaveProcess() {
+    async autoSaveProcess() {
       if (this.isVersionsInstalled === false) {
         return;
       }
@@ -238,12 +238,12 @@ export default {
         })
           .then((response) => {
             this.process.updated_at = response.data.updated_at;
-            ProcessMaker.alert(this.$t("The process was saved."), "success");
             window.ProcessMaker.EventBus.$emit("save-changes");
             this.$set(this, "warnings", response.data.warnings || []);
             if (response.data.warnings && response.data.warnings.length > 0) {
               this.$refs.validationStatus.autoValidate = true;
             }
+            this.$refs.modeler.showSavedNotification();
           })
           .catch((error) => {
             const { message } = error.response.data;
