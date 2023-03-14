@@ -76,21 +76,20 @@ export default {
   },
   computed: {
     filterActions() {
-      // Check for permissions first
       let btns = this.actions.filter(action => {
         if (!action.hasOwnProperty('permission') || action.hasOwnProperty('permission') && this.permission.includes(action.permission)) {
           return action;
         } 
       });
-      // This might not need to be separated can probably be done in the filter method above
-      btns = btns.filter(btn => {     
-        // See if you can write a if() conditional for the isDocumenterInstalled variable
-        // https://www.npmjs.com/package/expr-eval-ex?activeTab=readme
-        if (btn.hasOwnProperty('conditional') && btn.conditional === "isDocumenterInstalled") {
-          if (this.isDocumenterInstalled) {
+
+      btns = btns.filter(btn => {
+        if (btn.hasOwnProperty('isDocumenterInstalled')) {
+          const result = Parser.evaluate(btn.isDocumenterInstalled, this.isDocumenterInstalled);
+          if (result) {
             return btn;
           }
-        } else if (btn.hasOwnProperty('conditional')) {
+        }
+        if (btn.hasOwnProperty('conditional')) {
           const result = Parser.evaluate(btn.conditional, this.data);
           if (result) {
             return btn;
@@ -116,18 +115,10 @@ export default {
       return lastAction;
     },
   },
-  created() {
-  },
-  mounted() {
-  },
   methods: {
     onClick(action, data) {
       this.$emit("navigate", action, data);
     },
-    evaluateConditional(data, expression) {
-      console.log('DATA', data);
-      console.log('EXPRESSION', expression);
-    }
   },
 };
 </script>

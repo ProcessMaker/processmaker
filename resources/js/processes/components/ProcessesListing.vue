@@ -46,7 +46,6 @@
           ></avatar-image>
         </template>
         <template slot="actions" slot-scope="props">
-          <!-- {{props.rowData}} -->
           <ellipsis-menu 
             @navigate="onNavigate"
             :actions="actions"
@@ -183,13 +182,11 @@ import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
     data() {
       return {
         actions: [
-        // conditionals use expr-eval expressions 
-        // https://www.npmjs.com/package/expr-eval-ex?activeTab=readme
         { value: "unpause-start-timer", content: "Unpause Start Timer Events", icon: "fas fa-play", conditional: "if(has_timer_start_events and pause_timer_start, true, false)" },
         { value: "pause-start-timer", content: "Pause Start Timer Events", icon: "fas fa-pause", conditional: "if(has_timer_start_events and not(pause_timer_start), true, false)"},
         { value: "edit-designer", content: "Edit Process", permission: "edit-processes", icon: "fas fa-edit", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
         { value: "edit-item", content: "Configure", permission: "edit-processes", icon: "fas fa-cog", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
-        { value: "view-documentation", content: "View Documentation", permission: "view-processes", icon: "fas fa-sign", conditional: "isDocumenterInstalled"},
+        { value: "view-documentation", content: "View Documentation", permission: "view-processes", icon: "fas fa-sign", isDocumenterInstalled: "if('isDocumenterInstalled' == true, true, false)"},
         { value: "export-item", content: "Export", permission: "export-processes", icon: "fas fa-file-export"},
         { value: "create-template", content: "Create Template", permission: "create-templates", icon: "fas fa-layer-group" },
         { value: "remove-item", content: "Archive", permission: "archive-processes", icon: "fas fa-download", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)" },
