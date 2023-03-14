@@ -1,5 +1,5 @@
 <template>
-  <div class="dropdown-container">
+  <div>
     <b-dropdown
       variant="ellipsis"
       no-caret
@@ -10,18 +10,53 @@
       <template #button-content>
         <i class="fas fa-ellipsis-h" />
       </template>
-      <b-dropdown-item
-        v-for="action in filterActions"
-        v-show="action.conditional ? action.conditional : true"
-        :key="action.value"
-        class="ellipsis-dropdown-item pl-0 mb-1 mx-auto"
-        @click="onClick(action, data)"
-      >
-        <div class="ellipsis-dropdown-content">
-        <i class="pr-1" :class="action.icon"/>
-        <span>{{ action.content }}</span>
-        </div>
-      </b-dropdown-item>
+      <div v-if="divider === true">
+        <b-dropdown-item
+          v-for="action in filterAboveDivider"
+          :key="action.value"
+          class="ellipsis-dropdown-item mx-auto"
+          @click="onClick(action, data)"
+        >
+          <div class="ellipsis-dropdown-content">
+            <i
+              class="pr-1"
+              :class="action.icon"
+            />
+            <span>{{ action.content }}</span>
+          </div>
+        </b-dropdown-item>
+        <b-dropdown-divider />
+        <b-dropdown-item
+          v-for="action in filterBelowDivider"
+          :key="action.value"
+          class="ellipsis-dropdown-item mx-auto"
+          @click="onClick(action, data)"
+        >
+          <div class="ellipsis-dropdown-content">
+            <i
+              class="pr-1"
+              :class="action.icon"
+            />
+            <span>{{ action.content }}</span>
+          </div>
+        </b-dropdown-item>
+      </div>
+      <div v-else>
+        <b-dropdown-item
+          v-for="action in filterActions"
+          :key="action.value"
+          class="ellipsis-dropdown-item mx-auto"
+          @click="onClick(action, data)"
+        >
+          <div class="ellipsis-dropdown-content">
+            <i
+              class="pr-1"
+              :class="action.icon"
+            />
+            <span>{{ action.content }}</span>
+          </div>
+        </b-dropdown-item>
+      </div>
     </b-dropdown>
   </div>
 </template>
@@ -33,10 +68,10 @@ export default {
   components: { },
   filters: { },
   mixins: [],
-  props: ["actions", "permission", "data", "isDocumenterInstalled"],
+  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider"],
   data() {
     return {
-        active: false,
+      active: false,
     };
   },
   computed: {
@@ -53,7 +88,7 @@ export default {
         // https://www.npmjs.com/package/expr-eval-ex?activeTab=readme
         if (btn.hasOwnProperty('conditional') && btn.conditional === "isDocumenterInstalled") {
           if (this.isDocumenterInstalled) {
-              return btn;
+            return btn;
           }
         } else if (btn.hasOwnProperty('conditional')) {
           const result = Parser.evaluate(btn.conditional, this.data);
@@ -65,6 +100,20 @@ export default {
         }
       });
       return btns;
+    },
+    filterAboveDivider() {
+      const filteredActions = this.filterActions;
+
+      const firstActions = filteredActions.slice(0, -1);
+
+      return firstActions;
+    },
+    filterBelowDivider() {
+      const filteredActions = this.filterActions;
+
+      const lastAction = filteredActions.slice(-1);
+
+      return lastAction;
     },
   },
   created() {
@@ -83,7 +132,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "../../../sass/colors";
 
 .ellipsis-dropdown-main {
