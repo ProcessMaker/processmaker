@@ -9,8 +9,8 @@
     />
     <div v-show="!shouldShowLoader" class="card card-body table-card" data-cy="processes-table">
       <vuetable
-              :dataManager="dataManager"
-              :sortOrder="sortOrder"
+              :data-manager="dataManager"
+              :sort-order="sortOrder"
               :css="css"
               :api-mode="false"
               @vuetable:pagination-data="onPaginationData"
@@ -18,7 +18,7 @@
               :data="data"
               data-path="data"
               pagination-path="meta"
-              :noDataTemplate="$t('No Data Available')"
+              :no-data-template="$t('No Data Available')"
       >
         <template slot="name" slot-scope="props">
           <i tabindex="0"
@@ -47,7 +47,14 @@
         </template>
         <template slot="actions" slot-scope="props">
           <!-- {{props.rowData}} -->
-          <ellipsis-menu @navigate="onNavigate" :actions="actions" :permission="permission" :data="props.rowData" :isDocumenterInstalled="isDocumenterInstalled"/>
+          <ellipsis-menu 
+            @navigate="onNavigate"
+            :actions="actions"
+            :permission="permission"
+            :data="props.rowData"
+            :is-documenter-installed="isDocumenterInstalled"
+            :divider="true"
+          />
         </template>
 
         <!-- <template slot="actions" slot-scope="props">
@@ -151,7 +158,7 @@
       <pagination
               :single="$t('Process')"
               :plural="$t('Processes')"
-              :perPageSelectEnabled="true"
+              :per-page-select-enabled="true"
               @changePerPage="changePerPage"
               @vuetable-pagination:change-page="onPageChange"
               ref="pagination"
@@ -180,13 +187,13 @@ import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
         // https://www.npmjs.com/package/expr-eval-ex?activeTab=readme
         { value: "unpause-start-timer", content: "Unpause Start Timer Events", icon: "fas fa-play", conditional: "if(has_timer_start_events and pause_timer_start, true, false)" },
         { value: "pause-start-timer", content: "Pause Start Timer Events", icon: "fas fa-pause", conditional: "if(has_timer_start_events and not(pause_timer_start), true, false)"},
-        { value: "edit-designer", content: "Edit Process", permission: "edit-processes", icon: "fas fa-edit" },
-        { value: "edit-item", content: "Configure", permission: "edit-processes", icon: "fas fa-cog" },
-        { value: "view-documentation", content: "View Documentation", permission: "view-processes", icon: "fas fa-sign", conditional: "isDocumenterInstalled" },
-        { value: "export-item", content: "Export", permission: "export-processes", icon: "fas fa-file-export" },
+        { value: "edit-designer", content: "Edit Process", permission: "edit-processes", icon: "fas fa-edit", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
+        { value: "edit-item", content: "Configure", permission: "edit-processes", icon: "fas fa-cog", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
+        { value: "view-documentation", content: "View Documentation", permission: "view-processes", icon: "fas fa-sign", conditional: "isDocumenterInstalled"},
+        { value: "export-item", content: "Export", permission: "export-processes", icon: "fas fa-file-export"},
         { value: "create-template", content: "Create Template", permission: "create-templates", icon: "fas fa-layer-group" },
-        { value: "remove-item", content: "Archive", permission: "archive-processes", icon: "fas fa-download" },
-        { value: "restore-item", content: "Restore", permission: "archive-processes", icon: "fas fa-upload" },
+        { value: "remove-item", content: "Archive", permission: "archive-processes", icon: "fas fa-download", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)" },
+        { value: "restore-item", content: "Restore", permission: "archive-processes", icon: "fas fa-upload", conditional: "if(status == 'ARCHIVED', true, false)" },
       ],
         orderBy: "name",
         sortOrder: [
