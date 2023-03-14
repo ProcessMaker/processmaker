@@ -116,13 +116,13 @@
       },  
       methods: {
         show() {
+          this.customModalButtons[1].hidden === true ? this.toggleButtons() : true;
           this.$bvModal.show('createTemplate');
         },
         close() {
           this.$bvModal.hide('createTemplate');
           this.clear();
           this.errors = {};
-          this.toggleButtons();
         },
         clear() {
           this.name = '';
