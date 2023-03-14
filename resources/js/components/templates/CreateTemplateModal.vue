@@ -116,7 +116,7 @@
       },  
       methods: {
         show() {
-          this.customModalButtons[1].hidden === true ? this.toggleButtons() : true;
+          this.customModalButtons[1].hidden === true ? this.toggleButtons() : false;
           this.$bvModal.show('createTemplate');
         },
         close() {
