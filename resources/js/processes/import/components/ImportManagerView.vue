@@ -28,6 +28,9 @@
                                     <div class="alert alert-warning" v-if="showWarning">
                                         {{ $t('The file you are importing was made with an older version of ProcessMaker. Advanced import is not available. All assets will be copied.') }}
                                     </div>
+                                    <div class="alert alert-warning" v-if="showTemplateWarning">
+                                        {{ $t('The file you are importing is a Template. Advanced import is not available. All assets will be copied.') }}
+                                    </div>
                                     <b-form-radio 
                                         v-for="(item, index) in importTypeOptions" 
                                         v-model="selectedImportOption" 
@@ -116,6 +119,7 @@ export default {
             password: '',
             passwordError: null,
             showWarning:false,
+            showTemplateWarning: false,
             showOldImporter: false,
         }
     },
@@ -275,6 +279,13 @@ export default {
                     this.$root.manifest = response.data.manifest;
                     this.$root.rootUuid = response.data.rootUuid;
                     this.processVersion = response.data.processVersion;
+                    const model = response.data.manifest[response.data.rootUuid].model;
+                    
+                    if (model === 'ProcessMaker\\Models\\ProcessTemplates') {
+                        // disable 'custom' import type for templates
+                        this.importTypeOptions[1].disabled = true;
+                        this.showTemplateWarning = true;
+                    }
                 }  
                
                 if (this.processVersion === null) {
