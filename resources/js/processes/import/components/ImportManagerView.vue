@@ -334,21 +334,36 @@ export default {
         },
         handleImport() {
             this.loading = true;
-            DataProvider.doImport(this.file, this.$root.exportOptions(), this.password)
-            .then(response => {
-                ProcessMaker.alert(this.$t('Process was successfully imported'), 'success');
-                if (response.data?.processId) {
-                    window.location.href = `/modeler/${response.data.processId}`;
-                } else {
-                    this.loading = false;
-                }
-            }).catch(error => {
-                ProcessMaker.alert(this.$t('Unable to import the process.')  + (error.response.data.message ? ': ' + error.response.data.message : ''), 'danger');
-                this.submitted = false;
-                this.loading = false;
-            });
             this.submitted = true;
+
+            DataProvider.doImport(this.file, this.$root.exportOptions(), this.password)
+            .then((response) => {
+                if (response?.data) {
+                    const { processId } = response.data;
+                    const successMessage =
+                        processId
+                            ? this.$t('Process was successfully imported')
+                            : this.$t('Process Template was successfully imported');
+
+                    ProcessMaker.alert(successMessage, 'success');
+                    window.location.href = processId ? `/modeler/${processId}` : '/processes/';
+                    this.submitted = false; // the form was successfully submitted
+                } else {
+                    // the request was successful but did not return expected data
+                    throw new Error(this.$t('Unknown error while importing the process.'));
+                }
+            })
+            .catch((error) => {
+                this.handleError(error); // a shared method that displays the error message and resets loading/submitted
+            });
         },
+        // A shared method for handling errors across the app:
+        handleError(error) {
+            const message = error.response?.data?.message || this.$t('Unable to import the process.');
+            ProcessMaker.alert(`${message}.`, 'danger');
+            this.submitted = false;
+            this.loading = false;
+        }
     },
     mounted() {
         let received = false;
