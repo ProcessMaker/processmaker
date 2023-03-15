@@ -254,11 +254,11 @@ class ProcessTemplate implements TemplateInterface
 
     public function existingTemplate($request)
     {
-        $processId = $request->id;
+        $id = $request->id;
         $name = $request->name;
 
         $template = ProcessTemplates::where(['name' => $name])->first();
-        if ($template !== null) {
+        if ($template !== null && $id !== $template->id) {
             // If same asset has been Saved as Template previously, offer to choose between “Update Template” and “Save as New Template”
             return [$template->id, $name];
         }
