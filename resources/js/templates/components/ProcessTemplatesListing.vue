@@ -191,15 +191,15 @@
               template,
             }
           }).then(response => {
-            let header = response.headers['export-info'];
-            let exportInfo = JSON.parse(header);
+            const exportInfo = JSON.parse(response.headers['export-info']);
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement("a");
             link.href = url;
-            link.setAttribute("download", exportInfo.name.replace(' ', '_') + ".json");
+
+            link.setAttribute("download", `${exportInfo.name.replace(' ', '_')}.json`);
             document.body.appendChild(link);
             link.click();
-            Processmaker.alert('The template exported', 'success');
+            ProcessMaker.alert(`The template ${exportInfo.name} was exported`, 'success');
           });
         },
         onAction(action, data, index) {
