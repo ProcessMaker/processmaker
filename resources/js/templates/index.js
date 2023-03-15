@@ -22,7 +22,7 @@ new Vue({
       this.processModal = true;
     },
     goToImport() {
-      window.location = "/processes/import";
+      window.location = "/template/process/import";
     },
     reload() {
       this.$refs.templateListing.fetch();
