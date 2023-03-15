@@ -23,36 +23,27 @@ class TemplateExporter extends ExporterBase
         $mode = $request->mode;
         $model = $request->model;
 
-        $fields = [
-            'name',
-            'description',
-            'process_id',
-            'user_id',
-            'manifest',
-            'svg',
-            'process_template_category_id',
-            'is_system',
-            'created_at',
-            'updated_at',
-        ];
-
-        $processTemplate = [
-            'uuid' => $model->uuid,
-            // Fill in all other necessary fields here
+        $updateData = [
+            'name' => $model->name,
+            'description' => $model->description,
+            'process_id' => $model->process_id,
+            'user_id' => $model->user_id,
+            'manifest' => $model->manifest,
+            'svg' => $model->svg,
+            'process_template_category_id' => $model->process_template_category_id,
+            'is_system' =>$model->is_system,
         ];
 
         switch ($mode) {
             case 'update':
-                ProcessTemplates::where('uuid', $model->uuid)->update($fields);
+                ProcessTemplates::where('uuid', $model->uuid)->update($updateData);
 
                 return true;
-
             case 'new':
             case 'copy':
-                ProcessTemplates::updateOrCreate(['uuid' => $model->uuid], $fields);
+                ProcessTemplates::create(['uuid' => $model->uuid], $updateData);
 
                 return true;
-
             default:
                 // code...
                 break;
