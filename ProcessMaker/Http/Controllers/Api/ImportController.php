@@ -10,6 +10,7 @@ use ProcessMaker\ImportExport\ExportEncrypted;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessTemplates;
 
 class ImportController extends Controller
 {
@@ -40,23 +41,26 @@ class ImportController extends Controller
 
     public function import(Request $request): JsonResponse
     {
-        $payload = json_decode($request->file('file')->get(), true);
+        $jsonData = $request->file('file')->get();
+        $payload = json_decode($jsonData, true);
 
         try {
             $payload = $this->handlePasswordDecrypt($request, $payload);
         } catch (ImportPasswordException $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
-        $options = file_get_contents(utf8_decode($request->file('options')));
-        $postOptions = json_decode($options, true);
-        $options = new Options($postOptions);
+
+        $options = new Options(json_decode(file_get_contents(utf8_decode($request->file('options'))), true));
         $importer = new Importer($payload, $options);
         $manifest = $importer->doImport();
 
-        $rootLog = $manifest[$payload['root']]->log;
-        $processId = $rootLog['newId'];
+        if ($manifest[$payload['root']]->model instanceof ProcessTemplates) {
+            return response()->json([], 200);
+        }
 
-        return response()->json(['processId' => $processId], 200);
+        $newProcessId = $manifest[$payload['root']]->log['newId'];
+
+        return response()->json(['processId' => $newProcessId], 200);
     }
 
     private function handlePasswordDecrypt(Request $request, array $payload)
