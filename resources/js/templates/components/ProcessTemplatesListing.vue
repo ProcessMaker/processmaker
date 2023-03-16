@@ -77,7 +77,6 @@
     import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
     import { createUniqIdsMixin } from "vue-uniq-ids";
     import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
-    // import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
   
     const uniqIdsMixin = createUniqIdsMixin();
   
@@ -163,30 +162,6 @@
             description: data.description,
           };
           switch (action.value) {
-            case "unpause-start-timer":
-              putData.pause_timer_start = false;
-              ProcessMaker.apiClient
-                  .put("processes/" + data.id, putData)
-                  .then(response => {
-                    ProcessMaker.alert(
-                        this.$t("The process was unpaused."),
-                        "success"
-                    );
-                    this.$emit("reload");
-                  });
-              break;
-            case "pause-start-timer":
-              putData.pause_timer_start = true;
-              ProcessMaker.apiClient
-                  .put("processes/" + data.id, putData)
-                  .then(response => {
-                    ProcessMaker.alert(
-                        this.$t("The process was paused."),
-                        "success"
-                    );
-                    this.$emit("reload");
-                  });
-              break;
             case "edit-designer":
               this.goToDesigner(data.id);
               break;
@@ -201,17 +176,6 @@
               break;
             case "create-template":
               this.createTemplate(data.id);
-              break;
-            case "restore-item":
-              ProcessMaker.apiClient
-                  .put("processes/" + data.id + "/restore")
-                  .then(response => {
-                    ProcessMaker.alert(
-                        this.$t("The process was restored."),
-                        "success"
-                    );
-                    this.$emit("reload");
-                  });
               break;
             case "remove-item":
               ProcessMaker.confirmModal(
@@ -232,7 +196,7 @@
                         });
                   }
               );
-              break;
+            break;
           }
         },
         formatStatus(status) {
