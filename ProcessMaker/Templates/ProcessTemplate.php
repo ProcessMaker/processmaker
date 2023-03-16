@@ -52,12 +52,33 @@ class ProcessTemplate implements TemplateInterface
     public function save($request) : JsonResponse
     {
         // Get inputs from the $request object
-        $processId = (int) $request->input('asset_id');
+        $processId = (int) $request->id;
         $name = $request->input('name');
         $description = $request->input('description');
         $userId = $request->input('user_id');
         $category = $request->input('process_template_category_id');
         $manifest = $this->getManifest('process', $processId);
+        $mode = $request->input('mode');
+
+        if ($mode === 'discard') {
+            // Set the the 'discard' boolean for all dependents to true
+            $rootUuid = $manifest->getData()->root;
+            $originalExport = $manifest->original['export'];
+
+            // Filter root export by UUID
+            $rootExport = Arr::first(
+                $originalExport,
+                function ($value, $key) use ($rootUuid) {
+                    return $key === $rootUuid;
+                }
+            );
+
+            // Set discard flag for all dependents
+            data_set($rootExport, 'dependents.*.discard', true);
+
+            // Update export of original manifest with modified root export
+            data_set($manifest, 'original.export', [$rootUuid => $rootExport]);
+        }
 
         $model = ProcessTemplates::updateOrCreate(
             ['process_id' => $processId],
@@ -72,7 +93,7 @@ class ProcessTemplate implements TemplateInterface
                 'process_template_category_id' => null,
             ]
         );
-
+        //dd($model);
         return response()->json(['model' => $model]);
     }
 
