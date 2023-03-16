@@ -36,7 +36,6 @@
           </i>
           <span v-uni-id="props.rowData.id.toString()">{{props.rowData.name}}</span>
         </template>
-        <ellipsis-menu />
         <template slot="owner" slot-scope="props">
           <avatar-image
                   class="d-inline-flex pull-left align-items-center"
@@ -55,95 +54,7 @@
             :divider="true"
           />
         </template>
-
-        <!-- <template slot="actions" slot-scope="props">
-          <div class="actions">
-            <div class="popout">
-              <b-btn
-                      variant="link"
-                      @click="onAction('unpause-start-timer', props.rowData, props.rowIndex)"
-                      v-b-tooltip.hover
-                      :title="$t('Unpause Start Timer Events')"
-                      v-if="props.rowData.has_timer_start_events && props.rowData.pause_timer_start"
-                      v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-play fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                      variant="link"
-                      @click="onAction('pause-start-timer', props.rowData, props.rowIndex)"
-                      v-b-tooltip.hover
-                      :title="$t('Pause Start Timer Events')"
-                      v-if="props.rowData.has_timer_start_events && !props.rowData.pause_timer_start"
-                      v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-pause fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                      variant="link"
-                      @click="onAction('edit-designer', props.rowData, props.rowIndex)"
-                      v-b-tooltip.hover
-                      :title="$t('Edit')"
-                      v-if="permission.includes('edit-processes') && (props.rowData.status === 'ACTIVE' || props.rowData.status === 'INACTIVE')"
-                      v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-pen-square fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                      variant="link"
-                      @click="onAction('edit-item', props.rowData, props.rowIndex)"
-                      v-b-tooltip.hover
-                      :title="$t('Configure')"
-                      v-if="permission.includes('edit-processes') && (props.rowData.status === 'ACTIVE' || props.rowData.status === 'INACTIVE')"
-                      v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-cog fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                      variant="link"
-                      @click="onAction('view-documentation', props.rowData, props.rowIndex)"
-                      v-b-tooltip.hover
-                      :title="$t('View Documentation')"
-                      v-if="permission.includes('view-processes') && isDocumenterInstalled"
-                      v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-map-signs fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                      variant="link"
-                      @click="onAction('export-item', props.rowData, props.rowIndex)"
-                      v-b-tooltip.hover
-                      :title="$t('Export')"
-                      v-if="permission.includes('export-processes')"
-                      v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-file-export fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                      variant="link"
-                      @click="onAction('remove-item', props.rowData, props.rowIndex)"
-                      v-b-tooltip.hover
-                      :title="$t('Archive')"
-                      v-if="permission.includes('archive-processes') && (props.rowData.status === 'ACTIVE' || props.rowData.status === 'INACTIVE')"
-                      v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-download fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                      variant="link"
-                      @click="onAction('restore-item', props.rowData, props.rowIndex)"
-                      v-b-tooltip.hover
-                      :title="$t('Restore')"
-                      v-if="permission.includes('archive-processes') && props.rowData.status === 'ARCHIVED'"
-                      v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-upload fa-lg fa-fw"></i>
-              </b-btn>
-            </div>
-          </div>
-        </template> -->
       </vuetable>
-
       <pagination
               :single="$t('Process')"
               :plural="$t('Processes')"
@@ -160,7 +71,7 @@
   import datatableMixin from "../../components/common/mixins/datatable";
   import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
   import { createUniqIdsMixin } from "vue-uniq-ids";
-import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
+  import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 
   const uniqIdsMixin = createUniqIdsMixin();
 
@@ -247,15 +158,11 @@ import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
       goToExport(data) {
         window.location = "/processes/" + data + "/export";
       },
-      onNavigate(action, data, index) {
+      onNavigate(action, data) {
         let putData = {
           name: data.name,
           description: data.description,
         };
-        console.log('data', data);
-        // console.log('data id', this.data.id);
-        console.log('onNavigate action received', action);
-        console.log('action.value', action.value);
         switch (action.value) {
           case "unpause-start-timer":
             putData.pause_timer_start = false;
@@ -411,9 +318,6 @@ import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
         });
         return data;
       },
-    },
-    mounted() {
-      // console.log('rowData', this.props);
     },
     computed: {}
   };
