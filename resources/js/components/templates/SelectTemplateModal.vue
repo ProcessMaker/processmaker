@@ -6,14 +6,14 @@
     <modal
       id="selectTemplate"
       size="huge"
-      :title="$t('New [[Type]]')"
-      :subtitle="$t('Start a new [[type]] from a blank canvas or select a template')"
+      :title="$t(`New ${type}`)"
+      :subtitle="$t(`Start a new ${type} from a blank canvas or select a template`)"
       :hide-footer="true"
       @ok.prevent="onSubmit"
       @click="showTemplateDetailsModal"
     >
-      <b-button :aria-label="$t('Create Blank [[Type]]')" class="mb-3 blank-template-btn">
-        <i class="fas fa-plus" /> {{ $t('Blank [[Type]]') }}
+      <b-button :aria-label="$t(`Create Blank ${type}`)" class="mb-3 blank-template-btn">
+        <i class="fas fa-plus" /> {{ $t(`Blank ${type}`) }}
       </b-button>
       <template-search />
     </modal>
@@ -29,7 +29,7 @@
   export default {
     components: { Modal, TemplateSearch, TemplateDetailsModal },
     mixins: [ ],
-    props: [],
+    props: ['type'],
     data: function() {
       return {
       }
