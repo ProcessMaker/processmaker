@@ -51,38 +51,14 @@ class ProcessTemplate implements TemplateInterface
      */
     public function save($request) : JsonResponse
     {
-        // get inputs from the $request object
+        // Get inputs from the $request object
         $processId = (int) $request->input('asset_id');
         $name = $request->input('name');
         $description = $request->input('description');
         $userId = $request->input('user_id');
         $category = $request->input('process_template_category_id');
-        $mode = $request->input('mode');
+        $manifest = $this->getManifest('process', $processId);
 
-        if ($mode === 'discard') {
-            // Get process manifest
-            $manifest = $this->getManifest('process', $processId);
-            $rootUuid = $manifest->getData()->root;
-            $originalExport = json_decode(json_encode($manifest['original']['export']), true);
-
-            // Filter root export by UUID
-            $rootExport = Arr::first(
-                $originalExport,
-                function ($value, $key) use ($rootUuid) {
-                    return $key === $rootUuid;
-                }
-            );
-
-            // Set discard flag for all dependents
-            data_set($rootExport, 'dependents.*.discard', true);
-
-            // Update export of original manifest with modified root export
-            data_set($manifest, 'original.export', [$rootUuid => $rootExport]);
-        } else {
-            $manifest = null;
-        }
-
-        // Attempt to update or create a new record in the ProcessTemplates table
         $model = ProcessTemplates::updateOrCreate(
             ['process_id' => $processId],
             [
@@ -97,7 +73,6 @@ class ProcessTemplate implements TemplateInterface
             ]
         );
 
-        // Return JSON representation of the model
         return response()->json(['model' => $model]);
     }
 
@@ -195,33 +170,6 @@ class ProcessTemplate implements TemplateInterface
 
         return $response;
     }
-
-    // /**
-    //  * Get the where array to filter the resources.
-    //  *
-    //  * @param Request $request
-    //  * @param array $searchableColumns
-    //  *
-    //  * @return array
-    //  */
-    // protected function getRequestFilterBy(Request $request, array $searchableColumns)
-    // {
-    //     $where = [];
-    //     $filter = $request->input('filter');
-    //     if ($filter) {
-    //         foreach ($searchableColumns as $column) {
-    //             // for other columns, it can match a substring
-    //             $sub_search = '%';
-    //             if (array_search('status', explode('.', $column), true) !== false) {
-    //                 // filtering by status must match the entire string
-    //                 $sub_search = '';
-    //             }
-    //             $where[] = [$column, 'like', $sub_search . $filter . $sub_search, 'or'];
-    //         }
-    //     }
-
-    //     return $where;
-    // }
 
     /**
      * Get included relationships.
