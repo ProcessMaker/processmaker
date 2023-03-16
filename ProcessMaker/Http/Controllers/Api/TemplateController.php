@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\TemplateCollection;
@@ -37,6 +38,11 @@ class TemplateController extends Controller
      */
     public function store(string $type, Request $request)
     {
+        $request->validate([
+            'name' => 'required|string|min:1|max:255',
+            'description' => 'required|string',
+        ]);
+
         [$id, $name] = (new $this->types[$type][1])->existingTemplate($request);
 
         if ($id) {
@@ -59,6 +65,11 @@ class TemplateController extends Controller
      */
     public function update(string $type, Request $request)
     {
+        $request->validate([
+            'name' => 'required|string|min:1|max:255',
+            'description' => 'required|string',
+        ]);
+
         if (!isset($request->process_id)) {
             // This is an update from the template configs page. We need to check if the template name was updated and already exists
             [$id, $name] = (new $this->types[$type][1])->existingTemplate($request);

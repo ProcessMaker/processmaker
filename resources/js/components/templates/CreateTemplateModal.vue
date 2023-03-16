@@ -226,10 +226,18 @@
             }
           } else {
             this.customModalButtons[1].disabled = true;
+    
             if (this.showWarning) {
               this.customModalButtons[2].disabled = true;
               this.customModalButtons[3].disabled = true;
             }
+          }
+          if (this.name.length > 255) {
+            this.errors.name = ['Name must be less than 255 characters.'];
+            this.customModalButtons[1].disabled = true;
+            this.customModalButtons[3].disabled = true;
+          }else {
+            this.errors.name = null;
           }
         }
       },

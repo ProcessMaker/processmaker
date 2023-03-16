@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Validation\Rule;
 use ProcessMaker\Models\ProcessMakerModel;
 use ProcessMaker\Models\TemplateCategory;
 use ProcessMaker\Traits\HasUuids;
