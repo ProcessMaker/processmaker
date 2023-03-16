@@ -1,5 +1,5 @@
 <template>
-  <div class="data-table">
+  <div class="data-table position-relative">
     <data-loading
             :for="/\/processes\?page/"
             v-show="shouldShowLoader"
@@ -7,7 +7,7 @@
             :empty-desc="$t('')"
             empty-icon="noData"
     />
-    <div v-show="!shouldShowLoader" class="card card-body table-card" data-cy="processes-table">
+    <div v-show="!shouldShowLoader" class="card card-body processes-table-card" data-cy="processes-table">
       <vuetable
               :data-manager="dataManager"
               :sort-order="sortOrder"
@@ -330,5 +330,9 @@
 
   :deep(th#_created_at) {
     width: 14%;
+  }
+
+  .processes-table-card {
+    padding: 0;
   }
 </style>

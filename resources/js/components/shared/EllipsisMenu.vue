@@ -1,64 +1,63 @@
 <template>
-  <div>
-    <b-dropdown
-      variant="ellipsis"
-      no-caret
-      no-flip
-      lazy
-      class="ellipsis-dropdown-main"
-    >
-      <template #button-content>
-        <i class="fas fa-ellipsis-h" />
-      </template>
-      <div v-if="divider === true">
-        <b-dropdown-item
-          v-for="action in filterAboveDivider"
-          :key="action.value"
-          class="ellipsis-dropdown-item mx-auto"
-          @click="onClick(action, data)"
-        >
-          <div class="ellipsis-dropdown-content">
-            <i
-              class="pr-1"
-              :class="action.icon"
-            />
-            <span>{{ action.content }}</span>
-          </div>
-        </b-dropdown-item>
-        <b-dropdown-divider />
-        <b-dropdown-item
-          v-for="action in filterBelowDivider"
-          :key="action.value"
-          class="ellipsis-dropdown-item mx-auto"
-          @click="onClick(action, data)"
-        >
-          <div class="ellipsis-dropdown-content">
-            <i
-              class="pr-1"
-              :class="action.icon"
-            />
-            <span>{{ action.content }}</span>
-          </div>
-        </b-dropdown-item>
-      </div>
-      <div v-else>
-        <b-dropdown-item
-          v-for="action in filterActions"
-          :key="action.value"
-          class="ellipsis-dropdown-item mx-auto"
-          @click="onClick(action, data)"
-        >
-          <div class="ellipsis-dropdown-content">
-            <i
-              class="pr-1"
-              :class="action.icon"
-            />
-            <span>{{ action.content }}</span>
-          </div>
-        </b-dropdown-item>
-      </div>
-    </b-dropdown>
-  </div>
+  <b-dropdown
+    variant="ellipsis"
+    no-caret
+    no-flip
+    lazy
+    class="dropdown-right ellipsis-dropdown-main"
+    offset="-150px"
+  >
+    <template #button-content>
+      <i class="fas fa-ellipsis-h" />
+    </template>
+    <div v-if="divider === true">
+      <b-dropdown-item
+        v-for="action in filterAboveDivider"
+        :key="action.value"
+        class="ellipsis-dropdown-item mx-auto"
+        @click="onClick(action, data)"
+      >
+        <div class="ellipsis-dropdown-content">
+          <i
+            class="pr-1"
+            :class="action.icon"
+          />
+          <span>{{ action.content }}</span>
+        </div>
+      </b-dropdown-item>
+      <b-dropdown-divider />
+      <b-dropdown-item
+        v-for="action in filterBelowDivider"
+        :key="action.value"
+        class="ellipsis-dropdown-item mx-auto"
+        @click="onClick(action, data)"
+      >
+        <div class="ellipsis-dropdown-content">
+          <i
+            class="pr-1"
+            :class="action.icon"
+          />
+          <span>{{ action.content }}</span>
+        </div>
+      </b-dropdown-item>
+    </div>
+    <div v-else>
+      <b-dropdown-item
+        v-for="action in filterActions"
+        :key="action.value"
+        class="ellipsis-dropdown-item mx-auto"
+        @click="onClick(action, data)"
+      >
+        <div class="ellipsis-dropdown-content">
+          <i
+            class="pr-1"
+            :class="action.icon"
+          />
+          <span>{{ action.content }}</span>
+        </div>
+      </b-dropdown-item>
+    </div>
+  </b-dropdown>
 </template>
 
 <script>
