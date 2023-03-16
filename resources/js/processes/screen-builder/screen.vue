@@ -1,32 +1,46 @@
 <template>
   <div class="h-100">
-    <b-card no-body class="h-100 bg-white border-top-0" id="app">
+    <b-card
+      id="app"
+      no-body
+      class="h-100 bg-white border-top-0"
+    >
       <!-- Card Header -->
-      <top-menu ref="menuScreen" :options="optionsMenu" :environment="self" />
+      <top-menu
+        ref="menuScreen"
+        :options="optionsMenu"
+        :environment="self"
+      />
 
       <!-- Card Body -->
-      <b-card-body class="overflow-auto p-0 h-100" id="screen-builder-container">
+      <b-card-body
+        id="screen-builder-container"
+        class="overflow-auto p-0 h-100"
+      >
         <!-- Vue-form-builder -->
         <vue-form-builder
+          ref="builder"
           class="m-0"
-          :validationErrors="validationErrors"
-          :initialConfig="screen.config"
+          :validation-errors="validationErrors"
+          :initial-config="screen.config"
           :title="screen.title"
           :class="displayBuilder ? 'd-flex' : 'd-none'"
-          :screenType="type"
-          ref="builder"
-          @change="updateConfig"
+          :screen-type="type"
           :screen="screen"
           :render-controls="displayBuilder"
+          @change="updateConfig"
         >
           <data-loading-basic
             :is-loaded="false"
-          ></data-loading-basic>
+          />
         </vue-form-builder>
 
         <!-- Preview -->
-        <b-row class="h-100 m-0" id="preview" v-show="displayPreview">
-
+        <b-row
+          v-show="displayPreview"
+          id="preview"
+          class="h-100 m-0"
+        >
           <b-col class="overflow-auto h-100">
             <vue-form-renderer
               v-if="renderComponent === 'task-screen'"
@@ -34,22 +48,22 @@
               :key="rendererKey"
               v-model="previewData"
               class="p-3"
-              @submit="previewSubmit"
-              @update="onUpdate"
               :mode="mode"
               :config="preview.config"
               :computed="preview.computed"
               :custom-css="preview.custom_css"
               :watchers="preview.watchers"
-              v-on:css-errors="cssErrors = $event"
               :show-errors="true"
               :mock-magic-variables="mockMagicVariables"
+              @submit="previewSubmit"
+              @update="onUpdate"
+              @css-errors="cssErrors = $event"
             />
             <div v-else>
               <component
-                :mode="mode"
                 :is="renderComponent"
                 v-model="previewData"
+                :mode="mode"
                 :screen="preview.config"
                 :computed="preview.computed"
                 :custom-css="preview.custom_css"
@@ -63,10 +77,20 @@
           </b-col>
 
           <b-col class="overflow-hidden h-100 preview-inspector p-0">
-            <b-card no-body class="p-0 h-100 rounded-0 border-top-0 border-right-0 border-bottom-0">
+            <b-card
+              no-body
+              class="p-0 h-100 rounded-0 border-top-0 border-right-0 border-bottom-0"
+            >
               <b-card-body class="p-0 overflow-auto">
-                <div v-for="(component, index) in previewComponents" :key="index">
-                  <component :is="component" :data="previewData" @input="previewData = $event"></component>
+                <div
+                  v-for="(component, index) in previewComponents"
+                  :key="index"
+                >
+                  <component
+                    :is="component"
+                    :data="previewData"
+                    @input="previewData = $event"
+                  />
                 </div>
 
                 <b-button
@@ -74,15 +98,18 @@
                   class="text-left card-header d-flex align-items-center w-100 shadow-none text-capitalize"
                   @click="showDataInput = !showDataInput"
                 >
-                  <i class="fas fa-file-import mr-2"></i>
+                  <i class="fas fa-file-import mr-2" />
                   {{ $t('Data Input') }}
                   <i
                     class="fas ml-auto"
                     :class="showDataInput ? 'fa-angle-right' : 'fa-angle-down'"
-                  ></i>
+                  />
                 </b-button>
 
-                <b-collapse v-model="showDataInput" id="showDataInput">
+                <b-collapse
+                  id="showDataInput"
+                  v-model="showDataInput"
+                >
                   <monaco-editor
                     v-model="previewInput"
                     :options="monacoOptions"
@@ -91,8 +118,11 @@
                     @change="updateDataInput"
                   />
 
-                  <div v-if="!previewInputValid" class="pl-3">
-                    <i class="fas text-danger fa-times-circle mr-1"></i>
+                  <div
+                    v-if="!previewInputValid"
+                    class="pl-3"
+                  >
+                    <i class="fas text-danger fa-times-circle mr-1" />
                     <small class="text-muted text-capitalize">{{ $t('Invalid JSON Data Object') }}</small>
                   </div>
                 </b-collapse>
@@ -103,19 +133,23 @@
                   data-toggle="collapse"
                   @click="showDataPreview = !showDataPreview"
                 >
-                  <i class="fas fa-file-code mr-2"></i>
+                  <i class="fas fa-file-code mr-2" />
                   {{ $t('Data Preview') }}
                   <i
                     class="fas ml-auto"
                     :class="showDataPreview ? 'fa-angle-right' : 'fa-angle-down'"
-                  ></i>
+                  />
                 </b-button>
 
-                <b-collapse v-model="showDataPreview" id="showDataPreview" class="mt-2">
+                <b-collapse
+                  id="showDataPreview"
+                  v-model="showDataPreview"
+                  class="mt-2"
+                >
                   <monaco-editor
+                    v-model="previewDataStringify"
                     :options="monacoOptions"
                     class="editor"
-                    v-model="previewDataStringify"
                     language="json"
                     @editorDidMount="monacoMounted"
                   />
@@ -132,22 +166,39 @@
           v-model="toggleValidation"
           name="check-button"
           switch
-        >{{ $t('Screen Validation') }}</b-form-checkbox>
+        >
+          {{ $t('Screen Validation') }}
+        </b-form-checkbox>
 
-        <div class="ml-3" @click="showValidationErrors = !showValidationErrors">
-          <button type="button" class="btn btn-sm text-capitalize">
-            <i class="fas fa-angle-double-up"></i>
+        <div
+          class="ml-3"
+          @click="showValidationErrors = !showValidationErrors"
+        >
+          <button
+            type="button"
+            class="btn btn-sm text-capitalize"
+          >
+            <i class="fas fa-angle-double-up" />
             {{ $t('Open Console') }}
-            <span v-if="allErrors === 0 && allWarnings === 0" class="badge badge-success">
-              <i class="fas fa-check-circle "/>
+            <span
+              v-if="allErrors === 0 && allWarnings === 0"
+              class="badge badge-success"
+            >
+              <i class="fas fa-check-circle " />
             </span>
 
-            <span v-if="allErrors > 0" class="badge badge-danger">
-              <i class="fas fa-times-circle "/>
+            <span
+              v-if="allErrors > 0"
+              class="badge badge-danger"
+            >
+              <i class="fas fa-times-circle " />
               {{ $t(allErrors) }}
             </span>
-            <span v-if="allWarnings > 0" class="badge badge-warning">
-              <i class="fas fa-exclamation-triangle "/>
+            <span
+              v-if="allWarnings > 0"
+              class="badge badge-warning"
+            >
+              <i class="fas fa-exclamation-triangle " />
               {{ $t(allWarnings) }}
             </span>
           </button>
@@ -159,13 +210,13 @@
           :class="{'d-block':showValidationErrors && validationErrors.length}"
         >
           <b-button
-            variant="link"
-            class="validation__message d-flex align-items-center p-3"
             v-for="(validation,index) in warnings"
             :key="index"
+            variant="link"
+            class="validation__message d-flex align-items-center p-3"
             @click="focusInspector(validation)"
           >
-            <i class="fas fa-exclamation-triangle text-warning d-block mr-3"></i>
+            <i class="fas fa-exclamation-triangle text-warning d-block mr-3" />
             <span class="ml-2 text-dark font-weight-bold text-left">
               {{ validation.reference }}
               <span
@@ -174,13 +225,13 @@
             </span>
           </b-button>
           <b-button
-            variant="link"
-            class="validation__message d-flex align-items-center p-3 text-capitalize"
             v-for="(validation,index) in validationErrors"
             :key="index"
+            variant="link"
+            class="validation__message d-flex align-items-center p-3 text-capitalize"
             @click="focusInspector(validation)"
           >
-            <i class="fas fa-times-circle text-danger d-block mr-3"></i>
+            <i class="fas fa-times-circle text-danger d-block mr-3" />
             <span class="ml-2 text-dark font-weight-bold text-left">
               {{ validation.item && validation.item.component }}
               <span
@@ -196,60 +247,78 @@
       </b-card-footer>
     </b-card>
     <!-- Modals -->
-    <computed-properties v-model="computed" ref="computedProperties"></computed-properties>
-    <custom-CSS v-model="customCSS" ref="customCSS" :cssErrors="cssErrors" />
-    <watchers-popup v-model="watchers" ref="watchersPopup" />
+    <computed-properties
+      ref="computedProperties"
+      v-model="computed"
+    />
+    <custom-CSS
+      ref="customCSS"
+      v-model="customCSS"
+      :css-errors="cssErrors"
+    />
+    <watchers-popup
+      ref="watchersPopup"
+      v-model="watchers"
+    />
   </div>
 </template>
 
 <script>
 import { VueFormBuilder, VueFormRenderer } from "@processmaker/screen-builder";
 import WatchersPopup from "@processmaker/screen-builder/src/components/watchers-popup.vue";
-import ComputedProperties from "@processmaker/screen-builder/src/components/computed-properties";
-import CustomCSS from "@processmaker/screen-builder/src/components/custom-css";
+import ComputedProperties from "@processmaker/screen-builder/src/components/computed-properties.vue";
+import CustomCSS from "@processmaker/screen-builder/src/components/custom-css.vue";
 import "@processmaker/screen-builder/dist/vue-form-builder.css";
 import "@processmaker/vue-form-elements/dist/vue-form-elements.css";
 import MonacoEditor from "vue-monaco";
-import mockMagicVariables from "./mockMagicVariables";
-import TopMenu from "../../components/Menu";
-import { cloneDeep, debounce , isEqual} from 'lodash';
-import { mapMutations } from 'vuex';
-import i18next from 'i18next';
-
-// Bring in our initial set of controls
-import globalProperties from "@processmaker/screen-builder/src/global-properties";
-import _ from "lodash";
-
+import _, { cloneDeep, debounce } from "lodash";
+import { mapMutations } from "vuex";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import Validator from "validatorjs";
+import TopMenu from "../../components/Menu.vue";
+import mockMagicVariables from "./mockMagicVariables";
 import formTypes from "./formTypes";
-import DataLoadingBasic from "../../components/shared/DataLoadingBasic";
+import DataLoadingBasic from "../../components/shared/DataLoadingBasic.vue";
 
 // To include another language in the Validator with variable processmaker
 if (
-  window.ProcessMaker &&
-  window.ProcessMaker.user &&
-  window.ProcessMaker.user.lang
+  window.ProcessMaker
+  && window.ProcessMaker.user
+  && window.ProcessMaker.user.lang
 ) {
   Validator.useLang(window.ProcessMaker.user.lang);
 }
 
 Validator.register(
   "attr-value",
-  value => {
-    return value.match(/^[a-zA-Z0-9-_]+$/);
-  },
-  "Must be letters, numbers, underscores or dashes"
+  (value) => value.match(/^[a-zA-Z0-9-_]+$/),
+  "Must be letters, numbers, underscores or dashes",
 );
 
 export default {
-  props: ["process", "screen", "permission"],
+  components: {
+    VueFormBuilder,
+    VueFormRenderer,
+    ComputedProperties,
+    CustomCSS,
+    WatchersPopup,
+    MonacoEditor,
+    TopMenu,
+    DataLoadingBasic,
+  },
+  props: {
+    screen: {
+      type: Object,
+      required: true,
+    },
+  },
   data() {
     const defaultConfig = [
       {
         name: "Default",
         computed: [],
-        items: []
-      }
+        items: [],
+      },
     ];
 
     const options = [
@@ -265,7 +334,7 @@ export default {
             name: this.$t("Design"),
             variant: "secondary",
             icon: "fas fa-drafting-compass pr-1",
-            action: 'changeMode("editor")'
+            action: "changeMode(\"editor\")",
           },
           {
             id: "button_preview",
@@ -274,9 +343,9 @@ export default {
             name: this.$t("Preview"),
             variant: "outline-secondary",
             icon: "fas fa-cogs pr-1",
-            action: 'changeMode("preview")'
-          }
-        ]
+            action: "changeMode(\"preview\")",
+          },
+        ],
       },
       {
         id: "group_properties",
@@ -290,7 +359,7 @@ export default {
             name: this.$t("Calcs"),
             variant: "secondary",
             icon: "fas fa-flask",
-            action: 'openComputedProperties()'
+            action: "openComputedProperties()",
           },
           {
             id: "button_custom_css",
@@ -299,7 +368,7 @@ export default {
             name: this.$t("CSS"),
             variant: "secondary",
             icon: "fab fa-css3",
-            action: 'openCustomCSS()'
+            action: "openCustomCSS()",
           },
           {
             id: "button_watchers",
@@ -308,9 +377,9 @@ export default {
             name: this.$t("Watchers"),
             variant: "secondary",
             icon: "fas fa-mask",
-            action: 'openWatchersPopup()'
-          }
-        ]
+            action: "openWatchersPopup()",
+          },
+        ],
       },
       {
         id: "button_export",
@@ -320,7 +389,7 @@ export default {
         name: "",
         variant: "secondary",
         icon: "fas fa-file-export",
-        action: 'beforeExportScreen()'
+        action: "beforeExportScreen()",
       },
       {
         id: "button_save",
@@ -332,8 +401,8 @@ export default {
         icon: "fas fa-save",
         action: () => {
           ProcessMaker.EventBus.$emit("save-screen", false);
-        }
-      }
+        },
+      },
     ];
 
     return {
@@ -342,21 +411,21 @@ export default {
       preview: {
         config: [
           {
-            name: 'Default',
+            name: "Default",
             computed: [],
             items: [],
           },
         ],
         computed: [],
-        custom_css: '',
+        custom_css: "",
         watchers: [],
       },
       self: this,
       watchers_config: {
         api: {
           scripts: [],
-          execute: null
-        }
+          execute: null,
+        },
       },
       type: formTypes.form,
       mode: "editor",
@@ -376,7 +445,7 @@ export default {
       showDataInput: true,
       editor: null,
       monacoOptions: {
-        language: 'json',
+        language: "json",
         lineNumbers: "off",
         formatOnPaste: true,
         formatOnType: true,
@@ -387,23 +456,8 @@ export default {
       previewComponents: [],
       optionsMenu: options,
       rendererKey: 0,
-      renderComponent: 'task-screen'
+      renderComponent: "task-screen",
     };
-  },
-  components: {
-    VueFormBuilder,
-    VueFormRenderer,
-    ComputedProperties,
-    CustomCSS,
-    WatchersPopup,
-    MonacoEditor,
-    TopMenu,
-    DataLoadingBasic,
-  },
-  watch: {
-    customCSS(newCustomCSS) {
-      this.preview.custom_css = newCustomCSS;
-    },
   },
   computed: {
     previewInputValid() {
@@ -433,9 +487,9 @@ export default {
 
       const validationErrors = [];
 
-      this.config.forEach(page => {
+      this.config.forEach((page) => {
         validationErrors.push(
-          ...this.getValidationErrorsForItems(page.items, page)
+          ...this.getValidationErrorsForItems(page.items, page),
         );
       });
 
@@ -445,19 +499,24 @@ export default {
       const warnings = [];
       // Check if screen has watchers that use scripts
       const watchersWithScripts = this.watchers
-        .filter(watcher => watcher.script.id.substr(0, 7) === 'script-').length;
+        .filter((watcher) => watcher.script.id.substr(0, 7) === "script-").length;
       if (watchersWithScripts > 0) {
         warnings.push({
-          message: this.$t('Using watchers with Scripts can slow the performance of your screen.'),
+          message: this.$t("Using watchers with Scripts can slow the performance of your screen."),
         });
       }
       // Count form elements
       if (this.numberOfElements >= 25) {
         warnings.push({
-          message: this.$t('We recommend using fewer than 25 form elements in your screen for optimal performance.'),
+          message: this.$t("We recommend using fewer than 25 form elements in your screen for optimal performance."),
         });
       }
       return warnings;
+    },
+  },
+  watch: {
+    customCSS(newCustomCSS) {
+      this.preview.custom_css = newCustomCSS;
     },
   },
   mounted() {
@@ -481,16 +540,16 @@ export default {
     }, 1000),
     monacoMounted(editor) {
       this.editor = editor;
-      this.editor.updateOptions({ readOnly:  true });
+      this.editor.updateOptions({ readOnly: true });
     },
     formatMonaco() {
       if (!this.editor) {
         return;
       }
-      this.editor.updateOptions({ readOnly:  false });
+      this.editor.updateOptions({ readOnly: false });
       setTimeout(() => {
-        this.editor.getAction('editor.action.formatDocument').run().then(() => {
-          this.editor.updateOptions({ readOnly:  true });
+        this.editor.getAction("editor.action.formatDocument").run().then(() => {
+          this.editor.updateOptions({ readOnly: true });
         });
       }, 300);
     },
@@ -498,7 +557,7 @@ export default {
       if (!this.$refs.renderer) {
         return;
       }
-      this.$refs.renderer.countElements(this.config).then(allElements => {
+      this.$refs.renderer.countElements(this.config).then((allElements) => {
         this.numberOfElements = allElements.length;
       });
     },
@@ -507,7 +566,7 @@ export default {
 
       if (this.type === formTypes.form && !this.containsSubmitButton()) {
         warnings.push(
-          this.$t("Warning: Screens without save buttons cannot be executed.")
+          this.$t("Warning: Screens without save buttons cannot be executed."),
         );
       }
 
@@ -529,17 +588,18 @@ export default {
           return;
         }
         warnings.push(
-          this.$t('{{name}} on page {{pageName}} is not accessible to screen readers. Please add a Label in the Variable section or an Aria Label in the Advanced section.', {
+          // eslint-disable-next-line max-len
+          this.$t("{{name}} on page {{pageName}} is not accessible to screen readers. Please add a Label in the Variable section or an Aria Label in the Advanced section.", {
             name: item.config.name,
             pageName,
-          })
+          }),
         );
       });
 
       return warnings;
     },
     allControls(callback) {
-      this.config.forEach(page => {
+      this.config.forEach((page) => {
         this.getControlsFromItems(callback, page.items, page.name);
       });
     },
@@ -548,7 +608,7 @@ export default {
         return;
       }
 
-      items.forEach(item => {
+      items.forEach((item) => {
         if (Array.isArray(item)) {
           this.getControlsFromItems(callback, item, currentPageName);
         } else if (Array.isArray(item.items)) {
@@ -566,26 +626,25 @@ export default {
     },
     needsAriaLabel(item) {
       return [
-        'FormInput',
-        'FormSelectList',
-        'FormDatePicker',
-        'FormCheckbox',
-        'FileUpload',
-        'FileDownload',
-        'FormButton',
-        'FormTextArea'
+        "FormInput",
+        "FormSelectList",
+        "FormDatePicker",
+        "FormCheckbox",
+        "FileUpload",
+        "FileDownload",
+        "FormButton",
+        "FormTextArea",
       ].includes(item.component);
     },
     mountWhenTranslationAvailable() {
-      let d = new Date();
-      if(ProcessMaker.i18n.exists('Save') === false) {
+      if (ProcessMaker.i18n.exists("Save") === false) {
         window.setTimeout(() => this.mountWhenTranslationAvailable(), 100);
       } else {
-        let that = this;
+        const that = this;
         // Call our init lifecycle event
         ProcessMaker.EventBus.$emit("screen-builder-init", that);
-        if (that.screen.type === 'CONVERSATIONAL') {
-          that.renderComponent = 'ConversationalForm';
+        if (that.screen.type === "CONVERSATIONAL") {
+          that.renderComponent = "ConversationalForm";
         }
         that.computed = that.screen.computed ? that.screen.computed : [];
         that.customCSS = that.screen.custom_css ? that.screen.custom_css : "";
@@ -601,27 +660,27 @@ export default {
     changeMode(mode) {
       if (mode === "editor") {
         this.$refs.menuScreen.changeItem("button_design", {
-          variant: "secondary"
+          variant: "secondary",
         });
         this.$refs.menuScreen.changeItem("button_preview", {
-          variant: "outline-secondary"
+          variant: "outline-secondary",
         });
         this.$refs.menuScreen.sectionRight = true;
       }
       if (mode === "preview") {
         this.$refs.menuScreen.changeItem("button_design", {
-          variant: "outline-secondary"
+          variant: "outline-secondary",
         });
         this.$refs.menuScreen.changeItem("button_preview", {
-          variant: "secondary"
+          variant: "secondary",
         });
         this.$refs.menuScreen.sectionRight = false;
       }
       this.mode = mode;
       this.setStoreMode(this.mode);
       this.previewData = this.previewInputValid ? JSON.parse(this.previewInput) : {};
-      this.rendererKey++;
-      if (mode == 'preview') {
+      this.rendererKey += 1;
+      if (mode === "preview") {
         this.$dataProvider.flushScreenCache();
         this.preview.config = cloneDeep(this.config);
         this.preview.computed = cloneDeep(this.computed);
@@ -635,18 +694,15 @@ export default {
       this.updateDataPreview();
       ProcessMaker.EventBus.$emit("form-data-updated", data);
     },
-    getValidationErrorsForItems(items, page) {
+    getValidationErrorsForItems(inputItems, page) {
       const validationErrors = [];
+      const items = Array.isArray(inputItems) ? inputItems : [inputItems];
 
-      if (!Array.isArray(items)) {
-        items = [items];
-      }
-
-      items.forEach(item => {
+      items.forEach((item) => {
         if (item.container) {
-          item.items.forEach(containerItems => {
+          item.items.forEach((containerItems) => {
             validationErrors.push(
-              ...this.getValidationErrorsForItems(containerItems, page)
+              ...this.getValidationErrorsForItems(containerItems, page),
             );
           });
         }
@@ -654,12 +710,12 @@ export default {
         const data = item.config || {};
         const rules = {};
 
-        item.inspector.forEach(property => {
+        item.inspector.forEach((property) => {
           if (property.config.validation) {
-            if (property.config.validation.includes('regex:/^(?:[A-Za-z])(?:[0-9A-Z_.a-z])*(?<![.])$/')) {
-              let validationRuleArray = property.config.validation.split('|');
-              validationRuleArray[0] = 'regex:/^(?:[A-Za-z])(?:[0-9A-Z_.a-z])*[^.]$/';
-              rules[property.field] = validationRuleArray.join('|');
+            if (property.config.validation.includes("regex:/^(?:[A-Za-z])(?:[0-9A-Z_.a-z])*(?<![.])$/")) {
+              const validationRuleArray = property.config.validation.split("|");
+              validationRuleArray[0] = "regex:/^(?:[A-Za-z])(?:[0-9A-Z_.a-z])*[^.]$/";
+              rules[property.field] = validationRuleArray.join("|");
             } else {
               rules[property.field] = property.config.validation;
             }
@@ -677,12 +733,12 @@ export default {
           passes = false;
         }
         if (!passes) {
-          Object.keys(validator.errors.errors).forEach(field => {
-            validator.errors.errors[field].forEach(error => {
+          Object.keys(validator.errors.errors).forEach((field) => {
+            validator.errors.errors[field].forEach((error) => {
               validationErrors.push({
                 message: error,
                 page,
-                item
+                item,
               });
             });
           });
@@ -692,22 +748,17 @@ export default {
       return validationErrors;
     },
     containsSubmitButton() {
-      return this.config.some(config => {
-        return this.itemsContainSubmitButton(config.items);
-      });
+      return this.config.some((config) => this.itemsContainSubmitButton(config.items));
     },
     isSubmitButton(item) {
       return item.component === "FormButton" && item.config.event === "submit";
     },
-    itemsContainSubmitButton(items) {
-      if (!Array.isArray(items)) {
-        items = [items];
-      }
-      return items.some(item => {
-        return item.container
-          ? item.items.some(this.itemsContainSubmitButton)
-          : this.isSubmitButton(item);
-      });
+    itemsContainSubmitButton(inputItems) {
+      const items = Array.isArray(inputItems) ? inputItems : [inputItems];
+
+      return items.some((item) => (item.container
+        ? item.items.some(this.itemsContainSubmitButton)
+        : this.isSubmitButton(item)));
     },
     beforeExportScreen() {
       this.saveScreen(true);
@@ -738,6 +789,7 @@ export default {
       this.countElements();
     },
     previewSubmit() {
+      // eslint-disable-next-line no-alert
       alert("Preview Form was Submitted");
     },
     addControl(
@@ -745,18 +797,20 @@ export default {
       rendererComponent,
       rendererBinding,
       builderComponent,
-      builderBinding
+      builderBinding,
     ) {
       this.translateControl(control);
       // Add it to the renderer
-      if (!this.$refs.renderer) { return }
+      if (!this.$refs.renderer) { return; }
       this.$refs.renderer.$options.components[
         rendererBinding
       ] = rendererComponent;
       // Add it to the form builder
       this.$refs.builder.addControl(control, builderComponent, builderBinding);
     },
-    translateControl(control) {
+    translateControl(inputControl) {
+      const control = { ...inputControl };
+
       if (control.label) {
         control.label = this.$t(control.label);
       }
@@ -769,43 +823,40 @@ export default {
 
       // translate option list items
       if (control.config.options && Array.isArray(control.config.options)) {
-        control.config.options.forEach($item => {
+        control.config.options = control.config.options.map(($item) => {
           if ($item.content) {
-            $item.content = this.$t($item.content);
+            return { ...$item, content: this.$t($item.content) };
           }
+          return $item;
         });
       }
 
       // translate inspector items
       if (control.inspector) {
-        control.inspector.forEach($item => this.translateControl($item));
+        control.inspector.forEach(($item) => this.translateControl($item));
       }
-
     },
     addPreviewComponent(component) {
       this.previewComponents.push(component);
     },
-    refreshSession: _.throttle(function() {
+    refreshSession: _.throttle(() => {
       ProcessMaker.apiClient({
         method: "POST",
         url: "/keep-alive",
-        baseURL: "/"
+        baseURL: "/",
       });
     }, 60000),
     onClose() {
       window.location.href = "/designer/screens";
     },
-    beforeExportScreen() {
-      this.saveScreen(true);
-    },
     exportScreen() {
       ProcessMaker.apiClient
-        .post("screens/" + this.screen.id + "/export")
-        .then(response => {
+        .post(`screens/${this.screen.id}/export`)
+        .then((response) => {
           window.open(response.data.url);
           ProcessMaker.alert(this.$t("The screen was exported."), "success");
         })
-        .catch(error => {
+        .catch((error) => {
           ProcessMaker.alert(error.response.data.error, "danger");
         });
     },
@@ -813,23 +864,21 @@ export default {
       if (this.allErrors !== 0) {
         ProcessMaker.alert(
           this.$t("This screen has validation errors."),
-          "danger"
+          "danger",
         );
       } else {
-        this.validationWarnings().forEach(warning =>
-          ProcessMaker.alert(warning, "warning")
-        );
+        this.validationWarnings().forEach((warning) => ProcessMaker.alert(warning, "warning"));
         ProcessMaker.apiClient
-          .put("screens/" + this.screen.id, {
+          .put(`screens/${this.screen.id}`, {
             title: this.screen.title,
             description: this.screen.description,
             type: this.screen.type,
             config: this.config,
             computed: this.computed,
             custom_css: this.customCSS,
-            watchers: this.watchers
+            watchers: this.watchers,
           })
-          .then(response => {
+          .then((response) => {
             if (exportScreen) {
               this.exportScreen();
             }
@@ -839,14 +888,14 @@ export default {
               onSuccess(response);
             }
           })
-          .catch(err => {
+          .catch((err) => {
             if (typeof onError === "function") {
               onError(err);
             }
           });
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
