@@ -147,13 +147,13 @@
                       v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-upload fa-lg fa-fw"></i>
-              </b-btn>
-              <template-exists-modal ref="template-exists-modal" :processName="props.rowData.name" />
+              </b-btn>             
             </div>
           </div>
         </template> -->
       </vuetable>
-
+      <create-template-modal id="create-template-modal" ref="create-template-modal" assetType="process" :currentUserId="currentUserId" :assetName="processTemplateName" :assetId="processId"/>
+      <!-- <template-exists-modal ref="template-exists-modal" :assetData="processData" /> -->
       <pagination
               :single="$t('Process')"
               :plural="$t('Processes')"
@@ -171,14 +171,15 @@
   import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
   import { createUniqIdsMixin } from "vue-uniq-ids";
   import TemplateExistsModal from "../../components/templates/TemplateExistsModal.vue";
-import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
+  import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
+  import CreateTemplateModal from "../../components/templates/CreateTemplateModal.vue";
 
   const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
-    components: { TemplateExistsModal, EllipsisMenu },
+    components: { TemplateExistsModal, CreateTemplateModal, EllipsisMenu },
     mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
-    props: ["filter", "id", "status", "permission", "isDocumenterInstalled", "processName"],
+    props: ["filter", "id", "status", "permission", "isDocumenterInstalled", "processName", "currentUserId"],
     data() {
       return {
         actions: [
@@ -188,11 +189,14 @@ import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
         { value: "edit-item", content: "Configure", permission: "edit-processes", icon: "fas fa-cog", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
         { value: "view-documentation", content: "View Documentation", permission: "view-processes", icon: "fas fa-sign", isDocumenterInstalled: "if('isDocumenterInstalled' == true, true, false)"},
         { value: "export-item", content: "Export", permission: "export-processes", icon: "fas fa-file-export"},
-        { value: "create-template", content: "Create Template", permission: "create-templates", icon: "fas fa-layer-group" },
+        { value: "create-template", content: "Create Template", permission: "create-processes", icon: "fas fa-layer-group" },
         { value: "remove-item", content: "Archive", permission: "archive-processes", icon: "fas fa-download", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)" },
         { value: "restore-item", content: "Restore", permission: "archive-processes", icon: "fas fa-upload", conditional: "if(status == 'ARCHIVED', true, false)" },
       ],
         orderBy: "name",
+        processId: null,
+        processTemplateName: '',
+        processData: {},
         sortOrder: [
           {
             field: "name",
@@ -245,9 +249,11 @@ import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
         this.fetch();
       });
     },
-    methods: {
-      showTemplateExistsModal() {
-        this.$refs["template-exists-modal"].show();
+    methods: {      
+      showCreateTemplateModal(name, id) {        
+        this.processId = id;
+        this.processTemplateName = name;
+        this.$refs["create-template-modal"].show();
       },
       goToEdit(data) {
         window.location = "/processes/" + data + "/edit";
@@ -260,7 +266,7 @@ import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
       },
       goToExport(data) {
         window.location = "/processes/" + data + "/export";
-      },
+      },      
       onNavigate(action, data, index) {
         let putData = {
           name: data.name,
@@ -308,7 +314,7 @@ import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
             this.goToExport(data.id);
             break;
           case "create-template":
-            this.showTemplateExistsModal();
+            this.showCreateTemplateModal(data.name, data.id);
             break;
           case "restore-item":
             ProcessMaker.apiClient
