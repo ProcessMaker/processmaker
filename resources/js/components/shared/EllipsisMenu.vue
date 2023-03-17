@@ -5,7 +5,7 @@
     no-flip
     lazy
     class="dropdown-right ellipsis-dropdown-main"
-    offset="-150px"
+    offset="-145px"
   >
     <template #button-content>
       <i class="fas fa-ellipsis-h" />
