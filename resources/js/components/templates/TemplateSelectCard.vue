@@ -1,21 +1,23 @@
 <template>
   <div class="pb-2">
     <b-card no-body class="template-select-card" @click="showDetails()">
-      <div v-html="thumbnail" class="card-img card-img-top img-fluid mb-3"></div>
+      <!-- <div v-html="thumbnail" class="card-img card-img-top img-fluid mb-3"></div> -->
       <b-card-body :title="template.name" class="card-body">
         <b-card-text>
           {{ template.description }}
         </b-card-text>
+        <b-badge pill variant="success" class="category-badge mb-3">
+          Category 1
+        </b-badge>
       </b-card-body>
     </b-card>
   </div>
 </template>
 
 <script>
-import TemplateDetailsModal from "./TemplateDetailsModal.vue";
 
 export default {
-  components: { TemplateDetailsModal},
+  components: {},
   props: ['template'],
   data() {
     return {
