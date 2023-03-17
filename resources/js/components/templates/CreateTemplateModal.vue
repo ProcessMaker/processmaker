@@ -16,7 +16,7 @@
           <b-row align-v="start">
             <b-col>
                 <required></required>
-                <p>{{ $t(`This will create a re-usable template based on the ${this.assetName} ${this.assetType}.`) }}</p>
+                <p class="mt-3">{{ $t(`This will create a re-usable template based on the ${this.assetName} ${this.assetType}.`) }}</p>
                 <p class="mb-3" v-if="showWarning"><i class="fas fa-exclamation-triangle text-warning"></i> {{ assetExistsError }}</p>
                 <b-form-group
                     required
