@@ -148,10 +148,10 @@
               .catch(error => {
                 console.log('ERROR', error);
                 // //define how display errors
-                // if (error.response.status && error.response.status === 422) {
-                //   // Validation error
-                //   that.errors = error.response.data.errors;
-                // }
+                if (error.response.status && error.response.status === 422) {
+                  // Validation error
+                  that.errors = error.response.data.errors;
+                }
               });
           },          
         }
