@@ -10,14 +10,11 @@
         <b-form-input class="pl-0" :placeholder="$t('Search Templates')"></b-form-input>
       </b-input-group>
     </div>
-    <div class="pb-2">
+    <div class="pb-2 template-container" >
       <b-card-group deck class="d-flex justify-content-between">
-        <template-select-card />
-        <template-select-card />
-        <template-select-card />
-        <template-select-card />
+        <template-select-card v-for="(template, index) in templates" :key="index" :template="template" @show-details="showDetails($event)"/>        
       </b-card-group>
-    </div>
+    </div>    
   </div>
 </template>
 
@@ -25,8 +22,8 @@
 import TemplateSelectCard from "./TemplateSelectCard.vue";
 
 export default {
-  components: { TemplateSelectCard },
-  props: [],
+  components: { TemplateSelectCard},
+  props: ['templates'],
   data() {
     return {
     };
@@ -34,7 +31,11 @@ export default {
   computed: {},
   watch: {},
   beforeMount() {},
-  methods: {},
+  methods: {
+    showDetails($event) {
+      this.$emit('show-details', $event);      
+    }
+  },
 };
 </script>
 
@@ -55,5 +56,11 @@ export default {
 
 .search-icon {
   color: #6C757D;
+}
+
+.template-container {
+  height: 567px;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 </style>

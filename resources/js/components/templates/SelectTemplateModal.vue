@@ -6,18 +6,24 @@
     <modal
       id="selectTemplate"
       size="huge"
-      :title="$t(`New ${type}`)"
-      :subtitle="$t(`Start a new ${type} from a blank canvas or select a template`)"
       :hide-footer="true"
       @ok.prevent="onSubmit"
       @click="showTemplateDetailsModal"
     >
-      <b-button :aria-label="$t(`Create Blank ${type}`)" class="mb-3 blank-template-btn">
-        <i class="fas fa-plus" /> {{ $t(`Blank ${type}`) }}
-      </b-button>
-      <template-search />
+      <div>
+        <div class="d-flex justify-content-between" vertical-align="center" align-h="between">
+          <h5 class="modal-title">
+            {{ $t(`New ${type}`)}}
+            <span class="text-muted subtitle d-block">{{ $t(`Start a new ${type} from a blank canvas or select a template`) }}</span>
+          </h5>
+          <b-button :aria-label="$t(`Create Blank ${type}`)" class="mb-3 blank-template-btn" variant="primary">
+            <i class="fas fa-plus" /> {{ $t(`Blank ${type}`) }}
+          </b-button>
+        </div>
+      </div>
+      <template-search :templates="templates" @show-details="showTemplateDetailsModal($event)"/>
     </modal>
-    <template-details-modal />
+    <template-details-modal id="templateDetails" :template="template"/>
   </div>
 </template>
 
@@ -32,10 +38,23 @@
     props: ['type'],
     data: function() {
       return {
+        templates: [],
+        template: {},
       }
     },
+    beforeMount() {
+      ProcessMaker.apiClient
+      .get("templates/" + this.type.toLowerCase())
+      .then((response) => {
+        if (response?.data?.data) {
+          this.templates = response.data.data;
+        }
+      });
+    },
     methods: {
-        showTemplateDetailsModal() {
+      showTemplateDetailsModal($event) {
+        this.template = $event.template;
+        this.$bvModal.hide('selectTemplate');
         this.$bvModal.show('templateDetails');
       },
     }
@@ -43,8 +62,5 @@
 </script>
 
 <style scoped>
-  .blank-template-btn {
-    float: right;
-    background-color: #1572C2;
-  }
+
 </style>
