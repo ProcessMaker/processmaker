@@ -311,6 +311,18 @@ export default {
       type: Object,
       required: true,
     },
+    process: {
+      type: Object,
+      default: () => {},
+    },
+    permission: {
+      type: Array,
+      default: () => [],
+    },
+    autoSaveDelay: {
+      type: Number,
+      default: 5000,
+    },
   },
   data() {
     const defaultConfig = [
@@ -655,6 +667,12 @@ export default {
         ProcessMaker.EventBus.$on("save-screen", (value, onSuccess, onError) => {
           that.saveScreen(value, onSuccess, onError);
         });
+        ProcessMaker.EventBus.$on("screen-change", () => {
+          this.autoSaveScreen();
+        });
+        ProcessMaker.EventBus.$on("screen-close", () => {
+          that.closeScreen();
+        });
       }
     },
     changeMode(mode) {
@@ -859,6 +877,34 @@ export default {
         .catch((error) => {
           ProcessMaker.alert(error.response.data.error, "danger");
         });
+    },
+    closeScreen() {},
+    autoSaveScreen() {
+      if (this.debounceTimeout) {
+        clearTimeout(this.debounceTimeout);
+      }
+
+      this.debounceTimeout = setTimeout(() => {
+        ProcessMaker.apiClient
+          .put(`screens/${this.screen.id}/draft`, {
+            title: this.screen.title,
+            description: this.screen.description,
+            type: this.screen.type,
+            config: this.config,
+            computed: this.computed,
+            custom_css: this.customCSS,
+            watchers: this.watchers,
+          })
+          .then(() => {
+            ProcessMaker.EventBus.$emit("save-changes");
+            ProcessMaker.alert(this.$t("Successfully saved"), "success");
+            // this.$refs.builder.showSavedNotification();
+          })
+          .catch((error) => {
+            const { message } = error.response.data;
+            ProcessMaker.alert(message, "danger");
+          });
+      }, this.autoSaveDelay);
     },
     saveScreen(exportScreen, onSuccess, onError) {
       if (this.allErrors !== 0) {

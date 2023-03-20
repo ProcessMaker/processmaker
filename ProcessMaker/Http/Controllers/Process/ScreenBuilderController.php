@@ -27,6 +27,7 @@ class ScreenBuilderController extends Controller
          */
         event(new ScreenBuilderStarting($manager, $screen->type));
 
+        $autoSaveDelay = config('versions.delay.process', 5000);
         $draft = $screen->versions()->draft()->first();
         if ($draft) {
             $screen->fill($draft->only([
@@ -37,6 +38,6 @@ class ScreenBuilderController extends Controller
             ]));
         }
 
-        return view('processes.screen-builder.screen', compact('screen', 'manager'));
+        return view('processes.screen-builder.screen', compact('screen', 'manager', 'autoSaveDelay'));
     }
 }
