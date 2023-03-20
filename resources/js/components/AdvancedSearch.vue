@@ -192,25 +192,25 @@
                         </div>
                     </div>
                 </div>
-                <div class="search-bar-advanced d-flex w-100" v-if="advanced">
-                    <pmql-input 
+
+                <pmql-input v-if="advanced"
                       ref="pmql_input"
                       :search-type="type"
                       :value="pmql"
                       :ai-enabled="true"
                       :aria-label="$t('Advanced Search (PMQL)')"
                       :search-label="$t('Search using natural language or PMQL')"
-                      @submit="onNLQConversion"></pmql-input>
-                    <div class="search-bar-actions d-flex flex-shrink btn-search-advanced">
-                        <b-btn class="btn-search-toggle pl-3 pr-3" variant="success" @click="toggleAdvanced" v-b-tooltip.hover :title="$t('Basic Mode')"><i class="fas fa-ellipsis-h"></i></b-btn>
-                        <b-btn class="btn-search-run pl-3 pr-3" variant="primary" @click="$refs.pmql_input.runSearch()" v-b-tooltip.hover :title="$t('Search')"><i class="fas fa-search"></i></b-btn>
-                        <div class="search-bar-additions">
-                          <div v-for="addition in additions">
-                            <component :is="addition" :permission="permission"></component>
+                      @submit="onNLQConversion">
+                      
+                      <template v-slot:left-buttons>
+                        <b-btn class="btn-search-toggle" variant="success" @click="toggleAdvanced" v-b-tooltip.hover :title="$t('Basic Mode')"><i class="fas fa-ellipsis-h"></i></b-btn>
+                        <div class="d-flex">
+                          <div class="d-flex mr-1" v-for="addition in additions">
+                            <component class="d-flex" :is="addition" :permission="permission"></component>
                           </div>
                         </div>
-                    </div>
-                </div>
+                      </template>
+                </pmql-input>
             </div>
         </div>
     </div>
