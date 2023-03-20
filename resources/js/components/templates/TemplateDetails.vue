@@ -1,24 +1,26 @@
 <template>
     <div>
-      <p class="text-muted">{{ $t("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.") }}</p>
+      <p class="text-muted">{{ template.description }}</p>
       <div>
         <p class="text-muted">{{ $t("Created By:") }}
           <avatar-image
-                  size="25"
-                  hide-name="false"
+            size="25"
+            :hideName="false"
+            :input-data="template.user"
           ></avatar-image>
         </p>
       <b-badge pill variant="success" class="category-badge mb-3">
         Category 1
       </b-badge>
       </div>
-      <img src="https://via.placeholder.com/429x478">
+      <div id="svg-container" v-html="svg"></div>
     </div>
 </template>
 
 <script>
 import { Modal } from "SharedComponents";
 import AvatarImage from '../AvatarImage.vue';
+import svgPanZoom from 'svg-pan-zoom';
 
   export default {
     components: { Modal, AvatarImage },
@@ -29,8 +31,20 @@ import AvatarImage from '../AvatarImage.vue';
       }
     },
     methods: {},
+    computed: {
+      svg() {
+        let parser = new DOMParser();
+        let svg = parser.parseFromString(this.template.svg, "image/svg+xml");
+        return svg.documentElement.outerHTML;
+      }
+    },   
     mounted() {
-      console.log('TEMPLATE DETAILS MOUNTED', this.template);
+      svgPanZoom('#svg-container > svg', {
+        controlIconsEnabled: true,
+        fit: true,
+        center: true,
+        contain: true,
+      }); 
     }
   };
 </script>
@@ -46,5 +60,11 @@ import AvatarImage from '../AvatarImage.vue';
     color: #104A75;
     font-size: 12px;
     border: 1px solid #104A75;
+  }
+
+  #svg-container {
+    height: 51vh;
+    background: #fafafa;
+    cursor: all-scroll;
   }
 </style>

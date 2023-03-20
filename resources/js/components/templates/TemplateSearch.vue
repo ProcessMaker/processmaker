@@ -47,6 +47,7 @@ export default {
   methods: {
     showDetails($event) {
       this.$emit('show-details', {'title': $event.template.name});
+      this.template = $event.template;
     },
     fetch() {
         this.loading = true;
