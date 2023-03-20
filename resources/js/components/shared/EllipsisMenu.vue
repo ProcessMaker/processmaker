@@ -82,13 +82,11 @@ export default {
       });
 
       btns = btns.filter(btn => {
-        if (btn.hasOwnProperty('isDocumenterInstalled')) {
-          const result = Parser.evaluate(btn.isDocumenterInstalled, this.isDocumenterInstalled);
-          if (result) {
+        if (btn.hasOwnProperty('conditional') && btn.conditional === "isDocumenterInstalled") {
+          if (this.isDocumenterInstalled) {
             return btn;
           }
-        }
-        if (btn.hasOwnProperty('conditional')) {
+        } else if (btn.hasOwnProperty('conditional') ) {
           const result = Parser.evaluate(btn.conditional, this.data);
           if (result) {
             return btn;
