@@ -8,7 +8,6 @@ use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\Script;
 
 class ScreenBuilderController extends Controller
 {
@@ -27,6 +26,16 @@ class ScreenBuilderController extends Controller
          * can customize the modeler controls list.
          */
         event(new ScreenBuilderStarting($manager, $screen->type));
+
+        $draft = $screen->versions()->draft()->first();
+        if ($draft) {
+            $screen->fill($draft->only([
+                'config',
+                'computed',
+                'custom_css',
+                'watchers',
+            ]));
+        }
 
         return view('processes.screen-builder.screen', compact('screen', 'manager'));
     }
