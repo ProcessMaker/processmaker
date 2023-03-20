@@ -15,7 +15,7 @@
             <i v-if="aiLoading" class="fa fa-spinner fa-spin ml-3"></i> 
 
             <textarea ref="search_input" type="text" class="pmql-input"
-              :aria-label="inputAreaLabel"
+              :aria-label="inputAriaLabel"
               v-model="query"
               rows="1"
               @keydown.enter.prevent @keyup.enter="runSearch()"></textarea>
@@ -55,12 +55,12 @@
 import isPMQL from "../../modules/isPMQL";
 
 export default {
-  props: ["searchType", "value", "aiEnabled", "searchLabel", "areaLabel"],
+  props: ["searchType", "value", "aiEnabled", "searchLabel", "ariaLabel"],
   data() {
     return {
       aiLoading: false,
       searchInputLabel: "",
-      inputAreaLabel: "",
+      inputAriaLabel: "",
       showUsage: false,
       showAiIndicator: false,
       showFilter: false,
@@ -156,6 +156,7 @@ export default {
   padding-left: 0.75rem;
   overflow: hidden;
   resize: none;
+  min-height: calc(1.5em + 0.75rem + 2px);
 }
 
 .pmql-input:focus {
