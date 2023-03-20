@@ -1,30 +1,32 @@
 <template>
   <div class="settings-listing data-table">
-    <div class="d-flex mb-3">
-      <basic-search @submit="onSearch"></basic-search>
-      <pmql-input 
-        :search-type="'settings'"
-        :value="pmql"
-        :ai-enabled="true"
-        :aria-label="$t('Advanced Search (PMQL)')"
-        :search-label="$t('Search using natural language or PMQL')"
-        @submit="onNLQConversion"></pmql-input>
-      <div v-if="topButtons" class="d-flex">
-        <b-button
-            v-for="(btn,index) in topButtons"
-            :ref="formatGroupName(btn.group)"
-            :key="`btn-${index}`"
-            class="ml-2 nowrap"
-            v-bind="btn.ui.props"
-            @click="handler(btn)"
-            :disabled="false"
-            >
-            <b-spinner small ref="b-spinner" :hidden="true"></b-spinner>
-            <i v-if="btn.ui.props.icon" :class="btn.ui.props.icon"></i>
-            {{btn.name}}
-        </b-button>
-      </div>
-    </div>
+    <pmql-input 
+      class="mb-2"
+      :search-type="'settings'"
+      :value="pmql"
+      :ai-enabled="true"
+      :aria-label="$t('Advanced Search (PMQL)')"
+      :search-label="$t('Search using natural language or PMQL')"
+      @submit="onNLQConversion">
+        <template v-slot:right-buttons>
+            <div v-if="topButtons" class="d-flex">
+                <b-button
+                    v-for="(btn,index) in topButtons"
+                    :ref="formatGroupName(btn.group)"
+                    :key="`btn-${index}`"
+                    class="ml-2 nowrap"
+                    v-bind="btn.ui.props"
+                    @click="handler(btn)"
+                    :disabled="false"
+                    >
+                    <b-spinner small ref="b-spinner" :hidden="true"></b-spinner>
+                    <i v-if="btn.ui.props.icon" :class="btn.ui.props.icon"></i>
+                    {{btn.name}}
+                </b-button>
+            </div>
+        </template>
+    </pmql-input>
+
     <div class="card card-body table-card">
       <b-table
         class="settings-table table table-responsive-lg text-break m-0 h-100 w-100"
@@ -231,9 +233,6 @@ export default {
           this.filterBottomButtons(response.data);
         });
     },
-    onNLQConversion(pqml) {
-      this.searchQuery = pqml;
-    },
     apiGet() {
       return ProcessMaker.apiClient.get(this.pageUrl(this.currentPage));
     },
@@ -339,8 +338,8 @@ export default {
     onEdit(row) {
       this.$refs[`settingComponent_${row.index}`].onEdit();
     },
-    onSearch(query) {
-      this.searchQuery = query;
+    onNLQConversion(pqml) {
+      this.searchQuery = pqml;
     },
     pageUrl(page) {
       let url = `${this.url}?` +
