@@ -1,13 +1,13 @@
 <template>
   <div>
-    <basic-search class="mb-3" v-model="query" @submit="runSearch"></basic-search>
     <pmql-input 
-        :search-type="'security_logs'"
-        :value="pmql"
-        :ai-enabled="true"
-        :aria-label="$t('Advanced Search (PMQL)')"
-        :search-label="$t('Search using natural language or PMQL')"
-        @submit="onNLQConversion"></pmql-input>
+      class="mb-2"
+      :search-type="'security_logs'"
+      :value="query"
+      :ai-enabled="true"
+      :aria-label="$t('Advanced Search (PMQL)')"
+      :search-label="$t('Search using natural language or PMQL')"
+      @submit="onNLQConversion"></pmql-input>
     <div class="data-table">
       <div class="card card-body table-card">
         <vuetable
@@ -151,8 +151,9 @@
       runSearch() {
         this.fetch();
       },
-      onNLQConversion(pqml) {
-        this.pmql = pqml;
+      onNLQConversion(pmql) {
+        this.query = pmql;
+        this.runSearch();
       },
     }
   }
