@@ -4,8 +4,8 @@
             <div class="col">
                 <div class="card text-center">
                     <div class="card-header bg-light" align="left">
-                        <h5 class="mb-0">{{$t('Import Process')}}</h5>
-                        <small class="text-muted">{{ $t('Import a Process and its associated assets into this ProcessMaker environment') }}</small>
+                        <h5 class="mb-0">{{ title() }}</h5>
+                        <small class="text-muted">{{ subtitle() }}</small>
                     </div>
                     <div class="card-body">
                         <div id="pre-import" v-if="! importing && ! imported">
@@ -149,6 +149,8 @@ export default {
                     const asset = this.$root.manifest[uuid];  
                     return {
                         type: asset.type,
+                        typeHuman: asset.type_human,
+                        typeHumanPlural: asset.type_human_plural,
                         existingName: asset.existing_name, 
                         importingName: asset.name,
                         existingId: asset.existing_id,
@@ -374,7 +376,17 @@ export default {
             ProcessMaker.alert(`${message}.`, 'danger');
             this.submitted = false;
             this.loading = false;
-        }
+        },
+        title() {
+                if (window.location.pathname === '/template/process/import') {
+                    return this.$t('Import Process Template');
+                }
+        },
+        subtitle() {
+            if (window.location.pathname === '/template/process/import') {
+                return this.$t('Import a Process Template and its associated assets into this ProcessMaker environment');
+            }
+        },
     },
     mounted() {
         let received = false;

@@ -254,7 +254,7 @@ abstract class ExporterBase implements ExporterInterface
         $attributes = [
             'exporter' => get_class($this),
             'type' => $this->getClassName(),
-            'type_human' => $this->getTypeHuman($this->getClassName()),
+            'type_human' => Str::singular($this->getTypeHuman($this->getClassName())),
             'type_plural' => Str::plural($this->getClassName()),
             'type_human_plural' => Str::plural($this->getTypeHuman($this->getClassName())),
             'last_modified_by' => $this->getLastModifiedBy()['lastModifiedByName'],
