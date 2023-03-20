@@ -1,21 +1,52 @@
 <template>
-  <div class="search-bar-inputs flex-grow w-100">
-    <div class="group">
-      <input ref="search_input" type="text" class="search-input"
-        :aria-label="inputAreaLabel"
-        v-model="pmql"
-        @keyup.enter="runSearch()"
-        required>
-        <label class="float-label">
-          <i v-if="aiLoading" class="fa fa-spinner fa-spin mr-1"></i> 
-          <span v-html="searchInputLabel"></span>
-        </label>
+  <div>
+    <div class="">
+      <div class="d-flex align-items-start">
+        <div class="search-bar-buttons d-flex ml-md-0 flex-column flex-md-row">
+          <slot name="left-buttons"></slot>
+          <button v-if="showFilter" class="btn btn-outline-secondary mr-1 d-flex align-items-center">
+            <i class="fa fa-sliders-h mr-1"></i>
+            <span class="text-capitalize">Filter</span>
+          </button>
+        </div>
+        <div class="search-bar flex-grow w-100">
+          <div class="search-bar-container d-flex align-items-center">
+            <i v-if="!aiLoading" class="fa fa-search ml-3 text-muted"></i>
+            <i v-if="aiLoading" class="fa fa-spinner fa-spin ml-3"></i> 
 
-        <label class="badge badge-primary badge-pill usage-label"
-          v-b-tooltip.hover :title="'Prompt tokens: ' + usage.promptTokens + ' - Completion tokens: ' + usage.completionTokens + ' - Total: ' + usage.totalTokens + ' tokens'">
-          {{ usage.totalTokens }} tokens
-          <i class="fa fa-info-circle ml-1"></i>
-        </label>
+            <textarea ref="search_input" type="text" class="pmql-input"
+              :aria-label="inputAreaLabel"
+              v-model="query"
+              rows="1"
+              @keydown.enter.prevent @keyup.enter="runSearch()"></textarea>
+
+            <div v-if="showPmqlSection" class="separator align-items-center"></div>
+            <code v-if="showPmqlSection" class="w-100 d-block text-primary">{{ pmql }}</code>
+
+            <div v-if="showAiIndicator" class="separator align-items-center"></div>
+            <span v-if="showAiIndicator" class="badge badge-pill badge-success">AI</span>
+
+            <!-- <label class="float-label">
+              <i v-if="aiLoading" class="fa fa-spinner fa-spin mr-1"></i> 
+              <span v-html="searchInputLabel"></span>
+            </label> -->
+
+            <div v-if="showUsage" class="separator align-items-center"></div>
+            <label v-if="showUsage" class="badge badge-primary badge-pill usage-label"
+              v-b-tooltip.hover :title="'Prompt tokens: ' + usage.promptTokens + ' - Completion tokens: ' + usage.completionTokens + ' - Total: ' + usage.totalTokens + ' tokens'">
+                {{ usage.totalTokens }} tokens
+                <i class="fa fa-info-circle ml-1"></i>
+            </label>
+
+            <div class="separator align-items-center"></div>
+            <i class="fa fa-times pl-1 pr-3 text-secondary" role="button" @click="clearQuery"></i>
+
+          </div>
+        </div>
+        <div class="search-bar-buttons d-flex ml-md-0 flex-column flex-md-row">
+          <slot name="right-buttons"></slot>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -30,7 +61,11 @@ export default {
       aiLoading: false,
       searchInputLabel: "",
       inputAreaLabel: "",
+      showUsage: false,
+      showAiIndicator: false,
+      showFilter: false,
       pmql: "",
+      query: "",
       usage: {
         completionTokens: 0,
         promptTokens: 0,
@@ -39,8 +74,20 @@ export default {
     };
   },
 
+  computed: {
+    showPmqlSection() {
+      return this.pmql && this.pmql.isPMQL() && !this.query.isPMQL();
+    },
+  },
+
+  watch: {
+    query() {
+      this.calcInputHeight();
+    },
+  },
+
   mounted() {
-    this.pmql = this.value;
+    this.query = this.value;
     this.searchInputLabel = this.searchLabel;
     this.inputAreaLabel = this.areaLabel;
     Vue.nextTick().then(() => {
@@ -49,28 +96,37 @@ export default {
   },
 
   methods: {
+    calcInputHeight() {
+      this.$refs.search_input.style.height = "auto";
+      this.$nextTick(() => {
+        this.$refs.search_input.style.height = `${this.$refs.search_input.scrollHeight}px`;
+      });
+    },
     runSearch() {
-      if (this.pmql === "") {
+      this.pmql = "";
+      if (this.query === "") {
+        this.$emit("submit", "");
         return;
       }
 
-      if (this.pmql.isPMQL()) {
-        this.$emit("submit", this.pmql);
+      if (this.query.isPMQL()) {
+        this.$emit("submit", this.query);
       } else if (this.aiEnabled) {
         this.runNLQToPMQL();
       }
     },
+    clearQuery() {
+      this.query = "";
+    },
     runNLQToPMQL() {
       const params = {
-        question: this.pmql,
+        question: this.query,
         type: this.searchType,
       };
 
       this.aiLoading = true;
-      this.searchInputLabel = `Generating PMQL query for: <i>${this.pmql}</i>`;
 
       ProcessMaker.apiClient.post("/openai/nlq-to-pmql", params).then(response => {
-        this.searchInputLabel = `<i class="fa fa-check text-success"></i> ${this.pmql}`;
         this.pmql = response.data.result;
         this.usage = response.data.usage;
         this.$emit("submit", this.pmql);
@@ -81,31 +137,31 @@ export default {
 };
 </script>
 
-<style lang="scss">
-.group {
-    position: relative;
-    background-color: #ffffff;
-    color: #b6bfc6;
-    border-radius: 2px;
+<style lang="scss" scoped>
+
+.search-bar {
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-radius: 3px;
+  background: #ffffff;
 }
 
-input.search-input {
-    background: none;
-    color: gray;
-    padding: 0.2rem 0.75rem;
-    padding-top: 1.2rem;
-    display: block;
-    width: 100%;
-    border: none;
-    border-radius: 3px;
-    border: 1px solid rgba(0, 0, 0, 0.125);
+.pmql-input {
+  background: none;
+  color: gray;
+  padding: 0.4rem 0.75rem;
+  display: block;
+  width: 100%;
+  border: none;
+  padding-left: 0.75rem;
+  overflow: hidden;
+  resize: none;
 }
 
-input.search-input:focus {
-    outline: none;
+.pmql-input:focus {
+  outline: none;
 }
 
-input.search-input:focus ~ label, input.search-input:valid ~ label {
+input.pmql-input:focus ~ label, input.pmql-input:valid ~ label {
     top: 3px;
     font-size: 12px;
     color: #0872C2;
@@ -123,12 +179,27 @@ input.search-input:focus ~ label, input.search-input:valid ~ label {
 }
 
 .usage-label {
-    background: #dfdfdf;
-    color: #212529;
-    position: absolute;
-    right: 0;
+    background: #1c72c224;
+    color: #0872C2;
+    right: 29px;
     top: 0;
-    margin: 0.5rem 0.5rem;
+    margin-right: 0.5rem;
     font-weight: 300;
+    margin-bottom: 0;
 }
+
+.separator {
+    border-right: 1px solid rgb(227, 231, 236);
+    height: 1.6rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    right: 0;
+    top: 15%;
+}
+
+.badge-success {
+    color: #00875A;
+    background-color: #00875a26;
+}
+
 </style>
