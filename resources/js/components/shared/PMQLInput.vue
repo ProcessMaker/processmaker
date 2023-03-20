@@ -117,6 +117,7 @@ export default {
     },
     clearQuery() {
       this.query = "";
+      this.runSearch();
     },
     runNLQToPMQL() {
       const params = {
