@@ -1,9 +1,15 @@
 <template>
   <div>
-    <b-button :aria-label="$t('Create Process')" v-b-modal.createProcess class="mb-3 mb-md-0 ml-md-2">
+    <!-- <b-button :aria-label="$t('Create Process')" v-b-modal.createProcess class="mb-3 mb-md-0 ml-md-2">
       <i class="fas fa-plus"></i> {{ $t('Process') }}
-    </b-button>
-    <modal id="createProcess" :title="$t('Create Process')" :ok-disabled="disabled" @ok.prevent="onSubmit" @hidden="onClose">
+    </b-button> -->
+    <modal 
+      id="createProcess"
+      :title="$t('Create Process')"
+      :ok-disabled="disabled"
+      @ok.prevent="onSubmit"
+      @hidden="onClose"
+    >
       <template v-if="countCategories">
         <required></required>
         <b-form-group
@@ -69,9 +75,10 @@
 
 <script>
   import { FormErrorsMixin, Modal, Required } from "SharedComponents";
+  import TemplateSearch from "../../components/templates/TemplateSearch.vue";
 
   export default {
-    components: { Modal, Required },
+    components: { Modal, Required, TemplateSearch },
     mixins: [ FormErrorsMixin ],
     props: ["countCategories"],
     data: function() {
@@ -85,7 +92,11 @@
         addError: {},
         status: "",
         bpmn: "",
-        disabled: false
+        disabled: false,
+        customModalButtons: [
+            {'content': 'Cancel', 'action': 'hide()', 'variant': 'outline-secondary', 'disabled': false, 'hidden': false},
+            {'content': 'Create', 'action': 'createTemplate', 'variant': 'primary', 'disabled': false, 'hidden': false},
+        ],
       }
     },
     methods: {
@@ -154,3 +165,9 @@
     }
   };
 </script>
+
+<style scoped>
+  .search-column {
+    border-right: 1px solid #b6bfc6;
+  }
+</style>

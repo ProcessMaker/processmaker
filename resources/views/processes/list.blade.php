@@ -21,6 +21,7 @@
                         </div>
                     @endcan
                     @can('create-processes')
+                        <select-template-modal></select-template-modal>
                         <create-process-modal :count-categories="@json($config->countCategories)"></create-process-modal>
                     @endcan
                 </div>
@@ -37,6 +38,7 @@
             v-on:edit="edit"
             v-on:reload="reload"
             :permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"
+            :current-user-id="{{ \Auth::user()->id }}"
             is-documenter-installed="{{\ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled()}}"
         ></processes-listing>
     </div>

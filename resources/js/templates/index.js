@@ -1,23 +1,16 @@
 import Vue from "vue";
-import CreateProcessModal from "./components/CreateProcessModal";
-import SelectTemplateModal from "../components/templates/SelectTemplateModal.vue";
-import ProcessesListing from "./components/ProcessesListing";
+import ProcessTemplatesListing from "./components/ProcessTemplatesListing";
 import CategorySelect from "./categories/components/CategorySelect";
 
 Vue.component("CategorySelect", CategorySelect);
 
 new Vue({
-  el: "#processIndex",
+  el: "#templatesIndex",
   components: {
-    CreateProcessModal,
-    SelectTemplateModal,
-    ProcessesListing,
+    ProcessTemplatesListing,    
   },
   data: {
     filter: "",
-    processModal: false,
-    processId: null,
-    showModal: false,
   },
   methods: {
     show() {
@@ -32,7 +25,7 @@ new Vue({
       window.location = "/processes/import";
     },
     reload() {
-      this.$refs.processListing.fetch();
+      this.$refs.templateListing.fetch();
     },
   },
 });

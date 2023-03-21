@@ -111,6 +111,15 @@
               </b-btn>
               <b-btn
                       variant="link"
+                      @click="onAction('create-template', props.rowData, props.rowIndex)"
+                      v-b-tooltip.hover
+                      :title="$t('Convert to Template')"
+                      v-uni-aria-describedby="props.rowData.id.toString()"
+              >
+                <i class="fas fa-tools fa-lg fa-fw"></i>
+              </b-btn>
+              <b-btn
+                      variant="link"
                       @click="onAction('remove-item', props.rowData, props.rowIndex)"
                       v-b-tooltip.hover
                       :title="$t('Archive')"
@@ -128,12 +137,13 @@
                       v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-upload fa-lg fa-fw"></i>
-              </b-btn>
+              </b-btn>             
             </div>
           </div>
         </template>
       </vuetable>
-
+      <create-template-modal id="create-template-modal" ref="create-template-modal" assetType="process" :currentUserId="currentUserId" :assetName="processTemplateName" :assetId="processId"/>
+      <!-- <template-exists-modal ref="template-exists-modal" :assetData="processData" /> -->
       <pagination
               :single="$t('Process')"
               :plural="$t('Processes')"
@@ -150,14 +160,21 @@
   import datatableMixin from "../../components/common/mixins/datatable";
   import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
   import { createUniqIdsMixin } from "vue-uniq-ids";
+  import TemplateExistsModal from "../../components/templates/TemplateExistsModal.vue";
+  import CreateTemplateModal from "../../components/templates/CreateTemplateModal.vue";
+
   const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
+    components: { TemplateExistsModal, CreateTemplateModal },
     mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
-    props: ["filter", "id", "status", "permission", "isDocumenterInstalled"],
+    props: ["filter", "id", "status", "permission", "isDocumenterInstalled", "processName", "currentUserId"],
     data() {
       return {
         orderBy: "name",
+        processId: null,
+        processTemplateName: '',
+        processData: {},
         sortOrder: [
           {
             field: "name",
@@ -210,7 +227,12 @@
         this.fetch();
       });
     },
-    methods: {
+    methods: {      
+      showCreateTemplateModal(name, id) {        
+        this.processId = id;
+        this.processTemplateName = name;
+        this.$refs["create-template-modal"].show();
+      },
       goToEdit(data) {
         window.location = "/processes/" + data + "/edit";
       },
@@ -222,7 +244,7 @@
       },
       goToExport(data) {
         window.location = "/processes/" + data + "/export";
-      },
+      },      
       onAction(action, data, index) {
         let putData = {
           name: data.name,
@@ -264,6 +286,11 @@
             break;
           case "export-item":
             this.goToExport(data.id);
+            break;
+          case "create-template":
+            this.showCreateTemplateModal(data.name, data.id);
+            //this.createTemplate(data.name, data.id);
+            //this.showTemplateExistsModal();
             break;
           case "restore-item":
             ProcessMaker.apiClient
