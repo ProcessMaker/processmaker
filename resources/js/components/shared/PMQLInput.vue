@@ -16,8 +16,11 @@
 
             <textarea ref="search_input" type="text" class="pmql-input"
               :aria-label="inputAriaLabel"
+              :placeholder="placeholder"
+              :id="id"
               v-model="query"
               rows="1"
+              @input="onInput()"
               @keydown.enter.prevent @keyup.enter="runSearch()"></textarea>
 
             <div v-if="showPmqlSection" class="separator align-items-center"></div>
@@ -55,12 +58,13 @@
 import isPMQL from "../../modules/isPMQL";
 
 export default {
-  props: ["searchType", "value", "aiEnabled", "searchLabel", "ariaLabel"],
+  props: ["searchType", "value", "aiEnabled", "searchLabel", "ariaLabel", "id"],
   data() {
     return {
       aiLoading: false,
       searchInputLabel: "",
       inputAriaLabel: "",
+      placeholder: "",
       showUsage: false,
       showAiIndicator: false,
       showFilter: false,
@@ -102,6 +106,9 @@ export default {
         this.$refs.search_input.style.height = `${this.$refs.search_input.scrollHeight}px`;
       });
     },
+    onInput() {
+      this.$emit("pmqlChange", this.query);
+    },
     runSearch() {
       this.pmql = "";
       if (this.query === "") {
@@ -132,6 +139,7 @@ export default {
         this.usage = response.data.usage;
         this.$emit("submit", this.pmql);
         this.aiLoading = false;
+        this.calcInputHeight();
       });
     },
   },
