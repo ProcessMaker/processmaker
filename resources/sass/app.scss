@@ -171,11 +171,6 @@ button:focus.navbar-toggler {
   border: 1px solid $danger !important;
 }
 
-.btn-save-search {
-  @extend .ml-2;
-  height: 40px;
-}
-
 .search-bar-advanced {
   .form-control,
   .form-control:active,
