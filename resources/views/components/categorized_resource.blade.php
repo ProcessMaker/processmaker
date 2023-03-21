@@ -23,7 +23,7 @@
                 {{ $tabs[0] ?? __('Resources') }}
             </a>
         </li>
-        @if ($listTemplates->permissions['view'])
+        @if (isset($listTemplates) && $listTemplates->permissions['view'])
         <li class="nav-item">
             <a class="nav-item nav-link" id="nav-templates-tab" data-toggle="tab" href="#nav-templates"
                role="tab" onclick="loadTemplates()" aria-controls="nav-templates" aria-selected="true">
