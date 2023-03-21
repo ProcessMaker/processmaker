@@ -199,9 +199,8 @@
                       :value="pmql"
                       :ai-enabled="true"
                       :aria-label="$t('Advanced Search (PMQL)')"
-                      :search-label="$t('Search using natural language or PMQL')"
                       @submit="onNLQConversion">
-                      
+
                       <template v-slot:left-buttons>
                         <b-btn class="btn-search-toggle" variant="success" @click="toggleAdvanced" v-b-tooltip.hover :title="$t('Basic Mode')"><i class="fas fa-ellipsis-h"></i></b-btn>
                         <div class="d-flex">

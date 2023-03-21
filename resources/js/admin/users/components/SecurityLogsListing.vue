@@ -6,7 +6,6 @@
       :value="query"
       :ai-enabled="true"
       :aria-label="$t('Advanced Search (PMQL)')"
-      :search-label="$t('Search using natural language or PMQL')"
       @submit="onNLQConversion"></pmql-input>
     <div class="data-table">
       <div class="card card-body table-card">

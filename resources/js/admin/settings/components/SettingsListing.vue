@@ -6,7 +6,6 @@
       :value="pmql"
       :ai-enabled="true"
       :aria-label="$t('Advanced Search (PMQL)')"
-      :search-label="$t('Search using natural language or PMQL')"
       @submit="onNLQConversion">
         <template v-slot:right-buttons>
             <div v-if="topButtons" class="d-flex">
