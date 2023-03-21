@@ -299,6 +299,13 @@ class ScreenController extends Controller
         return response([], 204);
     }
 
+    public function close(Screen $screen)
+    {
+        $screen->deleteDraft();
+
+        return response([], 204);
+    }
+
     /**
      * duplicate a Screen.
      *

@@ -79,6 +79,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('screens', [ScreenController::class, 'store'])->name('screens.store')->middleware('can:create-screens');
     Route::put('screens/{screen}', [ScreenController::class, 'update'])->name('screens.update')->middleware('can:edit-screens');
     Route::put('screens/{screen}/draft', [ScreenController::class, 'draft'])->name('screens.draft')->middleware('can:edit-screens');
+    Route::post('screens/{screen}/close', [ScreenController::class, 'close'])->name('screens.close')->middleware('can:edit-screens');
     Route::put('screens/{screen}/duplicate', [ScreenController::class, 'duplicate'])->name('screens.duplicate')->middleware('can:create-screens');
     Route::delete('screens/{screen}', [ScreenController::class, 'destroy'])->name('screens.destroy')->middleware('can:delete-screens');
     Route::post('screens/{screen}/export', [ScreenController::class, 'export'])->name('screens.export')->middleware('can:export-screens');

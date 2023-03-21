@@ -878,7 +878,13 @@ export default {
           ProcessMaker.alert(error.response.data.error, "danger");
         });
     },
-    closeScreen() {},
+    closeScreen() {
+      ProcessMaker.apiClient
+        .post(`/screens/${this.screen.id}/close`)
+        .then(() => {
+          window.location.reload();
+        });
+    },
     autoSaveScreen() {
       if (this.debounceTimeout) {
         clearTimeout(this.debounceTimeout);
