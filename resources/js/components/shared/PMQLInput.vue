@@ -9,7 +9,7 @@
             <span class="text-capitalize">Filter</span>
           </button>
         </div>
-        <div class="search-bar flex-grow w-100">
+        <div class="search-bar flex-grow w-100" :class="{'is-invalid': validations}">
           <div class="search-bar-container d-flex align-items-center">
             <i v-if="!aiLoading" class="fa fa-search ml-3 text-muted"></i>
             <i v-if="aiLoading" class="fa fa-spinner fa-spin ml-3"></i> 
@@ -58,7 +58,7 @@
 import isPMQL from "../../modules/isPMQL";
 
 export default {
-  props: ["searchType", "value", "aiEnabled", "searchLabel", "ariaLabel", "id"],
+  props: ["searchType", "value", "aiEnabled", "searchLabel", "ariaLabel", "id", "validations"],
   data() {
     return {
       aiLoading: false,
@@ -152,6 +152,9 @@ export default {
   border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 3px;
   background: #ffffff;
+}
+.search-bar.is-invalid {
+  border-color: #E50130;
 }
 
 .pmql-input {
