@@ -129,14 +129,14 @@
           ],
           actions: [
             // { value: "edit-designer", content: "Edit Template", permission: "edit-processes", icon: "fas fa-edit", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
-            { value: "edit-item", content: "Configure", permission: "edit-processes", icon: "fas fa-cog"},
-            { value: "view-documentation", content: "View Documentation", permission: "view-processes", icon: "fas fa-sign", isDocumenterInstalled: "if('isDocumenterInstalled' == true, true, false)"},
-            { value: "export-item", content: "Export Template", permission: "export-processes", icon: "fas fa-file-export"}
+            { value: "edit-item", content: "Configure", permission: "edit-process-templates", icon: "fas fa-cog"},
+            { value: "view-documentation", content: "View Documentation", permission: "view-process-templates", icon: "fas fa-sign", isDocumenterInstalled: "if('isDocumenterInstalled' == true, true, false)"},
+            { value: "export-item", content: "Export Template", permission: "export-process-templates", icon: "fas fa-file-export"}
           ],
         };
       },
       created () {
-        ProcessMaker.EventBus.$on("api-data-process-template", (val) => {
+        ProcessMaker.EventBus.$on("api-data-process-templates", (val) => {
           this.fetch();
         });
       },
@@ -270,6 +270,7 @@
                 this.apiDataLoading = false;
                 this.apiNoResults = false;
                 this.loading = false;
+             //   console.log('FETCH PERMISSIONS', this.permission);
               });
         },
         addWarningMessages(data) {
@@ -286,7 +287,9 @@
           return data;
         },
       },
-      computed: {}
+      mounted() {
+        console.log('TEMPLATES MOUNTED');
+      }
     };
   </script>
   
