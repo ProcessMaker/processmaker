@@ -250,15 +250,18 @@
     <computed-properties
       ref="computedProperties"
       v-model="computed"
+      @input="onInput()"
     />
     <custom-CSS
       ref="customCSS"
       v-model="customCSS"
       :css-errors="cssErrors"
+      @input="onInput()"
     />
     <watchers-popup
       ref="watchersPopup"
       v-model="watchers"
+      @input="onInput()"
     />
   </div>
 </template>
@@ -866,6 +869,9 @@ export default {
     }, 60000),
     onClose() {
       window.location.href = "/designer/screens";
+    },
+    onInput() {
+      ProcessMaker.EventBus.$emit("screen-change");
     },
     exportScreen() {
       ProcessMaker.apiClient
