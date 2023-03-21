@@ -902,9 +902,16 @@ export default {
             watchers: this.watchers,
           })
           .then(() => {
+            // Display saved notification.
+            this.$refs.menuScreen.unshiftItem({
+              id: "SavedNotification",
+              type: "SavedNotification",
+              section: "right",
+            });
+            setTimeout(() => {
+              this.$refs.menuScreen.shiftItem();
+            }, 2000);
             ProcessMaker.EventBus.$emit("save-changes");
-            ProcessMaker.alert(this.$t("Successfully saved"), "success");
-            // this.$refs.builder.showSavedNotification();
           })
           .catch((error) => {
             const { message } = error.response.data;
