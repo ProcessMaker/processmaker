@@ -9,10 +9,12 @@
             <span class="text-capitalize">Filter</span>
           </button>
         </div>
-        <div class="search-bar flex-grow w-100" :class="{'is-invalid': validations}">
+        <div class="search-bar flex-grow w-100" 
+          :class="{'is-invalid': validations}"
+          :style="styles?.container">
           <div class="search-bar-container d-flex align-items-center">
-            <i v-if="!aiLoading" class="fa fa-search ml-3 text-muted"></i>
-            <i v-if="aiLoading" class="fa fa-spinner fa-spin ml-3"></i> 
+            <i v-if="!aiLoading" class="fa fa-search ml-3 pmql-icons" :style="styles?.icons"></i>
+            <i v-if="aiLoading" class="fa fa-spinner fa-spin ml-3 pmql-icons" :style="styles?.icons"></i> 
 
             <textarea ref="search_input" type="text" class="pmql-input"
               :aria-label="inputAriaLabel"
@@ -20,29 +22,25 @@
               :id="id"
               v-model="query"
               rows="1"
+              :style="styles?.input"
               @input="onInput()"
               @keydown.enter.prevent @keyup.enter="runSearch()"></textarea>
 
-            <div v-if="showPmqlSection" class="separator align-items-center"></div>
-            <code v-if="showPmqlSection" class="w-100 d-block text-primary">{{ pmql }}</code>
+            <div v-if="showPmqlSection" class="separator align-items-center" :style="styles?.separators"></div>
+            <code v-if="showPmqlSection" class="w-100 d-block input-right-section" :style="styles?.pmql">{{ pmql }}</code>
 
-            <div v-if="showAiIndicator" class="separator align-items-center"></div>
+            <div v-if="showAiIndicator" class="separator align-items-center" :style="styles?.separators"></div>
             <span v-if="showAiIndicator" class="badge badge-pill badge-success">AI</span>
 
-            <!-- <label class="float-label">
-              <i v-if="aiLoading" class="fa fa-spinner fa-spin mr-1"></i> 
-              <span v-html="searchInputLabel"></span>
-            </label> -->
-
-            <div v-if="showUsage" class="separator align-items-center"></div>
+            <div v-if="showUsage" class="separator align-items-center" :style="styles?.separators"></div>
             <label v-if="showUsage" class="badge badge-primary badge-pill usage-label"
               v-b-tooltip.hover :title="'Prompt tokens: ' + usage.promptTokens + ' - Completion tokens: ' + usage.completionTokens + ' - Total: ' + usage.totalTokens + ' tokens'">
                 {{ usage.totalTokens }} tokens
-                <i class="fa fa-info-circle ml-1"></i>
+                <i class="fa fa-info-circle ml-1 pmql-icons"></i>
             </label>
 
-            <div class="separator align-items-center"></div>
-            <i class="fa fa-times pl-1 pr-3 text-secondary" role="button" @click="clearQuery"></i>
+            <div class="separator align-items-center" :style="styles?.separators"></div>
+            <i class="fa fa-times pl-1 pr-3 pmql-icons" role="button" @click="clearQuery" :style="styles?.icons"></i>
 
           </div>
         </div>
@@ -58,11 +56,10 @@
 import isPMQL from "../../modules/isPMQL";
 
 export default {
-  props: ["searchType", "value", "aiEnabled", "searchLabel", "ariaLabel", "id", "validations"],
+  props: ["searchType", "value", "aiEnabled", "ariaLabel", "id", "validations", "styles"],
   data() {
     return {
       aiLoading: false,
-      searchInputLabel: "",
       inputAriaLabel: "",
       placeholder: "",
       showUsage: false,
@@ -92,7 +89,6 @@ export default {
 
   mounted() {
     this.query = this.value;
-    this.searchInputLabel = this.searchLabel;
     this.inputAreaLabel = this.areaLabel;
     Vue.nextTick().then(() => {
       this.$refs.search_input.focus();
@@ -104,10 +100,11 @@ export default {
       this.$refs.search_input.style.height = "auto";
       this.$nextTick(() => {
         this.$refs.search_input.style.height = `${this.$refs.search_input.scrollHeight}px`;
+        this.$emit("inputresize", this.$refs.search_input.scrollHeight);
       });
     },
     onInput() {
-      this.$emit("pmqlChange", this.query);
+      this.$emit("pmqlchange", this.query);
     },
     runSearch() {
       this.pmql = "";
@@ -121,6 +118,7 @@ export default {
       } else if (this.aiEnabled) {
         this.runNLQToPMQL();
       }
+      this.calcInputHeight();
     },
     clearQuery() {
       this.query = "";
@@ -180,15 +178,12 @@ input.pmql-input:focus ~ label, input.pmql-input:valid ~ label {
     color: #0872C2;
 }
 
-.float-label {
-    color: #c6c6c6;
-    font-size: 16px;
-    font-weight: normal;
-    position: absolute;
-    pointer-events: none;
-    padding: 0.1rem 0.75rem;
-    top: 10px;
-    transition: 300ms ease all;
+.input-right-section {
+  color: #0872C2;
+}
+
+.pmql-icons {
+  color: #6C757D;
 }
 
 .usage-label {
