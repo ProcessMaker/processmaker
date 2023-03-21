@@ -51,6 +51,15 @@
               ></b-form-textarea>
             </b-form-group>
 
+              <category-select
+                v-model="template_category_id"
+                :label="$t('Category')"
+                api-get="process_categories"
+                api-list="process_categories"
+                name="category"
+                :errors="addError.template_category_id"
+              />
+
             <b-form-group>
               <b-form-radio v-model="saveMode" 
                             name="save-mode-options" 
@@ -71,9 +80,10 @@
 
 <script>
 import { FormErrorsMixin, Modal, Required } from "SharedComponents";
+import CategorySelect from "../../processes/categories/components/CategorySelect.vue";
 
 export default {
-  components: { Modal, Required },
+  components: { Modal, Required, CategorySelect },
   mixins: [FormErrorsMixin],
   props: ["assetName", "assetType", "assetId", "currentUserId"],
   data() {
@@ -81,6 +91,8 @@ export default {
       errors: {},
       name: "",
       description: "",
+      template_category_id: "",
+      addError: {},
       showModal: false,
       disabled: true,
       showWarning: false,
@@ -127,6 +139,7 @@ export default {
     clear() {
       this.name = "";
       this.description = "";
+      this.template_category_id = "";
       this.showWarning = false;
       this.saveMode = "copy";
     },
@@ -141,7 +154,7 @@ export default {
       formData.append("description", this.description);
       formData.append("user_id", this.currentUserId);
       formData.append("mode", this.saveMode);
-      formData.append("template_category_id", null);
+      formData.append("template_category_id", this.template_category_id);
       ProcessMaker.apiClient.post("template/" + this.assetType + "/" + this.assetId, formData)
         .then(response => {
           ProcessMaker.alert(this.$t("Template successfully created"), "success");
