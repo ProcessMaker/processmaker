@@ -77,7 +77,6 @@ export default {
   computed: {
     filterActions() {
       let btns = this.actions.filter(action => {
-        console.log('PERMISSION', this.permission);
         if (!action.hasOwnProperty('permission') || action.hasOwnProperty('permission') && this.permission.includes(action.permission)) {
           return action;
         } 
@@ -118,10 +117,7 @@ export default {
     onClick(action, data) {
       this.$emit("navigate", action, data);
     },
-  },
-  mounted() {
-    console.log('ELLIPSES MOUNTED');
-  }
+  },  
 };
 </script>
 

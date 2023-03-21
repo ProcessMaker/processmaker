@@ -287,9 +287,6 @@
           return data;
         },
       },
-      mounted() {
-        console.log('TEMPLATES MOUNTED');
-      }
     };
   </script>
   
