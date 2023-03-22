@@ -31,15 +31,37 @@ class ProcessTemplate implements TemplateInterface
         $filter = $request->input('filter');
 
         $templates = $templates->select('process_templates.*')
-            ->leftJoin('users as user', 'process_templates.user_id', '=', 'user.id')
-            ->orderBy(...$orderBy)
-            ->where(function ($query) use ($filter) {
-                $query->where('process_templates.name', 'like', '%' . $filter . '%')
-                    ->orWhere('process_templates.description', 'like', '%' . $filter . '%')
-                    ->orWhere('user.firstname', 'like', '%' . $filter . '%')
-                    ->orWhere('user.lastname', 'like', '%' . $filter . '%');
-            })
-            ->get();
+        ->leftJoin('process_categories as category', 'process_templates.process_template_category_id', '=', 'category.id')
+        ->leftJoin('users as user', 'process_templates.user_id', '=', 'user.id')
+        ->orderBy(...$orderBy)
+        ->where(function ($query) use ($filter) {
+            $query->where('process_templates.name', 'like', '%' . $filter . '%')
+                ->orWhere('process_templates.description', 'like', '%' . $filter . '%')
+                ->orWhere('user.firstname', 'like', '%' . $filter . '%')
+                ->orWhere('user.lastname', 'like', '%' . $filter . '%')
+                ->orWhereIn('process_templates.id', function ($qry) use ($filter) {
+                    $qry->select('assignable_id')
+                        ->from('category_assignments')
+                        ->leftJoin('process_categories', function ($join) {
+                            $join->on('process_categories.id', '=', 'category_assignments.category_id');
+                            $join->where('category_assignments.category_type', '=', ProcessCategory::class);
+                            $join->where('category_assignments.assignable_type', '=', Process::class);
+                        })
+                        ->where('process_categories.name', 'like', '%' . $filter . '%');
+                });
+        })->get();
+
+        // $templates = $templates->select('process_templates.*')
+        //     ->leftJoin('process_template_categories as category', 'processes.process_category_id', '=', 'category.id')
+        //     ->leftJoin('users as user', 'process_templates.user_id', '=', 'user.id')
+        //     ->orderBy(...$orderBy)
+        //     ->where(function ($query) use ($filter) {
+        //         $query->where('process_templates.name', 'like', '%' . $filter . '%')
+        //             ->orWhere('process_templates.description', 'like', '%' . $filter . '%')
+        //             ->orWhere('user.firstname', 'like', '%' . $filter . '%')
+        //             ->orWhere('user.lastname', 'like', '%' . $filter . '%');
+        //     })
+        //     ->get();
 
         return $templates;
     }
@@ -55,7 +77,7 @@ class ProcessTemplate implements TemplateInterface
         $name = $request->name;
         $description = $request->description;
         $userId = $request->user_id;
-        $category = $request->process_template_category_id;
+        $category = $request->process_category_id;
         $mode = $request->mode;
 
         // Get process manifest
@@ -81,7 +103,7 @@ class ProcessTemplate implements TemplateInterface
             'manifest' => json_encode($manifest),
             'svg' => $svg,
             'process_id' => $processId,
-            'process_template_category_id' => null,
+            'process_template_category_id' => $category,
         ]);
 
         return response()->json(['model' => $model]);

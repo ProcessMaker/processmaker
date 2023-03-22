@@ -21,23 +21,14 @@
                 :noDataTemplate="$t('No Data Available')"
         >
           <template slot="name" slot-scope="props">
-            <!-- <i tabindex="0"
-              v-b-tooltip
-              :title="props.rowData.warningMessages.join(' ')"
-              class="text-warning fa fa-exclamation-triangle"
-              :class="{'invisible': props.rowData.warningMessages.length == 0}">
-            </i>
-            <i tabindex="0"
-              v-if="props.rowData.status == 'ACTIVE' || props.rowData.status == 'INACTIVE'"
-              v-b-tooltip
-              :title="props.rowData.status"
-              class="mr-2"
-              :class="{ 'fas fa-check-circle text-success': props.rowData.status == 'ACTIVE', 'far fa-circle': props.rowData.status == 'INACTIVE' }">
-            </i> -->
             <span v-uni-id="props.rowData.id.toString()">{{props.rowData.name}}
               <small class="muted d-block">{{ props.rowData.description }}</small>
             </span>
           </template>
+
+          <!-- <template slot="category" slot-scope="props">
+            text
+          </template> -->
   
           <template slot="owner" slot-scope="props">
             <avatar-image
@@ -70,9 +61,9 @@
         ></pagination>
       </div>
     </div>
-  </template>
+</template>
   
-  <script>
+<script>
     import datatableMixin from "../../components/common/mixins/datatable";
     import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
     import { createUniqIdsMixin } from "vue-uniq-ids";
@@ -102,15 +93,16 @@
               field: "name",
               sortField: "name"
             },
-            // {
-            //   title: () => this.$t("Category"),
-            //   name: "categories",
-            //   sortField: "category.name",
-            //   callback(categories) {
-            //     return '';
-            //     //return categories.map(item => item.name).join(', ');
-            //   }
-            // },
+            {
+              title: () => this.$t("Category"),
+              name: "process_template_category_id",
+              sortField: "category.name",
+              callback(categories) {
+                console.log('categories', categories);
+                // return '';
+                return categories.map(item => item.name).join(', ');
+              }
+            },
             {
               title: () => this.$t("Template Author"),
               name: "__slot:owner",
@@ -136,7 +128,7 @@
         };
       },
       created () {
-        ProcessMaker.EventBus.$on("api-data-process-template", (val) => {
+        ProcessMaker.EventBus.$on("api-data-process-template-listing", (val) => {
           this.fetch();
         });
       },
@@ -225,6 +217,9 @@
               "</span>"
           );
         },
+        getCategoryId(id) {
+          console.log('id', id);
+        },
         createImg(properties) {
           let container = document.createElement("div");
           let node = document.createElement("img");
@@ -261,12 +256,14 @@
                   this.orderBy +
                   "&order_direction=" +
                   this.orderDirection +
-                  "&include=user"
-                  //"&include=categories,category,user"
+                  "&include=user",
+                  "&include=categories,category,user"
               )
               .then(response => {
+                console.log('response data', response.data);
                 const data = this.addWarningMessages(response.data);
                 this.data = this.transform(data);
+                console.log('data', this.data);
                 this.apiDataLoading = false;
                 this.apiNoResults = false;
                 this.loading = false;

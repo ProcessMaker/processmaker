@@ -52,12 +52,12 @@
             </b-form-group>
 
               <category-select
-                v-model="template_category_id"
+                v-model="process_category_id"
                 :label="$t('Category')"
                 api-get="process_categories"
                 api-list="process_categories"
                 name="category"
-                :errors="addError.template_category_id"
+                :errors="addError.process_category_id"
               />
 
             <b-form-group>
@@ -91,7 +91,7 @@ export default {
       errors: {},
       name: "",
       description: "",
-      template_category_id: "",
+      process_category_id: "",
       addError: {},
       showModal: false,
       disabled: true,
@@ -139,7 +139,7 @@ export default {
     clear() {
       this.name = "";
       this.description = "";
-      this.template_category_id = "";
+      this.process_category_id = "";
       this.showWarning = false;
       this.saveMode = "copy";
     },
@@ -154,7 +154,7 @@ export default {
       formData.append("description", this.description);
       formData.append("user_id", this.currentUserId);
       formData.append("mode", this.saveMode);
-      formData.append("template_category_id", this.template_category_id);
+      formData.append("process_category_id", this.process_category_id);
       ProcessMaker.apiClient.post("template/" + this.assetType + "/" + this.assetId, formData)
         .then(response => {
           ProcessMaker.alert(this.$t("Template successfully created"), "success");
@@ -180,7 +180,7 @@ export default {
         user_id: this.currentUserId,
         mode: this.saveMode,
         process_id: this.assetId,
-        template_category_id: null,
+        process_category_id: this.process_category_id,
       };
       ProcessMaker.apiClient.put("template/" + this.assetType + "/" + this.existingAssetId, putData)
         .then(response => {
