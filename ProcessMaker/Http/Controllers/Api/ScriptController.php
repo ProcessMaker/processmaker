@@ -388,7 +388,7 @@ class ScriptController extends Controller
      *     operationId="updateDraftScript",
      *     tags={"Scripts"},
      *     @OA\Parameter(
-     *         descriptionc="ID of script to return",
+     *         description="ID of script to return",
      *         in="path",
      *         name="script_id",
      *         required=true,
