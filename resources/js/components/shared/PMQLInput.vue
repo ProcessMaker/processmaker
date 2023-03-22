@@ -27,6 +27,7 @@
             <i v-if="aiLoading && !condensed" class="fa fa-spinner fa-spin ml-3 pmql-icons" :style="styles?.icons"></i> 
 
             <textarea ref="search_input" type="text" class="pmql-input"
+              :class="{'overflow-auto': showScrollbars}"
               :aria-label="inputAriaLabel"
               :placeholder="placeholder"
               :id="id"
@@ -81,8 +82,10 @@ export default {
       showUsage: false,
       showAiIndicator: false,
       showFilter: false,
+      showScrollbars: false,
       pmql: "",
       query: "",
+      textAreaLines: 4,
       usage: {
         completionTokens: 0,
         promptTokens: 0,
@@ -102,7 +105,10 @@ export default {
       this.calcInputHeight();
     },
     value() {
-      this.query = this.value;
+      if (!this.query || this.query === "") {
+        this.query = this.value;
+      }
+      
     },
   },
 
@@ -117,9 +123,23 @@ export default {
   methods: {
     calcInputHeight() {
       this.$refs.search_input.style.height = "auto";
+      // Font size * line height in rems (1.5)
+      let fontSize = parseFloat(getComputedStyle(this.$refs.search_input).fontSize);
+      let lineHeight = fontSize * 1.5;
+      // Padding top and bottom (0.4rem each)
+      let padding = fontSize * 0.4 * 2;
+      let currentHeight = padding + (this.textAreaLines * lineHeight);
+
+      this.showScrollbars = false;
       this.$nextTick(() => {
-        this.$refs.search_input.style.height = `${this.$refs.search_input.scrollHeight}px`;
-        this.$emit("inputresize", this.$refs.search_input.scrollHeight);
+        if (currentHeight <= this.$refs.search_input.scrollHeight) {
+          this.showScrollbars = true;
+          this.$refs.search_input.style.height = `${currentHeight}px`;
+          this.$emit("inputresize", currentHeight);
+        } else {
+          this.$refs.search_input.style.height = `${this.$refs.search_input.scrollHeight}px`;
+          this.$emit("inputresize", this.$refs.search_input.scrollHeight);
+        }
       });
     },
     onInput() {
