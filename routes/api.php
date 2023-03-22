@@ -228,12 +228,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     // Templates
     Route::get('templates/{type}', [TemplateController::class, 'index'])->name('templates.index')->middleware('template-authorization');
-
-    // Route::middleware('templates')->group(function() {
-    //     Route::get('templates/{type}', [TemplateController::class, 'index'])->name('templates.index')->middleware('can:view-templates');
-    //     // Route::post('template/{type}/{id}', [TemplateController::class, 'store'])->name('templates.store');
-    //     // Route::put('template/{type}/{id}', [TemplateController::class, 'update'])->name('templates.update');
-    // });
+    Route::post('template/{type}/{id}', [TemplateController::class, 'store'])->name('templates.store')->middleware('template-authorization');
+    Route::put('template/{type}/{id}', [TemplateController::class, 'update'])->name('templates.update')->middleware('template-authorization');
 
     // debugging javascript errors
     Route::post('debug', [DebugController::class, 'store'])->name('debug.store')->middleware('throttle');
