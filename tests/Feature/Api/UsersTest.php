@@ -109,23 +109,23 @@ class UsersTest extends TestCase
         config()->set('app.timezone', 'America/Los_Angeles');
         putenv('DATE_FORMAT=m/d/Y H:i');
         putenv('APP_LANG=en');
-
-        // Create a user without setting fields that have default.
         $faker = Faker::create();
         $url = self::API_TEST_URL;
+
+        // Create a user without setting fields that have default.
         $response = $this->apiCall('POST', $url, [
             'username' => 'username1',
             'firstname' => $faker->firstName,
             'lastname' => $faker->lastName,
             'email' => $faker->email,
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->password(8, 20),
+            'password' => $faker->password(8) . 'A' . '1',
         ]);
 
-        $response->assertStatus(201);
-
         // Validate that the created user has the correct default values.
+        $response->assertStatus(201);
         $createdUser = $response->json();
+        // Verify that a user created from Rest API has the timezone defined in settings > users > Timezone when the request does not have the timezone parameter.
         $this->assertEquals(config()->get('app.timezone'), $createdUser['timezone']);
         $this->assertEquals(getenv('DATE_FORMAT'), $createdUser['datetime_format']);
         $this->assertEquals(getenv('APP_LANG'), $createdUser['language']);
@@ -143,15 +143,32 @@ class UsersTest extends TestCase
             'lastname' => $faker->lastName,
             'email' => $faker->email,
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->password(8, 20),
+            'password' => $faker->password(8) . 'A' . '1',
             'datetime_format' => $dateFormat,
         ]);
 
         // Validate that the created user has the correct values.
         $response->assertStatus(201);
         $createdUser = $response->json();
+        // Verify that a user created from UI has the timezone defined in settings > users > Timezone.
         $this->assertEquals($createdUser['timezone'], $setting->config->timezone);
         $this->assertEquals($createdUser['datetime_format'], $dateFormat);
+
+        // Create a new user and define a timezone on the request.
+        $response = $this->apiCall('POST', $url, [
+            'username' => 'username3',
+            'firstname' => $faker->firstName,
+            'lastname' => $faker->lastName,
+            'email' => $faker->email,
+            'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
+            'password' => $faker->password(8) . 'A' . '1',
+            'timezone' => 'America/Monterrey',
+        ]);
+
+        // Verify that a user created from Rest API has the timezone defined when the request have a timezone different to default/settings timezone value.
+        $response->assertStatus(201);
+        $createdUser = $response->json();
+        $this->assertEquals('America/Monterrey', $createdUser['timezone']);
     }
 
     /**
