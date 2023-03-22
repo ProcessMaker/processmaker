@@ -57,12 +57,14 @@
                     {{ $itemList }}
                 </div>
             </div>
-            @if(isset($templatesList) && can('view-process-templates'))
+            @if(isset($templatesList))
+                @can('view-process-templates')
                 <div class="tab-pane fade" id="nav-templates" role="tabpanel" aria-labelledby="nav-templates-tab">
                     <div class="card card-body p-3 border-top-0">
                         {{ $templatesList }}
                     </div>
                 </div>
+                @endcan
             @endif
             <div class="{{$secondContent}}" id="nav-categories" role="tabpanel" aria-labelledby="nav-categories-tab">
                 <div class="card card-body p-3 border-top-0">
