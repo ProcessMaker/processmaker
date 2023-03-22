@@ -12,9 +12,19 @@
         <div class="search-bar flex-grow w-100" 
           :class="{'is-invalid': validations}"
           :style="styles?.container">
+
+          <div v-if="condensed" class="d-flex justify-content-between mb-1 mt-1">
+            <i v-if="!aiLoading" class="fa fa-search ml-2 pmql-icons" :style="styles?.icons"></i>
+            <i v-if="aiLoading" class="fa fa-spinner fa-spin ml-2 pmql-icons" :style="styles?.icons"></i> 
+            <i class="fa fa-times pl-1 pr-2 pmql-icons" role="button" @click="clearQuery" :style="styles?.icons"></i>
+          </div>
+          <div v-if="condensed">
+            <div class="separator-horizontal align-items-center"></div>
+          </div>
+
           <div class="search-bar-container d-flex align-items-center">
-            <i v-if="!aiLoading" class="fa fa-search ml-3 pmql-icons" :style="styles?.icons"></i>
-            <i v-if="aiLoading" class="fa fa-spinner fa-spin ml-3 pmql-icons" :style="styles?.icons"></i> 
+            <i v-if="!aiLoading && !condensed" class="fa fa-search ml-3 pmql-icons" :style="styles?.icons"></i>
+            <i v-if="aiLoading && !condensed" class="fa fa-spinner fa-spin ml-3 pmql-icons" :style="styles?.icons"></i> 
 
             <textarea ref="search_input" type="text" class="pmql-input"
               :aria-label="inputAriaLabel"
@@ -26,23 +36,29 @@
               @input="onInput()"
               @keydown.enter.prevent @keyup.enter="runSearch()"></textarea>
 
-            <div v-if="showPmqlSection" class="separator align-items-center" :style="styles?.separators"></div>
-            <code v-if="showPmqlSection" class="w-100 d-block input-right-section" :style="styles?.pmql">{{ pmql }}</code>
+            <div v-if="showPmqlSection && !condensed" class="separator align-items-center" :style="styles?.separators"></div>
+            <code v-if="showPmqlSection && !condensed" class="w-100 d-block input-right-section" :style="styles?.pmql">{{ pmql }}</code>
 
-            <div v-if="showAiIndicator" class="separator align-items-center" :style="styles?.separators"></div>
-            <span v-if="showAiIndicator" class="badge badge-pill badge-success">AI</span>
+            <div v-if="showAiIndicator && !condensed" class="separator align-items-center" :style="styles?.separators"></div>
+            <span v-if="showAiIndicator && !condensed" class="badge badge-pill badge-success">AI</span>
 
-            <div v-if="showUsage" class="separator align-items-center" :style="styles?.separators"></div>
-            <label v-if="showUsage" class="badge badge-primary badge-pill usage-label"
+            <div v-if="showUsage && !condensed" class="separator align-items-center" :style="styles?.separators"></div>
+            <label v-if="showUsage && !condensed" class="badge badge-primary badge-pill usage-label"
               v-b-tooltip.hover :title="'Prompt tokens: ' + usage.promptTokens + ' - Completion tokens: ' + usage.completionTokens + ' - Total: ' + usage.totalTokens + ' tokens'">
                 {{ usage.totalTokens }} tokens
                 <i class="fa fa-info-circle ml-1 pmql-icons"></i>
             </label>
 
-            <div class="separator align-items-center" :style="styles?.separators"></div>
-            <i class="fa fa-times pl-1 pr-3 pmql-icons" role="button" @click="clearQuery" :style="styles?.icons"></i>
+            <div v-if="!condensed" class="separator align-items-center" :style="styles?.separators"></div>
+            <i v-if="!condensed" class="fa fa-times pl-1 pr-3 pmql-icons" role="button" @click="clearQuery" :style="styles?.icons"></i>
 
           </div>
+
+          <div v-if="showPmqlSection && condensed">
+            <div class="separator-horizontal align-items-center"></div>
+          </div>
+          <code v-if="showPmqlSection && condensed" class="w-100 d-block input-right-section mb-1 mt-1 pr-2 pl-2" :style="styles?.pmql">{{ pmql }}</code>
+
         </div>
         <div class="search-bar-buttons d-flex ml-md-0 flex-column flex-md-row">
           <slot name="right-buttons"></slot>
@@ -56,7 +72,7 @@
 import isPMQL from "../../modules/isPMQL";
 
 export default {
-  props: ["searchType", "value", "aiEnabled", "ariaLabel", "id", "validations", "styles"],
+  props: ["searchType", "value", "aiEnabled", "ariaLabel", "id", "validations", "styles", "condensed"],
   data() {
     return {
       aiLoading: false,
@@ -84,6 +100,9 @@ export default {
   watch: {
     query() {
       this.calcInputHeight();
+    },
+    value() {
+      this.query = this.value;
     },
   },
 
@@ -203,6 +222,13 @@ input.pmql-input:focus ~ label, input.pmql-input:valid ~ label {
     margin-right: 0.5rem;
     right: 0;
     top: 15%;
+}
+
+.separator-horizontal {
+  border: 0;
+  border-bottom: 1px dashed rgb(227, 231, 236);
+  height: 0;
+  margin: 5px 7px 0 8px;
 }
 
 .badge-success {
