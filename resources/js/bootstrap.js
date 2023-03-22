@@ -205,6 +205,7 @@ const token = document.head.querySelector("meta[name=\"csrf-token\"]");
 
 if (token) {
   window.ProcessMaker.apiClient.defaults.headers.common["X-CSRF-TOKEN"] = token.content;
+  window.ProcessMaker.apiClient.defaults.withCredentials = true;
 } else {
   console.error("CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token");
 }
