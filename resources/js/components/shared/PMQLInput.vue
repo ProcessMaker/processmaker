@@ -30,7 +30,7 @@
               :class="{'overflow-auto': showScrollbars}"
               :aria-label="inputAriaLabel"
               :placeholder="placeholder"
-              :id="id"
+              :id="inputId"
               v-model="query"
               rows="1"
               :style="styles?.input"
@@ -73,12 +73,11 @@
 import isPMQL from "../../modules/isPMQL";
 
 export default {
-  props: ["searchType", "value", "aiEnabled", "ariaLabel", "id", "validations", "styles", "condensed"],
+  props: ["searchType", "value", "aiEnabled", "ariaLabel", "inputId", "validations", "styles", "condensed", "placeholder", "collectionId"],
   data() {
     return {
       aiLoading: false,
       inputAriaLabel: "",
-      placeholder: "",
       showUsage: false,
       showAiIndicator: false,
       showFilter: false,
@@ -204,7 +203,7 @@ export default {
   padding-left: 0.75rem;
   overflow: hidden;
   resize: none;
-  min-height: calc(1.5em + 0.75rem + 2px);
+  min-height: calc(1.5em + 0.75rem);
 }
 
 .pmql-input:focus {
