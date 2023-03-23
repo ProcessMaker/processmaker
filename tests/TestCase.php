@@ -34,7 +34,7 @@ abstract class TestCase extends BaseTestCase
         }
     }
 
-    public static function setUpMockScriptRunners(): void
+    public function setUpMockScriptRunners(): void
     {
         config()->set('script-runners.php.runner', 'MockRunner');
         config()->set('script-runners.lua.runner', 'MockRunner');
@@ -46,13 +46,10 @@ abstract class TestCase extends BaseTestCase
      * saved before the command is run. Instead, mock it here and do what
      * it needs to do for the test to continue.
      */
-    public static function setUpMockConfigCache(): void
+    public function setUpMockConfigCache(): void
     {
-        Artisan::command('config:cache', function () {
-            foreach (Setting::select('id', 'key', 'config', 'format')->get() as $setting) {
-                config([$setting->key => $setting->config]);
-            }
-        });
+        $mock = app()->make(ConfigCacheCommandMock::class);
+        Artisan::registerCommand($mock);
     }
 
     /**
