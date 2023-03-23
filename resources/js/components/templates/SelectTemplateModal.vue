@@ -15,6 +15,7 @@
       :hide-footer="true"
       @showSelectTemplate="showSelectTemplateComponent"
       @ok.prevent="onSubmit"
+      @close="close"
     >
       <template-search :type="type" :component="currentComponent" @show-details="updateModal($event)"/>
     </modal>
@@ -71,8 +72,11 @@
         this.titleButtons[1].hidden = true;
         this.hasHeaderButtons = false;
         this.title = this.$t(`New ${this.type}`);
-
-      }
+      },
+      close() {
+        this.$bvModal.hide("selectTemplate");
+        this.currentComponent = 'template-select-card';
+      },
     },
     mounted() {
       this.title = this.$t(`New ${this.type}`);
