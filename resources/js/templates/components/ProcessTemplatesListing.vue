@@ -22,7 +22,7 @@
         >
           <template slot="name" slot-scope="props">
             <span v-uni-id="props.rowData.id.toString()">{{props.rowData.name}}
-              <small class="muted d-block">{{ props.rowData.description }}</small>
+              <small class="muted d-block">{{ props.rowData.description | str_limit(100) }}</small>
             </span>
           </template>
 
@@ -60,6 +60,15 @@
 </template>
   
 <script>
+  Vue.filter('str_limit', function (value, size) {
+    if (!value) return '';
+    value = value.toString();
+
+    if (value.length <= size) {
+      return value;
+    }
+    return value.substr(0, size) + '...';
+  });
     import datatableMixin from "../../components/common/mixins/datatable";
     import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
     import { createUniqIdsMixin } from "vue-uniq-ids";
