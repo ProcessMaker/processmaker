@@ -8,6 +8,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\ModelerManager;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
+use ProcessMaker\PackageHelper;
 use ProcessMaker\Traits\HasControllerAddons;
 
 class ModelerController extends Controller
@@ -35,6 +36,7 @@ class ModelerController extends Controller
             'process' => $process->append('notifications', 'task_notifications'),
             'manager' => $manager,
             'signalPermissions' => SignalManager::permissions($request->user()),
+            'isVersionsInstalled' => PackageHelper::isPackageInstalled('ProcessMaker\Package\Versions\PluginServiceProvider'),
         ]);
     }
 }

@@ -68,6 +68,7 @@ export default {
         borderOutline: {},
       },
       process: window.ProcessMaker.modeler.process,
+      isVersionsInstalled: window.ProcessMaker.modeler.isVersionsInstalled,
       validationErrors: {},
       warnings: [],
       xmlManager: null,
@@ -211,6 +212,10 @@ export default {
         .catch(saveFailed);
     },
     async autosaveProcess() {
+      if (this.isVersionsInstalled === false) {
+        return;
+      }
+
       const svg = document.querySelector(".mini-paper svg");
       const css = "text { font-family: sans-serif; }";
       const style = document.createElement("style");
