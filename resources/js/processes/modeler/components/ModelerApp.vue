@@ -216,42 +216,34 @@ export default {
       const style = document.createElement("style");
       style.textContent = css;
       svg.appendChild(style);
-
       const svgString = new XMLSerializer().serializeToString(svg);
       const xml = await this.$refs.modeler.getXmlFromDiagram();
-
-      const data = {
-        name: this.process.name,
-        description: this.process.description,
-        task_notifications: this.getTaskNotifications(),
-        bpmn: xml,
-        svg: svgString,
-        is_draft: true,
-      };
-
-      const savedSuccessfully = (response) => {
-        this.process.updated_at = response.data.updated_at;
-        ProcessMaker.alert(this.$t("The process was saved."), "success");
-        window.ProcessMaker.EventBus.$emit("save-changes");
-        this.$set(this, "warnings", response.data.warnings || []);
-        if (response.data.warnings && response.data.warnings.length > 0) {
-          this.$refs.validationStatus.autoValidate = true;
-        }
-      };
-
-      const saveFailed = (error) => {
-        const { message } = error.response.data;
-        ProcessMaker.alert(message, "danger");
-      };
 
       if (this.debounceTimeout) {
         clearTimeout(this.debounceTimeout);
       }
 
       this.debounceTimeout = setTimeout(() => {
-        ProcessMaker.apiClient.put(`/processes/${this.process.id}`, data)
-          .then(savedSuccessfully)
-          .catch(saveFailed);
+        ProcessMaker.apiClient.put(`/processes/${this.process.id}/draft`, {
+          name: this.process.name,
+          description: this.process.description,
+          task_notifications: this.getTaskNotifications(),
+          bpmn: xml,
+          svg: svgString,
+        })
+          .then((response) => {
+            this.process.updated_at = response.data.updated_at;
+            ProcessMaker.alert(this.$t("The process was saved."), "success");
+            window.ProcessMaker.EventBus.$emit("save-changes");
+            this.$set(this, "warnings", response.data.warnings || []);
+            if (response.data.warnings && response.data.warnings.length > 0) {
+              this.$refs.validationStatus.autoValidate = true;
+            }
+          })
+          .catch((error) => {
+            const { message } = error.response.data;
+            ProcessMaker.alert(message, "danger");
+          });
       }, 5000);
     },
   },
