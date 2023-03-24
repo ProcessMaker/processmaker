@@ -80,15 +80,24 @@ class CreateDataLakeViews extends Command
                 DB::statement($sql);
             }
         }
+        $dropped = [];
+        foreach ($views as $viewName => $view) {
+            if ($this->tableWasDropped($tables, $viewName)) {
+                $dropped[] = $this->getTableName($viewName);
+            }
+        }
+        $this->down($preview, $dropped);
     }
 
     /**
      * @param bool $preview
+     * @param array|string[]|null $tables
      * @return void
      */
-    public function down(bool $preview): void
+    public function down(bool $preview, array $tables = null): void
     {
-        foreach ($this->getTables() as $tableName) {
+        $tables = is_null($tables) ? $this->getTables() : $tables;
+        foreach ($tables as $tableName) {
             $viewName = $this->getViewName($tableName);
             $sql = sprintf('DROP VIEW IF EXISTS `%s`;', $viewName);
             if ($preview) {
@@ -100,7 +109,7 @@ class CreateDataLakeViews extends Command
     }
 
     /**
-     * @param array $views
+     * @param array|\Doctrine\DBAL\Schema\View[] $views
      * @param string $tableName
      * @param array $columns
      * @return bool
@@ -120,6 +129,11 @@ class CreateDataLakeViews extends Command
         return false;
     }
 
+    protected function tableWasDropped(array $tables, string $viewName)
+    {
+        return !in_array($this->getTableName($viewName), $tables);
+    }
+
     /**
      * @param string $tableName
      * @return string
@@ -127,6 +141,15 @@ class CreateDataLakeViews extends Command
     protected function getViewName(string $tableName): string
     {
         return 'dlv_' . $tableName;
+    }
+
+    /**
+     * @param string $viewName
+     * @return string
+     */
+    protected function getTableName(string $viewName): string
+    {
+        return substr($viewName, 4);
     }
 
     /**
@@ -156,7 +179,7 @@ class CreateDataLakeViews extends Command
     }
 
     /**
-     * @return string[]
+     * @return \Doctrine\DBAL\Schema\View[]
      */
     protected function getViews(): array
     {
