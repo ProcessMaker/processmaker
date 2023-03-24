@@ -34,7 +34,7 @@ Response: '(status IN ["Completed", "Error"]) AND data.date IN ["2021-07-01", "2
 Question: Find for completed or in progress Requests where the participant is admin or Melissa. The last modified is equal or major to 2020-07-01 00:00:00
 Response: 'participant IN ["admin", "Melissa"] AND status NOT IN ["Completed", "In Progress"] AND modified >= "2020-07-01 00:00:00"'
 Question: Find Requests for ProcessName that are not more than two (2) days old
-Response: '(modified < NOW -2 day) AND (request = "ProcessName")'
+Response: '(modified > NOW -2 day) AND (request = "ProcessName")'
 Question: Find Requests from ProcessName in which its Request participants are 25 years old or younger by only having their date of birth in a Request variable called DOB. Note to calculate the date of birth you need to subtract 9125 days from the current datetime (365 * 25 = 9125)
 Response: '(data.DOB > NOW -9125 day) AND (request = "ProcessName")'
 Question: Show me all the requests that are opened
@@ -46,10 +46,18 @@ Response: '(requester = "Admin")'
 Question: Generate a PMQL query to return all the requests for the requester Admin and with a score greater than 10
 Response: '(requester = "Admin") AND (data.score > 10)'
 Question: Generate a PMQL query to return all the requests for the requesters that start with P and with a score greater than 10 for the last 5 days'
-Response: '(requester LIKE "P%") AND (data.score > 10) AND (modified < NOW -5 day)
+Response: '(requester LIKE "P%") AND (data.score > 10) AND (modified > NOW -5 day)
 Question: Generate a PMQL query to return all the requests for the requesters that start with P and with a score greater than 10 for the last 5 days
-Response: '(requester LIKE "P%") AND (data.score > 10) AND (modified < NOW -5 day)'
+Response: '(requester LIKE "P%") AND (data.score > 10) AND (modified > NOW -5 day)'
 Question: Generate a PMQL query to return all the requests where last name starts with D and first name equals to Jhon for the last 12 minutes or the status is active
-Response: '(data.last_name LIKE "D%") AND (data.first_name = "Jhon") AND (modified < NOW -12 minutes) OR (status = "ACTIVE")'
+Response: '(data.last_name LIKE "D%") AND (data.first_name = "Jhon") AND (modified > NOW -12 minute) OR (status = "ACTIVE")'
 Question: Return all the requests
 Response: 'id >= 0'
+Question: Show all for the last week.
+Response: 'modified > NOW -7 day'
+Question: Show all for the last 2 weeks.
+Response: 'modified > NOW -14 day'
+Question: Show all for the last month.
+Response: 'modified > NOW -30 day'
+Question: Show all for the last 2 months.
+Response: 'modified > NOW -60 day'
