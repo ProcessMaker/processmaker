@@ -26,10 +26,6 @@
             </span>
           </template>
 
-          <!-- <template slot="category" slot-scope="props">
-            text
-          </template> -->
-  
           <template slot="owner" slot-scope="props">
             <avatar-image
                     class="d-inline-flex pull-left align-items-center"
@@ -95,11 +91,9 @@
             },
             {
               title: () => this.$t("Category"),
-              name: "process_template_category_id",
+              name: "categories",
               sortField: "category.name",
               callback(categories) {
-                console.log('categories', categories);
-                // return '';
                 return categories.map(item => item.name).join(', ');
               }
             },
@@ -128,7 +122,7 @@
         };
       },
       created () {
-        ProcessMaker.EventBus.$on("api-data-process-template-listing", (val) => {
+        ProcessMaker.EventBus.$on("api-data-process-templates", (val) => {
           this.fetch();
         });
       },
@@ -256,14 +250,11 @@
                   this.orderBy +
                   "&order_direction=" +
                   this.orderDirection +
-                  "&include=user",
-                  "&include=categories,category,user"
+                  "&include=user,category,categories"
               )
               .then(response => {
-                console.log('response data', response.data);
                 const data = this.addWarningMessages(response.data);
                 this.data = this.transform(data);
-                console.log('data', this.data);
                 this.apiDataLoading = false;
                 this.apiNoResults = false;
                 this.loading = false;
