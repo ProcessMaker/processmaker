@@ -281,7 +281,7 @@ class ProcessController extends Controller
             $process->warnings = null;
         }
 
-        $process->fill($request->except('notifications', 'task_notifications', 'notification_settings', 'cancel_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id', 'is_draft'));
+        $process->fill($request->except('notifications', 'task_notifications', 'notification_settings', 'cancel_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id'));
         if ($request->has('manager_id')) {
             $process->manager_id = $request->input('manager_id', null);
         }
@@ -308,11 +308,73 @@ class ProcessController extends Controller
 
         // Catch errors to send more specific status
         try {
-            if ($request->input('is_draft', false)) {
-                $process->saveDraft();
-            } else {
-                $process->saveOrFail();
-            }
+            $process->saveOrFail();
+        } catch (TaskDoesNotHaveUsersException $e) {
+            return response(
+                ['message' => $e->getMessage(),
+                    'errors' => ['bpmn' => $e->getMessage()], ],
+                422
+            );
+        }
+
+        return new Resource($process->refresh());
+    }
+
+    /**
+     * Update draft process.
+     *
+     * @param Request $request
+     * @param Process $process
+     * @return ResponseFactory|Response
+     *
+     * @throws \Throwable
+     *
+     * @OA\Put(
+     *     path="/processes/{processId}/draft",
+     *     summary="Update a draft process",
+     *     operationId="updateDraftProcess",
+     *     tags={"Processes"},
+     *     @OA\Parameter(
+     *         description="ID of process to return",
+     *         in="path",
+     *         name="processId",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="integer",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/ProcessEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *     ),
+     * )
+     */
+    public function updateDraft(Request $request, Process $process)
+    {
+        $request->validate(Process::rules($process));
+
+        // BPMN validation.
+        $schemaErrors = $this->validateBpmn($request);
+        if ($schemaErrors) {
+            $warnings = array_map(function ($error) {
+                return is_string($error)
+                    ? ['title' => __('Schema Validation'), 'text' => str_replace('DOMDocument::schemaValidate(): ', '', $error)]
+                    : $error;
+            }, $schemaErrors);
+            $process->warnings = $warnings;
+        } else {
+            $process->warnings = null;
+        }
+
+        $process->fill($request->except('task_notifications'));
+
+        try {
+            $process->saveDraft();
         } catch (TaskDoesNotHaveUsersException $e) {
             return response(
                 ['message' => $e->getMessage(),
@@ -413,12 +475,11 @@ class ProcessController extends Controller
      * Returns the list of errors found.
      *
      * @param Request $request
-     * @return array|null
      */
-    private function validateBpmn(Request $request)
+    private function validateBpmn(Request $request): array
     {
         $data = $request->all();
-        $schemaErrors = null;
+        $schemaErrors = [];
         if (isset($data['bpmn'])) {
             $document = new BpmnDocument();
             try {
@@ -450,17 +511,11 @@ class ProcessController extends Controller
 
     /**
      * Validate the bpmn has only one BPMNDiagram.
-     *
-     * @param BpmnDocument $document
-     * @param array $schemaErrors
-     *
-     * @return array
      */
-    private function validateOnlyOneDiagram(BpmnDocument $document, array $schemaErrors = null)
+    private function validateOnlyOneDiagram(BpmnDocument $document, array $schemaErrors = []): array
     {
         $diagrams = $document->getElementsByTagNameNS('http://www.omg.org/spec/BPMN/20100524/DI', 'BPMNDiagram');
         if ($diagrams->length > 1) {
-            $schemaErrors = $schemaErrors ?? [];
             $schemaErrors[] = __('Multiple diagrams are not supported');
         }
 

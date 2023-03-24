@@ -8,6 +8,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\ModelerManager;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
+use ProcessMaker\PackageHelper;
 use ProcessMaker\Traits\HasControllerAddons;
 
 class ModelerController extends Controller
@@ -36,6 +37,7 @@ class ModelerController extends Controller
             'manager' => $manager,
             'signalPermissions' => SignalManager::permissions($request->user()),
             'autoSaveDelay' => config('versions.delay.process', 5000),
+            'isVersionsInstalled' => PackageHelper::isPackageInstalled('ProcessMaker\Package\Versions\PluginServiceProvider'),
         ]);
     }
 }

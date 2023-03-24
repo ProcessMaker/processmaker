@@ -1138,35 +1138,43 @@ class ProcessTest extends TestCase
         $params = [
             'name' => 'Process',
             'description' => 'Description',
-            'is_draft' => true,
         ];
 
         $response = $this->apiCall('PUT', $url, $params);
         $response->assertStatus(200);
 
-        // Assert draft version is created.
-        $this->assertEquals(1, $process->versions()->draft()->count());
+        // Assert another published version is created.
+        $this->assertEquals(2, $process->versions()->published()->count());
+        $this->assertEquals(0, $process->versions()->draft()->count());
+    }
 
-        // Publish.
+    public function testUpdateDraftProcess()
+    {
+        $process = Process::factory()->create();
+        $url = route('api.processes.update_draft', ['process' => $process]);
+        $bpmn = '<?xml version="1.0" encoding="UTF-8"?><bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></bpmn:definitions>';
         $params = [
             'name' => 'Process',
             'description' => 'Description',
-            'is_draft' => false,
+            'bpmn' => $bpmn,
         ];
-        $response = $this->apiCall('PUT', $url, $params);
 
-        // Delete the draft after the item is published.
-        $this->assertEquals(0, $process->versions()->draft()->count());
+        $response = $this->apiCall('PUT', $url, $params);
+        $response->assertStatus(200);
+
+        $draft = $process->versions()->draft()->first();
+        $this->assertNotNull($draft);
+        $this->assertEquals($bpmn, $draft->bpmn);
     }
 
     public function testDiscardDraft()
     {
+        // Create draft.
         $process = Process::factory()->create();
-        $url = route('api.processes.update', ['process' => $process]);
+        $url = route('api.processes.update_draft', ['process' => $process]);
         $params = [
             'name' => 'Process',
             'description' => 'Description',
-            'is_draft' => true,
         ];
 
         $response = $this->apiCall('PUT', $url, $params);
