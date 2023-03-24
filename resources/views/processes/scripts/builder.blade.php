@@ -21,7 +21,7 @@
 @section('content')
   <div id="script-container">
     <script-editor :script="{{ $script }}" :script-executor='{!! json_encode($script->scriptExecutor) !!}'
-      test-data="{{ json_encode($testData, JSON_PRETTY_PRINT) }}" :auto-save-delay="{{ $autoSaveDelay }}"></script-editor>
+      test-data="{{ json_encode($testData, JSON_PRETTY_PRINT) }}" :auto-save-delay="{{ $autoSaveDelay }}" :is-versions-installed="@json($isVersionsInstalled)"></script-editor>
   </div>
 @endsection
 
