@@ -124,9 +124,10 @@
           ],
           actions: [
             // { value: "edit-designer", content: "Edit Template", permission: "edit-processes", icon: "fas fa-edit", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
-            { value: "edit-item", content: "Configure", permission: "edit-processes", icon: "fas fa-cog"},
-            { value: "view-documentation", content: "View Documentation", permission: "view-processes", icon: "fas fa-sign", isDocumenterInstalled: "if('isDocumenterInstalled' == true, true, false)"},
-            { value: "export-item", content: "Export Template", permission: "export-processes", icon: "fas fa-file-export"}
+            { value: "view-documentation", content: "Template Documentation", permission: "view-processes", icon: "fas fa-sign", isDocumenterInstalled: "if('isDocumenterInstalled' == true, true, false)"},
+            { value: "export-item", content: "Export Template", permission: "export-processes", icon: "fas fa-file-export"},
+            { value: "edit-item", content: "Configure Template", permission: "edit-processes", icon: "fas fa-cog"},
+            { value: "delete-item", content: "Delete Template", icon: "fas fa-trash"},
           ],
         };
       },
