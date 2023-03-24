@@ -84,7 +84,7 @@ export default {
                 this.orderBy +
                 "&order_direction=" +
                 this.orderDirection +
-                "&include=user"
+                "&include=user,categories,category"
             )
             .then(response => {
               if(response.data.data.length === 0) {

@@ -9,8 +9,8 @@
             :input-data="template.user"
           ></avatar-image>
         </p>
-      <b-badge pill variant="success" class="category-badge mb-3">
-        Category 1
+      <b-badge pill v-for="category in categories" :key="category.id" variant="success" class="category-badge mb-3">
+        {{ category.name }}
       </b-badge>
       </div>
       <div id="svg-container" v-html="svg"></div>
@@ -36,7 +36,10 @@ import svgPanZoom from 'svg-pan-zoom';
         let parser = new DOMParser();
         let svg = parser.parseFromString(this.template.svg, "image/svg+xml");
         return svg.documentElement.outerHTML;
-      }
+      },
+      categories() {
+        return this.catLimit ? this.template.categories.slice(0,this.catLimit) : this.template.categories;
+      },
     },   
     mounted() {
       svgPanZoom('#svg-container > svg', {

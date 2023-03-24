@@ -5,9 +5,10 @@
         <b-card-text>
           {{ template.description | str_limit(150) }}
         </b-card-text>
-        <b-badge pill variant="success" class="category-badge mb-3">
-          Category 1
+        <b-badge v-for="category in categories" :key="category.id" pill variant="success" class="category-badge mb-3 mr-1"> 
+          {{ category.name }}
         </b-badge>
+        <small v-if="template.categories.length > 3" class="text-muted">+{{ catCount }}</small>
       </b-card-body>
     </b-card>
   </div>
@@ -31,9 +32,18 @@ export default {
   data() {
     return {
       thumbnail: null,
+      catLimit: 3,
     };
   },
-  computed: {},
+  computed: {
+    categories() {
+      return this.catLimit ? this.template.categories.slice(0,this.catLimit) : this.template.categories;
+    },
+    catCount() {
+      const length = this.template.categories.length;
+      return  length  - this.catLimit;
+    }
+  },
   watch: {},
   beforeMount() {},
   methods: {
@@ -42,7 +52,6 @@ export default {
     }
   },
   mounted() {
-    this.thumbnail = this.template.svg;
   }
 };
 </script>
