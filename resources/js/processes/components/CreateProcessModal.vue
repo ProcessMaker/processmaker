@@ -10,7 +10,7 @@
       @ok.prevent="onSubmit"
       @hidden="onClose"
     >
-      <template v-if="countCategories">
+      <template v-if="countCategories || blankTemplate === true">
         <required></required>
         <b-form-group
           required
@@ -80,7 +80,7 @@
   export default {
     components: { Modal, Required, TemplateSearch },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories"],
+    props: ["countCategories", "blankTemplate"],
     data: function() {
       return {
         showModal: false,
@@ -100,6 +100,9 @@
       }
     },
     methods: {
+      show() {
+      this.$bvModal.show("createProcess");
+      },
       browse () {
         this.$refs.customFile.click();
       },

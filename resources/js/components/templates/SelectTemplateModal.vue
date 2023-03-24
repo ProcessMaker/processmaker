@@ -14,20 +14,23 @@
       :titleButtons="titleButtons"
       :hide-footer="true"
       @showSelectTemplate="showSelectTemplateComponent"
+      @createBlankProcess="createBlankProcess"
       @ok.prevent="onSubmit"
       @close="close"
     >
       <template-search :type="type" :component="currentComponent" @show-details="updateModal($event)"/>
     </modal>
+    <create-process-modal ref="create-process-modal" :blank-template="blankTemplate" />
   </div>
 </template>
 
 <script>
   import { Modal } from "SharedComponents";
   import TemplateSearch from "./TemplateSearch.vue";
+  import CreateProcessModal from "../../processes/components/CreateProcessModal.vue";
 
   export default {
-    components: { Modal, TemplateSearch},
+    components: { Modal, TemplateSearch, CreateProcessModal },
     props: ['type'],
     data: function() {
       return {
@@ -43,6 +46,7 @@
           {'content': `Blank ${this.type}`, 'action': 'createBlankProcess', 'variant': 'primary', 'disabled': false, 'hidden': false, 'position': 'right', 'icon': 'fas fa-plus', 'ariaLabel': `Create ${this.type}`},
           {'content': 'Use Template', 'action': 'useSelectedTemplate', 'variant': 'primary', 'disabled': false, 'hidden': true, 'position': 'right', 'ariaLabel': `Create a ${this.type} with this template` },
         ],
+        blankTemplate: false,
       }
     },
     computed: {
@@ -73,9 +77,13 @@
         this.hasHeaderButtons = false;
         this.title = this.$t(`New ${this.type}`);
       },
+      createBlankProcess() {
+        this.blankTemplate = true;
+        this.$bvModal.hide("selectTemplate");
+        this.$refs["create-process-modal"].show();
+      },
       close() {
         this.$bvModal.hide("selectTemplate");
-        this.currentComponent = 'template-select-card';
       },
     },
     mounted() {
