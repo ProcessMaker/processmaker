@@ -125,7 +125,7 @@ export default {
 }
 
 .template-container {
-  height: 567px;
+  height: 375px;
   overflow-x: hidden;
   overflow-y: auto;
 }

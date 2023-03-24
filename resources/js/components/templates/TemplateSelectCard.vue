@@ -1,10 +1,9 @@
 <template>
   <div class="pb-2">
     <b-card no-body class="template-select-card" @click="showDetails()">
-      <!-- <div v-html="thumbnail" class="card-img card-img-top img-fluid mb-3"></div> -->
-      <b-card-body :title="template.name" class="card-body">
+      <b-card-body :title="template.name | str_limit(30)" class="card-body">
         <b-card-text>
-          {{ template.description }}
+          {{ template.description | str_limit(150) }}
         </b-card-text>
         <b-badge pill variant="success" class="category-badge mb-3">
           Category 1
@@ -15,6 +14,16 @@
 </template>
 
 <script>
+
+Vue.filter('str_limit', function (value, size) {
+  if (!value) return '';
+  value = value.toString();
+
+  if (value.length <= size) {
+    return value;
+  }
+  return value.substr(0, size) + '...';
+});
 
 export default {
   components: {},
@@ -41,7 +50,7 @@ export default {
 <style lang="scss" scoped>
 .template-select-card {
   width: 277px;
-  height: 277px;
+  height: 180px;
   border-radius: 2px;
   padding: 10px 8px 10px 8px;
   overflow: hidden;

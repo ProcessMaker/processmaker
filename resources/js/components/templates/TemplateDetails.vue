@@ -63,7 +63,8 @@ import svgPanZoom from 'svg-pan-zoom';
   }
 
   #svg-container {
-    height: 51vh;
+    height: 23vh;
+    /* height: 51vh; */
     background: #fafafa;
     cursor: all-scroll;
   }
