@@ -8,6 +8,7 @@ use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\PackageHelper;
 
 class ScreenBuilderController extends Controller
 {
@@ -27,7 +28,6 @@ class ScreenBuilderController extends Controller
          */
         event(new ScreenBuilderStarting($manager, $screen->type));
 
-        $autoSaveDelay = config('versions.delay.process', 5000);
         $draft = $screen->versions()->draft()->first();
         if ($draft) {
             $screen->fill($draft->only([
@@ -38,6 +38,11 @@ class ScreenBuilderController extends Controller
             ]));
         }
 
-        return view('processes.screen-builder.screen', compact('screen', 'manager', 'autoSaveDelay'));
+        return view('processes.screen-builder.screen', [
+            'screen' => $screen,
+            'manager' => $manager,
+            'autoSaveDelay' => config('versions.delay.process', 5000),
+            'isVersionsInstalled' => PackageHelper::isPmPackageVersionsInstalled(),
+        ]);
     }
 }

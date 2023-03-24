@@ -21,7 +21,8 @@
     <div id="screen-container" style="display: contents !important">
         <component :is="'{{ $screen->builderComponent() }}'" :screen="{{ $screen }}"
                    :permission="{{ \Auth::user()->hasPermissionsFor('screens') }}"
-                   :auto-save-delay="{{ $autoSaveDelay }}">
+                   :auto-save-delay="{{ $autoSaveDelay }}"
+                   :is-versions-installed="@json($isVersionsInstalled)">
         </component>
     </div>
 @endsection

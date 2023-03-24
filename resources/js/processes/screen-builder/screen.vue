@@ -326,6 +326,10 @@ export default {
       type: Number,
       default: 5000,
     },
+    isVersionsInstalled: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     const defaultConfig = [
@@ -892,6 +896,10 @@ export default {
         });
     },
     autoSaveScreen() {
+      if (this.isVersionsInstalled === false) {
+        return;
+      }
+
       if (this.debounceTimeout) {
         clearTimeout(this.debounceTimeout);
       }
