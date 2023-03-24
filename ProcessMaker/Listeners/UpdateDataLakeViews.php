@@ -9,11 +9,14 @@ class UpdateDataLakeViews
     /**
      * Handle the event.
      *
-     * @param MigrationsEnded $event
      * @return void
      */
-    public function handle($event)
+    public function handle()
     {
+        $args = request()->server('argv');
+        if (is_array($args) && in_array('--pretend', $args)) {
+            return;
+        }
         Artisan::call('processmaker:create-data-lake-views');
     }
 }
