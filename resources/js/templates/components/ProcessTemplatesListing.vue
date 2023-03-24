@@ -22,7 +22,7 @@
         >
           <template slot="name" slot-scope="props">
             <span v-uni-id="props.rowData.id.toString()">{{props.rowData.name}}
-              <small class="muted d-block">{{ props.rowData.description | str_limit(100) }}</small>
+              <small class="text-muted d-block">{{ props.rowData.description | str_limit(70) }}</small>
             </span>
           </template>
 
