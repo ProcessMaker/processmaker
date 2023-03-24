@@ -32,7 +32,7 @@ Response: '(status IN ["Completed", "Error"]) AND data.date IN ["2021-07-01", "2
 Question: Find for completed or in progress Requests where the element is 1 or 3. The last modified is equal or major to 2020-07-01 00:00:00
 Response: 'element_id IN ["1", "3"] AND status NOT IN ["Completed", "In Progress"] AND modified >= "2020-07-01 00:00:00"'
 Question: Find tasks for ProcessName that are not more than two (2) days old
-Response: '(modified < NOW -2 day) AND (request = "ProcessName")'
+Response: '(modified > NOW -2 day) AND (request = "ProcessName")'
 Question: Show me all the tasks for the task "Fill user data"
 Response: '(task = "Fill user data")'
 Question: Generate a PMQL to return all the tasks for the request "Leave of absence"
@@ -51,3 +51,11 @@ Question: Generate a PMQL query to return all the tasks for the process "Leave o
 Response: '(request IN ["Leave of absence", "Manage customer"])'
 Question: Return all the tasks
 Response: 'id >= 0'
+Question: Show all for the last week.
+Response: 'modified > NOW -7 day'
+Question: Show all for the last 2 weeks.
+Response: 'modified > NOW -14 day'
+Question: Show all for the last month.
+Response: 'modified > NOW -30 day'
+Question: Show all for the last 2 months.
+Response: 'modified > NOW -60 day'

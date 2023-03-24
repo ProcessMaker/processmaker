@@ -36,7 +36,7 @@ Response: '(data.firstname IN ["Jhon", "Agustin"]) AND (data.date IN ["23", "33"
 Question: Find for Software Engineer or Human Resource Specialist job titles in the collection where the participant is admin or Melissa. The last modified is equal or major to 2020-07-01 00:00:00
 Response: '(data.participant IN ["admin", "Melissa"]) AND (data.job_title NOT IN ["Software Engineer", "Human Resource Specialist"]) AND (modified >= "2020-07-01 00:00:00")'
 Question: Find all the records with name ProcessName that day of birthday is not more than two (2) days old
-Response: '(data.day_of_birthday < NOW -2 day) AND (data.name = "ProcessName")'
+Response: '(data.day_of_birthday > NOW -2 day) AND (data.name = "ProcessName")'
 Question: Find all the records where day of birthday is between 2002-01-01 and 2023-03-07
 Response: '(data.day_of_birthday >= 2002-01-01) AND (data.day_of_birthday <= 2023-03-07)'
 Question: Show me all the records for the task "Fill user data"
@@ -49,3 +49,11 @@ Question: Show me all the records where item name is hammer or screwdriver and w
 Response: '((data.item.name = "hammer") OR (data.item.name = "screwdriver")) AND (data.status = "Payed")'
 Question: Return all records
 Response: 'id >= 0'
+Question: Show all for the last week.
+Response: 'modified > NOW -7 day'
+Question: Show all for the last 2 weeks.
+Response: 'modified > NOW -14 day'
+Question: Show all for the last month.
+Response: 'modified > NOW -30 day'
+Question: Show all for the last 2 months.
+Response: 'modified > NOW -60 day'

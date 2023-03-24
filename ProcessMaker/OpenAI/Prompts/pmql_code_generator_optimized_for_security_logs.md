@@ -78,3 +78,11 @@ Question: Get all the events that starts with Lo or Log for the browsers Safari 
 Response: '((event LIKE "lo%") OR (event LIKE "log%")) AND (meta.browser.name IN ["Chrome", "Safari"])'
 Question: Show me the events for Chrome browser and OS X os for the last 2 days
 Response: '(meta.browser.name = "Chrome") AND (meta.os.name = "OS X") AND (occurred_at > NOW -2 day)'
+Question: Show all for the last week.
+Response: 'occurred_at > NOW -7 day'
+Question: Show all for the last 2 weeks.
+Response: 'occurred_at > NOW -14 day'
+Question: Show all for the last month.
+Response: 'occurred_at > NOW -30 day'
+Question: Show all for the last 2 months.
+Response: 'occurred_at > NOW -60 day'
