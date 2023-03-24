@@ -7,6 +7,8 @@ use Illuminate\Database\DatabaseManager;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Bus;
+use ProcessMaker\Jobs\RefreshArtisanCaches;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestLock;
 use ProcessMaker\Models\SecurityLog;
@@ -48,8 +50,9 @@ abstract class TestCase extends BaseTestCase
      */
     public function setUpMockConfigCache(): void
     {
-        $mock = app()->make(ConfigCacheCommandMock::class);
-        Artisan::registerCommand($mock);
+        Bus::fake([
+            RefreshArtisanCaches::class,
+        ]);
     }
 
     /**
