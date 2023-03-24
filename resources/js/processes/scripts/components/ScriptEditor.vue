@@ -209,6 +209,10 @@ export default {
       type: Number,
       default: 5000,
     },
+    isVersionsInstalled: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     const options = [
@@ -367,6 +371,10 @@ export default {
         });
     },
     handleAutosave() {
+      if (this.isVersionsInstalled === false) {
+        return;
+      }
+
       if (this.debounceTimeout) {
         clearTimeout(this.debounceTimeout);
       }

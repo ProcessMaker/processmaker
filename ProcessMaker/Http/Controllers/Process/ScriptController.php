@@ -12,6 +12,7 @@ use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\User;
+use ProcessMaker\PackageHelper;
 use ProcessMaker\Traits\HasControllerAddons;
 
 class ScriptController extends Controller
@@ -87,6 +88,7 @@ class ScriptController extends Controller
             'manager' => $manager,
             'testData' => $testData,
             'autoSaveDelay' => config('versions.delay.script', 5000),
+            'isVersionsInstalled' => PackageHelper::isPmPackageVersionsInstalled(),
         ]);
     }
 
