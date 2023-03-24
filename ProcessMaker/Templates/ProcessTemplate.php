@@ -157,12 +157,7 @@ class ProcessTemplate implements TemplateInterface
     {
         $template = (object) [];
 
-        $query = ProcessTemplates::select(['name', 'description'])->where('id', $id)->firstOrFail();
-
-        $template->id = $id;
-        $template->name = $query->name;
-        $template->description = $query->description;
-
+        $template = ProcessTemplates::where('id', $id)->firstOrFail();
         $categories = ProcessCategory::orderBy('name')
             ->where('status', 'ACTIVE')
             ->get()
@@ -170,7 +165,7 @@ class ProcessTemplate implements TemplateInterface
             ->toArray();
         $addons = $this->getPluginAddons('edit', compact(['template']));
 
-        return [$template, $addons];
+        return [$template, $addons, $categories];
     }
 
     public function destroy() : bool
