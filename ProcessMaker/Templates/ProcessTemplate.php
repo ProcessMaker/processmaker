@@ -10,7 +10,6 @@ use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
-use ProcessMaker\Models\ProcessTemplateCategory;
 use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Traits\HasControllerAddons;
 use SebastianBergmann\CodeUnit\Exception;
@@ -26,42 +25,30 @@ class ProcessTemplate implements TemplateInterface
     {
         $orderBy = $this->getRequestSortBy($request, 'name');
         $include = $this->getRequestInclude($request);
+        $templates = ProcessTemplates::nonSystem()->with($include);
 
-        $templates = ProcessTemplates::with($include);
         $filter = $request->input('filter');
 
         $templates = $templates->select('process_templates.*')
-        ->leftJoin('process_categories as category', 'process_templates.process_template_category_id', '=', 'category.id')
-        ->leftJoin('users as user', 'process_templates.user_id', '=', 'user.id')
-        ->orderBy(...$orderBy)
-        ->where(function ($query) use ($filter) {
-            $query->where('process_templates.name', 'like', '%' . $filter . '%')
-                ->orWhere('process_templates.description', 'like', '%' . $filter . '%')
-                ->orWhere('user.firstname', 'like', '%' . $filter . '%')
-                ->orWhere('user.lastname', 'like', '%' . $filter . '%')
-                ->orWhereIn('process_templates.id', function ($qry) use ($filter) {
-                    $qry->select('assignable_id')
-                        ->from('category_assignments')
-                        ->leftJoin('process_categories', function ($join) {
-                            $join->on('process_categories.id', '=', 'category_assignments.category_id');
-                            $join->where('category_assignments.category_type', '=', ProcessCategory::class);
-                            $join->where('category_assignments.assignable_type', '=', Process::class);
-                        })
-                        ->where('process_categories.name', 'like', '%' . $filter . '%');
-                });
-        })->get();
-
-        // $templates = $templates->select('process_templates.*')
-        //     ->leftJoin('process_template_categories as category', 'processes.process_category_id', '=', 'category.id')
-        //     ->leftJoin('users as user', 'process_templates.user_id', '=', 'user.id')
-        //     ->orderBy(...$orderBy)
-        //     ->where(function ($query) use ($filter) {
-        //         $query->where('process_templates.name', 'like', '%' . $filter . '%')
-        //             ->orWhere('process_templates.description', 'like', '%' . $filter . '%')
-        //             ->orWhere('user.firstname', 'like', '%' . $filter . '%')
-        //             ->orWhere('user.lastname', 'like', '%' . $filter . '%');
-        //     })
-        //     ->get();
+            ->leftJoin('process_categories as category', 'process_templates.process_category_id', '=', 'category.id')
+            ->leftJoin('users as user', 'process_templates.user_id', '=', 'user.id')
+            ->orderBy(...$orderBy)
+            ->where(function ($query) use ($filter) {
+                $query->where('process_templates.name', 'like', '%' . $filter . '%')
+                    ->orWhere('process_templates.description', 'like', '%' . $filter . '%')
+                    ->orWhere('user.firstname', 'like', '%' . $filter . '%')
+                    ->orWhere('user.lastname', 'like', '%' . $filter . '%')
+                    ->orWhereIn('process_templates.id', function ($qry) use ($filter) {
+                        $qry->select('assignable_id')
+                            ->from('category_assignments')
+                            ->leftJoin('process_categories', function ($join) {
+                                $join->on('process_categories.id', '=', 'category_assignments.category_id');
+                                $join->where('category_assignments.category_type', '=', ProcessCategory::class);
+                                $join->where('category_assignments.assignable_type', '=', ProcessTemplates::class);
+                            })
+                            ->where('process_categories.name', 'like', '%' . $filter . '%');
+                    });
+            })->get();
 
         return $templates;
     }
@@ -103,7 +90,7 @@ class ProcessTemplate implements TemplateInterface
             'manifest' => json_encode($manifest),
             'svg' => $svg,
             'process_id' => $processId,
-            'process_template_category_id' => $category,
+            'process_category_id' => $category,
         ]);
 
         return response()->json(['model' => $model]);
@@ -176,7 +163,7 @@ class ProcessTemplate implements TemplateInterface
         $template->name = $query->name;
         $template->description = $query->description;
 
-        $categories = ProcessTemplateCategory::orderBy('name')
+        $categories = ProcessCategory::orderBy('name')
             ->where('status', 'ACTIVE')
             ->get()
             ->pluck('name', 'id')
@@ -265,10 +252,10 @@ class ProcessTemplate implements TemplateInterface
 
     public function existingTemplate($request)
     {
-        $processId = $request->id;
+        $templateId = $request->id;
         $name = $request->name;
 
-        $template = ProcessTemplates::where(['name' => $name])->first();
+        $template = ProcessTemplates::where(['name' => $name])->where('id', '!=', $templateId)->first();
         if ($template !== null) {
             // If same asset has been Saved as Template previously, offer to choose between “Update Template” and “Save as New Template”
             return [$template->id, $name];
