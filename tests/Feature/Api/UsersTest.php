@@ -119,7 +119,7 @@ class UsersTest extends TestCase
             'lastname' => $faker->lastName,
             'email' => $faker->email,
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->password(8, 20),
+            'password' => $faker->password(8) . 'A' . '1',
         ]);
 
         $response->assertStatus(201);
@@ -143,7 +143,7 @@ class UsersTest extends TestCase
             'lastname' => $faker->lastName,
             'email' => $faker->email,
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->password(8, 20),
+            'password' => $faker->password(8) . 'A' . '1',
             'datetime_format' => $dateFormat,
         ]);
 
