@@ -90,7 +90,6 @@ export default {
   background-color: #E6FFEB;
   color: #006644;
   font-size: 10px;
-  border: 1px solid #006644;
 }
 
 </style>

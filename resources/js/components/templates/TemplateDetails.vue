@@ -62,7 +62,6 @@ import svgPanZoom from 'svg-pan-zoom';
     background-color: #DEEBFF;
     color: #104A75;
     font-size: 12px;
-    border: 1px solid #104A75;
   }
 
   #svg-container {
