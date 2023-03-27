@@ -203,6 +203,20 @@ class Setting extends ProcessMakerModel implements HasMedia
     }
 
     /**
+     * PMQL value alias for fulltext field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasFullText($value, $expression)
+    {
+        return function ($query) use ($value) {
+            $this->scopeFilter($query, $value);
+        };
+    }
+
+    /**
      * Filter settings with a string
      *
      * @param $query
