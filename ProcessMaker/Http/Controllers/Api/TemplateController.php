@@ -55,6 +55,21 @@ class TemplateController extends Controller
     }
 
     /**
+     * Update the specified resource in storage.
+     *
+     * @param  string  $type
+     * @param  Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function create(string $type, Request $request)
+    {
+        $template = new Template();
+        $response = $template->create($type, $request);
+
+        return $response;
+    }
+
+    /**
      * Remove the specified resource from storage.
      *
      * @param  \ProcessMaker\Models\Template  $template

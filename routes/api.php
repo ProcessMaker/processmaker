@@ -229,6 +229,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // Templates
     Route::get('templates/{type}', [TemplateController::class, 'index'])->name('template.index');
     Route::post('template/{type}/{id}', [TemplateController::class, 'store'])->name('template.store');
+    Route::post('template/create/{type}/{id}', [TemplateController::class, 'create'])->name('template.create');
     Route::put('template/{type}/{id}', [TemplateController::class, 'update'])->name('template.update');
     Route::delete('template/{type}/{id}', [TemplateController::class, 'delete'])->name('template.delete');
 

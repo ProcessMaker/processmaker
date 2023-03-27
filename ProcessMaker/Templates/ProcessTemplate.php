@@ -73,6 +73,7 @@ class ProcessTemplate implements TemplateInterface
 
         $model = (new ExportController)->getModel('process')->findOrFail($processId);
         $result = (object) $this->getManifest('process', $processId);
+        //dd('RESULT', $result->export);
         $postOptions = [];
         foreach ($result->export as $key => $asset) {
             $postOptions[$key] = [
@@ -98,6 +99,29 @@ class ProcessTemplate implements TemplateInterface
         ]);
 
         return response()->json(['model' => $template]);
+    }
+
+    public function create($request) : JsonResponse
+    {
+        $templateId = $request->id;
+        $template = ProcessTemplates::where('id', $templateId)->firstOrFail();
+
+        $payload = json_decode($template->manifest, true);
+
+        $postOptions = [];
+        foreach ($payload['export']as $key => $asset) {
+            $postOptions[$key] = [
+                'mode' => $asset['mode'],
+            ];
+        }
+
+        $options = new Options($postOptions);
+        $importer = new Importer($payload, $options);
+        $manifest = $importer->doImport();
+        $rootLog = $manifest[$payload['root']]->log;
+        $processId = $rootLog['newId'];
+
+        return response()->json(['processId' => $processId]);
     }
 
     public function view() : bool

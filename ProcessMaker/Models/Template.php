@@ -129,6 +129,20 @@ class Template extends ProcessMakerModel
      * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
+    public function create(string $type, Request $request)
+    {
+        $response = (new $this->types[$type][1])->create($request);
+
+        return $response;
+    }
+
+    /**
+     * Remove an existing template
+     *
+     * @param string $type
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function deleteTemplate(string $type, Request $request)
     {
         $id = $request->id;
