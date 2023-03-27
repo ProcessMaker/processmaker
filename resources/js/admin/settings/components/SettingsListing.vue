@@ -337,8 +337,8 @@ export default {
     onEdit(row) {
       this.$refs[`settingComponent_${row.index}`].onEdit();
     },
-    onNLQConversion(pqml) {
-      this.searchQuery = pqml;
+    onNLQConversion(pmql) {
+      this.searchQuery = pmql;
     },
     pageUrl(page) {
       let url = `${this.url}?` +
