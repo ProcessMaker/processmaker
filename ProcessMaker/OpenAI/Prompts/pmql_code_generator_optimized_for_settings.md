@@ -1,9 +1,9 @@
-Generate a PMQL query code based on the context below. Should not be creative, and you should use the syntax and operators that I describe below. If the question cannot be answered with the information provided answer "I don't know, please take a look to PMQL documentation"
+For the rest of this conversation, I will feed you search queries. Using those queries, generate a PMQL query code based on the context below. Should not be creative, and you should use the syntax and operators that I describe below. If you determine the intent is to perform a fulltext search, the PMQL should search the "fulltext" field for the provided input. If the intent is to perform a complex query, use the PMQL to do so. If all else fails, fallback to the fulltext search behavior.
 ###
 Contexts:
 ProcessMaker Query Language (PMQL) is a custom language to search ProcessMaker data. Use PMQL to find settings information.
 ##
-Settings Data Type can use the following PMQL properties: event, ip, meta, user_id, ocurred_at.
+Settings Data Type can use the following PMQL properties: event, ip, meta, user_id, ocurred_at, fulltext.
 Data types never can be used with the prefix 'data.'
 ##
 The NOW keyword represents the current datetime. Use the NOW keyword in PMQL search queries to find records in the following ways: second, minute, hour, day.
@@ -44,3 +44,15 @@ Question: Find settings for IMAP
 Response:'name LIKE "IMAP%"'
 Question: Find settings that starts with IMAP and id less than 5
 Response:'(name LIKE "IMAP%") AND (id < 5)'
+Question: IMAP Server
+Response: '(fulltext LIKE "%IMAP Server%")'
+Question: IMAP Port
+Response: '(fulltext LIKE "%IMAP Port%")'
+Question: Username
+Response: '(fulltext LIKE "%Username%")'
+Question: imap.mail.yahoo.com
+Response: '(fulltext LIKE "%imap.mail.yahoo.com%")'
+Question: 1
+Response: '(fulltext LIKE "%1%")'
+Question: SSL Certificate
+Response: '(fulltext LIKE "%SSL Certificate%")'

@@ -1,9 +1,9 @@
-Generate a PMQL query code based on the context below. Should not be creative, and you should use the syntax and operators that I describe below. If the question cannot be answered with the information provided answer "I don't know, please take a look to PMQL documentation"
+For the rest of this conversation, I will feed you search queries. Using those queries, generate a PMQL query code based on the context below. Should not be creative, and you should use the syntax and operators that I describe below. If you determine the intent is to perform a fulltext search, the PMQL should search the "fulltext" field for the provided input. If the intent is to perform a complex query, use the PMQL to do so. If all else fails, fallback to the fulltext search behavior.
 ###
 Contexts:
 ProcessMaker Query Language (PMQL) is a custom language to search ProcessMaker data. Use PMQL to find security logs information.
 ##
-Security Logs Data Type can use the following PMQL properties: event, ip, meta, user_id, ocurred_at.
+Security Logs Data Type can use the following PMQL properties: event, ip, meta, user_id, ocurred_at, fulltext.
 Data types never can be used with the prefix 'data.'
 ##
 The NOW keyword represents the current datetime. Use the NOW keyword in PMQL search queries to find records in the following ways: second, minute, hour, day.
@@ -86,3 +86,15 @@ Question: Show all for the last month.
 Response: 'occurred_at > NOW -30 day'
 Question: Show all for the last 2 months.
 Response: 'occurred_at > NOW -60 day'
+Question: Login
+Response: '(fulltext LIKE "%Login%")'
+Question: Logout
+Response: '(fulltext LIKE "%Logout%")'
+Question: 127.0.0.1
+Response: '(fulltext LIKE "%127.0.0.1%")'
+Question: Chrome
+Response: '(fulltext LIKE "%Chrome%")'
+Question: OS X
+Response: '(fulltext LIKE "%OS X%")'
+Question: SSL Certificate
+Response: '(fulltext LIKE "%SSL Certificate%")'

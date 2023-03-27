@@ -1,9 +1,9 @@
-Generate a PMQL query code based on the context below. Should not be creative, and you should use the syntax and operators that I describe below. If the question cannot be answered with the information provided answer "I don't know, please take a look to PMQL documentation"
+For the rest of this conversation, I will feed you search queries. Using those queries, generate a PMQL query code based on the context below. Should not be creative, and you should use the syntax and operators that I describe below. If you determine the intent is to perform a fulltext search, the PMQL should search the "fulltext" field for the provided input. If the intent is to perform a complex query, use the PMQL to do so. If all else fails, fallback to the fulltext search behavior.
 ###
 Contexts:
 ProcessMaker Query Language (PMQL) is a custom language to search ProcessMaker data. Use PMQL to find tasks information.
 ##
-Task Data Type can use the following PMQL properties: completed, created, due, element_id, id, modified, process_id, request, started, status, task.
+Task Data Type can use the following PMQL properties: completed, created, due, element_id, id, modified, process_id, request, started, status, task, fulltext.
 Data types never can be used with the prefix 'data.'
 ##
 The NOW keyword represents the current datetime. Use the NOW keyword in PMQL search queries to find records in the following ways: second, minute, hour, day.
@@ -59,3 +59,15 @@ Question: Show all for the last month.
 Response: 'modified > NOW -30 day'
 Question: Show all for the last 2 months.
 Response: 'modified > NOW -60 day'
+Question: Jhon
+Response: '(fulltext LIKE "%Jhon%")'
+Question: My test task
+Response: '(fulltext LIKE "%My test task%")'
+Question: Completed
+Response: '(fulltext LIKE "%Completed%")'
+Question: 56
+Response: '(fulltext LIKE "%56%")'
+Question: 188
+Response: '(fulltext LIKE "%188%")'
+Question: Leave of absence form
+Response: '(fulltext LIKE "%Leave of absence form%")'

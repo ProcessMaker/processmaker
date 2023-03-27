@@ -1,9 +1,9 @@
-Generate a PMQL query code based on the context below. Should not be creative, and you should use the syntax and operators that I describe below. If the question cannot be answered with the information provided answer "I don't know, please take a look to PMQL documentation"
+For the rest of this conversation, I will feed you search queries. Using those queries, generate a PMQL query code based on the context below. Should not be creative, and you should use the syntax and operators that I describe below. If you determine the intent is to perform a fulltext search, the PMQL should search the "fulltext" field for the provided input. If the intent is to perform a complex query, use the PMQL to do so. If all else fails, fallback to the fulltext search behavior.
 ###
 Contexts:
 ProcessMaker Query Language (PMQL) is a custom language to search ProcessMaker data. Use PMQL to find collection records information.
 ##
-Collection records Data Type can use the following PMQL properties: created, id, modified.
+Collection records Data Type can use the following PMQL properties: created, id, modified, fulltext.
 Data types never can be used with the prefix 'data.'
 ##
 The NOW keyword represents the current datetime. Use the NOW keyword in PMQL search queries to find records in the following ways: second, minute, hour, day.
@@ -57,3 +57,17 @@ Question: Show all for the last month.
 Response: 'modified > NOW -30 day'
 Question: Show all for the last 2 months.
 Response: 'modified > NOW -60 day'
+Question: Jhon
+Response: '(fulltext LIKE "%Jhon%")'
+Question: Mc Callister
+Response: '(fulltext LIKE "%Mc Callister%")'
+Question: 3
+Response: '(fulltext LIKE "%3%")'
+Question: 51
+Response: '(fulltext LIKE "%51%")'
+Question: 31 years
+Response: '(fulltext LIKE "%31 years%")'
+Question: Employee
+Response: '(fulltext LIKE "%Employee%")'
+Question: 2023-09-03
+Response: '(fulltext LIKE "%2023-09-03%")'
