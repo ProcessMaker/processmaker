@@ -15,12 +15,13 @@
       :hide-footer="true"
       @showSelectTemplate="showSelectTemplateComponent"
       @createBlankProcess="createBlankProcess"
+      @useSelectedTemplate="useSelectedTemplate"
       @ok.prevent="onSubmit"
       @close="close"
     >
       <template-search :type="type" :component="currentComponent" @show-details="updateModal($event)"/>
     </modal>
-    <create-process-modal ref="create-process-modal" :blank-template="blankTemplate" />
+    <create-process-modal ref="create-process-modal" :blank-template="blankTemplate" :selected-template="selectedTemplate" :template-data="templateData"/>
   </div>
 </template>
 
@@ -47,6 +48,8 @@
           {'content': 'Use Template', 'action': 'useSelectedTemplate', 'variant': 'primary', 'disabled': false, 'hidden': true, 'position': 'right', 'ariaLabel': `Create a ${this.type} with this template` },
         ],
         blankTemplate: false,
+        selectedTemplate: false,
+        templateData: {},
       }
     },
     computed: {
@@ -62,6 +65,7 @@
     },
     methods: {
       updateModal($event) {
+        this.templateData = $event;
         this.title = $event.title;
         this.hasHeaderButtons = true;
         this.headerButtons[0].hidden = false;
@@ -79,6 +83,12 @@
       },
       createBlankProcess() {
         this.blankTemplate = true;
+        this.$bvModal.hide("selectTemplate");
+        this.$refs["create-process-modal"].show();
+      },
+      useSelectedTemplate() {
+        this.selectedTemplate = true;
+        this.blankTemplate = false;
         this.$bvModal.hide("selectTemplate");
         this.$refs["create-process-modal"].show();
       },

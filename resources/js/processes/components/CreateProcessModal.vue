@@ -63,6 +63,59 @@
           ></b-form-file>
         </b-form-group>
       </template>
+      <template v-else-if="selectedTemplate === true">
+        <required></required>
+        <b-form-group
+          required
+          :label="$t('Name')"
+          :description="formDescription('The process name must be unique', 'name', addError)"
+          :invalid-feedback="errorMessage('name', addError)"
+          :state="errorState('name', addError)"
+        >
+          <b-form-input
+            autofocus
+            v-model="templateData.title"
+            autocomplete="off"
+            :state="errorState('name', addError)"
+            name="name"
+            required
+          ></b-form-input>
+        </b-form-group>
+        <b-form-group
+          required
+          :label="$t('Description')"
+          :invalid-feedback="errorMessage('description', addError)"
+          :state="errorState('description', addError)"
+        >
+          <b-form-textarea
+            required
+            v-model="templateData.description"
+            autocomplete="off"
+            rows="3"
+            :state="errorState('description', addError)"
+            name="description"
+          ></b-form-textarea>
+        </b-form-group>
+        <category-select :label="$t('Category')" api-get="process_categories"
+          api-list="process_categories" v-model="process_category_id"
+          :errors="addError.process_category_id"
+          name="category"
+        ></category-select>
+        <b-form-group
+          :label="$t('Upload BPMN File (optional)')"
+          :invalid-feedback="errorMessage('bpmn', addError)"
+          :state="errorState('bpmn', addError)"
+        >
+          <b-form-file
+            :browse-text="$t('Browse')"
+            accept=".bpmn,.xml"
+            :placeholder="selectedFile"
+            ref="customFile"
+            @change="onFileChange"
+            :state="errorState('bpmn', addError)"
+          ></b-form-file>
+        </b-form-group>
+      </template>
       <template v-else>
         <div>{{ $t('Categories are required to create a process') }}</div>
         <a href="/designer/processes/categories" class="btn btn-primary container mt-2">
@@ -80,7 +133,7 @@
   export default {
     components: { Modal, Required, TemplateSearch },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories", "blankTemplate"],
+    props: ["countCategories", "blankTemplate", "selectedTemplate", "templateData"],
     data: function() {
       return {
         showModal: false,
