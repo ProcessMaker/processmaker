@@ -12,6 +12,7 @@ use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\User;
+use ProcessMaker\PackageHelper;
 use ProcessMaker\Traits\HasControllerAddons;
 
 class ScriptController extends Controller
@@ -70,6 +71,11 @@ class ScriptController extends Controller
             '_request' => $processRequestAttributes,
         ];
 
+        $draft = $script->versions()->draft()->first();
+        if ($draft) {
+            $script->fill($draft->only(['code']));
+        }
+
         /**
          * Emit the ScriptBuilderStarting event, passing in our ScriptBuilderManager instance. This will
          * allow packages to add additional javascript for Script Builder initialization which
@@ -77,7 +83,13 @@ class ScriptController extends Controller
          */
         event(new ScriptBuilderStarting($manager));
 
-        return view('processes.scripts.builder', compact('script', 'testData', 'manager'));
+        return view('processes.scripts.builder', [
+            'script' => $script,
+            'manager' => $manager,
+            'testData' => $testData,
+            'autoSaveDelay' => config('versions.delay.script', 5000),
+            'isVersionsInstalled' => PackageHelper::isPmPackageVersionsInstalled(),
+        ]);
     }
 
     private function getProcessRequestAttributes()

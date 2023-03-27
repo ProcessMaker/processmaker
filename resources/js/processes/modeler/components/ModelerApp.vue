@@ -68,6 +68,7 @@ export default {
         borderOutline: {},
       },
       process: window.ProcessMaker.modeler.process,
+      autoSaveDelay: window.ProcessMaker.modeler.autoSaveDelay,
       isVersionsInstalled: window.ProcessMaker.modeler.isVersionsInstalled,
       validationErrors: {},
       warnings: [],
@@ -249,7 +250,7 @@ export default {
             const { message } = error.response.data;
             ProcessMaker.alert(message, "danger");
           });
-      }, 5000);
+      }, this.autoSaveDelay);
     },
   },
 };

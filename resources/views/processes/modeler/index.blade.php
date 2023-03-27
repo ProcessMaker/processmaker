@@ -57,6 +57,7 @@ div.main {
   ]
   window.ProcessMaker.modeler = {
     process: @json($process),
+    autoSaveDelay: @json($autoSaveDelay),
     xml: @json($process->bpmn),
     isVersionsInstalled: @json($isVersionsInstalled),
     processName: @json($process->name),

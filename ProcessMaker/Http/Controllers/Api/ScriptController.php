@@ -3,9 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Mockery\Exception;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Script as ScriptResource;
@@ -264,7 +262,7 @@ class ScriptController extends Controller
      */
     public function execution($key)
     {
-        return response()->json(Cache::get("srn.$key"));
+        return response()->json(Cache::get("srn.{$key}"));
     }
 
     /**
@@ -371,15 +369,55 @@ class ScriptController extends Controller
     {
         $request->validate(Script::rules($script));
 
-        $script->fill($request->input());
-
-        $script->saveOrFail();
+        $script->fill($request->input())->saveOrFail();
 
         return response($request, 204);
     }
 
     /**
-     * duplicate a Script.
+     * Update a draft script.
+     *
+     * @param Script $script
+     * @param Request $request
+     *
+     * @return ResponseFactory|Response
+     *
+     *     @OA\Put(
+     *     path="/scripts/{script_id}/draft",
+     *     summary="Update a draft script",
+     *     operationId="updateDraftScript",
+     *     tags={"Scripts"},
+     *     @OA\Parameter(
+     *         description="ID of script to return",
+     *         in="path",
+     *         name="script_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/scriptsEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="success",
+     *     ),
+     * )
+     */
+    public function draft(Script $script, Request $request)
+    {
+        $request->validate(Script::rules($script));
+
+        $script->fill(['code' => $request->code]);
+        $script->saveDraft();
+
+        return response($request, 204);
+    }
+
+    /**
+     * Duplicate a Script.
      *
      * @param Script $script
      * @param Request $request
@@ -466,6 +504,13 @@ class ScriptController extends Controller
     public function destroy(Script $script)
     {
         $script->delete();
+
+        return response([], 204);
+    }
+
+    public function close(Script $script)
+    {
+        $script->deleteDraft();
 
         return response([], 204);
     }

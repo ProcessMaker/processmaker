@@ -36,6 +36,7 @@ class ModelerController extends Controller
             'process' => $process->append('notifications', 'task_notifications'),
             'manager' => $manager,
             'signalPermissions' => SignalManager::permissions($request->user()),
+            'autoSaveDelay' => config('versions.delay.process', 5000),
             'isVersionsInstalled' => PackageHelper::isPackageInstalled('ProcessMaker\Package\Versions\PluginServiceProvider'),
         ]);
     }

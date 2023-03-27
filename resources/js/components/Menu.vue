@@ -3,134 +3,156 @@
     <b-row>
       <b-col>
         <template v-for="(item, index) in section.left">
-          <b-button-group v-if="isVisible(item, 'group')" size="sm" :key="index">
+          <b-button-group
+            v-if="isVisible(item, 'group')"
+            :key="index"
+            size="sm"
+          >
             <b-button
-              v-for="(button, indexButton) in item.items"
+              v-for="(button, indexButton) in visibleItems(item)"
+              :key="indexButton"
               :variant="button.variant || 'secondary'"
               class="text-capitalize"
               :title="button.title"
-              :key="indexButton"
               tabindex="1"
               @click="executeFunction(button.action)"
-              v-if="button.hide !== true"
             >
-              <i :class="button.icon"></i>
+              <i :class="button.icon" />
               {{ button.name }}
             </b-button>
           </b-button-group>
 
           <b-button
             v-if="isVisible(item, 'button')"
-            :variant="item.variant || 'secondary'"
-            size="sm"
-            class="text-capitalize"
-            :title="item.title"
             :key="index"
+            class="text-capitalize"
+            size="sm"
+            :variant="item.variant || 'secondary'"
+            :title="item.title"
             @click="executeFunction(item.action)"
           >
-            <i :class="item.icon"></i>
+            <i :class="item.icon" />
             {{ item.name }}
           </b-button>
 
           <component
-            v-if="item.type !== 'group' && item.type !== 'button'"
             :is="item.type"
-            :options="item.options"
+            v-if="item.type !== 'group' && item.type !== 'button'"
             :key="index"
-          ></component>
+            :options="item.options"
+          />
         </template>
       </b-col>
 
-      <b-col class="text-right" v-if="sectionRight">
+      <b-col
+        v-if="sectionRight"
+        class="text-right"
+      >
         <template v-for="(item, index) in section.right">
-          <b-button-group v-if="isVisible(item, 'group')" size="sm" :key="index">
+          <b-button-group
+            v-if="isVisible(item, 'group')"
+            :key="index"
+            size="sm"
+          >
             <b-button
-              v-for="(button, indexButton) in item.items"
+              v-for="(button, indexButton) in visibleItems(item)"
+              :key="`group-${indexButton}`"
               :variant="button.variant || 'secondary'"
               class="text-capitalize"
               :title="button.title"
-              :key="`group-${indexButton}`"
               @click="executeFunction(button.action)"
-              v-if="button.hide !== true"
             >
-              <i :class="button.icon"></i>
+              <i :class="button.icon" />
               {{ button.name }}
             </b-button>
           </b-button-group>
 
           <b-button
             v-if="isVisible(item, 'button')"
+            :key="index"
             size="sm"
             :variant="item.variant || 'secondary'"
             class="text-capitalize"
             :title="item.title"
-            :key="index"
             @click="executeFunction(item.action)"
           >
-            <i :class="item.icon"></i>
+            <i :class="item.icon" />
             {{ item.name }}
           </b-button>
 
           <component
-            v-if="item.type !== 'group' && item.type !== 'button'"
             :is="item.type"
-            :options="item.options"
+            v-if="item.type !== 'group' && item.type !== 'button'"
             :key="index"
-          ></component>
+            :options="item.options"
+          />
         </template>
       </b-col>
     </b-row>
   </b-card-header>
 </template>
 
-
 <script>
 export default {
-  props: ["options", "environment"],
+  props: {
+    options: {
+      type: Array,
+      default: () => [],
+    },
+    environment: {
+      type: Object,
+      default: () => {},
+    },
+  },
   data() {
     return {
       changeItems: {},
       newItems: [],
       sectionRight: true,
-      items: []
+      items: [],
     };
   },
-  watch: {},
   computed: {
     section() {
-      let response = {};
+      const response = {};
       response.left = [];
       response.right = [];
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
       this.items = [];
 
-      this.options.forEach(item => {
+      this.options.forEach((item) => {
         if (item.type === "group") {
-          item.items.forEach(sub => {
+          item.items.forEach((sub) => {
             this.items.push(sub.id);
             return Object.assign(sub, this.changeItems[sub.id]);
           });
         }
         response[item.section].push(
-          Object.assign(item, this.changeItems[item.id])
+          Object.assign(item, this.changeItems[item.id]),
         );
         this.items.push(item.id);
       });
-      this.newItems.forEach(item => {
+      this.newItems.forEach((item) => {
         if (this.items.indexOf(item.id) === -1) {
           response[item.section].push(item);
           this.items.push(item.id);
         }
       });
       return response;
-    }
+    },
   },
+  watch: {},
   methods: {
     executeFunction(callback) {
       if (typeof callback === "function") {
         callback();
       } else {
+        // eslint-disable-next-line no-eval
         eval(`this.environment.${callback}`);
       }
+    },
+    visibleItems(item) {
+      return item.items.filter((button) => button.hide !== true);
     },
     isVisible(item, type) {
       return item.type === type && item.hide !== true;
@@ -141,16 +163,22 @@ export default {
       this.changeOptions(this.section.right);
     },
     changeOptions(data) {
-      data.forEach(item => {
-        item = Object.assign(item, this.changeItems[item.id]);
-        if (item.type === "group") {
-          this.changeOptions(item.items);
+      data.forEach((item) => {
+        const newItem = Object.assign(item, this.changeItems[item.id]);
+        if (newItem.type === "group") {
+          this.changeOptions(newItem.items);
         }
       });
     },
     addItem(value) {
       this.newItems.push(value);
-    }
-  }
+    },
+    unshiftItem(value) {
+      this.newItems.unshift(value);
+    },
+    shiftItem() {
+      this.newItems.shift();
+    },
+  },
 };
 </script>

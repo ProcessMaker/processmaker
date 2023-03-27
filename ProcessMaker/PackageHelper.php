@@ -42,6 +42,8 @@ class PackageHelper
 
     const PM_PACKAGE_WEBENTRY = 'ProcessMaker\Package\WebEntry\WebEntryServiceProvider';
 
+    const PM_PACKAGE_VERSIONS = 'ProcessMaker\Package\Versions\PluginServiceProvider';
+
     public static function isPackageInstalled(string $serviceProviderClass): bool
     {
         if (!$serviceProviderClass) {
