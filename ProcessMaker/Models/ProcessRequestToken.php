@@ -915,6 +915,29 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         return false;
     }
 
+    public function getLoopContext()
+    {
+        $isMultiInstance = isset($this->token_properties['data']);
+        if (!$isMultiInstance) {
+            return '';
+        }
+        $loopData = $this->token_properties['data'];
+        $index = $loopData['loopCounter'];
+        $definition = $this->getDefinition(true);
+        if (!$definition instanceof ActivityInterface) {
+            return '';
+        }
+        $loop = $definition->getLoopCharacteristics();
+        if ($loop && $loop->isExecutable() && $loop instanceof MultiInstanceLoopCharacteristicsInterface) {
+            $output = $loop->getLoopDataOutput();
+            $variable = $output ? $output->getName() : '';
+        } else {
+            return '';
+        }
+        $loopContext = $variable . '.' . $index;
+        return $loopContext;
+    }
+
     /**
      * Get a config parameter from the bpmn element definition.
      *
