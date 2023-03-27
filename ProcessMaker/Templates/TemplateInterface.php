@@ -25,7 +25,7 @@ interface TemplateInterface
 
     public function configure(int $id) : array;
 
-    public function destroy() : bool;
+    public function destroy(int $id) : bool;
 
     public function getManifest(string $type, int $id) : object;
 }

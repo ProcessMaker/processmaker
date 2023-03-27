@@ -173,19 +173,19 @@
             case "create-template":
               this.createTemplate(data.id);
               break;
-            case "remove-item":
+            case "delete-item":
               ProcessMaker.confirmModal(
                   this.$t("Caution!"),
-                  this.$t("Are you sure you want to archive the process") +
+                  this.$t("Are you sure you want to delete the process template") +
                   data.name +
                   "?",
                   "",
                   () => {
                     ProcessMaker.apiClient
-                        .delete("processes/" + data.id)
+                        .delete("template/process/" + data.id)
                         .then(response => {
                           ProcessMaker.alert(
-                              this.$t("The process was archived."),
+                              this.$t("The process template was deleted."),
                               "success"
                           );
                           this.$refs.pagination.loadPage(1);

@@ -168,9 +168,11 @@ class ProcessTemplate implements TemplateInterface
         return [$template, $addons, $categories];
     }
 
-    public function destroy() : bool
+    public function destroy(int $id) : bool
     {
-        dd('PROCESS TEMPLATE DESTROY');
+        $response = ProcessTemplates::where('id', $id)->delete();
+
+        return $response;
     }
 
     /**
