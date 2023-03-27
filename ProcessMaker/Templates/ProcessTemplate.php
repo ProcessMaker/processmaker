@@ -8,6 +8,10 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Api\ExportController;
+use ProcessMaker\ImportExport\Exporter;
+use ProcessMaker\ImportExport\Exporters\ProcessExporter;
+use ProcessMaker\ImportExport\Importer;
+use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
@@ -67,33 +71,33 @@ class ProcessTemplate implements TemplateInterface
         $category = $request->process_category_id;
         $mode = $request->mode;
 
-        // Get process manifest
-        $manifest = $this->getManifest('process', $processId);
-        $rootUuid = $manifest->getData()->root;
-        $export = $manifest->getData()->export;
-        $svg = $export->$rootUuid->attributes->svg;
-
-        // Discard ALL assets/dependents
-        if ($mode === 'discard') {
-            $manifest = json_decode(json_encode($manifest), true);
-            $rootExport = Arr::first($manifest['original']['export'], function ($value, $key) use ($rootUuid) {
-                return $key === $rootUuid;
-            });
-            data_set($rootExport, 'dependents.*.discard', true);
-            data_set($manifest, 'original.export', $rootExport);
+        $model = (new ExportController)->getModel('process')->findOrFail($processId);
+        $result = (object) $this->getManifest('process', $processId);
+        $postOptions = [];
+        foreach ($result->export as $key => $asset) {
+            $postOptions[$key] = [
+                'mode' => $mode,
+            ];
         }
 
-        $model = ProcessTemplates::firstOrCreate([
+        $options = new Options($postOptions);
+
+        $exporter = new Exporter();
+        $exporter->export($model, ProcessExporter::class, $options);
+        $payload = $exporter->payload();
+
+        $svg = Arr::get($payload, 'export.' . $payload['root'] . '.attributes.svg');
+        $template = ProcessTemplates::firstOrCreate([
             'name' => $name,
             'description' => $description,
             'user_id' => $userId,
-            'manifest' => json_encode($manifest),
+            'manifest' => json_encode($payload),
             'svg' => $svg,
             'process_id' => $processId,
             'process_category_id' => $category,
         ]);
 
-        return response()->json(['model' => $model]);
+        return response()->json(['model' => $template]);
     }
 
     public function view() : bool
@@ -184,11 +188,12 @@ class ProcessTemplate implements TemplateInterface
      *
      * @return JSON
      */
-    public function getManifest(string $type, int $id) : object
+    public function getManifest(string $type, int $id) : array
     {
         $response = (new ExportController)->manifest($type, $id);
+        $content = json_decode($response->getContent(), true);
 
-        return $response;
+        return $content;
     }
 
     /**
