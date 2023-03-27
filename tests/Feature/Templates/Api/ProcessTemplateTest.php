@@ -41,6 +41,7 @@ class ProcessTemplateTest extends TestCase
         $process = $this->createProcess('process-with-task-screen', ['name' => 'Test Process']);
         $processCategory = ProcessCategory::factory()->create(['name' => 'process category', 'status' => 'ACTIVE']);
         $process->process_category_id = $processCategory->id;
+
         Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:screenRef', $screen->id);
         $process->save();
 
@@ -54,7 +55,7 @@ class ProcessTemplateTest extends TestCase
                 'user_id' => $user->id,
                 'name' => 'Test Template',
                 'description' => 'Test template description',
-                'process_template_category_id' => 1,
+                'process_category_id' => $process->process_category_id,
                 'mode' => 'copy',
             ]
         );
@@ -133,7 +134,7 @@ class ProcessTemplateTest extends TestCase
                 'user_id' => $user->id,
                 'name' => 'Test Template',
                 'description' => 'Test template description',
-                'process_template_category_id' => 1,
+                'process_category_id' => $process->process_category_id,
                 'mode' => 'discard',
             ]
         );
