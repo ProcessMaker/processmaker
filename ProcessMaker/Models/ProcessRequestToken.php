@@ -737,6 +737,22 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         return $assignment;
     }
 
+
+    /**
+     * Returns if the token has the self service option activated
+     */
+    public function getSelfServiceAttribute()
+    {
+        $activity = $this->getBpmnDefinition()->getBpmnElementInstance();
+
+        $config = json_decode($activity->getProperty('config'));
+        if (empty($config)) {
+            return false;
+        }
+
+        return (property_exists($config, 'selfService')) ? $config->selfService : false;
+    }
+
     /**
      * Get Interstitial properties
      *
