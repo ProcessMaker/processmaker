@@ -94,6 +94,7 @@
       },
       close() {
         this.$bvModal.hide("selectTemplate");
+        this.currentComponent = 'template-select-card';
       },
     },
     mounted() {
