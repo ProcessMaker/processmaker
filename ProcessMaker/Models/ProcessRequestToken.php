@@ -583,7 +583,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     public function valueAliasFullText($value, $expression)
     {
         return function ($query) use ($value) {
-          $this->scopeFilter($query, $value);
+            $this->scopeFilter($query, $value);
         };
     }
 

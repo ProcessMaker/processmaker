@@ -2,8 +2,8 @@
 
 namespace ProcessMaker\Models;
 
-use ProcessMaker\Traits\ExtendedPMQL;
 use Illuminate\Support\Facades\DB;
+use ProcessMaker\Traits\ExtendedPMQL;
 
 /**
  * Class SecurityLog
@@ -83,7 +83,7 @@ class SecurityLog extends ProcessMakerModel
     public function valueAliasFullText($value, $expression)
     {
         return function ($query) use ($value) {
-          $this->scopeFilter($query, $value);
+            $this->scopeFilter($query, $value);
         };
     }
 

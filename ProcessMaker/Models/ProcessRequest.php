@@ -622,7 +622,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     public function valueAliasFullText($value, $expression)
     {
         return function ($query) use ($value) {
-          $this->scopeFilter($query, $value);
+            $this->scopeFilter($query, $value);
         };
     }
 
