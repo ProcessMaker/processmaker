@@ -90,11 +90,12 @@
         this.selectedTemplate = true;
         this.blankTemplate = false;
         this.$bvModal.hide("selectTemplate");
+        this.showSelectTemplateComponent();
         this.$refs["create-process-modal"].show();
       },
       close() {
         this.$bvModal.hide("selectTemplate");
-        this.currentComponent = 'template-select-card';
+        this.showSelectTemplateComponent();
       },
     },
     mounted() {
