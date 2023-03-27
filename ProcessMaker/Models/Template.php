@@ -123,6 +123,21 @@ class Template extends ProcessMakerModel
     }
 
     /**
+     * Remove an existing template
+     *
+     * @param string $type
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deleteTemplate(string $type, Request $request)
+    {
+        $id = $request->id;
+        $response = (new $this->types[$type][1])->destroy($id);
+
+        return $response;
+    }
+
+    /**
      * Get the creator/author of this template.
      */
     public function user()

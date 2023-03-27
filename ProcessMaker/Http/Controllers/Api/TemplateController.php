@@ -60,8 +60,11 @@ class TemplateController extends Controller
      * @param  \ProcessMaker\Models\Template  $template
      * @return \Illuminate\Http\Response
      */
-    public function destroy(string $type, Request $request)
+    public function delete(string $type, Request $request)
     {
-        //
+        $template = new Template();
+        $response = $template->deleteTemplate($type, $request);
+
+        return $response;
     }
 }

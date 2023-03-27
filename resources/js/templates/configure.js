@@ -1,3 +1,3 @@
-import CategorySelect from "./categories/components/CategorySelect";
+import CategorySelect from "../processes/categories/components/CategorySelect";
 
 Vue.component("CategorySelect", CategorySelect);
