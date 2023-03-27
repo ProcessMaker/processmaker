@@ -45,8 +45,7 @@ abstract class TestCase extends BaseTestCase
     /**
      * Calling the real config:cache command reconnects the database
      * and since we're using transactions for our tests, we lose any data
-     * saved before the command is run. Instead, mock it here and do what
-     * it needs to do for the test to continue.
+     * saved before the command is run. Instead, mock it out here.
      */
     public function setUpMockConfigCache(): void
     {
