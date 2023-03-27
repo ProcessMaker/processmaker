@@ -2,198 +2,7 @@
     <div id="search-bar" class="search advanced-search mb-3">
         <div class="d-flex">
             <div class="flex-grow-1">
-                <div v-if="! advanced" class="search-bar-advanced d-flex flex-column flex-md-row w-100">
-                    <div v-if="type == 'requests'" class="search-bar-inputs flex-grow d-flex flex-column flex-md-row w-100">
-                        <label for="process_name_filter" class="d-none">{{$t('Process')}}</label>
-                        <multiselect id="process_name_filter" v-model="process"
-                                     @search-change="getProcesses"
-                                     @input="buildPmql"
-                                     :show-labels="false"
-                                     :loading="isLoading.process"
-                                     open-direction="bottom"
-                                     label="name"
-                                     :options="processOptions"
-                                     :track-by="'id'"
-                                     :multiple="true"
-                                     :aria-label="$t('Process')"
-                                     :placeholder="$t('Process')">
-                            <template slot="noResult">
-                                {{ $t('No Results') }}
-                            </template>
-                            <template slot="noOptions">
-                                {{ $t('No Data Available') }}
-                            </template>
-                            <template slot="selection" slot-scope="{ values, search, isOpen }">
-                                <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('processes') }}</span>
-                            </template>
-                        </multiselect>
-                      <label for="process_status_filter" class="d-none">{{$t('status')}}</label>
-                      <multiselect id="process_status_filter" v-model="status"
-                                     :show-labels="false"
-                                     @input="buildPmql"
-                                     :loading="isLoading.status"
-                                     open-direction="bottom"
-                                     label="name"
-                                     :options="statusOptions"
-                                     track-by="value"
-                                     :multiple="true"
-                                     :aria-label="$t('Status')"
-                                     :placeholder="$t('Status')">
-                            <template slot="noResult">
-                                {{ $t('No Results') }}
-                            </template>
-                            <template slot="noOptions">
-                                {{ $t('No Data Available') }}
-                            </template>
-                            <template slot="selection" slot-scope="{ values, search, isOpen }">
-                                <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('statuses') }}</span>
-                            </template>
-                        </multiselect>
-                      <label for="process_requester_filter" class="d-none">{{$t('Requester')}}</label>
-                      <multiselect id="process_requester_filter"
-                                   v-model="requester"
-                                     @search-change="getRequesters"
-                                     @input="buildPmql"
-                                     :show-labels="false"
-                                     :loading="isLoading.requester"
-                                     open-direction="bottom"
-                                     label="fullname"
-                                     :options="requesterOptions"
-                                     :track-by="'id'"
-                                     :multiple="true"
-                                     :aria-label="$t('Requester')"
-                                     :placeholder="$t('Requester')">
-                            <template slot="noResult">
-                                {{ $t('No Results') }}
-                            </template>
-                            <template slot="noOptions">
-                                {{ $t('No Data Available') }}
-                            </template>
-                            <template slot="selection" slot-scope="{ values, search, isOpen }">
-                                <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('requesters') }}</span>
-                            </template>
-                            <template slot="option" slot-scope="props">
-                                <img v-if="props.option.avatar.length > 0" class="option__image"
-                                     :src="props.option.avatar">
-                                <span v-else class="initials bg-warning text-white p-1"> {{getInitials(props.option.firstname, props.option.lastname)}}</span>
-                                <span class="ml-1">{{props.option.fullname}}</span>
-                            </template>
-                        </multiselect>
-                      <label for="process_participant_filter" class="d-none">{{$t('Participants')}}</label>
-                      <multiselect id="process_participant_filter" v-model="participants"
-                                     @search-change="getParticipants"
-                                     @input="buildPmql"
-                                     :show-labels="false"
-                                     :loading="isLoading.participants"
-                                     open-direction="bottom"
-                                     label="fullname"
-                                     :options="participantsOptions"
-                                     :track-by="'id'"
-                                     :multiple="true"
-                                     :aria-label="$t('Participants')"
-                                     :placeholder="$t('Participants')">
-                            <template slot="noResult">
-                                {{ $t('No Results') }}
-                            </template>
-                            <template slot="noOptions">
-                                {{ $t('No Data Available') }}
-                            </template>
-                            <template slot="selection" slot-scope="{ values, search, isOpen }">
-                                <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('requesters') }}</span>
-                            </template>
-                            <template slot="option" slot-scope="props">
-                                <img v-if="props.option.avatar.length > 0" class="option__image"
-                                     :src="props.option.avatar">
-                                <span v-else class="initials bg-warning text-white p-1"> {{getInitials(props.option.firstname, props.option.lastname)}}</span>
-                                <span class="ml-1">{{props.option.fullname}}</span>
-                            </template>
-                        </multiselect>
-                    </div>
-                    <div v-if="type == 'tasks'" class="search-bar-inputs flex-grow d-flex flex-column flex-md-row w-100">
-                      <label for="process_request_filter" class="d-none">{{$t('Request')}}</label>
-                      <multiselect id="process_request_filter"
-                                  v-model="request"
-                                     @search-change="getRequests"
-                                     @input="buildPmql"
-                                     :show-labels="false"
-                                     :loading="isLoading.request"
-                                     open-direction="bottom"
-                                     label="name"
-                                     :options="requestOptions"
-                                     :track-by="'id'"
-                                     :multiple="true"
-                                     :aria-label="$t('Request')"
-                                     :placeholder="$t('Request')">
-                            <template slot="noResult">
-                                {{ $t('No Results') }}
-                            </template>
-                            <template slot="noOptions">
-                                {{ $t('No Data Available') }}
-                            </template>
-                            <template slot="selection" slot-scope="{ values, search, isOpen }">
-                                <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('requests') }}</span>
-                            </template>
-                        </multiselect>
-                      <label for="process_task_filter" class="d-none">{{$t('Task')}}</label>
-                      <multiselect id="process_task_filter"
-                                     v-model="name"
-                                     @search-change="getNames"
-                                     @input="buildPmql"
-                                     :show-labels="false"
-                                     :loading="isLoading.name"
-                                     open-direction="bottom"
-                                     label="name"
-                                     :options="nameOptions"
-                                     :track-by="'name'"
-                                     :multiple="true"
-                                     :aria-label="$t('Task')"
-                                     :placeholder="$t('Task')">
-                            <template slot="noResult">
-                                {{ $t('No Results') }}
-                            </template>
-                            <template slot="noOptions">
-                                {{ $t('No Data Available') }}
-                            </template>
-                            <template slot="selection" slot-scope="{ values, search, isOpen }">
-                                <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('names') }}</span>
-                            </template>
-                        </multiselect>
-                      <label for="process_status_options_filter" class="d-none">{{$t('Status')}}</label>
-                      <multiselect id="process_status_options_filter"
-                                      v-model="status"
-                                     :show-labels="false"
-                                     @input="buildPmql"
-                                     :loading="isLoading.status"
-                                     open-direction="bottom"
-                                     label="name"
-                                     :options="statusOptions"
-                                     track-by="value"
-                                     :multiple="true"
-                                     :aria-label="$t('Status')"
-                                     :placeholder="$t('Status')">
-                            <template slot="noResult">
-                                {{ $t('No Results') }}
-                            </template>
-                            <template slot="noOptions">
-                                {{ $t('No Data Available') }}
-                            </template>
-                            <template slot="selection" slot-scope="{ values, search, isOpen }">
-                                <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('statuses') }}</span>
-                            </template>
-                        </multiselect>
-                    </div>
-                    <div class="search-bar-actions d-flex flex-shrink mt-3 mt-md-0">
-                        <b-btn class="btn-search-toggle mr-2 mr-md-0" variant="secondary" @click="toggleAdvanced" v-b-tooltip.hover :title="$t('Advanced Mode')"><i class="fas fa-ellipsis-h"></i></b-btn>
-                        <b-btn class="btn-search-run flex-grow-1" variant="primary" @click="runSearch()" v-b-tooltip.hover :title="$t('Search')"><i class="fas fa-search"></i><span class="d-md-none"> Search</span></b-btn>
-                        <div class="search-bar-additions">
-                          <div v-for="addition in additions">
-                            <component :is="addition" :permission="permission"></component>
-                          </div>
-                        </div>
-                    </div>
-                </div>
-
-                <pmql-input v-if="advanced"
+                <pmql-input
                       ref="pmql_input"
                       :search-type="type"
                       :value="pmql"
@@ -202,13 +11,217 @@
                       @submit="onNLQConversion">
 
                       <template v-slot:left-buttons>
-                        <b-btn class="btn-search-toggle" variant="success" @click="toggleAdvanced" v-b-tooltip.hover :title="$t('Basic Mode')"><i class="fas fa-ellipsis-h"></i></b-btn>
                         <div class="d-flex">
                           <div class="d-flex mr-1" v-for="addition in additions">
                             <component class="d-flex" :is="addition" :permission="permission"></component>
                           </div>
                         </div>
                       </template>
+
+
+                      <template v-slot:filters>
+                        <div v-if="type == 'requests'" class="card-body">
+                            <label for="process_name_filter" class="d-none">{{$t('Process')}}</label>
+                            <multiselect id="process_name_filter" v-model="process"
+                              class="mb-3"
+                              @search-change="getProcesses"
+                              @input="buildPmql"
+                              :show-labels="true"
+                              :loading="isLoading.process"
+                              open-direction="bottom"
+                              label="name"
+                              :options="processOptions"
+                              :track-by="'id'"
+                              :multiple="true"
+                              :aria-label="$t('Process')"
+                              :placeholder="$t('Process')">
+                              <template slot="noResult">
+                                  {{ $t('No Results') }}
+                              </template>
+                              <template slot="noOptions">
+                                  {{ $t('No Data Available') }}
+                              </template>
+                              <template slot="selection" slot-scope="{ values, search, isOpen }">
+                                  <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('processes') }}</span>
+                              </template>
+                            </multiselect>
+                          <label for="process_status_filter" class="d-none">{{$t('status')}}</label>
+                          <multiselect id="process_status_filter" v-model="status"
+                            class="mb-3"
+                            :show-labels="true"
+                            @input="buildPmql"
+                            :loading="isLoading.status"
+                            open-direction="bottom"
+                            label="name"
+                            :options="statusOptions"
+                            track-by="value"
+                            :multiple="true"
+                            :aria-label="$t('Status')"
+                            :placeholder="$t('Status')">
+                              <template slot="noResult">
+                                  {{ $t('No Results') }}
+                              </template>
+                              <template slot="noOptions">
+                                  {{ $t('No Data Available') }}
+                              </template>
+                              <template slot="selection" slot-scope="{ values, search, isOpen }">
+                                  <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('statuses') }}</span>
+                              </template>
+                            </multiselect>
+                          <label for="process_requester_filter" class="d-none">{{$t('Requester')}}</label>
+                          <multiselect id="process_requester_filter"
+                            v-model="requester"
+                            @search-change="getRequesters"
+                            @input="buildPmql"
+                            class="mb-3"
+                            :show-labels="true"
+                            :loading="isLoading.requester"
+                            open-direction="bottom"
+                            label="fullname"
+                            :options="requesterOptions"
+                            :track-by="'id'"
+                            :multiple="true"
+                            :aria-label="$t('Requester')"
+                            :placeholder="$t('Requester')">
+                              <template slot="noResult">
+                                  {{ $t('No Results') }}
+                              </template>
+                              <template slot="noOptions">
+                                  {{ $t('No Data Available') }}
+                              </template>
+                              <template slot="selection" slot-scope="{ values, search, isOpen }">
+                                  <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('requesters') }}</span>
+                              </template>
+                              <template slot="option" slot-scope="props">
+                                  <img v-if="props.option.avatar.length > 0" class="option__image"
+                                      :src="props.option.avatar">
+                                  <span v-else class="initials bg-warning text-white p-1"> {{getInitials(props.option.firstname, props.option.lastname)}}</span>
+                                  <span class="ml-1">{{props.option.fullname}}</span>
+                              </template>
+                            </multiselect>
+                          <label for="process_participant_filter" class="d-none">{{$t('Participants')}}</label>
+                          <multiselect id="process_participant_filter" v-model="participants"
+                            @search-change="getParticipants"
+                            @input="buildPmql"
+                            class="mb-3"
+                            :show-labels="true"
+                            :loading="isLoading.participants"
+                            open-direction="bottom"
+                            label="fullname"
+                            :options="participantsOptions"
+                            :track-by="'id'"
+                            :multiple="true"
+                            :aria-label="$t('Participants')"
+                            :placeholder="$t('Participants')">
+                              <template slot="noResult">
+                                  {{ $t('No Results') }}
+                              </template>
+                              <template slot="noOptions">
+                                  {{ $t('No Data Available') }}
+                              </template>
+                              <template slot="selection" slot-scope="{ values, search, isOpen }">
+                                  <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('requesters') }}</span>
+                              </template>
+                              <template slot="option" slot-scope="props">
+                                  <img v-if="props.option.avatar.length > 0" class="option__image"
+                                      :src="props.option.avatar">
+                                  <span v-else class="initials bg-warning text-white p-1"> {{getInitials(props.option.firstname, props.option.lastname)}}</span>
+                                  <span class="ml-1">{{props.option.fullname}}</span>
+                              </template>
+                            </multiselect>
+                        </div>
+                        <div v-if="type == 'tasks'" class="search-bar-inputs flex-grow d-flex flex-column flex-md-row w-100">
+                          <label for="process_request_filter" class="d-none">{{$t('Request')}}</label>
+                          <multiselect id="process_request_filter"
+                            v-model="request"
+                            @search-change="getRequests"
+                            @input="buildPmql"
+                            class="mb-3"
+                            :show-labels="true"
+                            :loading="isLoading.request"
+                            open-direction="bottom"
+                            label="name"
+                            :options="requestOptions"
+                            :track-by="'id'"
+                            :multiple="true"
+                            :aria-label="$t('Request')"
+                            :placeholder="$t('Request')">
+                              <template slot="noResult">
+                                  {{ $t('No Results') }}
+                              </template>
+                              <template slot="noOptions">
+                                  {{ $t('No Data Available') }}
+                              </template>
+                              <template slot="selection" slot-scope="{ values, search, isOpen }">
+                                  <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('requests') }}</span>
+                              </template>
+                            </multiselect>
+                          <label for="process_task_filter" class="d-none">{{$t('Task')}}</label>
+                          <multiselect id="process_task_filter"
+                            v-model="name"
+                            @search-change="getNames"
+                            @input="buildPmql"
+                            class="mb-3"
+                            :show-labels="true"
+                            :loading="isLoading.name"
+                            open-direction="bottom"
+                            label="name"
+                            :options="nameOptions"
+                            :track-by="'name'"
+                            :multiple="true"
+                            :aria-label="$t('Task')"
+                            :placeholder="$t('Task')">
+                              <template slot="noResult">
+                                  {{ $t('No Results') }}
+                              </template>
+                              <template slot="noOptions">
+                                  {{ $t('No Data Available') }}
+                              </template>
+                              <template slot="selection" slot-scope="{ values, search, isOpen }">
+                                  <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('names') }}</span>
+                              </template>
+                            </multiselect>
+                          <label for="process_status_options_filter" class="d-none">{{$t('Status')}}</label>
+                          <multiselect id="process_status_options_filter"
+                            v-model="status"
+                            class="mb-3"
+                            :show-labels="true"
+                            @input="buildPmql"
+                            :loading="isLoading.status"
+                            open-direction="bottom"
+                            label="name"
+                            :options="statusOptions"
+                            track-by="value"
+                            :multiple="true"
+                            :aria-label="$t('Status')"
+                            :placeholder="$t('Status')">
+                              <template slot="noResult">
+                                  {{ $t('No Results') }}
+                              </template>
+                              <template slot="noOptions">
+                                  {{ $t('No Data Available') }}
+                              </template>
+                              <template slot="selection" slot-scope="{ values, search, isOpen }">
+                                  <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('statuses') }}</span>
+                              </template>
+                            </multiselect>
+                            <div class="card-footer">
+                              <button class="btn btn-secondary-outline">Reset</button>
+                              <button class="btn btn-primary">Apply</button>
+                            </div>
+                        </div>
+                        <div class="search-bar-actions d-flex flex-shrink mt-3 mt-md-0">
+                            <div class="search-bar-additions">
+                              <div v-for="addition in additions">
+                                <component :is="addition" :permission="permission"></component>
+                              </div>
+                            </div>
+                        </div>
+                      </template>
+
+                      <!-- <pmql-input-filters :search-type="type">
+                      </pmql-input-filters> -->
+
                 </pmql-input>
             </div>
         </div>
@@ -219,6 +232,7 @@
 
 import isPMQL from "../modules/isPMQL";
 import PmqlInput from "../components/shared/PmqlInput";
+// import PmqlInputFilters from "../components/shared/PmqlInputFilters";
 
 export default {
   components: { PmqlInput },
@@ -267,22 +281,6 @@ export default {
       onNLQConversion(pmql) {
         this.pmql = pmql;
         this.runSearch(true);
-      },
-      toggleAdvanced() {
-        if (this.advanced) {
-          this.advanced = false;
-        } else {
-          this.advanced = true;
-          Vue.nextTick().then(() => {
-            // this.$refs.search_input.focus();
-          });
-        }
-      },
-      toggleAssistant() {
-        if (this.advanced) {
-            this.assistantEnabled = !this.assistantEnabled;
-            this.pmql = '';
-        }
       },
       runSearch(advanced) {
         if (! advanced) {

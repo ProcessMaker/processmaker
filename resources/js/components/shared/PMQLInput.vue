@@ -10,10 +10,19 @@
       <div class="d-flex align-items-start">
         <div class="search-bar-buttons d-flex ml-md-0 flex-column flex-md-row">
           <slot name="left-buttons"></slot>
-          <button v-if="showFilter" class="btn btn-outline-secondary mr-1 d-flex align-items-center">
+          <!-- <button v-if="showFilter" class="btn btn-outline-secondary mr-1 d-flex align-items-center">
             <i class="fa fa-sliders-h mr-1"></i>
             <span class="text-capitalize">Filter</span>
-          </button>
+          </button> -->
+          <div class="position-relative">
+            <button class="btn btn-outline-secondary mr-1 d-flex align-items-center">
+              <i class="fa fa-sliders-h mr-1"></i>
+              <span class="text-capitalize">Filter</span>
+            </button>
+            <div class="filter-dropdown-panel-container card">
+              <slot name="filters"></slot>
+            </div>
+          </div>
         </div>
         <div class="search-bar flex-grow w-100"
           :class="{'is-invalid': validations}"
@@ -281,5 +290,18 @@ input.pmql-input:focus ~ label, input.pmql-input:valid ~ label {
 .badge-success {
     color: #00875A;
     background-color: #00875a26;
+}
+
+.filter-dropdown-panel-container {
+  min-width: 20rem;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  box-shadow: 0 6px 12px 2px rgba(0, 0, 0, 0.168627451);
+  position: absolute;
+  left: 0;
+  top: 2.5rem;
+  border-radius: 3px;
+  z-index: 1;
+  max-width: 30rem;
 }
 </style>
