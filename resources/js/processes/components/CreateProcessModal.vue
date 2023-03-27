@@ -74,7 +74,7 @@
         >
           <b-form-input
             autofocus
-            v-model="templateData.title"
+            v-model="templateData.name"
             autocomplete="off"
             :state="errorState('name', addError)"
             name="name"
@@ -101,20 +101,6 @@
           :errors="addError.process_category_id"
           name="category"
         ></category-select>
-        <b-form-group
-          :label="$t('Upload BPMN File (optional)')"
-          :invalid-feedback="errorMessage('bpmn', addError)"
-          :state="errorState('bpmn', addError)"
-        >
-          <b-form-file
-            :browse-text="$t('Browse')"
-            accept=".bpmn,.xml"
-            :placeholder="selectedFile"
-            ref="customFile"
-            @change="onFileChange"
-            :state="errorState('bpmn', addError)"
-          ></b-form-file>
-        </b-form-group>
       </template>
       <template v-else>
         <div>{{ $t('Categories are required to create a process') }}</div>
@@ -196,27 +182,53 @@
         this.disabled = true;
 
         let formData = new FormData();
-        formData.append("name", this.name);
-        formData.append("description", this.description);
-        formData.append("process_category_id", this.process_category_id);
-        if (this.file) {
-          formData.append("file", this.file);
+        if (this.templateData) {
+          formData.append("name", this.templateData.name);
+          formData.append("description", this.templateData.description);
+          formData.append("process_category_id", this.process_category_id);
+          console.log('process_category_id', this.process_category_id);
+          this.handleCreateFromTemplate(this.templateData.id, formData);
+        } else {
+          formData.append("name", this.name);
+          formData.append("description", this.description);
+          formData.append("process_category_id", this.process_category_id);
+          if (this.file) {
+            formData.append("file", this.file);
+          }
+          this.handleCreateBlank(formData);
         }
-
+      },
+      handleCreateFromTemplate(id, formData) {
+        ProcessMaker.apiClient.post(`template/create/process/${id}`, formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        })
+        .then(response => {
+          ProcessMaker.alert(this.$t('The process was created.'), "success");
+          window.location = "/modeler/" + response.data.processId;
+        })
+        .catch(error => {
+          this.disabled = false;
+          this.addError = error.response.data.errors;
+        });
+      },
+      handleCreateBlank(formData) {
         ProcessMaker.apiClient.post("/processes", formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data"
-            }
-          })
-          .then(response => {
-            ProcessMaker.alert(this.$t('The process was created.'), "success");
-            window.location = "/modeler/" + response.data.id;
-          })
-          .catch(error => {
-            this.disabled = false;
-            this.addError = error.response.data.errors;
-          });
+        {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        })
+        .then(response => {
+          ProcessMaker.alert(this.$t('The process was created.'), "success");
+          window.location = "/modeler/" + response.data.id;
+        })
+        .catch(error => {
+          this.disabled = false;
+          this.addError = error.response.data.errors;
+        });
       }
     }
   };
