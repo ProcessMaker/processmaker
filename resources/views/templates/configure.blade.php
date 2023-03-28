@@ -140,7 +140,7 @@
             this.resetErrors();
             let that = this;           
             
-            ProcessMaker.apiClient.put('template/process/' + that.formData.id, that.formData)
+            ProcessMaker.apiClient.put('template/settings/process/' + that.formData.id, that.formData)
               .then(response => {                
                 ProcessMaker.alert(this.$t('The template was saved.'), 'success', 5, true);
                 that.onClose();
