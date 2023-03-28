@@ -58,7 +58,7 @@ class TemplateController extends Controller
             'name' => 'required|string|min:1|max:255',
             'description' => 'required|string',
         ]);
-        
+
         $template = new Template();
         $response = $template->updateTemplate($type, $request);
 
@@ -78,7 +78,7 @@ class TemplateController extends Controller
             'name' => 'required|string|min:1|max:255',
             'description' => 'required|string',
         ]);
-        
+
         $template = new Template();
         $response = $template->updateTemplateConfigs($type, $request);
 

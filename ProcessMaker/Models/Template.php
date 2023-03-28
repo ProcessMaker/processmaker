@@ -4,8 +4,8 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Http\Request;
-use ProcessMaker\Models\ProcessCategory;
 use Illuminate\Validation\Rule;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessMakerModel;
 use ProcessMaker\Models\TemplateCategory;
 use ProcessMaker\Templates\ProcessTemplate;
@@ -99,6 +99,7 @@ class Template extends ProcessMakerModel
     public function updateTemplate(string $type, Request $request)
     {
         $response = (new $this->types[$type][1])->updateTemplate($request);
+
         return $response;
     }
 
@@ -212,10 +213,11 @@ class Template extends ProcessMakerModel
 
     private function checkForExistingTemplates($type, $request)
     {
-        $result =  (new $this->types[$type][1])->existingTemplate($request);
+        $result = (new $this->types[$type][1])->existingTemplate($request);
         if (!is_null($result)) {
             return [$result['id'], $result['name']];
         }
+
         return null;
     }
 }
