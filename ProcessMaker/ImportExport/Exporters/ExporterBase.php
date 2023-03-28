@@ -287,8 +287,6 @@ abstract class ExporterBase implements ExporterInterface
         $existingAttributes = null;
         $existingName = null;
         if ($this->model->exists) {
-            // dd($this->model);
-            // dd('get original', $this->model->getOriginal());
             $existingAttributes = $this->model->getOriginal();
             $class = get_class($this->model);
             $model = new $class($existingAttributes);
