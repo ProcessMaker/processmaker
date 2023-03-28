@@ -48,6 +48,15 @@
           :errors="addError.process_category_id"
           name="category"
         ></category-select>
+       <b-form-group
+          :label="$t('Process Manager')"
+        >
+          <select-user
+            :multiple="false"
+            v-model="selectedUser"
+            name="run_as_user_id"
+          ></select-user>
+        </b-form-group>
         <b-form-group
           :label="$t('Upload BPMN File (optional)')"
           :invalid-feedback="errorMessage('bpmn', addError)"
@@ -74,7 +83,7 @@
         >
           <b-form-input
             autofocus
-            v-model="templateData.name"
+            :value="prefilledName"
             autocomplete="off"
             :state="errorState('name', addError)"
             name="name"
@@ -89,7 +98,7 @@
         >
           <b-form-textarea
             required
-            v-model="templateData.description"
+            :value="prefilledDescription"
             autocomplete="off"
             rows="3"
             :state="errorState('description', addError)"
@@ -101,6 +110,29 @@
           :errors="addError.process_category_id"
           name="category"
         ></category-select>
+        <b-form-group
+          :label="$t('Process Manager')"
+        >
+          <select-user
+            :multiple="false"
+            v-model="selectedUser"
+            name="run_as_user_id"
+          ></select-user>
+        </b-form-group>
+        <b-form-group
+          :label="$t('Upload BPMN File (optional)')"
+          :invalid-feedback="errorMessage('bpmn', addError)"
+          :state="errorState('bpmn', addError)"
+        >
+          <b-form-file
+            :browse-text="$t('Browse')"
+            accept=".bpmn,.xml"
+            :placeholder="selectedFile"
+            ref="customFile"
+            @change="onFileChange"
+            :state="errorState('bpmn', addError)"
+          ></b-form-file>
+        </b-form-group>
       </template>
       <template v-else>
         <div>{{ $t('Categories are required to create a process') }}</div>
@@ -136,6 +168,15 @@
             {'content': 'Cancel', 'action': 'hide()', 'variant': 'outline-secondary', 'disabled': false, 'hidden': false},
             {'content': 'Create', 'action': 'createTemplate', 'variant': 'primary', 'disabled': false, 'hidden': false},
         ],
+        selectedUser: "",
+      }
+    },
+    computed: {
+      prefilledName() {
+        return this.templateData.title;
+      },
+      prefilledDescription() {
+        return this.templateData.description;
       }
     },
     methods: {
