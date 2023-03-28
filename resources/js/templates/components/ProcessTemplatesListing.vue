@@ -132,7 +132,7 @@
         };
       },
       created () {
-        ProcessMaker.EventBus.$on("api-data-process-templates", (val) => {
+        ProcessMaker.EventBus.$on("api-data-process-template", (val) => {
           this.fetch();
         });
       },
