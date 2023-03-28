@@ -45,7 +45,7 @@
   export default {
     components: { Modal },
     mixins: [ FormErrorsMixin ],
-    props: ['existingAssets', 'assetData','userHasEditPermissions'],
+    props: ['existingAssets', 'processName','userHasEditPermissions'],
     data: function() {
       return {
         showModal: false,
@@ -59,7 +59,7 @@
     },
     computed: {
       title() {
-        return this.$t('Create Template from: {{item}}', {item: 'SOMETHING'});
+        return this.$t('Create Template from: {{item}}', {item: this.processName});
       }
     },
     // watch: {

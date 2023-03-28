@@ -9,8 +9,8 @@
     />
     <div v-show="!shouldShowLoader" class="card card-body table-card" data-cy="processes-table">
       <vuetable
-              :dataManager="dataManager"
-              :sortOrder="sortOrder"
+              :data-manager="dataManager"
+              :sort-order="sortOrder"
               :css="css"
               :api-mode="false"
               @vuetable:pagination-data="onPaginationData"
@@ -18,7 +18,7 @@
               :data="data"
               data-path="data"
               pagination-path="meta"
-              :noDataTemplate="$t('No Data Available')"
+              :no-data-template="$t('No Data Available')"
       >
         <template slot="name" slot-scope="props">
           <i tabindex="0"
@@ -36,7 +36,7 @@
           </i>
           <span v-uni-id="props.rowData.id.toString()">{{props.rowData.name}}</span>
         </template>
-
+        <ellipsis-menu />
         <template slot="owner" slot-scope="props">
           <avatar-image
                   class="d-inline-flex pull-left align-items-center"
@@ -45,8 +45,18 @@
                   hide-name="true"
           ></avatar-image>
         </template>
-
         <template slot="actions" slot-scope="props">
+          <ellipsis-menu 
+            @navigate="onNavigate"
+            :actions="actions"
+            :permission="permission"
+            :data="props.rowData"
+            :is-documenter-installed="isDocumenterInstalled"
+            :divider="true"
+          />
+        </template>
+
+        <!-- <template slot="actions" slot-scope="props">
           <div class="actions">
             <div class="popout">
               <b-btn
@@ -140,14 +150,14 @@
               </b-btn>             
             </div>
           </div>
-        </template>
+        </template> -->
       </vuetable>
       <create-template-modal id="create-template-modal" ref="create-template-modal" assetType="process" :currentUserId="currentUserId" :assetName="processTemplateName" :assetId="processId"/>
       <!-- <template-exists-modal ref="template-exists-modal" :assetData="processData" /> -->
       <pagination
               :single="$t('Process')"
               :plural="$t('Processes')"
-              :perPageSelectEnabled="true"
+              :per-page-select-enabled="true"
               @changePerPage="changePerPage"
               @vuetable-pagination:change-page="onPageChange"
               ref="pagination"
@@ -161,16 +171,28 @@
   import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
   import { createUniqIdsMixin } from "vue-uniq-ids";
   import TemplateExistsModal from "../../components/templates/TemplateExistsModal.vue";
+  import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
   import CreateTemplateModal from "../../components/templates/CreateTemplateModal.vue";
 
   const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
-    components: { TemplateExistsModal, CreateTemplateModal },
+    components: { TemplateExistsModal, CreateTemplateModal, EllipsisMenu },
     mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
     props: ["filter", "id", "status", "permission", "isDocumenterInstalled", "processName", "currentUserId"],
     data() {
       return {
+        actions: [
+        { value: "unpause-start-timer", content: "Unpause Start Timer Events", icon: "fas fa-play", conditional: "if(has_timer_start_events and pause_timer_start, true, false)" },
+        { value: "pause-start-timer", content: "Pause Start Timer Events", icon: "fas fa-pause", conditional: "if(has_timer_start_events and not(pause_timer_start), true, false)"},
+        { value: "edit-designer", content: "Edit Process", permission: "edit-processes", icon: "fas fa-edit", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
+        { value: "create-template", content: "Publish as Template", permission: "create-process-templates", icon: "fas fa-layer-group" },
+        { value: "edit-item", content: "Configure", permission: "edit-processes", icon: "fas fa-cog", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
+        { value: "view-documentation", content: "View Documentation", permission: "view-processes", icon: "fas fa-sign", conditional: "isDocumenterInstalled"},
+        { value: "export-item", content: "Export", permission: "export-processes", icon: "fas fa-file-export"},
+        { value: "remove-item", content: "Archive", permission: "archive-processes", icon: "fas fa-download", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)" },
+        { value: "restore-item", content: "Restore", permission: "archive-processes", icon: "fas fa-upload", conditional: "if(status == 'ARCHIVED', true, false)" },
+      ],
         orderBy: "name",
         processId: null,
         processTemplateName: '',
@@ -245,12 +267,16 @@
       goToExport(data) {
         window.location = "/processes/" + data + "/export";
       },      
-      onAction(action, data, index) {
+      onNavigate(action, data, index) {
         let putData = {
           name: data.name,
           description: data.description,
         };
-        switch (action) {
+        console.log('data', data);
+        // console.log('data id', this.data.id);
+        console.log('onNavigate action received', action);
+        console.log('action.value', action.value);
+        switch (action.value) {
           case "unpause-start-timer":
             putData.pause_timer_start = false;
             ProcessMaker.apiClient
@@ -289,8 +315,6 @@
             break;
           case "create-template":
             this.showCreateTemplateModal(data.name, data.id);
-            //this.createTemplate(data.name, data.id);
-            //this.showTemplateExistsModal();
             break;
           case "restore-item":
             ProcessMaker.apiClient
@@ -411,7 +435,6 @@
         return data;
       },
     },
-    computed: {}
   };
 </script>
 

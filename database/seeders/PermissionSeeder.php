@@ -23,6 +23,14 @@ class PermissionSeeder extends Seeder
             'edit-process-categories',
             'view-process-categories',
         ],
+        'Process Templates' => [
+            'archive-process-templates',
+            'create-process-templates',
+            'edit-process-templates',
+            'export-process-templates',
+            'import-process-templates',
+            'view-process-templates',
+        ],
         'Comments' => [
             'create-comments',
             'delete-comments',

@@ -1,18 +1,15 @@
 <template>
   <div class="pb-2">
-    <b-card
-      class="template-select-card"
-      title="Template Name"
-      img-src="https://via.placeholder.com/261x112"
-      img-alt="Image"
-      img-top
-    >
-      <b-card-text class="pb-0">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-      </b-card-text>
-      <b-badge pill variant="success" class="category-badge">
-        Category 1
-      </b-badge>
+    <b-card no-body class="template-select-card" @click="showDetails()">
+      <!-- <div v-html="thumbnail" class="card-img card-img-top img-fluid mb-3"></div> -->
+      <b-card-body :title="template.name" class="card-body">
+        <b-card-text>
+          {{ template.description }}
+        </b-card-text>
+        <b-badge pill variant="success" class="category-badge mb-3">
+          Category 1
+        </b-badge>
+      </b-card-body>
     </b-card>
   </div>
 </template>
@@ -20,16 +17,24 @@
 <script>
 
 export default {
-  components: { },
-  props: [],
+  components: {},
+  props: ['template'],
   data() {
     return {
+      thumbnail: null,
     };
   },
   computed: {},
   watch: {},
   beforeMount() {},
-  methods: {},
+  methods: {
+    showDetails() {      
+      this.$emit('show-details', {"template": this.template});
+    }
+  },
+  mounted() {
+    this.thumbnail = this.template.svg;
+  }
 };
 </script>
 
@@ -44,20 +49,26 @@ export default {
 
 .card-title {
   font-weight: 600;
-  margin-left: -15px;
-  margin-top: -5px;
   font-size: 14px;
 }
 
+.card-img {
+  background: #80808017;
+  height: 112px;
+  display: flex;
+  align-items: center;
+}
+
+.card-body {
+  padding: 2px!important;
+}
+
 .card-text {
-  margin-left: -15px;
-  margin-bottom: 0px;
   font-size: 12px;
   color: #6C757D;
 }
 
 .category-badge {
-  margin-left: -15px;
   background-color: #E6FFEB;
   color: #006644;
   font-size: 10px;
