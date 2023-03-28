@@ -124,15 +124,15 @@
           ],
           actions: [
             // { value: "edit-designer", content: "Edit Template", permission: "edit-processes", icon: "fas fa-edit", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
-            { value: "view-documentation", content: "Template Documentation", permission: "view-processes", icon: "fas fa-sign", isDocumenterInstalled: "if('isDocumenterInstalled' == true, true, false)"},
-            { value: "export-item", content: "Export Template", permission: "export-processes", icon: "fas fa-file-export"},
-            { value: "edit-item", content: "Configure Template", permission: "edit-processes", icon: "fas fa-cog"},
-            { value: "delete-item", content: "Delete Template", icon: "fas fa-trash"},
+            { value: "view-documentation", content: "Template Documentation", permission: "view-process-templates", icon: "fas fa-sign", isDocumenterInstalled: "if('isDocumenterInstalled' == true, true, false)"},
+            { value: "export-item", content: "Export Template", permission: "export-process-templates", icon: "fas fa-file-export"},
+            { value: "edit-item", content: "Configure Template", permission: "edit-process-templates", icon: "fas fa-cog"},
+            { value: "delete-item", content: "Delete Template", permission: "archive-process-templates", icon: "fas fa-trash"},
           ],
         };
       },
       created () {
-        ProcessMaker.EventBus.$on("api-data-process-template", (val) => {
+        ProcessMaker.EventBus.$on("api-data-process-templates", (val) => {
           this.fetch();
         });
       },
@@ -176,9 +176,9 @@
             case "delete-item":
               ProcessMaker.confirmModal(
                   this.$t("Caution!"),
-                  this.$t("Are you sure you want to delete the process template") +
+                  this.$t("Are you sure you want to delete the process template '") +
                   data.name +
-                  "?",
+                  "'?",
                   "",
                   () => {
                     ProcessMaker.apiClient
@@ -268,6 +268,7 @@
                 this.apiDataLoading = false;
                 this.apiNoResults = false;
                 this.loading = false;
+             //   console.log('FETCH PERMISSIONS', this.permission);
               });
         },
         addWarningMessages(data) {
@@ -284,7 +285,6 @@
           return data;
         },
       },
-      computed: {}
     };
   </script>
   

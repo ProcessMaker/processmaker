@@ -120,7 +120,7 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
 
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index')->middleware('can:view-notifications,notification');
 
-    Route::get('template/{type}/{template}/configure', [TemplateController::class, 'configure'])->name('templates.configure')->middleware('can:edit-processes');
+    Route::get('template/{type}/{template}/configure', [TemplateController::class, 'configure'])->name('templates.configure')->middleware('template-authorization');
 
     // Allows for a logged in user to see navigation on a 404 page
     Route::fallback(function () {

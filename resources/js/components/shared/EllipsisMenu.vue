@@ -117,7 +117,7 @@ export default {
     onClick(action, data) {
       this.$emit("navigate", action, data);
     },
-  },
+  },  
 };
 </script>
 
