@@ -94,6 +94,12 @@ class TemplateController extends Controller
      */
     public function create(string $type, Request $request)
     {
+        $this->validate($request, [
+            'name' => 'required|string|min:5|max:255',
+            'description' => 'required|string|min:5|max:255',
+            'process_category_id' => 'required|integer',
+        ]);
+
         $template = new Template();
         $response = $template->create($type, $request);
 
