@@ -109,10 +109,18 @@ class ProcessTemplate implements TemplateInterface
         $payload = json_decode($template->manifest, true);
 
         $postOptions = [];
-        foreach ($payload['export']as $key => $asset) {
+        foreach ($payload['export'] as $key => $asset) {
             $postOptions[$key] = [
                 'mode' => $asset['mode'],
             ];
+            if ($asset['type'] === 'Process') {
+                // Set name and description for the new process
+                $payload['export'][$key]['attributes']['name'] = $request['name'];
+                $payload['export'][$key]['attributes']['description'] = $request['description'];
+
+                $payload['export'][$key]['name'] = $request['name'];
+                $payload['export'][$key]['description'] = $request['description'];
+            }
         }
 
         $options = new Options($postOptions);

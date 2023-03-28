@@ -162,12 +162,11 @@ class ProcessTemplateTest extends TestCase
         $screen->screen_category_id = $screenCategory->id;
         $screen->save();
 
-        $process = $this->createProcess('process-with-task-screen', ['name' => 'Test Process']);
         $processCategory = ProcessCategory::factory()->create(['name' => 'process category', 'status' => 'ACTIVE']);
-        $process->process_category_id = $processCategory->id;
+        $process = $this->createProcess('process-with-task-screen', ['name' => 'Test Process', 'process_category_id' => $processCategory->id]);
+
         Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:screenRef', $screen->id);
         $process->save();
-
         $response = $this->apiCall(
             'POST',
             route('api.template.store', [
@@ -183,12 +182,14 @@ class ProcessTemplateTest extends TestCase
             ]
         );
 
-        // // Validate the header status code
+        // Validate the header status code
         $response->assertStatus(200);
         // // Assert that our database has the process we need
         $this->assertDatabaseHas('process_templates', ['name' => 'Test Template']);
 
+        // Create Process Templates
         $template = ProcessTemplates::where('name', 'Test Template')->firstOrFail();
+
         $response = $this->apiCall(
             'POST',
             route('api.template.create', [
@@ -199,17 +200,17 @@ class ProcessTemplateTest extends TestCase
                 'user_id' => $user->id,
                 'name' => 'Test Create Process from Template',
                 'description' => 'Test template description',
-                'process_category_id' => $template->process_category_id,
+                'process_category_id' => $processCategory->id,
                 'mode' => 'copy',
             ]
         );
+
         $response->assertStatus(200);
         $id = json_decode($response->getContent(), true)['processId'];
 
         $newProcess = Process::where('id', $id)->firstOrFail();
 
-        // TODO:: Assert New Process is created
-
-        // TODO: Aserrt New Process is the name provided by Template Create POST
+        $this->assertEquals('Test Create Process from Template', $newProcess->name);
+        $this->assertEquals('Test template description', $newProcess->description);
     }
 }
