@@ -73,7 +73,6 @@ class ProcessTemplate implements TemplateInterface
 
         $model = (new ExportController)->getModel('process')->findOrFail($processId);
         $result = (object) $this->getManifest('process', $processId);
-        //dd('RESULT', $result->export);
         $postOptions = [];
         foreach ($result->export as $key => $asset) {
             $postOptions[$key] = [
@@ -134,38 +133,42 @@ class ProcessTemplate implements TemplateInterface
         dd('PROCESS TEMPLATE EDIT');
     }
 
-    public function update($request) : JsonResponse
+    public function updateTemplate($request) : JsonResponse
     {
         $id = (int) $request->id;
         $template = ProcessTemplates::where('id', $id)->firstOrFail();
-        if (!isset($request->process_id)) {
-            // This is an update from the template configs page
-            $template->fill($request->except('id'));
-        } else {
-            // This is an update from a the process designer
-            // Get process manifest
-            $processId = $request->process_id;
-            $mode = $request->mode;
+        // Get process manifest
+        $processId = $request->process_id;
+        $mode = $request->mode;
 
-            $manifest = $this->getManifest('process', $processId);
-            $rootUuid = $manifest->getData()->root;
-            $export = $manifest->getData()->export;
-            $svg = $export->$rootUuid->attributes->svg;
+        $manifest = $this->getManifest('process', $processId);
+        $rootUuid = $manifest->getData()->root;
+        $export = $manifest->getData()->export;
+        $svg = $export->$rootUuid->attributes->svg;
 
-            // Discard ALL assets/dependents
-            if ($mode === 'discard') {
-                $manifest = json_decode(json_encode($manifest), true);
-                $rootExport = Arr::first($manifest['original']['export'], function ($value, $key) use ($rootUuid) {
-                    return $key === $rootUuid;
-                });
-                data_set($rootExport, 'dependents.*.discard', true);
-                data_set($manifest, 'original.export', $rootExport);
-            }
+        $template->fill($request->except('id'));
+        $template->svg = $svg;
+        $template->manifest = json_encode($manifest);
 
-            $template->fill($request->except('id'));
-            $template->svg = $svg;
-            $template->manifest = json_encode($manifest);
+        // Catch errors to send more specific status
+        try {
+            $template->saveOrFail();
+        } catch (Exception $e) {
+            return response(
+                ['message' => $e->getMessage(),
+                    'errors' => ['bpmn' => $e->getMessage()], ],
+                422
+            );
         }
+
+        return response()->json();
+    }
+
+    public function updateTemplateConfigs($request) : JsonResponse
+    {
+        $id = (int) $request->id;
+        $template = ProcessTemplates::where('id', $id)->firstOrFail();
+        $template->fill($request->except('id'));
 
         // Catch errors to send more specific status
         try {
@@ -286,5 +289,7 @@ class ProcessTemplate implements TemplateInterface
             // If same asset has been Saved as Template previously, offer to choose between “Update Template” and “Save as New Template”
             return [$template->id, $name];
         }
+
+        return null;
     }
 }
