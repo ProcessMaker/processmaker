@@ -223,7 +223,7 @@
         this.disabled = true;
 
         let formData = new FormData();
-        if (this.templateData) {
+        if (this.templateData.length > 0) {
           formData.append("name", this.templateData.name);
           formData.append("description", this.templateData.description);
           formData.append("process_category_id", this.process_category_id);
