@@ -21,7 +21,7 @@ interface TemplateInterface
 
     public function edit($request) : JsonResponse;
 
-    public function update($request) : JsonResponse;
+    public function updateTemplateConfigs($request) : JsonResponse;
 
     public function configure(int $id) : array;
 
