@@ -21,11 +21,11 @@ interface TemplateInterface
 
     public function edit($request) : JsonResponse;
 
-    public function update($request) : JsonResponse;
+    public function updateTemplateConfigs($request) : JsonResponse;
 
     public function configure(int $id) : array;
 
     public function destroy(int $id) : bool;
 
-    public function getManifest(string $type, int $id) : object;
+    public function getManifest(string $type, int $id) : array;
 }

@@ -140,18 +140,19 @@
             this.resetErrors();
             let that = this;           
             
-            ProcessMaker.apiClient.put('template/process/' + that.formData.id, that.formData)
+            ProcessMaker.apiClient.put('template/settings/process/' + that.formData.id, that.formData)
               .then(response => {                
                 ProcessMaker.alert(this.$t('The template was saved.'), 'success', 5, true);
                 that.onClose();
               })
               .catch(error => {
-                console.log('ERROR', error);
                 // //define how display errors
-                // if (error.response.status && error.response.status === 422) {
-                //   // Validation error
-                //   that.errors = error.response.data.errors;
-                // }
+                this.errors.name = ['The template name must be unique.'];
+                if (error.response.status && error.response.status === 422) {
+                  // Validation error
+                  that.errors = error.response.data.errors;
+                 
+                }
               });
           },          
         }

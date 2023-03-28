@@ -82,7 +82,7 @@ class ExportController extends Controller
         );
     }
 
-    private function getModel(string $type): Model
+    public function getModel(string $type): Model
     {
         if (isset($this->types[$type])) {
             $modelClass = current($this->types[$type]);

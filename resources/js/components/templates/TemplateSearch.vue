@@ -57,7 +57,7 @@ export default {
   beforeMount() {},
   methods: {
     showDetails($event) {
-      this.$emit('show-details', {'title': $event.template.name, 'description': $event.template.description});
+      this.$emit('show-details', {'id': $event.template.id, 'name': $event.template.name, 'description': $event.template.description});
       this.template = $event.template;
     },
     fetch() {

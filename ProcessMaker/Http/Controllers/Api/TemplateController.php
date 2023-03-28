@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\TemplateCollection;
@@ -33,6 +34,11 @@ class TemplateController extends Controller
      */
     public function store(string $type, Request $request)
     {
+        $request->validate([
+            'name' => 'required|string|min:1|max:255',
+            'description' => 'required|string',
+        ]);
+
         $template = new Template();
         $response = $template->store($type, $request);
 
@@ -46,10 +52,56 @@ class TemplateController extends Controller
      * @param  Request $request
      * @return \Illuminate\Http\Response
      */
-    public function update(string $type, Request $request)
+    public function updateTemplate(string $type, Request $request)
     {
+        $request->validate([
+            'name' => 'required|string|min:1|max:255',
+            'description' => 'required|string',
+        ]);
+
         $template = new Template();
         $response = $template->updateTemplate($type, $request);
+
+        return $response;
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  string  $type
+     * @param  Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function updateTemplateConfigs(string $type, Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|min:1|max:255',
+            'description' => 'required|string',
+        ]);
+
+        $template = new Template();
+        $response = $template->updateTemplateConfigs($type, $request);
+
+        return $response;
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  string  $type
+     * @param  Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function create(string $type, Request $request)
+    {
+        $this->validate($request, [
+            'name' => 'required|string|min:5|max:255',
+            'description' => 'required|string|min:5|max:255',
+            'process_category_id' => 'required|integer',
+        ]);
+
+        $template = new Template();
+        $response = $template->create($type, $request);
 
         return $response;
     }

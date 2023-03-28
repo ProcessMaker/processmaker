@@ -23,12 +23,15 @@
                 {{ $tabs[0] ?? __('Resources') }}
             </a>
         </li>
+        @if (isset($listTemplates) && $listTemplates->permissions['view'])
         <li class="nav-item">
             <a class="nav-item nav-link" id="nav-templates-tab" data-toggle="tab" href="#nav-templates"
                role="tab" onclick="loadTemplates()" aria-controls="nav-templates" aria-selected="true">
                 {{ $tabs[1] ?? __('Templates') }}
             </a>
         </li>
+        @endif
+        
         @if ($catConfig->permissions['view'])
         <li class="nav-item">
             <a class="{{$secondTab}}" id="nav-categories-tab" data-toggle="tab" href="#nav-categories"
@@ -54,13 +57,15 @@
                     {{ $itemList }}
                 </div>
             </div>
-            @isset($templatesList)
+            @if(isset($templatesList))
+                @can('view-process-templates')
                 <div class="tab-pane fade" id="nav-templates" role="tabpanel" aria-labelledby="nav-templates-tab">
                     <div class="card card-body p-3 border-top-0">
                         {{ $templatesList }}
                     </div>
                 </div>
-            @endisset
+                @endcan
+            @endif
             <div class="{{$secondContent}}" id="nav-categories" role="tabpanel" aria-labelledby="nav-categories-tab">
                 <div class="card card-body p-3 border-top-0">
                     {{ $categoryList }}
@@ -86,7 +91,7 @@
         ProcessMaker.EventBus.$emit("api-data-process");
       };
       loadTemplates = function () {
-        ProcessMaker.EventBus.$emit("api-data-process-template");
+        ProcessMaker.EventBus.$emit("api-data-process-templates");
       }
       if ({{$listConfig->countCategories}} === 0) loadCategory();
     </script>
