@@ -96,7 +96,7 @@ class TemplateController extends Controller
     {
         $this->validate($request, [
             'name' => 'required|string|min:5|max:255',
-            'description' => 'required|string|min:5|max:255',
+            'description' => 'required|string',
             'process_category_id' => 'required|integer',
         ]);
 
