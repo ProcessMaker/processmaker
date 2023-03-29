@@ -5,10 +5,16 @@
     no-flip
     lazy
     class="dropdown-right ellipsis-dropdown-main"
-    offset="-145px"
   >
-    <template #button-content>
+    <template v-if="ellipsisIcon" #button-content>
       <i class="fas fa-ellipsis-h" />
+    </template>
+    <template v-else #button-content>
+      <i
+        class="pr-1"
+        :class="menuButton.icon"
+      />
+      <span>{{ menuButton.content }}</span>
     </template>
     <div v-if="divider === true">
       <b-dropdown-item
@@ -67,7 +73,7 @@ export default {
   components: { },
   filters: { },
   mixins: [],
-  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider"],
+  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "ellipsisIcon", "menuButton"],
   data() {
     return {
       active: false,
