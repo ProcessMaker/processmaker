@@ -52,7 +52,6 @@
             :data="props.rowData"
             :is-documenter-installed="isDocumenterInstalled"
             :divider="true"
-            :ellipsisIcon="true"
           />
         </template>
       </vuetable>

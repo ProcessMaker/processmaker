@@ -6,15 +6,15 @@
     lazy
     class="dropdown-right ellipsis-dropdown-main"
   >
-    <template v-if="ellipsisIcon" #button-content>
-      <i class="fas fa-ellipsis-h" />
-    </template>
-    <template v-else #button-content>
+    <template v-if="customButton" #button-content>
       <i
         class="pr-1"
-        :class="menuButton.icon"
+        :class="customButton.icon"
       />
-      <span>{{ menuButton.content }}</span>
+      <span>{{ customButton.content }}</span>
+    </template>
+    <template v-else #button-content>
+      <i class="fas fa-ellipsis-h" />
     </template>
     <div v-if="divider === true">
       <b-dropdown-item
@@ -73,7 +73,7 @@ export default {
   components: { },
   filters: { },
   mixins: [],
-  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "ellipsisIcon", "menuButton"],
+  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "customButton"],
   data() {
     return {
       active: false,
