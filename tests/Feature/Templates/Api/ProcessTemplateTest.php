@@ -61,7 +61,7 @@ class ProcessTemplateTest extends TestCase
         );
 
         // Validate the header status code
-        // dd($response);
+
         $response->assertStatus(200);
         // Assert that our database has the process we need
         $this->assertDatabaseHas('process_templates', ['name' => 'Test Template']);
@@ -199,7 +199,7 @@ class ProcessTemplateTest extends TestCase
             [
                 'user_id' => $user->id,
                 'name' => 'Test Create Process from Template',
-                'description' => 'Test template description',
+                'description' => 'Process from template description',
                 'process_category_id' => $processCategory->id,
                 'mode' => 'copy',
             ]
@@ -211,6 +211,6 @@ class ProcessTemplateTest extends TestCase
         $newProcess = Process::where('id', $id)->firstOrFail();
 
         $this->assertEquals('Test Create Process from Template', $newProcess->name);
-        $this->assertEquals('Test template description', $newProcess->description);
+        $this->assertEquals('Process from template description', $newProcess->description);
     }
 }
