@@ -54,7 +54,7 @@ class ProcessTemplateTest extends TestCase
                 'user_id' => $user->id,
                 'name' => 'Test Template',
                 'description' => 'Test template description',
-                'process_template_category_id' => 1,
+                'process_category_id' => 1,
                 'mode' => 'copy',
             ]
         );
@@ -95,7 +95,7 @@ class ProcessTemplateTest extends TestCase
                 'user_id' => $user->id,
                 'name' => 'Test Duplicate Name Template',
                 'description' => 'Test template description',
-                'process_template_category_id' => 1,
+                'process_category_id' => 1,
                 'mode' => 'new',
             ]
         );
@@ -132,7 +132,7 @@ class ProcessTemplateTest extends TestCase
                 'user_id' => $user->id,
                 'name' => 'Test Template',
                 'description' => 'Test template description',
-                'process_template_category_id' => 1,
+                'process_category_id' => 1,
                 'mode' => 'discard',
             ]
         );

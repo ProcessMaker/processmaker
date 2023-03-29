@@ -5,7 +5,6 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\ProcessMakerModel;
-use ProcessMaker\Models\TemplateCategory;
 use ProcessMaker\Traits\HasUuids;
 
 class Template extends ProcessMakerModel
@@ -42,16 +41,6 @@ class Template extends ProcessMakerModel
         'created_at',
         'updated_at',
     ];
-
-    /**
-     * Category of the template.
-     *
-     * @return BelongsTo
-     */
-    public function category()
-    {
-        return $this->belongsTo(TemplateCategory::class, 'template_category_id')->withDefault();
-    }
 
     /**
      * Get the creator/author of this template.

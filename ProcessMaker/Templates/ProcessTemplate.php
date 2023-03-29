@@ -10,7 +10,6 @@ use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
-use ProcessMaker\Models\ProcessTemplateCategory;
 use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Traits\HasControllerAddons;
 use SebastianBergmann\CodeUnit\Exception;
@@ -56,7 +55,7 @@ class ProcessTemplate implements TemplateInterface
         $name = $request->input('name');
         $description = $request->input('description');
         $userId = $request->input('user_id');
-        $category = $request->input('process_template_category_id');
+        $category = $request->input('process_category_id');
         $manifest = $this->getManifest('process', $processId);
         $mode = $request->input('mode');
 
@@ -90,7 +89,7 @@ class ProcessTemplate implements TemplateInterface
                 'svg' => isset($manifest)
                     ? $manifest->getData()->export->{$manifest->getData()->root}->attributes->svg
                     : '',
-                'process_template_category_id' => null,
+                'process_category_id' => null,
             ]
         );
         //dd($model);
@@ -161,7 +160,7 @@ class ProcessTemplate implements TemplateInterface
         $template->name = $query->name;
         $template->description = $query->description;
 
-        $categories = ProcessTemplateCategory::orderBy('name')
+        $categories = ProcessCategory::orderBy('name')
             ->where('status', 'ACTIVE')
             ->get()
             ->pluck('name', 'id')

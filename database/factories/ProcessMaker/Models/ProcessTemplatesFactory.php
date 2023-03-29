@@ -5,7 +5,7 @@ namespace Database\Factories\ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessTemplateCategory;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\User;
 
@@ -31,8 +31,8 @@ class ProcessTemplatesFactory extends Factory
             'manifest' => json_encode($manifest),
             'svg' => $process->svg,
             'process_id' => $process->id,
-            'process_template_category_id' => function () {
-                return ProcessTemplateCategory::factory()->create()->getKey();
+            'process_category_id' => function () {
+                return ProcessCategory::factory()->create()->getKey();
             },
         ];
     }
