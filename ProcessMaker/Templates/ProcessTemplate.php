@@ -104,15 +104,18 @@ class ProcessTemplate implements TemplateInterface
     {
         $templateId = $request->id;
         $template = ProcessTemplates::where('id', $templateId)->firstOrFail();
+        $template->fill($request->except('id'));
 
         $payload = json_decode($template->manifest, true);
+        $payload['name'] = $request['name'];
+        $payload['description'] = $request['description'];
 
         $postOptions = [];
         foreach ($payload['export'] as $key => $asset) {
             $postOptions[$key] = [
                 'mode' => $asset['mode'],
             ];
-            if ($asset['type'] === 'Process') {
+            if ($payload['root'] === $key) {
                 // Set name and description for the new process
                 $payload['export'][$key]['attributes']['name'] = $request['name'];
                 $payload['export'][$key]['attributes']['description'] = $request['description'];
@@ -295,7 +298,7 @@ class ProcessTemplate implements TemplateInterface
         $template = ProcessTemplates::where(['name' => $name])->where('id', '!=', $templateId)->first();
         if ($template !== null) {
             // If same asset has been Saved as Template previously, offer to choose between “Update Template” and “Save as New Template”
-            return [$template->id, $name];
+            return ['id' => $template->id, 'name' => $name];
         }
 
         return null;
