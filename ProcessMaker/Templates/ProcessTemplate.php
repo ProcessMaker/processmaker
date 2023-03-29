@@ -15,6 +15,7 @@ use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
+use ProcessMaker\Models\Template;
 use ProcessMaker\Traits\HasControllerAddons;
 use SebastianBergmann\CodeUnit\Exception;
 
@@ -64,40 +65,40 @@ class ProcessTemplate implements TemplateInterface
      */
     public function save($request) : JsonResponse
     {
-        $processId = $request->id;
-        $name = $request->name;
-        $description = $request->description;
-        $userId = $request->user_id;
-        $category = $request->process_category_id;
-        $mode = $request->mode;
+        $data = $request->all();
 
-        $model = (new ExportController)->getModel('process')->findOrFail($processId);
-        $result = (object) $this->getManifest('process', $processId);
-        $postOptions = [];
-        foreach ($result->export as $key => $asset) {
-            $postOptions[$key] = [
-                'mode' => $mode,
-            ];
-        }
+        // Find the required model
+        $model = (new ExportController)->getModel('process')->findOrFail($data['asset_id']);
 
+        // Get the process manifest
+        $manifest = $this->getManifest('process', $data['asset_id']);
+
+        // Array of post options
+        $postOptions = array_map(fn ($value) => ['mode' => $data['mode']], $manifest['export']);
         $options = new Options($postOptions);
 
+        // Create an exporter instance
         $exporter = new Exporter();
         $exporter->export($model, ProcessExporter::class, $options);
         $payload = $exporter->payload();
 
+        // Extract svg from payload
         $svg = Arr::get($payload, 'export.' . $payload['root'] . '.attributes.svg');
-        $template = ProcessTemplates::firstOrCreate([
-            'name' => $name,
-            'description' => $description,
-            'user_id' => $userId,
-            'manifest' => json_encode($payload),
-            'svg' => $svg,
-            'process_id' => $processId,
-            'process_category_id' => $category,
-        ]);
 
-        return response()->json(['model' => $template]);
+        // Create a new process template
+        $processTemplate = ProcessTemplates::make($data);
+
+        // Fill the manifest and svg attributes
+        $processTemplate->fill($data);
+        $processTemplate->manifest = json_encode($payload);
+        $processTemplate->svg = $svg;
+        $processTemplate->process_id = $data['asset_id'];
+        $processTemplate->user_id = \Auth::user()->id;
+
+        $processTemplate->saveOrFail();
+
+        // Return response
+        return response()->json(['model' => $processTemplate]);
     }
 
     public function create($request) : JsonResponse
@@ -119,9 +120,12 @@ class ProcessTemplate implements TemplateInterface
                 // Set name and description for the new process
                 $payload['export'][$key]['attributes']['name'] = $request['name'];
                 $payload['export'][$key]['attributes']['description'] = $request['description'];
+                $payload['export'][$key]['attributes']['process_category_id'] = $request['process_category_id'];
 
                 $payload['export'][$key]['name'] = $request['name'];
                 $payload['export'][$key]['description'] = $request['description'];
+                $payload['export'][$key]['process_category_id'] = $request['process_category_id'];
+                $payload['export'][$key]['process_manager_id'] = $request['manager_id'];
             }
         }
 

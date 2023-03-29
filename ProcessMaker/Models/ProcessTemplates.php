@@ -40,4 +40,14 @@ class ProcessTemplates extends Template
     {
         return $this->setMultipleCategories($value, 'process_category_id');
     }
+
+    /**
+     * Get multiple|single categories of the process
+     *
+     * @param string $value
+     */
+    public function getProcessCategoryIdAttribute($value)
+    {
+        return implode(',', $this->categories()->pluck('category_id')->toArray()) ?: $value;
+    }
 }
