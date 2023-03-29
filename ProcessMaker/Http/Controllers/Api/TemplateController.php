@@ -97,7 +97,6 @@ class TemplateController extends Controller
         $this->validate($request, [
             'name' => 'required|string|unique:processes,name|max:255',
             'description' => 'required|string',
-            'process_category_id' => 'required|integer',
         ]);
 
         $template = new Template();
