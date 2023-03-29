@@ -24,7 +24,7 @@ new Vue({
       // this.processModal = true;
     },
     goToImport() {
-      window.location = "/processes/import";
+      window.location = "/template/process/import";
     },
     reload() {
       console.log('TEMPLATE INDEX.JS RELAOD');

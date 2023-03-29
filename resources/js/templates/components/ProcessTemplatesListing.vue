@@ -61,12 +61,12 @@
         </vuetable>
   
         <pagination
-                :single="$t('Template')"
-                :plural="$t('Templates')"
-                :perPageSelectEnabled="true"
-                @changePerPage="changePerPage"
-                @vuetable-pagination:change-page="onPageChange"
-                ref="pagination"
+          :single="$t('Template')"
+          :plural="$t('Templates')"
+          :perPageSelectEnabled="true"
+          @changePerPage="changePerPage"
+          @vuetable-pagination:change-page="onPageChange"
+          ref="pagination"
         ></pagination>
       </div>
     </div>
@@ -153,8 +153,25 @@
         goToDesigner(data) {
           window.location = "/modeler/" + data;
         },
-        goToExport(data) {
-          window.location = "/processes/" + data + "/export";
+        exportTemplate(template) {
+          ProcessMaker.apiClient({
+            method: 'POST',
+            url: `export/process_templates/download/` + template.id,
+            responseType: 'blob',
+            data: {
+              template,
+            }
+          }).then(response => {
+            const exportInfo = JSON.parse(response.headers['export-info']);
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+
+            link.setAttribute("download", `${exportInfo.name.replace(' ', '_')}.json`);
+            document.body.appendChild(link);
+            link.click();
+            ProcessMaker.alert(`The template ${exportInfo.name} was exported`, 'success');
+          });
         },
         onNavigate(action, data, index) {
           let putData = {
@@ -172,7 +189,7 @@
               this.goToDocumentation(data.id);
               break;
             case "export-item":
-              this.goToExport(data.id);
+              this.exportTemplate(data);
               break;
             case "create-template":
               this.createTemplate(data.id);

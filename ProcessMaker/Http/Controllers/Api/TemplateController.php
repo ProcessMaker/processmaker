@@ -53,7 +53,7 @@ class TemplateController extends Controller
             ], 409);
         }
 
-        (new $this->types[$type][1])->save($request);
+        return (new $this->types[$type][1])->save($request);
     }
 
     /**
@@ -83,7 +83,7 @@ class TemplateController extends Controller
             }
         }
         // This is an update from the process designer page. This will overwrite the template with new data. We do not need to check for existing templates
-        (new $this->types[$type][1])->update($request);
+        return (new $this->types[$type][1])->update($request);
     }
 
     /**

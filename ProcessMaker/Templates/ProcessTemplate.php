@@ -10,7 +10,6 @@ use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
-use ProcessMaker\Models\ProcessTemplateCategory;
 use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Traits\HasControllerAddons;
 use SebastianBergmann\CodeUnit\Exception;
@@ -51,39 +50,49 @@ class ProcessTemplate implements TemplateInterface
      */
     public function save($request) : JsonResponse
     {
-        $processId = $request->id;
-        $name = $request->name;
-        $description = $request->description;
-        $userId = $request->user_id;
-        $category = $request->process_template_category_id;
-        $mode = $request->mode;
-
-        // Get process manifest
+        // Get inputs from the $request object
+        $processId = (int) $request->id;
+        $name = $request->input('name');
+        $description = $request->input('description');
+        $userId = $request->input('user_id');
+        $category = $request->input('process_category_id');
         $manifest = $this->getManifest('process', $processId);
-        $rootUuid = $manifest->getData()->root;
-        $export = $manifest->getData()->export;
-        $svg = $export->$rootUuid->attributes->svg;
+        $mode = $request->input('mode');
 
-        // Discard ALL assets/dependents
         if ($mode === 'discard') {
-            $manifest = json_decode(json_encode($manifest), true);
-            $rootExport = Arr::first($manifest['original']['export'], function ($value, $key) use ($rootUuid) {
-                return $key === $rootUuid;
-            });
+            // Set the the 'discard' boolean for all dependents to true
+            $rootUuid = $manifest->getData()->root;
+            $originalExport = $manifest->original['export'];
+
+            // Filter root export by UUID
+            $rootExport = Arr::first(
+                $originalExport,
+                function ($value, $key) use ($rootUuid) {
+                    return $key === $rootUuid;
+                }
+            );
+
+            // Set discard flag for all dependents
             data_set($rootExport, 'dependents.*.discard', true);
-            data_set($manifest, 'original.export', $rootExport);
+
+            // Update export of original manifest with modified root export
+            data_set($manifest, 'original.export', [$rootUuid => $rootExport]);
         }
 
-        $model = ProcessTemplates::firstOrCreate([
-            'name' => $name,
-            'description' => $description,
-            'user_id' => $userId,
-            'manifest' => json_encode($manifest),
-            'svg' => $svg,
-            'process_id' => $processId,
-            'process_template_category_id' => null,
-        ]);
-
+        $model = ProcessTemplates::updateOrCreate(
+            ['process_id' => $processId],
+            [
+                'name' => $name,
+                'description' => $description,
+                'user_id' => $userId,
+                'manifest' => json_encode($manifest),
+                'svg' => isset($manifest)
+                    ? $manifest->getData()->export->{$manifest->getData()->root}->attributes->svg
+                    : '',
+                'process_category_id' => null,
+            ]
+        );
+        //dd($model);
         return response()->json(['model' => $model]);
     }
 
@@ -117,28 +126,25 @@ class ProcessTemplate implements TemplateInterface
 
             // Discard ALL assets/dependents
             if ($mode === 'discard') {
-                $manifest = json_decode(json_encode($manifest), true);
-                $rootExport = Arr::first($manifest['original']['export'], function ($value, $key) use ($rootUuid) {
+                $rootExport = Arr::first($manifest->original['export'], function ($value, $key) use ($rootUuid) {
                     return $key === $rootUuid;
                 });
                 data_set($rootExport, 'dependents.*.discard', true);
-                data_set($manifest, 'original.export', $rootExport);
+                data_set($manifest->original, 'export', [$rootUuid => $rootExport]);
             }
 
-            $template->fill($request->except('id'));
-            $template->svg = $svg;
-            $template->manifest = json_encode($manifest);
+            $template->fill(array_merge($request->except(['id', '_token']), ['svg' => $svg, 'manifest' => $manifest->toJson()]));
         }
 
-        // Catch errors to send more specific status
         try {
             $template->saveOrFail();
-        } catch (Exception $e) {
-            return response(
-                ['message' => $e->getMessage(),
-                    'errors' => ['bpmn' => $e->getMessage()], ],
-                422
-            );
+        } catch (\Exception $e) {
+            return response([
+                'message' => $e->getMessage(),
+                'errors' => [
+                    'bpmn' => $e->getMessage(),
+                ],
+            ], 422);
         }
 
         return response()->json();
@@ -154,7 +160,7 @@ class ProcessTemplate implements TemplateInterface
         $template->name = $query->name;
         $template->description = $query->description;
 
-        $categories = ProcessTemplateCategory::orderBy('name')
+        $categories = ProcessCategory::orderBy('name')
             ->where('status', 'ACTIVE')
             ->get()
             ->pluck('name', 'id')
@@ -183,33 +189,6 @@ class ProcessTemplate implements TemplateInterface
         $response = (new ExportController)->manifest($type, $id);
 
         return $response;
-    }
-
-    /**
-     * Get the where array to filter the resources.
-     *
-     * @param Request $request
-     * @param array $searchableColumns
-     *
-     * @return array
-     */
-    protected function getRequestFilterBy(Request $request, array $searchableColumns)
-    {
-        $where = [];
-        $filter = $request->input('filter');
-        if ($filter) {
-            foreach ($searchableColumns as $column) {
-                // for other columns, it can match a substring
-                $sub_search = '%';
-                if (array_search('status', explode('.', $column), true) !== false) {
-                    // filtering by status must match the entire string
-                    $sub_search = '';
-                }
-                $where[] = [$column, 'like', $sub_search . $filter . $sub_search, 'or'];
-            }
-        }
-
-        return $where;
     }
 
     /**
@@ -243,11 +222,11 @@ class ProcessTemplate implements TemplateInterface
 
     public function existingTemplate($request)
     {
-        $processId = $request->id;
+        $id = $request->id;
         $name = $request->name;
 
         $template = ProcessTemplates::where(['name' => $name])->first();
-        if ($template !== null) {
+        if ($template !== null && $id !== $template->id) {
             // If same asset has been Saved as Template previously, offer to choose between “Update Template” and “Save as New Template”
             return [$template->id, $name];
         }

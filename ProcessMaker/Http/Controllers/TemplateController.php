@@ -20,7 +20,18 @@ class TemplateController extends Controller
      */
     public function edit(string $type, Request $request)
     {
-        (new $this->types[$type][1])->edit($request);
+        new $this->types[$type][1]->edit($request);
+    }
+
+    /**
+     * @param string $type
+     * @param Request $request
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function import(string $type, Request $request)
+    {
+        return view('templates.import', compact('type'));
     }
 
     /**
