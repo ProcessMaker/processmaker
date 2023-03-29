@@ -5,7 +5,7 @@
     </div>
     <div v-else>
       {{ display }}
-       <b-badge v-if="hasAuthorizedBadge" pill :variant="setting.ui.authorizedBadge ? 'success' : 'secondary'">
+       <b-badge v-if="hasAuthorizedBadge" pill :variant="setting.ui.authorizedBadge ? 'success' : 'warning'">
          <span v-if="setting.ui.authorizedBadge">{{ $t('Authorized') }}</span>
          <span v-else>{{ $t('Not Authorized') }}</span>
        </b-badge>
