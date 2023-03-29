@@ -95,7 +95,7 @@ class TemplateController extends Controller
     public function create(string $type, Request $request)
     {
         $this->validate($request, [
-            'name' => 'required|string|min:5|max:255',
+            'name' => 'required|string|unique:processes,name|max:255',
             'description' => 'required|string',
             'process_category_id' => 'required|integer',
         ]);
