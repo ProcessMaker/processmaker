@@ -66,7 +66,7 @@
     methods: {
       updateModal($event) {
         this.templateData = $event;
-        this.title = $event.title;
+        this.title = $event.name;
         this.hasHeaderButtons = true;
         this.headerButtons[0].hidden = false;
         this.titleButtons[0].hidden = true;
