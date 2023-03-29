@@ -197,8 +197,6 @@ If you choose not to install the certificate, you should access the socket.io js
 
 * [https://processmaker.local.processmaker.com:6001/socket.io/socket.io.js](https://processmaker.local.processmaker.com:6001/socket.io/socket.io.js)
 
-#### CI/CD
-
 #### Customize Logos
 
 1. Add images to resources/img/
