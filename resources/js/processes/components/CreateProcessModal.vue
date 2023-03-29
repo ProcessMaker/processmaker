@@ -50,11 +50,12 @@
         >
           <select-user
             :multiple="false"
-            v-model="selectedUser"
-            name="run_as_user_id"
+            v-model="manager"
+            name="process_manager_id"
           ></select-user>
         </b-form-group>
         <b-form-group
+          v-if="!selectedTemplate"
           :label="$t('Upload BPMN File (optional)')"
           :invalid-feedback="errorMessage('bpmn', addError)"
           :state="errorState('bpmn', addError)"
@@ -103,14 +104,15 @@
             {'content': 'Cancel', 'action': 'hide()', 'variant': 'outline-secondary', 'disabled': false, 'hidden': false},
             {'content': 'Create', 'action': 'createTemplate', 'variant': 'primary', 'disabled': false, 'hidden': false},
         ],
-        selectedUser: "",
+        manager: "",
       }
     },
     watch: {
       selectedTemplate: function() {
         if (this.selectedTemplate) {
           this.name = this.templateData.name;
-          this.description = this.templateData.description;   
+          this.description = this.templateData.description;  
+          this.process_category_id = this.templateData.category_id;
         }
       }
     },
@@ -161,6 +163,7 @@
         formData.append("name", this.name);
         formData.append("description", this.description);
         formData.append("process_category_id", this.process_category_id);
+        formData.append("manager_id", this.manager.id);
         if (this.file) {
           formData.append("file", this.file);
         }
