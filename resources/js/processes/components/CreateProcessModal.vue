@@ -1,8 +1,5 @@
 <template>
   <div>
-    <!-- <b-button :aria-label="$t('Create Process')" v-b-modal.createProcess class="mb-3 mb-md-0 ml-md-2">
-      <i class="fas fa-plus"></i> {{ $t('Process') }}
-    </b-button> -->
     <modal 
       id="createProcess"
       :title="$t('Create Process')"
@@ -10,7 +7,7 @@
       @ok.prevent="onSubmit"
       @hidden="onClose"
     >
-      <template v-if="countCategories || blankTemplate === true">
+      <template v-if="countCategories">
         <required></required>
         <b-form-group
           required
@@ -72,68 +69,6 @@
           ></b-form-file>
         </b-form-group>
       </template>
-      <template v-else-if="selectedTemplate === true">
-        <required></required>
-        <b-form-group
-          required
-          :label="$t('Name')"
-          :description="formDescription('The process name must be unique', 'name', addError)"
-          :invalid-feedback="errorMessage('name', addError)"
-          :state="errorState('name', addError)"
-        >
-          <b-form-input
-            autofocus
-            :value="prefilledName"
-            autocomplete="off"
-            :state="errorState('name', addError)"
-            name="name"
-            required
-          ></b-form-input>
-        </b-form-group>
-        <b-form-group
-          required
-          :label="$t('Description')"
-          :invalid-feedback="errorMessage('description', addError)"
-          :state="errorState('description', addError)"
-        >
-          <b-form-textarea
-            required
-            :value="prefilledDescription"
-            autocomplete="off"
-            rows="3"
-            :state="errorState('description', addError)"
-            name="description"
-          ></b-form-textarea>
-        </b-form-group>
-        <category-select :label="$t('Category')" api-get="process_categories"
-          api-list="process_categories" v-model="process_category_id"
-          :errors="addError.process_category_id"
-          name="category"
-        ></category-select>
-        <b-form-group
-          :label="$t('Process Manager')"
-        >
-          <select-user
-            :multiple="false"
-            v-model="selectedUser"
-            name="run_as_user_id"
-          ></select-user>
-        </b-form-group>
-        <b-form-group
-          :label="$t('Upload BPMN File (optional)')"
-          :invalid-feedback="errorMessage('bpmn', addError)"
-          :state="errorState('bpmn', addError)"
-        >
-          <b-form-file
-            :browse-text="$t('Browse')"
-            accept=".bpmn,.xml"
-            :placeholder="selectedFile"
-            ref="customFile"
-            @change="onFileChange"
-            :state="errorState('bpmn', addError)"
-          ></b-form-file>
-        </b-form-group>
-      </template>
       <template v-else>
         <div>{{ $t('Categories are required to create a process') }}</div>
         <a href="/designer/processes/categories" class="btn btn-primary container mt-2">
@@ -171,12 +106,12 @@
         selectedUser: "",
       }
     },
-    computed: {
-      prefilledName() {
-        return this.templateData.title;
-      },
-      prefilledDescription() {
-        return this.templateData.description;
+    watch: {
+      selectedTemplate: function() {
+        if (this.selectedTemplate) {
+          this.name = this.templateData.name;
+          this.description = this.templateData.description;   
+        }
       }
     },
     methods: {
@@ -221,21 +156,17 @@
           return;
         }
         this.disabled = true;
-
+        
         let formData = new FormData();
-        if (this.templateData.length > 0) {
-          formData.append("name", this.templateData.name);
-          formData.append("description", this.templateData.description);
-          formData.append("process_category_id", this.process_category_id);
-          console.log('process_category_id', this.process_category_id);
+        formData.append("name", this.name);
+        formData.append("description", this.description);
+        formData.append("process_category_id", this.process_category_id);
+        if (this.file) {
+          formData.append("file", this.file);
+        }
+        if (this.selectedTemplate) {
           this.handleCreateFromTemplate(this.templateData.id, formData);
         } else {
-          formData.append("name", this.name);
-          formData.append("description", this.description);
-          formData.append("process_category_id", this.process_category_id);
-          if (this.file) {
-            formData.append("file", this.file);
-          }
           this.handleCreateBlank(formData);
         }
       },
@@ -271,7 +202,7 @@
           this.addError = error.response.data.errors;
         });
       }
-    }
+    },
   };
 </script>
 

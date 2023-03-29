@@ -21,7 +21,7 @@
     >
       <template-search :type="type" :component="currentComponent" @show-details="updateModal($event)"/>
     </modal>
-    <create-process-modal ref="create-process-modal" :blank-template="blankTemplate" :selected-template="selectedTemplate" :template-data="templateData"/>
+    <create-process-modal ref="create-process-modal" :blank-template="blankTemplate" :count-categories="countCategories" :selected-template="selectedTemplate" :template-data="templateData"/>
   </div>
 </template>
 
@@ -32,7 +32,7 @@
 
   export default {
     components: { Modal, TemplateSearch, CreateProcessModal },
-    props: ['type'],
+    props: ['type', 'countCategories'],
     data: function() {
       return {
         title: '',
@@ -82,6 +82,7 @@
         this.title = this.$t(`New ${this.type}`);
       },
       createBlankProcess() {
+        this.selectedTemplate = false;
         this.blankTemplate = true;
         this.$bvModal.hide("selectTemplate");
         this.$refs["create-process-modal"].show();
