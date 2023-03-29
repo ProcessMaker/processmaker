@@ -15,8 +15,8 @@
         <template>
           <b-row align-v="start">
             <b-col>
-                <p>{{ $t(`This will create a re-usuable template based on the ${this.assetName} ${this.assetType}`) }}</p>
                 <required></required>
+                <p class="mt-3">{{ $t(`This will create a re-usable template based on the ${this.assetName} ${this.assetType}.`) }}</p>
                 <p class="mb-3" v-if="showWarning"><i class="fas fa-exclamation-triangle text-warning"></i> {{ assetExistsError }}</p>
                 <b-form-group
                     required
@@ -116,13 +116,13 @@
       },  
       methods: {
         show() {
+          this.customModalButtons[1].hidden === true ? this.toggleButtons() : false;
           this.$bvModal.show('createTemplate');
         },
         close() {
           this.$bvModal.hide('createTemplate');
           this.clear();
           this.errors = {};
-          this.toggleButtons();
         },
         clear() {
           this.name = '';
@@ -226,10 +226,18 @@
             }
           } else {
             this.customModalButtons[1].disabled = true;
+    
             if (this.showWarning) {
               this.customModalButtons[2].disabled = true;
               this.customModalButtons[3].disabled = true;
             }
+          }
+          if (this.name.length > 255) {
+            this.errors.name = ['Name must be less than 255 characters.'];
+            this.customModalButtons[1].disabled = true;
+            this.customModalButtons[3].disabled = true;
+          }else {
+            this.errors.name = null;
           }
         }
       },

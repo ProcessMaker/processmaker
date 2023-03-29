@@ -14,18 +14,27 @@ new Vue({
   },
   methods: {
     show() {
-      this.processId = null;
-      this.processModal = true;
+      console.log('SHOW');
+      // this.processId = null;
+      // this.processModal = true;
     },
     edit(id) {
-      this.processId = id;
-      this.processModal = true;
+      console.log('EDIT', id);
+      // this.processId = id;
+      // this.processModal = true;
     },
     goToImport() {
       window.location = "/template/process/import";
     },
     reload() {
-      this.$refs.templateListing.fetch();
+      console.log('TEMPLATE INDEX.JS RELAOD');
+      this.$refs.templateListing.dataManager([{
+        field: "updated_at",
+        direction: "desc",
+      }]);
     },
+    // reload() {
+    //   this.$refs.templateListing.fetch();
+    // },
   },
 });

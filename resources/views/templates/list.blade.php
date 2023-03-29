@@ -33,8 +33,10 @@
             ref="templateListing"
             :filter="filter"
             {{-- status="archived" --}}
+            v-on:edit="edit"
             v-on:reload="reload"
-            :permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"
+            :permission="{{ \Auth::user()->hasPermissionsFor('process-templates') }}"
+            :current-user-id="{{ \Auth::user()->id }}"
             is-documenter-installed="{{\ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled()}}"
         ></process-templates-listing>
     </div>

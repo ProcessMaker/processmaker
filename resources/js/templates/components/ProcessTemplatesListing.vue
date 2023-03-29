@@ -47,52 +47,16 @@
                     hide-name="true"
             ></avatar-image>
           </template>
-  
+
           <template slot="actions" slot-scope="props">
-            <div class="actions">
-              <div class="popout">
-                <!-- <b-btn
-                        variant="link"
-                        @click="onAction('view-documentation', props.rowData, props.rowIndex)"
-                        v-b-tooltip.hover
-                        :title="$t('Template Documentation')"
-                        v-if="permission.includes('view-processes') && isDocumenterInstalled"
-                        v-uni-aria-describedby="props.rowData.id.toString()"
-                >
-                  <i class="fas fa-map-signs fa-lg fa-fw"></i>
-                </b-btn> -->
-                <b-btn
-                  variant="link"
-                  @click="onAction('export-item', props.rowData, props.rowIndex)"
-                  v-b-tooltip.hover
-                  :title="$t('Export Template')"
-                  v-if="permission.includes('export-processes')"
-                  v-uni-aria-describedby="props.rowData.id.toString()"
-                >
-                  <i class="fas fa-file-export fa-lg fa-fw"></i>
-                </b-btn>
-                <!-- <b-btn
-                        variant="link"
-                        @click="onAction('edit-designer', props.rowData, props.rowIndex)"
-                        v-b-tooltip.hover
-                        :title="$t('Edit Template')"
-                        v-if="permission.includes('edit-processes')"
-                        v-uni-aria-describedby="props.rowData.id.toString()"
-                >
-                  <i class="fas fa-pen-square fa-lg fa-fw"></i>
-                </b-btn> -->
-                <b-btn
-                  variant="link"
-                  @click="onAction('configure-item', props.rowData, props.rowIndex)"
-                  v-b-tooltip.hover
-                  :title="$t('Configure Template')"
-                  v-if="permission.includes('edit-processes')"
-                  v-uni-aria-describedby="props.rowData.id.toString()"
-                >
-                  <i class="fas fa-cog fa-lg fa-fw"></i>
-                </b-btn>                
-              </div>
-            </div>
+            <ellipsis-menu 
+              @navigate="onNavigate"
+              :actions="actions"
+              :permission="permission"
+              :data="props.rowData"
+              :is-documenter-installed="isDocumenterInstalled"
+              :divider="true"
+            />
           </template>
         </vuetable>
   
@@ -112,11 +76,12 @@
     import datatableMixin from "../../components/common/mixins/datatable";
     import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
     import { createUniqIdsMixin } from "vue-uniq-ids";
+    import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
   
     const uniqIdsMixin = createUniqIdsMixin();
   
     export default {
-      components: {},
+      components: {EllipsisMenu},
       mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
       props: ["filter", "id", "status", "permission", "isDocumenterInstalled", "processName"],
       data() {
@@ -161,11 +126,17 @@
               name: "__slot:actions",
               title: ""
             }
-          ]
+          ],
+          actions: [
+            // { value: "edit-designer", content: "Edit Template", permission: "edit-processes", icon: "fas fa-edit", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
+            { value: "edit-item", content: "Configure", permission: "edit-process-templates", icon: "fas fa-cog"},
+            { value: "view-documentation", content: "View Documentation", permission: "view-process-templates", icon: "fas fa-sign", isDocumenterInstalled: "if('isDocumenterInstalled' == true, true, false)"},
+            { value: "export-item", content: "Export Template", permission: "export-process-templates", icon: "fas fa-file-export"}
+          ],
         };
       },
       created () {
-        ProcessMaker.EventBus.$on("api-data-process-template", (val) => {
+        ProcessMaker.EventBus.$on("api-data-process-templates", (val) => {
           this.fetch();
         });
       },
@@ -202,43 +173,16 @@
             ProcessMaker.alert(`The template ${exportInfo.name} was exported`, 'success');
           });
         },
-        onAction(action, data, index) {
+        onNavigate(action, data, index) {
           let putData = {
             name: data.name,
             description: data.description,
           };
-          switch (action) {
-            case "unpause-start-timer":
-              putData.pause_timer_start = false;
-              ProcessMaker.apiClient
-                  .put("processes/" + data.id, putData)
-                  .then(response => {
-                    ProcessMaker.alert(
-                        this.$t("The process was unpaused."),
-                        "success"
-                    );
-                    this.$emit("reload");
-                  });
-              break;
-            case "pause-start-timer":
-              putData.pause_timer_start = true;
-              ProcessMaker.apiClient
-                  .put("processes/" + data.id, putData)
-                  .then(response => {
-                    ProcessMaker.alert(
-                        this.$t("The process was paused."),
-                        "success"
-                    );
-                    this.$emit("reload");
-                  });
-              break;
+          switch (action.value) {
             case "edit-designer":
               this.goToDesigner(data.id);
               break;
             case "edit-item":
-              this.goToEdit(data.id);
-            break;
-            case "configure-item":
               this.goToConfigure(data.id);
             break;
             case "view-documentation":
@@ -249,17 +193,6 @@
               break;
             case "create-template":
               this.createTemplate(data.id);
-              break;
-            case "restore-item":
-              ProcessMaker.apiClient
-                  .put("processes/" + data.id + "/restore")
-                  .then(response => {
-                    ProcessMaker.alert(
-                        this.$t("The process was restored."),
-                        "success"
-                    );
-                    this.$emit("reload");
-                  });
               break;
             case "remove-item":
               ProcessMaker.confirmModal(
@@ -280,7 +213,7 @@
                         });
                   }
               );
-              break;
+            break;
           }
         },
         formatStatus(status) {
@@ -354,6 +287,7 @@
                 this.apiDataLoading = false;
                 this.apiNoResults = false;
                 this.loading = false;
+             //   console.log('FETCH PERMISSIONS', this.permission);
               });
         },
         addWarningMessages(data) {
@@ -370,7 +304,6 @@
           return data;
         },
       },
-      computed: {}
     };
   </script>
   

@@ -46,7 +46,7 @@ class ProcessTemplateTest extends TestCase
 
         $response = $this->apiCall(
             'POST',
-            route('api.template.store', [
+            route('api.templates.store', [
                 'type' => 'process',
                 'id' => $process->id,
             ]),
@@ -87,7 +87,7 @@ class ProcessTemplateTest extends TestCase
 
         $response = $this->apiCall(
             'POST',
-            route('api.template.store', [
+            route('api.templates.store', [
                 'type' => 'process',
                 'id' => $process->id,
             ]),
@@ -124,7 +124,7 @@ class ProcessTemplateTest extends TestCase
 
         $response = $this->apiCall(
             'POST',
-            route('api.template.store', [
+            route('api.templates.store', [
                 'type' => 'process',
                 'id' => $process->id,
             ]),

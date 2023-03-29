@@ -68,6 +68,7 @@ class Kernel extends HttpKernel
         'setskin' => \ProcessMaker\Http\Middleware\SetSkin::class,
         'external.connection' => \ProcessMaker\Http\Middleware\ValidateExternalConnection::class,
         'client' => \Laravel\Passport\Http\Middleware\CheckClientCredentials::class,
+        'template-authorization' => \ProcessMaker\Http\Middleware\TemplateAuthorization::class,
     ];
 
     /**

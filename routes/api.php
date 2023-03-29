@@ -227,9 +227,9 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('import/do-import', [ImportController::class, 'import'])->name('import.do_import')->middleware('can:export-processes');
 
     // Templates
-    Route::get('templates/{type}', [TemplateController::class, 'index'])->name('template.index');
-    Route::post('template/{type}/{id}', [TemplateController::class, 'store'])->name('template.store');
-    Route::put('template/{type}/{id}', [TemplateController::class, 'update'])->name('template.update');
+    Route::get('templates/{type}', [TemplateController::class, 'index'])->name('templates.index')->middleware('template-authorization');
+    Route::post('template/{type}/{id}', [TemplateController::class, 'store'])->name('templates.store')->middleware('template-authorization');
+    Route::put('template/{type}/{id}', [TemplateController::class, 'update'])->name('templates.update')->middleware('template-authorization');
 
     // debugging javascript errors
     Route::post('debug', [DebugController::class, 'store'])->name('debug.store')->middleware('throttle');
