@@ -175,7 +175,6 @@ export default {
             ProcessMaker.alert(error, "danger");
           }
         });
-        this.close();
       },  
       updateTemplate() {   
         let putData = {
