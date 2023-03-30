@@ -648,8 +648,8 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         $dataManager = new DataManager();
         $instanceData = $dataManager->getData($token);
 
-        $assignedUsers = $instanceData[$usersVariable];
-        $assignedGroups = $instanceData[$groupsVariable];
+        $assignedUsers = $usersVariable ? $instanceData[$usersVariable] : [];
+        $assignedGroups = $groupsVariable ?  $instanceData[$groupsVariable] : [];
 
         if (!is_array($assignedUsers)) {
             $assignedUsers = [$assignedUsers];

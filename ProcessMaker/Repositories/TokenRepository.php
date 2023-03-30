@@ -122,8 +122,8 @@ class TokenRepository implements TokenRepositoryInterface
                     $token->self_service_groups = ['users' => $evaluatedUsers, 'groups' => $evaluatedGroups];
                     break;
                 case 'process_variable':
-                    $evaluatedUsers = $token->getInstance()->getDataStore()->getData($selfServiceUsers);
-                    $evaluatedGroups = $token->getInstance()->getDataStore()->getData($selfServiceGroups);
+                    $evaluatedUsers = $selfServiceUsers ? $token->getInstance()->getDataStore()->getData($selfServiceUsers) : [];
+                    $evaluatedGroups = $selfServiceGroups ? $token->getInstance()->getDataStore()->getData($selfServiceGroups) : [];
 
                     // If we have single values we put it inside an array
                     $evaluatedUsers = is_array($evaluatedUsers) ? $evaluatedUsers : [$evaluatedUsers];
