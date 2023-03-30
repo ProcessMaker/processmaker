@@ -154,6 +154,9 @@ export default {
       return promptTokens + completionTokens + totalTokens;
     },
     aiEnabledLocal() {
+      if (!window.ProcessMaker.openAi.enabled || window.ProcessMaker.openAi.enabled === "") {
+        return false;
+      }
       if (!this.searchType || this.searchType === "") {
         return false;
       }
@@ -221,10 +224,13 @@ export default {
       }
 
       if (this.query.isPMQL()) {
-        // this.$emit("submit", this.query);
         this.$emit("submit", this.query);
       } else if (this.aiEnabledLocal) {
         this.runNLQToPMQL();
+      } else if (!this.query.isPMQL() && !this.aiEnabledLocal) {
+        const fullTextSearch = `(fulltext LIKE "%${this.query}%")`;
+        this.pmql = fullTextSearch;
+        this.$emit("submit", fullTextSearch);
       }
       this.calcInputHeight();
     },
