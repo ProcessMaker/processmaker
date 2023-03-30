@@ -35,7 +35,7 @@ class TemplateController extends Controller
     public function store(string $type, Request $request)
     {
         $request->validate([
-            'name' => 'required|string|min:1|max:255',
+            'name' => 'required|string|unique:processes,name|max:255',
             'description' => 'required|string',
         ]);
 
@@ -55,7 +55,7 @@ class TemplateController extends Controller
     public function updateTemplate(string $type, Request $request)
     {
         $request->validate([
-            'name' => 'required|string|min:1|max:255',
+            'name' => 'required|string|unique:processes,name|max:255',
             'description' => 'required|string',
         ]);
 
@@ -74,8 +74,8 @@ class TemplateController extends Controller
      */
     public function updateTemplateConfigs(string $type, Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|min:1|max:255',
+        $this->validate($request, [
+            'name' => 'required|string|unique:processes,name|max:255',
             'description' => 'required|string',
         ]);
 
