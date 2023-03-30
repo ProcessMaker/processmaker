@@ -240,13 +240,22 @@ export default {
 
       this.aiLoading = true;
 
-      ProcessMaker.apiClient.post("/openai/nlq-to-pmql", params).then((response) => {
-        this.pmql = response.data.result;
-        this.usage = response.data.usage;
-        this.$emit("submit", this.pmql);
-        this.aiLoading = false;
-        this.calcInputHeight();
-      });
+      ProcessMaker.apiClient.post("/openai/nlq-to-pmql", params)
+        .then((response) => {
+          this.pmql = response.data.result;
+          this.usage = response.data.usage;
+          this.$emit("submit", this.pmql);
+          this.aiLoading = false;
+          this.calcInputHeight();
+        })
+        .catch(error => {
+          window.ProcessMaker.alert(this.$t("An error ocurred while calling OpenAI endpoint."), "danger");
+          const fullTextSearch = `(fulltext LIKE "%${params.question}%")`;
+          this.pmql = fullTextSearch;
+          this.$emit("submit", fullTextSearch);
+          this.aiLoading = false;
+          this.calcInputHeight();
+        });
     },
   },
 };
