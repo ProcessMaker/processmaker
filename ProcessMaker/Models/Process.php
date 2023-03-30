@@ -478,10 +478,10 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
 
         $definitions = $token->getInstance()->getVersionDefinitions();
         $properties = $definitions->findElementById($activity->getId())->getBpmnElementInstance()->getProperties();
-        $assignmentLock = array_key_exists('assignmentLock', $properties) ? $properties['assignmentLock'] : false;
+        $assignmentLock = array_key_exists('assignmentLock', $properties ?? []) ? $properties['assignmentLock'] : false;
 
-        $config = array_key_exists('config', $properties) ? json_decode($properties['config'], true) : [];
-        $isSelfService = array_key_exists('selfService', $config) ? $config['selfService'] : false;
+        $config = array_key_exists('config', $properties ?? []) ? json_decode($properties['config'], true) : [];
+        $isSelfService = array_key_exists('selfService', $config ?? []) ? $config['selfService'] : false;
 
         if ($assignmentType === 'rule_expression') {
             $userByRule = $isSelfService ? null : $this->getNextUserByRule($activity, $token);
@@ -557,7 +557,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     private function checkAssignment(ProcessRequest $request, ActivityInterface $activity, $assignmentType, $escalateToManager, User $user = null)
     {
         $config = $activity->getProperty('config') ? json_decode($activity->getProperty('config'), true) : [];
-        $selfServiceToggle = array_key_exists('selfService', $config) ? $config['selfService'] : false;
+        $selfServiceToggle = array_key_exists('selfService', $config ?? []) ? $config['selfService'] : false;
         $isSelfService = $selfServiceToggle || $assignmentType === 'self_service';
 
         if ($activity instanceof ScriptTaskInterface
