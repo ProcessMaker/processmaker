@@ -1,10 +1,9 @@
 import Vue from "vue";
 import TasksList from "./components/TasksList";
-import AdvancedSearch from "../components/AdvancedSearch";
 
 new Vue({
   el: "#tasks",
-  components: { TasksList, AdvancedSearch },
+  components: { TasksList },
   data: {
     filter: "",
     pmql: "",
