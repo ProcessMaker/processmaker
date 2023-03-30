@@ -212,12 +212,12 @@ class ProcessTemplate implements TemplateInterface
     {
         $template = (object) [];
 
-        $query = ProcessTemplates::select(['name', 'description'])->where('id', $id)->firstOrFail();
+        $query = ProcessTemplates::select(['name', 'description', 'process_category_id'])->where('id', $id)->firstOrFail();
 
         $template->id = $id;
         $template->name = $query->name;
         $template->description = $query->description;
-
+        $template->process_category_id = $query['process_category_id'];
         $categories = ProcessCategory::orderBy('name')
             ->where('status', 'ACTIVE')
             ->get()
