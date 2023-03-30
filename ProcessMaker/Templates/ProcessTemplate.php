@@ -188,12 +188,13 @@ class ProcessTemplate implements TemplateInterface
         // Catch errors to send more specific status
         try {
             $template->saveOrFail();
-        } catch (Exception $e) {
-            return response(
-                ['message' => $e->getMessage(),
-                    'errors' => ['bpmn' => $e->getMessage()], ],
-                422
-            );
+        } catch (\Exception $e) {
+            return response([
+                'message' => $e->getMessage(),
+                'errors' => [
+                    'bpmn' => $e->getMessage(),
+                ],
+            ], 422);
         }
 
         return response()->json();
@@ -203,7 +204,12 @@ class ProcessTemplate implements TemplateInterface
     {
         $template = (object) [];
 
-        $template = ProcessTemplates::where('id', $id)->firstOrFail();
+        $query = ProcessTemplates::select(['name', 'description'])->where('id', $id)->firstOrFail();
+
+        $template->id = $id;
+        $template->name = $query->name;
+        $template->description = $query->description;
+
         $categories = ProcessCategory::orderBy('name')
             ->where('status', 'ACTIVE')
             ->get()
@@ -236,33 +242,6 @@ class ProcessTemplate implements TemplateInterface
         $content = json_decode($response->getContent(), true);
 
         return $content;
-    }
-
-    /**
-     * Get the where array to filter the resources.
-     *
-     * @param Request $request
-     * @param array $searchableColumns
-     *
-     * @return array
-     */
-    protected function getRequestFilterBy(Request $request, array $searchableColumns)
-    {
-        $where = [];
-        $filter = $request->input('filter');
-        if ($filter) {
-            foreach ($searchableColumns as $column) {
-                // for other columns, it can match a substring
-                $sub_search = '%';
-                if (array_search('status', explode('.', $column), true) !== false) {
-                    // filtering by status must match the entire string
-                    $sub_search = '';
-                }
-                $where[] = [$column, 'like', $sub_search . $filter . $sub_search, 'or'];
-            }
-        }
-
-        return $where;
     }
 
     /**

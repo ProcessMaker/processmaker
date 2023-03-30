@@ -12,8 +12,10 @@ use ProcessMaker\ImportExport\Exporters\ExporterBase;
 use ProcessMaker\ImportExport\Exporters\ProcessExporter;
 use ProcessMaker\ImportExport\Exporters\ScreenExporter;
 use ProcessMaker\ImportExport\Exporters\ScriptExporter;
+use ProcessMaker\ImportExport\Exporters\TemplateExporter;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 
@@ -23,6 +25,7 @@ class ExportController extends Controller
         'screen' => [Screen::class, ScreenExporter::class],
         'process' => [Process::class, ProcessExporter::class],
         'script' => [Script::class, ScriptExporter::class],
+        'process_templates' => [ProcessTemplates::class, TemplateExporter::class],
     ];
 
     /**
@@ -45,7 +48,7 @@ class ExportController extends Controller
     {
         $model = $this->getModel($type)->findOrFail($id);
         $post = $request->json()->all();
-        $options = new Options($post['options']);
+        $options = (isset($post['options'])) ? new Options($post['options']) : new Options([]);
         $password = (isset($post['password']) ? $post['password'] : null);
 
         $exporter = new Exporter();
