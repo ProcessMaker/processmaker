@@ -153,13 +153,13 @@ export default {
       },
       saveTemplate() {    
         let formData = new FormData();
-      formData.append("asset_id", this.assetId);
-      formData.append("name", this.name);
-      formData.append("description", this.description);
-      formData.append("user_id", this.currentUserId);
-      formData.append("mode", this.saveMode);
-      formData.append("process_category_id", this.process_category_id);
-      ProcessMaker.apiClient.post("template/" + this.assetType + "/" + this.assetId, formData)
+        formData.append("asset_id", this.assetId);
+        formData.append("name", this.name);
+        formData.append("description", this.description);
+        formData.append("user_id", this.currentUserId);
+        formData.append("mode", this.saveMode);
+        formData.append("process_category_id", this.process_category_id);
+        ProcessMaker.apiClient.post("template/" + this.assetType + "/" + this.assetId, formData)
         .then(response => {
           ProcessMaker.alert(this.$t("Template successfully created"), "success");
           this.close();
@@ -175,31 +175,7 @@ export default {
             ProcessMaker.alert(error, "danger");
           }
         });
-      //this.close();
-          // let formData = new FormData();
-          // formData.append("asset_id", this.assetId);
-          // formData.append("name", this.name);
-          // formData.append("description", this.description);
-          // formData.append("user_id", this.currentUserId);
-          // formData.append("mode", this.saveMode);
-          // formData.append("template_category_id", null);
-          // ProcessMaker.apiClient.post("template/" + this.assetType + '/' + this.assetId, formData)
-          // .then(response => {
-          //   ProcessMaker.alert( this.$t("Template successfully created"),"success");
-          //   this.close();
-          // }).catch(error => {
-          //     const name = error.response.data.name[0];
-          //     if (name) {
-          //         this.showWarning = true;
-          //         this.toggleButtons();
-          //         this.errors = error.response.data;
-          //         this.existingAssetId = error.response.data.id;
-          //         this.existingAssetName = error.response.data.templateName;
-          //     } else {
-          //         ProcessMaker.alert(error,"danger");
-          //     }
-          // }); 
-          // //this.close();
+        this.close();
       },  
       updateTemplate() {   
         let putData = {
