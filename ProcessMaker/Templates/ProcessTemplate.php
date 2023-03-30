@@ -156,10 +156,18 @@ class ProcessTemplate implements TemplateInterface
         $processId = $request->process_id;
         $mode = $request->mode;
 
+        $rootUuid = null;
+        $export = null;
         $manifest = $this->getManifest('process', $processId);
-        $rootUuid = $manifest->getData()->root;
-        $export = $manifest->getData()->export;
-        $svg = $export->$rootUuid->attributes->svg;
+        if (is_array($manifest)) {
+            $rootUuid = Arr::get($manifest, 'root');
+            $export = Arr::get($manifest, 'export');
+        } else {
+            $rootUuid = $manifest->getData()->root;
+            $export = $manifest->getData()->export;
+        }
+
+        $svg = Arr::get($export, $rootUuid . '.attributes.svg');
 
         $template->fill($request->except('id'));
         $template->svg = $svg;
