@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div  class="position-relative">
-      <button class="btn btn-outline-secondary mr-1 d-flex align-items-center" @click="toggleFiltersPopup">
+    <div class="position-relative">
+      <button ref="filterButton" class="btn btn-outline-secondary mr-1 d-flex align-items-center" @click="toggleFiltersPopup">
         <i class="fa fa-sliders-h mr-1"></i>
         <span class="text-capitalize">Filter</span>
       </button>
-      <div v-if="showFilterPopup" class="filter-dropdown-panel-container card">
+      <div v-if="showFilterPopup" class="filter-dropdown-panel-container card" v-click-outside="closeFiltersPopup">
         <div v-if="type == 'requests'" class="card-body">
           <label for="process_name_filter">{{$t('Process')}}</label>
           <multiselect id="process_name_filter" v-model="process"
@@ -203,7 +203,23 @@
 
 <script>
 
+let myEvent;
 export default {
+  directives: {
+    clickOutside: {
+      bind(el, binding, vnode) {
+        myEvent = function (event) {
+          if (!(el === event.target || el.contains(event.target) || vnode.context.$refs.filterButton.contains(event.target))) {
+            vnode.context[binding.expression](event);
+          }
+        };
+        document.body.addEventListener("click", myEvent);
+      },
+      unbind() {
+        document.body.removeEventListener("click", myEvent);
+      },
+    },
+  },
   props: [
     "type",
     "paramProcess",
@@ -270,12 +286,14 @@ export default {
   mounted() {
     this.$emit("filterspmqlchange", [this.pmql, this.getSelectedFilters()]);
     ProcessMaker.EventBus.$on("removefilter", (filter) => {
-      console.log("on remove filter");
       this.removeFilter(filter);
     });
   },
 
   methods: {
+    closeFiltersPopup() {
+      this.showFilterPopup = false;
+    },
     toggleFiltersPopup() {
       this.showFilterPopup = !this.showFilterPopup;
     },
