@@ -15,20 +15,52 @@
     ]])
 @endsection
 @section('content')
-    <div class="px-3 page-content mb-0" id="tasks">
-        <div class="row">
-            <div class="col" align="right">
-                <b-alert class="align-middle" show variant="danger" v-cloak v-if="inOverdueMessage.length>0"
-                         style="text-align: center; margin-top:20px;" data-cy="tasks-alert">
-                    @{{ inOverdueMessage }}
-                </b-alert>
-            </div>
-        </div>
-        <advanced-search ref="advancedSearch" type="tasks" :permission="{{ Auth::user()->hasPermissionsFor('users', 'groups') }}" :param-status="status" @change="onChange" @submit="onSearch"></advanced-search>
-        <div class="container-fluid">
-            <tasks-list ref="taskList" :filter="filter" :pmql="pmql" @in-overdue="setInOverdueMessage"></tasks-list>
-        </div>
+  <div class="px-3 page-content mb-0" id="tasks">
+    <div class="row">
+      <div class="col" align="right">
+          <b-alert class="align-middle" show variant="danger" v-cloak v-if="inOverdueMessage.length>0"
+            style="text-align: center; margin-top:20px;" data-cy="tasks-alert">
+            @{{ inOverdueMessage }}
+          </b-alert>
+      </div>
     </div>
+
+    <div class="row">
+      <div class="col-sm-12">
+        <div id="search-bar" class="search advanced-search mb-3">
+          <div class="d-flex">
+            <div class="flex-grow-1">
+              <pmql-input
+                ref="pmql_input"
+                search-type="tasks"
+                :value="pmql"
+                :filters-value="pmql"
+                :ai-enabled="true"
+                :show-filters="true"
+                :aria-label="$t('Advanced Search (PMQL)')"
+                :param-status="status" 
+                :permission="{{ Auth::user()->hasPermissionsFor('users', 'groups') }}" 
+                @submit="onNLQConversion"
+                @filterspmqlchange="onFiltersPmqlChange">
+
+                <template v-slot:left-buttons>
+                  <div class="d-flex">
+                    <div class="d-flex mr-1" v-for="addition in additions">
+                      <component class="d-flex" :is="addition" :permission="{{ Auth::user()->hasPermissionsFor('users', 'groups') }}"></component>
+                    </div>
+                  </div>
+                </template>
+
+              </pmql-input>
+            </div>
+          </div>
+        </div>
+
+        <tasks-list ref="taskList" :filter="filter" :pmql="fullPmql" @in-overdue="setInOverdueMessage"></tasks-list>
+
+      </div>
+    </div>
+  </div>
 @endsection
 
 @section('js')

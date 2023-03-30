@@ -10,20 +10,22 @@
       <div class="d-flex align-items-start">
         <div class="search-bar-buttons d-flex ml-md-0 flex-column flex-md-row">
           <slot name="left-buttons"></slot>
-          <!-- <button v-if="showFilter" class="btn btn-outline-secondary mr-1 d-flex align-items-center">
-            <i class="fa fa-sliders-h mr-1"></i>
-            <span class="text-capitalize">Filter</span>
-          </button> -->
-          <div class="position-relative">
-            <button class="btn btn-outline-secondary mr-1 d-flex align-items-center">
-              <i class="fa fa-sliders-h mr-1"></i>
-              <span class="text-capitalize">Filter</span>
-            </button>
-            <div class="filter-dropdown-panel-container card">
-              <slot name="filters"></slot>
-            </div>
-          </div>
+
+          <pmql-input-filters 
+            v-if="showFilters"
+            :type="searchType"
+            :param-process="paramProcess"
+            :param-status="paramStatus"
+            :param-requester="paramRequester"
+            :param-participants="paramParticipants"
+            :param-request="paramRequest"
+            :param-name="paramName"
+            :permission="permission"
+            @filterspmqlchange="onFiltersPmqlChange">
+          </pmql-input-filters>
+
         </div>
+
         <div class="search-bar flex-grow w-100"
           :class="{'is-invalid': validations}"
           :style="styles?.container">
@@ -74,19 +76,33 @@
           <slot name="right-buttons"></slot>
         </div>
       </div>
+
+      <div v-if="showFilters && selectedFilters.length" class="selected-filters-bar d-flex pt-2">
+        <span v-for="filter in selectedFilters" class="selected-filter-item d-flex align-items-center">
+          <span class="selected-filter-key mr-1">{{ filter[0] }}: </span>
+          {{ filter[1][0].name ? filter[1][0].name : filter[1][0].fullname }} 
+          <span v-if="filter[1].length > 1" class="badge badge-pill ml-2 filter-counter">
+            +{{ filter[1].length -1 }}
+          </span>
+          <i role="button" class="fa fa-times pl-2 pr-0" @click="removeFilter(filter)"></i>
+        </span>
+      </div>
+
     </div>
   </div>
 </template>
 <script>
 
 import isPMQL from "../../modules/isPMQL";
-import MustacheHelper from '@processmaker/screen-builder/src/components/inspector/mustache-helper'
+import MustacheHelper from '@processmaker/screen-builder/src/components/inspector/mustache-helper';
+import PmqlInputFilters from "./PmqlInputFilters.vue";
 
 export default {
-  components: { MustacheHelper },
+  components: { MustacheHelper, PmqlInputFilters },
   props: [
     "searchType",
     "value",
+    "filtersValue",
     "aiEnabled",
     "ariaLabel",
     "inputId",
@@ -96,6 +112,15 @@ export default {
     "placeholder",
     "collectionId",
     "inputLabel",
+    "showFilters",
+
+    "paramProcess",
+    "paramStatus",
+    "paramRequester",
+    "paramParticipants",
+    "paramRequest",
+    "paramName",
+    "permission"
   ],
   data() {
     return {
@@ -103,9 +128,11 @@ export default {
       inputAriaLabel: "",
       showUsage: false,
       showAiIndicator: false,
-      showFilter: false,
+      showFilterPopup: false,
       showScrollbars: false,
       pmql: "",
+      filtersPmql: "",
+      selectedFilters: [],
       query: "",
       textAreaLines: 4,
       usage: {
@@ -148,13 +175,19 @@ export default {
 
   mounted() {
     this.query = this.value;
+    this.filtersPmql = this.filtersValue;
     this.inputAriaLabel = this.ariaLabel;
-    // Vue.nextTick().then(() => {
-    //   this.$refs.search_input.focus();
-    // });
   },
 
   methods: {
+    onFiltersPmqlChange(value) {
+      this.filtersPmql = value[0];
+      this.selectedFilters = value[1];
+      this.$emit("filterspmqlchange", [this.filtersPmql, this.selectedFilters]);
+    },
+    removeFilter(filter) {
+      window.ProcessMaker.EventBus.$emit("removefilter", filter);
+    },
     calcInputHeight() {
       this.$refs.search_input.style.height = "auto";
       // Font size * line height in rems (1.5)
@@ -188,6 +221,7 @@ export default {
       }
 
       if (this.query.isPMQL()) {
+        // this.$emit("submit", this.query);
         this.$emit("submit", this.query);
       } else if (this.aiEnabledLocal) {
         this.runNLQToPMQL();
@@ -248,9 +282,9 @@ export default {
 }
 
 input.pmql-input:focus ~ label, input.pmql-input:valid ~ label {
-    top: 3px;
-    font-size: 12px;
-    color: #0872C2;
+  top: 3px;
+  font-size: 12px;
+  color: #0872C2;
 }
 
 .input-right-section {
@@ -262,22 +296,22 @@ input.pmql-input:focus ~ label, input.pmql-input:valid ~ label {
 }
 
 .usage-label {
-    background: #1c72c224;
-    color: #0872C2;
-    right: 29px;
-    top: 0;
-    margin-right: 0.5rem;
-    font-weight: 300;
-    margin-bottom: 0;
+  background: #1c72c224;
+  color: #0872C2;
+  right: 29px;
+  top: 0;
+  margin-right: 0.5rem;
+  font-weight: 300;
+  margin-bottom: 0;
 }
 
 .separator {
-    border-right: 1px solid rgb(227, 231, 236);
-    height: 1.6rem;
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
-    right: 0;
-    top: 15%;
+  border-right: 1px solid rgb(227, 231, 236);
+  height: 1.6rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  right: 0;
+  top: 15%;
 }
 
 .separator-horizontal {
@@ -288,12 +322,12 @@ input.pmql-input:focus ~ label, input.pmql-input:valid ~ label {
 }
 
 .badge-success {
-    color: #00875A;
-    background-color: #00875a26;
+  color: #00875A;
+  background-color: #00875a26;
 }
 
 .filter-dropdown-panel-container {
-  min-width: 20rem;
+  min-width: 30rem;
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.125);
   box-shadow: 0 6px 12px 2px rgba(0, 0, 0, 0.168627451);
@@ -302,6 +336,25 @@ input.pmql-input:focus ~ label, input.pmql-input:valid ~ label {
   top: 2.5rem;
   border-radius: 3px;
   z-index: 1;
-  max-width: 30rem;
+  max-width: 40rem;
+}
+
+.selected-filter-item {
+  background: #DEEBFF;
+  padding: 4px 9px 4px 9px;
+  color: #104A75;
+  border: 1px solid #104A75;
+  border-radius: 4px;
+  margin-right: 0.5em;
+}
+
+.selected-filter-key {
+  text-transform: capitalize;
+  font-weight: 700;
+}
+
+.filter-counter {
+  background: #EBEEF2 !important;
+  font-weight: 400;
 }
 </style>
