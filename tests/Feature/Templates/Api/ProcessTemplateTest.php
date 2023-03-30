@@ -52,6 +52,7 @@ class ProcessTemplateTest extends TestCase
                 'id' => $process->id,
             ]),
             [
+                'asset_id' => $process->id,
                 'user_id' => $user->id,
                 'name' => 'Test Template',
                 'description' => 'Test template description',
@@ -93,6 +94,7 @@ class ProcessTemplateTest extends TestCase
                 'id' => $process->id,
             ]),
             [
+                'asset_id' => $process->id,
                 'user_id' => $user->id,
                 'name' => 'Test Duplicate Name Template',
                 'description' => 'Test template description',
@@ -130,6 +132,7 @@ class ProcessTemplateTest extends TestCase
                 'id' => $process->id,
             ]),
             [
+                'asset_id' => $process->id,
                 'user_id' => $user->id,
                 'name' => 'Test Template',
                 'description' => 'Test template description',
@@ -176,6 +179,7 @@ class ProcessTemplateTest extends TestCase
                 'id' => $process->id,
             ]),
             [
+                'asset_id' => $process->id,
                 'user_id' => $user->id,
                 'name' => 'Test Template',
                 'description' => 'Test template description',
