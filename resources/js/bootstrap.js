@@ -225,6 +225,14 @@ window.ProcessMaker.alert = function (text, variant) {
   window.alert(`${variant}: ${text}`);
 };
 
+const openAiEnabled = document.head.querySelector("meta[name=\"open-ai-nlq-to-pmql\"]");
+
+if (openAiEnabled) {
+  window.ProcessMaker.openAi = {
+    enabled: openAiEnabled.content,
+  };
+}
+
 const userID = document.head.querySelector("meta[name=\"user-id\"]");
 const formatDate = document.head.querySelector("meta[name=\"datetime-format\"]");
 const timezone = document.head.querySelector("meta[name=\"timezone\"]");
