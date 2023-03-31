@@ -180,6 +180,10 @@ export default {
     this.query = this.value;
     this.filtersPmql = this.filtersValue;
     this.inputAriaLabel = this.ariaLabel;
+
+    this.$root.$on("bv::collapse::state", (collapseId, isJustShown) => {
+      this.calcInputHeight();
+    });
   },
 
   methods: {
@@ -192,6 +196,10 @@ export default {
       window.ProcessMaker.EventBus.$emit("removefilter", filter);
     },
     calcInputHeight() {
+      if (!this.$refs?.search_input) {
+        return;
+      }
+
       this.$refs.search_input.style.height = "auto";
       // Font size * line height in rems (1.5)
       const fontSize = parseFloat(getComputedStyle(this.$refs.search_input).fontSize);
@@ -203,6 +211,9 @@ export default {
 
       this.showScrollbars = false;
       this.$nextTick(() => {
+        if (!this.$refs?.search_input) {
+          return;
+        }
         if (currentHeight <= this.$refs.search_input.scrollHeight) {
           this.showScrollbars = true;
           this.$refs.search_input.style.height = `${currentHeight}px`;
