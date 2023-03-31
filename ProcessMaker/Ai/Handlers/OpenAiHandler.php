@@ -8,7 +8,7 @@ abstract class OpenAiHandler
 {
     abstract public function getConfig();
 
-    abstract public function getPrompt($type = null);
+    abstract public function getPromptFile($type = null);
 
     abstract public function setModel(String $model);
 

@@ -29,7 +29,7 @@ class NlqToPmqlHandler extends OpenAiHandler
         return $this->config;
     }
 
-    public function getPrompt($type = null)
+    public function getPromptFile($type = null)
     {
         return file_get_contents($this->getPromptsPath() . 'pmql_code_generator_optimized_for_' . $type . '.md');
     }
@@ -77,9 +77,10 @@ class NlqToPmqlHandler extends OpenAiHandler
     public function generatePrompt(String $type = null, String $question) : Object
     {
         $this->question = "Question: $question \n";
-        $prompt = $this->getPrompt($type);
+        $prompt = $this->getPromptFile($type);
+        $stopSequence = $this->config['stop'] . " \n";
 
-        $this->config['prompt'] = $prompt . $this->config['stop'] . " \n" . $question . $this->config['stop'] . " \n" . 'Response:' . "\n";
+        $this->config['prompt'] = $prompt . $stopSequence . $this->question . $stopSequence . 'Response:' . "\n";
 
         return $this;
     }
