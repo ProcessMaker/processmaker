@@ -117,8 +117,8 @@ class TokenRepository implements TokenRepositoryInterface
                 case 'user_group':
                     // For this assignment type, users and groups arrive as comma separated numbers that
                     // we need to convert to arrays for the self_service_groups column
-                    $evaluatedUsers = explode(',', $selfServiceUsers);
-                    $evaluatedGroups = explode(',', $selfServiceGroups);
+                    $evaluatedUsers = $selfServiceUsers ? explode(',', $selfServiceUsers) : [];
+                    $evaluatedGroups = $selfServiceGroups ? explode(',', $selfServiceGroups) : [];
                     $token->self_service_groups = ['users' => $evaluatedUsers, 'groups' => $evaluatedGroups];
                     break;
                 case 'process_variable':
