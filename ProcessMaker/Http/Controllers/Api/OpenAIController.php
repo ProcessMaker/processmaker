@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use OpenAI\Client;
+use ProcessMaker\Ai\Handlers\NlqToPmqlHandler;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\OpenAI\OpenAIHelper;
 
@@ -14,14 +15,16 @@ class OpenAIController extends Controller
         /**
          * Types: requests, tasks, collections, settings, security_logs
          **/
-        $type = $request->input('type');
-        $question = $request->input('question');
-        $model = 'text-davinci-003';
+        $nlqToPmqlHandler = new NlqToPmqlHandler();
+        [$result, $usage, $originalQuestion] = $nlqToPmqlHandler->generatePrompt(
+            $request->input('type'),
+            $request->input('question')
+        )->execute();
 
-        $prompt = OpenAIHelper::readPromptFromFile('pmql_code_generator_optimized_for_' . $type . '.md');
-        $config = OpenAIHelper::getNLQToPMQLConfig($prompt, $question, $model);
-        [ $result, $usage ] = OpenAIHelper::runNLQToPMQL($client, $config);
-
-        return response()->json(['result' => $result, 'usage' => $usage]);
+        return response()->json([
+            'result' => $result,
+            'usage' => $usage,
+            'question' => $originalQuestion,
+        ]);
     }
 }
