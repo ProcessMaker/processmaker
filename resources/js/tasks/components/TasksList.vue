@@ -391,6 +391,9 @@ export default {
                 }
               })
               .catch(error => {
+                if (error.code === "ERR_CANCELED") {
+                  return;
+                }
                 window.ProcessMaker.alert(error.response.data.message, "danger");
                 this.data = [];
               });
