@@ -19,7 +19,7 @@
     <div class="row">
       <div class="col" align="right">
           <b-alert class="align-middle" show variant="danger" v-cloak v-if="inOverdueMessage.length>0"
-            style="text-align: center; margin-top:20px;" data-cy="tasks-alert">
+            style="text-align: center;" data-cy="tasks-alert">
             @{{ inOverdueMessage }}
           </b-alert>
       </div>
