@@ -100,7 +100,7 @@
                 "connector-docusign": "1.2.0",
                 "connector-idp": "1.1.1",
                 "connector-pdf-print": "1.11.1",
-                "connector-send-email": "1.16.0",
+                "connector-send-email": "1.16.1",
                 "connector-slack": "1.3.0",
                 "docker-executor-node-ssr": "1.2.1",
                 "package-actions-by-email": "1.9.0",
