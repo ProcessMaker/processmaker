@@ -1,8 +1,5 @@
 import Vue from "vue";
 import ProcessTemplatesListing from "./components/ProcessTemplatesListing";
-import CategorySelect from "./categories/components/CategorySelect";
-
-Vue.component("CategorySelect", CategorySelect);
 
 new Vue({
   el: "#templatesIndex",

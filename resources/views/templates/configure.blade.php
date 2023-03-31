@@ -65,11 +65,11 @@
                                 !!}
                                 <div class="invalid-feedback" role="alert" v-if="errors.description">@{{errors.description[0]}}</div>
                             </div>
-                            {{-- <category-select :label="$t('Category')" api-get="process_categories"
+                            <category-select :label="$t('Category')" api-get="process_categories"
                                 api-list="process_categories" v-model="formData.process_category_id"
                                 :errors="errors.category"
                                 >
-                            </category-select> --}}
+                            </category-select>
                             {{-- <div class="form-group">
                                 <label class="typo__label">{{__('Process Manager')}}</label>
                                 <select-user v-model="manager" :multiple="false" :class="{'is-invalid': errors.manager_id}">
@@ -140,7 +140,7 @@
             this.resetErrors();
             let that = this;           
             
-            ProcessMaker.apiClient.put('template/process/' + that.formData.id, that.formData)
+            ProcessMaker.apiClient.put('template/settings/process/' + that.formData.id, that.formData)
               .then(response => {                
                 ProcessMaker.alert(this.$t('The template was saved.'), 'success', 5, true);
                 that.onClose();

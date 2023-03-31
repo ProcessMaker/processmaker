@@ -8,9 +8,14 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Api\ExportController;
+use ProcessMaker\ImportExport\Exporter;
+use ProcessMaker\ImportExport\Exporters\ProcessExporter;
+use ProcessMaker\ImportExport\Importer;
+use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
+use ProcessMaker\Models\Template;
 use ProcessMaker\Traits\HasControllerAddons;
 use SebastianBergmann\CodeUnit\Exception;
 
@@ -25,20 +30,30 @@ class ProcessTemplate implements TemplateInterface
     {
         $orderBy = $this->getRequestSortBy($request, 'name');
         $include = $this->getRequestInclude($request);
+        $templates = ProcessTemplates::nonSystem()->with($include);
 
-        $templates = ProcessTemplates::with($include);
         $filter = $request->input('filter');
 
         $templates = $templates->select('process_templates.*')
+            ->leftJoin('process_categories as category', 'process_templates.process_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'process_templates.user_id', '=', 'user.id')
             ->orderBy(...$orderBy)
             ->where(function ($query) use ($filter) {
                 $query->where('process_templates.name', 'like', '%' . $filter . '%')
                     ->orWhere('process_templates.description', 'like', '%' . $filter . '%')
                     ->orWhere('user.firstname', 'like', '%' . $filter . '%')
-                    ->orWhere('user.lastname', 'like', '%' . $filter . '%');
-            })
-            ->get();
+                    ->orWhere('user.lastname', 'like', '%' . $filter . '%')
+                    ->orWhereIn('process_templates.id', function ($qry) use ($filter) {
+                        $qry->select('assignable_id')
+                            ->from('category_assignments')
+                            ->leftJoin('process_categories', function ($join) {
+                                $join->on('process_categories.id', '=', 'category_assignments.category_id');
+                                $join->where('category_assignments.category_type', '=', ProcessCategory::class);
+                                $join->where('category_assignments.assignable_type', '=', ProcessTemplates::class);
+                            })
+                            ->where('process_categories.name', 'like', '%' . $filter . '%');
+                    });
+            })->get();
 
         return $templates;
     }
@@ -50,50 +65,77 @@ class ProcessTemplate implements TemplateInterface
      */
     public function save($request) : JsonResponse
     {
-        // Get inputs from the $request object
-        $processId = (int) $request->id;
-        $name = $request->input('name');
-        $description = $request->input('description');
-        $userId = $request->input('user_id');
-        $category = $request->input('process_category_id');
-        $manifest = $this->getManifest('process', $processId);
-        $mode = $request->input('mode');
+        $data = $request->all();
 
-        if ($mode === 'discard') {
-            // Set the the 'discard' boolean for all dependents to true
-            $rootUuid = $manifest->getData()->root;
-            $originalExport = $manifest->original['export'];
+        // Find the required model
+        $model = (new ExportController)->getModel('process')->findOrFail($data['asset_id']);
 
-            // Filter root export by UUID
-            $rootExport = Arr::first(
-                $originalExport,
-                function ($value, $key) use ($rootUuid) {
-                    return $key === $rootUuid;
-                }
-            );
+        // Get the process manifest
+        $manifest = $this->getManifest('process', $data['asset_id']);
 
-            // Set discard flag for all dependents
-            data_set($rootExport, 'dependents.*.discard', true);
+        // Array of post options
+        $postOptions = array_map(fn ($value) => ['mode' => $data['mode']], $manifest['export']);
+        $options = new Options($postOptions);
 
-            // Update export of original manifest with modified root export
-            data_set($manifest, 'original.export', [$rootUuid => $rootExport]);
+        // Create an exporter instance
+        $exporter = new Exporter();
+        $exporter->export($model, ProcessExporter::class, $options);
+        $payload = $exporter->payload();
+
+        // Extract svg from payload
+        $svg = Arr::get($payload, 'export.' . $payload['root'] . '.attributes.svg');
+
+        // Create a new process template
+        $processTemplate = ProcessTemplates::make($data);
+
+        // Fill the manifest and svg attributes
+        $processTemplate->fill($data);
+        $processTemplate->manifest = json_encode($payload);
+        $processTemplate->svg = $svg;
+        $processTemplate->process_id = $data['asset_id'];
+        $processTemplate->user_id = \Auth::user()->id;
+
+        $processTemplate->saveOrFail();
+
+        // Return response
+        return response()->json(['model' => $processTemplate]);
+    }
+
+    public function create($request) : JsonResponse
+    {
+        $templateId = $request->id;
+        $template = ProcessTemplates::where('id', $templateId)->firstOrFail();
+        $template->fill($request->except('id'));
+
+        $payload = json_decode($template->manifest, true);
+        $payload['name'] = $request['name'];
+        $payload['description'] = $request['description'];
+
+        $postOptions = [];
+        foreach ($payload['export'] as $key => $asset) {
+            $postOptions[$key] = [
+                'mode' => $asset['mode'],
+            ];
+            if ($payload['root'] === $key) {
+                // Set name and description for the new process
+                $payload['export'][$key]['attributes']['name'] = $request['name'];
+                $payload['export'][$key]['attributes']['description'] = $request['description'];
+                $payload['export'][$key]['attributes']['process_category_id'] = $request['process_category_id'];
+
+                $payload['export'][$key]['name'] = $request['name'];
+                $payload['export'][$key]['description'] = $request['description'];
+                $payload['export'][$key]['process_category_id'] = $request['process_category_id'];
+                $payload['export'][$key]['process_manager_id'] = $request['manager_id'];
+            }
         }
 
-        $model = ProcessTemplates::updateOrCreate(
-            ['process_id' => $processId],
-            [
-                'name' => $name,
-                'description' => $description,
-                'user_id' => $userId,
-                'manifest' => json_encode($manifest),
-                'svg' => isset($manifest)
-                    ? $manifest->getData()->export->{$manifest->getData()->root}->attributes->svg
-                    : '',
-                'process_category_id' => null,
-            ]
-        );
-        //dd($model);
-        return response()->json(['model' => $model]);
+        $options = new Options($postOptions);
+        $importer = new Importer($payload, $options);
+        $manifest = $importer->doImport();
+        $rootLog = $manifest[$payload['root']]->log;
+        $processId = $rootLog['newId'];
+
+        return response()->json(['processId' => $processId]);
     }
 
     public function view() : bool
@@ -106,36 +148,52 @@ class ProcessTemplate implements TemplateInterface
         dd('PROCESS TEMPLATE EDIT');
     }
 
-    public function update($request) : JsonResponse
+    public function updateTemplate($request) : JsonResponse
     {
         $id = (int) $request->id;
         $template = ProcessTemplates::where('id', $id)->firstOrFail();
-        if (!isset($request->process_id)) {
-            // This is an update from the template configs page
-            $template->fill($request->except('id'));
-        } else {
-            // This is an update from a the process designer
-            // Get process manifest
-            $processId = $request->process_id;
-            $mode = $request->mode;
+        // Get process manifest
+        $processId = $request->process_id;
+        $mode = $request->mode;
 
-            $manifest = $this->getManifest('process', $processId);
+        $rootUuid = null;
+        $export = null;
+        $manifest = $this->getManifest('process', $processId);
+        if (is_array($manifest)) {
+            $rootUuid = Arr::get($manifest, 'root');
+            $export = Arr::get($manifest, 'export');
+        } else {
             $rootUuid = $manifest->getData()->root;
             $export = $manifest->getData()->export;
-            $svg = $export->$rootUuid->attributes->svg;
-
-            // Discard ALL assets/dependents
-            if ($mode === 'discard') {
-                $rootExport = Arr::first($manifest->original['export'], function ($value, $key) use ($rootUuid) {
-                    return $key === $rootUuid;
-                });
-                data_set($rootExport, 'dependents.*.discard', true);
-                data_set($manifest->original, 'export', [$rootUuid => $rootExport]);
-            }
-
-            $template->fill(array_merge($request->except(['id', '_token']), ['svg' => $svg, 'manifest' => $manifest->toJson()]));
         }
 
+        $svg = Arr::get($export, $rootUuid . '.attributes.svg');
+
+        $template->fill($request->except('id'));
+        $template->svg = $svg;
+        $template->manifest = json_encode($manifest);
+
+        // Catch errors to send more specific status
+        try {
+            $template->saveOrFail();
+        } catch (Exception $e) {
+            return response(
+                ['message' => $e->getMessage(),
+                    'errors' => ['bpmn' => $e->getMessage()], ],
+                422
+            );
+        }
+
+        return response()->json();
+    }
+
+    public function updateTemplateConfigs($request) : JsonResponse
+    {
+        $id = (int) $request->id;
+        $template = ProcessTemplates::where('id', $id)->firstOrFail();
+        $template->fill($request->except('id'));
+
+        // Catch errors to send more specific status
         try {
             $template->saveOrFail();
         } catch (\Exception $e) {
@@ -154,12 +212,12 @@ class ProcessTemplate implements TemplateInterface
     {
         $template = (object) [];
 
-        $query = ProcessTemplates::select(['name', 'description'])->where('id', $id)->firstOrFail();
+        $query = ProcessTemplates::select(['name', 'description', 'process_category_id'])->where('id', $id)->firstOrFail();
 
         $template->id = $id;
         $template->name = $query->name;
         $template->description = $query->description;
-
+        $template->process_category_id = $query['process_category_id'];
         $categories = ProcessCategory::orderBy('name')
             ->where('status', 'ACTIVE')
             ->get()
@@ -167,12 +225,14 @@ class ProcessTemplate implements TemplateInterface
             ->toArray();
         $addons = $this->getPluginAddons('edit', compact(['template']));
 
-        return [$template, $addons];
+        return [$template, $addons, $categories];
     }
 
-    public function destroy() : bool
+    public function destroy(int $id) : bool
     {
-        dd('PROCESS TEMPLATE DESTROY');
+        $response = ProcessTemplates::where('id', $id)->delete();
+
+        return $response;
     }
 
     /**
@@ -184,11 +244,12 @@ class ProcessTemplate implements TemplateInterface
      *
      * @return JSON
      */
-    public function getManifest(string $type, int $id) : object
+    public function getManifest(string $type, int $id) : array
     {
         $response = (new ExportController)->manifest($type, $id);
+        $content = json_decode($response->getContent(), true);
 
-        return $response;
+        return $content;
     }
 
     /**
@@ -222,13 +283,15 @@ class ProcessTemplate implements TemplateInterface
 
     public function existingTemplate($request)
     {
-        $id = $request->id;
+        $templateId = $request->id;
         $name = $request->name;
 
-        $template = ProcessTemplates::where(['name' => $name])->first();
-        if ($template !== null && $id !== $template->id) {
+        $template = ProcessTemplates::where(['name' => $name])->where('id', '!=', $templateId)->first();
+        if ($template !== null) {
             // If same asset has been Saved as Template previously, offer to choose between “Update Template” and “Save as New Template”
-            return [$template->id, $name];
+            return ['id' => $template->id, 'name' => $name];
         }
+
+        return null;
     }
 }

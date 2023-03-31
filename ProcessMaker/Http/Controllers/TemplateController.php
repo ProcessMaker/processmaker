@@ -42,8 +42,8 @@ class TemplateController extends Controller
      */
     public function configure(string $type, $request)
     {
-        [$template, $addons] = (new $this->types[$type][1])->configure($request);
+        [$template, $addons, $categories] = (new $this->types[$type][1])->configure($request);
 
-        return view('templates.configure', compact(['template', 'addons']));
+        return view('templates.configure', compact(['template', 'addons', 'categories']));
     }
 }

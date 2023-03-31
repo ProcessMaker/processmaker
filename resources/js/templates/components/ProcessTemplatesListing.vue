@@ -21,30 +21,17 @@
                 :noDataTemplate="$t('No Data Available')"
         >
           <template slot="name" slot-scope="props">
-            <!-- <i tabindex="0"
-              v-b-tooltip
-              :title="props.rowData.warningMessages.join(' ')"
-              class="text-warning fa fa-exclamation-triangle"
-              :class="{'invisible': props.rowData.warningMessages.length == 0}">
-            </i>
-            <i tabindex="0"
-              v-if="props.rowData.status == 'ACTIVE' || props.rowData.status == 'INACTIVE'"
-              v-b-tooltip
-              :title="props.rowData.status"
-              class="mr-2"
-              :class="{ 'fas fa-check-circle text-success': props.rowData.status == 'ACTIVE', 'far fa-circle': props.rowData.status == 'INACTIVE' }">
-            </i> -->
             <span v-uni-id="props.rowData.id.toString()">{{props.rowData.name}}
-              <small class="muted d-block">{{ props.rowData.description }}</small>
+              <small class="text-muted d-block">{{ props.rowData.description | str_limit(70) }}</small>
             </span>
           </template>
-  
+
           <template slot="owner" slot-scope="props">
             <avatar-image
                     class="d-inline-flex pull-left align-items-center"
                     size="25"
                     :input-data="props.rowData.user"
-                    hide-name="true"
+                    :hide-name="false"
             ></avatar-image>
           </template>
 
@@ -70,9 +57,18 @@
         ></pagination>
       </div>
     </div>
-  </template>
+</template>
   
-  <script>
+<script>
+  Vue.filter('str_limit', function (value, size) {
+    if (!value) return '';
+    value = value.toString();
+
+    if (value.length <= size) {
+      return value;
+    }
+    return value.substr(0, size) + '...';
+  });
     import datatableMixin from "../../components/common/mixins/datatable";
     import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
     import { createUniqIdsMixin } from "vue-uniq-ids";
@@ -102,15 +98,14 @@
               field: "name",
               sortField: "name"
             },
-            // {
-            //   title: () => this.$t("Category"),
-            //   name: "categories",
-            //   sortField: "category.name",
-            //   callback(categories) {
-            //     return '';
-            //     //return categories.map(item => item.name).join(', ');
-            //   }
-            // },
+            {
+              title: () => this.$t("Category"),
+              name: "categories",
+              sortField: "category.name",
+              callback(categories) {
+                return categories.map(item => item.name).join(', ');
+              }
+            },
             {
               title: () => this.$t("Template Author"),
               name: "__slot:owner",
@@ -129,9 +124,10 @@
           ],
           actions: [
             // { value: "edit-designer", content: "Edit Template", permission: "edit-processes", icon: "fas fa-edit", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
-            { value: "edit-item", content: "Configure", permission: "edit-process-templates", icon: "fas fa-cog"},
-            { value: "view-documentation", content: "View Documentation", permission: "view-process-templates", icon: "fas fa-sign", isDocumenterInstalled: "if('isDocumenterInstalled' == true, true, false)"},
-            { value: "export-item", content: "Export Template", permission: "export-process-templates", icon: "fas fa-file-export"}
+            { value: "view-documentation", content: "Template Documentation", permission: "view-process-templates", icon: "fas fa-sign", isDocumenterInstalled: "if('isDocumenterInstalled' == true, true, false)"},
+            { value: "export-item", content: "Export Template", permission: "export-process-templates", icon: "fas fa-file-export"},
+            { value: "edit-item", content: "Configure Template", permission: "edit-process-templates", icon: "fas fa-cog"},
+            { value: "delete-item", content: "Delete Template", permission: "archive-process-templates", icon: "fas fa-trash"},
           ],
         };
       },
@@ -194,19 +190,19 @@
             case "create-template":
               this.createTemplate(data.id);
               break;
-            case "remove-item":
+            case "delete-item":
               ProcessMaker.confirmModal(
                   this.$t("Caution!"),
-                  this.$t("Are you sure you want to archive the process") +
+                  this.$t("Are you sure you want to delete the process template '") +
                   data.name +
-                  "?",
+                  "'?",
                   "",
                   () => {
                     ProcessMaker.apiClient
-                        .delete("processes/" + data.id)
+                        .delete("template/process/" + data.id)
                         .then(response => {
                           ProcessMaker.alert(
-                              this.$t("The process was archived."),
+                              this.$t("The process template was deleted."),
                               "success"
                           );
                           this.$refs.pagination.loadPage(1);
@@ -241,6 +237,9 @@
               user.fullname +
               "</span>"
           );
+        },
+        getCategoryId(id) {
+          console.log('id', id);
         },
         createImg(properties) {
           let container = document.createElement("div");
@@ -278,8 +277,7 @@
                   this.orderBy +
                   "&order_direction=" +
                   this.orderDirection +
-                  "&include=user"
-                  //"&include=categories,category,user"
+                  "&include=user,category,categories"
               )
               .then(response => {
                 const data = this.addWarningMessages(response.data);

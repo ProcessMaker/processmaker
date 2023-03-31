@@ -203,6 +203,11 @@ class ProcessController extends Controller
         //set current user
         $process->user_id = Auth::user()->id;
 
+        //set manager id
+        if ($request->has('manager_id')) {
+            $process->manager_id = $request->input('manager_id', null);
+        }
+
         if (isset($data['bpmn'])) {
             $process->bpmn = $data['bpmn'];
         } else {

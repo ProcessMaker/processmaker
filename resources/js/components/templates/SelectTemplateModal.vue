@@ -14,20 +14,25 @@
       :titleButtons="titleButtons"
       :hide-footer="true"
       @showSelectTemplate="showSelectTemplateComponent"
+      @createBlankProcess="createBlankProcess"
+      @useSelectedTemplate="useSelectedTemplate"
       @ok.prevent="onSubmit"
+      @close="close"
     >
       <template-search :type="type" :component="currentComponent" @show-details="updateModal($event)"/>
     </modal>
+    <create-process-modal ref="create-process-modal" :blank-template="blankTemplate" :count-categories="countCategories" :selected-template="selectedTemplate" :template-data="templateData"/>
   </div>
 </template>
 
 <script>
   import { Modal } from "SharedComponents";
   import TemplateSearch from "./TemplateSearch.vue";
+  import CreateProcessModal from "../../processes/components/CreateProcessModal.vue";
 
   export default {
-    components: { Modal, TemplateSearch},
-    props: ['type'],
+    components: { Modal, TemplateSearch, CreateProcessModal },
+    props: ['type', 'countCategories'],
     data: function() {
       return {
         title: '',
@@ -42,6 +47,9 @@
           {'content': `Blank ${this.type}`, 'action': 'createBlankProcess', 'variant': 'primary', 'disabled': false, 'hidden': false, 'position': 'right', 'icon': 'fas fa-plus', 'ariaLabel': `Create ${this.type}`},
           {'content': 'Use Template', 'action': 'useSelectedTemplate', 'variant': 'primary', 'disabled': false, 'hidden': true, 'position': 'right', 'ariaLabel': `Create a ${this.type} with this template` },
         ],
+        blankTemplate: false,
+        selectedTemplate: false,
+        templateData: {},
       }
     },
     computed: {
@@ -57,7 +65,8 @@
     },
     methods: {
       updateModal($event) {
-        this.title = $event.title;
+        this.templateData = $event;
+        this.title = $event.name;
         this.hasHeaderButtons = true;
         this.headerButtons[0].hidden = false;
         this.titleButtons[0].hidden = true;
@@ -71,8 +80,24 @@
         this.titleButtons[1].hidden = true;
         this.hasHeaderButtons = false;
         this.title = this.$t(`New ${this.type}`);
-
-      }
+      },
+      createBlankProcess() {
+        this.selectedTemplate = false;
+        this.blankTemplate = true;
+        this.$bvModal.hide("selectTemplate");
+        this.$refs["create-process-modal"].show();
+      },
+      useSelectedTemplate() {
+        this.selectedTemplate = true;
+        this.blankTemplate = false;
+        this.$bvModal.hide("selectTemplate");
+        this.showSelectTemplateComponent();
+        this.$refs["create-process-modal"].show();
+      },
+      close() {
+        this.$bvModal.hide("selectTemplate");
+        this.showSelectTemplateComponent();
+      },
     },
     mounted() {
       this.title = this.$t(`New ${this.type}`);

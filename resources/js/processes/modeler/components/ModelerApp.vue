@@ -9,6 +9,7 @@
           @validate="validationErrors = $event"
           @warnings="warnings = $event"
           @saveBpmn="emitRegisteredEvents"
+          @publishTemplate="publishTemplate"
           @set-xml-manager="xmlManager = $event"
         />
       </b-card-body>
@@ -24,19 +25,21 @@
       </validation-status>
 
       <component v-for="(component, index) in external" :key="`external-${index}`" :is="component.type" :options="component.options"/>
-
+      <create-template-modal ref="create-template-modal" />
     </b-card>
   </b-container>
 </template>
 
 <script>
   import {Modeler, ValidationStatus} from "@processmaker/modeler";
+  import CreateTemplateModal from "../../../components/templates/CreateTemplateModal.vue";
 
   export default {
   name: 'ModelerApp',
   components: {
     Modeler,
     ValidationStatus,
+    CreateTemplateModal,
   },
   data() {
     return {
@@ -146,7 +149,10 @@
       ProcessMaker.apiClient.put('/processes/' + this.process.id, data)
               .then(savedSuccessfully)
               .catch(saveFailed);
-    }
+    },
+    publishTemplate() {
+      this.$refs["create-template-modal"].show();
+    },
   },
   mounted() {
     ProcessMaker.$modeler = this.$refs.modeler;

@@ -21,14 +21,12 @@
                         </div>
                     @endcan
                     @can('create-processes')
-                        <select-template-modal :type="__('Process')"></select-template-modal>
-                        {{-- <create-process-modal :count-categories="@json($config->countCategories)"></create-process-modal> --}}
+                        <select-template-modal :type="__('Process')" :count-categories="@json($config->countCategories)"></select-template-modal>
                     @endcan
                 </div>
             @endcan
         </div>
     </div>
-
 
     <div class="container-fluid">
         <processes-listing

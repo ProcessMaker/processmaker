@@ -6,15 +6,10 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\TemplateCollection;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Templates\ProcessTemplate;
+use ProcessMaker\Models\Template;
 
 class TemplateController extends Controller
 {
-    protected array $types = [
-        'process' => [Process::class, ProcessTemplate::class],
-    ];
-
     /**
      * Get list Process Templates
      *
@@ -24,7 +19,8 @@ class TemplateController extends Controller
      */
     public function index(string $type, Request $request)
     {
-        $templates = (new $this->types[$type][1])->index($request);
+        $template = new Template();
+        $templates = $template->index($type, $request);
 
         return new TemplateCollection($templates);
     }
@@ -39,21 +35,14 @@ class TemplateController extends Controller
     public function store(string $type, Request $request)
     {
         $request->validate([
-            'name' => 'required|string|min:1|max:255',
+            'name' => 'required|string|unique:process_templates,name|max:255',
             'description' => 'required|string',
         ]);
 
-        [$id, $name] = (new $this->types[$type][1])->existingTemplate($request);
+        $template = new Template();
+        $response = $template->store($type, $request);
 
-        if ($id) {
-            return response()->json([
-                'name' => ['The template name must be unique.'],
-                'id' => $id,
-                'templateName' => $name,
-            ], 409);
-        }
-
-        return (new $this->types[$type][1])->save($request);
+        return $response;
     }
 
     /**
@@ -63,27 +52,57 @@ class TemplateController extends Controller
      * @param  Request $request
      * @return \Illuminate\Http\Response
      */
-    public function update(string $type, Request $request)
+    public function updateTemplate(string $type, Request $request)
     {
         $request->validate([
-            'name' => 'required|string|min:1|max:255',
+            'name' => 'required|string|unique:processes,name|max:255',
             'description' => 'required|string',
         ]);
 
-        if (!isset($request->process_id)) {
-            // This is an update from the template configs page. We need to check if the template name was updated and already exists
-            [$id, $name] = (new $this->types[$type][1])->existingTemplate($request);
+        $template = new Template();
+        $response = $template->updateTemplate($type, $request);
 
-            if ($id) {
-                return response()->json([
-                    'name' => ['The template name must be unique.'],
-                    'id' => $id,
-                    'templateName' => $name,
-                ], 409);
-            }
-        }
-        // This is an update from the process designer page. This will overwrite the template with new data. We do not need to check for existing templates
-        return (new $this->types[$type][1])->update($request);
+        return $response;
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  string  $type
+     * @param  Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function updateTemplateConfigs(string $type, Request $request)
+    {
+        $this->validate($request, [
+            'name' => 'required|string|unique:processes,name|max:255',
+            'description' => 'required|string',
+        ]);
+
+        $template = new Template();
+        $response = $template->updateTemplateConfigs($type, $request);
+
+        return $response;
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  string  $type
+     * @param  Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function create(string $type, Request $request)
+    {
+        $this->validate($request, [
+            'name' => 'required|string|unique:processes,name|max:255',
+            'description' => 'required|string',
+        ]);
+
+        $template = new Template();
+        $response = $template->create($type, $request);
+
+        return $response;
     }
 
     /**
@@ -92,8 +111,11 @@ class TemplateController extends Controller
      * @param  \ProcessMaker\Models\Template  $template
      * @return \Illuminate\Http\Response
      */
-    public function destroy(string $type, Request $request)
+    public function delete(string $type, Request $request)
     {
-        //
+        $template = new Template();
+        $response = $template->deleteTemplate($type, $request);
+
+        return $response;
     }
 }
