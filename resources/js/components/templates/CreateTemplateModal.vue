@@ -164,7 +164,7 @@ export default {
           ProcessMaker.alert(this.$t("Template successfully created"), "success");
           this.close();
         }).catch(error => {
-          const name = error.response.data.name[0];
+          const name = error.response.data.errors.name[0];
           if (name) {
             this.showWarning = true;
             this.toggleButtons();
