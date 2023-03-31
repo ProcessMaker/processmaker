@@ -315,6 +315,8 @@ input.pmql-input:focus ~ label, input.pmql-input:valid ~ label {
 
 .input-right-section {
   color: #0872C2;
+  font-family: 'Open Sans';
+  font-weight: 600;
 }
 
 .pmql-icons {
