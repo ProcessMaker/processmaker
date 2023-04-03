@@ -13,9 +13,9 @@
                     </div>
                 </div>
             </div>
-             @canany(['import-processes', 'create-processes'])
+             @canany(['import-process-templates', 'create-process-templates'])
                 <div class="d-flex ml-md-0 flex-column flex-md-row">
-                    @can('import-processes')
+                    @can('import-process-templates')
                         <div class="mb-3 mb-md-0 ml-md-2">
                             <a href="#" aria-label="{{ __('Import Template') }}" id="import_template" class="btn btn-outline-secondary w-100" @click="goToImport">
                                 <i class="fas fa-file-import"></i> {{__('Import')}}
