@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use ProcessMaker\Contracts\ScriptInterface;
 use ProcessMaker\Traits\HasCategories;
 
@@ -58,5 +59,21 @@ class ScriptVersion extends ProcessMakerModel implements ScriptInterface
         }
 
         return $script->runScript($data, $config, $tokenId);
+    }
+
+    /**
+     * Scope to only return draft versions.
+     */
+    public function scopeDraft(Builder $query)
+    {
+        return $query->where('draft', true);
+    }
+
+    /**
+     * Scope to only return published versions.
+     */
+    public function scopePublished(Builder $query)
+    {
+        return $query->where('draft', false);
     }
 }
