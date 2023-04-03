@@ -173,6 +173,12 @@ export default {
     addItem(value) {
       this.newItems.push(value);
     },
+    removeItem(idToRemove) {
+      const indexToRemove = this.newItems.findIndex((element) => element.id === idToRemove);
+      if (indexToRemove !== -1) {
+        this.newItems.splice(indexToRemove, 1);
+      }
+    },
     unshiftItem(value) {
       this.newItems.unshift(value);
     },
