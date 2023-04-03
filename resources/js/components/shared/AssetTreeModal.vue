@@ -37,11 +37,18 @@ export default {
       const formattedGroupChildren = group.items.map((item) => {
         item.html = `
           <div>Name: ${item.name}</div>
-          <div>Last modified: ${item.updated_at} By: <a href="/profile/${item.lastModifiedById}">${item.lastModifiedBy}</a></div>
-        `;
+          <span>Last modified: ${item.updatedAt}</span>`;
+
+        if (item.lastModifiedBy && item.lastModifiedById && item.lastModifiedBy !== "N/A") {
+          item.html += ` By: <a href="/profile/${item.lastModifiedById}">${item.lastModifiedBy}</a>`;
+        }
+        if (item.lastModifiedBy && !item.lastModifiedById && item.lastModifiedBy !== "N/A") {
+          item.html += ` By: ${item.lastModifiedBy}`;
+        }
         if (item.assetLink) {
           item.html += `<div><a href="${item.assetLink}" target="_blank"><i class="mr-1 fas fa-external-link-alt"></i> View ${item.typeHuman}</a></div>`;
         }
+
         return item;
       });
 

@@ -1,3 +1,3 @@
 String.prototype.isPMQL = function () {
-  return /^.+(?:[=><]|LIKE).+$/i.test(this);
+  return /^.+(?:[=><]|LIKE|NOT IN \[|IN \[).+$/i.test(this);
 };
