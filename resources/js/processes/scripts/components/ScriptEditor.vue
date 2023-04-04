@@ -402,18 +402,18 @@ export default {
           })
           .then(() => {
             // Display saved notification.
-            this.$refs.menuScript.unshiftItem({
+            this.$refs.menuScript.addItem({
               id: "SavedNotification",
               type: "SavedNotification",
               section: "right",
-            });
+            }, 1);
 
             // Update version indicator.
             this.setVersionIndicator(true);
 
             // Hide the notification after 2 seconds.
             setTimeout(() => {
-              this.$refs.menuScript.shiftItem();
+              this.$refs.menuScript.removeItem("SavedNotification");
             }, 2000);
           });
       }, this.autoSaveDelay);
@@ -455,7 +455,6 @@ export default {
       }
     },
     setVersionIndicator(isDraft = null) {
-      const draft = isDraft ?? this.isDraft;
       if (this.isVersionsInstalled) {
         this.$refs.menuScript.removeItem("VersionIndicator");
         this.$refs.menuScript.addItem({
@@ -463,9 +462,9 @@ export default {
           type: "VersionIndicator",
           section: "right",
           options: {
-            is_draft: draft,
+            is_draft: isDraft ?? this.isDraft,
           },
-        });
+        }, 0);
       }
     },
   },
