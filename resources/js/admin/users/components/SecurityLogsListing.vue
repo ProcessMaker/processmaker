@@ -4,7 +4,7 @@
       class="mb-2"
       :search-type="'security_logs'"
       :value="query"
-      :ai-enabled="true"
+      :ai-enabled="false"
       :aria-label="$t('Advanced Search (PMQL)')"
       @submit="onNLQConversion"></pmql-input>
     <div class="data-table">
