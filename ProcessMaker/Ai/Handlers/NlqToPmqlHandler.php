@@ -108,8 +108,9 @@ class NlqToPmqlHandler extends OpenAiHandler
 
     public function replaceWithCurrentYear($prompt)
     {
-      $currentYearReplaced = str_replace('{currentYear}', date('Y'), $prompt);
-      $pastYearReplaced = str_replace('{pastYear}', date('Y') -1, $currentYearReplaced);
-      return $pastYearReplaced;
+        $currentYearReplaced = str_replace('{currentYear}', date('Y'), $prompt);
+        $pastYearReplaced = str_replace('{pastYear}', date('Y') - 1, $currentYearReplaced);
+
+        return $pastYearReplaced;
     }
 }
