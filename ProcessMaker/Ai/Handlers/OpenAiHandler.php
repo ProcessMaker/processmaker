@@ -10,7 +10,8 @@ abstract class OpenAiHandler
 
     protected $question = '';
 
-    public function __construct() {
+    public function __construct()
+    {
     }
 
     public function getPromptsPath()

@@ -6,7 +6,8 @@ use OpenAI\Client;
 
 class NlqToPmqlHandler extends OpenAiHandler
 {
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         $this->config = [
             'model' => 'text-davinci-003',
