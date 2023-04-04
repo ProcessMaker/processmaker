@@ -6,72 +6,23 @@ use OpenAI\Client;
 
 class NlqToPmqlHandler extends OpenAiHandler
 {
-    private $config = [
-        'model' => 'text-davinci-003',
-        'max_tokens' => 1900,
-        'temperature' => 0,
-        'top_p' => 1,
-        'n' => 1,
-        'frequency_penalty' => 0,
-        'presence_penalty' => 0,
-        'stop' => 'END_',
-    ];
-
-    private $question = '';
-
-    private function getPromptsPath()
-    {
-        return app_path() . '/Ai/Prompts/';
-    }
-
-    public function getConfig()
-    {
-        return $this->config;
+    public function __construct() {
+        parent::__construct();
+        $this->config = [
+            'model' => 'text-davinci-003',
+            'max_tokens' => 1900,
+            'temperature' => 0,
+            'top_p' => 1,
+            'n' => 1,
+            'frequency_penalty' => 0,
+            'presence_penalty' => 0,
+            'stop' => 'END_',
+        ];
     }
 
     public function getPromptFile($type = null)
     {
         return file_get_contents($this->getPromptsPath() . 'nlq_to_pmql_' . $type . '.md');
-    }
-
-    public function setModel(String $model)
-    {
-        $this->config['model'] = $model;
-    }
-
-    public function setMaxTokens(int $maxTokens)
-    {
-        $this->config['max_token'] = $maxTokens;
-    }
-
-    public function setTemperature(float $temperature)
-    {
-        $this->config['temperature'] = $temperature;
-    }
-
-    public function setTopP(float $topP)
-    {
-        $this->config['top_p'] = $topP;
-    }
-
-    public function setN(int $n)
-    {
-        $this->config['n'] = $n;
-    }
-
-    public function setStop(String $stop)
-    {
-        $this->config['stop'] = $stop;
-    }
-
-    public function setFrequencyPenalty(float $frequencyPenalty)
-    {
-        $this->config['frequency_penalty'] = $frequencyPenalty;
-    }
-
-    public function setPresencePenalty(float $presencePenalty)
-    {
-        $this->config['presence_penalty'] = $presencePenalty;
     }
 
     public function generatePrompt(String $type = null, String $question) : Object
