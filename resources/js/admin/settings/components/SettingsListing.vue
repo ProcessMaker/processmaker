@@ -4,7 +4,7 @@
       class="mb-2"
       :search-type="'settings'"
       :value="pmql"
-      :ai-enabled="true"
+      :ai-enabled="false"
       :aria-label="$t('Advanced Search (PMQL)')"
       @submit="onNLQConversion">
         <template v-slot:right-buttons>
