@@ -1443,7 +1443,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     public function valueAliasName($value, $expression)
     {
         return function ($query) use ($value, $expression) {
-            $processes = Process::where('name', $expression->operator, $value)->get();
+            $processes = self::where('name', $expression->operator, $value)->get();
             $query->whereIn('processes.id', $processes->pluck('id'));
         };
     }
@@ -1458,7 +1458,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     public function valueAliasProcess($value, $expression)
     {
         return function ($query) use ($value, $expression) {
-            $processes = Process::where('name', $expression->operator, $value)->get();
+            $processes = self::where('name', $expression->operator, $value)->get();
             $query->whereIn('processes.id', $processes->pluck('id'));
         };
     }
@@ -1473,7 +1473,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     public function valueAliasStatus($value, $expression)
     {
         return function ($query) use ($value, $expression) {
-            $processes = Process::where('status', $expression->operator, $value)->get();
+            $processes = self::where('status', $expression->operator, $value)->get();
             $query->whereIn('processes.id', $processes->pluck('id'));
         };
     }
@@ -1488,7 +1488,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     public function valueAliasId($value, $expression)
     {
         return function ($query) use ($value, $expression) {
-            $processes = Process::where('id', $expression->operator, $value)->get();
+            $processes = self::where('id', $expression->operator, $value)->get();
             $query->whereIn('processes.id', $processes->pluck('id'));
         };
     }
@@ -1504,43 +1504,43 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     {
         return function ($query) use ($value, $expression) {
             $categoryAssignment = DB::table('category_assignments')->leftJoin('process_categories', function ($join) {
-                    $join->on('process_categories.id', '=', 'category_assignments.category_id');
-                    $join->where('category_assignments.category_type', '=', ProcessCategory::class);
-                    $join->where('category_assignments.assignable_type', '=', Process::class);
-                })
+                $join->on('process_categories.id', '=', 'category_assignments.category_id');
+                $join->where('category_assignments.category_type', '=', ProcessCategory::class);
+                $join->where('category_assignments.assignable_type', '=', self::class);
+            })
                 ->where('name', $expression->operator, $value);
             $query->whereIn('processes.id', $categoryAssignment->pluck('assignable_id'));
         };
     }
 
-    /**
-     * Filter settings with a string
-     *
-     * @param $query
-     *
-     * @param $filter string
-     */
+     /**
+      * Filter settings with a string
+      *
+      * @param $query
+      *
+      * @param $filter string
+      */
      public function scopeFilter($query, $filter)
      {
-        $filter = '%' . mb_strtolower($filter) . '%';
-        $query->where(function ($query) use ($filter) {
-            $query->where('processes.name', 'like', '%' . $filter . '%')
-                ->orWhere('processes.description', 'like', '%' . $filter . '%')
-                ->orWhere('processes.status', '=', $filter)
-                ->orWhere('user.firstname', 'like', '%' . $filter . '%')
-                ->orWhere('user.lastname', 'like', '%' . $filter . '%')
-                ->orWhereIn('processes.id', function ($qry) use ($filter) {
-                    $qry->select('assignable_id')
-                        ->from('category_assignments')
-                        ->leftJoin('process_categories', function ($join) {
-                            $join->on('process_categories.id', '=', 'category_assignments.category_id');
-                            $join->where('category_assignments.category_type', '=', ProcessCategory::class);
-                            $join->where('category_assignments.assignable_type', '=', Process::class);
-                        })
-                        ->where('process_categories.name', 'like', '%' . $filter . '%');
-                });
-        });
+         $filter = '%' . mb_strtolower($filter) . '%';
+         $query->where(function ($query) use ($filter) {
+             $query->where('processes.name', 'like', '%' . $filter . '%')
+                 ->orWhere('processes.description', 'like', '%' . $filter . '%')
+                 ->orWhere('processes.status', '=', $filter)
+                 ->orWhere('user.firstname', 'like', '%' . $filter . '%')
+                 ->orWhere('user.lastname', 'like', '%' . $filter . '%')
+                 ->orWhereIn('processes.id', function ($qry) use ($filter) {
+                     $qry->select('assignable_id')
+                         ->from('category_assignments')
+                         ->leftJoin('process_categories', function ($join) {
+                             $join->on('process_categories.id', '=', 'category_assignments.category_id');
+                             $join->where('category_assignments.category_type', '=', ProcessCategory::class);
+                             $join->where('category_assignments.assignable_type', '=', self::class);
+                         })
+                         ->where('process_categories.name', 'like', '%' . $filter . '%');
+                 });
+         });
 
-        return $query;
-    }
+         return $query;
+     }
 }
