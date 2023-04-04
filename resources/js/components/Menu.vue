@@ -170,8 +170,8 @@ export default {
         }
       });
     },
-    addItem(value) {
-      this.newItems.push(value);
+    addItem(value, index = null) {
+      return index !== null ? this.newItems.splice(index, 0, value) : this.newItems.push(value);
     },
     removeItem(idToRemove) {
       const indexToRemove = this.newItems.findIndex((element) => element.id === idToRemove);
