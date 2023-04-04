@@ -10,5 +10,7 @@ Question: Show the tasks assigned to me
 Response: tasks
 Question: Return the last processes that starts with P
 Response: processes
+Question: Return all the collections where age greater than 30
+Response: collections
 Question: {question}
 Response: {stopSequence}
