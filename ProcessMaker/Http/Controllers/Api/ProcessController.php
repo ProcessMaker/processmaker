@@ -84,6 +84,7 @@ class ProcessController extends Controller
         $perPage = $this->getPerPage($request);
         $include = $this->getRequestInclude($request);
         $status = $request->input('status');
+        $pmql = $request->input('pmql', '');
 
         $processes = Process::nonSystem()->notArchived()->with($include);
         if ($status === 'archived') {
@@ -92,28 +93,25 @@ class ProcessController extends Controller
         if ($status === 'all') {
             $processes = Process::active()->with($include);
         }
-        $filter = $request->input('filter');
+
+        $filter = $request->input('filter', '');
+        if (!empty($filter)) {
+            $processes->filter($filter);
+        }
+
+        if (!empty($pmql)) {
+            try {
+                $processes->pmql($pmql);
+            } catch (\ProcessMaker\Query\SyntaxError $e) {
+                return response(['error' => 'PMQL error'], 400);
+            }
+        }
+
         $processes = $processes->select('processes.*')
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
             ->orderBy(...$orderBy)
-            ->where(function ($query) use ($filter) {
-                $query->where('processes.name', 'like', '%' . $filter . '%')
-                    ->orWhere('processes.description', 'like', '%' . $filter . '%')
-                    ->orWhere('processes.status', '=', $filter)
-                    ->orWhere('user.firstname', 'like', '%' . $filter . '%')
-                    ->orWhere('user.lastname', 'like', '%' . $filter . '%')
-                    ->orWhereIn('processes.id', function ($qry) use ($filter) {
-                        $qry->select('assignable_id')
-                            ->from('category_assignments')
-                            ->leftJoin('process_categories', function ($join) {
-                                $join->on('process_categories.id', '=', 'category_assignments.category_id');
-                                $join->where('category_assignments.category_type', '=', ProcessCategory::class);
-                                $join->where('category_assignments.assignable_type', '=', Process::class);
-                            })
-                            ->where('process_categories.name', 'like', '%' . $filter . '%');
-                    });
-            })->get();
+            ->get();
 
         return new ProcessCollection($processes);
     }
