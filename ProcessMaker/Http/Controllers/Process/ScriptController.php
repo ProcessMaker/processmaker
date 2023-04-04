@@ -89,6 +89,7 @@ class ScriptController extends Controller
             'testData' => $testData,
             'autoSaveDelay' => config('versions.delay.script', 5000),
             'isVersionsInstalled' => PackageHelper::isPmPackageVersionsInstalled(),
+            'isDraft' => $draft !== null,
         ]);
     }
 

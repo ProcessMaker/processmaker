@@ -186,6 +186,8 @@
 import MonacoEditor from "vue-monaco";
 import _ from "lodash";
 import TopMenu from "../../../components/Menu.vue";
+// eslint-disable-next-line no-unused-vars
+import customFilters from "../customFilters";
 
 export default {
   components: {
@@ -210,6 +212,10 @@ export default {
       default: 5000,
     },
     isVersionsInstalled: {
+      type: Boolean,
+      default: false,
+    },
+    isDraft: {
       type: Boolean,
       default: false,
     },
@@ -281,6 +287,9 @@ export default {
       this.outputResponse(response);
     });
     this.loadBoilerplateTemplate();
+
+    // Display version indicator.
+    this.setVersionIndicator();
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.handleResize);
@@ -361,6 +370,8 @@ export default {
         })
         .then((response) => {
           ProcessMaker.alert(this.$t("The script was saved."), "success");
+          // Update version indicator.
+          this.setVersionIndicator(false);
           if (typeof onSuccess === "function") {
             onSuccess(response);
           }
@@ -396,6 +407,10 @@ export default {
               type: "SavedNotification",
               section: "right",
             });
+
+            // Update version indicator.
+            this.setVersionIndicator(true);
+
             // Hide the notification after 2 seconds.
             setTimeout(() => {
               this.$refs.menuScript.shiftItem();
@@ -434,6 +449,23 @@ export default {
           default:
             break;
         }
+
+        // Save boilerplate template to avoid issues when script code is [].
+        ProcessMaker.EventBus.$emit("save-script");
+      }
+    },
+    setVersionIndicator(isDraft = null) {
+      const draft = isDraft ?? this.isDraft;
+      if (this.isVersionsInstalled) {
+        this.$refs.menuScript.removeItem("VersionIndicator");
+        this.$refs.menuScript.addItem({
+          id: "VersionIndicator",
+          type: "VersionIndicator",
+          section: "right",
+          options: {
+            is_draft: draft,
+          },
+        });
       }
     },
   },
