@@ -58,12 +58,14 @@ class NlqToCategoryHandler extends OpenAiHandler
     public function replaceStopSequence($prompt)
     {
         $replaced = str_replace('{stopSequence}', $this->config['stop'] . " \n", $prompt);
+
         return $replaced;
     }
 
     public function replaceQuestion($prompt, $question)
     {
         $replaced = str_replace('{question}', $question . " \n", $prompt);
+
         return $replaced;
     }
 
