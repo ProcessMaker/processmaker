@@ -75,6 +75,13 @@ Question: 31 years
 Response: '(fulltext LIKE "%31 years%")'
 Question: Employee
 Response: '(fulltext LIKE "%Employee%")'
+Question: Show me all where firstname starts with Jhon for the collection persons
+Response: '
+{
+  "pmql": "(data.firstname LIKE \"Jhon%\")",
+  "collection": "persons"
+}
+'
 Question: {currentYear}-09-03
 Response: '(fulltext LIKE "%{currentYear}-09-03%")'{stopSequence}
 Question: {question}
