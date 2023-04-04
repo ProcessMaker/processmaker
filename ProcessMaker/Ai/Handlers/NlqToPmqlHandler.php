@@ -28,12 +28,13 @@ class NlqToPmqlHandler extends OpenAiHandler
 
     public function generatePrompt(String $type = null, String $question) : Object
     {
-        $this->question = "Question: $question \n";
+        $this->question = $question;
         $prompt = $this->getPromptFile($type);
+        $prompt = $this->replaceQuestion($prompt, $question);
+        $prompt = $this->replaceStopSequence($prompt);
         $prompt = $this->replaceWithCurrentYear($prompt);
-        $stopSequence = $this->config['stop'] . " \n";
 
-        $this->config['prompt'] = $prompt . $stopSequence . $this->question . $stopSequence . 'Response:' . "\n";
+        $this->config['prompt'] = $prompt;
 
         return $this;
     }
@@ -56,6 +57,20 @@ class NlqToPmqlHandler extends OpenAiHandler
         $result = str_replace('\'', '', $result);
 
         return [$result, $response->usage, $this->question];
+    }
+
+    public function replaceStopSequence($prompt)
+    {
+        $replaced = str_replace('{stopSequence}', $this->config['stop'] . " \n", $prompt);
+
+        return $replaced;
+    }
+
+    public function replaceQuestion($prompt, $question)
+    {
+        $replaced = str_replace('{question}', $question . " \n", $prompt);
+
+        return $replaced;
     }
 
     public function replaceWithCurrentYear($prompt)

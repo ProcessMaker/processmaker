@@ -103,4 +103,7 @@ Response: '(fulltext LIKE "%Chrome%")'
 Question: OS X
 Response: '(fulltext LIKE "%OS X%")'
 Question: SSL Certificate
-Response: '(fulltext LIKE "%SSL Certificate%")'
+Response: '(fulltext LIKE "%SSL Certificate%")'{stopSequence}
+Question: {question}
+{stopSequence}
+Response:

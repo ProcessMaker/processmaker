@@ -76,4 +76,7 @@ Response: '(fulltext LIKE "%31 years%")'
 Question: Employee
 Response: '(fulltext LIKE "%Employee%")'
 Question: {currentYear}-09-03
-Response: '(fulltext LIKE "%{currentYear}-09-03%")'
+Response: '(fulltext LIKE "%{currentYear}-09-03%")'{stopSequence}
+Question: {question}
+{stopSequence}
+Response:

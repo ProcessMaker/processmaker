@@ -55,4 +55,7 @@ Response: '(fulltext LIKE "%imap.mail.yahoo.com%")'
 Question: 1
 Response: '(fulltext LIKE "%1%")'
 Question: SSL Certificate
-Response: '(fulltext LIKE "%SSL Certificate%")'
+Response: '(fulltext LIKE "%SSL Certificate%")'{stopSequence}
+Question: {question}
+{stopSequence}
+Response:

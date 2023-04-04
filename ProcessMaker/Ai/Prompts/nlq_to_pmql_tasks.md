@@ -76,4 +76,7 @@ Response: '(fulltext LIKE "%56%")'
 Question: 188
 Response: '(fulltext LIKE "%188%")'
 Question: Leave of absence form
-Response: '(fulltext LIKE "%Leave of absence form%")'
+Response: '(fulltext LIKE "%Leave of absence form%")'{stopSequence}
+Question: {question}
+{stopSequence}
+Response:
