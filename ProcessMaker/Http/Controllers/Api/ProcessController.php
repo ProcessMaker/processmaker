@@ -107,11 +107,48 @@ class ProcessController extends Controller
             }
         }
 
-        $processes = $processes->select('processes.*')
+        $processes = $processes->with('events')
+            ->select('processes.*')
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
             ->orderBy(...$orderBy)
-            ->get();
+            ->get()
+            ->collect();
+
+        foreach ($processes as $key => $process) {
+            // filter the start events that can be used manually (no timer start events);
+            // TODO: startEvents is not a real property on Process.
+            // Move below to $process->getManualStartEvents();
+            $process->startEvents = $process->events->filter(function ($event) {
+                $eventIsTimerStart = collect($event['eventDefinitions'])
+                        ->filter(function ($eventDefinition) {
+                            return $eventDefinition['$type'] == 'timerEventDefinition';
+                        })->count() > 0;
+
+                // Filter out web entry start events
+                $eventIsWebEntry = false;
+                if (isset($event['config'])) {
+                    $config = json_decode($event['config'], true);
+                    if (isset($config['web_entry']) && $config['web_entry'] !== null) {
+                        $eventIsWebEntry = true;
+                    }
+                }
+
+                return !$eventIsTimerStart && !$eventIsWebEntry;
+            })->values();
+
+            // Filter all processes that have event definitions (start events like message event, conditional event, signal event, timer event)
+            if ($request->has('without_event_definitions') && $request->input('without_event_definitions') == 'true') {
+                $startEvents = $process->events->filter(function ($event) {
+                    return collect($event['eventDefinitions'])->isEmpty();
+                });
+            }
+
+            // filter only valid executable processes
+            if (!$process->isValidForExecution()) {
+                $processes->startEvents = [];
+            }
+        }
 
         return new ProcessCollection($processes);
     }

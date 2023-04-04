@@ -379,7 +379,8 @@
                   this.orderBy +
                   "&order_direction=" +
                   this.orderDirection +
-                  "&include=categories,category,user"
+                  "&include=categories,category,user" +
+                  "&with=events"
               )
               .then(response => {
                 const data = this.addWarningMessages(response.data);
