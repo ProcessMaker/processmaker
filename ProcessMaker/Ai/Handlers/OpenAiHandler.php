@@ -3,6 +3,7 @@
 namespace ProcessMaker\Ai\Handlers;
 
 use OpenAI\Client;
+use ProcessMaker\Models\AiSearch;
 
 abstract class OpenAiHandler
 {
@@ -62,6 +63,15 @@ abstract class OpenAiHandler
     public function setPresencePenalty(float $presencePenalty)
     {
         $this->config['presence_penalty'] = $presencePenalty;
+    }
+
+    public function saveResponse(string $type, string $response)
+    {
+        $aiSearch = new AiSearch();
+        $aiSearch->type = $type;
+        $aiSearch->search = $this->question;
+        $aiSearch->response = $response;
+        $aiSearch->save();
     }
 
     abstract public function getPromptFile($type = null);
