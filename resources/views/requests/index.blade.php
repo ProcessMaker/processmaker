@@ -60,7 +60,7 @@
                     search-type="requests"
                     :value="pmql"
                     :filters-value="pmql"
-                    :ai-enabled="true"
+                    :ai-enabled="false"
                     :show-filters="true"
                     :aria-label="$t('Advanced Search (PMQL)')"
                     :param-status="status" 
