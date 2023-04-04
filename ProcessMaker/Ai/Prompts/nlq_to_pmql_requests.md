@@ -3,7 +3,7 @@ For the rest of this conversation, I will feed you search queries. Using those q
 Contexts:
 ProcessMaker Query Language (PMQL) is a custom language to search ProcessMaker data. Use PMQL to find Requests information.
 ##
-Request Data Type can use the following PMQL properties: completed, created, id, modified, participant, process_id, request, requester, started, status, fulltext.
+Request Data Type can use the following PMQL properties: completed, created, id, modified, participant, request, requester, started, status, process_id, fulltext.
 Data types never can be used with the prefix 'data.'
 ##
 The NOW keyword represents the current datetime. Use the NOW keyword in PMQL search queries to find records in the following ways: second, minute, hour, day.
@@ -27,12 +27,12 @@ Question: Find all requests that begin with T and have exactly 3 characters foll
 Response: 'request LIKE "T___"'
 Question: Find both persons in Request data based on the string company
 Response: 'data.Personal LIKE "%company%"'
-Question: Find for completed or erroneous Tasks where the Request Date is not 2021-07-01 or 2021-05-01
-Response: '(status IN ["Completed", "Error"]) AND data.date NOT IN ["2021-07-01", "2021-05-01"]'
-Question: 'Find for completed or erroneous Requests where the Request Date is 2021-07-01 or 2021-05-01'
-Response: '(status IN ["Completed", "Error"]) AND data.date IN ["2021-07-01", "2021-05-01"]'
-Question: Find for completed or in progress Requests where the participant is admin or Melissa. The last modified is equal or major to 2020-07-01 00:00:00
-Response: 'participant IN ["admin", "Melissa"] AND status NOT IN ["Completed", "In Progress"] AND modified >= "2020-07-01 00:00:00"'
+Question: Find for completed or erroneous Tasks where the Request Date is not {currentYear}-07-01 or {currentYear}-05-01
+Response: '(status IN ["Completed", "Error"]) AND data.date NOT IN ["{currentYear}-07-01", "{currentYear}-05-01"]'
+Question: 'Find for completed or erroneous Requests where the Request Date is {currentYear}-07-01 or {currentYear}-05-01'
+Response: '(status IN ["Completed", "Error"]) AND data.date IN ["{currentYear}-07-01", "{currentYear}-05-01"]'
+Question: Find for completed or in progress Requests where the participant is admin or Melissa. The last modified is equal or major to {currentYear}-07-01 00:00:00
+Response: 'participant IN ["admin", "Melissa"] AND status NOT IN ["Completed", "In Progress"] AND modified >= "{currentYear}-07-01 00:00:00"'
 Question: Find Requests for ProcessName that are not more than two (2) days old
 Response: '(modified > NOW -2 day) AND (request = "ProcessName")'
 Question: Show all the requests for ProcessName
@@ -67,6 +67,12 @@ Question: Show all for the last month.
 Response: 'modified > NOW -30 day'
 Question: Show all for the last 2 months.
 Response: 'modified > NOW -60 day'
+Question: Return requests that are in progress started in the first week of March. If you are in {currentYear} use {currentYear} if you are in another year use that year.
+Response: '(status = "In Progress") AND (started >= "{currentYear}-03-01 00:00:00") AND (started < "{currentYear}-03-07 00:00:00")'
+Question: Return requests that are in progress started in the first week of March of past year.
+Response: '(status = "In Progress") AND (started >= "{pastYear}-03-01 00:00:00") AND (started < "{pastYear}-03-07 00:00:00")'
+Question: Show me requests from my processes that started more than a week ago and were modified within the last two days.
+Response: '(started >= NOW -7 day) AND (modified <= NOW -2 day)'
 Question: Jhon
 Response: '(fulltext LIKE "%Jhon%")'
 Question: My test process

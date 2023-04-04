@@ -86,6 +86,12 @@ Question: Show all for the last month.
 Response: 'occurred_at > NOW -30 day'
 Question: Show all for the last 2 months.
 Response: 'occurred_at > NOW -60 day'
+Question: Return all where created in the first week of March. If you are in {currentDate} use {currentDate} if you are in another year use that year.
+Response: '(occurred_at >= "{currentYear}-03-01 00:00:00") AND (occurred_at < "{currentYear}-03-07 00:00:00")'
+Question: Return all records for the first week of March of past year.
+Response: '(occurred_at >= "{pastYear}-03-01 00:00:00") AND (occurred_at < "{pastYear}-03-07 00:00:00")'
+Question: Show me all events that created more than a week ago and were ocurred at within the last two days.
+Response: '(ocurred_at >= NOW -7 day) AND (ocurred_at <= NOW -2 day)'
 Question: Login
 Response: '(fulltext LIKE "%Login%")'
 Question: Logout

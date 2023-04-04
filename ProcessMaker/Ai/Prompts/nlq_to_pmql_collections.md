@@ -29,16 +29,16 @@ Question: Show me the records where job_title begins with T case insensitive.
 Response: 'lower(data.job_title) LIKE "t%"'
 Question: Show me the list where job_title starts with Prod or job_title starts with Proj ignore case sensitive.
 Response: 'lower(data.job_title) LIKE "prod%" OR lower(data.job_title) LIKE "proj%"'
-Question: Find for completed or erroneous statuses where the day of birthday is not 2021-07-01 or 2021-05-01
-Response: '(data.status IN ["Completed", "Error"]) AND data.day_of_birthday NOT IN ["2021-07-01", "2021-05-01"]'
+Question: Find for completed or erroneous statuses where the day of birthday is not {currentYear}-07-01 or {currentYear}-05-01
+Response: '(data.status IN ["Completed", "Error"]) AND data.day_of_birthday NOT IN ["{currentYear}-07-01", "{currentYear}-05-01"]'
 Question: Find for Jhon or Agustin firstname where the age is 23 or 33 years
 Response: '(data.firstname IN ["Jhon", "Agustin"]) AND (data.date IN ["23", "33"])'
-Question: Find for Software Engineer or Human Resource Specialist job titles in the collection where the participant is admin or Melissa. The last modified is equal or major to 2020-07-01 00:00:00
-Response: '(data.participant IN ["admin", "Melissa"]) AND (data.job_title NOT IN ["Software Engineer", "Human Resource Specialist"]) AND (modified >= "2020-07-01 00:00:00")'
+Question: Find for Software Engineer or Human Resource Specialist job titles in the collection where the participant is admin or Melissa. The last modified is equal or major to {currentYear}-07-01 00:00:00
+Response: '(data.participant IN ["admin", "Melissa"]) AND (data.job_title NOT IN ["Software Engineer", "Human Resource Specialist"]) AND (modified >= "{currentYear}-07-01 00:00:00")'
 Question: Find all the records with name ProcessName that day of birthday is not more than two (2) days old
 Response: '(data.day_of_birthday > NOW -2 day) AND (data.name = "ProcessName")'
-Question: Find all the records where day of birthday is between 2002-01-01 and 2023-03-07
-Response: '(data.day_of_birthday >= 2002-01-01) AND (data.day_of_birthday <= 2023-03-07)'
+Question: Find all the records where day of birthday is between 2002-01-01 and {currentYear}-03-07
+Response: '(data.day_of_birthday >= 2002-01-01) AND (data.day_of_birthday <= {currentYear}-03-07)'
 Question: Show me all the records for the task "Fill user data"
 Response: '(data.task = "Fill user data")'
 Question: Generate a PMQL to return all the records for credits upper to 1200
@@ -57,6 +57,12 @@ Question: Show all for the last month.
 Response: 'modified > NOW -30 day'
 Question: Show all for the last 2 months.
 Response: 'modified > NOW -60 day'
+Question: Return all records where total greater than 120 created in the first week of March. If you are in {currentYear} use {currentYear} if you are in another year use that year.
+Response: '(data.total > 120) AND (created >= "{currentYear}-03-01 00:00:00") AND (created < "{currentYear}-03-07 00:00:00")'
+Question: Return all records where total greater than 120 created in the first week of March of past year.
+Response: '(data.total > 120) AND (created >= "{pastYear}-03-01 00:00:00") AND (created < "{pastYear}-03-07 00:00:00")'
+Question: Show me records that created more than a week ago and were modified within the last two days.
+Response: '(created >= NOW -7 day) AND (modified <= NOW -2 day)'
 Question: Jhon
 Response: '(fulltext LIKE "%Jhon%")'
 Question: Mc Callister
@@ -69,5 +75,5 @@ Question: 31 years
 Response: '(fulltext LIKE "%31 years%")'
 Question: Employee
 Response: '(fulltext LIKE "%Employee%")'
-Question: 2023-09-03
-Response: '(fulltext LIKE "%2023-09-03%")'
+Question: {currentYear}-09-03
+Response: '(fulltext LIKE "%{currentYear}-09-03%")'

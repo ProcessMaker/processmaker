@@ -31,7 +31,7 @@ class NlqToPmqlHandler extends OpenAiHandler
 
     public function getPromptFile($type = null)
     {
-        return file_get_contents($this->getPromptsPath() . 'pmql_code_generator_optimized_for_' . $type . '.md');
+        return file_get_contents($this->getPromptsPath() . 'nlq_to_pmql_' . $type . '.md');
     }
 
     public function setModel(String $model)
@@ -78,6 +78,7 @@ class NlqToPmqlHandler extends OpenAiHandler
     {
         $this->question = "Question: $question \n";
         $prompt = $this->getPromptFile($type);
+        $prompt = $this->replaceWithCurrentYear($prompt);
         $stopSequence = $this->config['stop'] . " \n";
 
         $this->config['prompt'] = $prompt . $stopSequence . $this->question . $stopSequence . 'Response:' . "\n";
@@ -103,5 +104,12 @@ class NlqToPmqlHandler extends OpenAiHandler
         $result = str_replace('\'', '', $result);
 
         return [$result, $response->usage, $this->question];
+    }
+
+    public function replaceWithCurrentYear($prompt)
+    {
+      $currentYearReplaced = str_replace('{currentYear}', date('Y'), $prompt);
+      $pastYearReplaced = str_replace('{pastYear}', date('Y') -1, $currentYearReplaced);
+      return $pastYearReplaced;
     }
 }
