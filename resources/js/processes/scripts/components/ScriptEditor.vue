@@ -449,6 +449,9 @@ export default {
           default:
             break;
         }
+
+        // Save boilerplate template to avoid issues when script code is [].
+        ProcessMaker.EventBus.$emit("save-script");
       }
     },
     setVersionIndicator(isDraft = null) {
