@@ -38,6 +38,7 @@ class ModelerController extends Controller
             'signalPermissions' => SignalManager::permissions($request->user()),
             'autoSaveDelay' => config('versions.delay.process', 5000),
             'isVersionsInstalled' => PackageHelper::isPackageInstalled('ProcessMaker\Package\Versions\PluginServiceProvider'),
+            'isDraft' => $draft !== null,
         ]);
     }
 }

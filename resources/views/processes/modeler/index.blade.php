@@ -60,6 +60,7 @@ div.main {
     autoSaveDelay: @json($autoSaveDelay),
     xml: @json($process->bpmn),
     isVersionsInstalled: @json($isVersionsInstalled),
+    isDraft: @json($isDraft),
     processName: @json($process->name),
     signalPermissions: @json($signalPermissions),
     // list of toggles in assignment rules

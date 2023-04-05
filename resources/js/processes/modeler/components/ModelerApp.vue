@@ -71,6 +71,7 @@ export default {
       process: window.ProcessMaker.modeler.process,
       autoSaveDelay: window.ProcessMaker.modeler.autoSaveDelay,
       isVersionsInstalled: window.ProcessMaker.modeler.isVersionsInstalled,
+      isDraft: window.ProcessMaker.modeler.isDraft,
       validationErrors: {},
       warnings: [],
       xmlManager: null,
@@ -106,6 +107,8 @@ export default {
     window.ProcessMaker.EventBus.$on("modeler-discard", () => {
       this.discardDraft();
     });
+    // Display version indicator.
+    this.setVersionIndicator();
   },
   methods: {
     updateBpmnValidations() {
@@ -193,6 +196,8 @@ export default {
         this.process.updated_at = response.data.updated_at;
         // Now show alert
         ProcessMaker.alert(this.$t("The process was saved."), "success");
+        // Set published status.
+        this.setVersionIndicator(false);
         window.ProcessMaker.EventBus.$emit("save-changes");
         this.$set(this, "warnings", response.data.warnings || []);
         if (response.data.warnings && response.data.warnings.length > 0) {
@@ -249,12 +254,19 @@ export default {
               this.$refs.validationStatus.autoValidate = true;
             }
             this.$refs.modeler.showSavedNotification();
+            // Set draft status.
+            this.setVersionIndicator(true);
           })
           .catch((error) => {
             const { message } = error.response.data;
             ProcessMaker.alert(message, "danger");
           });
       }, this.autoSaveDelay);
+    },
+    setVersionIndicator(isDraft = null) {
+      if (this.isVersionsInstalled) {
+        this.$refs.modeler.setVersionIndicator(isDraft ?? this.isDraft);
+      }
     },
   },
 };
