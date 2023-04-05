@@ -61,28 +61,40 @@ class ProcessTemplate implements TemplateInterface
     public function show($request)
     {
         $templateId = (int) $request->id;
-        $template = ProcessTemplates::where('id', $templateId)->firstOrFail();
+        $template = \DB::table('process_templates')->find($templateId);
         $payload = json_decode($template->manifest, true);
-        foreach ($payload['export'] as $key => $asset) {
-            if ($payload['root'] === $key) {
-                // Set name and description for the new process
-                $payload['export'][$key]['attributes']['name'] = $template->name;
-                $payload['export'][$key]['attributes']['description'] = $template->description;
-                $payload['export'][$key]['attributes']['process_category_id'] = 1;
 
+        // Loop through each asset in the "export" array and set postOptions "mode" accordingly
+        $postOptions = [];
+        foreach ($payload['export'] as $key => $asset) {
+            // If the asset type ends with "Category", set mode to discard, otherwise set it to update
+            $postOptions[$key] = [
+                'mode' => substr($asset['type'], -8) === 'Category' ? 'discard' : 'update',
+            ];
+
+            // If this process is the root, set name, description, and is_template attributes to the payload
+            if ($payload['root'] === $key) {
+                $payload['export'][$key]['attributes'] = [
+                    'name' => $template->name,
+                    'description' => $template->description,
+                    'is_template' => 1,
+                ];
+
+                // Also set the name, description, and is_template directly on the asset for convenience
                 $payload['export'][$key]['name'] = $template->name;
                 $payload['export'][$key]['description'] = $template->description;
-                $payload['export'][$key]['process_category_id'] = 1;
-                $payload['export'][$key]['process_manager_id'] = $template->manager_id;
+                $payload['export'][$key]['is_template'] = 1;
             }
         }
-        $options = new Options([]);
+
+        $options = new Options($postOptions);
         $importer = new Importer($payload, $options);
         $manifest = $importer->doImport();
         $rootLog = $manifest[$payload['root']]->log;
         $processId = $rootLog['newId'];
 
-        return ['id' => $processId, 'mode' => 'review'];
+        // Return an array with the process ID
+        return ['id' => $processId];
     }
 
     /**
