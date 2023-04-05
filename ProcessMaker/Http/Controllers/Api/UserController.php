@@ -159,6 +159,7 @@ class UserController extends Controller
         }
 
         $user->fill($fields);
+        $user->setTimezoneAttribute($request->input('timezone', ''));
         $user->saveOrFail();
 
         return new UserResource($user->refresh());
