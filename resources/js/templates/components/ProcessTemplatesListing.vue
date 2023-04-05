@@ -123,7 +123,7 @@
             }
           ],
           actions: [
-            // { value: "edit-designer", content: "Edit Template", permission: "edit-processes", icon: "fas fa-edit", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
+            { value: "edit-designer", content: "Edit Template", permission: "edit-process-templates", icon: "fas fa-edit"},
             { value: "view-documentation", content: "Template Documentation", permission: "view-process-templates", icon: "fas fa-sign", isDocumenterInstalled: "if('isDocumenterInstalled' == true, true, false)"},
             { value: "export-item", content: "Export Template", permission: "export-process-templates", icon: "fas fa-file-export"},
             { value: "edit-item", content: "Configure Template", permission: "edit-process-templates", icon: "fas fa-cog"},
@@ -147,7 +147,12 @@
           window.location = `/modeler/${processId}/print`;
         },
         goToDesigner(data) {
-          window.location = "/modeler/" + data;
+          ProcessMaker.apiClient.get(`modeler/templates/process/${data}`)
+          .then(response => {
+            if (response.data) {
+              window.location = "/modeler/" + response.data.id;
+            }
+          });
         },
         exportTemplate(template) {
           ProcessMaker.apiClient({
@@ -176,6 +181,7 @@
           };
           switch (action.value) {
             case "edit-designer":
+              console.log('data', data);
               this.goToDesigner(data.id);
               break;
             case "edit-item":
