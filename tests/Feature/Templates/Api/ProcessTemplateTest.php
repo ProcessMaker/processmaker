@@ -167,7 +167,7 @@ class ProcessTemplateTest extends TestCase
         $screen->screen_category_id = $screenCategory->id;
         $screen->save();
 
-        $processCategory = ProcessCategory::factory()->create(['name' => 'process category', 'status' => 'ACTIVE']);
+        $processCategory = ProcessCategory::factory()->create(['name' => 'Default Templates', 'status' => 'ACTIVE']);
         $process = $this->createProcess('process-with-task-screen', ['name' => 'Test Process', 'process_category_id' => $processCategory->id]);
 
         Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:screenRef', $screen->id);
@@ -206,7 +206,7 @@ class ProcessTemplateTest extends TestCase
                 'user_id' => $user->id,
                 'name' => 'Test Create Process from Template',
                 'description' => 'Process from template description',
-                'process_category_id' => $processCategory->id,
+                'process_category_id' => $template['process_category_id'],
                 'mode' => 'copy',
             ]
         );
@@ -215,8 +215,10 @@ class ProcessTemplateTest extends TestCase
         $id = json_decode($response->getContent(), true)['processId'];
 
         $newProcess = Process::where('id', $id)->firstOrFail();
+        $newCategory = ProcessCategory::where('id', $template['process_category_id'])->firstOrFail();
 
         $this->assertEquals('Test Create Process from Template', $newProcess->name);
         $this->assertEquals('Process from template description', $newProcess->description);
+        $this->assertEquals('Default Templates', $newCategory->name);
     }
 }
