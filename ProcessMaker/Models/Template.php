@@ -72,6 +72,13 @@ class Template extends ProcessMakerModel
         return $templates;
     }
 
+    public function show(String $type, Request $request)
+    {
+        $templates = (new $this->types[$type][1])->show($request);
+
+        return $templates;
+    }
+
     /**
      * Store a newly created template
      *

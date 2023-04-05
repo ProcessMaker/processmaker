@@ -58,6 +58,33 @@ class ProcessTemplate implements TemplateInterface
         return $templates;
     }
 
+    public function show($request)
+    {
+        $templateId = (int) $request->id;
+        $template = ProcessTemplates::where('id', $templateId)->firstOrFail();
+        $payload = json_decode($template->manifest, true);
+        foreach ($payload['export'] as $key => $asset) {
+            if ($payload['root'] === $key) {
+                // Set name and description for the new process
+                $payload['export'][$key]['attributes']['name'] = $template->name;
+                $payload['export'][$key]['attributes']['description'] = $template->description;
+                $payload['export'][$key]['attributes']['process_category_id'] = 1;
+
+                $payload['export'][$key]['name'] = $template->name;
+                $payload['export'][$key]['description'] = $template->description;
+                $payload['export'][$key]['process_category_id'] = 1;
+                $payload['export'][$key]['process_manager_id'] = $template->manager_id;
+            }
+        }
+        $options = new Options([]);
+        $importer = new Importer($payload, $options);
+        $manifest = $importer->doImport();
+        $rootLog = $manifest[$payload['root']]->log;
+        $processId = $rootLog['newId'];
+
+        return ['id' => $processId, 'mode' => 'review'];
+    }
+
     /**
      * Summary of save
      * @param mixed $request
