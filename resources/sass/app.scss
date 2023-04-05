@@ -17,9 +17,6 @@
 $form-control-border-color: #b6bfc6;
 $form-control-border-radius: 2px;
 $focus-border-opacity: .5;
-$ellipsis-menu-btn-color: #ffffff;
-$ellipsis-menu-btn-hover: #ebeef2;
-$ellipsis-menu-btn-active: #104a75;
 
 body,
 html {
@@ -890,5 +887,14 @@ nav {
 }
 
 .btn-ellipsis {
-  @include button-variant($ellipsis-menu-btn-color, $ellipsis-menu-btn-color, $ellipsis-menu-btn-hover, $ellipsis-menu-btn-hover, $ellipsis-menu-btn-active, $ellipsis-menu-btn-active)
+  background: transparent;
+  border: transparent;
+
+  &:hover {
+    background: #104a75;
+
+    .ellipsis-menu-icon {
+      color: #ffffff;
+    }
+  }
 }

@@ -8,13 +8,13 @@
   >
     <template v-if="customButton" #button-content>
       <i
-        class="pr-1"
+        class="pr-1 ellipsis-menu-icon"
         :class="customButton.icon"
       />
       <span>{{ customButton.content }}</span>
     </template>
     <template v-else #button-content>
-      <i class="fas fa-ellipsis-h" />
+      <i class="fas fa-ellipsis-h ellipsis-menu-icon" />
     </template>
     <div v-if="divider === true">
       <b-dropdown-item
