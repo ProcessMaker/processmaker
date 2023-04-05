@@ -276,7 +276,10 @@ export default {
       this.save(onSuccess, onError);
     });
     ProcessMaker.EventBus.$on("script-close", () => {
-      this.close();
+      window.location.href = "/designer/scripts";
+    });
+    ProcessMaker.EventBus.$on("script-discard", () => {
+      this.discardDraft();
     });
 
     window.addEventListener("resize", this.handleResize);
@@ -413,7 +416,7 @@ export default {
           });
       }, this.autoSaveDelay);
     },
-    close() {
+    discardDraft() {
       ProcessMaker.apiClient
         .post(`/scripts/${this.script.id}/close`)
         .then(() => {

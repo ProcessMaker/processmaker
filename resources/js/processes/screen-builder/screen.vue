@@ -678,7 +678,10 @@ export default {
           this.autoSaveScreen();
         });
         ProcessMaker.EventBus.$on("screen-close", () => {
-          that.closeScreen();
+          window.location.href = "/designer/screens";
+        });
+        ProcessMaker.EventBus.$on("screen-discard", () => {
+          that.discardDraft();
         });
       }
     },
@@ -888,7 +891,7 @@ export default {
           ProcessMaker.alert(error.response.data.error, "danger");
         });
     },
-    closeScreen() {
+    discardDraft() {
       ProcessMaker.apiClient
         .post(`/screens/${this.screen.id}/close`)
         .then(() => {

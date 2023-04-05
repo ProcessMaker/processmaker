@@ -18,7 +18,8 @@
           @validate="validationErrors = $event"
           @warnings="warnings = $event"
           @saveBpmn="emitSaveEvent"
-          @close="emitCloseEvent"
+          @discard="emitDiscardEvent"
+          @close="close"
           @set-xml-manager="xmlManager = $event"
         />
       </b-card-body>
@@ -102,8 +103,8 @@ export default {
       this.autoSaveProcess();
       window.ProcessMaker.EventBus.$emit("new-changes");
     });
-    window.ProcessMaker.EventBus.$on("modeler-close", () => {
-      this.close();
+    window.ProcessMaker.EventBus.$on("modeler-discard", () => {
+      this.discardDraft();
     });
   },
   methods: {
@@ -162,14 +163,17 @@ export default {
       }
       window.ProcessMaker.EventBus.$emit("modeler-save");
     },
-    emitCloseEvent() {
-      if (this.externalEmit.includes("open-close-versions")) {
-        window.ProcessMaker.EventBus.$emit("open-close-versions");
+    close() {
+      window.location.href = "/processes";
+    },
+    emitDiscardEvent() {
+      if (this.externalEmit.includes("open-discard-versions")) {
+        window.ProcessMaker.EventBus.$emit("open-discard-versions");
         return;
       }
-      window.ProcessMaker.EventBus.$emit("modeler-close");
+      window.ProcessMaker.EventBus.$emit("modeler-discard");
     },
-    close() {
+    discardDraft() {
       ProcessMaker.apiClient
         .post(`/processes/${this.process.id}/close`)
         .then(() => {
