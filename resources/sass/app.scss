@@ -891,6 +891,18 @@ nav {
   border: transparent;
 
   &:hover {
+    background: #ebeef2;
+  }
+
+  &[aria-expanded="true"] {
+    background: #104a75;
+
+    .ellipsis-menu-icon {
+      color: #ffffff;
+    }
+  }
+
+  &:active {
     background: #104a75;
 
     .ellipsis-menu-icon {
