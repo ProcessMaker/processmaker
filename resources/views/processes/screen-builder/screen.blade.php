@@ -22,7 +22,8 @@
         <component :is="'{{ $screen->builderComponent() }}'" :screen="{{ $screen }}"
                    :permission="{{ \Auth::user()->hasPermissionsFor('screens') }}"
                    :auto-save-delay="{{ $autoSaveDelay }}"
-                   :is-versions-installed="@json($isVersionsInstalled)">
+                   :is-versions-installed="@json($isVersionsInstalled)"
+                   :is-draft="@json($isDraft)">
         </component>
     </div>
 @endsection

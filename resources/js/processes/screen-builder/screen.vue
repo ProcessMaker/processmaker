@@ -330,6 +330,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    isDraft: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     const defaultConfig = [
@@ -910,6 +914,8 @@ export default {
       }
 
       this.debounceTimeout = setTimeout(() => {
+        // Start saving state.
+        this.setLoadingState(true);
         ProcessMaker.apiClient
           .put(`screens/${this.screen.id}/draft`, {
             title: this.screen.title,
@@ -923,21 +929,15 @@ export default {
           .then(() => {
             // Set draft status.
             this.setVersionIndicator(true);
-
-            // Display saved notification.
-            this.$refs.menuScreen.unshiftItem({
-              id: "SavedNotification",
-              type: "SavedNotification",
-              section: "right",
-            });
-            setTimeout(() => {
-              this.$refs.menuScreen.shiftItem();
-            }, 2000);
             ProcessMaker.EventBus.$emit("save-changes");
           })
           .catch((error) => {
             const { message } = error.response.data;
             ProcessMaker.alert(message, "danger");
+          })
+          .finally(() => {
+            // Stop saving state.
+            this.setLoadingState(false);
           });
       }, this.autoSaveDelay);
     },
@@ -989,6 +989,19 @@ export default {
             is_draft: isDraft ?? this.isDraft,
           },
         }, 0);
+      }
+    },
+    setLoadingState(isLoading = false) {
+      if (this.isVersionsInstalled) {
+        this.$refs.menuScreen.removeItem("SavedNotification");
+        this.$refs.menuScreen.addItem({
+          id: "SavedNotification",
+          type: "SavedNotification",
+          section: "right",
+          options: {
+            is_loading: isLoading,
+          },
+        }, 1);
       }
     },
   },

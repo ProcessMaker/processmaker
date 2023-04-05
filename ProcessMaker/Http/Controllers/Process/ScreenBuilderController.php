@@ -43,6 +43,7 @@ class ScreenBuilderController extends Controller
             'manager' => $manager,
             'autoSaveDelay' => config('versions.delay.process', 5000),
             'isVersionsInstalled' => PackageHelper::isPmPackageVersionsInstalled(),
+            'isDraft' => $draft !== null,
         ]);
     }
 }
