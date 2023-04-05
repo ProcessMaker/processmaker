@@ -239,6 +239,7 @@ export default {
       }
 
       this.debounceTimeout = setTimeout(() => {
+        this.setLoadingState(true);
         ProcessMaker.apiClient.put(`/processes/${this.process.id}/draft`, {
           name: this.process.name,
           description: this.process.description,
@@ -253,19 +254,26 @@ export default {
             if (response.data.warnings && response.data.warnings.length > 0) {
               this.$refs.validationStatus.autoValidate = true;
             }
-            this.$refs.modeler.showSavedNotification();
             // Set draft status.
             this.setVersionIndicator(true);
           })
           .catch((error) => {
             const { message } = error.response.data;
             ProcessMaker.alert(message, "danger");
+          })
+          .finally(() => {
+            this.setLoadingState(false);
           });
       }, this.autoSaveDelay);
     },
     setVersionIndicator(isDraft = null) {
       if (this.isVersionsInstalled) {
         this.$refs.modeler.setVersionIndicator(isDraft ?? this.isDraft);
+      }
+    },
+    setLoadingState(isLoading = false) {
+      if (this.isVersionsInstalled) {
+        this.$refs.modeler.setLoadingState(isLoading);
       }
     },
   },
