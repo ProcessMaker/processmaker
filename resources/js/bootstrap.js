@@ -26,6 +26,7 @@ import { initializeScreenCache } from "@processmaker/screen-builder";
 import Vue from 'vue'
 import VueCookies from 'vue-cookies'
 import PmqlInput from "./components/shared/PmqlInput.vue";
+import GlobalSearch from "./components/shared/GlobalSearch.vue";
 
 window.__ = translator;
 window._ = require("lodash");
@@ -76,6 +77,7 @@ window.Vue.component("monaco-editor", MonacoEditor);
 window.Vue.component("screen-select", ScreenSelect);
 window.Vue.component("pm-modal", Modal);
 window.Vue.component("pmql-input", PmqlInput);
+window.Vue.component("global-search", GlobalSearch);
 let translationsLoaded = false;
 const mdates = JSON.parse(
   document.head.querySelector("meta[name=\"i18n-mdate\"]").content,

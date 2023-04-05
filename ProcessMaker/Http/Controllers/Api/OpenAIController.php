@@ -63,7 +63,7 @@ class OpenAIController extends Controller
             'usage' => $usage,
             'result' => $result,
             'question' => $originalQuestion,
-            'collection' => $collection,
+            'collection' => isset($collection) ? $collection : null,
         ]);
     }
 }

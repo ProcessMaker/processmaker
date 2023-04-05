@@ -92,6 +92,8 @@
         </b-navbar-nav>
 
         <b-navbar-nav class="d-flex align-items-center ml-auto">
+
+          <global-search></global-search>
             <component v-bind:is="'request-modal'" url="{{ route('processes.index') }}" v-bind:permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"></component>
 
             @can('view-notifications')
