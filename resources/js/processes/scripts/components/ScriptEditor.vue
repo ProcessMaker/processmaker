@@ -370,7 +370,7 @@ export default {
         })
         .then((response) => {
           ProcessMaker.alert(this.$t("The script was saved."), "success");
-          // Update version indicator.
+          // Set published status.
           this.setVersionIndicator(false);
           if (typeof onSuccess === "function") {
             onSuccess(response);
@@ -391,6 +391,8 @@ export default {
       }
 
       this.debounceTimeout = setTimeout(() => {
+        // Start saving state.
+        this.setLoadingState(true);
         ProcessMaker.apiClient
           .put(`scripts/${this.script.id}/draft`, {
             code: this.code,
@@ -401,20 +403,12 @@ export default {
             timeout: this.script.timeout,
           })
           .then(() => {
-            // Display saved notification.
-            this.$refs.menuScript.addItem({
-              id: "SavedNotification",
-              type: "SavedNotification",
-              section: "right",
-            }, 1);
-
-            // Update version indicator.
+            // Set draft status.
             this.setVersionIndicator(true);
-
-            // Hide the notification after 2 seconds.
-            setTimeout(() => {
-              this.$refs.menuScript.removeItem("SavedNotification");
-            }, 2000);
+          })
+          .finally(() => {
+            // Stop saving state.
+            this.setLoadingState(false);
           });
       }, this.autoSaveDelay);
     },
@@ -465,6 +459,19 @@ export default {
             is_draft: isDraft ?? this.isDraft,
           },
         }, 0);
+      }
+    },
+    setLoadingState(isLoading = false) {
+      if (this.isVersionsInstalled) {
+        this.$refs.menuScript.removeItem("SavedNotification");
+        this.$refs.menuScript.addItem({
+          id: "SavedNotification",
+          type: "SavedNotification",
+          section: "right",
+          options: {
+            is_loading: isLoading,
+          },
+        }, 1);
       }
     },
   },
