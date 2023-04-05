@@ -301,7 +301,8 @@ export default {
       const { clientHeight } = this.$refs.editorContainer;
       domNode.style.height = `${clientHeight.toString()}px`;
     },
-    stopResizing: _.debounce(() => {
+    // eslint-disable-next-line func-names
+    stopResizing: _.debounce(function () {
       this.resizing = false;
     }, 50),
     handleResize() {
