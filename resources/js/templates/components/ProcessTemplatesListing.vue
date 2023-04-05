@@ -127,7 +127,7 @@
             { value: "view-documentation", content: "Template Documentation", permission: "view-process-templates", icon: "fas fa-sign", isDocumenterInstalled: "if('isDocumenterInstalled' == true, true, false)"},
             { value: "export-item", content: "Export Template", permission: "export-process-templates", icon: "fas fa-file-export"},
             { value: "edit-item", content: "Configure Template", permission: "edit-process-templates", icon: "fas fa-cog"},
-            { value: "delete-item", content: "Delete Template", permission: "archive-process-templates", icon: "fas fa-trash"},
+            { value: "delete-item", content: "Delete Template", permission: "delete-process-templates", icon: "fas fa-trash"},
           ],
         };
       },

@@ -20,7 +20,7 @@ class AddProcessTemplatePermissionsToPermissionsTable extends Migration
             ['Import Process Templates', 'import-process-templates'],
             ['Export Process Templates', 'export-process-templates'],
             ['Edit Process Templates', 'edit-process-templates'],
-            ['Archive Process Templates', 'archive-process-templates'],
+            ['Delete Process Templates', 'delete-process-templates'],
         ];
 
         foreach ($permissions as $permission) {
