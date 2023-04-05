@@ -542,6 +542,8 @@ export default {
     this.countElements = debounce(this.countElements, 2000);
     this.mountWhenTranslationAvailable();
     this.countElements();
+    // Display version indicator.
+    this.setVersionIndicator();
   },
   methods: {
     ...mapMutations("globalErrorsModule", { setStoreMode: "setMode" }),
@@ -919,6 +921,9 @@ export default {
             watchers: this.watchers,
           })
           .then(() => {
+            // Set draft status.
+            this.setVersionIndicator(true);
+
             // Display saved notification.
             this.$refs.menuScreen.unshiftItem({
               id: "SavedNotification",
@@ -959,6 +964,8 @@ export default {
               this.exportScreen();
             }
             ProcessMaker.alert(this.$t("Successfully saved"), "success");
+            // Set published status.
+            this.setVersionIndicator(false);
             ProcessMaker.EventBus.$emit("save-changes");
             if (typeof onSuccess === "function") {
               onSuccess(response);
@@ -969,6 +976,19 @@ export default {
               onError(err);
             }
           });
+      }
+    },
+    setVersionIndicator(isDraft = null) {
+      if (this.isVersionsInstalled) {
+        this.$refs.menuScreen.removeItem("VersionIndicator");
+        this.$refs.menuScreen.addItem({
+          id: "VersionIndicator",
+          type: "VersionIndicator",
+          section: "right",
+          options: {
+            is_draft: isDraft ?? this.isDraft,
+          },
+        }, 0);
       }
     },
   },
