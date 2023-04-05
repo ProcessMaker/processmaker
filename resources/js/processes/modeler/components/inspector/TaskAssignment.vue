@@ -18,33 +18,35 @@
             v-if="showAssignments"
             :label="$t('Assigned Users/Groups')"
             v-model="assignments"
-            :hide-users="hideUsers" 
+            :hide-users="hideUsers"
             :multiple="true" />
-          
-          <user-by-id
-              v-if="showAssignUserById"
-              :label="$t('Variable Name')"
-              v-model="assigned"
-              :helper="$t('Variable containing the numeric User ID')"
-          ></user-by-id>
 
-          <self-service-select v-if="showAssignSelfService" 
-            v-model="assignments"
-          ></self-service-select>
+          <div v-if="showAssignByVariable">
+            <label class="mt-1">{{ $t('Variable Name (Users)') }}</label>
+            <b-form-input v-model="assignedUsersVar" />
+            <small class="form-text text-muted">{{$t("Enter the variable containing one or more numeric user IDs")}}</small>
 
-          <assign-expression 
+            <label class="mt-2">{{ $t('Variable Name (Groups)') }}</label>
+            <b-form-input v-model="assignedGroupsVar" />
+            <small v-if="helper" class="form-text text-muted" >{{ $t(helper) }}</small>
+
+            <small class="form-text text-muted">{{$t("Enter the variable containing one or more numeric group IDs")}}</small>
+          </div>
+
+          <assign-expression
             v-if="showAssignRuleExpression"
             v-model="specialAssignments" 
           />
-            
-          <form-checkbox v-for="configurable in optionsConfigurables"
-            :key="configurable"
-            :label="configurableLabel(configurable)"
-            :checked="getConfigurableValue(configurable)"
-            toggle="true"
-            @change="setConfigurableValue($event, configurable)">
-          </form-checkbox>
-
+          <div v-for="configurable in optionsConfigurables">
+            <h6 class="font-weight-bold mt-3" v-if="configurable.startsWith('SECTION_TITLE:')" v-text="configurableLabel(configurable)"></h6>
+            <form-checkbox v-else-if="configurable !== 'SELF_SERVICE' || (configurable === 'SELF_SERVICE' && showAssignSelfService)"
+               :key="configurable"
+               :label="configurableLabel(configurable)"
+               :checked="getConfigurableValue(configurable)"
+               toggle="true"
+               @change="setConfigurableValue($event, configurable)">
+            </form-checkbox>
+          </div>
         </div>
     </div>
 </template>
@@ -86,6 +88,25 @@
         disabled: false,
       };
     },
+    created () {
+      // If it is self service in the old format we transform to the new one
+      if (this.assignment === 'self_service') {
+        const cachedAssignments = {...this.assignments};
+        this.assignment = 'user_group';
+        this.setConfigurableValue (true, 'SELF_SERVICE');
+        this.assignedUserSetter(cachedAssignments.users.join(","));
+        this.assignedGroupSetter(cachedAssignments.groups.join(","));
+      }
+
+      // If it is user_by_id we update the assignment to an assignment by process_variable
+      if (this.assignment === 'user_by_id') {
+        const cachedAssignments = {...this.assignments};
+        this.assignment = 'process_variable';
+        this.setConfigurableValue (true, 'PROCESS_VARIABLE');
+        this.assignedUserSetter(cachedAssignments.users.join(","));
+        this.assignedGroupSetter(cachedAssignments.groups.join(","));
+      }
+    },
     mounted () {
       this.$root.$on('disable-assignment-settings', (val) => {
         this.disabled = val;
@@ -116,6 +137,22 @@
       },
       assignedGroupGetter () {
         return _.get(this.node, "assignedGroups");
+      },
+      assignedUsersVar: {
+        get () {
+          return _.get(this.node, "assignedUsers");
+        },
+        set (value) {
+          this.$set(this.node, "assignedUsers", value);
+        }
+      },
+      assignedGroupsVar: {
+        get () {
+          return _.get(this.node, "assignedGroups");
+        },
+        set (value) {
+          this.$set(this.node, "assignedGroups", value);
+        }
       },
       assignments: {
         get () {
@@ -175,8 +212,8 @@
           this.$set(this.node, "assignment", value);
         }
       },
-      showAssignUserById () {
-        return this.assignment === "user_by_id";
+      showAssignByVariable () {
+        return this.assignment === "process_variable";
       },
       showAssignments() {
         this.hideUsers = this.assignment === "self_service";
@@ -184,7 +221,7 @@
         return assign.indexOf(this.assignment) !== -1;
       },
       showAssignSelfService () {
-        return this.assignment === "self_service";
+        return this.assignmentSupportsSelfService(this.assignment);
       },
       showAssignRuleExpression () {
         return this.assignment === 'rule_expression';
@@ -235,7 +272,16 @@
         }
       },
       configurableLabel(configurable) {
+        if (configurable.substr(0, 'SECTION_TITLE:'.length) === 'SECTION_TITLE:') {
+          configurable = configurable.substr('SECTION_TITLE:'.length);
+        }
         switch (configurable) {
+          case 'ASSIGNMENT_OPTIONS':
+            return this.$t('Assignment Options');
+          case 'ASSIGNEE_PERMISSIONS':
+            return this.$t('Assignee Permissions');
+          case 'SELF_SERVICE':
+            return this.$t('Self Service');
           case 'LOCK_TASK_ASSIGNMENT':
             return this.$t('Lock User Assignment');
           case 'ALLOW_REASSIGNMENT':
@@ -286,6 +332,9 @@
       assignmentRulesSetter (value) {
         this.$set(this.node, "assignmentRules", JSON.stringify(value));
       },
+      assignmentSupportsSelfService (assignmentType) {
+        return ['process_variable', 'user_group', 'rule_expression'].includes(assignmentType);
+      },
     },
     watch: {
       assigned: {
@@ -301,6 +350,12 @@
         handler (assigned) {
           this.assignments.groups = [];
           this.assignments.users = [];
+
+          //self service toggle must be inactivated with a non supported assignment type
+          if (!this.assignmentSupportsSelfService(assigned)) {
+            this.setConfigurableValue (false, 'SELF_SERVICE');
+          }
+
           let value = "";
           if (assigned === "user") {
             value = this.assignedUserGetter;

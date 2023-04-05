@@ -61,14 +61,13 @@ div.main {
     processName: @json($process->name),
     signalPermissions: @json($signalPermissions),
     // list of toggles in assignment rules
-    configurables: ['LOCK_TASK_ASSIGNMENT', 'ALLOW_REASSIGNMENT'],
+    configurables: ['SECTION_TITLE:ASSIGNMENT_OPTIONS', 'SELF_SERVICE', 'LOCK_TASK_ASSIGNMENT', 'ALLOW_REASSIGNMENT'],
     // list of items for assignment Types dropdown list
     assignmentTypes: [
       { value: "user_group", label: "Users / Groups" },
       { value: "previous_task_assignee", label: "Previous Task Assignee" },
       { value: "requester", label: "Request Starter" },
-      { value: "user_by_id", label: "By User ID" },
-      { value: "self_service", label: "Self Service" },
+      { value: "process_variable", label: "Process Variable" },
       { value: "rule_expression", label: "Rule Expression" },
       { value: "process_manager", label: "Process Manager" },
     ],

@@ -56,6 +56,7 @@
                               :initial-request-id="{{ $task->process_request_id }}"
                               :user-id="{{ Auth::user()->id }}"
                               csrf-token="{{ csrf_token() }}"
+                              initial-loop-context="{{ $task->getLoopContext() }}"
                               @task-updated="taskUpdated"
                               @submit="submit"
                               @completed="completed"
@@ -109,7 +110,7 @@
                             @{{ moment(completedAt).format() }}
                         </li>
 
-                        <li class="list-group-item">
+                        <li class="list-group-item" v-if="task.is_self_service === 0">
                             <h5>{{__('Assigned To')}}</h5>
                             <avatar-image v-if="task.user" size="32" class="d-inline-flex pull-left align-items-center"
                                           :input-data="task.user"></avatar-image>
