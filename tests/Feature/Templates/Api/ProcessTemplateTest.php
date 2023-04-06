@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Templates\Api;
 
+use Database\Seeders\ProcessTemplatesSeeder;
+use Database\Seeders\UserSeeder;
 use Exception;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Arr;
@@ -220,5 +222,14 @@ class ProcessTemplateTest extends TestCase
         $this->assertEquals('Test Create Process from Template', $newProcess->name);
         $this->assertEquals('Process from template description', $newProcess->description);
         $this->assertEquals('Default Templates', $newCategory->name);
+    }
+
+    public function testSeededTemplate()
+    {
+        $this->seed(UserSeeder::class);
+        $this->seed(ProcessTemplatesSeeder::class);
+        $template = ProcessTemplates::where('name', 'Employee Onboarding 2023')->firstOrFail();
+        $this->assertEquals('Employee Onboarding 2023', $template->name);
+        $this->assertEquals('Default Templates', ProcessCategory::where('id', $template['process_category_id'])->firstOrFail()->name);
     }
 }
