@@ -212,7 +212,7 @@ export default {
   width: 200px;
   transition:
     max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-    width 0.3s 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.55s 0.15s cubic-bezier(0.4, 0, 0.2, 1),
     box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   max-height: 40px;
   position: absolute;
