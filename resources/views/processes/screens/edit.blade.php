@@ -106,7 +106,7 @@
                 },
                 onUpdate() {
                     this.resetErrors();
-                    ProcessMaker.apiClient.put('screens/' + this.formData.id, this.formData)
+                    ProcessMaker.apiClient.put('screens/' + this.formData.id, this.formData, { timeout: 30000 })
                         .then(response => {
                             ProcessMaker.alert(this.$t('The screen was saved.'), 'success');
                             this.onClose();

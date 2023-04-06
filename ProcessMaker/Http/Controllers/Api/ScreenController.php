@@ -504,4 +504,28 @@ class ScreenController extends Controller
 
         return new ScreenResource($screen);
     }
+    /**
+     *Hackaton queryToOpenAI
+     * 
+     */
+    public function queryToOpenAI(Request $request){
+        $parameters = [
+            'model' => 'text-davinci-003',
+            'prompt' => "JSON SCHEMA: ".$request->message,
+            'temperature' => 1,
+            'max_tokens' => 3000,
+        ];
+        $variable = env('OPENIA_SECRET');
+        $client = \OpenAI::client($variable);
+        $response = $client->completions()->create($parameters);
+        $resp = $response['choices'][0]['text'];
+        // validate json
+        $regex = '/{.*}/s';
+        preg_match($regex, $resp, $matches);
+        $resp = isset($matches[0]) ? $matches[0] : '';
+
+        return $resp;
+    }
+
+
 }
