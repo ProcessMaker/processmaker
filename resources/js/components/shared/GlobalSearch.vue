@@ -218,14 +218,14 @@ export default {
   position: absolute;
   right: 0;
   top: -19px;
-  z-index: 1;
+  z-index: 99;
 }
 
 .search-bar.expanded {
   width: 608px;
   max-height: 700px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.16);
-  z-index: 1;
+  z-index: 99;
   background: #ffffff;
   transition:
     max-height 1s 0.15s cubic-bezier(0.4, 0, 0.2, 1),
