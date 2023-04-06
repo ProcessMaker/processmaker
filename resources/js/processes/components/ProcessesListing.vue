@@ -7,10 +7,10 @@
             :empty-desc="$t('')"
             empty-icon="noData"
     />
-    <div v-show="!shouldShowLoader" class="card card-body table-card" data-cy="processes-table">
+    <div v-show="!shouldShowLoader" class="card card-body processes-table-card" data-cy="processes-table">
       <vuetable
-              :dataManager="dataManager"
-              :sortOrder="sortOrder"
+              :data-manager="dataManager"
+              :sort-order="sortOrder"
               :css="css"
               :api-mode="false"
               @vuetable:pagination-data="onPaginationData"
@@ -18,7 +18,7 @@
               :data="data"
               data-path="data"
               pagination-path="meta"
-              :noDataTemplate="$t('No Data Available')"
+              :no-data-template="$t('No Data Available')"
       >
         <template slot="name" slot-scope="props">
           <i tabindex="0"
@@ -36,7 +36,6 @@
           </i>
           <span v-uni-id="props.rowData.id.toString()">{{props.rowData.name}}</span>
         </template>
-
         <template slot="owner" slot-scope="props">
           <avatar-image
                   class="d-inline-flex pull-left align-items-center"
@@ -45,99 +44,21 @@
                   hide-name="true"
           ></avatar-image>
         </template>
-
         <template slot="actions" slot-scope="props">
-          <div class="actions">
-            <div class="popout">
-              <b-btn
-                      variant="link"
-                      @click="onAction('unpause-start-timer', props.rowData, props.rowIndex)"
-                      v-b-tooltip.hover
-                      :title="$t('Unpause Start Timer Events')"
-                      v-if="props.rowData.has_timer_start_events && props.rowData.pause_timer_start"
-                      v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-play fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                      variant="link"
-                      @click="onAction('pause-start-timer', props.rowData, props.rowIndex)"
-                      v-b-tooltip.hover
-                      :title="$t('Pause Start Timer Events')"
-                      v-if="props.rowData.has_timer_start_events && !props.rowData.pause_timer_start"
-                      v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-pause fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                      variant="link"
-                      @click="onAction('edit-designer', props.rowData, props.rowIndex)"
-                      v-b-tooltip.hover
-                      :title="$t('Edit')"
-                      v-if="permission.includes('edit-processes') && (props.rowData.status === 'ACTIVE' || props.rowData.status === 'INACTIVE')"
-                      v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-pen-square fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                      variant="link"
-                      @click="onAction('edit-item', props.rowData, props.rowIndex)"
-                      v-b-tooltip.hover
-                      :title="$t('Configure')"
-                      v-if="permission.includes('edit-processes') && (props.rowData.status === 'ACTIVE' || props.rowData.status === 'INACTIVE')"
-                      v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-cog fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                      variant="link"
-                      @click="onAction('view-documentation', props.rowData, props.rowIndex)"
-                      v-b-tooltip.hover
-                      :title="$t('View Documentation')"
-                      v-if="permission.includes('view-processes') && isDocumenterInstalled"
-                      v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-map-signs fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                      variant="link"
-                      @click="onAction('export-item', props.rowData, props.rowIndex)"
-                      v-b-tooltip.hover
-                      :title="$t('Export')"
-                      v-if="permission.includes('export-processes')"
-                      v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-file-export fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                      variant="link"
-                      @click="onAction('remove-item', props.rowData, props.rowIndex)"
-                      v-b-tooltip.hover
-                      :title="$t('Archive')"
-                      v-if="permission.includes('archive-processes') && (props.rowData.status === 'ACTIVE' || props.rowData.status === 'INACTIVE')"
-                      v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-download fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                      variant="link"
-                      @click="onAction('restore-item', props.rowData, props.rowIndex)"
-                      v-b-tooltip.hover
-                      :title="$t('Restore')"
-                      v-if="permission.includes('archive-processes') && props.rowData.status === 'ARCHIVED'"
-                      v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-upload fa-lg fa-fw"></i>
-              </b-btn>
-            </div>
-          </div>
+          <ellipsis-menu 
+            @navigate="onNavigate"
+            :actions="actions"
+            :permission="permission"
+            :data="props.rowData"
+            :is-documenter-installed="isDocumenterInstalled"
+            :divider="true"
+          />
         </template>
       </vuetable>
-
       <pagination
               :single="$t('Process')"
               :plural="$t('Processes')"
-              :perPageSelectEnabled="true"
+              :per-page-select-enabled="true"
               @changePerPage="changePerPage"
               @vuetable-pagination:change-page="onPageChange"
               ref="pagination"
@@ -150,13 +71,26 @@
   import datatableMixin from "../../components/common/mixins/datatable";
   import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
   import { createUniqIdsMixin } from "vue-uniq-ids";
+  import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
+
   const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
+    components: { EllipsisMenu },
     mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
     props: ["filter", "id", "status", "permission", "isDocumenterInstalled"],
     data() {
       return {
+        actions: [
+        { value: "unpause-start-timer", content: "Unpause Start Timer Events", icon: "fas fa-play", conditional: "if(has_timer_start_events and pause_timer_start, true, false)" },
+        { value: "pause-start-timer", content: "Pause Start Timer Events", icon: "fas fa-pause", conditional: "if(has_timer_start_events and not(pause_timer_start), true, false)"},
+        { value: "edit-designer", content: "Edit Process", permission: "edit-processes", icon: "fas fa-edit", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
+        { value: "edit-item", content: "Configure", permission: "edit-processes", icon: "fas fa-cog", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
+        { value: "view-documentation", content: "View Documentation", permission: "view-processes", icon: "fas fa-sign", conditional: "isDocumenterInstalled"},
+        { value: "export-item", content: "Export", permission: "export-processes", icon: "fas fa-file-export"},
+        { value: "remove-item", content: "Archive", permission: "archive-processes", icon: "fas fa-download", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)" },
+        { value: "restore-item", content: "Restore", permission: "archive-processes", icon: "fas fa-upload", conditional: "if(status == 'ARCHIVED', true, false)" },
+      ],
         orderBy: "name",
         sortOrder: [
           {
@@ -223,12 +157,12 @@
       goToExport(data) {
         window.location = "/processes/" + data + "/export";
       },
-      onAction(action, data, index) {
+      onNavigate(action, data) {
         let putData = {
           name: data.name,
           description: data.description,
         };
-        switch (action) {
+        switch (action.value) {
           case "unpause-start-timer":
             putData.pause_timer_start = false;
             ProcessMaker.apiClient
@@ -395,5 +329,9 @@
 
   :deep(th#_created_at) {
     width: 14%;
+  }
+
+  .processes-table-card {
+    padding: 0;
   }
 </style>
