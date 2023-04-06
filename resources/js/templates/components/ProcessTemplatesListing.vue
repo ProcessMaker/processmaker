@@ -144,7 +144,7 @@
           window.location = "/template/process/" + data + "/configure";
         },
         goToDocumentation(processId) {
-          window.location = `/modeler/${processId}/print`;
+          window.location = `/modeler/template/${processId}/print`;
         },
         goToDesigner(data) {
           ProcessMaker.apiClient.get(`modeler/templates/process/${data}`)
