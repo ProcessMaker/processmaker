@@ -25,8 +25,8 @@
       >
         <div class="ellipsis-dropdown-content">
           <i
-            class="pr-1"
-            :class="`${action.icon} fa-fw`"
+            class="pr-1 fa-fw"
+            :class="action.icon"
           />
           <span>{{ action.content }}</span>
         </div>
@@ -40,8 +40,8 @@
       >
         <div class="ellipsis-dropdown-content">
           <i
-            class="pr-1"
-            :class="`${action.icon} fa-fw`"
+            class="pr-1 fa-fw"
+            :class="action.icon"
           />
           <span>{{ action.content }}</span>
         </div>
@@ -56,8 +56,8 @@
       >
         <div class="ellipsis-dropdown-content">
           <i
-            class="pr-1"
-            :class="`${action.icon} fa-fw`"
+            class="pr-1 fa-fw"
+            :class="action.icon"
           />
           <span>{{ action.content }}</span>
         </div>
