@@ -32,6 +32,7 @@ class NlqToCategoryHandler extends OpenAiHandler
         $prompt = $this->getPromptFile($type);
         $prompt = $this->replaceQuestion($prompt, $question);
         $prompt = $this->replaceStopSequence($prompt);
+        $prompt = $this->replaceDefaultType($prompt, $type);
 
         $this->config['prompt'] = $prompt;
 
@@ -75,5 +76,12 @@ class NlqToCategoryHandler extends OpenAiHandler
         $pastYearReplaced = str_replace('{pastYear}', date('Y') - 1, $currentYearReplaced);
 
         return $pastYearReplaced;
+    }
+
+    public function replaceDefaultType($prompt, $type)
+    {
+        $replaced = str_replace('{type}', $type, $prompt);
+
+        return $replaced;
     }
 }

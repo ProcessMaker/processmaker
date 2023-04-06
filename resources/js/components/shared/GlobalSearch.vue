@@ -1,22 +1,60 @@
 <template>
   <div>
     <div class="">
-      <div class="d-flex align-items-start">
-        <div class="search-bar flex-grow">
+      <div class="d-flex align-items-start position-relative">
+        <div class="search-bar flex-grow" @click="showPopUp()" :class="{'expanded': expanded}" v-click-outside="hidePopUp">
 
-          <div class="search-bar-container d-flex align-items-center">
-            <i v-if="!aiLoading" class="fa fa-search ml-3 pmql-icons"></i>
-            <i v-if="aiLoading" class="fa fa-spinner fa-spin ml-3 pmql-icons"></i> 
+          <div class="row m-0">
+            <div class="search-bar-container col-12 d-flex align-items-center p-0">
+              <i v-if="!aiLoading" class="fa fa-search ml-3 pmql-icons"></i>
+              <i v-if="aiLoading" class="fa fa-spinner fa-spin ml-3 pmql-icons"></i> 
 
-            <input ref="search_input" type="text" class="pmql-input"
-              :aria-label="inputAriaLabel"
-              :placeholder="placeholder"
-              :id="inputId"
-              v-model="query"
-              rows="1"
-              @input="onInput()"
-              @keydown.enter.prevent @keyup.enter="search()">
-            </input>
+              <input ref="search_input" type="text" class="pmql-input"
+                :aria-label="inputAriaLabel"
+                :placeholder="placeholder"
+                :id="inputId"
+                v-model="query"
+                rows="1"
+                @input="onInput()"
+                @keydown.enter.prevent
+                @keyup.enter="search()" >
+            </div>
+          </div>
+          <div class="row m-0">
+            <div class="col-12 search-popup p-2 border-top">
+              <div class="container px-2 d-flex flex-column">
+                <div class="section-title p-2 w-100">
+                  Search result
+                </div>
+                <div v-if="!aiLoading && pmql === '' && !lastSearch" class="p-2 w-100 text-muted small py-3" style="
+                    font-size: .8rem;
+                    font-weight: 100;
+                ">Nothing searched yet</div>
+                <span v-if="aiLoading" class="power-loader mb-3"></span>
+                <span v-if="aiLoading" style="color: #42516e; font-size: .8rem;">Please wait ...</span>
+
+                <div v-if="!aiLoading && pmql !== '' && lastSearch" class="section-item w-100 p-2">
+                  <a href="#">{{ lastSearch.search }}</a>
+                  <div class="path text-secondary">{{ getPath(lastSearch) }}</div>
+                </div>
+                <div class="section-title px-2 w-100 mt-2 border-top py-2">
+                  Recently searched
+                </div>
+                <div v-for="recentSearch in recentSearches" class="section-item w-100 p-2">
+                  <a href="#">{{ recentSearch.search }}</a>
+                  <div class="path text-secondary">{{ getPath(recentSearch) }}</div>
+                </div>
+                <div class="w-100 p-2 mb-2">
+                  <a href="#">Show more</a>
+                </div>
+                <div class="section-footer w-100 d-flex pt-2 pb-0 w-100 align-items-center px-0 border-top">
+                  <img src="/img/logo-icon.png" 
+                    style="height: 30px;">
+                    <div style="font-size: 80%; font-weight: 600;">Powered by AI</div>
+                  </div>
+                
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -27,7 +65,23 @@
 
 import isPMQL from "../../modules/isPMQL";
 
+let myEvent;
 export default {
+  directives: {
+    clickOutside: {
+      bind(el, binding, vnode) {
+        myEvent = function (event) {
+          if (!(el === event.target || el.contains(event.target))) {
+            vnode.context[binding.expression](event);
+          }
+        };
+        document.body.addEventListener("click", myEvent);
+      },
+      unbind() {
+        document.body.removeEventListener("click", myEvent);
+      },
+    },
+  },
   props: [
     "searchType",
     "value",
@@ -43,6 +97,9 @@ export default {
       inputAriaLabel: "",
       pmql: "",
       query: "",
+      expanded: false,
+      lastSearch: null,
+      recentSearches: [],
       usage: {
         completionTokens: 0,
         promptTokens: 0,
@@ -67,9 +124,38 @@ export default {
   mounted() {
     this.query = this.value;
     this.inputAriaLabel = this.ariaLabel;
+    this.getRecentSearches();
   },
 
   methods: {
+    getPath(item) {
+      if (item.type === "requests") {
+        return "Home / Requests";
+      }
+
+      if (item.type === "tasks") {
+        return "Home / Tasks / To Do Tasks";
+      }
+
+      if (item.type === "processes") {
+        return "Home / Processes";
+      }
+
+      if (item.type === "collections") {
+        return `Home / Collections / ${JSON.parse(item.response).collection}`;
+      }
+
+      return "";
+    },
+    showPopUp() {
+      this.expanded = true;
+    },
+    hidePopUp() {
+      this.expanded = false;
+    },
+    getContext() {
+      return window.location.pathname.split("/")[1];
+    },
     onInput() {
       this.$emit("pmqlchange", this.query);
     },
@@ -77,10 +163,19 @@ export default {
       this.query = "";
       this.search();
     },
+    getRecentSearches() {
+      ProcessMaker.apiClient.get('/openai/recent-searches?quantity=5')
+        .then((response) => {
+          if (response.data && response.data.recentSearches) {
+            this.recentSearches = response.data.recentSearches;
+          }
+        });
+    },
     search() {
+      this.showPopUp();
       const params = {
         question: this.query,
-        // type: this.searchType,
+        type: this.getContext(),
       };
 
       this.aiLoading = true;
@@ -89,6 +184,8 @@ export default {
         .then((response) => {
           this.pmql = response.data.result;
           this.usage = response.data.usage;
+          this.recentSearches = response.data.recentSearches;
+          this.lastSearch = response.data.lastSearch;
           this.$emit("submit", this.pmql);
           this.aiLoading = false;
         })
@@ -109,13 +206,69 @@ export default {
 
 .search-bar {
   border: 1px solid rgba(0, 0, 0, 0.125);
+  box-shadow: none;
   border-radius: 3px;
   background: #ffffff;
-  width: 500px;
+  width: 200px;
+  transition:
+    max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.3s 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  max-height: 40px;
+  position: absolute;
+  right: 0;
+  top: -19px;
+  z-index: 1;
+}
+
+.search-bar.expanded {
+  width: 608px;
+  max-height: 700px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.16);
+  z-index: 1;
+  background: #ffffff;
+  transition:
+    max-height 1s 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: absolute;
+  right: 0;
+  top: -19px;
+}
+
+.search-popup {
+  opacity: 0;
+}
+
+.expanded .search-popup {
+  opacity: 1;
+  transition: opacity 3s 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search-popup .container {
+  // align-items: flex-start;
 }
 
 .search-bar.is-invalid {
   border-color: #E50130;
+}
+.section-item {
+  font-size: 1rem;
+}
+
+.section-item:hover {
+  background-color: #F5F6F8;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.section-title {
+  font-weight: 600;
+  color: #42526E
+}
+
+.path {
+  font-size: 80%;
 }
 
 .pmql-input {
@@ -213,4 +366,89 @@ input.pmql-input:focus ~ label, input.pmql-input:valid ~ label {
   background: #EBEEF2 !important;
   font-weight: 400;
 }
+.power-loader {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    position: relative;
+    animation: rotate 1s linear infinite
+  }
+  .power-loader::before , .power-loader::after {
+    content: "";
+    box-sizing: border-box;
+    position: absolute;
+    inset: 0px;
+    border-radius: 50%;
+    border: 5px solid #0871c231;
+    animation: prixClipFix 2s linear infinite ;
+  }
+  .power-loader::after{
+    border-color: #0872C2;
+    animation: prixClipFix 2s linear infinite , rotate 0.5s linear infinite reverse;
+    inset: 6px;
+  }
+
+  @keyframes rotate {
+    0%   {transform: rotate(0deg)}
+    100%   {transform: rotate(360deg)}
+  }
+
+  @keyframes prixClipFix {
+      0%   {clip-path:polygon(50% 50%,0 0,0 0,0 0,0 0,0 0)}
+      25%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 0,100% 0,100% 0)}
+      50%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,100% 100%,100% 100%)}
+      75%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 100%)}
+      100% {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 0)}
+  }
+
+
+
+
+// .search-bar.expanded:after {
+//   content: '';
+//   position: absolute;
+//   top: 0;
+//   left: 0;
+//   right: 0;
+//   bottom: 0;
+//   border-radius: 4px;
+//   background: linear-gradient(120deg, #00F260, #0575E6, #00F260);
+//   background-size: 300% 300%;
+//   clip-path: polygon(0% 100%, 3px 100%, 3px 3px, calc(100% - 3px) 3px, calc(100% - 3px) calc(100% - 3px), 3px calc(100% - 3px), 3px 100%, 100% 100%, 100% 0%, 0% 0%);
+// }
+
+// .search-bar.expanded:after {
+//   animation: frame-enter 1s forwards ease-in-out reverse, gradient-animation 4s ease-in-out infinite;
+// }
+
+// /* motion */
+// @keyframes gradient-animation {
+//   0% {
+//     background-position: 15% 0%;
+//   }
+//   50% {
+//     background-position: 85% 100%;
+//   }
+//   100% {
+//     background-position: 15% 0%;
+//   }
+// }
+
+// @keyframes frame-enter {
+//   0% {
+//     clip-path: polygon(0% 100%, 3px 100%, 3px 3px, calc(100% - 3px) 3px, calc(100% - 3px) calc(100% - 3px), 3px calc(100% - 3px), 3px 100%, 100% 100%, 100% 0%, 0% 0%);
+//   }
+//   25% {
+//     clip-path: polygon(0% 100%, 3px 100%, 3px 3px, calc(100% - 3px) 3px, calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) 100%, 100% 100%, 100% 0%, 0% 0%);
+//   }
+//   50% {
+//     clip-path: polygon(0% 100%, 3px 100%, 3px 3px, calc(100% - 3px) 3px, calc(100% - 3px) 3px, calc(100% - 3px) 3px, calc(100% - 3px) 3px, calc(100% - 3px) 3px, 100% 0%, 0% 0%);
+//   }
+//   75% {
+//     -webkit-clip-path: polygon(0% 100%, 3px 100%, 3px 3px, 3px 3px, 3px 3px, 3px 3px, 3px 3px, 3px 3px, 3px 0%, 0% 0%);
+//   }
+//   100% {
+//     -webkit-clip-path: polygon(0% 100%, 3px 100%, 3px 100%, 3px 100%, 3px 100%, 3px 100%, 3px 100%, 3px 100%, 3px 100%, 0% 100%);
+//   }
+// }
 </style>

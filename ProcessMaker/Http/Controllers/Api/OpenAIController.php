@@ -7,6 +7,7 @@ use OpenAI\Client;
 use ProcessMaker\Ai\Handlers\NlqToCategoryHandler;
 use ProcessMaker\Ai\Handlers\NlqToPmqlHandler;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Models\AiSearch;
 use ProcessMaker\OpenAI\OpenAIHelper;
 use ProcessMaker\Plugins\Collections\Models\Collection;
 
@@ -32,8 +33,9 @@ class OpenAIController extends Controller
 
     public function NLQToCategory(Client $client, Request $request)
     {
+        $defaultType = $request->input('type');
         $nlqToCategoryHandler = new NlqToCategoryHandler();
-        [$type, $classifierUsage, $originalQuestion] = $nlqToCategoryHandler->generatePrompt(null,
+        [$type, $classifierUsage, $originalQuestion] = $nlqToCategoryHandler->generatePrompt($defaultType,
             $request->input('question')
         )->execute();
 
@@ -55,15 +57,31 @@ class OpenAIController extends Controller
         $resultDecoded = json_decode($result, true);
         if (json_last_error() === JSON_ERROR_NONE) {
             // Search for collection
-            $collection = Collection::where('name', 'like', '%' . mb_strtolower($resultDecoded['collection']) . '%')->first();
-            // dd($collection);
+            if (array_key_exists('collection', $resultDecoded)) {
+              $collection = Collection::where('name', 'like', '%' . mb_strtolower($resultDecoded['collection']) . '%')->first();
+            }
         }
+
+        // Return recent searched
+        $recentSearches = AiSearch::latest()->take(5)->get();
 
         return response()->json([
             'usage' => $usage,
             'result' => $result,
             'question' => $originalQuestion,
+            'lastSearch' => $recentSearches->first(),
             'collection' => isset($collection) ? $collection : null,
+            'recentSearches' => $recentSearches
+        ]);
+    }
+
+    public function recentSearches(Request $request)
+    {
+        // Return recent searched
+        $quantity = $request->input('quantity');
+        $recentSearches = AiSearch::latest()->take($quantity)->get();
+        return response()->json([
+            'recentSearches' => $recentSearches
         ]);
     }
 }
