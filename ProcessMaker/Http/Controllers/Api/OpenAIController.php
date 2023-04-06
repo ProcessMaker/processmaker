@@ -58,7 +58,7 @@ class OpenAIController extends Controller
         if (json_last_error() === JSON_ERROR_NONE) {
             // Search for collection
             if (array_key_exists('collection', $resultDecoded)) {
-              $collection = Collection::where('name', 'like', '%' . mb_strtolower($resultDecoded['collection']) . '%')->first();
+                $collection = Collection::where('name', 'like', '%' . mb_strtolower($resultDecoded['collection']) . '%')->first();
             }
         }
 
@@ -71,7 +71,7 @@ class OpenAIController extends Controller
             'question' => $originalQuestion,
             'lastSearch' => $recentSearches->first(),
             'collection' => isset($collection) ? $collection : null,
-            'recentSearches' => $recentSearches
+            'recentSearches' => $recentSearches,
         ]);
     }
 
@@ -80,8 +80,9 @@ class OpenAIController extends Controller
         // Return recent searched
         $quantity = $request->input('quantity');
         $recentSearches = AiSearch::latest()->take($quantity)->get();
+
         return response()->json([
-            'recentSearches' => $recentSearches
+            'recentSearches' => $recentSearches,
         ]);
     }
 }
