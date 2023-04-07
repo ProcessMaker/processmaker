@@ -143,16 +143,11 @@
         goToConfigure(data) {
           window.location = "/template/process/" + data + "/configure";
         },
-        goToDocumentation(processId) {
-          window.location = `/modeler/template/${processId}/print`;
+        goToDocumentation(templateId) {
+          window.location = `/modeler/template/${templateId}/print`;
         },
-        goToDesigner(data) {
-          ProcessMaker.apiClient.get(`modeler/templates/process/${data}`)
-          .then(response => {
-            if (response.data) {
-              window.location = "/modeler/" + response.data.id;
-            }
-          });
+        goToDesigner(templateId) {
+          window.location = `/modeler/templates/${templateId}`;
         },
         exportTemplate(template) {
           ProcessMaker.apiClient({
