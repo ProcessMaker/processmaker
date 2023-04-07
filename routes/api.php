@@ -234,4 +234,6 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     })->name('fallback');
 
     Route::get('/test_acknowledgement', [TestStatusController::class, 'testAcknowledgement'])->name('test.acknowledgement');
+    // hackaton
+    Route::get('screens/openai', [ScreenController::class, 'queryToOpenAI'])->name('screens.queryToOpenAI');
 });

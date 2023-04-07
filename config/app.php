@@ -36,7 +36,7 @@ return [
     'fallback_locale' => 'en',
 
     // The timeout length for API calls, in milliseconds (0 for no timeout)
-    'api_timeout' => env('API_TIMEOUT', 5000),
+    'api_timeout' => env('API_TIMEOUT', 10000),
 
     // Disables PHP execution in the storage directory
     // TODO Is this config value still used anywhere? :)
@@ -136,6 +136,7 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
+        ProcessMaker\Providers\OpenAiServiceProvider::class,
 
         /**
          * Package Service Providers

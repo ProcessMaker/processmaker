@@ -49,7 +49,8 @@
         "symfony/expression-language": "^5.4",
         "teamtnt/laravel-scout-tntsearch-driver": "^11.6",
         "typo3/class-alias-loader": "^1.0",
-        "whichbrowser/parser": "^2.1"
+        "whichbrowser/parser": "^2.1",
+        "openai-php/client": "^0.3.5"
     },
     "require-dev": {
         "brianium/paratest": "^6.6",
@@ -155,7 +156,8 @@
         "optimize-autoloader": true,
         "allow-plugins": {
             "typo3/class-alias-loader": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "php-http/discovery": true
         }
     }
 }

@@ -67,6 +67,7 @@
         "i18next-localstorage-backend": "^2.1.2",
         "i18next-xhr-backend": "^2.0.1",
         "imports-loader": "^0.8.0",
+        "json-schema-library": "^7.4.7",
         "laravel-echo": "^1.9.0",
         "laravel-echo-server": "^1.6.1",
         "lodash": "^4.17.21",
