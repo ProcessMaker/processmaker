@@ -44,6 +44,7 @@ class ProcessTemplatesSeeder extends Seeder
                 'manifest' => $manifest,
                 'svg' => $svg,
                 'is_system' => 0,
+                'key' => 'default_templates',
             ]);
     }
 }
