@@ -14,6 +14,7 @@ new Vue({
   data: {
     filter: "",
     pmql: "",
+    urlPmql: "",
     filtersPmql: "",
     fullPmql: "",
     status: [],
@@ -49,6 +50,9 @@ new Vue({
         item.name = this.$t(item.name);
       });
     });
+
+    const urlParams = new URLSearchParams(window.location.search);
+    this.urlPmql = urlParams.get("pmql");
   },
   mounted() {
     ProcessMaker.EventBus.$on('advanced-search-addition', (component) => {

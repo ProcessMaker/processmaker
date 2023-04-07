@@ -2,57 +2,74 @@
   <div>
     <div class="">
       <div class="d-flex align-items-start position-relative">
-        <div class="search-bar flex-grow" @click="showPopUp()" :class="{'expanded': expanded}" v-click-outside="hidePopUp">
-
+        <div class="search-bar flex-grow"
+             v-click-outside="hidePopUp"
+             :class="{'expanded': expanded}"
+             @click="showPopUp()">
           <div class="row m-0">
             <div class="search-bar-container col-12 d-flex align-items-center p-0">
-              <i v-if="!aiLoading" class="fa fa-search ml-3 pmql-icons"></i>
-              <i v-if="aiLoading" class="fa fa-spinner fa-spin ml-3 pmql-icons"></i> 
+              <i class="fa fa-search ml-3 pmql-icons" />
 
-              <input ref="search_input" type="text" class="pmql-input"
-                :aria-label="inputAriaLabel"
-                :placeholder="placeholder"
-                :id="inputId"
-                v-model="query"
-                rows="1"
-                @input="onInput()"
-                @keydown.enter.prevent
-                @keyup.enter="search()" >
+              <input ref="search_input" 
+                     type="text" 
+                     class="pmql-input"
+                     :aria-label="inputAriaLabel"
+                     :placeholder="placeholder"
+                     :id="inputId"
+                     v-model="query"
+                     rows="1"
+                     @input="onInput()"
+                     @keydown.enter.prevent
+                     @keyup.enter="search()">
             </div>
           </div>
-          <div class="row m-0">
-            <div class="col-12 search-popup p-2 border-top">
-              <div class="container px-2 d-flex flex-column">
-                <div class="section-title p-2 w-100">
-                  Search result
-                </div>
-                <div v-if="!aiLoading && pmql === '' && !lastSearch" class="p-2 w-100 text-muted small py-3" style="
-                    font-size: .8rem;
-                    font-weight: 100;
-                ">Nothing searched yet</div>
-                <span v-if="aiLoading" class="power-loader mb-3"></span>
-                <span v-if="aiLoading" style="color: #42516e; font-size: .8rem;">Please wait ...</span>
+          <div class="col-12 search-popup border-top">
+            <div class="container d-flex flex-column p-0">
+              <div class="section-title p-2 w-100">
+                {{ $t("Search result") }}
+              </div>
+              <div v-if="!aiLoading && pmql === '' && !lastSearch"
+                    class="p-2 w-100 text-muted py-2 no-results">
+                    {{ $t("Nothing searched yet") }}
+              </div>
 
-                <div v-if="!aiLoading && pmql !== '' && lastSearch" class="section-item w-100 p-2">
-                  <a href="#">{{ lastSearch.search }}</a>
-                  <div class="path text-secondary">{{ getPath(lastSearch) }}</div>
+              <div v-if="aiLoading" class="d-flex justify-content-center align-items-center pb-2">
+                <span class="power-loader mb-3" />
+                <span class="ml-2 text">
+                  {{ $t("Please wait ...") }}
+                </span>
+              </div>
+
+              <div v-if="!aiLoading && pmql !== '' && lastSearch" 
+                   class="section-item w-100 p-2"
+                  @click="redirect(lastSearch)">
+                <span class="text-primary">
+                  {{ lastSearch.search }}
+                </span>
+                <div class="path text-secondary">
+                  {{ getPath(lastSearch) }}
                 </div>
-                <div class="section-title px-2 w-100 mt-2 border-top py-2">
-                  Recently searched
+              </div>
+              <div class="section-title p-2 mt-2 border-top w-100">
+                {{ $t("Recently searched") }}
+              </div>
+              <div v-for="(recentSearch, index) in recentSearches"
+                :key="index"
+                class="section-item w-100 p-2"
+                @click="redirect(recentSearch)">
+                <span class="text-primary">
+                  {{ recentSearch.search }}
+                </span>
+                <div class="path text-secondary">
+                  {{ getPath(recentSearch) }}
                 </div>
-                <div v-for="recentSearch in recentSearches" class="section-item w-100 p-2">
-                  <a href="#">{{ recentSearch.search }}</a>
-                  <div class="path text-secondary">{{ getPath(recentSearch) }}</div>
-                </div>
-                <div class="w-100 p-2 mb-2">
-                  <a href="#">Show more</a>
-                </div>
-                <div class="section-footer w-100 d-flex pt-2 pb-0 w-100 align-items-center px-0 border-top">
-                  <img src="/img/logo-icon.png" 
-                    style="height: 30px;">
-                    <div style="font-size: 80%; font-weight: 600;">Powered by AI</div>
-                  </div>
-                
+              </div>
+              <div class="w-100 p-2 mb-2">
+                <a href="#">Show more</a>
+              </div>
+              <div class="section-footer w-100 d-flex pt-2 pb-0 w-100 align-items-center px-0 border-top">
+                <img src="/img/logo-icon.png">
+                <div>Powered by AI</div>
               </div>
             </div>
           </div>
@@ -129,23 +146,35 @@ export default {
 
   methods: {
     getPath(item) {
-      if (item.type === "requests") {
-        return "Home / Requests";
-      }
-
-      if (item.type === "tasks") {
-        return "Home / Tasks / To Do Tasks";
-      }
-
-      if (item.type === "processes") {
-        return "Home / Processes";
-      }
-
       if (item.type === "collections") {
-        return `Home / Collections / ${JSON.parse(item.response).collection}`;
+        return `Home / ${this.capitalize(item.type)} / ${JSON.parse(item.response).collection}`;
       }
 
-      return "";
+      if (!item.type || item.type === "") {
+        return "";
+      }
+
+      return `Home / ${this.capitalize(item.type)}`;
+    },
+    redirect(search) {
+      const url = this.getUrl(search);
+      // if (`/${this.getContext()}` !== url) {
+        window.location.href = `${url}?pmql=${search.response}`;
+      // }
+    },
+    getUrl(item) {
+      if (item.type === "collections") {
+        return `/${item.type}/${JSON.parse(item.response).collectionId}`;
+      }
+
+      if (item.type === "requests") {
+        return `/${item.type}/all`;
+      }
+
+      return `/${item.type}`;
+    },
+    capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
     },
     showPopUp() {
       this.expanded = true;
@@ -238,17 +267,23 @@ export default {
 
 .search-popup {
   opacity: 0;
+  padding: 0;
 }
 
 .expanded .search-popup {
   opacity: 1;
+  height: 100%;
+  padding: 0.5rem;
   transition: opacity 3s 0.1s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 .search-popup .container {
-  // align-items: flex-start;
+  height: 0px;
+  display: none !important;
 }
-
+.expanded .search-popup .container {
+  height: auto;
+  display: block !important;
+}
 .search-bar.is-invalid {
   border-color: #E50130;
 }
@@ -265,6 +300,20 @@ export default {
 .section-title {
   font-weight: 600;
   color: #42526E
+}
+
+.section-footer {
+  font-size: 80%;
+  font-weight: 600;
+}
+
+.section-footer img {
+  height: 30px;
+}
+
+.no-results {
+  font-size: .8rem;
+  font-weight: 100;
 }
 
 .path {
@@ -366,10 +415,14 @@ input.pmql-input:focus ~ label, input.pmql-input:valid ~ label {
   background: #EBEEF2 !important;
   font-weight: 400;
 }
+.power-loader .text {
+  color: #42516e; 
+  font-size: .8rem;
+}
 .power-loader {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    border-radius: 10%;
     position: relative;
     animation: rotate 1s linear infinite
   }
@@ -400,55 +453,4 @@ input.pmql-input:focus ~ label, input.pmql-input:valid ~ label {
       75%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 100%)}
       100% {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 0)}
   }
-
-
-
-
-// .search-bar.expanded:after {
-//   content: '';
-//   position: absolute;
-//   top: 0;
-//   left: 0;
-//   right: 0;
-//   bottom: 0;
-//   border-radius: 4px;
-//   background: linear-gradient(120deg, #00F260, #0575E6, #00F260);
-//   background-size: 300% 300%;
-//   clip-path: polygon(0% 100%, 3px 100%, 3px 3px, calc(100% - 3px) 3px, calc(100% - 3px) calc(100% - 3px), 3px calc(100% - 3px), 3px 100%, 100% 100%, 100% 0%, 0% 0%);
-// }
-
-// .search-bar.expanded:after {
-//   animation: frame-enter 1s forwards ease-in-out reverse, gradient-animation 4s ease-in-out infinite;
-// }
-
-// /* motion */
-// @keyframes gradient-animation {
-//   0% {
-//     background-position: 15% 0%;
-//   }
-//   50% {
-//     background-position: 85% 100%;
-//   }
-//   100% {
-//     background-position: 15% 0%;
-//   }
-// }
-
-// @keyframes frame-enter {
-//   0% {
-//     clip-path: polygon(0% 100%, 3px 100%, 3px 3px, calc(100% - 3px) 3px, calc(100% - 3px) calc(100% - 3px), 3px calc(100% - 3px), 3px 100%, 100% 100%, 100% 0%, 0% 0%);
-//   }
-//   25% {
-//     clip-path: polygon(0% 100%, 3px 100%, 3px 3px, calc(100% - 3px) 3px, calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) 100%, 100% 100%, 100% 0%, 0% 0%);
-//   }
-//   50% {
-//     clip-path: polygon(0% 100%, 3px 100%, 3px 3px, calc(100% - 3px) 3px, calc(100% - 3px) 3px, calc(100% - 3px) 3px, calc(100% - 3px) 3px, calc(100% - 3px) 3px, 100% 0%, 0% 0%);
-//   }
-//   75% {
-//     -webkit-clip-path: polygon(0% 100%, 3px 100%, 3px 3px, 3px 3px, 3px 3px, 3px 3px, 3px 3px, 3px 3px, 3px 0%, 0% 0%);
-//   }
-//   100% {
-//     -webkit-clip-path: polygon(0% 100%, 3px 100%, 3px 100%, 3px 100%, 3px 100%, 3px 100%, 3px 100%, 3px 100%, 3px 100%, 0% 100%);
-//   }
-// }
 </style>

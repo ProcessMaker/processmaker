@@ -7,6 +7,7 @@ new Vue({
   data: {
     filter: "",
     pmql: "",
+    urlPmql: "",
     filtersPmql: "",
     fullPmql: "",
     status: [],
@@ -21,6 +22,8 @@ new Vue({
   created() {
     const params = new URL(document.location).searchParams;
     const statusParam = params.get("status");
+    this.urlPmql = params.get('pmql');
+
     let status = "";
 
     switch (statusParam) {
@@ -46,6 +49,8 @@ new Vue({
         item.name = this.$t(item.name);
       });
     });
+
+    this.onSearch();
   },
   methods: {
     onFiltersPmqlChange(value) {

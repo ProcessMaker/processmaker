@@ -102,6 +102,7 @@ export default {
   props: [
     "searchType",
     "value",
+    "urlPmql",
     "filtersValue",
     "aiEnabled",
     "ariaLabel",
@@ -177,13 +178,17 @@ export default {
   },
 
   mounted() {
-    this.query = this.value;
+    this.query = this.urlPmql ? this.urlPmql : this.value;
     this.filtersPmql = this.filtersValue;
     this.inputAriaLabel = this.ariaLabel;
 
     this.$root.$on("bv::collapse::state", (collapseId, isJustShown) => {
       this.calcInputHeight();
     });
+
+    if (this.urlPmql) {
+      this.$emit("submit", this.query);
+    }
   },
 
   methods: {
@@ -371,9 +376,10 @@ input.pmql-input:focus ~ label, input.pmql-input:valid ~ label {
   background: #DEEBFF;
   padding: 4px 9px 4px 9px;
   color: #104A75;
-  border: 1px solid #104A75;
+  border: 0;
   border-radius: 4px;
   margin-right: 0.5em;
+  font-size: 0.8rem;
 }
 
 .selected-filter-key {

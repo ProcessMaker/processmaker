@@ -52,13 +52,14 @@
             </counter-card-group>
 
 
-            <div id="search-bar" class="search advanced-search mb-3">
+            <div id="search-bar" class="search advanced-search mb-2">
               <div class="d-flex">
                 <div class="flex-grow-1">
                   <pmql-input
                     ref="pmql_input"
                     search-type="requests"
                     :value="pmql"
+                    :url-pmql="urlPmql"
                     :filters-value="pmql"
                     :ai-enabled="false"
                     :show-filters="true"

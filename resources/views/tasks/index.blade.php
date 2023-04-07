@@ -27,13 +27,14 @@
 
     <div class="row">
       <div class="col-sm-12">
-        <div id="search-bar" class="search advanced-search mb-3">
+        <div id="search-bar" class="search advanced-search mb-2">
           <div class="d-flex">
             <div class="flex-grow-1">
               <pmql-input
                 ref="pmql_input"
                 search-type="tasks"
                 :value="pmql"
+                :url-pmql="urlPmql"
                 :filters-value="pmql"
                 :ai-enabled="false"
                 :show-filters="true"

@@ -53,7 +53,7 @@ class NlqToCategoryHandler extends OpenAiHandler
     {
         $result = ltrim($response->choices[0]->text);
 
-        return [$result, $response->usage, $this->question];
+        return [strtolower($result), $response->usage, $this->question];
     }
 
     public function replaceStopSequence($prompt)
