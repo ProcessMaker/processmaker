@@ -82,7 +82,7 @@ class ProcessTemplate implements TemplateInterface
         foreach ($payload['export'] as $key => $asset) {
             // If the asset type ends with "Category", set mode to discard, otherwise set it to update
             $postOptions[$key] = [
-                'mode' => substr($asset['type'], -8) === 'Category' ? 'discard' : 'update',
+                'mode' => substr($asset['type'], -8) === 'Category' ? 'discard' : 'copy',
             ];
 
             // If this process is the root, set name, description, and is_template attributes to the payload
@@ -91,6 +91,8 @@ class ProcessTemplate implements TemplateInterface
                     'name' => $template->name,
                     'description' => $template->description,
                     'is_template' => 1,
+                    'bpmn' => $asset['attributes']['bpmn'],
+                    'user_id' => $template->user_id,
                 ];
 
                 // Also set the name, description, and is_template directly on the asset for convenience
