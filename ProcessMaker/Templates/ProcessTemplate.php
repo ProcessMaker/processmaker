@@ -26,7 +26,14 @@ class ProcessTemplate implements TemplateInterface
 {
     use HasControllerAddons;
 
-    public function index(Request $request)
+    /**
+     * List process templates
+     *
+     * @param Request $request The request object.
+     *
+     * @return array An array containing the list of process templates.
+     */
+    public function index(Request $request) : array
     {
         $orderBy = $this->getRequestSortBy($request, 'name');
         $include = $this->getRequestInclude($request);
@@ -58,7 +65,13 @@ class ProcessTemplate implements TemplateInterface
         return $templates;
     }
 
-    public function show($request)
+    /**
+     * Show process template in modeler
+     *
+     * @param mixed $request Request object
+     * @return array Returns an array with the process ID
+     */
+    public function show($request) : array
     {
         $templateId = (int) $request->id;
         $template = \DB::table('process_templates')->find($templateId);
@@ -98,9 +111,9 @@ class ProcessTemplate implements TemplateInterface
     }
 
     /**
-     * Summary of save
-     * @param mixed $request
-     * @return JsonResponse
+     * Save new process template
+     * @param mixed $request The HTTP request containing the template data
+     * @return JsonResponse The JSON response with the saved template model
      */
     public function save($request) : JsonResponse
     {
@@ -140,6 +153,14 @@ class ProcessTemplate implements TemplateInterface
         return response()->json(['model' => $processTemplate]);
     }
 
+    /**
+     * Create a process from the selected process template
+     *
+     * @param mixed $request The HTTP request data
+     * @return JsonResponse The JSON response containing the new process ID
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException if the process template is not found
+     */
     public function create($request) : JsonResponse
     {
         $templateId = $request->id;
@@ -178,16 +199,11 @@ class ProcessTemplate implements TemplateInterface
         return response()->json(['processId' => $processId]);
     }
 
-    public function view() : bool
-    {
-        dd('PROCESS TEMPLATE VIEW');
-    }
-
-    public function edit($template) : JsonResponse
-    {
-        dd('PROCESS TEMPLATE EDIT');
-    }
-
+    /**
+     *  Update process template bpmn.
+     * @param mixed $request
+     * @return JsonResponse
+     */
     public function updateTemplate($request) : JsonResponse
     {
         $id = (int) $request->id;
@@ -227,6 +243,11 @@ class ProcessTemplate implements TemplateInterface
         return response()->json();
     }
 
+    /**
+     *  Update process template configurations
+     * @param Request
+     * @return JsonResponse
+     */
     public function updateTemplateConfigs($request) : JsonResponse
     {
         $id = (int) $request->id;
@@ -248,6 +269,13 @@ class ProcessTemplate implements TemplateInterface
         return response()->json();
     }
 
+    /**
+     * Displays Template Configurations
+     *
+     * @param int $id ID of the process template
+     * @return array An array containing the template object, addons, and categories
+     * @throws Illuminate\Database\Eloquent\ModelNotFoundException If no template is found with the given ID
+     */
     public function configure(int $id) : array
     {
         $template = (object) [];
@@ -268,6 +296,11 @@ class ProcessTemplate implements TemplateInterface
         return [$template, $addons, $categories];
     }
 
+    /**
+     *  Delete process template
+     * @param mixed $request
+     * @return bool
+     */
     public function destroy(int $id) : bool
     {
         $response = ProcessTemplates::where('id', $id)->delete();
@@ -276,13 +309,13 @@ class ProcessTemplate implements TemplateInterface
     }
 
     /**
-     * Get process manifest.
+     * Get process template manifest.
      *
      * @param string $type
      *
      * @param Request $request
      *
-     * @return JSON
+     * @return array
      */
     public function getManifest(string $type, int $id) : array
     {
@@ -299,7 +332,7 @@ class ProcessTemplate implements TemplateInterface
      *
      * @return array
      */
-    protected function getRequestSortBy(Request $request, $default)
+    protected function getRequestSortBy(Request $request, $default) : array
     {
         $column = $request->input('order_by', $default);
         $direction = $request->input('order_direction', 'asc');
@@ -314,14 +347,22 @@ class ProcessTemplate implements TemplateInterface
      *
      * @return array
      */
-    protected function getRequestInclude(Request $request)
+    protected function getRequestInclude(Request $request) : array
     {
         $include = $request->input('include');
 
         return $include ? explode(',', $include) : [];
     }
 
-    public function existingTemplate($request)
+    /**
+     * Check if an existing process template with the same name exists.
+     * If exists, return an array with the existing template ID and name.
+     * Otherwise, return null.
+     * @param Request $request
+     *
+     * @return array|null Array containing the existing template ID and name or null if no existing template found
+     */
+    public function existingTemplate($request) : ?array
     {
         $templateId = $request->id;
         $name = $request->name;
