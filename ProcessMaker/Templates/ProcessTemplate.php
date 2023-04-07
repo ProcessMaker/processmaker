@@ -33,7 +33,7 @@ class ProcessTemplate implements TemplateInterface
      *
      * @return array An array containing the list of process templates.
      */
-    public function index(Request $request) : array
+    public function index(Request $request)
     {
         $orderBy = $this->getRequestSortBy($request, 'name');
         $include = $this->getRequestInclude($request);
