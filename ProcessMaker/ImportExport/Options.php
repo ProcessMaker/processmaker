@@ -15,6 +15,7 @@ class Options
             ],
             'default' => 'update',
         ],
+        'isTemplate' => false,
     ];
 
     public $options;
@@ -29,6 +30,16 @@ class Options
     {
         $assetOptions = Arr::get($this->options, $uuid, []);
 
-        return Arr::get($assetOptions, $name, self::IMPORT_OPTIONS[$name]['default']);
+        $option = self::IMPORT_OPTIONS[$name];
+        $importOptions = null;
+
+        if ($name === 'mode') {
+            $importOptions = self::IMPORT_OPTIONS[$name]['default'];
+        } else {
+            $importOptions = self::IMPORT_OPTIONS[$name];
+            dd($assetOptions, $uuid, $name, $importOptions, Arr::get($assetOptions, $name, $importOptions));
+        }
+
+        return Arr::get($assetOptions, $name, $importOptions);
     }
 }

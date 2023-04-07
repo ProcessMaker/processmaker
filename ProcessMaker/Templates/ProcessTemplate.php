@@ -154,6 +154,7 @@ class ProcessTemplate implements TemplateInterface
         foreach ($payload['export'] as $key => $asset) {
             $postOptions[$key] = [
                 'mode' => $asset['mode'],
+                'isTemplate' => true,
             ];
             if ($payload['root'] === $key) {
                 // Set name and description for the new process
