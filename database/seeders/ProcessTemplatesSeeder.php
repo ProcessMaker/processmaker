@@ -20,7 +20,6 @@ class ProcessTemplatesSeeder extends Seeder
     public function run()
     {
         //load user admin
-        $admin = User::where('username', 'admin')->firstOrFail();
         $manifest = file_get_contents(app_path('Templates/Fixtures/process-employee-onboarding-template.json'));
         $svg = file_get_contents(app_path('Templates/Fixtures/process-employee-onboarding-template.svg'));
 
@@ -39,7 +38,7 @@ class ProcessTemplatesSeeder extends Seeder
                 'name' => 'Employee Onboarding 2023',
                 'description' => 'New version of the employee onboarding process from veggieDonuts',
                 'process_id' => null,
-                'user_id' => $admin->getKey(),
+                'user_id' => null,
                 'process_category_id' => ProcessCategory::where('name', 'Default Templates')->firstOrFail()->getKey(),
                 'manifest' => $manifest,
                 'svg' => $svg,
