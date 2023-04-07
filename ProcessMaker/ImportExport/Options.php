@@ -37,7 +37,6 @@ class Options
             $importOptions = self::IMPORT_OPTIONS[$name]['default'];
         } else {
             $importOptions = self::IMPORT_OPTIONS[$name];
-            dd($assetOptions, $uuid, $name, $importOptions, Arr::get($assetOptions, $name, $importOptions));
         }
 
         return Arr::get($assetOptions, $name, $importOptions);
