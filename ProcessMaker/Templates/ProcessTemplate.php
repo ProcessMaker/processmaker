@@ -77,7 +77,7 @@ class ProcessTemplate implements TemplateInterface
         $template = \DB::table('process_templates')->find($templateId);
         $payload = json_decode($template->manifest, true);
 
-        $process = Process::where('name', $template->name)->where('is_template', true)->first();
+        $process = Process::where('name', $template->name)->where('is_template', 1)->first();
         if ($process) {
             return ['id' => $process->id];
         }
@@ -151,7 +151,7 @@ class ProcessTemplate implements TemplateInterface
             $postOptions[$key] = [
                 'mode' => $mode,
                 'isTemplate' => true,
-                'saveAssetsMode' => $data['saveAssetsMode'],
+                'saveAssetsMode' => $asset['saveAssetsMode'],
             ];
         }
         $options = new Options($postOptions);
@@ -279,11 +279,16 @@ class ProcessTemplate implements TemplateInterface
     {
         $id = (int) $request->id;
         $template = ProcessTemplates::where('id', $id)->firstOrFail();
+        $oldTemplateName = $template->name;
         $template->fill($request->except('id'));
+
+        $process = Process::where('name', $oldTemplateName)->where('is_template', 1)->first();
+        $process->fill($request->except('id'));
 
         // Catch errors to send more specific status
         try {
             $template->saveOrFail();
+            $process->saveOrFail();
         } catch (\Exception $e) {
             return response([
                 'message' => $e->getMessage(),
@@ -292,6 +297,44 @@ class ProcessTemplate implements TemplateInterface
                 ],
             ], 422);
         }
+
+        return response()->json();
+    }
+
+    public function updateTemplateManifest(int $processId, $request)  : JsonResponse
+    {
+        $data = $request->all();
+
+        $model = (new ExportController)->getModel('process')->findOrFail($processId);
+        $model->fill($data);
+        $model->saveOrFail();
+
+        $manifest = $this->getManifest('process', $processId);
+
+        $postOptions = [];
+        foreach ($manifest['export'] as $key => $asset) {
+            $postOptions[$key] = [
+                'mode' => 'update',
+                'isTemplate' => true,
+                'saveAssetsMode' => 'saveAllAssets',
+            ];
+        }
+        $options = new Options($postOptions);
+
+        // Create an exporter instance
+        $exporter = new Exporter();
+        $exporter->export($model, ProcessExporter::class, $options);
+        $payload = $exporter->payload();
+
+        // Extract svg from payload
+        $svg = Arr::get($payload, 'export.' . $payload['root'] . '.attributes.svg');
+
+        // Update the process template manifest, svg, and user_id
+        $processTemplate = ProcessTemplates::where('name', $data['name'])->update([
+            'manifest' => json_encode($payload),
+            'svg' => $svg,
+            'user_id' => \Auth::user()->id,
+        ]);
 
         return response()->json();
     }
