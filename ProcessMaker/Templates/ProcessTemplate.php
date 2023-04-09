@@ -77,6 +77,11 @@ class ProcessTemplate implements TemplateInterface
         $template = \DB::table('process_templates')->find($templateId);
         $payload = json_decode($template->manifest, true);
 
+        $process = Process::where('name', $template->name)->where('is_template', true)->first();
+        if ($process) {
+            return ['id' => $process->id];
+        }
+
         // Loop through each asset in the "export" array and set postOptions "mode" accordingly
         $postOptions = [];
         foreach ($payload['export'] as $key => $asset) {
