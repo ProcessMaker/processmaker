@@ -103,6 +103,13 @@ class Template extends ProcessMakerModel
         return $response;
     }
 
+    public function updateTemplateManifest(string $type, int $processId, $request)
+    {
+        $response = (new $this->types[$type][1])->updateTemplateManifest($processId, $request);
+
+        return $response;
+    }
+
     public function updateTemplate(string $type, Request $request)
     {
         $response = (new $this->types[$type][1])->updateTemplate($request);

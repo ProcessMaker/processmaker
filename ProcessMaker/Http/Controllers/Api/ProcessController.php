@@ -8,6 +8,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Http\Controllers\Api\TemplateController;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Process as Resource;
@@ -309,6 +310,17 @@ class ProcessController extends Controller
         //Save any task notification settings...
         if ($request->has('task_notifications')) {
             $this->saveTaskNotifications($process, $request);
+        }
+
+        $isTemplate = Process::select('is_template')->where('id', $process->id)->value('is_template');
+        if ($isTemplate) {
+            try {
+                $response = (new TemplateController)->updateTemplateManifest('process', $process->id, $request);
+
+                return new Resource($process->refresh());
+            } catch (\Exception $error) {
+                return ['error' => $error->getMessage()];
+            }
         }
 
         // Catch errors to send more specific status
