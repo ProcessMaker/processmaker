@@ -80,9 +80,15 @@ class ProcessTemplate implements TemplateInterface
         // Loop through each asset in the "export" array and set postOptions "mode" accordingly
         $postOptions = [];
         foreach ($payload['export'] as $key => $asset) {
-            // If the asset type ends with "Category", set mode to discard, otherwise set it to update
+            $mode = 'copy';
+            if ($payload['root'] != $key && $asset['saveAssetsMode'] === 'saveModelOnly' || substr($asset['type'], -8) === 'Category') {
+                $mode = 'discard';
+            }
+
             $postOptions[$key] = [
-                'mode' => substr($asset['type'], -8) === 'Category' ? 'discard' : 'copy',
+                'mode' => $mode,
+                'isTemplate' => true,
+                'saveAssetsMode' => $asset['saveAssetsMode'],
             ];
 
             // If this process is the root, set name, description, and is_template attributes to the payload
@@ -90,7 +96,7 @@ class ProcessTemplate implements TemplateInterface
                 $payload['export'][$key]['attributes'] = [
                     'name' => $template->name,
                     'description' => $template->description,
-                    'is_template' => 1,
+                    'is_template' => true,
                     'bpmn' => $asset['attributes']['bpmn'],
                     'user_id' => $template->user_id,
                 ];
@@ -128,7 +134,21 @@ class ProcessTemplate implements TemplateInterface
         $manifest = $this->getManifest('process', $data['asset_id']);
 
         // Array of post options
-        $postOptions = array_map(fn ($value) => ['mode' => $data['mode']], $manifest['export']);
+        $uuid = $model->uuid;
+
+        // Loop through each asset in the "export" array and set postOptions "mode" accordingly
+        $postOptions = [];
+        foreach ($manifest['export'] as $key => $asset) {
+            $mode = $asset['saveAssetsMode'] === 'saveAllAssets' ? 'copy' : 'discard';
+            if ($key === $uuid) {
+                $mode = 'copy';
+            }
+            $postOptions[$key] = [
+                'mode' => $mode,
+                'isTemplate' => true,
+                'saveAssetsMode' => $data['saveAssetsMode'],
+            ];
+        }
         $options = new Options($postOptions);
 
         // Create an exporter instance

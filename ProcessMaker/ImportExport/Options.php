@@ -16,6 +16,7 @@ class Options
             'default' => 'update',
         ],
         'isTemplate' => false,
+        'saveAssetsMode' => ['saveModelOnly', 'saveAllAssets'],
     ];
 
     public $options;
