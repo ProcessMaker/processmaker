@@ -111,6 +111,7 @@ abstract class ExporterBase implements ExporterInterface
         public $ignoreExplicitDiscard
     ) {
         $this->mode = $options->get('mode', $this->model->uuid);
+        $this->saveAssetsMode = $options->get('saveAssetsMode', $this->model->uuid);
     }
 
     public function uuid() : string
@@ -263,6 +264,7 @@ abstract class ExporterBase implements ExporterInterface
             'force_password_protect' => $this->forcePasswordProtect,
             'hidden' => $this->hidden,
             'mode' => $this->mode,
+            'saveAssetsMode' => $this->saveAssetsMode,
             'explicit_discard' => $this->discard,
             'dependents' => array_map(fn ($d) => $d->toArray(), $this->dependents),
             'name' => $this->getName($this->model),
