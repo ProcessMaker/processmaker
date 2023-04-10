@@ -8,6 +8,10 @@
         <b-navbar-toggle class="ml-auto" :target="['nav-collapse', 'breadcrumbs-collapse']"></b-navbar-toggle>
     </div>
 
+    <div class="d-flex d-lg-none w-100">
+      <global-search class="w-100 small-screen"></global-search>
+    </div>
+
     <b-collapse is-nav id="nav-collapse">
         <confirmation-modal class="d-none d-lg-block" id="confirmModal" :show="confirmShow" :title="confirmTitle" :message="confirmMessage"
                             :variant="confirmVariant" :callback="confirmCallback"
@@ -93,7 +97,7 @@
 
         <b-navbar-nav class="d-flex align-items-center ml-auto">
 
-          <global-search></global-search>
+            <global-search class="d-none d-lg-block"></global-search>
             <component v-bind:is="'request-modal'" url="{{ route('processes.index') }}" v-bind:permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"></component>
 
             @can('view-notifications')

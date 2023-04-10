@@ -4,10 +4,11 @@
       <div class="d-flex align-items-start position-relative">
         <div class="search-bar flex-grow"
              v-click-outside="hidePopUp"
-             :class="{'expanded': expanded}"
-             @click="showPopUp()">
+             :class="{'expanded': expanded}">
           <div class="row m-0">
-            <div class="search-bar-container col-12 d-flex align-items-center p-0">
+            <div 
+              class="search-bar-container col-12 d-flex align-items-center p-0"
+              @click="showPopUp()">
               <i class="fa fa-search ml-3 pmql-icons" />
 
               <input ref="search_input" 
@@ -76,13 +77,20 @@
                   {{ getPath(recentSearch) }}
                 </div>
               </div>
+
               <!-- <div class="w-100 p-2 mb-2">
                 <a href="#">Show more</a>
               </div> -->
 
-              <div class="section-footer w-100 d-flex pt-2 pb-0 w-100 align-items-center px-0 border-top">
-                <img src="/img/logo-icon.png">
-                <div>Powered by AI</div>
+              <div class="section-footer d-flex pt-2 pb-0 px-0 w-100 align-items-center border-top justify-content-between">
+                <div>
+                  <img src="/img/logo-icon.png">
+                  <div>{{ $t("Powered by AI") }}</div>
+                </div>
+                <div class="">
+                  <button class="btn btn-outline-secondary d-lg-none" 
+                    @click="hidePopUp">{{ $t("Close") }}</button>
+                </div>
               </div>
             </div>
           </div>
@@ -276,10 +284,18 @@ export default {
   max-height: 40px;
   position: absolute;
   right: 0;
-  top: -19px;
-  z-index: 99;
+  top: -20px;
+  z-index: 100;
 }
 
+.small-screen .search-bar{
+  position: relative;
+  top: 0;
+  right: 0;
+  left: 0;
+  width: 100%;
+  margin-top: 0.25rem;
+}
 .search-bar.expanded {
   width: 608px;
   max-height: 900px;
@@ -292,8 +308,15 @@ export default {
     box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: absolute;
   right: 0;
-  top: -19px;
+  top: -20px;
   overflow-y: auto;
+}
+
+.small-screen .search-bar.expanded {
+  width: 100%;
+  position: relative;
+  right: 0;
+  top: 0px;
 }
 
 .search-popup {
