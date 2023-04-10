@@ -84,8 +84,7 @@
 
               <div class="section-footer d-flex pt-2 pb-0 px-0 w-100 align-items-center border-top justify-content-between">
                 <div>
-                  <img src="/img/logo-icon.png">
-                  <div>{{ $t("Powered by AI") }}</div>
+                  <div><img src="/img/favicon.svg"> {{ $t("Powered by AI") }}</div>
                 </div>
                 <div class="">
                   <button class="btn btn-outline-secondary d-lg-none" 
@@ -362,7 +361,8 @@ export default {
 }
 
 .section-footer img {
-  height: 30px;
+  display: inline-block;
+  height: 16px;
 }
 
 .no-results {
