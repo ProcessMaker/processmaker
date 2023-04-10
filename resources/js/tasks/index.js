@@ -50,7 +50,9 @@ new Vue({
       });
     });
 
-    this.onSearch();
+    if (this.urlPmql && this.urlPmql !== "") {
+      this.onSearch();
+    }
   },
   methods: {
     onFiltersPmqlChange(value) {
@@ -67,7 +69,9 @@ new Vue({
       this.fullPmql = this.getFullPmql();
     },
     onSearch() {
-      this.$refs.taskList.fetch(true);
+      if (this.$refs.taskList) {
+        this.$refs.taskList.fetch(true);
+      }
     },
     setInOverdueMessage(inOverdue) {
       const taskText = (inOverdue > 1) ? this.$t("Tasks").toLowerCase() : this.$t("Task").toLowerCase();

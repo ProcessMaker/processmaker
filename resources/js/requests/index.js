@@ -74,7 +74,9 @@ new Vue({
       this.fullPmql = this.getFullPmql();
     },
     onSearch() {
-      this.$refs.requestList.fetch(null, true);
+      if (this.$refs.requestList) {
+        this.$refs.requestList.fetch(null, true);
+      }
     },
     getFullPmql() {
       let fullPmqlString = "";
