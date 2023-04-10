@@ -751,6 +751,22 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         return $assignment;
     }
 
+
+    /**
+     * Returns if the token has the self service option activated
+     */
+    public function getSelfServiceAttribute()
+    {
+        $activity = $this->getBpmnDefinition()->getBpmnElementInstance();
+
+        $config = json_decode($activity->getProperty('config'));
+        if (empty($config)) {
+            return false;
+        }
+
+        return (property_exists($config, 'selfService')) ? $config->selfService : false;
+    }
+
     /**
      * Get Interstitial properties
      *
@@ -911,6 +927,29 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         }
 
         return false;
+    }
+
+    public function getLoopContext()
+    {
+        $isMultiInstance = isset($this->token_properties['data']);
+        if (!$isMultiInstance) {
+            return '';
+        }
+        $loopData = $this->token_properties['data'];
+        $index = $loopData['loopCounter'];
+        $definition = $this->getDefinition(true);
+        if (!$definition instanceof ActivityInterface) {
+            return '';
+        }
+        $loop = $definition->getLoopCharacteristics();
+        if ($loop && $loop->isExecutable() && $loop instanceof MultiInstanceLoopCharacteristicsInterface) {
+            $output = $loop->getLoopDataOutput();
+            $variable = $output ? $output->getName() : '';
+        } else {
+            return '';
+        }
+        $loopContext = $variable . '.' . $index;
+        return $loopContext;
     }
 
     /**

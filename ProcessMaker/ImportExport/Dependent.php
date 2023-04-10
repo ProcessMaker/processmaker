@@ -25,6 +25,7 @@ class Dependent
             'exporterClass' => $this->exporterClass,
             'modelClass' => $this->modelClass,
             'fallbackMatches' => $this->fallbackMatches,
+            'name' => $this->name,
             'discard' => $this->discard,
         ];
     }
@@ -68,6 +69,14 @@ class Dependent
                 return $asset->mode;
             } else {
                 return 'discard';
+            }
+        }
+
+        if ($property === 'name') {
+            if ($asset) {
+                return $asset->getName($this->model);
+            } else {
+                return '';
             }
         }
 

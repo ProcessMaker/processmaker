@@ -476,18 +476,21 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         $config = json_decode($activity->getProperty('config', '{}'), true);
         $escalateToManager = $config['escalateToManager'] ?? false;
 
+        $definitions = $token->getInstance()->getVersionDefinitions();
+        $properties = $definitions->findElementById($activity->getId())->getBpmnElementInstance()->getProperties();
+        $assignmentLock = array_key_exists('assignmentLock', $properties ?? []) ? $properties['assignmentLock'] : false;
+
+        $config = array_key_exists('config', $properties ?? []) ? json_decode($properties['config'], true) : [];
+        $isSelfService = array_key_exists('selfService', $config ?? []) ? $config['selfService'] : false;
+
         if ($assignmentType === 'rule_expression') {
-            $userByRule = $this->getNextUserByRule($activity, $token);
+            $userByRule = $isSelfService ? null : $this->getNextUserByRule($activity, $token);
             if ($userByRule !== null) {
                 $user = $this->scalateToManagerIfEnabled($userByRule->id, $activity, $token, $assignmentType);
 
                 return $this->checkAssignment($token->processRequest, $activity, $assignmentType, $escalateToManager, $user ? User::where('id', $user)->first() : null);
             }
         }
-
-        $definitions = $token->getInstance()->getVersionDefinitions();
-        $properties = $definitions->findElementById($activity->getId())->getBpmnElementInstance()->getProperties();
-        $assignmentLock = array_key_exists('assignmentLock', $properties) ? $properties['assignmentLock'] : false;
 
         if (filter_var($assignmentLock, FILTER_VALIDATE_BOOLEAN) === true) {
             $user = $this->getLastUserAssignedToTask($activity->getId(), $token->getInstance()->getId());
@@ -506,6 +509,9 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                 break;
             case 'user_by_id':
                 $user = $this->getNextUserFromVariable($activity, $token);
+                break;
+            case 'process_variable':
+                $user = $this->getNextUserFromProcessVariable($activity, $token);
                 break;
             case 'requester':
                 $user = $this->getRequester($activity, $token);
@@ -526,6 +532,12 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             default:
                 $user = null;
         }
+
+        // If the self-service toggle is enabled the user must always be null
+        if ($isSelfService && in_array($assignmentType, ['user_group', 'process_variable', 'rule_expression'])) {
+            $user = null;
+        }
+
         $user = $this->scalateToManagerIfEnabled($user, $activity, $token, $assignmentType);
 
         return $this->checkAssignment($token->getInstance(), $activity, $assignmentType, $escalateToManager, $user ? User::where('id', $user)->first() : null);
@@ -544,12 +556,16 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      */
     private function checkAssignment(ProcessRequest $request, ActivityInterface $activity, $assignmentType, $escalateToManager, User $user = null)
     {
+        $config = $activity->getProperty('config') ? json_decode($activity->getProperty('config'), true) : [];
+        $selfServiceToggle = array_key_exists('selfService', $config ?? []) ? $config['selfService'] : false;
+        $isSelfService = $selfServiceToggle || $assignmentType === 'self_service';
+
         if ($activity instanceof ScriptTaskInterface
             || $activity instanceof ServiceTaskInterface) {
             return $user;
         }
         if ($user === null) {
-            if ($assignmentType === 'self_service' && !$escalateToManager) {
+            if ($isSelfService && !$escalateToManager) {
                 return null;
             }
             $user = $request->processVersion->manager;
@@ -564,14 +580,14 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     private function scalateToManagerIfEnabled($user, $activity, $token, $assignmentType)
     {
         if ($user) {
-            $assignmentProcesss = self::where('name', self::ASSIGNMENT_PROCESS)->first();
-            if (app()->bound('workflow.UserManager') && $assignmentProcesss) {
+            $assignmentProcess = self::where('name', self::ASSIGNMENT_PROCESS)->first();
+            if (app()->bound('workflow.UserManager') && $assignmentProcess) {
                 $config = json_decode($activity->getProperty('config', '{}'), true);
                 $escalateToManager = $config['escalateToManager'] ?? false;
                 if ($escalateToManager) {
                     $user = WorkflowUserManager::escalateToManager($token, $user);
                 } else {
-                    $res = WorkflowManager::runProcess($assignmentProcesss, 'assign', [
+                    $res = WorkflowManager::runProcess($assignmentProcess, 'assign', [
                         'user_id' => $user,
                         'process_id' => $this->id,
                         'request_id' => $token->getInstance()->getId(),
@@ -613,6 +629,47 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         } catch (Exception $exception) {
             return null;
         }
+    }
+
+    /*
+     * Used to assign a user when the task is assigned by variables that have lists
+     * of users and groups
+     */
+    private function getNextUserFromProcessVariable($activity, $token)
+    {
+        // self service tasks should not have a next user
+        if ($token->getSelfServiceAttribute()) {
+            return null;
+        }
+
+        $usersVariable = $activity->getProperty('assignedUsers');
+        $groupsVariable = $activity->getProperty('assignedGroups');
+
+        $dataManager = new DataManager();
+        $instanceData = $dataManager->getData($token);
+
+        $assignedUsers = $usersVariable ? $instanceData[$usersVariable] : [];
+        $assignedGroups = $groupsVariable ?  $instanceData[$groupsVariable] : [];
+
+        if (!is_array($assignedUsers)) {
+            $assignedUsers = [$assignedUsers];
+        }
+
+        if (!is_array($assignedGroups)) {
+            $assignedGroups = [$assignedGroups];
+        }
+
+        // We need to remove inactive users.
+        $users = User::whereIn('id', array_unique($assignedUsers)) ->where('status', 'ACTIVE')->pluck('id')->toArray();
+
+        foreach ($assignedGroups as $groupId) {
+            // getConsolidatedUsers already removes inactive users
+            $this->getConsolidatedUsers($groupId, $users);
+        }
+
+        $nextAssignee =  $this->getNextUserFromGroupAssignment($activity->getId(), $users);
+
+        return $nextAssignee;
     }
 
     /**
@@ -770,6 +827,57 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         }
 
         return null;
+    }
+
+    /**
+     * Evaluates each expression rule and returns the list of groups and users
+     * that can be assigned to
+     *
+     * @param $activity
+     * @param $token
+     * @return array
+     */
+    public function getAssigneesFromExpressionRules($activity, $token)
+    {
+        $assignmentRules = $activity->getProperty('assignmentRules', null);
+        $instanceData = $token->getInstance()->getDataStore()->getData();
+        $groups = [];
+        $users = [];
+        $default = [];
+        if ($assignmentRules && $instanceData) {
+            $list = json_decode($assignmentRules);
+            $list = ($list === null) ? [] : $list;
+            foreach ($list as $item) {
+                if (is_null($item->expression)) {
+                    $default[] = $item;
+                    continue;
+                }
+                $formalExp = new FormalExpression();
+                $formalExp->setLanguage('FEEL');
+                $formalExp->setBody($item->expression);
+                $eval = $formalExp($instanceData);
+                if ($eval) {
+                    if ($item->type === 'group') {
+                        $groups[] = $item->assignee;
+                    } elseif ($item->type === 'user') {
+                        $users[] = $item->assignee;
+                    }
+                }
+            }
+
+            // If no rule was applied, use the default configured user/group
+            if (empty($users) && empty($groups)) {
+                foreach($default as $item) {
+                    if ($item->type === 'group') {
+                        $groups[] = $item->assignee;
+                    } elseif ($item->type === 'user') {
+                        $users[] = $item->assignee;
+                    }
+                }
+            }
+        }
+
+        return compact('users', 'groups');
     }
 
     /**

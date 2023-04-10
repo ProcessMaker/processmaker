@@ -7,6 +7,8 @@ use Illuminate\Database\DatabaseManager;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Bus;
+use ProcessMaker\Jobs\RefreshArtisanCaches;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestLock;
 use ProcessMaker\Models\SecurityLog;
@@ -34,7 +36,7 @@ abstract class TestCase extends BaseTestCase
         }
     }
 
-    public static function setUpMockScriptRunners(): void
+    public function setUpMockScriptRunners(): void
     {
         config()->set('script-runners.php.runner', 'MockRunner');
         config()->set('script-runners.lua.runner', 'MockRunner');
@@ -43,16 +45,13 @@ abstract class TestCase extends BaseTestCase
     /**
      * Calling the real config:cache command reconnects the database
      * and since we're using transactions for our tests, we lose any data
-     * saved before the command is run. Instead, mock it here and do what
-     * it needs to do for the test to continue.
+     * saved before the command is run. Instead, mock it out here.
      */
-    public static function setUpMockConfigCache(): void
+    public function setUpMockConfigCache(): void
     {
-        Artisan::command('config:cache', function () {
-            foreach (Setting::select('id', 'key', 'config', 'format')->get() as $setting) {
-                config([$setting->key => $setting->config]);
-            }
-        });
+        Bus::fake([
+            RefreshArtisanCaches::class,
+        ]);
     }
 
     /**

@@ -5,6 +5,7 @@ namespace ProcessMaker\Repositories;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Exception\InvalidUserAssignmentException;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequest as Instance;
@@ -95,7 +96,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->user_id = $user ? $user->getKey() : null;
 
         $token->is_self_service = 0;
-        if ($token->getAssignmentRule() === 'self_service') {
+        if ($token->getAssignmentRule() === 'self_service' || $token->getSelfServiceAttribute()) {
             if ($user) {
                 // A user is already assigned (from assignmentLock) so do not
                 // treat this as a self-service task
@@ -107,6 +108,39 @@ class TokenRepository implements TokenRepositoryInterface
 
         $selfServiceTasks = $token->getInstance()->processVersion->self_service_tasks;
         $token->self_service_groups = $selfServiceTasks && isset($selfServiceTasks[$activity->getId()]) ? $selfServiceTasks[$activity->getId()] : [];
+
+        if($token->getSelfServiceAttribute()) {
+            $selfServiceUsers = !empty($token->getDefinition()['assignedUsers']) ? $token->getDefinition()['assignedUsers'] : [];
+            $selfServiceGroups = !empty($token->getDefinition()['assignedGroups']) ? $token->getDefinition()['assignedGroups'] : [];
+
+            switch ($activity->getProperty('assignment')) {
+                case 'user_group':
+                    // For this assignment type, users and groups arrive as comma separated numbers that
+                    // we need to convert to arrays for the self_service_groups column
+                    $evaluatedUsers = $selfServiceUsers ? explode(',', $selfServiceUsers) : [];
+                    $evaluatedGroups = $selfServiceGroups ? explode(',', $selfServiceGroups) : [];
+                    $token->self_service_groups = ['users' => $evaluatedUsers, 'groups' => $evaluatedGroups];
+                    break;
+                case 'process_variable':
+                    $evaluatedUsers = $selfServiceUsers ? $token->getInstance()->getDataStore()->getData($selfServiceUsers) : [];
+                    $evaluatedGroups = $selfServiceGroups ? $token->getInstance()->getDataStore()->getData($selfServiceGroups) : [];
+
+                    // If we have single values we put it inside an array
+                    $evaluatedUsers = is_array($evaluatedUsers) ? $evaluatedUsers : [$evaluatedUsers];
+                    $evaluatedGroups = is_array($evaluatedGroups) ? $evaluatedGroups : [$evaluatedGroups];
+
+                    $token->self_service_groups = ['users' => $evaluatedUsers, 'groups' => $evaluatedGroups];
+                    break;
+                case 'rule_expression':
+                    $assignees = $token->process->getAssigneesFromExpressionRules($activity, $token);
+                    $token->self_service_groups = ['users' => $assignees['users'], 'groups' => $assignees['groups']];
+                    break;
+                default:
+                    $assignmentType = $activity->getProperty('assignment');
+                    throw new \Exception("The Assignment Type '$assignmentType' is not compatible with the Self Service Option");
+            }
+        }
+
         //Default 3 days of due date
         $due = $activity->getProperty('dueIn', '72');
         $token->due_at = $due ? Carbon::now()->addHours($due) : null;

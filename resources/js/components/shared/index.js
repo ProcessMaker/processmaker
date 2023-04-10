@@ -7,6 +7,7 @@ import ColumnConfig from "./ColumnConfig";
 import DataFormatSelector from "./DataFormatSelector";
 import DataLoadingBasic from "./DataLoadingBasic";
 import DataMaskSelector from "./DataMaskSelector";
+import EllipsisMenu from "./EllipsisMenu";
 import FileUploadButton from "./FileUploadButton";
 import FormErrorsMixin from "./FormErrorsMixin";
 import IconSelector from "./IconSelector";
@@ -28,6 +29,7 @@ export {
   DataFormatSelector,
   DataLoadingBasic,
   DataMaskSelector,
+  EllipsisMenu,
   FileUploadButton,
   FormErrorsMixin,
   IconSelector,

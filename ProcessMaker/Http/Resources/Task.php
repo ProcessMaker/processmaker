@@ -68,6 +68,9 @@ class Task extends ApiResource
             }
             $array['request_data'] = $data;
         }
+        if (in_array('loopContext', $include)) {
+            $array['loop_context'] = $this->getLoopContext();
+        }
         if (in_array('definition', $include)) {
             $array['definition'] = $this->getDefinition();
         }

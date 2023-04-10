@@ -129,6 +129,7 @@ import PmqlInput from "../../../components/shared/PmqlInput";
 import SettingBoolean from './SettingBoolean';
 import SettingCheckboxes from './SettingCheckboxes';
 import SettingChoice from './SettingChoice';
+import SettingSelect from './SettingSelect';
 import SettingFile from './SettingFile';
 import SettingObject from './SettingObject';
 import SettingScreen from './SettingScreen';
@@ -154,7 +155,8 @@ export default {
     SettingTextArea,
     SettingsImport,
     SettingsExport,
-    SettingsRange
+    SettingsRange,
+    SettingSelect
   },
   mixins:[uniqIdsMixin],
   props: ['group'],
@@ -244,6 +246,7 @@ export default {
         case 'boolean':
         case 'checkboxes':
         case 'choice':
+        case 'select':
           return `setting-${setting.format}`;
         case 'object':
           if (setting.ui && setting.ui.format && setting.ui.format == 'map') {
