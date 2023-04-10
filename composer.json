@@ -123,7 +123,8 @@
                 "package-vocabularies": "2.8.0",
                 "package-webentry": "2.11.0",
                 "packages": "^0"
-            }
+            },
+            "release": "Spring 2023"
         }
     },
     "scripts": {
