@@ -46,7 +46,7 @@
                 <span class="text-primary">
                   {{ lastSearch.search }}
                 </span>
-                <div v-if="errors(lastSearch)" class="alert alert-warning small">
+                <div v-if="errors(lastSearch)" class="alert alert-warning small mb-1">
                   <i class="fa fa-exclamation-triangle text-warning mr-1" />
                   {{ errors(lastSearch) }}
                   <code class="text-info">{{ getPmql(lastSearch) }}</code>
@@ -67,7 +67,7 @@
                 <span class="text-primary">
                   {{ recentSearch.search }}
                 </span>
-                <div v-if="errors(recentSearch)" class="alert alert-warning small">
+                <div v-if="errors(recentSearch)" class="alert alert-warning small mb-1">
                   <i class="fa fa-exclamation-triangle text-warning mr-1" />
                   {{ errors(recentSearch) }}
                   <code class="text-info">{{ getPmql(recentSearch) }}</code>
