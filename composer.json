@@ -156,7 +156,8 @@
         "optimize-autoloader": true,
         "allow-plugins": {
             "typo3/class-alias-loader": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "php-http/discovery": true
         }
     }
 }

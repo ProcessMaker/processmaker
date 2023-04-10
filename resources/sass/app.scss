@@ -17,6 +17,9 @@
 $form-control-border-color: #b6bfc6;
 $form-control-border-radius: 2px;
 $focus-border-opacity: .5;
+$ellipsis-menu-btn-color: #ffffff;
+$ellipsis-menu-btn-hover: #ebeef2;
+$ellipsis-menu-btn-active: #104a75;
 
 body,
 html {
@@ -388,6 +391,12 @@ button:focus.navbar-toggler {
 
 .modal-footer > :not(:last-child) {
   @extend .mr-2;
+}
+
+.modal .modal-huge {
+  max-width: 947px;
+  width: 947px;
+  height: 746px;
 }
 
 select.pagination-nav-item {

@@ -28,6 +28,7 @@ use ProcessMaker\Http\Controllers\Api\SettingController;
 use ProcessMaker\Http\Controllers\Api\SignalController;
 use ProcessMaker\Http\Controllers\Api\TaskAssignmentController;
 use ProcessMaker\Http\Controllers\Api\TaskController;
+use ProcessMaker\Http\Controllers\Api\TemplateController;
 use ProcessMaker\Http\Controllers\Api\UserController;
 use ProcessMaker\Http\Controllers\Api\UserTokenController;
 use ProcessMaker\Http\Controllers\TestStatusController;
@@ -225,6 +226,14 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('export/{type}/download/{id}', [ExportController::class, 'download'])->name('export.download')->middleware('can:export-processes');
     Route::post('import/preview', [ImportController::class, 'preview'])->name('import.preview')->middleware('can:export-processes');
     Route::post('import/do-import', [ImportController::class, 'import'])->name('import.do_import')->middleware('can:export-processes');
+
+    // Templates
+    Route::get('templates/{type}', [TemplateController::class, 'index'])->name('template.index')->middleware('template-authorization');
+    Route::post('template/{type}/{id}', [TemplateController::class, 'store'])->name('template.store')->middleware('template-authorization');
+    Route::post('template/create/{type}/{id}', [TemplateController::class, 'create'])->name('template.create')->middleware('template-authorization');
+    Route::put('template/{type}/{id}', [TemplateController::class, 'updateTemplate'])->name('template.update.template')->middleware('template-authorization');
+    Route::put('template/settings/{type}/{id}', [TemplateController::class, 'updateTemplateConfigs'])->name('template.settings.update')->middleware('template-authorization');
+    Route::delete('template/{type}/{id}', [TemplateController::class, 'delete'])->name('template.delete')->middleware('template-authorization');
 
     // debugging javascript errors
     Route::post('debug', [DebugController::class, 'store'])->name('debug.store')->middleware('throttle');
