@@ -9,6 +9,7 @@
     ok-variant="secondary"
     :ok-title="okTitleWithDefault"
     :ok-disabled="okDisabled"
+    :hide-footer="hideFooter"
     :size="size"
     :ok-only="okOnly"
     no-close-on-backdrop
@@ -22,9 +23,47 @@
     @show="onEvent('show', $event)"
     @shown="onEvent('shown', $event)"
   >
-  <template #modal-title>
+    <template #modal-header="{ close }" v-if="hasHeaderButtons || hasTitleButtons">
+      <div class="w-100 d-block">
+        <div>
+          <div class="w-100 p-0" :class="hasHeaderButtons ? 'd-flex justify-content-between align-middle' : ''">
+            <b-button v-show="hasHeaderButtons" v-for="button in headerButtons" :key="button.content" 
+              :aria-label="button.ariaLabel"
+              :variant="button.variant"
+              :disabled="button.disabled"
+              :hidden="button.hidden"
+              @click="executeFunction(button.action)"
+            >
+              <small> {{ $t(button.content) }}</small>
+            </b-button>
+            <b-button variant="link" @click="close()" class="close">×</b-button>
+          </div>
+        </div>
+        <div v-if="hasTitleButtons">
+          <div class="d-flex justify-content-between align-middle w-100 pt-3">
+            <h5>
+              {{ title }}
+              <small v-if="subtitle" class="text-muted subtitle d-block mt-1">{{subtitle}}</small>
+            </h5>
+            <b-button v-for="(button, index) in titleButtons" 
+              :key="button.content" 
+              :aria-label="button.ariaLabel" 
+              :hidden="button.hidden"
+              :disabled="button.disabled"
+              :variant="button.variant" 
+              :class="button.position"
+              @click="executeFunction(button.action)" 
+            >
+              <i v-if="button.icon" :class="button.icon" /> {{ button.content }}
+            </b-button>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <template #modal-title v-else>
       <div>{{title}}</div>
-      <small v-if="subtitle" class="text-muted subtitle">{{subtitle}}</small>
+      <small v-if="subtitle" class="text-muted subtitle mt-1">{{subtitle}}</small>
     </template>
     <slot></slot>
     <template v-if="setCustomButtons" #modal-footer>
@@ -43,7 +82,21 @@
 
 <script>
   export default {
-    props: ["id", "title", "okDisabled", "okOnly", "okTitle", 'setCustomButtons', 'customButtons', 'subtitle', 'size'],
+    props: [
+      "id",
+      "title", 
+      "okDisabled", 
+      "okOnly", 
+      "okTitle", "setCustomButtons",
+      "customButtons", 
+      "subtitle", 
+      "size", 
+      "hideFooter", 
+      "hasHeaderButtons", 
+      "headerButtons", 
+      "hasTitleButtons", 
+      "titleButtons"
+    ],
     methods: {
       onEvent(name, event) {
         this.$emit(name, event);

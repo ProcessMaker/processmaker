@@ -2,14 +2,17 @@
     <div id="search-bar" class="search mb-3" vcloak>
         <div class="d-flex flex-column flex-md-row">
             <div class="flex-grow-1">
-                <div id="search" class="mb-3 mb-md-0">
-                    <div class="input-group w-100">
-                        <input id="search-box" v-model="filter" class="form-control" placeholder="{{__('Search')}}"  aria-label="{{__('Search')}}">
-                        <div class="input-group-append">
-                            <button type="button" class="btn btn-primary" aria-label="{{__('Search')}}"><i class="fas fa-search"></i></button>
-                        </div>
-                    </div>
-                </div>
+              <pmql-input
+                ref="pmql_input"
+                search-type="processes"
+                :value="pmql"
+                :filters-value="pmql"
+                :ai-enabled="false"
+                :show-filters="false"
+                :aria-label="$t('Search')"
+                @submit="onNLQConversion"
+                @pmqlchange="onChange">
+              </pmql-input>
             </div>
             @canany(['import-processes', 'create-processes'])
                 <div class="d-flex ml-md-0 flex-column flex-md-row">
@@ -21,22 +24,23 @@
                         </div>
                     @endcan
                     @can('create-processes')
-                        <create-process-modal :count-categories="@json($config->countCategories)"></create-process-modal>
+                        <select-template-modal :type="__('Process')" :count-categories="@json($config->countCategories)"></select-template-modal>
                     @endcan
                 </div>
             @endcan
         </div>
     </div>
 
-
     <div class="container-fluid">
         <processes-listing
             ref="processListing"
             :filter="filter"
+            :pmql="pmql"
             status="{{ $config->status }}"
             v-on:edit="edit"
             v-on:reload="reload"
-            :permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"
+            :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'process-templates') }}"
+            :current-user-id="{{ \Auth::user()->id }}"
             is-documenter-installed="{{\ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled()}}"
         ></processes-listing>
     </div>

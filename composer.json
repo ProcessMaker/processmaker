@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.5.0-RC5",
+    "version": "4.5.0",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -33,6 +33,7 @@
         "microsoft/microsoft-graph": "^1.77",
         "moontoast/math": "^1.2",
         "mustache/mustache": "^2.14",
+        "openai-php/client": "^0.3.0",
         "phing/phing": "^2.17",
         "pion/laravel-chunk-upload": "^1.5",
         "predis/predis": "^2.0",
@@ -92,7 +93,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "c74053ab",
+            "build": "ed79482f",
             "custom": {
                 "package-ellucian-ethos": "1.12.0"
             },
@@ -155,7 +156,8 @@
         "optimize-autoloader": true,
         "allow-plugins": {
             "typo3/class-alias-loader": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "php-http/discovery": true
         }
     }
 }

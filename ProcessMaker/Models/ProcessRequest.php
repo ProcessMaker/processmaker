@@ -613,6 +613,20 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     }
 
     /**
+     * PMQL value alias for fulltext field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasFullText($value, $expression)
+    {
+        return function ($query) use ($value) {
+            $this->scopeFilter($query, $value);
+        };
+    }
+
+    /**
      * PMQL value alias for request field
      *
      * @param string $value

@@ -7,10 +7,12 @@ import ColumnConfig from "./ColumnConfig";
 import DataFormatSelector from "./DataFormatSelector";
 import DataLoadingBasic from "./DataLoadingBasic";
 import DataMaskSelector from "./DataMaskSelector";
+import EllipsisMenu from "./EllipsisMenu";
 import FileUploadButton from "./FileUploadButton";
 import FormErrorsMixin from "./FormErrorsMixin";
 import IconSelector from "./IconSelector";
 import Modal from "./Modal";
+import PmqlInput from "./PmqlInput";
 import PTab from "./PTab";
 import PTabs from "./PTabs";
 import Required from "./Required";
@@ -27,10 +29,12 @@ export {
   DataFormatSelector,
   DataLoadingBasic,
   DataMaskSelector,
+  EllipsisMenu,
   FileUploadButton,
   FormErrorsMixin,
   IconSelector,
   Modal,
+  PmqlInput,
   PTab,
   PTabs,
   Required,
