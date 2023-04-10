@@ -1,3 +1,4 @@
+@if (shouldShow('breadcrumbTrail'))
 <div id="breadcrumbs">
     @if (!isset($dynamic))
         <nav aria-label="breadcrumb">
@@ -44,3 +45,4 @@
         <breadcrumbs ref="breadcrumbs" :routes='@json($routes)'></breadcrumbs>
     @endif
 </div>
+@endif

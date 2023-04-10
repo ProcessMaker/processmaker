@@ -178,17 +178,18 @@ export default {
     }
   },
   mounted() {
-    this.arrowStyle.top = $("#navbar-request-button").offset().top + 45 + "px";
-    this.arrowStyle.left =
-      $("#navbar-request-button").offset().left + 53 + "px";
-
-    window.addEventListener("resize", () => {
-      this.arrowStyle.top =
-        $("#navbar-request-button").offset().top + 42 + "px";
+    if ($("#navbar-request-button").length > 0) {
+      this.arrowStyle.top = $("#navbar-request-button").offset().top + 45 + "px";
       this.arrowStyle.left =
-        $("#navbar-request-button").offset().left + 32 + "px";
-    });
+        $("#navbar-request-button").offset().left + 53 + "px";
 
+      window.addEventListener("resize", () => {
+        this.arrowStyle.top =
+          $("#navbar-request-button").offset().top + 42 + "px";
+        this.arrowStyle.left =
+          $("#navbar-request-button").offset().left + 32 + "px";
+      });
+    }
     this.updateTotalMessages();
   }
 };
