@@ -16,10 +16,10 @@ class AddSeededDataToProcessTemplates extends Migration
      */
     public function up()
     {
-        // Artisan::call('db:seed', [
-        //     '--class' => ProcessTemplatesSeeder::class,
-        //     '--force' => true,
-        // ]);
+        Artisan::call('db:seed', [
+            '--class' => ProcessTemplatesSeeder::class,
+            '--force' => true,
+        ]);
     }
 
     /**
@@ -29,6 +29,6 @@ class AddSeededDataToProcessTemplates extends Migration
      */
     public function down()
     {
-        // ProcessTemplates::where('key', 'default_templates')->delete();
+        ProcessTemplates::where('key', 'default_templates')->delete();
     }
 }
