@@ -53,20 +53,18 @@ class OpenAIController extends Controller
         // If response is json (needed for collections when asking for specific one)
         $resultDecoded = json_decode($result, true);
         if (json_last_error() === JSON_ERROR_NONE) {
-
             // Search for collection
             if (array_key_exists('collectionName', $resultDecoded)) {
                 $collection = Collection::where('name', 'like', '%' . mb_strtolower($resultDecoded['collectionName']) . '%')->first();
 
                 if ($collection) {
-                  $resultDecoded['collection'] = $collection;
+                    $resultDecoded['collection'] = $collection;
                 } else {
-                  $resultDecoded['collectionError'] = _('We could not find a collection that match with the name "' . $resultDecoded['collectionName'] . '". You can search the collection manually and use the following PMQL query: ');
+                    $resultDecoded['collectionError'] = _('We could not find a collection that match with the name "' . $resultDecoded['collectionName'] . '". You can search the collection manually and use the following PMQL query: ');
                 }
 
                 $result = json_encode($resultDecoded);
             }
-
         }
 
         // Save the response
