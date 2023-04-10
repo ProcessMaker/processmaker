@@ -29,13 +29,13 @@
                 {{ $t("Search result") }}
               </div>
               <div v-if="!aiLoading && pmql === '' && !lastSearch"
-                    class="p-2 w-100 text-muted py-2 no-results">
+                    class="p-2 w-100 text-muted pt-1 pb-3 no-results">
                     {{ $t("Nothing searched yet") }}
               </div>
 
               <div v-if="aiLoading" class="d-flex justify-content-center align-items-center pb-2">
-                <span class="power-loader mb-3" />
-                <span class="ml-2 text">
+                <span class="power-loader" />
+                <span class="ml-2 text-muted small">
                   {{ $t("Please wait ...") }}
                 </span>
               </div>
@@ -46,13 +46,20 @@
                 <span class="text-primary">
                   {{ lastSearch.search }}
                 </span>
+                <div v-if="errors(lastSearch)" class="alert alert-warning small">
+                  <i class="fa fa-exclamation-triangle text-warning mr-1" />
+                  {{ errors(lastSearch) }}
+                  <code class="text-info">{{ getPmql(lastSearch) }}</code>
+                </div>
                 <div class="path text-secondary">
                   {{ getPath(lastSearch) }}
                 </div>
               </div>
+
               <div class="section-title p-2 mt-2 border-top w-100">
                 {{ $t("Recently searched") }}
               </div>
+
               <div v-for="(recentSearch, index) in recentSearches"
                 :key="index"
                 class="section-item w-100 p-2"
@@ -60,13 +67,19 @@
                 <span class="text-primary">
                   {{ recentSearch.search }}
                 </span>
+                <div v-if="errors(recentSearch)" class="alert alert-warning small">
+                  <i class="fa fa-exclamation-triangle text-warning mr-1" />
+                  {{ errors(recentSearch) }}
+                  <code class="text-info">{{ getPmql(recentSearch) }}</code>
+                </div>
                 <div class="path text-secondary">
                   {{ getPath(recentSearch) }}
                 </div>
               </div>
-              <div class="w-100 p-2 mb-2">
+              <!-- <div class="w-100 p-2 mb-2">
                 <a href="#">Show more</a>
-              </div>
+              </div> -->
+
               <div class="section-footer w-100 d-flex pt-2 pb-0 w-100 align-items-center px-0 border-top">
                 <img src="/img/logo-icon.png">
                 <div>Powered by AI</div>
@@ -146,8 +159,8 @@ export default {
 
   methods: {
     getPath(item) {
-      if (item.type === "collections") {
-        return `Home / ${this.capitalize(item.type)} / ${JSON.parse(item.response).collection}`;
+      if (item.type === "collections" && !JSON.parse(item.response).collectionError) {
+        return `Home / ${this.capitalize(item.type)} / ${JSON.parse(item.response).collection.name}`;
       }
 
       if (!item.type || item.type === "") {
@@ -158,13 +171,16 @@ export default {
     },
     redirect(search) {
       const url = this.getUrl(search);
-      // if (`/${this.getContext()}` !== url) {
-        window.location.href = `${url}?pmql=${search.response}`;
-      // }
+      let pmql = search.response;
+
+      if (search.type === "collections") {
+        pmql = JSON.parse(search.response).pmql;
+      }
+      window.location.href = `${url}?pmql=${pmql}`;
     },
     getUrl(item) {
-      if (item.type === "collections") {
-        return `/${item.type}/${JSON.parse(item.response).collectionId}`;
+      if (item.type === "collections" && !JSON.parse(item.response).collectionError) {
+        return `/${item.type}/${JSON.parse(item.response).collection.id}`;
       }
 
       if (item.type === "requests") {
@@ -199,6 +215,20 @@ export default {
             this.recentSearches = response.data.recentSearches;
           }
         });
+    },
+    errors(search) {
+      try {
+        return JSON.parse(search.response).collectionError;
+      } catch (e) {
+        return false;
+      }
+    },
+    getPmql(search) {
+      try {
+        return JSON.parse(search.response).pmql;
+      } catch (e) {
+        return search.response;
+      }
     },
     search() {
       this.showPopUp();
@@ -252,7 +282,7 @@ export default {
 
 .search-bar.expanded {
   width: 608px;
-  max-height: 700px;
+  max-height: 900px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.16);
   z-index: 99;
   background: #ffffff;
@@ -263,6 +293,7 @@ export default {
   position: absolute;
   right: 0;
   top: -19px;
+  overflow-y: auto;
 }
 
 .search-popup {
@@ -274,7 +305,7 @@ export default {
   opacity: 1;
   height: 100%;
   padding: 0.5rem;
-  transition: opacity 3s 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 2s 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .search-popup .container {
   height: 0px;
