@@ -79,7 +79,7 @@ Question: Show me all where firstname starts with Jhon for the collection person
 Response: '
 {
   "pmql": "(data.firstname LIKE \"Jhon%\")",
-  "collection": "persons"
+  "collectionName": "persons"
 }
 '
 Question: {currentYear}-09-03
