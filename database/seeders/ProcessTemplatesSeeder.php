@@ -19,10 +19,6 @@ class ProcessTemplatesSeeder extends Seeder
      */
     public function run()
     {
-        //load user admin
-        $manifest = file_get_contents(app_path('Templates/Fixtures/process-employee-onboarding-template.json'));
-        $svg = file_get_contents(app_path('Templates/Fixtures/process-employee-onboarding-template.svg'));
-
         ProcessCategory::updateOrCreate(
             ['name'  => 'Default Templates'],
             [
@@ -40,8 +36,21 @@ class ProcessTemplatesSeeder extends Seeder
                 'process_id' => null,
                 'user_id' => null,
                 'process_category_id' => ProcessCategory::where('name', 'Default Templates')->firstOrFail()->getKey(),
-                'manifest' => $manifest,
-                'svg' => $svg,
+                'manifest' => file_get_contents(app_path('Templates/Fixtures/process-employee-onboarding-template.json')),
+                'svg' => file_get_contents(app_path('Templates/Fixtures/process-employee-onboarding-template.svg')),
+                'is_system' => 0,
+                'key' => 'default_templates',
+            ]);
+        ProcessTemplates::updateOrCreate(
+            ['name' => 'Leave of Absence 2023'],
+            [
+                'name' => 'Leave of Absence 2023',
+                'description' => 'New Version of the Leave of Absence request.',
+                'process_id' => null,
+                'user_id' => null,
+                'process_category_id' => ProcessCategory::where('name', 'Default Templates')->firstOrFail()->getKey(),
+                'manifest' => file_get_contents(app_path('Templates/Fixtures/process-leave-of-absence-template.json')),
+                'svg' => file_get_contents(app_path('Templates/Fixtures/process-leave-of-absence-template.svg')),
                 'is_system' => 0,
                 'key' => 'default_templates',
             ]);
