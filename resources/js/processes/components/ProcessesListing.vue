@@ -71,6 +71,7 @@
   import datatableMixin from "../../components/common/mixins/datatable";
   import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
   import { createUniqIdsMixin } from "vue-uniq-ids";
+  import isPMQL from "../../modules/isPMQL";
   import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 
   const uniqIdsMixin = createUniqIdsMixin();
@@ -78,7 +79,7 @@
   export default {
     components: { EllipsisMenu },
     mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
-    props: ["filter", "id", "status", "permission", "isDocumenterInstalled"],
+    props: ["filter", "id", "status", "permission", "isDocumenterInstalled", "pmql"],
     data() {
       return {
         actions: [
@@ -268,41 +269,60 @@
         return container.innerHTML;
       },
       fetch() {
-        this.loading = true;
-        this.apiDataLoading = true;
-        //change method sort by user
-        this.orderBy = this.orderBy === "user" ? "user.firstname" : this.orderBy;
-        //change method sort by slot name
-        this.orderBy = this.orderBy === "__slot:name" ? "name" : this.orderBy;
+        Vue.nextTick(() => {
+          this.loading = true;
+          this.apiDataLoading = true;
+          //change method sort by user
+          this.orderBy = this.orderBy === "user" ? "user.firstname" : this.orderBy;
+          //change method sort by slot name
+          this.orderBy = this.orderBy === "__slot:name" ? "name" : this.orderBy;
 
-        let url =
-            this.status === null || this.status === "" || this.status === undefined
-                ? "processes?"
-                : "processes?status=" + this.status + "&";
+          let url =
+              this.status === null || this.status === "" || this.status === undefined
+                  ? "processes?"
+                  : "processes?status=" + this.status + "&";
 
-        // Load from our api client
-        ProcessMaker.apiClient
-            .get(
-                url +
-                "page=" +
-                this.page +
-                "&per_page=" +
-                this.perPage +
-                "&filter=" +
-                this.filter +
-                "&order_by=" +
-                this.orderBy +
-                "&order_direction=" +
-                this.orderDirection +
-                "&include=categories,category,user"
-            )
-            .then(response => {
-              const data = this.addWarningMessages(response.data);
-              this.data = this.transform(data);
-              this.apiDataLoading = false;
-              this.apiNoResults = false;
-              this.loading = false;
-            });
+          let pmql = "";
+          if (this.pmql !== undefined) {
+              pmql = this.pmql;
+          }
+
+          let filter = this.filter;
+
+          if (filter && filter.length) {
+            if (filter.isPMQL()) {
+              pmql = `(${pmql}) and (${filter})`;
+              filter = "";
+            }
+          }
+
+          // Load from our api client
+          ProcessMaker.apiClient
+              .get(
+                  url +
+                  "page=" +
+                  this.page +
+                  "&per_page=" +
+                  this.perPage +
+                  "&pmql=" +
+                  encodeURIComponent(pmql) +
+                  "&filter=" +
+                  this.filter +
+                  "&order_by=" +
+                  this.orderBy +
+                  "&order_direction=" +
+                  this.orderDirection +
+                  "&include=categories,category,user" +
+                  "&with=events"
+              )
+              .then(response => {
+                const data = this.addWarningMessages(response.data);
+                this.data = this.transform(data);
+                this.apiDataLoading = false;
+                this.apiNoResults = false;
+                this.loading = false;
+              });
+        });
       },
       addWarningMessages(data) {
         data.data = data.data.map(process => {

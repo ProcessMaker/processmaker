@@ -13,6 +13,7 @@ new Vue({
   },
   data: {
     filter: "",
+    pmql: "",
     processModal: false,
     processId: null,
     showModal: false,
@@ -28,6 +29,13 @@ new Vue({
     },
     goToImport() {
       window.location = "/processes/import";
+    },
+    onNLQConversion(query) {
+      this.onChange(query);
+      this.reload();
+    },
+    onChange(query) {
+      this.pmql = query;
     },
     reload() {
       this.$refs.processListing.fetch();
