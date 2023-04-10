@@ -14,12 +14,12 @@
           <pmql-input-filters 
             v-if="showFilters"
             :type="searchType"
-            :param-process="paramProcess"
-            :param-status="paramStatus"
-            :param-requester="paramRequester"
-            :param-participants="paramParticipants"
-            :param-request="paramRequest"
-            :param-name="paramName"
+            :param-process="this.urlPmql ? '' : paramProcess"
+            :param-status="this.urlPmql ? '' : paramStatus"
+            :param-requester="this.urlPmql ? '' : paramRequester"
+            :param-participants="this.urlPmql ? '' : paramParticipants"
+            :param-request="this.urlPmql ? '' : paramRequest"
+            :param-name="this.urlPmql ? '' : paramName"
             :permission="permission"
             @filterspmqlchange="onFiltersPmqlChange">
           </pmql-input-filters>
