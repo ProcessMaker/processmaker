@@ -25,6 +25,8 @@ import AccessibilityMixin from "./components/common/mixins/accessibility";
 import { initializeScreenCache } from "@processmaker/screen-builder";
 import Vue from 'vue'
 import VueCookies from 'vue-cookies'
+import PmqlInput from "./components/shared/PmqlInput.vue";
+import GlobalSearch from "./components/shared/GlobalSearch.vue";
 
 window.__ = translator;
 window._ = require("lodash");
@@ -74,6 +76,8 @@ window.Vue.component("pagination", Pagination);
 window.Vue.component("monaco-editor", MonacoEditor);
 window.Vue.component("screen-select", ScreenSelect);
 window.Vue.component("pm-modal", Modal);
+window.Vue.component("pmql-input", PmqlInput);
+window.Vue.component("global-search", GlobalSearch);
 let translationsLoaded = false;
 const mdates = JSON.parse(
   document.head.querySelector("meta[name=\"i18n-mdate\"]").content,
@@ -222,6 +226,14 @@ window.ProcessMaker.apiClient.defaults.timeout = apiTimeout;
 window.ProcessMaker.alert = function (text, variant) {
   window.alert(`${variant}: ${text}`);
 };
+
+const openAiEnabled = document.head.querySelector("meta[name=\"open-ai-nlq-to-pmql\"]");
+
+if (openAiEnabled) {
+  window.ProcessMaker.openAi = {
+    enabled: openAiEnabled.content,
+  };
+}
 
 const userID = document.head.querySelector("meta[name=\"user-id\"]");
 const formatDate = document.head.querySelector("meta[name=\"datetime-format\"]");

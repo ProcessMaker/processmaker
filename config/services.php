@@ -29,4 +29,8 @@ return [
     'processmakerpost' => [
         'secret' => env('PROCESSMAKERPOST_SECRET'),
     ],
+
+    'open_ai' => [
+        'secret' => env('OPEN_AI_SECRET'),
+    ],
 ];
