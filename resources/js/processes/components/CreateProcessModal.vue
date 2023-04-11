@@ -141,6 +141,7 @@
         this.addError = {};
         this.selectedFile = '';
         this.file = null;
+        this.$emit('resetModal');
       },
       onSubmit () {
         this.errors = Object.assign({}, {
