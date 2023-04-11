@@ -29,7 +29,10 @@
               <div class="section-title p-2 w-100">
                 {{ $t("Search result") }}
               </div>
-              <div v-if="!aiLoading && pmql === '' && !lastSearch"
+              <div v-if="endpointErrors" class="alert alert-danger mx-2 small px-3">
+                <i class="fa fa-ban mr-1"></i>{{ endpointErrors }}
+              </div>
+              <div v-if="!aiLoading && pmql === '' && !lastSearch && !endpointErrors"
                     class="p-2 w-100 text-muted pt-1 pb-3 no-results">
                     {{ $t("Nothing searched yet") }}
               </div>
@@ -61,6 +64,10 @@
                 {{ $t("Recently searched") }}
               </div>
 
+              <div v-if="!recentSearches && recentSearches.length === 0"
+                      class="p-2 w-100 text-muted pt-1 pb-3 no-results">
+                      {{ $t("The history is empty") }}
+                </div>
               <div v-for="(recentSearch, index) in recentSearches"
                 :key="index"
                 class="section-item w-100 p-2"
@@ -82,13 +89,17 @@
                 <a href="#">Show more</a>
               </div> -->
 
-              <div class="section-footer d-flex pt-2 pb-0 px-0 w-100 align-items-center border-top justify-content-between">
+              <div class="section-footer d-flex pt-2 pb-0 px-0 mt-3 w-100 align-items-center border-top justify-content-between">
                 <div>
-                  <div><img src="/img/favicon.svg"> {{ $t("Powered by AI") }}</div>
+                  <div><img src="/img/favicon.svg"> {{ $t("Powered by ProcessMaker AI") }}</div>
                 </div>
                 <div class="">
-                  <button class="btn btn-outline-secondary d-lg-none" 
-                    @click="hidePopUp">{{ $t("Close") }}</button>
+                  <button class="btn btn-outline-secondary btn-sm" @click="clearHistory">
+                    {{ $t("Clear history") }}
+                  </button>
+                  <button class="btn btn-outline-secondary d-lg-none ml-2" 
+                    @click="hidePopUp">{{ $t("Close") }}
+                  </button>
                 </div>
               </div>
             </div>
@@ -137,6 +148,7 @@ export default {
       expanded: false,
       lastSearch: null,
       recentSearches: [],
+      endpointErrors: false,
       usage: {
         completionTokens: 0,
         promptTokens: 0,
@@ -147,7 +159,7 @@ export default {
 
   computed: {
     aiEnabledLocal() {
-      if (!window.ProcessMaker.openAi.enabled || window.ProcessMaker.openAi.enabled === "") {
+      if (!window.ProcessMaker.openAi.enabled || window.ProcessMaker.openAi.enabled === "")  {
         return false;
       }
 
@@ -223,6 +235,13 @@ export default {
           }
         });
     },
+    clearHistory() {
+      ProcessMaker.apiClient.delete("/openai/recent-searches")
+        .then((response) => {
+          this.pmql = response.data.result;
+          this.recentSearches = [];
+        });
+    },
     errors(search) {
       try {
         return JSON.parse(search.response).collectionError;
@@ -245,6 +264,7 @@ export default {
       };
 
       this.aiLoading = true;
+      this.endpointErrors = false;
 
       ProcessMaker.apiClient.post("/openai/nlq-to-category", params)
         .then((response) => {
@@ -256,11 +276,9 @@ export default {
           this.aiLoading = false;
         })
         .catch(error => {
-          console.log(error);
-          window.ProcessMaker.alert(this.$t("An error ocurred while calling OpenAI endpoint."), "danger");
-          const fullTextSearch = `(fulltext LIKE "%${params.question}%")`;
-          this.pmql = fullTextSearch;
-          this.$emit("submit", fullTextSearch);
+          const $errorMsg = this.$t("An error ocurred while calling OpenAI endpoint.");
+          window.ProcessMaker.alert($errorMsg, "danger");
+          this.endpointErrors = $errorMsg;
           this.aiLoading = false;
         });
     },
@@ -327,7 +345,7 @@ export default {
   opacity: 1;
   height: 100%;
   padding: 0.5rem;
-  transition: opacity 2s 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity .5s .4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .search-popup .container {
   height: 0px;
