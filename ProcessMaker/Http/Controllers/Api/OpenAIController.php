@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use OpenAI\Client;
 use ProcessMaker\Ai\Handlers\NlqToCategoryHandler;
 use ProcessMaker\Ai\Handlers\NlqToPmqlHandler;
@@ -71,7 +72,10 @@ class OpenAIController extends Controller
         $nlqToPmqlHandler->saveResponse($type, $result);
 
         // Return recent searched
-        $recentSearches = AiSearch::latest()->take(5)->get();
+        $recentSearches = AiSearch::where('user_id', Auth::user()->id)
+            ->latest()
+            ->take(5)
+            ->get();
 
         return response()->json([
             'usage' => $usage,
@@ -87,10 +91,21 @@ class OpenAIController extends Controller
     {
         // Return recent searched
         $quantity = $request->input('quantity');
-        $recentSearches = AiSearch::latest()->take($quantity)->get();
+        $recentSearches = AiSearch::where('user_id', Auth::user()->id)
+            ->latest()
+            ->take($quantity)
+            ->get();
 
         return response()->json([
             'recentSearches' => $recentSearches,
         ]);
+    }
+
+    public function deleteRecentSearches(Request $request)
+    {
+        $deleted = AiSearch::where('user_id', Auth::user()->id)
+            ->delete();
+
+        return $deleted;
     }
 }
