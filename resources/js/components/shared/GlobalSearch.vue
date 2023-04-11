@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="">
+    <div v-if="aiEnabledLocal" class="">
       <div class="d-flex align-items-start position-relative">
         <div class="search-bar flex-grow"
              v-click-outside="hidePopUp"
@@ -151,7 +151,7 @@ export default {
         return false;
       }
 
-      return this.aiEnabled;
+      return true;
     },
   },
 
