@@ -20,6 +20,7 @@
           @saveBpmn="emitSaveEvent"
           @discard="emitDiscardEvent"
           @close="close"
+          @publishTemplate="publishTemplate"
           @set-xml-manager="xmlManager = $event"
         />
       </b-card-body>
@@ -45,18 +46,21 @@
         :key="`external-${index}`"
         :options="component.options"
       />
+      <create-template-modal ref="create-template-modal" />
     </b-card>
   </b-container>
 </template>
 
 <script>
 import { Modeler, ValidationStatus } from "@processmaker/modeler";
+import CreateTemplateModal from "../../../components/templates/CreateTemplateModal.vue";
 
 export default {
   name: "ModelerApp",
   components: {
     Modeler,
     ValidationStatus,
+    CreateTemplateModal,
   },
   data() {
     return {
@@ -275,6 +279,9 @@ export default {
       if (this.isVersionsInstalled) {
         this.$refs.modeler.setLoadingState(isLoading);
       }
+    },
+    publishTemplate() {
+      this.$refs["create-template-modal"].show();
     },
   },
 };

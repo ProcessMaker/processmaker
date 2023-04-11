@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.5.0",
+    "version": "4.6.0-RC1",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -33,6 +33,7 @@
         "microsoft/microsoft-graph": "^1.77",
         "moontoast/math": "^1.2",
         "mustache/mustache": "^2.14",
+        "openai-php/client": "^0.3.0",
         "phing/phing": "^2.17",
         "pion/laravel-chunk-upload": "^1.5",
         "predis/predis": "^2.0",
@@ -92,7 +93,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "ed79482f",
+            "build": "45bd3bcc",
             "custom": {
                 "package-ellucian-ethos": "1.12.0"
             },
@@ -106,16 +107,17 @@
                 "package-actions-by-email": "1.9.0",
                 "package-advanced-user-manager": "1.4.0",
                 "package-auth": "1.10.1",
-                "package-collections": "2.7.0",
+                "package-collections": "2.8.0",
                 "package-comments": "1.5.0",
                 "package-conversational-forms": "1.2.2",
                 "package-data-sources": "1.14.0",
-                "package-dynamic-ui": "1.6.0",
+                "package-decision-engine": "0.1.0",
+                "package-dynamic-ui": "1.7.0",
                 "package-files": "1.6.2",
                 "package-googleplaces": "1.4.0",
                 "package-process-documenter": "1.2.0",
                 "package-process-optimization": "1.3.0",
-                "package-savedsearch": "1.21.0",
+                "package-savedsearch": "1.22.0",
                 "package-sentry": "1.3.0",
                 "package-signature": "1.4.0",
                 "package-translations": "2.3.2",
@@ -123,7 +125,8 @@
                 "package-vocabularies": "2.8.0",
                 "package-webentry": "2.11.0",
                 "packages": "^0"
-            }
+            },
+            "release": "Spring 2023"
         }
     },
     "scripts": {
@@ -155,7 +158,8 @@
         "optimize-autoloader": true,
         "allow-plugins": {
             "typo3/class-alias-loader": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "php-http/discovery": true
         }
     }
 }

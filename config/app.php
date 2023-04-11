@@ -95,6 +95,9 @@ return [
     // Unique name on multi-tenant installations. Just use the DB name for now
     'instance' => env('DB_DATABASE'),
 
+    // Allows to detect if )penAI is enabled or not
+    'open_ai_nlq_to_pmql' => env('OPEN_AI_NLQ_TO_PMQL_ENABLED', false) && env('OPEN_AI_SECRET', false),
+
     // Global app settings
     'settings' => [
 
@@ -108,7 +111,7 @@ return [
         'icon_path' => env('ICON_PATH_PATH', '/img/processmaker-icon.svg'),
 
         // Path to site-wide favicon
-        'favicon_path' => env('FAVICON_PATH', '/favicon.png'),
+        'favicon_path' => env('FAVICON_PATH', '/img/favicon.svg'),
 
     ],
 
@@ -159,7 +162,7 @@ return [
         ProcessMaker\Providers\WorkflowServiceProvider::class,
         ProcessMaker\Providers\UpgradeServiceProvider::class,
         ProcessMaker\Providers\OauthMailServiceProvider::class,
-
+        ProcessMaker\Providers\OpenAiServiceProvider::class,
     ],
 
     'aliases' => [

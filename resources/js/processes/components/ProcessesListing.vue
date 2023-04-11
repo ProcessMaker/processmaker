@@ -55,6 +55,7 @@
           />
         </template>
       </vuetable>
+      <create-template-modal id="create-template-modal" ref="create-template-modal" assetType="process" :currentUserId="currentUserId" :assetName="processTemplateName" :assetId="processId"/>
       <pagination
               :single="$t('Process')"
               :plural="$t('Processes')"
@@ -71,20 +72,24 @@
   import datatableMixin from "../../components/common/mixins/datatable";
   import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
   import { createUniqIdsMixin } from "vue-uniq-ids";
+  import isPMQL from "../../modules/isPMQL";
+  import TemplateExistsModal from "../../components/templates/TemplateExistsModal.vue";
+  import CreateTemplateModal from "../../components/templates/CreateTemplateModal.vue";
   import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 
   const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
-    components: { EllipsisMenu },
+    components: { TemplateExistsModal, CreateTemplateModal, EllipsisMenu },
     mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
-    props: ["filter", "id", "status", "permission", "isDocumenterInstalled"],
+    props: ["filter", "id", "status", "permission", "isDocumenterInstalled", "pmql", "processName", "currentUserId"],
     data() {
       return {
         actions: [
         { value: "unpause-start-timer", content: "Unpause Start Timer Events", icon: "fas fa-play", conditional: "if(has_timer_start_events and pause_timer_start, true, false)" },
         { value: "pause-start-timer", content: "Pause Start Timer Events", icon: "fas fa-pause", conditional: "if(has_timer_start_events and not(pause_timer_start), true, false)"},
         { value: "edit-designer", content: "Edit Process", permission: "edit-processes", icon: "fas fa-edit", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
+        { value: "create-template", content: "Publish as Template", permission: "create-process-templates", icon: "fas fa-layer-group" },
         { value: "edit-item", content: "Configure", permission: "edit-processes", icon: "fas fa-cog", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
         { value: "view-documentation", content: "View Documentation", permission: "view-processes", icon: "fas fa-sign", conditional: "isDocumenterInstalled"},
         { value: "export-item", content: "Export", permission: "export-processes", icon: "fas fa-file-export"},
@@ -92,6 +97,9 @@
         { value: "restore-item", content: "Restore", permission: "archive-processes", icon: "fas fa-upload", conditional: "if(status == 'ARCHIVED', true, false)" },
       ],
         orderBy: "name",
+        processId: null,
+        processTemplateName: '',
+        processData: {},
         sortOrder: [
           {
             field: "name",
@@ -144,7 +152,12 @@
         this.fetch();
       });
     },
-    methods: {
+    methods: {      
+      showCreateTemplateModal(name, id) {        
+        this.processId = id;
+        this.processTemplateName = name;
+        this.$refs["create-template-modal"].show();
+      },
       goToEdit(data) {
         window.location = "/processes/" + data + "/edit";
       },
@@ -198,6 +211,9 @@
             break;
           case "export-item":
             this.goToExport(data.id);
+            break;
+          case "create-template":
+            this.showCreateTemplateModal(data.name, data.id);
             break;
           case "restore-item":
             ProcessMaker.apiClient
@@ -268,41 +284,60 @@
         return container.innerHTML;
       },
       fetch() {
-        this.loading = true;
-        this.apiDataLoading = true;
-        //change method sort by user
-        this.orderBy = this.orderBy === "user" ? "user.firstname" : this.orderBy;
-        //change method sort by slot name
-        this.orderBy = this.orderBy === "__slot:name" ? "name" : this.orderBy;
+        Vue.nextTick(() => {
+          this.loading = true;
+          this.apiDataLoading = true;
+          //change method sort by user
+          this.orderBy = this.orderBy === "user" ? "user.firstname" : this.orderBy;
+          //change method sort by slot name
+          this.orderBy = this.orderBy === "__slot:name" ? "name" : this.orderBy;
 
-        let url =
-            this.status === null || this.status === "" || this.status === undefined
-                ? "processes?"
-                : "processes?status=" + this.status + "&";
+          let url =
+              this.status === null || this.status === "" || this.status === undefined
+                  ? "processes?"
+                  : "processes?status=" + this.status + "&";
 
-        // Load from our api client
-        ProcessMaker.apiClient
-            .get(
-                url +
-                "page=" +
-                this.page +
-                "&per_page=" +
-                this.perPage +
-                "&filter=" +
-                this.filter +
-                "&order_by=" +
-                this.orderBy +
-                "&order_direction=" +
-                this.orderDirection +
-                "&include=categories,category,user"
-            )
-            .then(response => {
-              const data = this.addWarningMessages(response.data);
-              this.data = this.transform(data);
-              this.apiDataLoading = false;
-              this.apiNoResults = false;
-              this.loading = false;
-            });
+          let pmql = "";
+          if (this.pmql !== undefined) {
+              pmql = this.pmql;
+          }
+
+          let filter = this.filter;
+
+          if (filter && filter.length) {
+            if (filter.isPMQL()) {
+              pmql = `(${pmql}) and (${filter})`;
+              filter = "";
+            }
+          }
+
+          // Load from our api client
+          ProcessMaker.apiClient
+              .get(
+                  url +
+                  "page=" +
+                  this.page +
+                  "&per_page=" +
+                  this.perPage +
+                  "&pmql=" +
+                  encodeURIComponent(pmql) +
+                  "&filter=" +
+                  this.filter +
+                  "&order_by=" +
+                  this.orderBy +
+                  "&order_direction=" +
+                  this.orderDirection +
+                  "&include=categories,category,user" +
+                  "&with=events"
+              )
+              .then(response => {
+                const data = this.addWarningMessages(response.data);
+                this.data = this.transform(data);
+                this.apiDataLoading = false;
+                this.apiNoResults = false;
+                this.loading = false;
+              });
+        });
       },
       addWarningMessages(data) {
         data.data = data.data.map(process => {
@@ -318,7 +353,6 @@
         return data;
       },
     },
-    computed: {}
   };
 </script>
 

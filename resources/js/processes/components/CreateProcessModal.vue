@@ -1,9 +1,12 @@
 <template>
   <div>
-    <b-button :aria-label="$t('Create Process')" v-b-modal.createProcess class="mb-3 mb-md-0 ml-md-2">
-      <i class="fas fa-plus"></i> {{ $t('Process') }}
-    </b-button>
-    <modal id="createProcess" :title="$t('Create Process')" :ok-disabled="disabled" @ok.prevent="onSubmit" @hidden="onClose">
+    <modal 
+      id="createProcess"
+      :title="$t('Create Process')"
+      :ok-disabled="disabled"
+      @ok.prevent="onSubmit"
+      @hidden="onClose"
+    >
       <template v-if="countCategories">
         <required></required>
         <b-form-group
@@ -42,7 +45,17 @@
           :errors="addError.process_category_id"
           name="category"
         ></category-select>
+       <b-form-group
+          :label="$t('Process Manager')"
+        >
+          <select-user
+            :multiple="false"
+            v-model="manager"
+            name="process_manager_id"
+          ></select-user>
+        </b-form-group>
         <b-form-group
+          v-if="!selectedTemplate"
           :label="$t('Upload BPMN File (optional)')"
           :invalid-feedback="errorMessage('bpmn', addError)"
           :state="errorState('bpmn', addError)"
@@ -69,11 +82,12 @@
 
 <script>
   import { FormErrorsMixin, Modal, Required } from "SharedComponents";
+  import TemplateSearch from "../../components/templates/TemplateSearch.vue";
 
   export default {
-    components: { Modal, Required },
+    components: { Modal, Required, TemplateSearch },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories"],
+    props: ["countCategories", "blankTemplate", "selectedTemplate", "templateData"],
     data: function() {
       return {
         showModal: false,
@@ -85,10 +99,27 @@
         addError: {},
         status: "",
         bpmn: "",
-        disabled: false
+        disabled: false,
+        customModalButtons: [
+            {'content': 'Cancel', 'action': 'hide()', 'variant': 'outline-secondary', 'disabled': false, 'hidden': false},
+            {'content': 'Create', 'action': 'createTemplate', 'variant': 'primary', 'disabled': false, 'hidden': false},
+        ],
+        manager: "",
+      }
+    },
+    watch: {
+      selectedTemplate: function() {
+        if (this.selectedTemplate) {
+          this.name = this.templateData.name;
+          this.description = this.templateData.description;  
+          this.process_category_id = this.templateData.category_id;
+        }
       }
     },
     methods: {
+      show() {
+      this.$bvModal.show("createProcess");
+      },
       browse () {
         this.$refs.customFile.click();
       },
@@ -127,30 +158,59 @@
           return;
         }
         this.disabled = true;
-
+        
         let formData = new FormData();
         formData.append("name", this.name);
         formData.append("description", this.description);
         formData.append("process_category_id", this.process_category_id);
+        formData.append("manager_id", this.manager.id);
         if (this.file) {
           formData.append("file", this.file);
         }
-
+        if (this.selectedTemplate) {
+          this.handleCreateFromTemplate(this.templateData.id, formData);
+        } else {
+          this.handleCreateBlank(formData);
+        }
+      },
+      handleCreateFromTemplate(id, formData) {
+        ProcessMaker.apiClient.post(`template/create/process/${id}`, formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        })
+        .then(response => {
+          ProcessMaker.alert(this.$t('The process was created.'), "success");
+          window.location = "/modeler/" + response.data.processId;
+        })
+        .catch(error => {
+          this.disabled = false;
+          this.addError = error.response.data.errors;
+        });
+      },
+      handleCreateBlank(formData) {
         ProcessMaker.apiClient.post("/processes", formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data"
-            }
-          })
-          .then(response => {
-            ProcessMaker.alert(this.$t('The process was created.'), "success");
-            window.location = "/modeler/" + response.data.id;
-          })
-          .catch(error => {
-            this.disabled = false;
-            this.addError = error.response.data.errors;
-          });
+        {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        })
+        .then(response => {
+          ProcessMaker.alert(this.$t('The process was created.'), "success");
+          window.location = "/modeler/" + response.data.id;
+        })
+        .catch(error => {
+          this.disabled = false;
+          this.addError = error.response.data.errors;
+        });
       }
-    }
+    },
   };
 </script>
+
+<style scoped>
+  .search-column {
+    border-right: 1px solid #b6bfc6;
+  }
+</style>

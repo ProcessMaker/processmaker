@@ -27,6 +27,9 @@ class EventServiceProvider extends ServiceProvider
         'ProcessMaker\Events\SessionStarted' => [
             'ProcessMaker\Listeners\ActiveUserListener',
         ],
+        'Illuminate\Database\Events\MigrationsEnded' => [
+            'ProcessMaker\Listeners\UpdateDataLakeViews',
+        ],
     ];
 
     /**
