@@ -6,6 +6,7 @@
                 ref="pmql_input"
                 search-type="processes"
                 :value="pmql"
+                :url-pmql="urlPmql"
                 :filters-value="pmql"
                 :ai-enabled="false"
                 :show-filters="false"
