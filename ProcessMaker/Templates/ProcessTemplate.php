@@ -6,6 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\ImportExport\Exporter;
@@ -93,7 +94,7 @@ class ProcessTemplate implements TemplateInterface
         $processTemplate->manifest = json_encode($payload);
         $processTemplate->svg = $svg;
         $processTemplate->process_id = $data['asset_id'];
-        $processTemplate->user_id = \Auth::user()->id;
+        $processTemplate->user_id = Auth::user()->id;
 
         $processTemplate->saveOrFail();
 
@@ -192,6 +193,7 @@ class ProcessTemplate implements TemplateInterface
         $id = (int) $request->id;
         $template = ProcessTemplates::where('id', $id)->firstOrFail();
         $template->fill($request->except('id'));
+        $template->user_id = Auth::user()->id;
 
         // Catch errors to send more specific status
         try {
