@@ -7,7 +7,7 @@
               :empty-desc="$t('')"
               empty-icon="noData"
       />
-      <div v-show="!shouldShowLoader" class="card card-body table-card" data-cy="processes-table">
+      <div v-show="!shouldShowLoader" class="card card-body process-template-table-card" data-cy="processes-template-table">
         <vuetable
                 :dataManager="dataManager"
                 :sortOrder="sortOrder"
@@ -312,6 +312,9 @@
   
     :deep(th#_created_at) {
       width: 14%;
+    }
+    .process-template-table-card {
+      padding: 0;
     }
   </style>
   
