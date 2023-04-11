@@ -83,4 +83,12 @@ class Application extends IlluminateApplication
     {
         return $this->basePath . DIRECTORY_SEPARATOR . 'ProcessMaker' . ($path ? DIRECTORY_SEPARATOR . $path : $path);
     }
+
+    public function storagePath()
+    {
+        if (is_dir($path = '/mnt/local/storage')) {
+            return $path;
+        }
+        return $this->storagePath ?: $this->basePath.DIRECTORY_SEPARATOR.'storage';
+    }
 }

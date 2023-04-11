@@ -57,7 +57,7 @@ class SettingServiceProvider extends ServiceProvider
         // cached configuration
         $this->app['events']->listen(CommandFinished::class, function ($event) {
             if ($this->isCacheConfigCommand($event)) {
-                $this->restartHorizon();
+                //$this->restartHorizon();
             }
         });
 

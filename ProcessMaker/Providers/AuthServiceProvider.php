@@ -57,6 +57,8 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
+        Passport::loadKeysFrom('/mnt/local/storage');
+
         Passport::routes(function ($router) {
             $router->forAuthorization();
             $router->forAccessTokens();

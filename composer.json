@@ -27,6 +27,7 @@
         "laravel/telescope": "^4.9",
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.4",
+        "laravel/vapor-core": "^2.29",
         "laravelcollective/html": "^6.3",
         "lavary/laravel-menu": "^1.8",
         "lcobucci/jwt": "^4.2",

@@ -1,0 +1,29 @@
+id: 45039
+name: pm4-os
+environments:
+  production:
+    memory: 2048
+    cli-memory: 512
+    runtime: php-8.1:al2
+    database: mysql_pm4_os
+    queues:
+      - bpmn
+      - default
+      - low
+      - high
+    scheduler: false
+    network: pm4-vapor-network
+    build:
+      - composer install --no-dev
+      - php artisan event:cache
+      - npm ci && npm run prod && rm -rf node_modules
+    deploy:
+      - php artisan migrate --force
+      - php artisan db:seed --force --class=UserSeeder
+      - php artisan db:seed --force --class=PermissionSeeder
+      - php artisan db:seed --force --class=ProcessSystemCategorySeeder
+      - php artisan db:seed --force --class=GroupSeeder
+      - php artisan db:seed --force --class=ScreenTypeSeeder
+      - php artisan db:seed --force --class=CategorySystemSeeder
+      - php artisan db:seed --force --class=ScreenSystemSeeder
+      - php artisan db:seed --force --class=SignalSeeder
