@@ -73,14 +73,13 @@
   import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
   import { createUniqIdsMixin } from "vue-uniq-ids";
   import isPMQL from "../../modules/isPMQL";
-  import TemplateExistsModal from "../../components/templates/TemplateExistsModal.vue";
   import CreateTemplateModal from "../../components/templates/CreateTemplateModal.vue";
   import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 
   const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
-    components: { TemplateExistsModal, CreateTemplateModal, EllipsisMenu },
+    components: {CreateTemplateModal, EllipsisMenu },
     mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
     props: ["filter", "id", "status", "permission", "isDocumenterInstalled", "pmql", "processName", "currentUserId"],
     data() {
