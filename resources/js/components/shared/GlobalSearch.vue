@@ -6,10 +6,9 @@
              v-click-outside="hidePopUp"
              :class="{'expanded': expanded}">
           <div class="row m-0">
-            <div 
-              class="search-bar-container col-12 d-flex align-items-center p-0"
-              @click="showPopUp()">
-              <i class="fa fa-search ml-3 pmql-icons" />
+            <div class="search-bar-container col-12 d-flex align-items-center p-0">
+              <i @click="showPopUp()"
+                class="fa fa-search ml-3 pmql-icons" />
 
               <input ref="search_input" 
                      type="text" 
@@ -19,9 +18,14 @@
                      :id="inputId"
                      v-model="query"
                      rows="1"
+                     @click="showPopUp()"
                      @input="onInput()"
                      @keydown.enter.prevent
                      @keyup.enter="search()">
+
+              <i class="fa fa-times pl-1 pr-3 pmql-icons" 
+                role="button"
+                @click="clearQuery" />
             </div>
           </div>
           <div class="col-12 search-popup border-top">
@@ -60,11 +64,14 @@
                 </div>
               </div>
 
-              <div class="section-title p-2 mt-2 border-top w-100">
-                {{ $t("Recently searched") }}
+              <div class="section-title p-2 mt-2 border-top w-100 d-flex justify-content-between align-items-center">
+                <span>{{ $t("Recently searched") }}</span>
+                <span role="button" @click="clearHistory">
+                  <span>{{ $t("Clear") }}</span>
+                </span>
               </div>
 
-              <div v-if="!recentSearches && recentSearches.length === 0"
+              <div v-if="!recentSearches || recentSearches.length === 0"
                       class="p-2 w-100 text-muted pt-1 pb-3 no-results">
                       {{ $t("The history is empty") }}
                 </div>
@@ -94,11 +101,9 @@
                   <div><img src="/img/favicon.svg"> {{ $t("Powered by ProcessMaker AI") }}</div>
                 </div>
                 <div class="">
-                  <button class="btn btn-outline-secondary btn-sm" @click="clearHistory">
-                    {{ $t("Clear history") }}
-                  </button>
-                  <button class="btn btn-outline-secondary d-lg-none ml-2" 
-                    @click="hidePopUp">{{ $t("Close") }}
+                  <button class="btn d-lg-none ml-2 close-button" 
+                    @click="hidePopUp">
+                    <i class="fa fa-times"></i>
                   </button>
                 </div>
               </div>
@@ -225,7 +230,6 @@ export default {
     },
     clearQuery() {
       this.query = "";
-      this.search();
     },
     getRecentSearches() {
       ProcessMaker.apiClient.get('/openai/recent-searches?quantity=5')
@@ -236,11 +240,19 @@ export default {
         });
     },
     clearHistory() {
-      ProcessMaker.apiClient.delete("/openai/recent-searches")
-        .then((response) => {
-          this.pmql = response.data.result;
-          this.recentSearches = [];
-        });
+      ProcessMaker.confirmModal(
+        this.$t("Caution!"),
+        this.$t("Are you sure you want to clear the history?"),
+        "",
+        () => {
+          ProcessMaker.apiClient
+            .delete("/openai/recent-searches")
+            .then(() => {
+              this.recentSearches = [];
+              this.showPopUp();
+            });
+        },
+      );
     },
     errors(search) {
       try {
@@ -424,71 +436,74 @@ input.pmql-input:focus ~ label, input.pmql-input:valid ~ label {
 .pmql-icons {
   color: #6C757D;
 }
-
-.usage-label {
-  background: #1c72c224;
-  color: #0872C2;
-  right: 29px;
-  top: 0;
-  margin-right: 0.5rem;
-  font-weight: 300;
-  margin-bottom: 0;
+.close-button {
+  margin-right: -0.5em;
+  font-size: 1.5rem;
 }
+// .usage-label {
+//   background: #1c72c224;
+//   color: #0872C2;
+//   right: 29px;
+//   top: 0;
+//   margin-right: 0.5rem;
+//   font-weight: 300;
+//   margin-bottom: 0;
+// }
 
-.separator {
-  border-right: 1px solid rgb(227, 231, 236);
-  height: 1.6rem;
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
-  right: 0;
-  top: 15%;
-}
+// .separator {
+//   border-right: 1px solid rgb(227, 231, 236);
+//   height: 1.6rem;
+//   margin-left: 0.5rem;
+//   margin-right: 0.5rem;
+//   right: 0;
+//   top: 15%;
+// }
 
-.separator-horizontal {
-  border: 0;
-  border-bottom: 1px dashed rgb(227, 231, 236);
-  height: 0;
-  margin: 5px 7px 0 8px;
-}
+// .separator-horizontal {
+//   border: 0;
+//   border-bottom: 1px dashed rgb(227, 231, 236);
+//   height: 0;
+//   margin: 5px 7px 0 8px;
+// }
 
-.badge-success {
-  color: #00875A;
-  background-color: #00875a26;
-}
+// .badge-success {
+//   color: #00875A;
+//   background-color: #00875a26;
+// }
 
-.filter-dropdown-panel-container {
-  min-width: 30rem;
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.125);
-  box-shadow: 0 6px 12px 2px rgba(0, 0, 0, 0.168627451);
-  position: absolute;
-  left: 0;
-  top: 2.5rem;
-  border-radius: 3px;
-  z-index: 1;
-  max-width: 40rem;
-}
+// .filter-dropdown-panel-container {
+//   min-width: 30rem;
+//   background: #ffffff;
+//   border: 1px solid rgba(0, 0, 0, 0.125);
+//   box-shadow: 0 6px 12px 2px rgba(0, 0, 0, 0.168627451);
+//   position: absolute;
+//   left: 0;
+//   top: 2.5rem;
+//   border-radius: 3px;
+//   z-index: 1;
+//   max-width: 40rem;
+// }
 
-.selected-filter-item {
-  background: #DEEBFF;
-  padding: 4px 9px 4px 9px;
-  color: #104A75;
-  border: 1px solid #104A75;
-  border-radius: 4px;
-  margin-right: 0.5em;
-}
+// .selected-filter-item {
+//   background: #DEEBFF;
+//   padding: 4px 9px 4px 9px;
+//   color: #104A75;
+//   border: 1px solid #104A75;
+//   border-radius: 4px;
+//   margin-right: 0.5em;
+// }
 
-.selected-filter-key {
-  text-transform: capitalize;
-  font-weight: 700;
-}
+// .selected-filter-key {
+//   text-transform: capitalize;
+//   font-weight: 700;
+// }
 
-.filter-counter {
-  background: #EBEEF2 !important;
-  font-weight: 400;
-}
+// .filter-counter {
+//   background: #EBEEF2 !important;
+//   font-weight: 400;
+// }
 .power-loader .text {
-  color: #42516e; 
+  color: #42516e;
   font-size: .8rem;
 }
 .power-loader {
