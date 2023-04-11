@@ -35,49 +35,7 @@ class UtilsTest extends TestCase
 
     public function testFindScreenDependent()
     {
-        $config = [
-            [
-                'items' => [
-                    [
-                        'component' => 'MyComponent',
-                        'test' => 'first',
-                    ],
-                    [
-                        'component' => 'FormMultiColumn',
-                        'items' => [
-                            [
-                                ['component' => 'MyComponent', 'test' => 'second'],
-                            ],
-                            [
-                                ['component' => 'OtherComponent', 'test' => 'other'],
-                                ['component' => 'MyComponent', 'test' => 'third'],
-                                [
-                                    'component' => 'FormLoop',
-                                    'items' => [
-                                        ['component' => 'MyComponent', 'test' => 'fourth'],
-                                        [
-                                            'component' => 'FormMultiColumn',
-                                            'items' => [
-                                                [],
-                                                [
-                                                    ['component' => 'MyComponent', 'test' => 'fifth'],
-                                                ],
-                                            ],
-                                            ['component' => 'OtherComponent', 'test' => 'other'],
-                                        ],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-            [
-                'items' => [
-                    ['component' => 'MyComponent', 'test' => 'sixth'],
-                ],
-            ],
-        ];
+        $config = json_decode(file_get_contents(__DIR__ . '/fixtures/screen-with-dependents-min.json'), true);
         $matches = Utils::findScreenDependent($config, 'MyComponent', 'test');
 
         $this->assertCount(6, $matches);

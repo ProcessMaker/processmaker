@@ -1,0 +1,64 @@
+[
+    {
+        "items": [
+            {
+                "component": "MyComponent",
+                "test": "first"
+            },
+            {
+                "component": "FormMultiColumn",
+                "items": [
+                    [
+                        {
+                            "component": "MyComponent",
+                            "test": "second"
+                        }
+                    ],
+                    [
+                        {
+                            "component": "OtherComponent",
+                            "test": "other"
+                        },
+                        {
+                            "component": "MyComponent",
+                            "test": "third"
+                        },
+                        {
+                            "component": "FormLoop",
+                            "items": [
+                                {
+                                    "component": "MyComponent",
+                                    "test": "fourth"
+                                },
+                                {
+                                    "component": "FormMultiColumn",
+                                    "items": [
+                                        [],
+                                        [
+                                            {
+                                                "component": "MyComponent",
+                                                "test": "fifth"
+                                            }
+                                        ]
+                                    ],
+                                    "0": {
+                                        "component": "OtherComponent",
+                                        "test": "other"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                ]
+            }
+        ]
+    },
+    {
+        "items": [
+            {
+                "component": "MyComponent",
+                "test": "sixth"
+            }
+        ]
+    }
+]
