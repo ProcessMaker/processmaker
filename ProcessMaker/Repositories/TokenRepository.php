@@ -109,7 +109,7 @@ class TokenRepository implements TokenRepositoryInterface
         $selfServiceTasks = $token->getInstance()->processVersion->self_service_tasks;
         $token->self_service_groups = $selfServiceTasks && isset($selfServiceTasks[$activity->getId()]) ? $selfServiceTasks[$activity->getId()] : [];
 
-        if($token->getSelfServiceAttribute()) {
+        if ($token->getSelfServiceAttribute()) {
             $selfServiceUsers = !empty($token->getDefinition()['assignedUsers']) ? $token->getDefinition()['assignedUsers'] : [];
             $selfServiceGroups = !empty($token->getDefinition()['assignedGroups']) ? $token->getDefinition()['assignedGroups'] : [];
 
