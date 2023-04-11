@@ -11,8 +11,6 @@ use Laravel\Scout\Searchable;
 use Log;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Facades\WorkflowUserManager;
-use ProcessMaker\Models\Setting;
-use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
@@ -218,7 +216,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
         $notifiables = $notifiableTypes->implode(', ');
         $users = $userIds->implode(', ');
-        Log::debug("Sending task $notificationType notification to $notifiables (users: $users)");
+        Log::debug("Sending task {$notificationType} notification to {$notifiables} (users: {$users})");
 
         return User::whereIn('id', $userIds)->get();
     }
@@ -689,7 +687,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                     $value = json_encode($value);
                 }
 
-                $pmql = "$field $operator $value";
+                $pmql = "{$field} {$operator} {$value}";
 
                 return function ($query) use ($pmql) {
                     $requests = ProcessRequest::pmql($pmql)->get();
@@ -750,7 +748,6 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
         return $assignment;
     }
-
 
     /**
      * Returns if the token has the self service option activated
@@ -948,8 +945,8 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         } else {
             return '';
         }
-        $loopContext = $variable . '.' . $index;
-        return $loopContext;
+
+        return $variable . '.' . $index;
     }
 
     /**
