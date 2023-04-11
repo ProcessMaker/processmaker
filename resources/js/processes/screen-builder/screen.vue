@@ -480,6 +480,15 @@ export default {
       optionsMenu: options,
       rendererKey: 0,
       renderComponent: "task-screen",
+      ellipsisMenuOptions: {
+        actions: [
+          {
+            value: "discard-draft",
+            content: this.$t("Discard Draft"),
+            icon: "",
+          },
+        ],
+      },
     };
   },
   computed: {
@@ -548,6 +557,8 @@ export default {
     this.countElements();
     // Display version indicator.
     this.setVersionIndicator();
+    // Display ellipsis menu.
+    this.setEllipsisMenu();
   },
   methods: {
     ...mapMutations("globalErrorsModule", { setStoreMode: "setMode" }),
@@ -1002,6 +1013,20 @@ export default {
             is_loading: isLoading,
           },
         }, 1);
+      }
+    },
+    setEllipsisMenu() {
+      if (this.isVersionsInstalled) {
+        this.$refs.menuScreen.addItem({
+          id: "EllipsisMenu",
+          type: "EllipsisMenu",
+          section: "right",
+          options: {
+            actions: [...this.ellipsisMenuOptions.actions],
+            data: {},
+            divider: false,
+          },
+        }, 4);
       }
     },
   },
