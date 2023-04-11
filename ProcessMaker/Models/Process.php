@@ -649,7 +649,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         $instanceData = $dataManager->getData($token);
 
         $assignedUsers = $usersVariable ? $instanceData[$usersVariable] : [];
-        $assignedGroups = $groupsVariable ? $instanceData[$groupsVariable] : [];
+        $assignedGroups = $groupsVariable ?  $instanceData[$groupsVariable] : [];
 
         if (!is_array($assignedUsers)) {
             $assignedUsers = [$assignedUsers];
@@ -660,14 +660,14 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         }
 
         // We need to remove inactive users.
-        $users = User::whereIn('id', array_unique($assignedUsers))->where('status', 'ACTIVE')->pluck('id')->toArray();
+        $users = User::whereIn('id', array_unique($assignedUsers)) ->where('status', 'ACTIVE')->pluck('id')->toArray();
 
         foreach ($assignedGroups as $groupId) {
             // getConsolidatedUsers already removes inactive users
             $this->getConsolidatedUsers($groupId, $users);
         }
 
-        $nextAssignee = $this->getNextUserFromGroupAssignment($activity->getId(), $users);
+        $nextAssignee =  $this->getNextUserFromGroupAssignment($activity->getId(), $users);
 
         return $nextAssignee;
     }
@@ -867,7 +867,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
 
             // If no rule was applied, use the default configured user/group
             if (empty($users) && empty($groups)) {
-                foreach ($default as $item) {
+                foreach($default as $item) {
                     if ($item->type === 'group') {
                         $groups[] = $item->assignee;
                     } elseif ($item->type === 'user') {

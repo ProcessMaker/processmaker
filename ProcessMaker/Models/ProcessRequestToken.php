@@ -751,6 +751,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         return $assignment;
     }
 
+
     /**
      * Returns if the token has the self service option activated
      */
@@ -948,7 +949,6 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             return '';
         }
         $loopContext = $variable . '.' . $index;
-
         return $loopContext;
     }
 

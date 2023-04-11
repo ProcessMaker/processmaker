@@ -3,8 +3,8 @@
 namespace ProcessMaker\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class CreateDataLakeViews extends Command
 {
@@ -40,7 +40,7 @@ class CreateDataLakeViews extends Command
     public function handle(): int
     {
         $drop = $this->option('drop');
-        $preview = (bool) $this->option('preview');
+        $preview = !!$this->option('preview');
         if ($drop) {
             $this->info('Dropping views...' . PHP_EOL);
             $this->down($preview);
@@ -49,7 +49,6 @@ class CreateDataLakeViews extends Command
             $this->up($preview);
         }
         $this->info('Done.');
-
         return 0;
     }
 
@@ -127,7 +126,6 @@ class CreateDataLakeViews extends Command
                 return true;
             }
         }
-
         return false;
     }
 

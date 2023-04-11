@@ -29,7 +29,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         'Illuminate\Database\Events\MigrationsEnded' => [
             'ProcessMaker\Listeners\UpdateDataLakeViews',
-        ],
+        ]
     ];
 
     /**
