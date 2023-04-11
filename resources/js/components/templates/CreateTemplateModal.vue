@@ -142,10 +142,6 @@ export default {
         this.process_category_id = "";
         this.showWarning = false;
         this.saveMode = "copy";
-        // this.name = '';
-        // this.description = '';
-        // this.showWarning = false;
-        // this.saveMode = 'copy';
       },
       onUpdate() {
         this.$emit('update-template');
@@ -164,15 +160,14 @@ export default {
           ProcessMaker.alert(this.$t("Template successfully created"), "success");
           this.close();
         }).catch(error => {
-          const name = error.response.data.errors.name[0];
-          if (name) {
+          this.errors = error.response.data;
+          if (this.errors.hasOwnProperty('errors')) {
+            this.errors = this.errors.errors;
+          } else if (_.includes(this.errors.name, 'The template name must be unique.')) {
             this.showWarning = true;
             this.toggleButtons();
-            this.errors = error.response.data;
             this.existingAssetId = error.response.data.id;
-            this.existingAssetName = error.response.data.templateName;
-          } else {
-            ProcessMaker.alert(error, "danger");
+            this.existingAssetName = error.response.data.assetName;
           }
         });
       },  
@@ -190,41 +185,16 @@ export default {
           ProcessMaker.alert( this.$t("Template successfully updated"),"success");
           this.close();
         }).catch(error => {
-          const message = error.response.data.message;
-          if (message === this.assetExistsError) {
+          this.errors = error.response.data;
+          if (this.errors.hasOwnProperty('errors')) {
+            this.errors = this.errors.errors;
+          } else if (_.includes(this.errors.name, 'The template name must be unique.')) {
             this.showWarning = true;
             this.toggleButtons();
-            this.errors = error.response.data;
             this.existingAssetId = error.response.data.id;
             this.existingAssetName = error.response.data.assetName;
-          } else {
-            ProcessMaker.alert(message,"danger");
           }
         });
-        // let putData = {
-        //   name: this.name,
-        //   description: this.description,
-        //   user_id: this.currentUserId,
-        //   mode: this.saveMode,
-        //   process_id: this.assetId,
-        //   template_category_id: null,
-        // }; 
-        // ProcessMaker.apiClient.put("template/" + this.assetType + '/' + this.existingAssetId, putData)
-        // .then(response => {
-        //   ProcessMaker.alert( this.$t("Template successfully updated"),"success");
-        //   this.close();
-        // }).catch(error => {
-        //     const message = error.response.data.message;
-        //     if (message === this.assetExistsError) {
-        //         this.showWarning = true;
-        //         this.toggleButtons();
-        //         this.errors = error.response.data;
-        //         this.existingAssetId = error.response.data.id;
-        //         this.existingAssetName = error.response.data.assetName;
-        //     } else {
-        //         ProcessMaker.alert(message,"danger");
-        //     }
-        // }); 
       },
       toggleButtons() {
         this.customModalButtons[1].hidden = !this.customModalButtons[1].hidden;
@@ -233,43 +203,23 @@ export default {
       },
       validateDescription() {
         if (!_.isEmpty(this.description) && !_.isEmpty(this.name)) {
-        this.customModalButtons[1].disabled = false;
-        if (this.showWarning) {
-          if (this.name !== this.existingAssetName) {
+          this.customModalButtons[1].disabled = false;
+          if (this.showWarning) {
+            if (this.name !== this.existingAssetName) {
+              this.customModalButtons[2].disabled = true;
+              this.customModalButtons[3].disabled = false;  
+            } else {
+              this.customModalButtons[2].disabled = false;
+              this.customModalButtons[3].disabled = true;
+            }
+          }
+        } else {
+          this.customModalButtons[1].disabled = true;
+          if (this.showWarning) {
             this.customModalButtons[2].disabled = true;
-            this.customModalButtons[3].disabled = false;  
-          } else {
-            this.customModalButtons[2].disabled = false;
             this.customModalButtons[3].disabled = true;
           }
         }
-      } else {
-        this.customModalButtons[1].disabled = true;
-        if (this.showWarning) {
-          this.customModalButtons[2].disabled = true;
-          this.customModalButtons[3].disabled = true;
-        }
-      }
-
-        // if (!_.isEmpty(this.description) && !_.isEmpty(this.name)) {
-        //   this.customModalButtons[1].disabled = false;
-        //   if (this.showWarning) {
-        //     if (this.name !== this.existingAssetName) {
-        //       this.customModalButtons[2].disabled = true;
-        //       this.customModalButtons[3].disabled = false;  
-        //     } else {
-        //       this.customModalButtons[2].disabled = false;
-        //       this.customModalButtons[3].disabled = true;
-        //     }
-            
-        //   }
-        // } else {
-        //   this.customModalButtons[1].disabled = true;
-        //   if (this.showWarning) {
-        //     this.customModalButtons[2].disabled = true;
-        //     this.customModalButtons[3].disabled = true;
-        //   }
-        // }
       },
       validateName(newName, oldName) {
         if (!_.isEmpty(this.name) && !_.isEmpty(this.description)) {
