@@ -259,6 +259,15 @@ export default {
       // eslint-disable-next-line max-len
       boilerPlateTemplate: this.$t(" \r Welcome to ProcessMaker 4 Script Editor \r To access Environment Variables use {accessEnvVar} \r To access Request Data use {dataVariable} \r To access Configuration Data use {configVariable} \r To preview your script, click the Run button using the provided input and config data \r Return an array and it will be merged with the processes data \r Example API to retrieve user email by their ID {apiExample} \r API Documentation {apiDocsUrl} \r "),
       nonce: null,
+      ellipsisMenuOptions: {
+        actions: [
+          {
+            value: "discard-draft",
+            content: this.$t("Discard Draft"),
+            icon: "",
+          },
+        ],
+      },
     };
   },
   computed: {
@@ -293,6 +302,9 @@ export default {
 
     // Display version indicator.
     this.setVersionIndicator();
+
+    // Display ellipsis menu.
+    this.setEllipsisMenu();
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.handleResize);
@@ -476,6 +488,20 @@ export default {
             is_loading: isLoading,
           },
         }, 1);
+      }
+    },
+    setEllipsisMenu() {
+      if (this.isVersionsInstalled) {
+        this.$refs.menuScript.addItem({
+          id: "EllipsisMenu",
+          type: "EllipsisMenu",
+          section: "right",
+          options: {
+            actions: [...this.ellipsisMenuOptions.actions],
+            data: {},
+            divider: false,
+          },
+        }, 4);
       }
     },
   },

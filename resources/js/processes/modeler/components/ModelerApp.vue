@@ -170,8 +170,8 @@ export default {
       window.location.href = "/processes";
     },
     emitDiscardEvent() {
-      if (this.externalEmit.includes("open-discard-versions")) {
-        window.ProcessMaker.EventBus.$emit("open-discard-versions");
+      if (this.externalEmit.includes("open-versions-discard-modal")) {
+        window.ProcessMaker.EventBus.$emit("open-versions-discard-modal");
         return;
       }
       window.ProcessMaker.EventBus.$emit("modeler-discard");

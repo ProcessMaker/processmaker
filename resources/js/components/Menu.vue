@@ -83,8 +83,13 @@
           <component
             :is="item.type"
             v-if="item.type !== 'group' && item.type !== 'button'"
+            :ref="item.id"
+            v-bind="{
+              ...item.options
+            }"
             :key="index"
             :options="item.options"
+            @navigate="(action, data) => handleNavigate(action, data)"
           />
         </template>
       </b-col>
@@ -141,8 +146,16 @@ export default {
       return response;
     },
   },
-  watch: {},
   methods: {
+    handleNavigate(action) {
+      switch (action.value) {
+        case "discard-draft":
+          window.ProcessMaker.EventBus.$emit("open-versions-discard-modal");
+          break;
+        default:
+          break;
+      }
+    },
     executeFunction(callback) {
       if (typeof callback === "function") {
         callback();
@@ -178,12 +191,6 @@ export default {
       if (indexToRemove !== -1) {
         this.newItems.splice(indexToRemove, 1);
       }
-    },
-    unshiftItem(value) {
-      this.newItems.unshift(value);
-    },
-    shiftItem() {
-      this.newItems.shift();
     },
   },
 };
