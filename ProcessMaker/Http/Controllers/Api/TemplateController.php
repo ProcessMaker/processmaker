@@ -10,6 +10,13 @@ use ProcessMaker\Models\Template;
 
 class TemplateController extends Controller
 {
+    private $template;
+
+    public function __construct(Template $template)
+    {
+        $this->template = $template;
+    }
+
     /**
      * Get list Process Templates
      *
@@ -19,8 +26,7 @@ class TemplateController extends Controller
      */
     public function index(string $type, Request $request)
     {
-        $template = new Template();
-        $templates = $template->index($type, $request);
+        $templates = $this->template->index($type, $request);
 
         return new TemplateCollection($templates);
     }
@@ -34,13 +40,8 @@ class TemplateController extends Controller
      */
     public function store(string $type, Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|unique:process_templates,name|max:255',
-            'description' => 'required|string',
-        ]);
-
-        $template = new Template();
-        $response = $template->store($type, $request);
+        $this->validateRequest($request);
+        $response = $this->template->store($type, $request);
 
         return $response;
     }
@@ -54,13 +55,8 @@ class TemplateController extends Controller
      */
     public function updateTemplate(string $type, Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|unique:processes,name|max:255',
-            'description' => 'required|string',
-        ]);
-
-        $template = new Template();
-        $response = $template->updateTemplate($type, $request);
+        $this->validateRequest($request);
+        $response = $this->template->updateTemplate($type, $request);
 
         return $response;
     }
@@ -74,13 +70,8 @@ class TemplateController extends Controller
      */
     public function updateTemplateConfigs(string $type, Request $request)
     {
-        $this->validate($request, [
-            'name' => 'required|string|unique:processes,name|max:255',
-            'description' => 'required|string',
-        ]);
-
-        $template = new Template();
-        $response = $template->updateTemplateConfigs($type, $request);
+        $this->validateRequest($request);
+        $response = $this->template->updateTemplateConfigs($type, $request);
 
         return $response;
     }
@@ -94,13 +85,8 @@ class TemplateController extends Controller
      */
     public function create(string $type, Request $request)
     {
-        $this->validate($request, [
-            'name' => 'required|string|unique:processes,name|max:255',
-            'description' => 'required|string',
-        ]);
-
-        $template = new Template();
-        $response = $template->create($type, $request);
+        $this->validateRequest($request);
+        $response = $this->template->create($type, $request);
 
         return $response;
     }
@@ -113,9 +99,22 @@ class TemplateController extends Controller
      */
     public function delete(string $type, Request $request)
     {
-        $template = new Template();
-        $response = $template->deleteTemplate($type, $request);
+        $response = $this->template->deleteTemplate($type, $request);
 
         return $response;
+    }
+
+    /**
+     * Validate the request input.
+     *
+     * @param Request $request
+     * @return void
+     */
+    private function validateRequest(Request $request): void
+    {
+        $this->validate($request, [
+            'name' => 'required|string|unique:processes,name|regex:/^[a-zA-Z0-9\s]+$/|max:255',
+            'description' => 'required|string',
+        ]);
     }
 }
