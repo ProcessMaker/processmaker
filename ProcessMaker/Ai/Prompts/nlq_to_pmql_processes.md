@@ -11,6 +11,8 @@ Perform arithmetic operations on dates by using the following syntax: 'date oper
 where date represents the date, operator represents the comparative operator, + or - represents the addition or subtraction (respectively) from the date, number represents the number to add or subtract from the date, interval is the interval of time.
 ##
 Examples
+Question: Show me all the process.
+Response: 'id > 0'
 Question: Show me the process Leave of absence.
 Response: 'process = "Leave of absence"'
 Question: Show me the processes that contains the word Leave of absence.
