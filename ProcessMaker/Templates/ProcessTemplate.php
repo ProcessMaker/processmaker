@@ -59,7 +59,7 @@ class ProcessTemplate implements TemplateInterface
     }
 
     /**
-     * Summary of save
+     *  Store new process template
      * @param mixed $request
      * @return JsonResponse
      */
@@ -82,22 +82,16 @@ class ProcessTemplate implements TemplateInterface
         $exporter->export($model, ProcessExporter::class, $options);
         $payload = $exporter->payload();
 
-        // Extract svg from payload
-        $svg = Arr::get($payload, 'export.' . $payload['root'] . '.attributes.svg');
-
         // Create a new process template
-        $processTemplate = ProcessTemplates::make($data);
-
-        // Fill the manifest and svg attributes
-        $processTemplate->fill($data);
-        $processTemplate->manifest = json_encode($payload);
-        $processTemplate->svg = $svg;
-        $processTemplate->process_id = $data['asset_id'];
-        $processTemplate->user_id = \Auth::user()->id;
+        $processTemplate = ProcessTemplates::make($data)->fill([
+            'manifest' => json_encode($payload),
+            'svg' => Arr::get($payload, "export.{$payload['root']}.attributes.svg"),
+            'process_id' => $data['asset_id'],
+            'user_id' => \Auth::user()->id,
+        ]);
 
         $processTemplate->saveOrFail();
 
-        // Return response
         return response()->json(['model' => $processTemplate]);
     }
 
