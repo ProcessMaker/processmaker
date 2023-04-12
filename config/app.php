@@ -111,7 +111,7 @@ return [
         'icon_path' => env('ICON_PATH_PATH', '/img/processmaker-icon.svg'),
 
         // Path to site-wide favicon
-        'favicon_path' => env('FAVICON_PATH', '/favicon.png'),
+        'favicon_path' => env('FAVICON_PATH', '/img/favicon.svg'),
 
     ],
 

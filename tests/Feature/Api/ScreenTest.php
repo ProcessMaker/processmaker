@@ -2,9 +2,7 @@
 
 namespace Tests\Feature\Api;
 
-use Carbon\Carbon;
 use Faker\Factory as Faker;
-use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\User;
@@ -29,11 +27,11 @@ class ScreenTest extends TestCase
      */
     public function testNotCreatedForParameterRequired()
     {
-        //Post should have the parameter required
+        // Post should have the parameter required
         $url = self::API_TEST_SCREEN;
         $response = $this->apiCall('POST', $url, []);
 
-        //validating the answer is an error
+        // validating the answer is an error
         $response->assertStatus(422);
         $this->assertArrayHasKey('message', $response->json());
     }
@@ -43,7 +41,7 @@ class ScreenTest extends TestCase
      */
     public function testCreateFormScreen()
     {
-        //Post title duplicated
+        // Post title duplicated
         $faker = Faker::create();
         $url = self::API_TEST_SCREEN;
         $response = $this->apiCall('POST', $url, [
@@ -60,7 +58,7 @@ class ScreenTest extends TestCase
      */
     public function testCreateDisplayScreen()
     {
-        //Post title duplicated
+        // Post title duplicated
         $faker = Faker::create();
         $url = self::API_TEST_SCREEN;
         $response = $this->apiCall('POST', $url, [
@@ -82,7 +80,7 @@ class ScreenTest extends TestCase
             'title' => 'Title Screen',
         ]);
 
-        //Post title duplicated
+        // Post title duplicated
         $faker = Faker::create();
         $url = self::API_TEST_SCREEN;
         $response = $this->apiCall('POST', $url, [
@@ -99,27 +97,27 @@ class ScreenTest extends TestCase
     public function testListScreen()
     {
         Screen::query()->delete();
-        //add Screen to process
+        // add Screen to process
         $faker = Faker::create();
         Screen::factory()->count(10)->create();
 
-        //List Screen
+        // List Screen
         $url = self::API_TEST_SCREEN;
         $response = $this->apiCall('GET', $url);
-        //Validate the answer is correct
+        // Validate the answer is correct
         $response->assertStatus(200);
-        //verify count of data
+        // verify count of data
         $json = $response->json();
         $this->assertEquals(10, $json['meta']['total']);
 
-        //verify structure paginate
+        // verify structure paginate
         $response->assertJsonStructure([
             'data',
             'meta',
         ]);
         $this->assertArrayNotHasKey('links', $json);
 
-        //Verify the structure
+        // Verify the structure
         $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
     }
 
@@ -154,14 +152,14 @@ class ScreenTest extends TestCase
             'title' => $title,
         ]);
 
-        //List Screen with filter option
+        // List Screen with filter option
         $perPage = Faker::create()->randomDigitNotNull;
         $query = '?page=1&per_page=' . $perPage . '&order_by=description&order_direction=DESC&filter=' . urlencode($title);
         $url = self::API_TEST_SCREEN . $query;
         $response = $this->apiCall('GET', $url);
-        //Validate the answer is correct
+        // Validate the answer is correct
         $response->assertStatus(200);
-        //verify structure paginate
+        // verify structure paginate
         $response->assertJsonStructure([
             'data',
             'meta',
@@ -169,7 +167,7 @@ class ScreenTest extends TestCase
 
         $json = $response->json();
 
-        //verify response in meta
+        // verify response in meta
         $this->assertEquals(1, $json['meta']['total']);
         $this->assertEquals($perPage, $json['meta']['per_page']);
         $this->assertEquals(1, $json['meta']['current_page']);
@@ -177,7 +175,7 @@ class ScreenTest extends TestCase
         $this->assertEquals($title, $json['meta']['filter']);
         $this->assertEquals('description', $json['meta']['sort_by']);
         $this->assertEquals('DESC', $json['meta']['sort_order']);
-        //verify structure of model
+        // verify structure of model
         $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
     }
 
@@ -186,7 +184,7 @@ class ScreenTest extends TestCase
      */
     public function testGetScreen()
     {
-        //load Screen
+        // load Screen
         $url = self::API_TEST_SCREEN . '/' . Screen::factory()->create([
             'config' => [
                 'field' => 'field 1',
@@ -197,10 +195,10 @@ class ScreenTest extends TestCase
             ],
         ])->id;
         $response = $this->apiCall('GET', $url);
-        //Validate the answer is correct
+        // Validate the answer is correct
         $response->assertStatus(200);
 
-        //verify structure paginate
+        // verify structure paginate
         $response->assertJsonStructure(self::STRUCTURE);
     }
 
@@ -209,13 +207,13 @@ class ScreenTest extends TestCase
      */
     public function testUpdateScreenParametersRequired()
     {
-        //Post should have the parameter title
+        // Post should have the parameter title
         $url = self::API_TEST_SCREEN . '/' . Screen::factory()->create()->id;
         $response = $this->apiCall('PUT', $url, [
             'title' => '',
             'description' => '',
         ]);
-        //Validate the answer is incorrect
+        // Validate the answer is incorrect
         $response->assertStatus(422);
         $this->assertArrayHasKey('message', $response->json());
     }
@@ -225,14 +223,13 @@ class ScreenTest extends TestCase
      */
     public function testUpdateScreen()
     {
-        //Post saved success
         $faker = Faker::create();
-        $yesterday = \Carbon\Carbon::now()->subDay();
+        $yesterday = now()->yesterday();
         $screen = Screen::factory()->create([
             'created_at' => $yesterday,
             'type' => 'FORM',
         ]);
-        $original_attributes = $screen->getAttributes();
+        $originalAttributes = $screen->getAttributes();
         $url = self::API_TEST_SCREEN . '/' . $screen->id;
         $response = $this->apiCall('PUT', $url, [
             'title' => 'ScreenTitleTest',
@@ -242,17 +239,73 @@ class ScreenTest extends TestCase
             'screen_category_id' => $screen->screen_category_id,
         ]);
 
-        //Validate the answer is correct
+        // Validate the answer is correct.
         $response->assertStatus(204);
 
-        // assert it creates a script version
+        // assert it creates a published screen version.
         $screen->refresh();
-        $version = $screen->versions()->first();
+        $version = $screen->versions()->published()->first();
         $this->assertEquals($version->screen_category_id, $screen->screen_category_id);
-        $this->assertEquals($version->title, $original_attributes['title']);
-        $this->assertEquals($version->description, $original_attributes['description']);
+        $this->assertEquals($version->title, $originalAttributes['title']);
+        $this->assertEquals($version->description, $originalAttributes['description']);
         $this->assertEquals($version->config, null);
         $this->assertLessThan(3, $version->updated_at->diffInSeconds($screen->updated_at));
+    }
+
+    /**
+     * Update draft Screen.
+     */
+    public function testUpdateDraftScreen()
+    {
+        $faker = Faker::create();
+        $yesterday = now()->yesterday();
+        $screen = Screen::factory()->create([
+            'created_at' => $yesterday,
+            'type' => 'FORM',
+        ]);
+        $url = self::API_TEST_SCREEN . "/{$screen->id}/draft";
+        $response = $this->apiCall('PUT', $url, [
+            'title' => 'ScreenTitleTest',
+            'description' => $faker->sentence(5),
+            'config' => '{"foo":"bar"}',
+            'computed' => '[{"id": 2, "name": "test", "type": "expression", "formula": "test", "property": "test"}]',
+            'custom_css' => '.class { font-size: large; }',
+            'watchers' => '[{"input_data":"{}","script_configuration":"{}","synchronous":false,"show_async_loading":false,"run_onload":false,"name":"Watchers","watching":"form_input_1","script":{"id":"script-4","uuid":"98a4376e-efb8-4c10-83fd-01199398eddc","key":null,"title":"Autosave","description":"Autosave","language":"php","code":"","timeout":60,"run_as_user_id":1,"status":"ACTIVE","script_category_id":"1","script_executor_id":3},"script_id":"4","script_key":null,"uid":"16794186944621"}]',
+            'type' => $screen->type,
+            'screen_category_id' => $screen->screen_category_id,
+        ]);
+
+        // Validate the answer is correct.
+        $response->assertStatus(204);
+
+        // assert it creates a published screen version.
+        $screen->refresh();
+        $draft = $screen->versions()->draft()->first();
+        $this->assertEquals($draft->config, '{"foo":"bar"}');
+        $this->assertEquals($draft->computed, '[{"id": 2, "name": "test", "type": "expression", "formula": "test", "property": "test"}]');
+        $this->assertEquals($draft->custom_css, '.class { font-size: large; }');
+        $this->assertEquals($draft->watchers, '[{"input_data":"{}","script_configuration":"{}","synchronous":false,"show_async_loading":false,"run_onload":false,"name":"Watchers","watching":"form_input_1","script":{"id":"script-4","uuid":"98a4376e-efb8-4c10-83fd-01199398eddc","key":null,"title":"Autosave","description":"Autosave","language":"php","code":"","timeout":60,"run_as_user_id":1,"status":"ACTIVE","script_category_id":"1","script_executor_id":3},"script_id":"4","script_key":null,"uid":"16794186944621"}]');
+        $this->assertLessThan(3, $draft->updated_at->diffInSeconds($screen->updated_at));
+    }
+
+    /**
+     * Close draft screen.
+     */
+    public function testCloseDraftScreen()
+    {
+        $screen = Screen::factory()->create();
+
+        // Create a draft.
+        $url = self::API_TEST_SCREEN . "/{$screen->id}/draft";
+        $response = $this->apiCall('PUT', $url, [
+            'title' => 'ScreenTitleTest',
+            'config' => '{"foo":"bar"}',
+        ]);
+
+        // Close the draft.
+        $response = $this->apiCall('POST', route('api.screens.close', ['screen' => $screen->id]));
+        $response->assertStatus(204);
+        $this->assertTrue($screen->versions()->draft()->doesntExist());
     }
 
     /**
@@ -302,7 +355,7 @@ class ScreenTest extends TestCase
      */
     public function testUpdateSameTitleScreen()
     {
-        //Post saved success
+        // Post saved success
         $faker = Faker::create();
         $title = 'Some title';
         $screen = Screen::factory()->create([
@@ -317,7 +370,7 @@ class ScreenTest extends TestCase
             'type' => 'DISPLAY',
             'screen_category_id' => $screen->screen_category_id,
         ]);
-        //Validate the answer is correct
+        // Validate the answer is correct
         $response->assertStatus(204);
     }
 
@@ -326,10 +379,10 @@ class ScreenTest extends TestCase
      */
     public function testDeleteScreen()
     {
-        //Remove Screen
+        // Remove Screen
         $url = self::API_TEST_SCREEN . '/' . Screen::factory()->create()->id;
         $response = $this->apiCall('DELETE', $url);
-        //Validate the answer is correct
+        // Validate the answer is correct
         $response->assertStatus(204);
     }
 
@@ -338,10 +391,10 @@ class ScreenTest extends TestCase
      */
     public function testDeleteScreenNotExist()
     {
-        //screen not exist
+        // screen not exist
         $url = self::API_TEST_SCREEN . '/' . Screen::factory()->make()->id;
         $response = $this->apiCall('DELETE', $url);
-        //Validate the answer is correct
+        // Validate the answer is correct
         $response->assertStatus(405);
     }
 
@@ -408,13 +461,13 @@ class ScreenTest extends TestCase
             'status' => 'active',
         ]);
 
-        //List Screen with filter option
+        // List Screen with filter option
         $query = '?filter=' . urlencode($name);
         $url = self::API_TEST_SCREEN . $query;
         $response = $this->apiCall('GET', $url);
-        //Validate the answer is correct
+        // Validate the answer is correct
         $response->assertStatus(200);
-        //verify structure paginate
+        // verify structure paginate
         $response->assertJsonStructure([
             'data',
             'meta',
@@ -422,21 +475,21 @@ class ScreenTest extends TestCase
 
         $json = $response->json();
 
-        //verify response in meta
+        // verify response in meta
         $this->assertEquals(1, $json['meta']['total']);
         $this->assertEquals(1, $json['meta']['current_page']);
         $this->assertEquals($name, $json['meta']['filter']);
-        //verify structure of model
+        // verify structure of model
         $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
 
-        //List Screen without peers
+        // List Screen without peers
         $name = 'Search category that does not exist';
         $query = '?filter=' . urlencode($name);
         $url = self::API_TEST_SCREEN . $query;
         $response = $this->apiCall('GET', $url);
-        //Validate the answer is correct
+        // Validate the answer is correct
         $response->assertStatus(200);
-        //verify structure paginate
+        // verify structure paginate
         $response->assertJsonStructure([
             'data',
             'meta',
@@ -444,11 +497,11 @@ class ScreenTest extends TestCase
 
         $json = $response->json();
 
-        //verify response in meta
+        // verify response in meta
         $this->assertEquals(0, $json['meta']['total']);
         $this->assertEquals(1, $json['meta']['current_page']);
         $this->assertEquals($name, $json['meta']['filter']);
-        //verify structure of model
+        // verify structure of model
         $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
     }
 
@@ -477,7 +530,7 @@ class ScreenTest extends TestCase
             'screen_category_id' => ScreenCategory::factory()->create()->getKey() . ',' . ScreenCategory::factory()->create()->getKey(),
         ];
 
-        //The call is done without an authenticated user so it should return 401
+        // The call is done without an authenticated user so it should return 401
         $response = $this->actingAs(User::factory()->create())
             ->json('PUT', $url, $params);
         $response->assertStatus(401);
@@ -507,7 +560,7 @@ class ScreenTest extends TestCase
             'custom_css' => 'bar',
         ];
 
-        //Post saved success
+        // Post saved success
         $url = self::API_TEST_SCREEN . '/preview';
         $response = $this->apiCall('POST', $url, $preview);
 

@@ -10,6 +10,7 @@ module.exports = {
     Snap: true,
     Dispatcher: true,
     ProcessMaker: true,
+    _: true,
   },
   extends: ["eslint:recommended", "plugin:vue/recommended", "airbnb-base"],
   parserOptions: {
