@@ -22,11 +22,6 @@ class Template extends ProcessMakerModel
     use HasCategories;
     use Exportable;
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
     protected $guarded = [
         'id',
         'uuid',
@@ -34,51 +29,17 @@ class Template extends ProcessMakerModel
         'updated_at',
     ];
 
-    /**
-     * Table columns.
-     *
-     * @var array
-     */
-    protected $columns = [
-        'id',
-        'name',
-        'description',
-        'user_id',
-        'manifest',
-        'svg',
-        'is_system',
-        'created_at',
-        'updated_at',
-    ];
-
     private $templateType;
-
-    private $request;
 
     protected array $types = [
         'process' => [Process::class, ProcessTemplate::class, ProcessCategory::class, 'process_category_id'],
     ];
 
-    /**
-     * Get a list of templates
-     *
-     * @param string $type
-     * @param  \Illuminate\Http\Request $request
-     */
     public function index(String $type, Request $request)
     {
-        $templates = (new $this->types[$type][1])->index($request);
-
-        return $templates;
+        return (new $this->types[$type][1])->index($request);
     }
 
-    /**
-     * Store a newly created template
-     *
-     * @param string $type
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function store(string $type, Request $request)
     {
         [$id, $name] = $this->checkForExistingTemplates($type, $request);
@@ -91,25 +52,14 @@ class Template extends ProcessMakerModel
             ], 409);
         }
 
-        $response = (new $this->types[$type][1])->save($request);
-
-        return $response;
+        return (new $this->types[$type][1])->save($request);
     }
 
     public function updateTemplate(string $type, Request $request)
     {
-        $response = (new $this->types[$type][1])->updateTemplate($request);
-
-        return $response;
+        return (new $this->types[$type][1])->updateTemplate($request);
     }
 
-    /**
-     * Update an existing template
-     *
-     * @param string $type
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function updateTemplateConfigs(string $type, Request $request)
     {
         $existingTemplate = $this->checkForExistingTemplates($type, $request);
@@ -121,51 +71,26 @@ class Template extends ProcessMakerModel
             ], 409);
         }
 
-        $response = (new $this->types[$type][1])->updateTemplateConfigs($request);
-
-        return $response;
+        return (new $this->types[$type][1])->updateTemplateConfigs($request);
     }
 
-    /**
-     * Remove an existing template
-     *
-     * @param string $type
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function create(string $type, Request $request)
     {
-        $response = (new $this->types[$type][1])->create($request);
-
-        return $response;
+        return (new $this->types[$type][1])->create($request);
     }
 
-    /**
-     * Remove an existing template
-     *
-     * @param string $type
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function deleteTemplate(string $type, Request $request)
     {
         $id = $request->id;
-        $response = (new $this->types[$type][1])->destroy($id);
 
-        return $response;
+        return (new $this->types[$type][1])->destroy($id);
     }
 
-    /**
-     * Get the creator/author of this template.
-     */
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    /**
-     * Get the creator/author of this template.
-     */
     public function categories()
     {
         $categoryClass = $this->types[$type][2];
@@ -174,13 +99,6 @@ class Template extends ProcessMakerModel
         return $this->belongsTo($categoryClass, $categoryColumn)->withDefault();
     }
 
-    /**
-     * Validation rules.
-     *
-     * @param null $existing
-     *
-     * @return array
-     */
     public static function rules($existing = null)
     {
         $unique = Rule::unique('templates')->ignore($existing);
