@@ -164,7 +164,7 @@ export default {
 
   computed: {
     aiEnabledLocal() {
-      if (!window.ProcessMaker.openAi.enabled || window.ProcessMaker.openAi.enabled === "")  {
+      if (!window.ProcessMaker.openAi.enabled || window.ProcessMaker.openAi.enabled === "") {
         return false;
       }
 
@@ -172,13 +172,17 @@ export default {
     },
   },
 
-  watch: {
-  },
-
   mounted() {
     this.query = this.value;
     this.inputAriaLabel = this.ariaLabel;
     this.getRecentSearches();
+
+    if (localStorage.globalSearchValue && localStorage.globalSearchValue !== "") {
+      this.query = localStorage.globalSearchValue.slice();
+      this.$nextTick(() => {
+        localStorage.globalSearchValue = "";
+      });
+    }
   },
 
   methods: {
@@ -230,6 +234,7 @@ export default {
     },
     clearQuery() {
       this.query = "";
+      localStorage.globalSearchValue = "";
     },
     getRecentSearches() {
       ProcessMaker.apiClient.get('/openai/recent-searches?quantity=5')
@@ -274,6 +279,8 @@ export default {
         question: this.query,
         type: this.getContext(),
       };
+
+      localStorage.globalSearchValue = this.query;
 
       this.aiLoading = true;
       this.endpointErrors = false;
