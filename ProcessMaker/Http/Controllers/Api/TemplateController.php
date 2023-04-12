@@ -12,6 +12,10 @@ class TemplateController extends Controller
 {
     private $template;
 
+    protected array $types = [
+        'process' => [Process::class, ProcessTemplate::class, ProcessCategory::class, 'process_category_id', 'process_templates'],
+    ];
+
     public function __construct(Template $template)
     {
         $this->template = $template;
@@ -40,10 +44,18 @@ class TemplateController extends Controller
      */
     public function store(string $type, Request $request)
     {
-        $this->validateRequest($request);
-        $response = $this->template->store($type, $request);
+        $existingTemplate = (new Template)->checkForExistingTemplates($type, $request);
 
-        return $response;
+        if (!is_null($existingTemplate)) {
+            return response()->json([
+                'name' => ['The template name must be unique.'],
+                'id' => $existingTemplate['id'],
+                'templateName' => $existingTemplate['name'],
+            ], 409);
+        }
+        $request->validate(Template::rules($request->id, $this->types[$type][4]));
+
+        return $this->template->store($type, $request);
     }
 
     /**
@@ -55,10 +67,9 @@ class TemplateController extends Controller
      */
     public function updateTemplate(string $type, Request $request)
     {
-        $this->validateRequest($request);
-        $response = $this->template->updateTemplate($type, $request);
+        $request->validate(Template::rules($request->id, $this->types[$type][4]));
 
-        return $response;
+        return $this->template->updateTemplate($type, $request);
     }
 
     /**
@@ -70,10 +81,9 @@ class TemplateController extends Controller
      */
     public function updateTemplateConfigs(string $type, Request $request)
     {
-        $this->validateRequest($request);
-        $response = $this->template->updateTemplateConfigs($type, $request);
+        $request->validate(Template::rules($request->id, $this->types[$type][4]));
 
-        return $response;
+        return $this->template->updateTemplateConfigs($type, $request);
     }
 
     /**
@@ -85,10 +95,9 @@ class TemplateController extends Controller
      */
     public function create(string $type, Request $request)
     {
-        $this->validateRequest($request);
-        $response = $this->template->create($type, $request);
+        $request->validate(Template::rules($request->id, $this->types[$type][4]));
 
-        return $response;
+        return $this->template->create($type, $request);
     }
 
     /**
@@ -99,22 +108,6 @@ class TemplateController extends Controller
      */
     public function delete(string $type, Request $request)
     {
-        $response = $this->template->deleteTemplate($type, $request);
-
-        return $response;
-    }
-
-    /**
-     * Validate the request input.
-     *
-     * @param Request $request
-     * @return void
-     */
-    private function validateRequest(Request $request): void
-    {
-        $this->validate($request, [
-            'name' => 'required|string|unique:processes,name|regex:/^[a-zA-Z0-9\s]+$/|max:255',
-            'description' => 'required|string',
-        ]);
+        return $this->template->deleteTemplate($type, $request);
     }
 }
