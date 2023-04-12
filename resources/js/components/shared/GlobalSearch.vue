@@ -54,10 +54,10 @@
                 <span class="text-primary">
                   {{ lastSearch.search }}
                 </span>
-                <div v-if="errors(lastSearch)" class="alert alert-warning small mb-1">
+                <div v-if="lastSearch.response.collectionError" class="alert alert-warning small mb-1">
                   <i class="fa fa-exclamation-triangle text-warning mr-1" />
-                  {{ errors(lastSearch) }}
-                  <code class="text-info">{{ getPmql(lastSearch) }}</code>
+                  {{ lastSearch.response.collectionError }}
+                  <code class="text-info">{{ lastSearch.response.pmql }}</code>
                 </div>
                 <div class="path text-secondary">
                   {{ getPath(lastSearch) }}
@@ -82,10 +82,10 @@
                 <span class="text-primary">
                   {{ recentSearch.search }}
                 </span>
-                <div v-if="errors(recentSearch)" class="alert alert-warning small mb-1">
+                <div v-if="recentSearch.response.collectionError" class="alert alert-warning small mb-1">
                   <i class="fa fa-exclamation-triangle text-warning mr-1" />
-                  {{ errors(recentSearch) }}
-                  <code class="text-info">{{ getPmql(recentSearch) }}</code>
+                  {{ recentSearch.response.collectionError }}
+                  <code class="text-info">{{ recentSearch.response.pmql }}</code>
                 </div>
                 <div class="path text-secondary">
                   {{ getPath(recentSearch) }}
@@ -187,8 +187,11 @@ export default {
 
   methods: {
     getPath(item) {
-      if (item.type === "collections" && !JSON.parse(item.response).collectionError) {
-        return `Home / ${this.capitalize(item.type)} / ${JSON.parse(item.response).collection.name}`;
+      if (item.type === "collections" && !item.response.collectionError) {
+        if (!item.response.collection) {
+          return `Home / ${this.capitalize(item.type)}`;
+        }
+        return `Home / ${this.capitalize(item.type)} / ${item.response.collection.name}`;
       }
 
       if (!item.type || item.type === "") {
@@ -199,16 +202,16 @@ export default {
     },
     redirect(search) {
       const url = this.getUrl(search);
-      let pmql = search.response;
+      let { pmql } = search.response;
 
-      if (search.type === "collections") {
-        pmql = JSON.parse(search.response).pmql;
-      }
       window.location.href = `${url}?pmql=${pmql}`;
     },
     getUrl(item) {
-      if (item.type === "collections" && !JSON.parse(item.response).collectionError) {
-        return `/${item.type}/${JSON.parse(item.response).collection.id}`;
+      if (item.type === "collections" && !item.response.collectionError) {
+        if (!item.response.collection) {
+          return `/${item.type}`;
+        }
+        return `/${item.type}/${item.response.collection.id}`;
       }
 
       if (item.type === "requests") {
@@ -259,20 +262,6 @@ export default {
         },
       );
     },
-    errors(search) {
-      try {
-        return JSON.parse(search.response).collectionError;
-      } catch (e) {
-        return false;
-      }
-    },
-    getPmql(search) {
-      try {
-        return JSON.parse(search.response).pmql;
-      } catch (e) {
-        return search.response;
-      }
-    },
     search() {
       this.showPopUp();
       const params = {
@@ -287,7 +276,7 @@ export default {
 
       ProcessMaker.apiClient.post("/openai/nlq-to-category", params)
         .then((response) => {
-          this.pmql = response.data.result;
+          this.pmql = response.data.result.pmql;
           this.usage = response.data.usage;
           this.recentSearches = response.data.recentSearches;
           this.lastSearch = response.data.lastSearch;

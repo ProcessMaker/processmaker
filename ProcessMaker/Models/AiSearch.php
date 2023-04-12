@@ -10,4 +10,10 @@ class AiSearch extends ProcessMakerModel
 {
     use HasFactory;
     use SoftDeletes;
+
+    protected function getResponseAttribute($value)
+    {
+        return json_decode($value, true);
+    }
+
 }
