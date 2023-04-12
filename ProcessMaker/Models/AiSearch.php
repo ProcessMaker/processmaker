@@ -15,5 +15,4 @@ class AiSearch extends ProcessMakerModel
     {
         return json_decode($value, true);
     }
-
 }

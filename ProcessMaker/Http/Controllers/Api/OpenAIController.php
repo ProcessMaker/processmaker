@@ -67,7 +67,7 @@ class OpenAIController extends Controller
                 $result = json_encode($resultDecoded);
             }
         } else {
-          $result = json_encode(["pmql" => $result]);
+            $result = json_encode(['pmql' => $result]);
         }
 
         // Save the response
