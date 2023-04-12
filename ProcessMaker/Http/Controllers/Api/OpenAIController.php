@@ -66,6 +66,8 @@ class OpenAIController extends Controller
 
                 $result = json_encode($resultDecoded);
             }
+        } else {
+          $result = json_encode(["pmql" => $result]);
         }
 
         // Save the response
@@ -79,7 +81,7 @@ class OpenAIController extends Controller
 
         return response()->json([
             'usage' => $usage,
-            'result' => $result,
+            'result' => json_decode($result, true),
             'question' => $originalQuestion,
             'lastSearch' => $recentSearches->first(),
             'collection' => isset($collection) ? $collection : null,
