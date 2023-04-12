@@ -96,7 +96,7 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
 
     Route::get('about', [AboutController::class, 'index'])->name('about.index');
 
-    Route::get('profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('profile/edit', [ProfileController::class, 'edit'])->name('profile.edit')->middleware('can:edit-personal-profile');
     Route::get('profile/{id}', [ProfileController::class, 'show'])->name('profile.show');
     // Ensure our modeler loads at a distinct url
     Route::get('modeler/{process}', [ModelerController::class, 'show'])->name('modeler.show')->middleware('can:edit-processes');
@@ -147,7 +147,7 @@ Route::get('password/reset/{token}', [ResetPasswordController::class, 'showReset
 Route::post('password/reset', [ResetPasswordController::class, 'reset']);
 Route::get('password/change', [ChangePasswordController::class, 'edit'])->name('password.change');
 
-//overwrite laravel passport
+// overwrite laravel passport
 Route::get('oauth/clients', [ClientController::class, 'index'])->name('passport.clients.index')->middleware('can:view-auth_clients');
 Route::get('oauth/clients/{client_id}', [ClientController::class, 'show'])->name('passport.clients.show')->middleware('can:view-auth_clients');
 Route::post('oauth/clients', [ClientController::class, 'store'])->name('passport.clients.store')->middleware('can:create-auth_clients');

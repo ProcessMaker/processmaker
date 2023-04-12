@@ -33,7 +33,10 @@
             {{ viewProfileText }}
           </a>
         </li>
-        <li class="list-group-item px-2">
+        <li
+          v-if="permissions['edit-personal-profile']"
+          class="list-group-item px-2"
+        >
           <a
             href="/profile/edit"
             role="menuitem"
@@ -106,6 +109,10 @@ Vue.use(VueCroppie);
 export default {
   props: {
     info: {
+      type: Object,
+      required: true,
+    },
+    permissions: {
       type: Object,
       required: true,
     },

@@ -109,18 +109,12 @@
             <li class="separator d-none d-lg-block"></li>
             <li class="d-none d-lg-block">
                 @php
-                    $items = [];
-                    foreach ($dropdown_nav->items as $item ) {
-                        $newItem = new stdClass();
-                        $newItem->class = 'fas ' . $item->attr('icon') . ' fa-fw fa-lg';
-                        $newItem->title = $item->title;
-                        $newItem->url = $item->url();
-                        $items[] = $newItem;
-                    }
-                    $items = json_encode($items);
                     $user = Auth::user();
+                    $permissions = json_encode([
+                        'edit-personal-profile' => $user->can('edit-personal-profile'),
+                    ]);
                 @endphp
-                <navbar-profile :info="{{$user}}" :items="{{$items}}"></navbar-profile>
+                <navbar-profile :info="{{$user}}" :permissions="{{$permissions}}"></navbar-profile>
             </li>
         </b-navbar-nav>
     </b-collapse>
