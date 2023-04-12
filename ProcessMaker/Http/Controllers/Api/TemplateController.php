@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\TemplateCollection;
@@ -10,11 +9,11 @@ use ProcessMaker\Models\Template;
 
 class TemplateController extends Controller
 {
-    private $template;
-
     protected array $types = [
         'process' => [Process::class, ProcessTemplate::class, ProcessCategory::class, 'process_category_id', 'process_templates'],
     ];
+
+    private $template;
 
     public function __construct(Template $template)
     {
