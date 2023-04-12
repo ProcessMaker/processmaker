@@ -12,9 +12,11 @@ class AddIsTemplateColumnToSpecificTables extends Migration
         $tables_to_modify = ['processes', 'screens', 'scripts', 'data_sources', 'collections', 'saved_searches'];
 
         foreach ($tables_to_modify as $table_name) {
-            Schema::table($table_name, function (Blueprint $table) {
-                $table->boolean('is_template')->default(false);
-            });
+            if (Schema::hasTable($table_name)) {
+                Schema::table($table_name, function (Blueprint $table) {
+                    $table->boolean('is_template')->default(false);
+                });
+            }
         }
     }
 
