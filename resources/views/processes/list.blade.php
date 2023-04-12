@@ -11,8 +11,7 @@
                 :ai-enabled="false"
                 :show-filters="false"
                 :aria-label="$t('Search')"
-                @submit="onNLQConversion"
-                @pmqlchange="onChange">
+                @submit="onNLQConversion">
               </pmql-input>
             </div>
             @canany(['import-processes', 'create-processes'])

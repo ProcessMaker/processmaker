@@ -285,6 +285,13 @@
       },
       fetch() {
         Vue.nextTick(() => {
+
+          if (this.cancelToken) {
+              this.cancelToken();
+              this.cancelToken = null;
+            }
+            const CancelToken = ProcessMaker.apiClient.CancelToken;
+
           this.loading = true;
           this.apiDataLoading = true;
           //change method sort by user
@@ -328,7 +335,12 @@
                   "&order_direction=" +
                   this.orderDirection +
                   "&include=categories,category,user" +
-                  "&with=events"
+                  "&with=events",
+                  {
+                    cancelToken: new CancelToken(c => {
+                      this.cancelToken = c;
+                    }),
+                  }
               )
               .then(response => {
                 const data = this.addWarningMessages(response.data);
@@ -336,6 +348,12 @@
                 this.apiDataLoading = false;
                 this.apiNoResults = false;
                 this.loading = false;
+              }).catch(error => {
+                if (error.code === "ERR_CANCELED") {
+                  return;
+                }
+                window.ProcessMaker.alert(error.response.data.message, "danger");
+                this.data = [];
               });
         });
       },
