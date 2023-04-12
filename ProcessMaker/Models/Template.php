@@ -5,9 +5,9 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessMakerModel;
+use ProcessMaker\Models\TemplateCategory;
 use ProcessMaker\Templates\ProcessTemplate;
 use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HasCategories;
@@ -22,6 +22,11 @@ class Template extends ProcessMakerModel
     use HasCategories;
     use Exportable;
 
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
     protected $guarded = [
         'id',
         'uuid',
@@ -29,57 +34,138 @@ class Template extends ProcessMakerModel
         'updated_at',
     ];
 
-    private $templateType;
-
-    protected array $types = [
-        'process' => [Process::class, ProcessTemplate::class, ProcessCategory::class, 'process_category_id', 'process_templates'],
+    /**
+     * Table columns.
+     *
+     * @var array
+     */
+    protected $columns = [
+        'id',
+        'name',
+        'description',
+        'user_id',
+        'manifest',
+        'svg',
+        'is_system',
+        'created_at',
+        'updated_at',
     ];
 
+    private $templateType;
+
+    private $request;
+
+    protected array $types = [
+        'process' => [Process::class, ProcessTemplate::class, ProcessCategory::class, 'process_category_id'],
+    ];
+
+    /**
+     * Get a list of templates
+     *
+     * @param string $type
+     * @param  \Illuminate\Http\Request $request
+     */
     public function index(String $type, Request $request)
     {
-        return (new $this->types[$type][1])->index($request);
+        $templates = (new $this->types[$type][1])->index($request);
+
+        return $templates;
     }
 
-    public function store(string $type, Request $request): mixed
+    /**
+     * Store a newly created template
+     *
+     * @param string $type
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(string $type, Request $request)
     {
-        $request->validate(self::rules(true, $this->types[$type][4]));
+        [$id, $name] = $this->checkForExistingTemplates($type, $request);
 
-        return (new $this->types[$type][1])->save($request);
+        if ($id) {
+            return response()->json([
+                'name' => ['The template name must be unique.'],
+                'id' => $id,
+                'templateName' => $name,
+            ], 409);
+        }
+
+        $response = (new $this->types[$type][1])->save($request);
+
+        return $response;
     }
 
-    public function updateTemplate(string $type, Request $request): mixed
+    public function updateTemplate(string $type, Request $request)
     {
-        $request->validate(self::rules(true, $this->types[$type][4]));
+        $response = (new $this->types[$type][1])->updateTemplate($request);
 
-        return (new $this->types[$type][1])->updateTemplate($request);
+        return $response;
     }
 
-    public function updateTemplateConfigs(string $type, Request $request): mixed
+    /**
+     * Update an existing template
+     *
+     * @param string $type
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateTemplateConfigs(string $type, Request $request)
     {
-        $request->validate(self::rules(true, $this->types[$type][4]));
+        $existingTemplate = $this->checkForExistingTemplates($type, $request);
+        if (!is_null($existingTemplate)) {
+            return response()->json([
+                'name' => ['The template name must be unique.'],
+                'id' => $existingTemplate['id'],
+                'templateName' => $existingTemplate['name'],
+            ], 409);
+        }
 
-        return (new $this->types[$type][1])->updateTemplateConfigs($request);
+        $response = (new $this->types[$type][1])->updateTemplateConfigs($request);
+
+        return $response;
     }
 
-    public function create(string $type, Request $request): mixed
+    /**
+     * Remove an existing template
+     *
+     * @param string $type
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function create(string $type, Request $request)
     {
-        $request->validate($this->types[$type][1]::rules($request));
+        $response = (new $this->types[$type][1])->create($request);
 
-        return (new $this->types[$type][1])->create($request);
+        return $response;
     }
 
-    public function deleteTemplate(string $type, Request $request): mixed
+    /**
+     * Remove an existing template
+     *
+     * @param string $type
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deleteTemplate(string $type, Request $request)
     {
         $id = $request->id;
+        $response = (new $this->types[$type][1])->destroy($id);
 
-        return (new $this->types[$type][1])->destroy($id);
+        return $response;
     }
 
-    public function user(): mixed
+    /**
+     * Get the creator/author of this template.
+     */
+    public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    /**
+     * Get the creator/author of this template.
+     */
     public function categories()
     {
         $categoryClass = $this->types[$type][2];
@@ -88,17 +174,33 @@ class Template extends ProcessMakerModel
         return $this->belongsTo($categoryClass, $categoryColumn)->withDefault();
     }
 
-    public static function rules($existing = null, $table = null): array
+    /**
+     * Validation rules.
+     *
+     * @param null $existing
+     *
+     * @return array
+     */
+    public static function rules($existing = null)
     {
-        $unique = Rule::unique($table ?? 'templates')->ignore($existing);
+        $unique = Rule::unique('templates')->ignore($existing);
 
         return [
-            'name' => ['required', $unique, 'alpha_spaces', 'max:255'],
+            'name' => ['required', $unique, 'alpha_spaces'],
             'description' => 'required',
-            'process_id' => 'nullable',
-            'user_id' => 'nullable',
+            'process_id' => 'required',
             'manifest' => 'required',
             'svg' => 'nullable',
         ];
+    }
+
+    private function checkForExistingTemplates($type, $request)
+    {
+        $result = (new $this->types[$type][1])->existingTemplate($request);
+        if (!is_null($result)) {
+            return [$result['id'], $result['name']];
+        }
+
+        return null;
     }
 }
