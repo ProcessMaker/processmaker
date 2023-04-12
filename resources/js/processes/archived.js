@@ -7,8 +7,16 @@ new Vue({
   el: "#archivedProcess",
   data: {
     filter: "",
+    pmql: "",
   },
   methods: {
+    onNLQConversion(query) {
+      this.onChange(query);
+      this.reload();
+    },
+    onChange(query) {
+      this.pmql = query;
+    },
     reload() {
       this.$refs.processListing.dataManager([{
         field: "updated_at",

@@ -85,6 +85,7 @@ class ProcessController extends Controller
         $perPage = $this->getPerPage($request);
         $include = $this->getRequestInclude($request);
         $status = $request->input('status');
+        $pmql = $request->input('pmql', '');
 
         $processes = Process::nonSystem()->notArchived()->with($include);
         if ($status === 'archived') {
@@ -93,28 +94,62 @@ class ProcessController extends Controller
         if ($status === 'all') {
             $processes = Process::active()->with($include);
         }
-        $filter = $request->input('filter');
-        $processes = $processes->select('processes.*')
+
+        $filter = $request->input('filter', '');
+        if (!empty($filter)) {
+            $processes->filter($filter);
+        }
+
+        if (!empty($pmql)) {
+            try {
+                $processes->pmql($pmql);
+            } catch (\ProcessMaker\Query\SyntaxError $e) {
+                return response(['error' => 'PMQL error'], 400);
+            }
+        }
+
+        $processes = $processes->with('events')
+            ->select('processes.*')
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
             ->orderBy(...$orderBy)
-            ->where(function ($query) use ($filter) {
-                $query->where('processes.name', 'like', '%' . $filter . '%')
-                    ->orWhere('processes.description', 'like', '%' . $filter . '%')
-                    ->orWhere('processes.status', '=', $filter)
-                    ->orWhere('user.firstname', 'like', '%' . $filter . '%')
-                    ->orWhere('user.lastname', 'like', '%' . $filter . '%')
-                    ->orWhereIn('processes.id', function ($qry) use ($filter) {
-                        $qry->select('assignable_id')
-                            ->from('category_assignments')
-                            ->leftJoin('process_categories', function ($join) {
-                                $join->on('process_categories.id', '=', 'category_assignments.category_id');
-                                $join->where('category_assignments.category_type', '=', ProcessCategory::class);
-                                $join->where('category_assignments.assignable_type', '=', Process::class);
-                            })
-                            ->where('process_categories.name', 'like', '%' . $filter . '%');
-                    });
-            })->get();
+            ->get()
+            ->collect();
+
+        foreach ($processes as $key => $process) {
+            // filter the start events that can be used manually (no timer start events);
+            // TODO: startEvents is not a real property on Process.
+            // Move below to $process->getManualStartEvents();
+            $process->startEvents = $process->events->filter(function ($event) {
+                $eventIsTimerStart = collect($event['eventDefinitions'])
+                        ->filter(function ($eventDefinition) {
+                            return $eventDefinition['$type'] == 'timerEventDefinition';
+                        })->count() > 0;
+
+                // Filter out web entry start events
+                $eventIsWebEntry = false;
+                if (isset($event['config'])) {
+                    $config = json_decode($event['config'], true);
+                    if (isset($config['web_entry']) && $config['web_entry'] !== null) {
+                        $eventIsWebEntry = true;
+                    }
+                }
+
+                return !$eventIsTimerStart && !$eventIsWebEntry;
+            })->values();
+
+            // Filter all processes that have event definitions (start events like message event, conditional event, signal event, timer event)
+            if ($request->has('without_event_definitions') && $request->input('without_event_definitions') == 'true') {
+                $startEvents = $process->events->filter(function ($event) {
+                    return collect($event['eventDefinitions'])->isEmpty();
+                });
+            }
+
+            // filter only valid executable processes
+            if (!$process->isValidForExecution()) {
+                $processes->startEvents = [];
+            }
+        }
 
         return new ProcessCollection($processes);
     }
