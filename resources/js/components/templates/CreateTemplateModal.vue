@@ -68,7 +68,7 @@
 
               <b-form-radio v-model="saveMode" 
                             name="save-mode-options" 
-                            value="discard">{{ $t(`Save ${assetType} modal only`) }}
+                            value="discard">{{ $t(`Save ${assetType} model only`) }}
               </b-form-radio>
             </b-form-group>
           </b-col>
