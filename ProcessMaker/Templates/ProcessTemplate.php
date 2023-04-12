@@ -152,30 +152,20 @@ class ProcessTemplate implements TemplateInterface
     {
         $id = (int) $request->id;
         $template = ProcessTemplates::where('id', $id)->firstOrFail();
-        // Get process manifest
-        $processId = $request->process_id;
-        $mode = $request->mode;
 
-        $rootUuid = null;
-        $export = null;
-        $manifest = $this->getManifest('process', $processId);
-        if (is_array($manifest)) {
-            $rootUuid = Arr::get($manifest, 'root');
-            $export = Arr::get($manifest, 'export');
-        } else {
-            $rootUuid = $manifest->getData()->root;
-            $export = $manifest->getData()->export;
-        }
+        $manifest = $this->getManifest('process', $request->process_id);
+        $rootUuid = Arr::get($manifest, 'root');
+        $export = Arr::get($manifest, 'export');
+        $svg = Arr::get($export, $rootUuid . '.attributes.svg', null);
 
-        $svg = Arr::get($export, $rootUuid . '.attributes.svg');
-
-        $template->fill($request->except('id'));
+        $template->fill($request->all());
         $template->svg = $svg;
         $template->manifest = json_encode($manifest);
 
-        // Catch errors to send more specific status
         try {
             $template->saveOrFail();
+
+            return response()->json();
         } catch (Exception $e) {
             return response(
                 ['message' => $e->getMessage(),
@@ -183,8 +173,6 @@ class ProcessTemplate implements TemplateInterface
                 422
             );
         }
-
-        return response()->json();
     }
 
     public function updateTemplateConfigs($request) : JsonResponse
@@ -193,9 +181,10 @@ class ProcessTemplate implements TemplateInterface
         $template = ProcessTemplates::where('id', $id)->firstOrFail();
         $template->fill($request->except('id'));
 
-        // Catch errors to send more specific status
         try {
             $template->saveOrFail();
+
+            return response()->json();
         } catch (\Exception $e) {
             return response([
                 'message' => $e->getMessage(),
@@ -204,8 +193,6 @@ class ProcessTemplate implements TemplateInterface
                 ],
             ], 422);
         }
-
-        return response()->json();
     }
 
     public function configure(int $id) : array
