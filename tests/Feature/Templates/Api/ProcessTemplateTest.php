@@ -103,8 +103,9 @@ class ProcessTemplateTest extends TestCase
             ]
         );
 
-        $response->assertStatus(422);
-        $this->assertEquals('The Name has already been taken.', $response->getOriginalContent()['errors']['name'][0]);
+        $response->assertStatus(409);
+        $content = json_decode($response->getContent());
+        $this->assertEquals('The template name must be unique.', $content->name[0]);
     }
 
     public function testSaveProcessModelAsTemplate()
