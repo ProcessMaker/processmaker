@@ -19,31 +19,14 @@ class ProcessTemplatesSeeder extends Seeder
      */
     public function run()
     {
-        //load user admin
-        $admin = User::where('username', 'admin')->firstOrFail();
-        $processCategory = ProcessCategory::where('name', 'Uncategorized')->firstOrFail();
-        $manifest = file_get_contents(app_path('Templates/Fixtures/process-employee-onboarding-template.json'));
-        $svg = file_get_contents(app_path('Templates/Fixtures/process-employee-onboarding-template.svg'));
-
-        // We need to decide if we want to seed the script or use the imported one
-
-        // $phpScriptExecutor = ScriptExecutor::where('title', 'PHP Executor')->firstOrFail();
-
-        // Script::updateOrCreate(
-        //     ['title' => 'Create User on PM'],
-        //     [
-        //         'title' => 'Create User on PM',
-        //         'description' => 'Creates a Vendor on the System',
-        //         'language' => 'php',
-        //         'code' => file_get_contents(app_path('Templates/Fixtures/create-user-script.php')),
-        //         'timeout' => 60,
-        //         'run_as_user_id' => $admin->getKey(),
-        //         'status' => 'ACTIVE',
-        //         'script_category_id' => ScriptCategory::where('name', 'Uncategorized')->firstOrFail()->getKey(),
-        //         'script_executor_id' => $phpScriptExecutor->getKey(),
-        //     ]
-        // );
-
+        ProcessCategory::updateOrCreate(
+            ['name'  => 'Default Templates'],
+            [
+                'name' => 'Default Templates',
+                'status' => 'ACTIVE',
+                'is_system' => 0,
+            ]
+        );
         // create process templates seed data
         ProcessTemplates::updateOrCreate(
             ['name' => 'Employee Onboarding 2023'],
@@ -51,11 +34,25 @@ class ProcessTemplatesSeeder extends Seeder
                 'name' => 'Employee Onboarding 2023',
                 'description' => 'New version of the employee onboarding process from veggieDonuts',
                 'process_id' => null,
-                'user_id' => $admin->getKey(),
-                'process_category_id' => $processCategory->getKey(),
-                'manifest' => $manifest,
-                'svg' => $svg,
+                'user_id' => null,
+                'process_category_id' => ProcessCategory::where('name', 'Default Templates')->firstOrFail()->getKey(),
+                'manifest' => file_get_contents(app_path('Templates/Fixtures/process-employee-onboarding-template.json')),
+                'svg' => file_get_contents(app_path('Templates/Fixtures/process-employee-onboarding-template.svg')),
                 'is_system' => 0,
+                'key' => 'default_templates',
+            ]);
+        ProcessTemplates::updateOrCreate(
+            ['name' => 'Leave of Absence 2023'],
+            [
+                'name' => 'Leave of Absence 2023',
+                'description' => 'New Version of the Leave of Absence request.',
+                'process_id' => null,
+                'user_id' => null,
+                'process_category_id' => ProcessCategory::where('name', 'Default Templates')->firstOrFail()->getKey(),
+                'manifest' => file_get_contents(app_path('Templates/Fixtures/process-leave-of-absence-template.json')),
+                'svg' => file_get_contents(app_path('Templates/Fixtures/process-leave-of-absence-template.svg')),
+                'is_system' => 0,
+                'key' => 'default_templates',
             ]);
     }
 }

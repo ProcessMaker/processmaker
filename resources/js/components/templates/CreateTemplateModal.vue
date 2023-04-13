@@ -16,7 +16,7 @@
         <b-row align-v="start">
           <b-col>
             <required></required>
-            <p>{{ $t(`This will create a re-usable template based on the ${this.assetName} ${this.assetType}`) }}</p>
+            <div v-html="descriptionText" class="my-3"></div>
             <p class="mb-3" v-if="showWarning"><i class="fas fa-exclamation-triangle text-warning"></i> {{ assetExistsError }}</p>
             <b-form-group
               required
@@ -116,6 +116,9 @@ export default {
           const reset =  this.assetType.slice(1);
           const asset = capFirst + reset;
           return asset + ' Template with the same name already exists';
+      },
+      descriptionText() {
+        return this.$t(`This will create a re-usable template based on the <strong>${this.assetName}</strong> ${this.assetType}`)
       }
     },
     watch: {
