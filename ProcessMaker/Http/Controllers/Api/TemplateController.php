@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\TemplateCollection;
@@ -10,6 +9,17 @@ use ProcessMaker\Models\Template;
 
 class TemplateController extends Controller
 {
+    protected array $types = [
+        'process' => [Process::class, ProcessTemplate::class, ProcessCategory::class, 'process_category_id', 'process_templates'],
+    ];
+
+    private $template;
+
+    public function __construct(Template $template)
+    {
+        $this->template = $template;
+    }
+
     /**
      * Get list Process Templates
      *
@@ -19,18 +29,14 @@ class TemplateController extends Controller
      */
     public function index(string $type, Request $request)
     {
-        $template = new Template();
-        $templates = $template->index($type, $request);
+        $templates = $this->template->index($type, $request);
 
         return new TemplateCollection($templates);
     }
 
     public function show(string $type, Request $request)
     {
-        $template = new Template();
-        $response = $template->show($type, $request);
-
-        return $response;
+        return $this->template->show($type, $request);
     }
 
     /**
@@ -42,15 +48,18 @@ class TemplateController extends Controller
      */
     public function store(string $type, Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|unique:process_templates,name|max:255',
-            'description' => 'required|string',
-        ]);
+        $existingTemplate = $this->template->checkForExistingTemplates($type, $request);
 
-        $template = new Template();
-        $response = $template->store($type, $request);
+        if (!is_null($existingTemplate)) {
+            return response()->json([
+                'name' => ['The template name must be unique.'],
+                'id' => $existingTemplate['id'],
+                'templateName' => $existingTemplate['name'],
+            ], 409);
+        }
+        $request->validate(Template::rules($request->id, $this->types[$type][4]));
 
-        return $response;
+        return $this->template->store($type, $request);
     }
 
      /**
@@ -62,15 +71,9 @@ class TemplateController extends Controller
       */
      public function updateTemplateManifest(string $type, int $processId, Request $request)
      {
-         $request->validate([
-             'name' => 'required|string|max:255',
-             'description' => 'required|string',
-         ]);
+         $request->validate(Template::rules($request->id, $this->types[$type][4]));
 
-         $template = new Template();
-         $response = $template->updateTemplateManifest($type, $processId, $request);
-
-         return $response;
+         return $this->template->updateTemplateManifest($type, $processId, $request);
      }
 
     /**
@@ -82,15 +85,9 @@ class TemplateController extends Controller
      */
     public function updateTemplate(string $type, Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|unique:processes,name|max:255',
-            'description' => 'required|string',
-        ]);
+        $request->validate(Template::rules($request->id, $this->types[$type][4]));
 
-        $template = new Template();
-        $response = $template->updateTemplate($type, $request);
-
-        return $response;
+        return $this->template->updateTemplate($type, $request);
     }
 
     /**
@@ -102,15 +99,9 @@ class TemplateController extends Controller
      */
     public function updateTemplateConfigs(string $type, Request $request)
     {
-        // $this->validate($request, [
-        //     'name' => 'required|string|unique:processes,name|max:255',
-        //     'description' => 'required|string',
-        // ]);
+        $request->validate(Template::rules($request->id, $this->types[$type][4]));
 
-        $template = new Template();
-        $response = $template->updateTemplateConfigs($type, $request);
-
-        return $response;
+        return $this->template->updateTemplateConfigs($type, $request);
     }
 
     /**
@@ -122,15 +113,9 @@ class TemplateController extends Controller
      */
     public function create(string $type, Request $request)
     {
-        $this->validate($request, [
-            'name' => 'required|string|unique:processes,name|max:255',
-            'description' => 'required|string',
-        ]);
+        $request->validate(Template::rules($request->id, $this->types[$type][4]));
 
-        $template = new Template();
-        $response = $template->create($type, $request);
-
-        return $response;
+        return $this->template->create($type, $request);
     }
 
     /**
@@ -141,9 +126,6 @@ class TemplateController extends Controller
      */
     public function delete(string $type, Request $request)
     {
-        $template = new Template();
-        $response = $template->deleteTemplate($type, $request);
-
-        return $response;
+        return $this->template->deleteTemplate($type, $request);
     }
 }

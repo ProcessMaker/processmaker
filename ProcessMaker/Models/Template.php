@@ -32,7 +32,7 @@ class Template extends ProcessMakerModel
     private $templateType;
 
     protected array $types = [
-        'process' => [Process::class, ProcessTemplate::class, ProcessCategory::class, 'process_category_id'],
+        'process' => [Process::class, ProcessTemplate::class, ProcessCategory::class, 'process_category_id', 'process_templates'],
     ];
 
     public function index(String $type, Request $request)
@@ -42,38 +42,17 @@ class Template extends ProcessMakerModel
 
     public function show(String $type, Request $request)
     {
-        $templates = (new $this->types[$type][1])->show($request);
-
-        return $templates;
+        return (new $this->types[$type][1])->show($request);
     }
 
-    /**
-     * Store a newly created template
-     *
-     * @param string $type
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function store(string $type, Request $request)
     {
-        [$id, $name] = $this->checkForExistingTemplates($type, $request);
-
-        if ($id) {
-            return response()->json([
-                'name' => ['The template name must be unique.'],
-                'id' => $id,
-                'templateName' => $name,
-            ], 409);
-        }
-
         return (new $this->types[$type][1])->save($request);
     }
 
     public function updateTemplateManifest(string $type, int $processId, $request)
     {
-        $response = (new $this->types[$type][1])->updateTemplateManifest($processId, $request);
-
-        return $response;
+        return (new $this->types[$type][1])->updateTemplateManifest($processId, $request);
     }
 
     public function updateTemplate(string $type, Request $request)
@@ -83,15 +62,6 @@ class Template extends ProcessMakerModel
 
     public function updateTemplateConfigs(string $type, Request $request)
     {
-        $existingTemplate = $this->checkForExistingTemplates($type, $request);
-        if (!is_null($existingTemplate)) {
-            return response()->json([
-                'name' => ['The template name must be unique.'],
-                'id' => $existingTemplate['id'],
-                'templateName' => $existingTemplate['name'],
-            ], 409);
-        }
-
         return (new $this->types[$type][1])->updateTemplateConfigs($request);
     }
 
@@ -120,24 +90,21 @@ class Template extends ProcessMakerModel
         return $this->belongsTo($categoryClass, $categoryColumn)->withDefault();
     }
 
-    public static function rules($existing = null)
+    public static function rules($existing = null, $table = null)
     {
-        $unique = Rule::unique('templates')->ignore($existing);
+        $unique = Rule::unique($table ?? 'templates')->ignore($existing);
 
         return [
-            'name' => ['required', $unique, 'alpha_spaces'],
+            'name' => ['required', $unique, 'alpha_spaces', 'max:255'],
             'description' => 'required',
-            'process_id' => 'required',
-            'manifest' => 'required',
-            'svg' => 'nullable',
         ];
     }
 
-    private function checkForExistingTemplates($type, $request)
+    public function checkForExistingTemplates($type, $request)
     {
         $result = (new $this->types[$type][1])->existingTemplate($request);
         if (!is_null($result)) {
-            return [$result['id'], $result['name']];
+            return ['id' => $result['id'], 'name' => $result['name']];
         }
 
         return null;

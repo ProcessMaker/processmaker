@@ -166,22 +166,16 @@ class ProcessTemplate implements TemplateInterface
         $exporter->export($model, ProcessExporter::class, $options);
         $payload = $exporter->payload();
 
-        // Extract svg from payload
-        $svg = Arr::get($payload, 'export.' . $payload['root'] . '.attributes.svg');
-
         // Create a new process template
-        $processTemplate = ProcessTemplates::make($data);
-
-        // Fill the manifest and svg attributes
-        $processTemplate->fill($data);
-        $processTemplate->manifest = json_encode($payload);
-        $processTemplate->svg = $svg;
-        $processTemplate->process_id = $data['asset_id'];
-        $processTemplate->user_id = Auth::user()->id;
+        $processTemplate = ProcessTemplates::make($data)->fill([
+            'manifest' => json_encode($payload),
+            'svg' => Arr::get($payload, "export.{$payload['root']}.attributes.svg"),
+            'process_id' => $data['asset_id'],
+            'user_id' => \Auth::user()->id,
+        ]);
 
         $processTemplate->saveOrFail();
 
-        // Return response
         return response()->json(['model' => $processTemplate]);
     }
 
@@ -241,30 +235,20 @@ class ProcessTemplate implements TemplateInterface
     {
         $id = (int) $request->id;
         $template = ProcessTemplates::where('id', $id)->firstOrFail();
-        // Get process manifest
-        $processId = $request->process_id;
-        $mode = $request->mode;
 
-        $rootUuid = null;
-        $export = null;
-        $manifest = $this->getManifest('process', $processId);
-        if (is_array($manifest)) {
-            $rootUuid = Arr::get($manifest, 'root');
-            $export = Arr::get($manifest, 'export');
-        } else {
-            $rootUuid = $manifest->getData()->root;
-            $export = $manifest->getData()->export;
-        }
+        $manifest = $this->getManifest('process', $request->process_id);
+        $rootUuid = Arr::get($manifest, 'root');
+        $export = Arr::get($manifest, 'export');
+        $svg = Arr::get($export, $rootUuid . '.attributes.svg', null);
 
-        $svg = Arr::get($export, $rootUuid . '.attributes.svg');
-
-        $template->fill($request->except('id'));
+        $template->fill($request->all());
         $template->svg = $svg;
         $template->manifest = json_encode($manifest);
 
-        // Catch errors to send more specific status
         try {
             $template->saveOrFail();
+
+            return response()->json();
         } catch (Exception $e) {
             return response(
                 ['message' => $e->getMessage(),
@@ -272,8 +256,6 @@ class ProcessTemplate implements TemplateInterface
                 422
             );
         }
-
-        return response()->json();
     }
 
     /**
@@ -292,10 +274,10 @@ class ProcessTemplate implements TemplateInterface
         $process = Process::where('name', $oldTemplateName)->where('is_template', 1)->first();
         $process->fill($request->except('id'));
 
-        // Catch errors to send more specific status
         try {
             $template->saveOrFail();
-            $process->saveOrFail();
+
+            return response()->json();
         } catch (\Exception $e) {
             return response([
                 'message' => $e->getMessage(),
@@ -304,8 +286,6 @@ class ProcessTemplate implements TemplateInterface
                 ],
             ], 422);
         }
-
-        return response()->json();
     }
 
     public function updateTemplateManifest(int $processId, $request)  : JsonResponse
