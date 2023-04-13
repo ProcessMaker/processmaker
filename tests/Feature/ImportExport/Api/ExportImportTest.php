@@ -185,6 +185,23 @@ class ExportImportTest extends TestCase
      */
     public function testExportImportFull($importType)
     {
+        $classes = [
+            DataSourceCategory::class,
+            DataSource::class,
+            Vocabulary::class,
+            WebEntryUtils::class,
+            Webhook::class,
+            Collection::class,
+        ];
+
+        $missingClasses = array_filter(array_map(function ($class) {
+            return class_exists($class) ? null : $class;
+        }, $classes));
+
+        if (!empty($missingClasses)) {
+            $this->markTestSkipped('Missing classes, skip full import export test for now');
+        }
+
         DB::beginTransaction();
         $this->addGlobalSignalProcess();
 

@@ -125,7 +125,12 @@
       const savedSuccessfully = (response) => {
         this.process.updated_at = response.data.updated_at;
         // Now show alert
-        ProcessMaker.alert(this.$t('The process was saved.'), 'success');
+        let type = 'process';
+        if (this.process.is_template) {
+          type = 'process template';
+        }
+        ProcessMaker.alert(this.$t(`The ${type} was saved.`, {'type': type}), 'success');
+
         window.ProcessMaker.EventBus.$emit('save-changes');
         this.$set(this, 'warnings', response.data.warnings || []);
         if (response.data.warnings && response.data.warnings.length > 0) {

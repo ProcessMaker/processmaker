@@ -25,6 +25,14 @@ class TemplateController extends Controller
         return new TemplateCollection($templates);
     }
 
+    public function show(string $type, Request $request)
+    {
+        $template = new Template();
+        $response = $template->show($type, $request);
+
+        return $response;
+    }
+
     /**
      * Store a newly created template
      *
@@ -45,8 +53,28 @@ class TemplateController extends Controller
         return $response;
     }
 
+     /**
+      * Update the template manifest
+      *
+      * @param  string  $type
+      * @param  Request $request
+      * @return \Illuminate\Http\Response
+      */
+     public function updateTemplateManifest(string $type, int $processId, Request $request)
+     {
+         $request->validate([
+             'name' => 'required|string|max:255',
+             'description' => 'required|string',
+         ]);
+
+         $template = new Template();
+         $response = $template->updateTemplateManifest($type, $processId, $request);
+
+         return $response;
+     }
+
     /**
-     * Update the specified resource in storage.
+     * Update stored template with new.
      *
      * @param  string  $type
      * @param  Request $request
@@ -74,10 +102,10 @@ class TemplateController extends Controller
      */
     public function updateTemplateConfigs(string $type, Request $request)
     {
-        $this->validate($request, [
-            'name' => 'required|string|unique:processes,name|max:255',
-            'description' => 'required|string',
-        ]);
+        // $this->validate($request, [
+        //     'name' => 'required|string|unique:processes,name|max:255',
+        //     'description' => 'required|string',
+        // ]);
 
         $template = new Template();
         $response = $template->updateTemplateConfigs($type, $request);
