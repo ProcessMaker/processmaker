@@ -19,7 +19,7 @@ class CreateProcessTemplatesTable extends Migration
             $table->string('name');
             $table->text('description');
             $table->unsignedInteger('process_id')->nullable();
-            $table->unsignedInteger('user_id');
+            $table->unsignedInteger('user_id')->nullable();
             $table->unsignedInteger('process_category_id');
             $table->json('manifest');
             $table->longText('svg')->nullable();
