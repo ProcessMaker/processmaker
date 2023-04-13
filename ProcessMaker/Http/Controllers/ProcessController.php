@@ -72,7 +72,7 @@ class ProcessController extends Controller
                 'view'   => $request->user()->can('view-process-templates'),
                 'create' => $request->user()->can('create-process-templates'),
                 'edit'   => $request->user()->can('edit-process-templates'),
-                'archive' => $request->user()->can('archive-process-templates'),
+                'delete' => $request->user()->can('delete-process-templates'),
                 'import' => $request->user()->can('import-process-templates'),
                 'export' => $request->user()->can('export-process-templates'),
             ],

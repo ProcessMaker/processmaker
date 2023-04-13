@@ -174,11 +174,6 @@ button:focus.navbar-toggler {
   border: 1px solid $danger !important;
 }
 
-.btn-save-search {
-  @extend .ml-2;
-  height: 40px;
-}
-
 .search-bar-advanced {
   .form-control,
   .form-control:active,
@@ -878,14 +873,15 @@ nav {
 }
 
 //Ellipsis menu styling
-.dropdown-menu {
+.ellipsis-dropdown-main .dropdown-menu {
   border-radius: 4px;
   border: 0px;
   box-shadow: 0px 8px 10px 1px rgb(0 0 0 / 14%), 0px 3px 14px 2px rgb(0 0 0 / 12%), 0px 5px 5px -3px rgb(0 0 0 / 20%);
-  margin-right: 5px;
+  margin-right: 40px;
+  margin-top: 5px;
 }
 
-.dropdown-item {
+.ellipsis-dropdown-main .dropdown-item {
   padding-top: 10px;
   padding-bottom: 10px;
 
@@ -895,5 +891,26 @@ nav {
 }
 
 .btn-ellipsis {
-  @include button-variant($ellipsis-menu-btn-color, $ellipsis-menu-btn-color, $ellipsis-menu-btn-hover, $ellipsis-menu-btn-hover, $ellipsis-menu-btn-active, $ellipsis-menu-btn-active)
+  background: transparent;
+  border: transparent;
+
+  &:hover {
+    background: #ebeef2;
+  }
+
+  &[aria-expanded="true"] {
+    background: #104a75;
+
+    .ellipsis-menu-icon {
+      color: #ffffff;
+    }
+  }
+
+  &:active {
+    background: #104a75;
+
+    .ellipsis-menu-icon {
+      color: #ffffff;
+    }
+  }
 }
