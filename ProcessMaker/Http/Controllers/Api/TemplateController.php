@@ -25,6 +25,14 @@ class TemplateController extends Controller
         return new TemplateCollection($templates);
     }
 
+    public function show(string $type, Request $request)
+    {
+        $template = new Template();
+        $response = $template->show($type, $request);
+
+        return $response;
+    }
+
     /**
      * Store a newly created template
      *

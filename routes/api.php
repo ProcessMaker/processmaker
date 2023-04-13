@@ -31,6 +31,7 @@ use ProcessMaker\Http\Controllers\Api\TaskController;
 use ProcessMaker\Http\Controllers\Api\TemplateController;
 use ProcessMaker\Http\Controllers\Api\UserController;
 use ProcessMaker\Http\Controllers\Api\UserTokenController;
+use ProcessMaker\Http\Controllers\Process\ModelerController;
 use ProcessMaker\Http\Controllers\TestStatusController;
 
 Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/1.0')->name('api.')->group(function () {
@@ -234,6 +235,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('template/{type}/{id}', [TemplateController::class, 'updateTemplate'])->name('template.update.template')->middleware('template-authorization');
     Route::put('template/settings/{type}/{id}', [TemplateController::class, 'updateTemplateConfigs'])->name('template.settings.update')->middleware('template-authorization');
     Route::delete('template/{type}/{id}', [TemplateController::class, 'delete'])->name('template.delete')->middleware('template-authorization');
+    Route::get('modeler/templates/{type}/{id}', [TemplateController::class, 'show'])->name('modeler.template.show')->middleware('template-authorization');
 
     // debugging javascript errors
     Route::post('debug', [DebugController::class, 'store'])->name('debug.store')->middleware('throttle');

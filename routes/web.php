@@ -122,6 +122,7 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
 
     Route::get('template/{type}/import', [TemplateController::class, 'import'])->name('templates.import')->middleware('template-authorization');
     Route::get('template/{type}/{template}/configure', [TemplateController::class, 'configure'])->name('templates.configure')->middleware('template-authorization');
+    Route::get('modeler/templates/{id}', [TemplateController::class, 'show'])->name('modeler.template.show')->middleware('template-authorization', 'can:edit-process-templates');
 
     // Allows for a logged in user to see navigation on a 404 page
     Route::fallback(function () {

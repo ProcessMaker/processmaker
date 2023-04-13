@@ -17,10 +17,6 @@ interface TemplateInterface
      */
     public function save($request) : JsonResponse;
 
-    public function view() : bool;
-
-    public function edit($request) : JsonResponse;
-
     public function updateTemplateConfigs($request) : JsonResponse;
 
     public function configure(int $id) : array;
