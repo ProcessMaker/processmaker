@@ -51,7 +51,7 @@ class ProcessTemplatesSeeder extends Seeder
                 'name' => 'Employee Onboarding 2023',
                 'description' => 'New version of the employee onboarding process from veggieDonuts',
                 'process_id' => null,
-                'user_id' => $admin->getKey(),
+                'user_id' => null,
                 'process_category_id' => $processCategory->getKey(),
                 'manifest' => $manifest,
                 'svg' => $svg,
