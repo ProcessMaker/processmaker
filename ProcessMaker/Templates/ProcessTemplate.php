@@ -86,14 +86,18 @@ class ProcessTemplate implements TemplateInterface
         $postOptions = [];
         foreach ($payload['export'] as $key => $asset) {
             $mode = 'copy';
-            if ($payload['root'] != $key && $asset['saveAssetsMode'] === 'saveModelOnly' || substr($asset['type'], -8) === 'Category') {
+            $saveMode = 'saveAllAssets';
+            if (array_key_exists('saveAssetsMode', $asset) && $asset['saveAssetsMode'] === 'saveModelOnly') {
+                $saveMode = 'saveModelOnly';
+            }
+            if ($payload['root'] != $key && $saveMode || substr($asset['type'], -8) === 'Category') {
                 $mode = 'discard';
             }
 
             $postOptions[$key] = [
                 'mode' => $mode,
                 'isTemplate' => true,
-                'saveAssetsMode' => $asset['saveAssetsMode'],
+                'saveAssetsMode' => $saveMode,
             ];
 
             // If this process is the root, set name, description, and is_template attributes to the payload

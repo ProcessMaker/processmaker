@@ -19,6 +19,8 @@ interface TemplateInterface
 
     public function updateTemplateConfigs($request) : JsonResponse;
 
+    public function updateTemplateManifest(int $id, $request) : JsonResponse;
+
     public function configure(int $id) : array;
 
     public function destroy(int $id) : bool;

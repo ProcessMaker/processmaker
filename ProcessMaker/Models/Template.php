@@ -54,7 +54,6 @@ class Template extends ProcessMakerModel
      * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-
     public function store(string $type, Request $request)
     {
         [$id, $name] = $this->checkForExistingTemplates($type, $request);
@@ -68,6 +67,13 @@ class Template extends ProcessMakerModel
         }
 
         return (new $this->types[$type][1])->save($request);
+    }
+
+    public function updateTemplateManifest(string $type, int $processId, $request)
+    {
+        $response = (new $this->types[$type][1])->updateTemplateManifest($processId, $request);
+
+        return $response;
     }
 
     public function updateTemplate(string $type, Request $request)
