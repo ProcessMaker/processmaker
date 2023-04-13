@@ -30,6 +30,7 @@
             <avatar-image
                     class="d-inline-flex pull-left align-items-center"
                     size="25"
+                    v-if="props.rowData.user"
                     :input-data="props.rowData.user"
                     :hide-name="false"
             ></avatar-image>
