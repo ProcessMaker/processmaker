@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Api\TemplateController as TemplateApiController;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\Template;
 use ProcessMaker\Templates\ProcessTemplate;
 
 class TemplateController extends Controller
@@ -50,7 +51,7 @@ class TemplateController extends Controller
 
     public function show(Request $request)
     {
-        $templateApiController = new TemplateApiController;
+        $templateApiController = new TemplateApiController(new Template);
         $response = $templateApiController->show('process', $request);
 
         return view('processes.modeler.showTemplate')->with('id', $response['id']);
