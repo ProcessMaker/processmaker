@@ -303,9 +303,9 @@ export default {
   background: #ffffff;
   width: 200px;
   transition:
-    max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-    width 0.55s 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height 0.12s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.27s 0.07s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.12s cubic-bezier(0.4, 0, 0.2, 1);
   max-height: 40px;
   position: absolute;
   right: 0;
@@ -328,9 +328,9 @@ export default {
   z-index: 100;
   background: #ffffff;
   transition:
-    max-height 1s 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-    width 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height 0.5s 0.07s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.07s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.12s cubic-bezier(0.4, 0, 0.2, 1);
   position: absolute;
   right: 0;
   top: -20px;
@@ -353,7 +353,7 @@ export default {
   opacity: 1;
   height: 100%;
   padding: 0.5rem;
-  transition: opacity .5s .4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity .25s .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .search-popup .container {
   height: 0px;
@@ -436,68 +436,6 @@ input.pmql-input:focus ~ label, input.pmql-input:valid ~ label {
   margin-right: -0.5em;
   font-size: 1.5rem;
 }
-// .usage-label {
-//   background: #1c72c224;
-//   color: #0872C2;
-//   right: 29px;
-//   top: 0;
-//   margin-right: 0.5rem;
-//   font-weight: 300;
-//   margin-bottom: 0;
-// }
-
-// .separator {
-//   border-right: 1px solid rgb(227, 231, 236);
-//   height: 1.6rem;
-//   margin-left: 0.5rem;
-//   margin-right: 0.5rem;
-//   right: 0;
-//   top: 15%;
-// }
-
-// .separator-horizontal {
-//   border: 0;
-//   border-bottom: 1px dashed rgb(227, 231, 236);
-//   height: 0;
-//   margin: 5px 7px 0 8px;
-// }
-
-// .badge-success {
-//   color: #00875A;
-//   background-color: #00875a26;
-// }
-
-// .filter-dropdown-panel-container {
-//   min-width: 30rem;
-//   background: #ffffff;
-//   border: 1px solid rgba(0, 0, 0, 0.125);
-//   box-shadow: 0 6px 12px 2px rgba(0, 0, 0, 0.168627451);
-//   position: absolute;
-//   left: 0;
-//   top: 2.5rem;
-//   border-radius: 3px;
-//   z-index: 1;
-//   max-width: 40rem;
-// }
-
-// .selected-filter-item {
-//   background: #DEEBFF;
-//   padding: 4px 9px 4px 9px;
-//   color: #104A75;
-//   border: 1px solid #104A75;
-//   border-radius: 4px;
-//   margin-right: 0.5em;
-// }
-
-// .selected-filter-key {
-//   text-transform: capitalize;
-//   font-weight: 700;
-// }
-
-// .filter-counter {
-//   background: #EBEEF2 !important;
-//   font-weight: 400;
-// }
 .power-loader .text {
   color: #42516e;
   font-size: .8rem;
