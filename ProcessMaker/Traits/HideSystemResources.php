@@ -4,9 +4,12 @@ namespace ProcessMaker\Traits;
 
 use Illuminate\Support\Str;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessTemplates;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\User;
 
 trait HideSystemResources
@@ -50,6 +53,14 @@ trait HideSystemResources
     {
         if (substr(static::class, -8) === 'Category') {
             return $query->where('is_system', false);
+        } elseif (static::class === Process::class) {
+            $systemCategory = ProcessCategory::where('is_system', true)->pluck('id');
+
+            return $query->whereNotIn('process_category_id', $systemCategory)->where('is_template', false);
+        } elseif (static::class === Screen::class) {
+            $systemCategory = ScreenCategory::where('is_system', true)->pluck('id');
+
+            return $query->whereNotIn('screen_category_id', $systemCategory)->where('is_template', false);
         } elseif (static::class == ProcessRequest::class) {
             // ProcessRequests must be filtered this way since
             // they could be in a separate database

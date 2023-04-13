@@ -3,6 +3,7 @@
 namespace ProcessMaker\ImportExport\Exporters;
 
 use DOMXPath;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Psudomodels\Signal;
@@ -90,13 +91,7 @@ class ProcessExporter extends ExporterBase
             $process->request_detail_screen_id = $dependent->model->id;
         }
 
-        $this->importScreens();
-
-        $this->importScripts();
-
-        $this->importSubprocesses();
-
-        $this->importAssignments();
+        $this->importAssetsByMode();
 
         $process->save();
 
@@ -341,6 +336,39 @@ class ProcessExporter extends ExporterBase
         foreach ($this->getDependents(DependentType::SCRIPTS) as $dependent) {
             $path = $dependent->meta['path'];
             Utils::setAttributeAtXPath($this->model, $path, 'pm:scriptRef', $dependent->model->id);
+        }
+    }
+
+    /**
+     * Imports assets according to the `saveAssetsMode` option of the manifest.
+     *
+     * For non-template imports, `saveAllAssets` is the default `saveAssetsMode`.
+     *
+     * This function reads the `options` array to determine the `saveAssetsMode` value,
+     * and imports the appropriate assets based on the value.
+     */
+    private function importAssetsByMode(): void
+    {
+        // Retrieve the `manifest` and `options` arrays
+        $manifest = $this->manifest->toArray(true);
+        $options = (array) $this->options;
+
+        // Determine the `saveAssetsMode` value from the `options` array
+        $saveAssetsMode = collect($options['options'])
+            ->filter(function ($optionValue, $optionKey) use ($manifest) {
+                return Arr::has($manifest, $optionKey);
+            })
+            ->map(function ($optionValue, $optionKey) {
+                return Arr::get($optionValue, 'saveAssetsMode');
+            })
+            ->first();
+
+        // Import the appropriate assets based on the `saveAssetsMode` value
+        if ($saveAssetsMode === 'saveAllAssets') {
+            $this->importScreens();
+            $this->importScripts();
+            $this->importSubprocesses();
+            $this->importAssignments();
         }
     }
 }

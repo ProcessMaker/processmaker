@@ -30,6 +30,7 @@
             <avatar-image
                     class="d-inline-flex pull-left align-items-center"
                     size="25"
+                    v-if="props.rowData.user"
                     :input-data="props.rowData.user"
                     :hide-name="false"
             ></avatar-image>
@@ -123,7 +124,7 @@
             }
           ],
           actions: [
-            // { value: "edit-designer", content: "Edit Template", permission: "edit-processes", icon: "fas fa-edit", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
+            { value: "edit-designer", content: "Edit Template", permission: "edit-process-templates", icon: "fas fa-edit"},
             { value: "view-documentation", content: "Template Documentation", permission: "view-process-templates", icon: "fas fa-sign", isDocumenterInstalled: "if('isDocumenterInstalled' == true, true, false)"},
             { value: "export-item", content: "Export Template", permission: "export-process-templates", icon: "fas fa-file-export"},
             { value: "edit-item", content: "Configure Template", permission: "edit-process-templates", icon: "fas fa-cog"},
@@ -143,11 +144,11 @@
         goToConfigure(data) {
           window.location = "/template/process/" + data + "/configure";
         },
-        goToDocumentation(processId) {
-          window.location = `/modeler/${processId}/print`;
+        goToDocumentation(templateId) {
+          window.location = `/modeler/template/${templateId}/print`;
         },
-        goToDesigner(data) {
-          window.location = "/modeler/" + data;
+        goToDesigner(templateId) {
+          window.location = `/modeler/templates/${templateId}`;
         },
         exportTemplate(template) {
           ProcessMaker.apiClient({
@@ -176,6 +177,7 @@
           };
           switch (action.value) {
             case "edit-designer":
+              console.log('data', data);
               this.goToDesigner(data.id);
               break;
             case "edit-item":

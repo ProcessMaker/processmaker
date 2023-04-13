@@ -34,6 +34,11 @@ class TemplateController extends Controller
         return new TemplateCollection($templates);
     }
 
+    public function show(string $type, Request $request)
+    {
+        return $this->template->show($type, $request);
+    }
+
     /**
      * Store a newly created template
      *
@@ -43,7 +48,7 @@ class TemplateController extends Controller
      */
     public function store(string $type, Request $request)
     {
-        $existingTemplate = (new Template)->checkForExistingTemplates($type, $request);
+        $existingTemplate = $this->template->checkForExistingTemplates($type, $request);
 
         if (!is_null($existingTemplate)) {
             return response()->json([
@@ -57,8 +62,22 @@ class TemplateController extends Controller
         return $this->template->store($type, $request);
     }
 
+     /**
+      * Update the template manifest
+      *
+      * @param  string  $type
+      * @param  Request $request
+      * @return \Illuminate\Http\Response
+      */
+     public function updateTemplateManifest(string $type, int $processId, Request $request)
+     {
+         $request->validate(Template::rules($request->id, $this->types[$type][4]));
+
+         return $this->template->updateTemplateManifest($type, $processId, $request);
+     }
+
     /**
-     * Update the specified resource in storage.
+     * Update stored template with new.
      *
      * @param  string  $type
      * @param  Request $request

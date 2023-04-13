@@ -22,11 +22,6 @@ class Template extends ProcessMakerModel
     use HasCategories;
     use Exportable;
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
     protected $guarded = [
         'id',
         'uuid',
@@ -45,9 +40,19 @@ class Template extends ProcessMakerModel
         return (new $this->types[$type][1])->index($request);
     }
 
+    public function show(String $type, Request $request)
+    {
+        return (new $this->types[$type][1])->show($request);
+    }
+
     public function store(string $type, Request $request)
     {
         return (new $this->types[$type][1])->save($request);
+    }
+
+    public function updateTemplateManifest(string $type, int $processId, $request)
+    {
+        return (new $this->types[$type][1])->updateTemplateManifest($processId, $request);
     }
 
     public function updateTemplate(string $type, Request $request)

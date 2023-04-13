@@ -26,12 +26,14 @@
     <template #modal-header="{ close }" v-if="hasHeaderButtons || hasTitleButtons">
       <div class="w-100 d-block">
         <div>
-          <div class="w-100 p-0" :class="hasHeaderButtons ? 'd-flex justify-content-between align-middle' : ''">
+          <div class="w-100 p-0" :class="hasHeaderButtons ? 'd-flex justify-content-between align-middle align-items-center' : ''">
             <b-button v-show="hasHeaderButtons" v-for="button in headerButtons" :key="button.content" 
               :aria-label="button.ariaLabel"
               :variant="button.variant"
               :disabled="button.disabled"
               :hidden="button.hidden"
+              size="sm"
+              class="pl-0"
               @click="executeFunction(button.action)"
             >
               <small> {{ $t(button.content) }}</small>
@@ -40,7 +42,7 @@
           </div>
         </div>
         <div v-if="hasTitleButtons">
-          <div class="d-flex justify-content-between align-middle w-100 pt-3">
+          <div class="d-flex justify-content-between align-middle align-items-center w-100 pt-3">
             <h5>
               {{ title }}
               <small v-if="subtitle" class="text-muted subtitle d-block mt-1">{{subtitle}}</small>
@@ -52,6 +54,7 @@
               :disabled="button.disabled"
               :variant="button.variant" 
               :class="button.position"
+              size="sm"
               @click="executeFunction(button.action)" 
             >
               <i v-if="button.icon" :class="button.icon" /> {{ button.content }}
