@@ -574,6 +574,20 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     }
 
     /**
+     * PMQL value alias for fulltext field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasFullText($value, $expression)
+    {
+        return function ($query) use ($value) {
+            $this->scopeFilter($query, $value);
+        };
+    }
+
+    /**
      * PMQL value alias for status field
      *
      * @param string $value
@@ -736,7 +750,6 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
         return $assignment;
     }
-
 
     /**
      * Returns if the token has the self service option activated
@@ -935,6 +948,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             return '';
         }
         $loopContext = $variable . '.' . $index;
+
         return $loopContext;
     }
 

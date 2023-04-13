@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Support\Facades\DB;
 use ProcessMaker\Traits\ExtendedPMQL;
 
 /**
@@ -70,5 +71,39 @@ class SecurityLog extends ProcessMakerModel
     public function user()
     {
         return $this->belongsTo('ProcessMaker\Models\User');
+    }
+
+    /**
+     * PMQL value alias for fulltext field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasFullText($value, $expression)
+    {
+        return function ($query) use ($value) {
+            $this->scopeFilter($query, $value);
+        };
+    }
+
+    /**
+     * Filter settings with a string
+     *
+     * @param $query
+     *
+     * @param $filter string
+     */
+    public function scopeFilter($query, $filter)
+    {
+        $filter = '%' . mb_strtolower($filter) . '%';
+
+        $query->where(function ($query) use ($filter) {
+            $query->where(DB::raw('LOWER(`event`)'), 'like', $filter)
+                ->orWhere(DB::raw('LOWER(`meta`)'), 'like', $filter)
+                ->orWhere('ip', 'like', $filter);
+        });
+
+        return $query;
     }
 }

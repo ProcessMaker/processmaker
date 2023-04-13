@@ -30,9 +30,9 @@ use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
-use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Rules\BPMNValidation;
 use ProcessMaker\Traits\Exportable;
+use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasSelfServiceTasks;
 use ProcessMaker\Traits\HasVersioning;
@@ -145,7 +145,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     use ProcessTimerEventsTrait;
     use ProcessStartEventAssignmentsTrait;
     use HideSystemResources;
-    use PMQL;
+    use ExtendedPMQL;
     use HasCategories;
     use HasSelfServiceTasks;
     use ProcessTrait;
@@ -649,7 +649,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         $instanceData = $dataManager->getData($token);
 
         $assignedUsers = $usersVariable ? $instanceData[$usersVariable] : [];
-        $assignedGroups = $groupsVariable ?  $instanceData[$groupsVariable] : [];
+        $assignedGroups = $groupsVariable ? $instanceData[$groupsVariable] : [];
 
         if (!is_array($assignedUsers)) {
             $assignedUsers = [$assignedUsers];
@@ -660,14 +660,14 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         }
 
         // We need to remove inactive users.
-        $users = User::whereIn('id', array_unique($assignedUsers)) ->where('status', 'ACTIVE')->pluck('id')->toArray();
+        $users = User::whereIn('id', array_unique($assignedUsers))->where('status', 'ACTIVE')->pluck('id')->toArray();
 
         foreach ($assignedGroups as $groupId) {
             // getConsolidatedUsers already removes inactive users
             $this->getConsolidatedUsers($groupId, $users);
         }
 
-        $nextAssignee =  $this->getNextUserFromGroupAssignment($activity->getId(), $users);
+        $nextAssignee = $this->getNextUserFromGroupAssignment($activity->getId(), $users);
 
         return $nextAssignee;
     }
@@ -867,7 +867,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
 
             // If no rule was applied, use the default configured user/group
             if (empty($users) && empty($groups)) {
-                foreach($default as $item) {
+                foreach ($default as $item) {
                     if ($item->type === 'group') {
                         $groups[] = $item->assignee;
                     } elseif ($item->type === 'user') {
@@ -1526,4 +1526,129 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             $customRoute->delete();
         }
     }
+
+    /**
+     * PMQL value alias for fulltext field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasFullText($value, $expression)
+    {
+        return function ($query) use ($value) {
+            $this->scopeFilter($query, $value);
+        };
+    }
+
+    /**
+     * PMQL value alias for process field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasName($value, $expression)
+    {
+        return function ($query) use ($value, $expression) {
+            $processes = self::where('name', $expression->operator, $value)->get();
+            $query->whereIn('processes.id', $processes->pluck('id'));
+        };
+    }
+
+    /**
+     * PMQL value alias for process field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasProcess($value, $expression)
+    {
+        return function ($query) use ($value, $expression) {
+            $processes = self::where('name', $expression->operator, $value)->get();
+            $query->whereIn('processes.id', $processes->pluck('id'));
+        };
+    }
+
+    /**
+     * PMQL value alias for status field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasStatus($value, $expression)
+    {
+        return function ($query) use ($value, $expression) {
+            $processes = self::where('status', $expression->operator, $value)->get();
+            $query->whereIn('processes.id', $processes->pluck('id'));
+        };
+    }
+
+    /**
+     * PMQL value alias for id field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasId($value, $expression)
+    {
+        return function ($query) use ($value, $expression) {
+            $processes = self::where('id', $expression->operator, $value)->get();
+            $query->whereIn('processes.id', $processes->pluck('id'));
+        };
+    }
+
+    /**
+     * PMQL value alias for category field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasCategory($value, $expression)
+    {
+        return function ($query) use ($value, $expression) {
+            $categoryAssignment = DB::table('category_assignments')->leftJoin('process_categories', function ($join) {
+                $join->on('process_categories.id', '=', 'category_assignments.category_id');
+                $join->where('category_assignments.category_type', '=', ProcessCategory::class);
+                $join->where('category_assignments.assignable_type', '=', self::class);
+            })
+                ->where('name', $expression->operator, $value);
+            $query->whereIn('processes.id', $categoryAssignment->pluck('assignable_id'));
+        };
+    }
+
+     /**
+      * Filter settings with a string
+      *
+      * @param $query
+      *
+      * @param $filter string
+      */
+     public function scopeFilter($query, $filter)
+     {
+         $filter = '%' . mb_strtolower($filter) . '%';
+         $query->where(function ($query) use ($filter) {
+             $query->where('processes.name', 'like', '%' . $filter . '%')
+                 ->orWhere('processes.description', 'like', '%' . $filter . '%')
+                 ->orWhere('processes.status', '=', $filter)
+                 ->orWhere('user.firstname', 'like', '%' . $filter . '%')
+                 ->orWhere('user.lastname', 'like', '%' . $filter . '%')
+                 ->orWhereIn('processes.id', function ($qry) use ($filter) {
+                     $qry->select('assignable_id')
+                         ->from('category_assignments')
+                         ->leftJoin('process_categories', function ($join) {
+                             $join->on('process_categories.id', '=', 'category_assignments.category_id');
+                             $join->where('category_assignments.category_type', '=', ProcessCategory::class);
+                             $join->where('category_assignments.assignable_type', '=', self::class);
+                         })
+                         ->where('process_categories.name', 'like', '%' . $filter . '%');
+                 });
+         });
+
+         return $query;
+     }
 }

@@ -9,7 +9,7 @@
             :input-data="template.user"
           ></avatar-image>
         </p>
-      <b-badge pill v-for="category in categories" :key="category.id" variant="success" class="category-badge mb-3 mr-1">
+      <b-badge pill v-for="category in categories" :key="category.id" class="category-badge mb-3 mr-1">
         {{ category.name }}
       </b-badge>
       </div>

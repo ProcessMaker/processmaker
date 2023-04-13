@@ -1,23 +1,31 @@
 <template>
   <div class="settings-listing data-table">
-    <div class="d-flex mb-3">
-      <basic-search @submit="onSearch"></basic-search>
-      <div v-if="topButtons" class="d-flex">
-        <b-button
-            v-for="(btn,index) in topButtons"
-            :ref="formatGroupName(btn.group)"
-            :key="`btn-${index}`"
-            class="ml-2 nowrap"
-            v-bind="btn.ui.props"
-            @click="handler(btn)"
-            :disabled="false"
-            >
-            <b-spinner small ref="b-spinner" :hidden="true"></b-spinner>
-            <i v-if="btn.ui.props.icon" :class="btn.ui.props.icon"></i>
-            {{btn.name}}
-        </b-button>
-      </div>
-    </div>
+    <pmql-input 
+      class="mb-2"
+      :search-type="'settings'"
+      :value="pmql"
+      :ai-enabled="false"
+      :aria-label="$t('Advanced Search (PMQL)')"
+      @submit="onNLQConversion">
+        <template v-slot:right-buttons>
+            <div v-if="topButtons" class="d-flex">
+                <b-button
+                    v-for="(btn,index) in topButtons"
+                    :ref="formatGroupName(btn.group)"
+                    :key="`btn-${index}`"
+                    class="ml-2 nowrap"
+                    v-bind="btn.ui.props"
+                    @click="handler(btn)"
+                    :disabled="false"
+                    >
+                    <b-spinner small ref="b-spinner" :hidden="true"></b-spinner>
+                    <i v-if="btn.ui.props.icon" :class="btn.ui.props.icon"></i>
+                    {{btn.name}}
+                </b-button>
+            </div>
+        </template>
+    </pmql-input>
+
     <div class="card card-body table-card">
       <b-table
         class="settings-table table table-responsive-lg text-break m-0 h-100 w-100"
@@ -117,6 +125,7 @@
 <script>
 import { BasicSearch } from "SharedComponents";
 import isPMQL from "../../../modules/isPMQL";
+import PmqlInput from "../../../components/shared/PmqlInput";
 import SettingBoolean from './SettingBoolean';
 import SettingCheckboxes from './SettingCheckboxes';
 import SettingChoice from './SettingChoice';
@@ -135,6 +144,7 @@ const uniqIdsMixin = createUniqIdsMixin();
 export default {
   components: {
     BasicSearch,
+    PmqlInput,
     SettingBoolean,
     SettingChoice,
     SettingCheckboxes,
@@ -330,8 +340,8 @@ export default {
     onEdit(row) {
       this.$refs[`settingComponent_${row.index}`].onEdit();
     },
-    onSearch(query) {
-      this.searchQuery = query;
+    onNLQConversion(pmql) {
+      this.searchQuery = pmql;
     },
     pageUrl(page) {
       let url = `${this.url}?` +
