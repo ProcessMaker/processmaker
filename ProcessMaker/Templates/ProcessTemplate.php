@@ -116,6 +116,7 @@ class ProcessTemplate implements TemplateInterface
             $postOptions[$key] = [
                 'mode' => $asset['mode'],
             ];
+
             if ($payload['root'] === $key) {
                 // Set name and description for the new process
                 $payload['export'][$key]['attributes']['name'] = $request['name'];

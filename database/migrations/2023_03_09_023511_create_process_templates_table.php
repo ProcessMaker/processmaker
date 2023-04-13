@@ -16,10 +16,11 @@ class CreateProcessTemplatesTable extends Migration
         Schema::create('process_templates', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique()->nullable();
+            $table->string('key')->nullable();
             $table->string('name');
             $table->text('description');
             $table->unsignedInteger('process_id')->nullable();
-            $table->unsignedInteger('user_id');
+            $table->unsignedInteger('user_id')->nullable();
             $table->unsignedInteger('process_category_id');
             $table->json('manifest');
             $table->longText('svg')->nullable();
