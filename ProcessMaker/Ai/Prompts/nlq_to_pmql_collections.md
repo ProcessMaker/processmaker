@@ -75,6 +75,8 @@ Question: 31 years
 Response: '(fulltext LIKE "%31 years%")'
 Question: Employee
 Response: '(fulltext LIKE "%Employee%")'
+Question: show me all where firstname is Jhon
+Response: 'data.firstname = "Jhon"'
 Question: Show me all where firstname starts with Jhon for the collection persons
 Response: '
 {
