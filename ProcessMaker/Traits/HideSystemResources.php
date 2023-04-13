@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\User;
 
 trait HideSystemResources
@@ -60,6 +61,8 @@ trait HideSystemResources
             return $query->whereHas('process.categories', function ($query) {
                 $query->where('is_system', false);
             });
+        } elseif (static::class === ProcessTemplates::class) {
+            return $query->where('process_templates.is_system', false);
         } else {
             return $query->whereDoesntHave('categories', function ($query) {
                 $query->where('is_system', true);

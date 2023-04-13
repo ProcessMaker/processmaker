@@ -4,8 +4,8 @@
             <div class="col">
                 <div class="card text-center">
                     <div class="card-header bg-light" align="left">
-                        <h5 class="mb-0">{{$t('Import Process')}}</h5>
-                        <small class="text-muted">{{ $t('Import a Process and its associated assets into this ProcessMaker environment') }}</small>
+                        <h5 class="mb-0">{{ title() }}</h5>
+                        <small class="text-muted">{{ subtitle() }}</small>
                     </div>
                     <div class="card-body">
                         <div id="pre-import" v-if="! importing && ! imported">
@@ -27,6 +27,9 @@
                                     <h6>{{ $t('Select Import Type') }}</h6>
                                     <div class="alert alert-warning" v-if="showWarning">
                                         {{ $t('The file you are importing was made with an older version of ProcessMaker. Advanced import is not available. All assets will be copied.') }}
+                                    </div>
+                                    <div class="alert alert-warning" v-if="showTemplateWarning">
+                                        {{ $t('The file you are importing is a Template. Advanced import is not available. All assets will be copied.') }}
                                     </div>
                                     <b-form-radio 
                                         v-for="(item, index) in importTypeOptions" 
@@ -116,6 +119,7 @@ export default {
             password: '',
             passwordError: null,
             showWarning:false,
+            showTemplateWarning: false,
             showOldImporter: false,
         }
     },
@@ -145,6 +149,8 @@ export default {
                     const asset = this.$root.manifest[uuid];  
                     return {
                         type: asset.type,
+                        typeHuman: asset.type_human,
+                        typeHumanPlural: asset.type_human_plural,
                         existingName: asset.existing_name, 
                         importingName: asset.name,
                         existingId: asset.existing_id,
@@ -275,6 +281,13 @@ export default {
                     this.$root.manifest = response.data.manifest;
                     this.$root.rootUuid = response.data.rootUuid;
                     this.processVersion = response.data.processVersion;
+                    const model = response.data.manifest[response.data.rootUuid].model;
+                    
+                    if (model === 'ProcessMaker\\Models\\ProcessTemplates') {
+                        // disable 'custom' import type for templates
+                        this.importTypeOptions[1].disabled = true;
+                        this.showTemplateWarning = true;
+                    }
                 }  
                
                 if (this.processVersion === null) {
@@ -334,20 +347,45 @@ export default {
         },
         handleImport() {
             this.loading = true;
-            DataProvider.doImport(this.file, this.$root.exportOptions(), this.password)
-            .then(response => {
-                ProcessMaker.alert(this.$t('Process was successfully imported'), 'success');
-                if (response.data?.processId) {
-                    window.location.href = `/modeler/${response.data.processId}`;
-                } else {
-                    this.loading = false;
-                }
-            }).catch(error => {
-                ProcessMaker.alert(this.$t('Unable to import the process.')  + (error.response.data.message ? ': ' + error.response.data.message : ''), 'danger');
-                this.submitted = false;
-                this.loading = false;
-            });
             this.submitted = true;
+
+            DataProvider.doImport(this.file, this.$root.exportOptions(), this.password)
+            .then((response) => {
+                if (response?.data) {
+                    const { processId } = response.data;
+                    const successMessage =
+                        processId
+                            ? this.$t('Process was successfully imported')
+                            : this.$t('Process Template was successfully imported');
+
+                    ProcessMaker.alert(successMessage, 'success');
+                    window.location.href = processId ? `/modeler/${processId}` : '/processes/';
+                    this.submitted = false; // the form was successfully submitted
+                } else {
+                    // the request was successful but did not return expected data
+                    throw new Error(this.$t('Unknown error while importing the process.'));
+                }
+            })
+            .catch((error) => {
+                this.handleError(error); // a shared method that displays the error message and resets loading/submitted
+            });
+        },
+        // A shared method for handling errors across the app:
+        handleError(error) {
+            const message = error.response?.data?.message || this.$t('Unable to import the process.');
+            ProcessMaker.alert(`${message}.`, 'danger');
+            this.submitted = false;
+            this.loading = false;
+        },
+        title() {
+                if (window.location.pathname === '/template/process/import') {
+                    return this.$t('Import Process Template');
+                }
+        },
+        subtitle() {
+            if (window.location.pathname === '/template/process/import') {
+                return this.$t('Import a Process Template and its associated assets into this ProcessMaker environment');
+            }
         },
     },
     mounted() {

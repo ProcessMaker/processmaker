@@ -87,6 +87,7 @@
                     </div>
                 </div>
             </div>
+            @if (shouldShow('taskStatusContainer'))
             <div class="ml-md-3 mt-3 mt-md-0">
                 <div class="card">
                     <div :class="statusCard">
@@ -200,6 +201,7 @@
                     </ul>
                 </div>
             </div>
+            @endif
         </div>
     </div>
 @endsection

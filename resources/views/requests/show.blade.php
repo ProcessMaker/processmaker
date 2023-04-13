@@ -252,6 +252,7 @@
 					/>
 				@endcan
 			</div>
+			@if (shouldShow('requestStatusContainer'))
 			<div class="ml-md-3 mt-3 mt-md-0">
 				<template v-if="statusLabel">
 					<div class="card">
@@ -337,6 +338,7 @@
 					</div>
 				</template>
 			</div>
+			@endif
 		</div>
 	</div>
 

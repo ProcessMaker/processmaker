@@ -1,5 +1,6 @@
 import Vue from "vue";
 import CreateProcessModal from "./components/CreateProcessModal";
+import SelectTemplateModal from "../components/templates/SelectTemplateModal.vue";
 import ProcessesListing from "./components/ProcessesListing";
 import CategorySelect from "./categories/components/CategorySelect";
 
@@ -9,10 +10,12 @@ new Vue({
   el: "#processIndex",
   components: {
     CreateProcessModal,
+    SelectTemplateModal,
     ProcessesListing,
   },
   data: {
     filter: "",
+    pmql: "",
     processModal: false,
     processId: null,
     showModal: false,
@@ -28,6 +31,13 @@ new Vue({
     },
     goToImport() {
       window.location = "/processes/import";
+    },
+    onNLQConversion(query) {
+      this.onChange(query);
+      this.reload();
+    },
+    onChange(query) {
+      this.pmql = query;
     },
     reload() {
       this.$refs.processListing.fetch();

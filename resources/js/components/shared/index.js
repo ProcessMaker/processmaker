@@ -12,6 +12,7 @@ import FileUploadButton from "./FileUploadButton";
 import FormErrorsMixin from "./FormErrorsMixin";
 import IconSelector from "./IconSelector";
 import Modal from "./Modal";
+import PmqlInput from "./PmqlInput";
 import PTab from "./PTab";
 import PTabs from "./PTabs";
 import Required from "./Required";
@@ -33,6 +34,7 @@ export {
   FormErrorsMixin,
   IconSelector,
   Modal,
+  PmqlInput,
   PTab,
   PTabs,
   Required,
