@@ -110,6 +110,7 @@ class ProcessTemplate implements TemplateInterface
                 // Also set the name, description, and is_template directly on the asset for convenience
                 $payload['export'][$key]['name'] = $template->name;
                 $payload['export'][$key]['description'] = $template->description;
+                $payload['export'][$key]['is_template'] = true;
             }
 
             // $payload['export'][$key]['attributes']['is_template'] = true;
