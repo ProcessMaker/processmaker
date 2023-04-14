@@ -97,7 +97,9 @@
 
         <b-navbar-nav class="d-flex align-items-center ml-auto">
 
+            @if (config('app.open_ai_nlq_to_pmql') && shouldShow('globalSearchBar'))
             <global-search class="d-none d-lg-block"></global-search>
+            @endif
             @if (shouldShow('requestButton'))
             <component v-bind:is="'request-modal'" url="{{ route('processes.index') }}" v-bind:permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"></component>
             @endif
