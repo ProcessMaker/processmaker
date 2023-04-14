@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use ProcessMaker\Contracts\ScreenInterface;
 use ProcessMaker\Traits\HasCategories;
 
@@ -47,5 +48,21 @@ class ScreenVersion extends ProcessMakerModel implements ScreenInterface
     public function parent()
     {
         return $this->belongsTo(Screen::class, 'screen_id', 'id');
+    }
+
+    /**
+     * Scope to only return draft versions.
+     */
+    public function scopeDraft(Builder $query)
+    {
+        return $query->where('draft', true);
+    }
+
+    /**
+     * Scope to only return published versions.
+     */
+    public function scopePublished(Builder $query)
+    {
+        return $query->where('draft', false);
     }
 }

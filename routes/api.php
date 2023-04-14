@@ -36,25 +36,25 @@ use ProcessMaker\Http\Controllers\TestStatusController;
 
 Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/1.0')->name('api.')->group(function () {
     // Users
-    Route::get('users', [UserController::class, 'index'])->name('users.index'); //Permissions handled in the controller
-    Route::get('users/{user}', [UserController::class, 'show'])->name('users.show'); //Permissions handled in the controller
+    Route::get('users', [UserController::class, 'index'])->name('users.index'); // Permissions handled in the controller
+    Route::get('users/{user}', [UserController::class, 'show'])->name('users.show'); // Permissions handled in the controller
     Route::get('deleted_users', [UserController::class, 'deletedUsers'])->name('users.deletedUsers')->middleware('can:view-users');
     Route::post('users', [UserController::class, 'store'])->name('users.store')->middleware('can:create-users');
     Route::put('users/restore', [UserController::class, 'restore'])->name('users.restore')->middleware('can:create-users');
-    Route::put('users/{user}', [UserController::class, 'update'])->name('users.update'); //Permissions handled in the controller
+    Route::put('users/{user}', [UserController::class, 'update'])->name('users.update'); // Permissions handled in the controller
     Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy')->middleware('can:delete-users');
     Route::put('password/change', [ChangePasswordController::class, 'update'])->name('password.update');
     // User Groups
     Route::put('users/{user}/groups', [UserController::class, 'updateGroups'])->name('users.groups.update')->middleware('can:edit-users');
     // User personal access tokens
-    Route::get('users/{user}/tokens', [UserTokenController::class, 'index'])->name('users.tokens.index'); //Permissions handled in the controller
-    Route::get('users/{user}/tokens/{tokenId}', [UserTokenController::class, 'show'])->name('users.tokens.show'); //Permissions handled in the controller
+    Route::get('users/{user}/tokens', [UserTokenController::class, 'index'])->name('users.tokens.index'); // Permissions handled in the controller
+    Route::get('users/{user}/tokens/{tokenId}', [UserTokenController::class, 'show'])->name('users.tokens.show'); // Permissions handled in the controller
     Route::post('users/{user}/tokens', [UserTokenController::class, 'store'])->name('users.tokens.store'); // Permissions handled in the controller
     Route::delete('users/{user}/tokens/{tokenId}', [UserTokenController::class, 'destroy'])->name('users.tokens.destroy'); // Permissions handled in the controller
 
     // Groups//Permissions policy
-    Route::get('groups', [GroupController::class, 'index'])->name('groups.index'); //Permissions handled in the controller
-    Route::get('groups/{group}', [GroupController::class, 'show'])->name('groups.show'); //Permissions handled in the controller
+    Route::get('groups', [GroupController::class, 'index'])->name('groups.index'); // Permissions handled in the controller
+    Route::get('groups/{group}', [GroupController::class, 'show'])->name('groups.show'); // Permissions handled in the controller
     Route::post('groups', [GroupController::class, 'store'])->name('groups.store')->middleware('can:create-groups');
     Route::put('groups/{group}', [GroupController::class, 'update'])->name('groups.update')->middleware('can:edit-groups');
     Route::delete('groups/{group}', [GroupController::class, 'destroy'])->name('groups.destroy')->middleware('can:delete-groups');
@@ -62,9 +62,9 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('groups/{group}/groups', [GroupController::class, 'groups'])->name('groups.groups')->middleware('can:view-groups');
 
     // Group Members
-    Route::get('group_members', [GroupMemberController::class, 'index'])->name('group_members.index'); //Already filtered in controller
+    Route::get('group_members', [GroupMemberController::class, 'index'])->name('group_members.index'); // Already filtered in controller
     Route::get('group_members/{group_member}', [GroupMemberController::class, 'show'])->name('group_members.show')->middleware('can:view-groups');
-    Route::get('group_members_available', [GroupMemberController::class, 'groupsAvailable'])->name('group_members_available.show'); //Permissions handled in the controller
+    Route::get('group_members_available', [GroupMemberController::class, 'groupsAvailable'])->name('group_members_available.show'); // Permissions handled in the controller
     Route::get('user_members_available', [GroupMemberController::class, 'usersAvailable'])->name('user_members_available.show')->middleware('can:view-groups');
     Route::post('group_members', [GroupMemberController::class, 'store'])->name('group_members.store')->middleware('can:edit-groups');
     Route::delete('group_members/{group_member}', [GroupMemberController::class, 'destroy'])->name('group_members.destroy')->middleware('can:edit-groups');
@@ -77,10 +77,12 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::delete('environment_variables/{environment_variable}', [EnvironmentVariablesController::class, 'destroy'])->name('environment_variables.destroy')->middleware('can:delete-environment_variables');
 
     // Screens
-    Route::get('screens', [ScreenController::class, 'index'])->name('screens.index'); //Permissions handled in the controller
-    Route::get('screens/{screen}', [ScreenController::class, 'show'])->name('screens.show'); //Permissions handled in the controller
+    Route::get('screens', [ScreenController::class, 'index'])->name('screens.index'); // Permissions handled in the controller
+    Route::get('screens/{screen}', [ScreenController::class, 'show'])->name('screens.show'); // Permissions handled in the controller
     Route::post('screens', [ScreenController::class, 'store'])->name('screens.store')->middleware('can:create-screens');
     Route::put('screens/{screen}', [ScreenController::class, 'update'])->name('screens.update')->middleware('can:edit-screens');
+    Route::put('screens/{screen}/draft', [ScreenController::class, 'draft'])->name('screens.draft')->middleware('can:edit-screens');
+    Route::post('screens/{screen}/close', [ScreenController::class, 'close'])->name('screens.close')->middleware('can:edit-screens');
     Route::put('screens/{screen}/duplicate', [ScreenController::class, 'duplicate'])->name('screens.duplicate')->middleware('can:create-screens');
     Route::delete('screens/{screen}', [ScreenController::class, 'destroy'])->name('screens.destroy')->middleware('can:delete-screens');
     Route::post('screens/{screen}/export', [ScreenController::class, 'export'])->name('screens.export')->middleware('can:export-screens');
@@ -98,6 +100,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('scripts/{script}', [ScriptController::class, 'show'])->name('scripts.show')->middleware('can:view-scripts');
     Route::post('scripts', [ScriptController::class, 'store'])->name('scripts.store')->middleware('can:create-scripts');
     Route::put('scripts/{script}', [ScriptController::class, 'update'])->name('scripts.update')->middleware('can:edit-scripts');
+    Route::put('scripts/{script}/draft', [ScriptController::class, 'draft'])->name('scripts.draft')->middleware('can:edit-scripts');
+    Route::post('scripts/{script}/close', [ScriptController::class, 'close'])->name('scripts.close')->middleware('can:edit-scripts');
     Route::put('scripts/{script}/duplicate', [ScriptController::class, 'duplicate'])->name('scripts.duplicate')->middleware('can:create-scripts');
     Route::delete('scripts/{script}', [ScriptController::class, 'destroy'])->name('scripts.destroy')->middleware('can:delete-scripts');
     Route::post('scripts/{script}/preview', [ScriptController::class, 'preview'])->name('scripts.preview')->middleware('can:view-scripts');
@@ -121,12 +125,14 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('processes/{process}/import/assignments', [ProcessController::class, 'importAssignments'])->name('processes.import.assignments')->middleware('can:import-processes');
     Route::post('processes', [ProcessController::class, 'store'])->name('processes.store')->middleware('can:create-processes');
     Route::put('processes/{process}', [ProcessController::class, 'update'])->name('processes.update')->middleware('can:edit-processes');
+    Route::put('processes/{process}/draft', [ProcessController::class, 'updateDraft'])->name('processes.update_draft')->middleware('can:edit-screens');
+    Route::post('processes/{process}/close', [ProcessController::class, 'close'])->name('processes.close')->middleware('can:edit-processes');
     Route::delete('processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy')->middleware('can:archive-processes');
     Route::put('processes/{processId}/restore', [ProcessController::class, 'restore'])->name('processes.restore')->middleware('can:archive-processes');
     Route::post('process_events/{process}', [ProcessController::class, 'triggerStartEvent'])->name('process_events.trigger')->middleware('can:start,process');
 
     // List of Processes that the user can start
-    Route::get('start_processes', [ProcessController::class, 'startProcesses'])->name('processes.start'); //Filtered in controller
+    Route::get('start_processes', [ProcessController::class, 'startProcesses'])->name('processes.start'); // Filtered in controller
 
     // Process Categories
     Route::get('process_categories', [ProcessCategoryController::class, 'index'])->name('process_categories.index')->middleware('can:view-process-categories');
@@ -140,13 +146,13 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('permissions', [PermissionController::class, 'update'])->name('permissions.update')->middleware('can:edit-users');
 
     // Tasks
-    Route::get('tasks', [TaskController::class, 'index'])->name('tasks.index'); //Already filtered in controller
+    Route::get('tasks', [TaskController::class, 'index'])->name('tasks.index'); // Already filtered in controller
     Route::get('tasks/{task}', [TaskController::class, 'show'])->name('tasks.show')->middleware('can:view,task');
     Route::put('tasks/{task}', [TaskController::class, 'update'])->name('tasks.update')->middleware('can:update,task');
     Route::get('tasks/{task}/screens/{screen}', [TaskController::class, 'getScreen'])->name('tasks.get_screen')->middleware('can:viewScreen,task,screen');
 
     // Requests
-    Route::get('requests', [ProcessRequestController::class, 'index'])->name('requests.index'); //Already filtered in controller
+    Route::get('requests', [ProcessRequestController::class, 'index'])->name('requests.index'); // Already filtered in controller
     Route::get('requests/{request}', [ProcessRequestController::class, 'show'])->name('requests.show')->middleware('can:view,request');
     Route::put('requests/{request}', [ProcessRequestController::class, 'update'])->name('requests.update')->middleware('can:update,request');
     Route::put('requests/{request}/retry', [ProcessRequestController::class, 'retry'])->name('requests.retry')->middleware('can:update,request');
@@ -168,16 +174,16 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::delete('files/{file}', [FileController::class, 'destroy'])->name('files.destroy')->middleware('can:delete,file');
 
     // Notifications
-    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');  //Already filtered in controller
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');  // Already filtered in controller
     Route::get('notifications/{notification}', [NotificationController::class, 'show'])->name('notifications.show')->middleware('can:view,notification');
     Route::post('notifications', [NotificationController::class, 'store'])->name('notifications.store')->middleware('can:create,ProcessMaker\Models\Notification');
     Route::put('notifications/{notification}', [NotificationController::class, 'update'])->name('notifications.update')->middleware('can:edit,notification');
     Route::delete('notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy')->middleware('can:delete,notification');
 
     // Mark Notifications as Read & Unread
-    Route::put('read_notifications', [NotificationController::class, 'updateAsRead'])->name('notifications.update_as_read'); //No permissions necessary
-    Route::put('unread_notifications', [NotificationController::class, 'updateAsUnread'])->name('notifications.update_as_unread'); //No permissions necessary
-    Route::put('read_all_notifications', [NotificationController::class, 'updateAsReadAll'])->name('notifications.update_as_read'); //No permissions necessary
+    Route::put('read_notifications', [NotificationController::class, 'updateAsRead'])->name('notifications.update_as_read'); // No permissions necessary
+    Route::put('unread_notifications', [NotificationController::class, 'updateAsUnread'])->name('notifications.update_as_unread'); // No permissions necessary
+    Route::put('read_all_notifications', [NotificationController::class, 'updateAsReadAll'])->name('notifications.update_as_read'); // No permissions necessary
 
     // Task Assignments
     Route::get('task_assignments', [TaskAssignmentController::class, 'index'])->name('task_assignments.index')->middleware('can:view-task_assignments');
@@ -199,7 +205,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('signals/{signalId}', [SignalController::class, 'update'])->name('signals.update')->middleware('can:edit-signals');
     Route::delete('signals/{signalId}', [SignalController::class, 'destroy'])->name('signals.destroy')->middleware('can:delete-signals');
 
-    //UI customization
+    // UI customization
     Route::post('customize-ui', [CssOverrideController::class, 'store'])->name('customize-ui.store');
 
     // Rebuild Script Executors

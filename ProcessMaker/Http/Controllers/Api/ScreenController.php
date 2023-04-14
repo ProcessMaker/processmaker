@@ -2,9 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -256,6 +254,54 @@ class ScreenController extends Controller
         $request->validate(Screen::rules($screen));
         $screen->fill($request->input());
         $screen->saveOrFail();
+
+        return response([], 204);
+    }
+
+    /**
+     * Update a draft Screen.
+     *
+     * @param Screen $screen
+     * @param Request $request
+     *
+     * @return ResponseFactory|Response
+     *
+     *     @OA\Put(
+     *     path="/screens/{screens_id}/draft",
+     *     summary="Update a draft screen",
+     *     operationId="updateDraftScreen",
+     *     tags={"Screens"},
+     *     @OA\Parameter(
+     *         description="ID of screen to return",
+     *         in="path",
+     *         name="screens_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/screensEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="success"
+     *     ),
+     * )
+     */
+    public function draft(Screen $screen, Request $request)
+    {
+        $request->validate(Screen::rules($screen));
+        $screen->fill($request->input());
+        $screen->saveDraft();
+
+        return response([], 204);
+    }
+
+    public function close(Screen $screen)
+    {
+        $screen->deleteDraft();
 
         return response([], 204);
     }

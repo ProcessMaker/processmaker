@@ -85,9 +85,14 @@
 <body>
 <a class="skip-navigation alert alert-info" role="link" href="#main" tabindex="1">{{ __('Skip to Content') }}</a>
 <div class="d-flex w-100 mw-100 h-100 mh-100" id="app-container">
+  @if (shouldShow('leftSideBar'))
   <div id="sidebar" class="d-print-none" :class="{expanded: expanded}">
       @yield('sidebar')
   </div>
+  @else
+  <div id="sidebar" class="d-none invisible">
+  </div>
+  @endif
   <div class="d-flex flex-grow-1 flex-column overflow-hidden">
     <div class="flex-grow-1">
         @include('layouts.navbar')

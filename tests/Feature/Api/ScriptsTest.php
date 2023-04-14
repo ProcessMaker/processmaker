@@ -6,20 +6,16 @@ use Database\Seeders\PermissionSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Notification;
-use Mockery;
 use ProcessMaker\Events\ScriptResponseEvent;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\ScriptExecutor;
-use ProcessMaker\Models\ScriptVersion;
 use ProcessMaker\Models\User;
 use ProcessMaker\PolicyExtension;
 use ProcessMaker\Providers\AuthServiceProvider;
@@ -51,10 +47,10 @@ class ScriptsTest extends TestCase
      */
     public function testNotCreatedForParameterRequired()
     {
-        //Post should have the parameter required
+        // Post should have the parameter required
         $url = self::API_TEST_SCRIPT;
         $response = $this->apiCall('POST', $url);
-        //validating the answer is an error
+        // validating the answer is an error
         $response->assertStatus(422);
         $this->assertArrayHasKey('message', $response->json());
     }
@@ -68,7 +64,7 @@ class ScriptsTest extends TestCase
         $user = User::factory()->create(['is_administrator' => true]);
         $category = ScriptCategory::factory()->create(['status' => 'ACTIVE']);
 
-        //Post saved correctly
+        // Post saved correctly
         $url = self::API_TEST_SCRIPT;
         $response = $this->apiCall('POST', $url, [
             'title' => 'Script Title',
@@ -78,8 +74,8 @@ class ScriptsTest extends TestCase
             'script_category_id' => $category->getkey(),
             'run_as_user_id' => $user->id,
         ]);
-        //validating the answer is correct.
-        //Check structure of response.
+        // validating the answer is correct.
+        // Check structure of response.
         $response->assertJsonStructure(self::STRUCTURE);
     }
 
@@ -128,7 +124,7 @@ class ScriptsTest extends TestCase
             'title' => 'Script Title',
         ]);
 
-        //Post title duplicated
+        // Post title duplicated
         $faker = Faker::create();
         $url = self::API_TEST_SCRIPT;
         $response = $this->apiCall('POST', $url, [
@@ -166,7 +162,7 @@ class ScriptsTest extends TestCase
      */
     public function testListScripts()
     {
-        //add scripts to process
+        // add scripts to process
         Script::query()->delete();
         $faker = Faker::create();
         $total = $faker->randomDigitNotNull;
@@ -179,19 +175,19 @@ class ScriptsTest extends TestCase
             'key' => 'some-key',
         ]);
 
-        //List scripts
+        // List scripts
         $url = self::API_TEST_SCRIPT;
         $response = $this->apiCall('GET', $url);
-        //Validate the answer is correct
+        // Validate the answer is correct
         $response->assertStatus(200);
 
-        //verify structure paginate
+        // verify structure paginate
         $response->assertJsonStructure([
             'data' => ['*' => self::STRUCTURE],
             'meta',
         ]);
 
-        //verify count of data
+        // verify count of data
         $this->assertEquals($total, $response->json()['meta']['total']);
     }
 
@@ -227,19 +223,19 @@ class ScriptsTest extends TestCase
             'title' => $title,
         ]);
 
-        //List Document with filter option
+        // List Document with filter option
         $perPage = Faker::create()->randomDigitNotNull;
         $query = '?page=1&per_page=' . $perPage . '&order_by=description&order_direction=DESC&filter=' . urlencode($title);
         $url = self::API_TEST_SCRIPT . $query;
         $response = $this->apiCall('GET', $url);
-        //Validate the answer is correct
+        // Validate the answer is correct
         $response->assertStatus(200);
-        //verify structure paginate
+        // verify structure paginate
         $response->assertJsonStructure([
             'data' => ['*' => self::STRUCTURE],
             'meta',
         ]);
-        //verify response in meta
+        // verify response in meta
         $json = $response->json();
         $meta = $json['meta'];
         $this->assertEquals(1, $meta['total']);
@@ -256,16 +252,16 @@ class ScriptsTest extends TestCase
      */
     public function testGetScript()
     {
-        //add scripts to process
+        // add scripts to process
         $script = Script::factory()->create();
 
-        //load script
+        // load script
         $url = self::API_TEST_SCRIPT . '/' . $script->id;
         $response = $this->apiCall('GET', $url);
-        //Validate the answer is correct
+        // Validate the answer is correct
         $response->assertStatus(200);
 
-        //verify structure paginate
+        // verify structure paginate
         $response->assertJsonStructure(self::STRUCTURE);
     }
 
@@ -278,7 +274,7 @@ class ScriptsTest extends TestCase
 
         $script = Script::factory()->create(['code' => $faker->sentence(50)])->id;
 
-        //The post must have the required parameters
+        // The post must have the required parameters
         $url = self::API_TEST_SCRIPT . '/' . $script;
 
         $response = $this->apiCall('PUT', $url, [
@@ -287,7 +283,7 @@ class ScriptsTest extends TestCase
             'code' => $faker->sentence(3),
         ]);
 
-        //Validate the answer is incorrect
+        // Validate the answer is incorrect
         $response->assertStatus(422);
     }
 
@@ -299,7 +295,7 @@ class ScriptsTest extends TestCase
         $faker = Faker::create();
         $user = User::factory()->create(['is_administrator' => true]);
 
-        //Post saved success
+        // Post saved success
         $yesterday = \Carbon\Carbon::now()->subDay();
         $script = Script::factory()->create([
             'description' => 'ufufu',
@@ -317,7 +313,7 @@ class ScriptsTest extends TestCase
             'script_category_id' => $script->script_category_id,
         ]);
 
-        //Validate the answer is correct
+        // Validate the answer is correct
         $response->assertStatus(204);
 
         // assert it creates a script version
@@ -345,7 +341,7 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('PUT', $url, [
             'title' => 'Some title',
         ]);
-        //Validate the answer is correct
+        // Validate the answer is correct
         $response->assertStatus(422);
         $response->assertSeeText('The Name has already been taken');
     }
@@ -441,10 +437,10 @@ class ScriptsTest extends TestCase
      */
     public function testDeleteScript()
     {
-        //Remove script
+        // Remove script
         $url = self::API_TEST_SCRIPT . '/' . Script::factory()->create()->id;
         $response = $this->apiCall('DELETE', $url);
-        //Validate the answer is correct
+        // Validate the answer is correct
         $response->assertStatus(204);
     }
 
@@ -453,10 +449,10 @@ class ScriptsTest extends TestCase
      */
     public function testDeleteScriptNotExist()
     {
-        //Script not exist
+        // Script not exist
         $url = self::API_TEST_SCRIPT . '/' . Script::factory()->make()->id;
         $response = $this->apiCall('DELETE', $url);
-        //Validate the answer is correct
+        // Validate the answer is correct
         $response->assertStatus(405);
     }
 
@@ -508,13 +504,13 @@ class ScriptsTest extends TestCase
             'status' => 'active',
         ]);
 
-        //List Screen with filter option
+        // List Screen with filter option
         $query = '?filter=' . urlencode($name);
         $url = self::API_TEST_SCRIPT . $query;
         $response = $this->apiCall('GET', $url);
-        //Validate the answer is correct
+        // Validate the answer is correct
         $response->assertStatus(200);
-        //verify structure paginate
+        // verify structure paginate
         $response->assertJsonStructure([
             'data',
             'meta',
@@ -522,21 +518,21 @@ class ScriptsTest extends TestCase
 
         $json = $response->json();
 
-        //verify response in meta
+        // verify response in meta
         $this->assertEquals(1, $json['meta']['total']);
         $this->assertEquals(1, $json['meta']['current_page']);
         $this->assertEquals($name, $json['meta']['filter']);
-        //verify structure of model
+        // verify structure of model
         $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
 
-        //List Screen without peers
+        // List Screen without peers
         $name = 'Search category that does not exist';
         $query = '?filter=' . urlencode($name);
         $url = self::API_TEST_SCRIPT . $query;
         $response = $this->apiCall('GET', $url);
-        //Validate the answer is correct
+        // Validate the answer is correct
         $response->assertStatus(200);
-        //verify structure paginate
+        // verify structure paginate
         $response->assertJsonStructure([
             'data',
             'meta',
@@ -544,11 +540,11 @@ class ScriptsTest extends TestCase
 
         $json = $response->json();
 
-        //verify response in meta
+        // verify response in meta
         $this->assertEquals(0, $json['meta']['total']);
         $this->assertEquals(1, $json['meta']['current_page']);
         $this->assertEquals($name, $json['meta']['filter']);
-        //verify structure of model
+        // verify structure of model
         $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
     }
 
@@ -631,5 +627,61 @@ class ScriptsTest extends TestCase
         });
 
         Carbon::setTestNow();
+    }
+
+    public function testUpdateDraftScript()
+    {
+        $faker = Faker::create();
+        $user = User::factory()->create(['is_administrator' => true]);
+
+        $script = Script::factory()->create([
+            'description' => $faker->sentence(10),
+            'created_at' => now()->yesterday(),
+        ]);
+        $originalAttributes = $script->getAttributes();
+
+        $url = route('api.scripts.draft', ['script' => $script->id]);
+        $response = $this->apiCall('PUT', $url, [
+            'title' => $script->title,
+            'language' => 'lua',
+            'description' => 'jdbsdfkj',
+            'code' => $script->code,
+            'run_as_user_id' => $user->id,
+            'script_category_id' => $script->script_category_id,
+        ]);
+
+        $response->assertStatus(204);
+
+        // assert it creates a draft script version.
+        $script->refresh();
+        $draft = $script->versions()->draft()->first();
+        $this->assertEquals($draft->key, $script->key);
+        $this->assertEquals($draft->title, $originalAttributes['title']);
+        $this->assertEquals($draft->language, $originalAttributes['language']);
+        $this->assertEquals($draft->code, $originalAttributes['code']);
+        $this->assertLessThan(3, $draft->updated_at->diffInSeconds($script->updated_at));
+    }
+
+    public function testCloseDraftScript()
+    {
+        $user = User::factory()->create(['is_administrator' => true]);
+        $script = Script::factory()->create();
+
+        // Create a draft.
+        $url = route('api.scripts.draft', ['script' => $script->id]);
+        $response = $this->apiCall('PUT', $url, [
+            'title' => $script->title,
+            'language' => 'lua',
+            'description' => 'jdbsdfkj',
+            'code' => $script->code,
+            'run_as_user_id' => $user->id,
+            'script_category_id' => $script->script_category_id,
+        ]);
+        $response->assertStatus(204);
+
+        // Close the draft.
+        $response = $this->apiCall('POST', route('api.scripts.close', ['script' => $script->id]));
+        $response->assertStatus(204);
+        $this->assertTrue($script->versions()->draft()->doesntExist());
     }
 }
