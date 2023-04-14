@@ -204,3 +204,19 @@ if (!function_exists('removeTemporalData')) {
         }
     }
 }
+
+if (!function_exists('shouldShow')) {
+    /**
+     * @param string $element
+     *
+     * @return bool
+     */
+    function shouldShow($element)
+    {
+        if (Session::has('visibilitySettings')) {
+            return Session::get('visibilitySettings')->{$element} ?? true;
+        } else {
+            return true;
+        }
+    }
+}

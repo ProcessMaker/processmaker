@@ -18,7 +18,6 @@ use ProcessMaker\Exception\InvalidUserAssignmentException;
 use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Exception\ThereIsNoProcessManagerAssignedException;
-use ProcessMaker\Exception\UserOrGroupAssignmentEmptyException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Facades\WorkflowUserManager;
 use ProcessMaker\Managers\DataManager;
@@ -357,9 +356,8 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     {
         $relationship = $this->morphedByMany('ProcessMaker\Models\User', 'processable')
             ->wherePivot('method', 'START');
-        $relationship = $node === null ? $relationship : $relationship->wherePivot('node', $node);
 
-        return $relationship;
+        return $node === null ? $relationship : $relationship->wherePivot('node', $node);
     }
 
     /**
@@ -371,9 +369,8 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     {
         $relationship = $this->morphedByMany('ProcessMaker\Models\Group', 'processable')
             ->wherePivot('method', 'START');
-        $relationship = $node === null ? $relationship : $relationship->wherePivot('node', $node);
 
-        return $relationship;
+        return $node === null ? $relationship : $relationship->wherePivot('node', $node);
     }
 
     /**
@@ -413,7 +410,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         $this->bpmnDefinitions = app(BpmnDocumentInterface::class, ['process' => $this]);
         if ($this->bpmn) {
             $this->bpmnDefinitions->loadXML($this->bpmn);
-            //Load the collaborations if exists
+            // Load the collaborations if exists
             return $this->bpmnDefinitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'collaboration');
         }
     }
@@ -667,9 +664,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             $this->getConsolidatedUsers($groupId, $users);
         }
 
-        $nextAssignee = $this->getNextUserFromGroupAssignment($activity->getId(), $users);
-
-        return $nextAssignee;
+        return $this->getNextUserFromGroupAssignment($activity->getId(), $users);
     }
 
     /**
@@ -1370,14 +1365,6 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     public function getProcessCategoryIdAttribute($value)
     {
         return implode(',', $this->categories()->pluck('category_id')->toArray()) ?: $value;
-    }
-
-    /**
-     * Get the latest version of the process
-     */
-    public function getLatestVersion()
-    {
-        return $this->versions()->orderBy('id', 'desc')->first();
     }
 
     /**
