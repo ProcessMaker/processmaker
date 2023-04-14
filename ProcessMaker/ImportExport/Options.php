@@ -37,7 +37,11 @@ class Options
         if ($name === 'mode') {
             $importOptions = self::IMPORT_OPTIONS[$name]['default'];
         } else {
-            $importOptions = self::IMPORT_OPTIONS[$name];
+            if (count($assetOptions) === 0) {
+                $importOptions = self::IMPORT_OPTIONS[$name][1];
+            } else {
+                $importOptions = self::IMPORT_OPTIONS[$name];
+            }
         }
 
         return Arr::get($assetOptions, $name, $importOptions);
