@@ -183,11 +183,14 @@ export default {
     this.inputAriaLabel = this.ariaLabel;
 
     this.$root.$on("bv::collapse::state", (collapseId, isJustShown) => {
+      this.query = this.value;
+      this.pmql = this.value;
       this.calcInputHeight();
     });
 
     if (this.urlPmql) {
       this.$emit("submit", this.query);
+      this.$emit("input", this.query);
     }
   },
 
@@ -231,22 +234,26 @@ export default {
     },
     onInput() {
       this.$emit("pmqlchange", this.query);
+      this.$emit("input", this.query);
     },
     runSearch() {
       this.pmql = "";
       if (this.query === "") {
         this.$emit("submit", "");
+        this.$emit("input", "");
         return;
       }
 
       if (this.query.isPMQL()) {
         this.$emit("submit", this.query);
+        this.$emit("input", this.query);
       } else if (this.aiEnabledLocal) {
         this.runNLQToPMQL();
       } else if (!this.query.isPMQL() && !this.aiEnabledLocal) {
         const fullTextSearch = `(fulltext LIKE "%${this.query}%")`;
         this.pmql = fullTextSearch;
         this.$emit("submit", fullTextSearch);
+        this.$emit("input", fullTextSearch);
       }
       this.calcInputHeight();
     },
@@ -267,6 +274,7 @@ export default {
           this.pmql = response.data.result;
           this.usage = response.data.usage;
           this.$emit("submit", this.pmql);
+          this.$emit("input", this.pmql);
           this.aiLoading = false;
           this.calcInputHeight();
         })
@@ -275,6 +283,7 @@ export default {
           const fullTextSearch = `(fulltext LIKE "%${params.question}%")`;
           this.pmql = fullTextSearch;
           this.$emit("submit", fullTextSearch);
+          this.$emit("input", fullTextSearch);
           this.aiLoading = false;
           this.calcInputHeight();
         });
