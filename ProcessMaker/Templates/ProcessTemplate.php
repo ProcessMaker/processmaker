@@ -91,7 +91,8 @@ class ProcessTemplate implements TemplateInterface
             if (array_key_exists('saveAssetsMode', $asset) && $asset['saveAssetsMode'] === 'saveModelOnly') {
                 $saveMode = 'saveModelOnly';
             }
-            if ($payload['root'] != $key && $saveMode || substr($asset['type'], -8) === 'Category') {
+
+            if ($payload['root'] != $key && $saveMode && substr($asset['type'], -8) === 'Category') {
                 $mode = 'discard';
             }
 
