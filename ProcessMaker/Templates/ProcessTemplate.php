@@ -104,7 +104,7 @@ class ProcessTemplate implements TemplateInterface
                     'description' => $template->description,
                     'is_template' => true,
                     'bpmn' => $asset['attributes']['bpmn'],
-                    'user_id' => $template->user_id,
+                    'user_id' => $template->user_id ? $template->user_id : \Auth::user()->getKey(),
                 ];
 
                 // Also set the name, description, and is_template directly on the asset for convenience
