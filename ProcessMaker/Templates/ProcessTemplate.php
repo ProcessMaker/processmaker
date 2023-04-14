@@ -279,9 +279,10 @@ class ProcessTemplate implements TemplateInterface
         $oldTemplateName = $template->name;
         $template->fill($request->except('id'));
         $template->user_id = Auth::user()->id;
-
         $process = Process::where('name', $oldTemplateName)->where('is_template', 1)->first();
-        $process->fill($request->except('id'));
+        if ($process) {
+            $process->fill($request->except('id'));
+        }
 
         try {
             $template->saveOrFail();
