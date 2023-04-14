@@ -98,7 +98,7 @@ export default {
       actions: [
         {
           value: "edit-script",
-          content: "Edit",
+          content: "Edit Script",
           permission: "edit-scripts",
           icon: "fas fa-pen-square",
         },
