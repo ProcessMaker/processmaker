@@ -30,9 +30,9 @@ class Importer
         return Manifest::fromArray($this->payload['export'], $this->options);
     }
 
-    public function doImport()
+    public function doImport($existingAssetInDatabase = null)
     {
-        DB::transaction(function () {
+        DB::transaction(function () use ($existingAssetInDatabase) {
             // First, we save the model so we have IDs set for all assets
             Schema::disableForeignKeyConstraints();
             foreach ($this->manifest->all() as $exporter) {
@@ -50,7 +50,7 @@ class Importer
             // Now, run the import method in each Exporter class
             foreach ($this->manifest->all() as $exporter) {
                 if ($exporter->mode !== 'discard') {
-                    $exporter->runImport();
+                    $exporter->runImport($existingAssetInDatabase);
                 }
             }
 

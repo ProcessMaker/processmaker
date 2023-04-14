@@ -67,8 +67,11 @@ class ProcessExporter extends ExporterBase
         $this->exportSubprocesses();
     }
 
-    public function import() : bool
+    public function import($existingAssetInDatabase = null) : bool
     {
+        if ($existingAssetInDatabase) {
+            $this->model = Process::where('id', $existingAssetInDatabase)->first();
+        }
         $process = $this->model;
 
         foreach ($this->getDependents('user') as $dependent) {

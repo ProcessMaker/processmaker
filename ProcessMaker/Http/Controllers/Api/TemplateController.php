@@ -71,8 +71,6 @@ class TemplateController extends Controller
       */
      public function updateTemplateManifest(string $type, int $processId, Request $request)
      {
-         $request->validate(Template::rules($request->id, $this->types[$type][4]));
-
          return $this->template->updateTemplateManifest($type, $processId, $request);
      }
 

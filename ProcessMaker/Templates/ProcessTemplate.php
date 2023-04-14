@@ -78,11 +78,6 @@ class ProcessTemplate implements TemplateInterface
         $template = \DB::table('process_templates')->find($templateId);
         $payload = json_decode($template->manifest, true);
 
-        $process = Process::where('name', $template->name)->where('is_template', 1)->first();
-        if ($process) {
-            return ['id' => $process->id];
-        }
-
         // Loop through each asset in the "export" array and set postOptions "mode" accordingly
         $postOptions = [];
         foreach ($payload['export'] as $key => $asset) {
@@ -115,15 +110,24 @@ class ProcessTemplate implements TemplateInterface
                 // Also set the name, description, and is_template directly on the asset for convenience
                 $payload['export'][$key]['name'] = $template->name;
                 $payload['export'][$key]['description'] = $template->description;
-                $payload['export'][$key]['is_template'] = 1;
             }
+
+            // $payload['export'][$key]['attributes']['is_template'] = true;
+            // $payload['export'][$key]['is_template'] = true;
         }
 
         $options = new Options($postOptions);
         $importer = new Importer($payload, $options);
-        $manifest = $importer->doImport();
-        $rootLog = $manifest[$payload['root']]->log;
-        $processId = $rootLog['newId'];
+        $process = Process::where('name', $template->name)->where('is_template', 1)->first();
+        if ($process) {
+            $manifest = $importer->doImport($process->id);
+
+            return ['id' => $process->id];
+        } else {
+            $manifest = $importer->doImport();
+            $rootLog = $manifest[$payload['root']]->log;
+            $processId = $rootLog['newId'];
+        }
 
         // Return an array with the process ID
         return ['id' => $processId];
@@ -203,6 +207,7 @@ class ProcessTemplate implements TemplateInterface
             $postOptions[$key] = [
                 'mode' => $asset['mode'],
                 'isTemplate' => true,
+                'saveAssetsMode' => 'saveAllAssets',
             ];
 
             if ($payload['root'] === $key) {

@@ -21,6 +21,7 @@ use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\Template;
 use ProcessMaker\Nayra\Exceptions\ElementNotFoundException;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
@@ -350,7 +351,7 @@ class ProcessController extends Controller
         $isTemplate = Process::select('is_template')->where('id', $process->id)->value('is_template');
         if ($isTemplate) {
             try {
-                $response = (new TemplateController)->updateTemplateManifest('process', $process->id, $request);
+                $response = (new TemplateController(new Template))->updateTemplateManifest('process', $process->id, $request);
 
                 return new Resource($process->refresh());
             } catch (\Exception $error) {
