@@ -220,7 +220,8 @@ export default {
         });
     },
     onAction(actionType, data, index) {
-      switch (actionType.value) {
+      if (actionType.value) {
+        switch (actionType.value) {
         case "edit-screen":
           window.location.href =
             "/designer/screen-builder/" + data.id + "/edit";
@@ -260,9 +261,53 @@ export default {
                 });
             }
           );
+            break;
+        }
+    } else {
+        switch (actionType) {
+        case "edit-screen":
+          window.location.href =
+            "/designer/screen-builder/" + data.id + "/edit";
           break;
-      }
-    },
+        case "edit-item":
+          window.location.href = "/designer/screens/" + data.id + "/edit";
+          break;
+        case "duplicate-item":
+          this.dupScreen.title = data.title + ' ' + this.$t('Copy');
+          this.dupScreen.type = data.type;
+          this.dupScreen.category = data.category;
+          this.dupScreen.screen_category_id = data.screen_category_id;
+          this.dupScreen.description = data.description;
+          this.dupScreen.id = data.id;
+          this.showModal();
+          break;
+        case "export-item":
+          window.location.href = "/designer/screens/" + data.id + "/export";
+          break;
+        case "remove-item":
+          let that = this;
+          ProcessMaker.confirmModal(
+            this.$t("Caution!"),
+             this.$t("Are you sure you want to delete the screen {{item}}? Deleting this asset will break any active tasks that are assigned.", {
+                item: data.title,
+              }),
+              "",
+            function() {
+              ProcessMaker.apiClient
+                .delete("screens/" + data.id)
+                .then(response => {
+                  ProcessMaker.alert(
+                    this.$t("The screen was deleted."),
+                    "success"
+                  );
+                  that.fetch();
+                });
+            }
+          );
+            break;
+        }
+    }
+  },
     fetch() {
       this.loading = true;
       //change method sort by slot name
