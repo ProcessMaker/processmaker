@@ -74,47 +74,49 @@ class ProcessTemplate implements TemplateInterface
      */
     public function show($request) : array
     {
-        $templateId = (int) $request->id;
-        $template = \DB::table('process_templates')->find($templateId);
+        $template = ProcessTemplates::find($request->id);
         $payload = json_decode($template->manifest, true);
+
+        $export = array_filter($payload['export'], function ($asset) {
+            return $asset['type'] !== 'CommentConfiguration';
+        });
 
         // Loop through each asset in the "export" array and set postOptions "mode" accordingly
         $postOptions = [];
-        foreach ($payload['export'] as $key => $asset) {
-            $mode = 'copy';
+        $attributes = [
+            'is_template' => true, // set this attribute for all assets
+        ];
+        foreach ($export as $key => $asset) {
+            $mode = 'update';
             $saveMode = 'saveAllAssets';
             if (array_key_exists('saveAssetsMode', $asset) && $asset['saveAssetsMode'] === 'saveModelOnly') {
                 $saveMode = 'saveModelOnly';
             }
-
-            if ($payload['root'] != $key && $saveMode && substr($asset['type'], -8) === 'Category') {
-                $mode = 'discard';
+            if ($payload['root'] != $key && $saveMode === 'saveModelOnly' && substr($asset['type'], -8) === 'Category') {
+                $mode = 'discard'; // set mode to 'discard' for category assets that are not the root
             }
-
             $postOptions[$key] = [
                 'mode' => $mode,
                 'isTemplate' => true,
                 'saveAssetsMode' => $saveMode,
             ];
 
-            // If this process is the root, set name, description, and is_template attributes to the payload
             if ($payload['root'] === $key) {
+                // Set name, description, and user_id attributes for root asset
                 $payload['export'][$key]['attributes'] = [
                     'name' => $template->name,
                     'description' => $template->description,
                     'is_template' => true,
                     'bpmn' => $asset['attributes']['bpmn'],
-                    'user_id' => $template->user_id ? $template->user_id : \Auth::user()->getKey(),
+                    'user_id' => $template->user_id ?? \Auth::user()->getKey(),
                 ];
 
-                // Also set the name, description, and is_template directly on the asset for convenience
+                // Also set the name, description, and is_template directly on the asset
                 $payload['export'][$key]['name'] = $template->name;
                 $payload['export'][$key]['description'] = $template->description;
-                $payload['export'][$key]['is_template'] = true;
             }
-
-            // $payload['export'][$key]['attributes']['is_template'] = true;
-            // $payload['export'][$key]['is_template'] = true;
+            $payload['export'][$key]['attributes'] = $attributes; // set attributes for all assets
+            $payload['export'][$key]['is_template'] = true; // set attributes for all assets
         }
 
         $options = new Options($postOptions);
@@ -124,11 +126,11 @@ class ProcessTemplate implements TemplateInterface
             $manifest = $importer->doImport($process->id);
 
             return ['id' => $process->id];
-        } else {
-            $manifest = $importer->doImport();
-            $rootLog = $manifest[$payload['root']]->log;
-            $processId = $rootLog['newId'];
         }
+
+        $manifest = $importer->doImport();
+        $rootLog = $manifest[$payload['root']]->log;
+        $processId = $rootLog['newId'];
 
         // Return an array with the process ID
         return ['id' => $processId];
@@ -195,7 +197,7 @@ class ProcessTemplate implements TemplateInterface
      */
     public function create($request) : JsonResponse
     {
-        $templateId = $request->id;
+        $templateId = (int) $request->id;
         $template = ProcessTemplates::where('id', $templateId)->firstOrFail();
         $template->fill($request->except('id'));
 

@@ -111,36 +111,6 @@
 			"last_modified_by_id": null,
 			"force_password_protect": false
 		},
-		"98d01afe-02d1-4530-8a05-4516a14d6dee": {
-			"mode": "update",
-			"name": "Bundle",
-			"type": "ScreenCategory",
-			"model": "ProcessMaker\\Models\\ScreenCategory",
-			"hidden": true,
-			"exporter": "ProcessMaker\\ImportExport\\Exporters\\CategoryExporter",
-			"attributes": {
-				"id": 4,
-				"name": "Bundle",
-				"uuid": "98d01afe-02d1-4530-8a05-4516a14d6dee",
-				"status": "ACTIVE",
-				"is_system": 0,
-				"created_at": "2020-03-20 18:02:44",
-				"updated_at": "2023-03-30 17:02:14"
-			},
-			"dependents": [],
-			"references": [],
-			"type_human": "Screen Category",
-			"description": null,
-			"type_plural": "ScreenCategories",
-			"extraAttributes": [],
-			"process_manager": "",
-			"explicit_discard": false,
-			"last_modified_by": "",
-			"type_human_plural": "Screen Categories",
-			"process_manager_id": null,
-			"last_modified_by_id": null,
-			"force_password_protect": false
-		},
 		"98d01afe-11bc-4429-a5e4-5080f1279e61": {
 			"mode": "copy",
 			"name": "LoA Request Form Web Entry",
@@ -164,18 +134,6 @@
 				"description": "Leave of absence request Web Entry"
 			},
 			"dependents": [
-				{
-					"meta": null,
-					"name": "Bundle",
-					"type": "categories",
-					"uuid": "98d01afe-02d1-4530-8a05-4516a14d6dee",
-					"discard": false,
-					"modelClass": "ProcessMaker\\Models\\ScreenCategory",
-					"exporterClass": "ProcessMaker\\ImportExport\\Exporters\\CategoryExporter",
-					"fallbackMatches": {
-						"name": "Bundle"
-					}
-				},
 				{
 					"meta": null,
 					"name": "Employee Onboarding - Configure IT Accounts 5",

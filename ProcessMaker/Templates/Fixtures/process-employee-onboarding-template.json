@@ -280,18 +280,6 @@
 					"fallbackMatches": {
 						"title": "Create User on PM"
 					}
-				},
-				{
-					"meta": null,
-					"name": "Default Templates",
-					"type": "categories",
-					"uuid": "98e63b44-3697-49a1-a755-223a62ea2914",
-					"discard": false,
-					"modelClass": "ProcessMaker\\Models\\ProcessCategory",
-					"exporterClass": "ProcessMaker\\ImportExport\\Exporters\\CategoryExporter",
-					"fallbackMatches": {
-						"name": "Default Templates"
-					}
 				}
 			],
 			"references": {
@@ -647,39 +635,9 @@
 			"last_modified_by_id": null,
 			"force_password_protect": false
 		},
-		"98e63b44-3697-49a1-a755-223a62ea2914": {
-			"mode": "update",
-			"name": "Default Templates",
-			"type": "ProcessCategory",
-			"model": "ProcessMaker\\Models\\ProcessCategory",
-			"hidden": true,
-			"exporter": "ProcessMaker\\ImportExport\\Exporters\\CategoryExporter",
-			"attributes": {
-				"id": 1,
-				"name": "Default Templates",
-				"uuid": "98e63b44-3697-49a1-a755-223a62ea2914",
-				"status": "ACTIVE",
-				"is_system": 0,
-				"created_at": "2023-04-10 17:00:42",
-				"updated_at": "2023-04-10 17:00:42"
-			},
-			"dependents": [],
-			"references": [],
-			"type_human": "Process Category",
-			"description": null,
-			"type_plural": "ProcessCategories",
-			"extraAttributes": [],
-			"process_manager": "",
-			"explicit_discard": false,
-			"last_modified_by": "",
-			"type_human_plural": "Process Categories",
-			"process_manager_id": null,
-			"last_modified_by_id": null,
-			"force_password_protect": false
-		},
 		"98e6486d-d74d-4967-8a42-bc5cd48479eb": {
 			"mode": "copy",
-			"name": "Web Entry Generic Thank You 2",
+			"name": "Web Entry Generic Thank You",
 			"type": "Screen",
 			"model": "ProcessMaker\\Models\\Screen",
 			"hidden": false,
