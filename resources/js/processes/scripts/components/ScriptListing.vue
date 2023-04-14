@@ -210,7 +210,8 @@ export default {
         });
     },
     onAction(action, data, index) {
-      switch (action.value) {
+      if (action.value) {
+        switch (action.value) {
         case "edit-script":
           window.location.href = "/designer/scripts/" + data.id + "/builder";
           break;
@@ -240,7 +241,39 @@ export default {
             }
           );
           break;
+        }
+      } else {
+        switch (action) {
+        case "edit-script":
+          window.location.href = "/designer/scripts/" + data.id + "/builder";
           break;
+        case "edit-item":
+          this.goToEdit(data.id);
+          break;
+        case "duplicate-item":
+          this.dupScript.title = data.title + " Copy";
+          this.dupScript.language = data.language;
+          this.dupScript.code = data.code;
+          this.dupScript.description = data.description;
+          this.dupScript.category = data.category;
+          this.dupScript.script_category_id = data.script_category_id;
+          this.dupScript.id = data.id;
+          this.dupScript.run_as_user_id = data.run_as_user_id;
+          this.showModal();
+          break;
+        case "remove-item":
+          ProcessMaker.confirmModal(
+            this.$t("Caution!"),
+            this.$t("Are you sure you want to delete {{item}}? Deleting this asset will break any active tasks that are assigned.", {
+              item: data.title
+            }),
+            "",
+            () => {
+              this.$emit("delete", data);
+            }
+          );
+          break;
+        }
       }
     },
     formatLanguage(language) {
