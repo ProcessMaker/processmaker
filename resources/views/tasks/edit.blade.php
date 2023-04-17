@@ -87,6 +87,7 @@
                     </div>
                 </div>
             </div>
+            @if (shouldShow('taskStatusContainer'))
             <div class="ml-md-3 mt-3 mt-md-0">
                 <div class="card">
                     <div :class="statusCard">
@@ -110,7 +111,7 @@
                             @{{ moment(completedAt).format() }}
                         </li>
 
-                        <li class="list-group-item">
+                        <li class="list-group-item" v-if="task.is_self_service === 0">
                             <h5>{{__('Assigned To')}}</h5>
                             <avatar-image v-if="task.user" size="32" class="d-inline-flex pull-left align-items-center"
                                           :input-data="task.user"></avatar-image>
@@ -200,6 +201,7 @@
                     </ul>
                 </div>
             </div>
+            @endif
         </div>
     </div>
 @endsection

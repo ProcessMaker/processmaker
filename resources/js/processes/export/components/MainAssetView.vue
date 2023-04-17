@@ -216,12 +216,16 @@ export default {
             this.loading = true;
             DataProvider.doImport(this.$root.file, this.$root.exportOptions(), this.$root.password)
             .then((response) => {
-                ProcessMaker.alert(this.$t('Process was successfully imported'), 'success');
-                if (response.data?.processId) {
+                const message = this.$t('Process was successfully imported');
+                ProcessMaker.alert(message, 'success');
+                if (response?.data?.processId) {
                     window.location.href = `/modeler/${response.data.processId}`;
                 }
             }).catch(error => {
-                ProcessMaker.alert(this.$t('Unable to import the process.')  + (error.response.data.message ? ': ' + error.response.data.message : ''), 'danger');
+                const message = `${this.$t('Unable to import the process.')}${error.response.data.message 
+                    ? ': ' + error.response.data.message 
+                    : ''}`;
+                ProcessMaker.alert(message, 'danger');
                 this.loading = false;
             });
         }

@@ -28,6 +28,7 @@ use ProcessMaker\Http\Controllers\ProcessController;
 use ProcessMaker\Http\Controllers\ProfileController;
 use ProcessMaker\Http\Controllers\RequestController;
 use ProcessMaker\Http\Controllers\TaskController;
+use ProcessMaker\Http\Controllers\TemplateController;
 use ProcessMaker\Http\Controllers\TestStatusController;
 use ProcessMaker\Http\Controllers\UnavailableController;
 
@@ -118,6 +119,9 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
     Route::get('tasks/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
 
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index')->middleware('can:view-notifications,notification');
+
+    Route::get('template/{type}/import', [TemplateController::class, 'import'])->name('templates.import')->middleware('template-authorization');
+    Route::get('template/{type}/{template}/configure', [TemplateController::class, 'configure'])->name('templates.configure')->middleware('template-authorization');
 
     // Allows for a logged in user to see navigation on a 404 page
     Route::fallback(function () {

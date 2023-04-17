@@ -144,9 +144,7 @@ export default {
   //   return match[1] || "N/A";
   // },
   getCategories(asset, allAssets) {
-    const categories = asset.dependents.filter((d) => d.type === "categories").map((category) => {
-      return allAssets[category.uuid] ? allAssets[category.uuid].name : "Unexported Category"
-    });
+    const categories = asset.dependents.filter((d) => d.type === "categories").map((category) => category.name);
     if (categories.length === 0) {
       categories.push("Uncategorized");
     }

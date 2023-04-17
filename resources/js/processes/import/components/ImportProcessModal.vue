@@ -13,8 +13,8 @@
         <b-row align-v="start">
           <b-col :class="{'border-bottom': existingAssets.length}">
             <ul class="descriptions pl-3 ml-1">
-              <li class="mb-1"><span class="fw-semibold">{{ $t('Import As New') }}</span>{{ $t(' will create a new process in this environment.') }}</li>
-              <li v-if="userHasEditPermissions" class="mb-1"><span class="fw-semibold">{{$t('Update') }}</span>{{ $t(' will overwrite any assets tied to the current process. This may cause unintended side effects.') }}</li>
+              <li class="mb-1"><span class="fw-semibold">{{ $t('Import As New') }}</span>{{ willCreate() }}</li>
+              <li v-if="userHasEditPermissions" class="mb-1"><span class="fw-semibold">{{$t('Update') }}</span>{{ willOverwrite() }}</li>
             </ul>
           </b-col>
         </b-row>
@@ -26,12 +26,12 @@
               </b-col>
               <b-col class="p-0 pl-1">
                 <h5 class="mb-3 fw-semibold">
-                  {{ warningTitle(asset.type) }}
+                  {{ warningTitle(asset) }}
                   <div><small class="helper text-muted">{{ helperText(asset) }}</small></div>
                 </h5>
               </b-col>
             </b-row>
-            <p v-if="!userHasEditPermissions">{{ $t('You do not have permissions to update the existing process in this environment') }}</p>
+            <p v-if="!userHasEditPermissions">{{ noUpdatePermissions(asset) }}</p>
           </b-col>
         </b-row>
         
@@ -60,15 +60,17 @@
     },
     computed: {
       title() {
-        return this.$t('Import Process: {{item}}', {item: this.processName});
-      }
+        if (this.existingAssets.length > 0) {
+          return this.$t('Import {{type}}: {{item}}', {type: this.existingAssets[0].typeHuman, item: this.processName});
+        }
+        return;
+      },
     },
     watch: {
-      
     },
     beforeMount() {
         if (this.userHasEditPermissions) {
-            this.customModalButtons[1].hidden = false
+            this.customModalButtons[1].hidden = false;
         } else {
             this.customModalButtons[1].hidden = true;
         }
@@ -88,12 +90,22 @@
         this.$emit('import-new');
         this.close();
       },
-      warningTitle(assetType) {
-        return this.$t('Caution: {{type}} Already Exists', {type: assetType});
+      willCreate() {
+        if (this.existingAssets.length > 0) {
+          return this.$t(" will create a new {{type}} in this environment.", { type: this.existingAssets[0].typeHuman.toLowerCase() });
+        }
+      },
+      willOverwrite() {
+        if (this.existingAssets.length > 0) {
+          return this.$t(" will overwrite any assets tied to the current {{type}}. This may cause unintended side effects.", { type: this.existingAssets[0].typeHuman.toLowerCase() });
+        }
+      },
+      warningTitle(asset) {
+        return this.$t('Caution: {{type}} Already Exists', {type: asset.typeHuman});
       },
       helperText(asset) {
         let text = this.$t('This environment contains a {{ item }} with the same name', {
-          item: asset.type.toLowerCase()
+          item: asset.typeHuman.toLowerCase(),
         });
 
         text += ': ' + asset.existingName + '.';
@@ -112,7 +124,10 @@
 
         return text;
       },
-    }
+      noUpdatePermissions(asset) {
+          return this.$t("You do not have permissions to update the existing {{type}} in this environment.", { type: asset.typeHuman.toLowerCase() });
+      },
+    },
   };
 </script>
 

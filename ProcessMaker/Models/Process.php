@@ -18,7 +18,6 @@ use ProcessMaker\Exception\InvalidUserAssignmentException;
 use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Exception\ThereIsNoProcessManagerAssignedException;
-use ProcessMaker\Exception\UserOrGroupAssignmentEmptyException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Facades\WorkflowUserManager;
 use ProcessMaker\Managers\DataManager;
@@ -30,9 +29,9 @@ use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
-use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Rules\BPMNValidation;
 use ProcessMaker\Traits\Exportable;
+use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasSelfServiceTasks;
 use ProcessMaker\Traits\HasVersioning;
@@ -145,7 +144,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     use ProcessTimerEventsTrait;
     use ProcessStartEventAssignmentsTrait;
     use HideSystemResources;
-    use PMQL;
+    use ExtendedPMQL;
     use HasCategories;
     use HasSelfServiceTasks;
     use ProcessTrait;
@@ -357,9 +356,8 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     {
         $relationship = $this->morphedByMany('ProcessMaker\Models\User', 'processable')
             ->wherePivot('method', 'START');
-        $relationship = $node === null ? $relationship : $relationship->wherePivot('node', $node);
 
-        return $relationship;
+        return $node === null ? $relationship : $relationship->wherePivot('node', $node);
     }
 
     /**
@@ -371,9 +369,8 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     {
         $relationship = $this->morphedByMany('ProcessMaker\Models\Group', 'processable')
             ->wherePivot('method', 'START');
-        $relationship = $node === null ? $relationship : $relationship->wherePivot('node', $node);
 
-        return $relationship;
+        return $node === null ? $relationship : $relationship->wherePivot('node', $node);
     }
 
     /**
@@ -413,7 +410,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         $this->bpmnDefinitions = app(BpmnDocumentInterface::class, ['process' => $this]);
         if ($this->bpmn) {
             $this->bpmnDefinitions->loadXML($this->bpmn);
-            //Load the collaborations if exists
+            // Load the collaborations if exists
             return $this->bpmnDefinitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'collaboration');
         }
     }
@@ -478,10 +475,10 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
 
         $definitions = $token->getInstance()->getVersionDefinitions();
         $properties = $definitions->findElementById($activity->getId())->getBpmnElementInstance()->getProperties();
-        $assignmentLock = array_key_exists('assignmentLock', $properties) ? $properties['assignmentLock'] : false;
+        $assignmentLock = array_key_exists('assignmentLock', $properties ?? []) ? $properties['assignmentLock'] : false;
 
-        $config = array_key_exists('config', $properties) ? json_decode($properties['config'], true) : [];
-        $isSelfService = array_key_exists('selfService', $config) ? $config['selfService'] : false;
+        $config = array_key_exists('config', $properties ?? []) ? json_decode($properties['config'], true) : [];
+        $isSelfService = array_key_exists('selfService', $config ?? []) ? $config['selfService'] : false;
 
         if ($assignmentType === 'rule_expression') {
             $userByRule = $isSelfService ? null : $this->getNextUserByRule($activity, $token);
@@ -557,7 +554,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     private function checkAssignment(ProcessRequest $request, ActivityInterface $activity, $assignmentType, $escalateToManager, User $user = null)
     {
         $config = $activity->getProperty('config') ? json_decode($activity->getProperty('config'), true) : [];
-        $selfServiceToggle = array_key_exists('selfService', $config) ? $config['selfService'] : false;
+        $selfServiceToggle = array_key_exists('selfService', $config ?? []) ? $config['selfService'] : false;
         $isSelfService = $selfServiceToggle || $assignmentType === 'self_service';
 
         if ($activity instanceof ScriptTaskInterface
@@ -648,8 +645,8 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         $dataManager = new DataManager();
         $instanceData = $dataManager->getData($token);
 
-        $assignedUsers = $instanceData[$usersVariable];
-        $assignedGroups = $instanceData[$groupsVariable];
+        $assignedUsers = $usersVariable ? $instanceData[$usersVariable] : [];
+        $assignedGroups = $groupsVariable ? $instanceData[$groupsVariable] : [];
 
         if (!is_array($assignedUsers)) {
             $assignedUsers = [$assignedUsers];
@@ -660,16 +657,14 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         }
 
         // We need to remove inactive users.
-        $users = User::whereIn('id', array_unique($assignedUsers)) ->where('status', 'ACTIVE')->pluck('id')->toArray();
+        $users = User::whereIn('id', array_unique($assignedUsers))->where('status', 'ACTIVE')->pluck('id')->toArray();
 
         foreach ($assignedGroups as $groupId) {
             // getConsolidatedUsers already removes inactive users
             $this->getConsolidatedUsers($groupId, $users);
         }
 
-        $nextAssignee =  $this->getNextUserFromGroupAssignment($activity->getId(), $users);
-
-        return $nextAssignee;
+        return $this->getNextUserFromGroupAssignment($activity->getId(), $users);
     }
 
     /**
@@ -867,7 +862,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
 
             // If no rule was applied, use the default configured user/group
             if (empty($users) && empty($groups)) {
-                foreach($default as $item) {
+                foreach ($default as $item) {
                     if ($item->type === 'group') {
                         $groups[] = $item->assignee;
                     } elseif ($item->type === 'user') {
@@ -1373,14 +1368,6 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     }
 
     /**
-     * Get the latest version of the process
-     */
-    public function getLatestVersion()
-    {
-        return $this->versions()->orderBy('id', 'desc')->first();
-    }
-
-    /**
      * Check if process is valid for execution
      *
      * @return bool
@@ -1526,4 +1513,129 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             $customRoute->delete();
         }
     }
+
+    /**
+     * PMQL value alias for fulltext field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasFullText($value, $expression)
+    {
+        return function ($query) use ($value) {
+            $this->scopeFilter($query, $value);
+        };
+    }
+
+    /**
+     * PMQL value alias for process field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasName($value, $expression)
+    {
+        return function ($query) use ($value, $expression) {
+            $processes = self::where('name', $expression->operator, $value)->get();
+            $query->whereIn('processes.id', $processes->pluck('id'));
+        };
+    }
+
+    /**
+     * PMQL value alias for process field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasProcess($value, $expression)
+    {
+        return function ($query) use ($value, $expression) {
+            $processes = self::where('name', $expression->operator, $value)->get();
+            $query->whereIn('processes.id', $processes->pluck('id'));
+        };
+    }
+
+    /**
+     * PMQL value alias for status field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasStatus($value, $expression)
+    {
+        return function ($query) use ($value, $expression) {
+            $processes = self::where('status', $expression->operator, $value)->get();
+            $query->whereIn('processes.id', $processes->pluck('id'));
+        };
+    }
+
+    /**
+     * PMQL value alias for id field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasId($value, $expression)
+    {
+        return function ($query) use ($value, $expression) {
+            $processes = self::where('id', $expression->operator, $value)->get();
+            $query->whereIn('processes.id', $processes->pluck('id'));
+        };
+    }
+
+    /**
+     * PMQL value alias for category field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasCategory($value, $expression)
+    {
+        return function ($query) use ($value, $expression) {
+            $categoryAssignment = DB::table('category_assignments')->leftJoin('process_categories', function ($join) {
+                $join->on('process_categories.id', '=', 'category_assignments.category_id');
+                $join->where('category_assignments.category_type', '=', ProcessCategory::class);
+                $join->where('category_assignments.assignable_type', '=', self::class);
+            })
+                ->where('name', $expression->operator, $value);
+            $query->whereIn('processes.id', $categoryAssignment->pluck('assignable_id'));
+        };
+    }
+
+     /**
+      * Filter settings with a string
+      *
+      * @param $query
+      *
+      * @param $filter string
+      */
+     public function scopeFilter($query, $filter)
+     {
+         $filter = '%' . mb_strtolower($filter) . '%';
+         $query->where(function ($query) use ($filter) {
+             $query->where('processes.name', 'like', '%' . $filter . '%')
+                 ->orWhere('processes.description', 'like', '%' . $filter . '%')
+                 ->orWhere('processes.status', '=', $filter)
+                 ->orWhere('user.firstname', 'like', '%' . $filter . '%')
+                 ->orWhere('user.lastname', 'like', '%' . $filter . '%')
+                 ->orWhereIn('processes.id', function ($qry) use ($filter) {
+                     $qry->select('assignable_id')
+                         ->from('category_assignments')
+                         ->leftJoin('process_categories', function ($join) {
+                             $join->on('process_categories.id', '=', 'category_assignments.category_id');
+                             $join->where('category_assignments.category_type', '=', ProcessCategory::class);
+                             $join->where('category_assignments.assignable_type', '=', self::class);
+                         })
+                         ->where('process_categories.name', 'like', '%' . $filter . '%');
+                 });
+         });
+
+         return $query;
+     }
 }

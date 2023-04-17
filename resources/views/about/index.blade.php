@@ -20,7 +20,7 @@
         <div class="card card-body">
         <img class="about-logo" src="/img/processmaker-login.svg" alt="ProcessMaker">
         <hr>
-        <div>{{ $version }}</div>
+        <div><strong>{{ __('ProcessMaker Platform') }}</strong> {{ $versionTitle }}</div>
         <hr>
         <a href="https://github.com/ProcessMaker/processmaker/issues/new" target="_blank">{{__('Report an issue')}}  <i class="fas fa-caret-right fa-lg float-right mr-1"></i></a>
         <hr>
@@ -46,8 +46,14 @@
         @endif
         <div><strong>{{ __('Indexed Search') }}</strong>: {{ $indexedSearch ? __('Enabled') : __('Disabled') }}</div>
         <hr>
-        &copy; {{date('Y')}} - {{__('All Rights Reserved')}}
-        @if($commit_hash)<br><small>Build #{{ $commit_hash }}</small>@endif
+        &copy;{{date('Y')}}. {{__('All Rights Reserved')}}.
+        <br>
+        <small>
+            Version {{ $versionNumber }}
+            @if($commit_hash)
+                (Build #{{ $commit_hash }})
+            @endif
+        </small>
       </div>
     </div>
   </div>

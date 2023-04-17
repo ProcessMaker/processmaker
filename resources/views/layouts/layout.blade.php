@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="app-url" content="{{ config('app.url') }}">
+    <meta name="open-ai-nlq-to-pmql" content="{{ config('app.open_ai_nlq_to_pmql') }}">
     <meta name="i18n-mdate" content='{!! json_encode(ProcessMaker\i18nHelper::mdates()) !!}'>
     <meta name="screen-cache-enabled" content="{{ config('app.screen.cache_enabled') ? 'true' : 'false' }}">
     <meta name="screen-cache-timeout" content="{{ config('app.screen.cache_timeout') }}">
@@ -84,9 +85,14 @@
 <body>
 <a class="skip-navigation alert alert-info" role="link" href="#main" tabindex="1">{{ __('Skip to Content') }}</a>
 <div class="d-flex w-100 mw-100 h-100 mh-100" id="app-container">
+  @if (shouldShow('leftSideBar'))
   <div id="sidebar" class="d-print-none" :class="{expanded: expanded}">
       @yield('sidebar')
   </div>
+  @else
+  <div id="sidebar" class="d-none invisible">
+  </div>
+  @endif
   <div class="d-flex flex-grow-1 flex-column overflow-hidden">
     <div class="flex-grow-1">
         @include('layouts.navbar')

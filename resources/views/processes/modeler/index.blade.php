@@ -36,7 +36,7 @@ div.main {
 
 @section('js')
   <script src="{{mix('js/leave-warning.js')}}"></script>
-  <script> 
+  <script>
   const breadcrumbData = [
     {
       'text':'{{__('Designer')}}',
@@ -57,7 +57,10 @@ div.main {
   ]
   window.ProcessMaker.modeler = {
     process: @json($process),
+    autoSaveDelay: @json($autoSaveDelay),
     xml: @json($process->bpmn),
+    isVersionsInstalled: @json($isVersionsInstalled),
+    isDraft: @json($isDraft),
     processName: @json($process->name),
     signalPermissions: @json($signalPermissions),
     // list of toggles in assignment rules
@@ -73,7 +76,7 @@ div.main {
     ],
   }
   const warnings = @json($process->warnings);
- 
+
   window.ProcessMaker.EventBus.$on('modeler-start', ({ loadXML, addWarnings, addBreadcrumbs }) => {
     loadXML(window.ProcessMaker.modeler.xml);
     addWarnings(warnings || []);

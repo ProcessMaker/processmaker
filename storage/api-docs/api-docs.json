@@ -1674,7 +1674,7 @@
                     "Processes"
                 ],
                 "summary": "Update a process",
-                "description": "Updates the current element",
+                "description": "Updates the current element.",
                 "operationId": "updateProcess",
                 "parameters": [
                     {
@@ -1800,7 +1800,7 @@
                     "Processes"
                 ],
                 "summary": "Restore an inactive process",
-                "description": "Reverses the soft delete of the element",
+                "description": "Reverses the soft delete of the element.",
                 "operationId": "restoreProcess",
                 "parameters": [
                     {
@@ -1858,6 +1858,45 @@
                                         }
                                     },
                                     "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/processes/import/validation": {
+            "post": {
+                "tags": [
+                    "Processes"
+                ],
+                "summary": "Validate a import",
+                "description": "Validate the specified process before importing.",
+                "operationId": "validateImport",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "file": {
+                                        "description": "file to import",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProcessImport"
                                 }
                             }
                         }
@@ -3772,7 +3811,7 @@
         "/security-logs": {
             "get": {
                 "tags": [
-                    "Secuirty Logs"
+                    "Security Logs"
                 ],
                 "summary": "Returns all security logs",
                 "description": "Get a list of Security Logs.",
@@ -3819,7 +3858,7 @@
         "/security-logs/{securityLog}": {
             "get": {
                 "tags": [
-                    "Secuirty Logs"
+                    "Security Logs"
                 ],
                 "summary": "Get single security log by ID",
                 "description": "Display the specified resource.",
@@ -4350,6 +4389,15 @@
                         "required": true,
                         "schema": {
                             "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "include",
+                        "in": "query",
+                        "description": "include",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 ],
@@ -5476,6 +5524,9 @@
                         "type": "string"
                     },
                     "request_id": {
+                        "type": "string"
+                    },
+                    "url": {
                         "type": "string"
                     }
                 },

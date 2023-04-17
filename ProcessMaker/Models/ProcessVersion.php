@@ -2,7 +2,7 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\Builder;
 use ProcessMaker\Contracts\ProcessModelInterface;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasSelfServiceTasks;
@@ -132,5 +132,21 @@ class ProcessVersion extends ProcessMakerModel implements ProcessModelInterface
     public function parent()
     {
         return $this->belongsTo(Process::class, 'process_id', 'id');
+    }
+
+    /**
+     * Scope to only return draft versions.
+     */
+    public function scopeDraft(Builder $query)
+    {
+        return $query->where('draft', true);
+    }
+
+    /**
+     * Scope to only return published versions.
+     */
+    public function scopePublished(Builder $query)
+    {
+        return $query->where('draft', false);
     }
 }

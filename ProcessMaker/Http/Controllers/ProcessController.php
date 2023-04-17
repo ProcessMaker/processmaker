@@ -10,6 +10,7 @@ use ProcessMaker\Http\Controllers\Api\ProcessController as ApiProcessController;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use ProcessMaker\Traits\HasControllerAddons;
@@ -65,7 +66,19 @@ class ProcessController extends Controller
             'status' => $request->input('status'),
         ];
 
-        return view('processes.index', compact('listConfig', 'catConfig'));
+        $listTemplates = (object) [
+            'process-templates' => ProcessTemplates::all(),
+            'permissions' => [
+                'view'   => $request->user()->can('view-process-templates'),
+                'create' => $request->user()->can('create-process-templates'),
+                'edit'   => $request->user()->can('edit-process-templates'),
+                'delete' => $request->user()->can('delete-process-templates'),
+                'import' => $request->user()->can('import-process-templates'),
+                'export' => $request->user()->can('export-process-templates'),
+            ],
+        ];
+
+        return view('processes.index', compact('listConfig', 'catConfig', 'listTemplates'));
     }
 
     /**
