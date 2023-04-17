@@ -126,4 +126,31 @@ class TemplateController extends Controller
     {
         return $this->template->deleteTemplate($type, $request);
     }
+
+    public function preimportValidation(string $type, Request $request)
+    {
+        $content = $request->file('file')->get();
+        $payload = json_decode($content);
+
+        if (!$result = $this->validateImportedFile($content, $request)) {
+            return response(
+                ['message' => __('The selected file is is a invalid or not supported for the Templates importer. Please verify that this file is a Template.')],
+                422
+            );
+        }
+
+        return $result;
+    }
+
+    private function validateImportedFile($content, $request)
+    {
+        $decoded = substr($content, 0, 1) === '{' ? json_decode($content) : (($content = base64_decode($content)) && substr($content, 0, 1) === '{' ? json_decode($content) : null);
+        $isDecoded = $decoded && is_object($decoded);
+        $hasType = $isDecoded && isset($decoded->type) && is_string($decoded->type);
+        $validType = $hasType && $decoded->type === 'process_templates_package';
+
+        if ($validType) {
+            return (new ImportController())->preview($request, $decoded->version);
+        }
+    }
 }

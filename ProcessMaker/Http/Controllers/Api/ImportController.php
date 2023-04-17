@@ -54,13 +54,21 @@ class ImportController extends Controller
         $importer = new Importer($payload, $options);
         $manifest = $importer->doImport();
 
-        if ($manifest[$payload['root']]->model instanceof ProcessTemplates) {
-            return response()->json([], 200);
-        }
-
         $newProcessId = $manifest[$payload['root']]->log['newId'];
 
         return response()->json(['processId' => $newProcessId], 200);
+    }
+
+    public function importTemplate(String $type, Request $request): JsonResponse
+    {
+        $jsonData = $request->file('file')->get();
+        $payload = json_decode($jsonData, true);
+
+        $options = new Options(json_decode(file_get_contents(utf8_decode($request->file('options'))), true));
+        $importer = new Importer($payload, $options);
+        $manifest = $importer->doImport();
+
+        return response()->json([], 200);
     }
 
     private function handlePasswordDecrypt(Request $request, array $payload)
