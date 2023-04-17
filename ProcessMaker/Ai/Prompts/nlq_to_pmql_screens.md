@@ -22,11 +22,11 @@ Response: 'type = "DISPLAY"'
 Question: Show me screens for type form.
 Response: 'type = "FORM"'
 Question: Show me the screen Create State.
-Response: 'process = "Create State"'
+Response: 'screen = "Create State"'
 Question: Show me the screens that contains the words Leave of absence form.
-Response: 'process LIKE "%Leave of absence form%"'
+Response: 'screen LIKE "%Leave of absence form%"'
 Question: Show me the screens that contains leave of absence form case insensitive.
-Response: 'lower(process) LIKE "%leave of absence form%"'
+Response: 'lower(screen) LIKE "%leave of absence form%"'
 Question: Show me screens where category contains catSreenPao.
 Response: 'category LIKE "%catScreenPao%"'
 Question: Show me the catSreenPao screens
