@@ -83,9 +83,6 @@ class ProcessTemplate implements TemplateInterface
 
         // Loop through each asset in the "export" array and set postOptions "mode" accordingly
         $postOptions = [];
-        $attributes = [
-            'is_template' => true, // set this attribute for all assets
-        ];
         foreach ($export as $key => $asset) {
             $mode = 'update';
             $saveMode = 'saveAllAssets';
@@ -115,7 +112,7 @@ class ProcessTemplate implements TemplateInterface
                 $payload['export'][$key]['name'] = $template->name;
                 $payload['export'][$key]['description'] = $template->description;
             }
-            $payload['export'][$key]['attributes'] = $attributes; // set attributes for all assets
+            $payload['export'][$key]['attributes']['is_template'] = true; // set attributes for all assets
             $payload['export'][$key]['is_template'] = true; // set attributes for all assets
         }
 
