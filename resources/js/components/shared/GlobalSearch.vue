@@ -194,6 +194,10 @@ export default {
         return `Home / ${this.capitalize(item.type)} / ${item.response.collection.name}`;
       }
 
+      if (item.type === "screens") {
+        return `Home / Designer / ${this.capitalize(item.type)}`;
+      }
+
       if (!item.type || item.type === "") {
         return "";
       }
@@ -204,7 +208,7 @@ export default {
       const url = this.getUrl(search);
       let { pmql } = search.response;
 
-      window.location.href = `${url}?pmql=${pmql}`;
+      window.location.href = `${url}?pmql=${encodeURIComponent(pmql)}`;
     },
     getUrl(item) {
       if (item.type === "collections" && !item.response.collectionError) {
@@ -216,6 +220,10 @@ export default {
 
       if (item.type === "requests") {
         return `/${item.type}/all`;
+      }
+
+      if (item.type === "screens") {
+        return `/designer/${item.type}`;
       }
 
       return `/${item.type}`;
@@ -230,6 +238,9 @@ export default {
       this.expanded = false;
     },
     getContext() {
+      if (window.location.pathname.split("/")[1] === "designer") {
+        return window.location.pathname.split("/")[2];
+      }
       return window.location.pathname.split("/")[1];
     },
     onInput() {
