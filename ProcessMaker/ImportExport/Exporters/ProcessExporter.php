@@ -367,7 +367,7 @@ class ProcessExporter extends ExporterBase
             ->first();
 
         // Import the appropriate assets based on the `saveAssetsMode` value
-        if ($saveAssetsMode === 'saveAllAssets') {
+        if ($saveAssetsMode === null || $saveAssetsMode === 'saveAllAssets') {
             $this->importScreens();
             $this->importScripts();
             $this->importSubprocesses();
