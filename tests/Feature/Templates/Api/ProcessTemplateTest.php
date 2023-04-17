@@ -57,9 +57,10 @@ class ProcessTemplateTest extends TestCase
                 'asset_id' => $process->id,
                 'user_id' => $user->id,
                 'name' => 'Test Template',
-                'description' => 'Test template description',
+                'description' => 'description 1',
                 'process_category_id' => $process->process_category_id,
                 'mode' => 'copy',
+                'saveAssetsMode' => 'saveAllAssets',
             ]
         );
 
@@ -102,6 +103,7 @@ class ProcessTemplateTest extends TestCase
                 'description' => 'Test template description',
                 'process_category_id' => 1,
                 'mode' => 'new',
+                'saveAssetsMode' => 'saveAllAssets',
             ]
         );
 
@@ -141,6 +143,7 @@ class ProcessTemplateTest extends TestCase
                 'description' => 'Test template description',
                 'process_category_id' => $process->process_category_id,
                 'mode' => 'discard',
+                'saveAssetsMode' => 'saveAllAssets',
             ]
         );
 
@@ -177,7 +180,7 @@ class ProcessTemplateTest extends TestCase
         $process->save();
         $response = $this->apiCall(
             'POST',
-            route('api.template.store', [
+            route('api.template.create', [
                 'type' => 'process',
                 'id' => $process->id,
             ]),
@@ -188,9 +191,10 @@ class ProcessTemplateTest extends TestCase
                 'description' => 'Test template description',
                 'process_category_id' => $process->process_category_id,
                 'mode' => 'copy',
+                'saveAssetMode' => 'saveAllAssets',
             ]
         );
-
+        dd($response);
         // Validate the header status code
         $response->assertStatus(200);
         // // Assert that our database has the process we need
