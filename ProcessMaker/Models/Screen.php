@@ -279,7 +279,7 @@ class Screen extends ProcessMakerModel implements ScreenInterface
         return $screenIds;
     }
 
-    /**
+     /**
       * Filter screen with a string
       *
       * @param $query
