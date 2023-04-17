@@ -381,11 +381,13 @@ export default {
                 if (window.location.pathname === '/template/process/import') {
                     return this.$t('Import Process Template');
                 }
+                return this.$t('Import Process');
         },
         subtitle() {
             if (window.location.pathname === '/template/process/import') {
                 return this.$t('Import a Process Template and its associated assets into this ProcessMaker environment');
             }
+            return this.$t('Import a Process and its associated assets into this ProcessMaker environment');
         },
     },
     mounted() {
