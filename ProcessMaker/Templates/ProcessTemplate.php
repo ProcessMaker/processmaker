@@ -209,7 +209,7 @@ class ProcessTemplate implements TemplateInterface
         foreach ($payload['export'] as $key => $asset) {
             $postOptions[$key] = [
                 'mode' => $asset['mode'],
-                'isTemplate' => true,
+                'isTemplate' => false,
                 'saveAssetsMode' => 'saveAllAssets',
             ];
 
@@ -218,13 +218,11 @@ class ProcessTemplate implements TemplateInterface
                 $payload['export'][$key]['attributes']['name'] = $request['name'];
                 $payload['export'][$key]['attributes']['description'] = $request['description'];
                 $payload['export'][$key]['attributes']['process_category_id'] = $request['process_category_id'];
-                $payload['export'][$key]['attributes']['is_template'] = true;
 
                 $payload['export'][$key]['name'] = $request['name'];
                 $payload['export'][$key]['description'] = $request['description'];
                 $payload['export'][$key]['process_category_id'] = $request['process_category_id'];
                 $payload['export'][$key]['process_manager_id'] = $request['manager_id'];
-                $payload['export'][$key]['is_template'] = true;
             }
         }
 
