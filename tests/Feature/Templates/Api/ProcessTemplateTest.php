@@ -193,7 +193,7 @@ class ProcessTemplateTest extends TestCase
 
         $response->assertStatus(200);
         $id = json_decode($response->getContent(), true)['processId'];
-        $newProcess = Process::where('id', $id)->where('is_template', true)->firstOrFail();
+        $newProcess = Process::where('id', $id)->firstOrFail();
         $newCategory = ProcessCategory::where('id', $template['process_category_id'])->firstOrFail();
 
         $this->assertEquals('Test Create Process from Template', $newProcess->name);
