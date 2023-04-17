@@ -88,7 +88,7 @@
         actions: [
         { value: "unpause-start-timer", content: "Unpause Start Timer Events", icon: "fas fa-play", conditional: "if(has_timer_start_events and pause_timer_start, true, false)" },
         { value: "pause-start-timer", content: "Pause Start Timer Events", icon: "fas fa-pause", conditional: "if(has_timer_start_events and not(pause_timer_start), true, false)"},
-        { value: "edit-designer", content: "Edit Process", link: true, href:"/modeler/{{id}}", permission: "edit-processes", icon: "fas fa-edit", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
+        { value: "edit-designer", content: "Edit Process", permission: "edit-processes", icon: "fas fa-edit", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
         { value: "create-template", content: "Publish as Template", permission: "create-process-templates", icon: "fas fa-layer-group" },
         { value: "edit-item", content: "Configure", permission: "edit-processes", icon: "fas fa-cog", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
         { value: "view-documentation", content: "View Documentation", permission: "view-processes", icon: "fas fa-sign", conditional: "isDocumenterInstalled"},
@@ -164,6 +164,9 @@
       goToDocumentation(processId) {
         window.location = `/modeler/${processId}/print`;
       },
+      goToDesigner(data) {
+        window.location = "/modeler/" + data;
+      },
       goToExport(data) {
         window.location = "/processes/" + data + "/export";
       },
@@ -196,6 +199,9 @@
                   );
                   this.$emit("reload");
                 });
+            break;
+          case "edit-designer":
+            this.goToDesigner(data.id);
             break;
           case "edit-item":
             this.goToEdit(data.id);

@@ -20,9 +20,8 @@
       <b-dropdown-item
         v-for="action in filterAboveDivider"
         :key="action.value"
-        :href="action.link ? itemLink(action, data) : null"
         class="ellipsis-dropdown-item mx-auto"
-        @click="!action.link ? onClick(action, data) : null"
+        @click="onClick(action, data)"
       >
         <div class="ellipsis-dropdown-content">
           <i
@@ -36,9 +35,8 @@
       <b-dropdown-item
         v-for="action in filterBelowDivider"
         :key="action.value"
-        :href="action.link ? itemLink(action, data) : null"
         class="ellipsis-dropdown-item mx-auto"
-        @click="!action.link ? onClick(action, data) : null"
+        @click="onClick(action, data)"
       >
         <div class="ellipsis-dropdown-content">
           <i
@@ -53,9 +51,8 @@
       <b-dropdown-item
         v-for="action in filterActions"
         :key="action.value"
-        :href="action.link ? itemLink(action, data) : null"
         class="ellipsis-dropdown-item mx-auto"
-        @click="!action.link ? onClick(action, data) : null"
+        @click="onClick(action, data)"
       >
         <div class="ellipsis-dropdown-content">
           <i
@@ -71,7 +68,6 @@
 
 <script>
 import { Parser } from "expr-eval";
-import Mustache from 'mustache';
 
 export default {
   components: { },
@@ -126,14 +122,7 @@ export default {
     onClick(action, data) {
       this.$emit("navigate", action, data);
     },
-    itemLink(action, data) {
-      console.log('ITEM LINK', action, data);
-      return Mustache.render(action.href, data);
-    }
   },
-  mounted() {
-    console.log('ACTIONS', this.actions);
-  }
 };
 </script>
 
