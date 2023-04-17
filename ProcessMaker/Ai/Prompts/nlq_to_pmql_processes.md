@@ -18,7 +18,9 @@ Response: 'process = "Leave of absence"'
 Question: Show me the processes that contains the word Leave of absence.
 Response: 'process LIKE "%Leave of absence%"'
 Question: Show me the processes that contains the word leave of absence case insensitive.
-Response: 'lower(process)LIKE "%leave of absence%"'
+Response: 'lower(process) LIKE "%leave of absence%"'
+Question: Show me processes where category contains catPao.
+Response: 'category LIKE "%catPao%"'
 Question: Show me the processes where name starts with proc or name starts with form ignore case sensitive.
 Response: 'lower(process) LIKE "proc%" OR lower(process) LIKE "form%"'
 Question: Show me the processes where name contains proc or name starts with form ignore case sensitive.
