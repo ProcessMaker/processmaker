@@ -63,7 +63,7 @@ trait ExtendedPMQL
             if ($value && !property_exists($value, 'field')) {
                 $fields[] = $this->getFromExpression($value, $fields);
             } else {
-              $fields[] = $value->field->getField();
+                $fields[] = $value->field->getField();
             }
         }
 
