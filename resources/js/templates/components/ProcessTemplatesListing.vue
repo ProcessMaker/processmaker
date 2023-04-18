@@ -137,18 +137,6 @@
         });
       },
       methods: {
-        // goToEdit(data) {          
-        //   window.location = "/template/process/" + data + "/edit";
-        // },
-        // goToConfigure(data) {
-        //   window.location = "/template/process/" + data + "/configure";
-        // },
-        // goToDocumentation(templateId) {
-        //   window.location = `/modeler/template/${templateId}/print`;
-        // },
-        // goToDesigner(templateId) {
-        //   window.location = `/modeler/templates/${templateId}`;
-        // },
         exportTemplate(template) {
           ProcessMaker.apiClient({
             method: 'POST',
