@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Builder;
 use ProcessMaker\Models\User;
 use ProcessMaker\Query\Expression;
 use ProcessMaker\Query\IntervalExpression;
+use ProcessMaker\Query\Parser;
+use ProcessMaker\Query\Processor;
 use ProcessMaker\Query\Traits\PMQL;
 use Throwable;
 
@@ -29,6 +31,8 @@ trait ExtendedPMQL
      */
     public function scopePMQL(Builder $builder, string $query, callable $callback = null, User $user = null)
     {
+        $this->getFields($query);
+
         if (!$callback) {
             // If a callback isn't passed to the scope, we handle it here
             return $this->parentScopePMQL($builder, $query, function ($expression) use ($builder, $user) {
@@ -38,6 +42,32 @@ trait ExtendedPMQL
             // If a callback is passed to the scope, we skip handling it here
             return $this->parentScopePMQL($builder, $query, $callback);
         }
+    }
+
+    public function getFields($query)
+    {
+        $parser = new Parser;
+        $tree = $parser->parse($query);
+        $fields = [];
+
+        $fields = collect($this->getFromExpression($tree, $fields))
+          ->flatten()
+          ->unique();
+
+        return $fields;
+    }
+
+    private function getFromExpression($values, $fields)
+    {
+        foreach ($values as $value) {
+            if ($value && !property_exists($value, 'field')) {
+                $fields[] = $this->getFromExpression($value, $fields);
+            } else {
+              $fields[] = $value->field->getField();
+            }
+        }
+
+        return $fields;
     }
 
     /**
