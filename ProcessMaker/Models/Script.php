@@ -352,13 +352,13 @@ class Script extends ProcessMakerModel implements ScriptInterface
     public function valueAliasCategory($value, $expression)
     {
         return function ($query) use ($value, $expression) {
-            $categoryAssignment = DB::table('category_assignments')->leftJoin('screen_categories', function ($join) {
-                $join->on('screen_categories.id', '=', 'category_assignments.category_id');
-                $join->where('category_assignments.category_type', '=', ScreenCategory::class);
+            $categoryAssignment = DB::table('category_assignments')->leftJoin('script_categories', function ($join) {
+                $join->on('script_categories.id', '=', 'category_assignments.category_id');
+                $join->where('category_assignments.category_type', '=', ScriptCategory::class);
                 $join->where('category_assignments.assignable_type', '=', self::class);
             })
             ->where('name', $expression->operator, $value);
-            $query->whereIn('screens.id', $categoryAssignment->pluck('assignable_id'));
+            $query->whereIn('scripts.id', $categoryAssignment->pluck('assignable_id'));
         };
     }
 
