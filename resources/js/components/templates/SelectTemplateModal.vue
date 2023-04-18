@@ -21,7 +21,7 @@
     >
       <template-search :type="type" :component="currentComponent" @show-details="updateModal($event)"/>
     </modal>
-    <create-process-modal ref="create-process-modal" :blank-template="blankTemplate" :count-categories="countCategories" :selected-template="selectedTemplate" :template-data="templateData"/>
+    <create-process-modal ref="create-process-modal" :blank-template="blankTemplate" :count-categories="countCategories" :selected-template="selectedTemplate" :template-data="templateData" @resetModal="resetModal()"/>
   </div>
 </template>
 
@@ -98,6 +98,10 @@
         this.$bvModal.hide("selectTemplate");
         this.showSelectTemplateComponent();
       },
+      resetModal() {
+        this.selectedTemplate = false;
+        this.templateData = {};
+      }
     },
     mounted() {
       this.title = this.$t(`New ${this.type}`);
