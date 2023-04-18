@@ -7,7 +7,7 @@
               :empty-desc="$t('')"
               empty-icon="noData"
       />
-      <div v-show="!shouldShowLoader" class="card card-body table-card" data-cy="processes-table">
+      <div v-show="!shouldShowLoader" class="card card-body process-template-table-card" data-cy="processes-template-table">
         <vuetable
                 :dataManager="dataManager"
                 :sortOrder="sortOrder"
@@ -123,8 +123,8 @@
             }
           ],
           actions: [
-            // { value: "edit-designer", content: "Edit Template", permission: "edit-processes", icon: "fas fa-edit", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
-            { value: "view-documentation", content: "Template Documentation", link: true, href:"/modeler/{{process_id}}/print", permission: "view-process-templates", icon: "fas fa-sign", conditional: "isDocumenterInstalled"},
+            { value: "view-documentation", content: "Template Documentation", link: true, href:"/modeler/template/{{id}}/print", permission: "view-process-templates", icon: "fas fa-sign", conditional: "isDocumenterInstalled"},
+            { value: "edit-designer", content: "Edit Template", link: true, href:"/modeler/templates/{{id}}", permission: "edit-process-templates", icon: "fas fa-edit"},
             { value: "export-item", content: "Export Template", permission: "export-process-templates", icon: "fas fa-file-export"},
             { value: "edit-item", content: "Configure Template", link: true, href:"/template/process/{{id}}/configure", permission: "edit-process-templates", icon: "fas fa-cog"},
             { value: "delete-item", content: "Delete Template", permission: "delete-process-templates", icon: "fas fa-trash"},
@@ -137,12 +137,18 @@
         });
       },
       methods: {
-        goToEdit(data) {          
-          window.location = "/template/process/" + data + "/edit";
-        },
-        goToDesigner(data) {
-          window.location = "/modeler/" + data;
-        },
+        // goToEdit(data) {          
+        //   window.location = "/template/process/" + data + "/edit";
+        // },
+        // goToConfigure(data) {
+        //   window.location = "/template/process/" + data + "/configure";
+        // },
+        // goToDocumentation(templateId) {
+        //   window.location = `/modeler/template/${templateId}/print`;
+        // },
+        // goToDesigner(templateId) {
+        //   window.location = `/modeler/templates/${templateId}`;
+        // },
         exportTemplate(template) {
           ProcessMaker.apiClient({
             method: 'POST',
@@ -170,6 +176,7 @@
           };
           switch (action.value) {
             case "edit-designer":
+              console.log('data', data);
               this.goToDesigner(data.id);
               break;
             case "export-item":
@@ -300,6 +307,9 @@
   
     :deep(th#_created_at) {
       width: 14%;
+    }
+    .process-template-table-card {
+      padding: 0;
     }
   </style>
   

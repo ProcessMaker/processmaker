@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="pb-2">
+    <div class="pb-3">
       <b-input-group v-if="component === 'template-select-card'">
         <b-input-group-prepend>
           <b-btn class="btn-search-run px-2" :title="$t('Search Templates')">

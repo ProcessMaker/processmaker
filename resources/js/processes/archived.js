@@ -8,6 +8,11 @@ new Vue({
   data: {
     filter: "",
     pmql: "",
+    urlPmql: "",
+  },
+  created() {
+    const urlParams = new URLSearchParams(window.location.search);
+    this.urlPmql = urlParams.get("pmql");
   },
   methods: {
     onNLQConversion(query) {

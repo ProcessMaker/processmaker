@@ -22,7 +22,9 @@ class ProcessTemplatesFactory extends Factory
     public function definition()
     {
         $process = Process::factory()->create();
-        $manifest = (new ExportController)->manifest('process', $process->id);
+
+        $response = (new ExportController)->manifest('process', $process->id);
+        $manifest = json_decode($response->getContent(), true);
 
         return [
             'name' => $this->faker->unique()->sentence(3),

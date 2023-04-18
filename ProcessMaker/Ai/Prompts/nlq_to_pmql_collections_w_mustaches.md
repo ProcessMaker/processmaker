@@ -11,6 +11,14 @@ Perform arithmetic operations on dates by using the following syntax: 'date oper
 where date represents the date, operator represents the comparative operator, + or - represents the addition or subtraction (respectively) from the date, number represents the number to add or subtract from the date, interval is the interval of time.
 ##
 Examples
+Question: Show records where "country" is equal to selectlist "selectedCountry"
+Response: 'data.country = "{{ selectedCountry }}"'
+Question: Show records where "country" is equal to select list "selectedCountry"
+Response: 'data.country = "{{ selectedCountry }}"'
+Question: Show records where "country" is equal to variable "selectedCountry"
+Response: 'data.country = "{{ selectedCountry }}"'
+Question: Show all where "league" is "selectedLeague" variable and "state" is "state" variable
+Response: 'data.league = "{{ selectedLeague }}" AND data.state = "{{ state }}"'
 Question: Find records associated with customer with firstname that begin with P
 Response: 'data.firstname LIKE "P%"'
 Question: Find records with statuses that start with c

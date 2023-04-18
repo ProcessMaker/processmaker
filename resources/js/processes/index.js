@@ -16,9 +16,14 @@ new Vue({
   data: {
     filter: "",
     pmql: "",
+    urlPmql: "",
     processModal: false,
     processId: null,
     showModal: false,
+  },
+  created() {
+    const urlParams = new URLSearchParams(window.location.search);
+    this.urlPmql = urlParams.get("pmql");
   },
   methods: {
     show() {

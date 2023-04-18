@@ -5,6 +5,8 @@
     no-flip
     lazy
     class="dropdown-right ellipsis-dropdown-main"
+    @show="onShow"
+    @hide="onHide"
   >
     <template v-if="customButton" #button-content>
       <i
@@ -88,7 +90,7 @@ export default {
       let btns = this.actions.filter(action => {
         if (!action.hasOwnProperty('permission') || action.hasOwnProperty('permission') && this.permission.includes(action.permission)) {
           return action;
-        } 
+        }
       });
 
       btns = btns.filter(btn => {
@@ -127,9 +129,14 @@ export default {
       this.$emit("navigate", action, data);
     },
     itemLink(action, data) {
-      console.log('ITEM LINK', action, data);
       return Mustache.render(action.href, data);
-    }
+    },
+    onShow() {
+      this.$emit('show');
+    },
+    onHide() {
+      this.$emit('hide');
+    },
   },
   mounted() {
     console.log('ACTIONS', this.actions);
