@@ -51,7 +51,7 @@
         "@panter/vue-i18next": "^0.15.2",
         "@processmaker/modeler": "1.27.0",
         "@processmaker/processmaker-bpmn-moddle": "0.13.0",
-        "@processmaker/screen-builder": "2.67.0",
+        "@processmaker/screen-builder": "2.68.0",
         "@processmaker/vue-form-elements": "0.44.1",
         "@processmaker/vue-multiselect": "2.2.0",
         "autoprefixer": "10.4.5",
