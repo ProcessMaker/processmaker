@@ -29,13 +29,13 @@ class TaskAssignmentByVariableTest extends TestCase
         // The first assignment should be to user (is the first created user)
         $response = $this->startTestProcess($process, ['usersVariable' => $user->id, 'groupsVariable' => $group->id]);
         $requestId = $response['id'];
-        $task = ProcessRequestToken::where([ 'process_request_id' => $requestId, 'status' => 'ACTIVE', ])->firstOrFail();
+        $task = ProcessRequestToken::where(['process_request_id' => $requestId, 'status' => 'ACTIVE'])->firstOrFail();
         $this->assertEquals($user->id, $task->user_id);
 
         // The second assignment should be to the first user of the created group
         $response = $this->startTestProcess($process, ['usersVariable' => $user->id, 'groupsVariable' => $group->id]);
         $requestId = $response['id'];
-        $task = ProcessRequestToken::where([ 'process_request_id' => $requestId, 'status' => 'ACTIVE', ])->firstOrFail();
+        $task = ProcessRequestToken::where(['process_request_id' => $requestId, 'status' => 'ACTIVE'])->firstOrFail();
         $this->assertEquals($group->users->first()->id, $task->user_id);
     }
 
@@ -50,31 +50,31 @@ class TaskAssignmentByVariableTest extends TestCase
         // The first assignment should be to user (is the first created user)
         $response = $this->startTestProcess($process, [
             'usersVariable' => $users->pluck('id')->toArray(),
-            'groupsVariable' => [$group1->id, $group2->id]
+            'groupsVariable' => [$group1->id, $group2->id],
         ]);
 
         $requestId = $response['id'];
-        $task = ProcessRequestToken::where([ 'process_request_id' => $requestId, 'status' => 'ACTIVE', ])->firstOrFail();
+        $task = ProcessRequestToken::where(['process_request_id' => $requestId, 'status' => 'ACTIVE'])->firstOrFail();
         $this->assertEquals($users->first()->id, $task->user_id);
 
         // The second assignment should be to the second user
         $response = $this->startTestProcess($process, [
             'usersVariable' => $users->pluck('id')->toArray(),
-            'groupsVariable' => [$group1->id, $group2->id]
+            'groupsVariable' => [$group1->id, $group2->id],
         ]);
 
         $requestId = $response['id'];
-        $task = ProcessRequestToken::where([ 'process_request_id' => $requestId, 'status' => 'ACTIVE', ])->firstOrFail();
+        $task = ProcessRequestToken::where(['process_request_id' => $requestId, 'status' => 'ACTIVE'])->firstOrFail();
         $this->assertEquals($users->get(1)->id, $task->user_id);
 
         // The third assignment should be to the first user of the first created group
         $response = $this->startTestProcess($process, [
             'usersVariable' => $users->pluck('id')->toArray(),
-            'groupsVariable' => [$group1->id, $group2->id]
+            'groupsVariable' => [$group1->id, $group2->id],
         ]);
 
         $requestId = $response['id'];
-        $task = ProcessRequestToken::where([ 'process_request_id' => $requestId, 'status' => 'ACTIVE', ])->firstOrFail();
+        $task = ProcessRequestToken::where(['process_request_id' => $requestId, 'status' => 'ACTIVE'])->firstOrFail();
         $this->assertEquals($group1->users->first()->id, $task->user_id);
     }
 
@@ -89,11 +89,11 @@ class TaskAssignmentByVariableTest extends TestCase
         // The first assignment should be to user (is the first created user)
         $response = $this->startTestProcess($process, [
             'usersVariable' => $users->pluck('id')->toArray(),
-            'groupsVariable' => [$group1->id, $group2->id]
+            'groupsVariable' => [$group1->id, $group2->id],
         ]);
 
         $requestId = $response['id'];
-        $assignedTasks = ProcessRequestToken::where([ 'process_request_id' => $requestId, 'status' => 'ACTIVE', ])
+        $assignedTasks = ProcessRequestToken::where(['process_request_id' => $requestId, 'status' => 'ACTIVE'])
             ->get()
             ->count();
         $this->assertEquals(0, $assignedTasks);
@@ -107,13 +107,13 @@ class TaskAssignmentByVariableTest extends TestCase
 
         $response = $this->startTestProcess($process, ['usersVariable' => $user->id, 'groupsVariable' => [$group->id]]);
         $requestId = $response['id'];
-        $task = ProcessRequestToken::where([ 'process_request_id' => $requestId, 'status' => 'ACTIVE', ])->firstOrFail();
+        $task = ProcessRequestToken::where(['process_request_id' => $requestId, 'status' => 'ACTIVE'])->firstOrFail();
 
         $this->assertEquals(1, $task->is_self_service);
         // As it is self service the user must be null
         $this->assertEquals(null, $task->user_id);
         // The column self_service_groups should have the configured groups and users
-        $this->assertEquals(["users" => [$user->id], "groups" =>[$group->id]], $task->self_service_groups);
+        $this->assertEquals(['users' => [$user->id], 'groups' =>[$group->id]], $task->self_service_groups);
     }
 
     public function testSelfServiceClaims()
@@ -126,7 +126,7 @@ class TaskAssignmentByVariableTest extends TestCase
 
         $response = $this->startTestProcess($process, ['usersVariable' => $user->id, 'groupsVariable' => [$group->id]]);
         $requestId = $response['id'];
-        $task = ProcessRequestToken::where([ 'process_request_id' => $requestId, 'status' => 'ACTIVE', ])->firstOrFail();
+        $task = ProcessRequestToken::where(['process_request_id' => $requestId, 'status' => 'ACTIVE'])->firstOrFail();
 
         // Assert some users that can claim the task
         $updateTaskUrl = route('api.tasks.update', [$task->id]);
@@ -138,7 +138,7 @@ class TaskAssignmentByVariableTest extends TestCase
         $response->assertStatus(200);
 
         // Reset task assignment
-        $task = ProcessRequestToken::where([ 'process_request_id' => $requestId, 'status' => 'ACTIVE', ])->firstOrFail();
+        $task = ProcessRequestToken::where(['process_request_id' => $requestId, 'status' => 'ACTIVE'])->firstOrFail();
         $task['is_self_service'] = true;
         $task['user_id'] = null;
         $task->save();
@@ -153,7 +153,7 @@ class TaskAssignmentByVariableTest extends TestCase
         $response->assertStatus(200);
 
         // Reset task assignment
-        $task = ProcessRequestToken::where([ 'process_request_id' => $requestId, 'status' => 'ACTIVE', ])->firstOrFail();
+        $task = ProcessRequestToken::where(['process_request_id' => $requestId, 'status' => 'ACTIVE'])->firstOrFail();
         $task['is_self_service'] = true;
         $task['user_id'] = null;
         $task->save();
@@ -176,13 +176,13 @@ class TaskAssignmentByVariableTest extends TestCase
 
         $response = $this->startTestProcess($process, []);
         $requestId = $response['id'];
-        $task = ProcessRequestToken::where([ 'process_request_id' => $requestId, 'status' => 'ACTIVE', ])->firstOrFail();
+        $task = ProcessRequestToken::where(['process_request_id' => $requestId, 'status' => 'ACTIVE'])->firstOrFail();
 
         $this->assertEquals(1, $task->is_self_service);
         // As it is self service the user must be null
         $this->assertEquals(null, $task->user_id);
         // The column self_service_groups should have the configured groups and users
-        $this->assertEquals(["users" => $users->pluck('id')->toArray(), "groups" =>[$group->id]], $task->self_service_groups);
+        $this->assertEquals(['users' => $users->pluck('id')->toArray(), 'groups' =>[$group->id]], $task->self_service_groups);
     }
 
     public function testSelfServiceWithExpressionAssignment()
@@ -201,22 +201,22 @@ class TaskAssignmentByVariableTest extends TestCase
 
         $response = $this->startTestProcess($process, ['TestVar' => 5]);
         $requestId = $response['id'];
-        $task = ProcessRequestToken::where([ 'process_request_id' => $requestId, 'status' => 'ACTIVE', ])->firstOrFail();
+        $task = ProcessRequestToken::where(['process_request_id' => $requestId, 'status' => 'ACTIVE'])->firstOrFail();
 
         // Assert that the task has been stored correctly in the database
         $this->assertEquals(1, $task->is_self_service);
         $this->assertEquals(null, $task->user_id);
-        $this->assertEquals(["users" => [$users->get(0)->id, $users->get(1)->id], "groups" =>[$group->id]], $task->self_service_groups);
+        $this->assertEquals(['users' => [$users->get(0)->id, $users->get(1)->id], 'groups' =>[$group->id]], $task->self_service_groups);
 
         // Now we'll test that the default assignment rule runs correctly
         $response = $this->startTestProcess($process, ['TestVar' => 10]);
         $requestId = $response['id'];
-        $task = ProcessRequestToken::where([ 'process_request_id' => $requestId, 'status' => 'ACTIVE', ])->firstOrFail();
+        $task = ProcessRequestToken::where(['process_request_id' => $requestId, 'status' => 'ACTIVE'])->firstOrFail();
 
         // Assert that the task has been stored correctly in the database
         $this->assertEquals(1, $task->is_self_service);
         $this->assertEquals(null, $task->user_id);
-        $this->assertEquals(["users" => [$users->get(3)->id], "groups" =>[]], $task->self_service_groups);
+        $this->assertEquals(['users' => [$users->get(3)->id], 'groups' =>[]], $task->self_service_groups);
     }
 
     private function createProcess($assignment, $assignedUsers, $assignedGroups, $rules, $isSelfService)
@@ -233,7 +233,7 @@ class TaskAssignmentByVariableTest extends TestCase
         }
 
         $process = Process::factory()->create([
-            'bpmn' => $bpmn
+            'bpmn' => $bpmn,
         ]);
 
         if ($assignment === 'user_group') {
@@ -270,12 +270,14 @@ class TaskAssignmentByVariableTest extends TestCase
                 'group_id' => $group->id,
             ]);
         }
+
         return $group;
     }
 
     private function startTestProcess($process, $processData)
     {
         $route = route('api.process_events.trigger', [$process->id, 'event' => 'start_node']);
+
         return $this->apiCall('POST', $route, $processData)->json();
     }
 }

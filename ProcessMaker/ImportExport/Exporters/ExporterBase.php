@@ -111,6 +111,7 @@ abstract class ExporterBase implements ExporterInterface
         public $ignoreExplicitDiscard
     ) {
         $this->mode = $options->get('mode', $this->model->uuid);
+        $this->saveAssetsMode = $options->get('saveAssetsMode', $this->model->uuid);
     }
 
     public function uuid() : string
@@ -191,11 +192,11 @@ abstract class ExporterBase implements ExporterInterface
         }
     }
 
-    public function runImport()
+    public function runImport($existingAssetInDatabase = null)
     {
         $extensions = app()->make(Extension::class);
         $extensions->runExtensions($this, 'preImport');
-        $this->import();
+        $this->import($existingAssetInDatabase);
         $extensions->runExtensions($this, 'postImport');
     }
 
@@ -263,6 +264,7 @@ abstract class ExporterBase implements ExporterInterface
             'force_password_protect' => $this->forcePasswordProtect,
             'hidden' => $this->hidden,
             'mode' => $this->mode,
+            'saveAssetsMode' => $this->saveAssetsMode,
             'explicit_discard' => $this->discard,
             'dependents' => array_map(fn ($d) => $d->toArray(), $this->dependents),
             'name' => $this->getName($this->model),
@@ -455,8 +457,23 @@ abstract class ExporterBase implements ExporterInterface
         foreach ($this->getDependents(DependentType::CATEGORIES) as $dependent) {
             $categories->push($categoryClass::findOrFail($dependent->model->id));
         }
+        // Get the options from the object, filter them for the `isTemplate` flag and get the first value.
+        $manifest = $this->manifest->toArray(true);
+        $options = (array) $this->options;
+        $isTemplate = collect($options['options'])
+            ->filter(function ($optionValue, $optionKey) use ($manifest) {
+                return Arr::has($manifest, $optionKey);
+            })
+            ->map(function ($optionValue, $optionKey) {
+                return Arr::get($optionValue, 'isTemplate');
+            })
+            ->first();
 
-        if ($categories->empty() && $this->getReference('uncategorized-category')) {
+        // If a template is being used and an associated category is present, add that category to the collection.
+        // Otherwise, if the collection is empty and there's an uncategorized reference, add the uncategorized category.
+        if ($isTemplate && isset($this->model->process_category_id)) {
+            $categories->push($categoryClass::findOrFail($this->model->process_category_id));
+        } elseif ($categories->empty() && $this->getReference('uncategorized-category')) {
             $categories->push($categoryClass::where('name', 'Uncategorized')->firstOrFail());
         }
 

@@ -27,9 +27,15 @@
           :key="'button-' + key"
           class="border-0 d-inline-flex align-items-center justify-content-center text-white text-uppercase text-nowrap font-weight-normal"
           :style="styleButton"
-        >{{value.initials}}</span>
+        >
+          <span v-if="value.initials">{{value.initials}}</span>
+          <span v-else>PM</span>
+        </span>
       </b-button>
-      <span v-if="!hideName" class="text-center text-capitalize text-nowrap m-1" :key="'name-' + key">{{value.name}}</span>
+      <span v-if="!hideName" class="text-center text-capitalize text-nowrap m-1" :key="'name-' + key">
+          <span v-if="value.name">{{value.name}}</span>
+          <span v-else>ProcessMaker</span>
+      </span>
     </template>
   </span>
 </template>

@@ -86,7 +86,9 @@ class Manifest
             $exporterClass = $assetInfo['exporter'];
             self::checkClass($exporterClass);
             $modeOption = $options->get('mode', $uuid);
+            $saveAssetsModeOption = $options->get('saveAssetsMode', $uuid);
             list($mode, $model, $matchedBy) = self::getModel($uuid, $assetInfo, $modeOption, $exporterClass);
+            $model = self::updateBPMNDefinitions($model, $saveAssetsModeOption);
             $exporter = new $exporterClass($model, $manifest, $options, false);
             $exporter->importing = true;
             $exporter->mode = $mode;
@@ -259,5 +261,21 @@ class Manifest
         }
 
         return $parentMode;
+    }
+
+    public static function updateBPMNDefinitions($model, $saveAssetsModeOption)
+    {
+        if ($saveAssetsModeOption === 'saveModelOnly') {
+            $bpmn = $model->bpmn;
+            $bpmn_definitions = simplexml_load_string($bpmn);
+            // Find all instances of screenRef and scriptRef and set their values to empty strings
+            foreach ($bpmn_definitions->xpath('//@pm:screenRef | //@pm:scriptRef') as $attribute) {
+                $attribute[0] = '';
+            }
+            $new_bpmn_string = $bpmn_definitions->asXML();
+            $model->bpmn = $new_bpmn_string;
+        }
+
+        return $model;
     }
 }
