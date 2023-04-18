@@ -33,6 +33,14 @@ Question: Show me the catScriptPao scripts
 Response: 'category = "catScriptPao"'
 Question: Show me all the Uncategorized scripts
 Response: 'category = "Uncategorized"'
+Question: Show me all the php scripts
+Response: 'language = "php"'
+Question: Show me all the javascript scripts
+Response: 'language = "javascript"'
+Question: Show me all the lua scripts
+Response: 'language = "lua"'
+Question: Show me all the javascript ssr scripts
+Response: 'language = "javascript-ssr"'
 Question: Show me the scripts where name starts with script or title starts with calculate ignore case sensitive.
 Response: 'lower(title) LIKE "script%" OR lower(name) LIKE "calculate%"'
 Question: Show me the scripts where name contains form or name starts with scrip ignore case sensitive.
