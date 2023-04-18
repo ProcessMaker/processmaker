@@ -31,8 +31,6 @@ trait ExtendedPMQL
      */
     public function scopePMQL(Builder $builder, string $query, callable $callback = null, User $user = null)
     {
-        $this->getFields($query);
-
         if (!$callback) {
             // If a callback isn't passed to the scope, we handle it here
             return $this->parentScopePMQL($builder, $query, function ($expression) use ($builder, $user) {
@@ -51,8 +49,8 @@ trait ExtendedPMQL
         $fields = [];
 
         $fields = collect($this->getFromExpression($tree, $fields))
-          ->flatten()
-          ->unique();
+            ->flatten()
+            ->unique();
 
         return $fields;
     }
