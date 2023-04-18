@@ -134,7 +134,7 @@ class TemplateController extends Controller
 
         if (!$result = $this->validateImportedFile($content, $request)) {
             return response(
-                ['message' => __('The selected file is is a invalid or not supported for the Templates importer. Please verify that this file is a Template.')],
+                ['message' => __('The selected file is invalid or not supported for the Templates importer. Please verify that this file is a Template.')],
                 422
             );
         }

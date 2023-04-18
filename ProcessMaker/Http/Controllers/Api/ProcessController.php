@@ -902,7 +902,7 @@ class ProcessController extends Controller
 
         if (!$result = $this->validateImportedFile($content, $request)) {
             return response(
-                ['message' => __('The selected file is is a invalid or not supported for the Process importer. Please verify that this file is a Process.')],
+                ['message' => __('The selected file is invalid or not supported for the Process importer. Please verify that this file is a Process.')],
                 422
             );
         }
