@@ -138,9 +138,6 @@ export default {
       this.$emit('hide');
     },
   },
-  mounted() {
-    console.log('ACTIONS', this.actions);
-  }
 };
 </script>
 

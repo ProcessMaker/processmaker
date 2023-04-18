@@ -164,7 +164,6 @@
           };
           switch (action.value) {
             case "edit-designer":
-              console.log('data', data);
               this.goToDesigner(data.id);
               break;
             case "export-item":
@@ -220,9 +219,6 @@
               user.fullname +
               "</span>"
           );
-        },
-        getCategoryId(id) {
-          console.log('id', id);
         },
         createImg(properties) {
           let container = document.createElement("div");
