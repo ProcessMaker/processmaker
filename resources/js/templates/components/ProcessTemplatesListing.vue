@@ -124,9 +124,9 @@
           ],
           actions: [
             // { value: "edit-designer", content: "Edit Template", permission: "edit-processes", icon: "fas fa-edit", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
-            { value: "view-documentation", content: "Template Documentation", permission: "view-process-templates", icon: "fas fa-sign", isDocumenterInstalled: "if('isDocumenterInstalled' == true, true, false)"},
+            { value: "view-documentation", content: "Template Documentation", link: true, href:"/modeler/{{process_id}}/print", permission: "view-process-templates", icon: "fas fa-sign", conditional: "isDocumenterInstalled"},
             { value: "export-item", content: "Export Template", permission: "export-process-templates", icon: "fas fa-file-export"},
-            { value: "edit-item", content: "Configure Template", permission: "edit-process-templates", icon: "fas fa-cog"},
+            { value: "edit-item", content: "Configure Template", link: true, href:"/template/process/{{id}}/configure", permission: "edit-process-templates", icon: "fas fa-cog"},
             { value: "delete-item", content: "Delete Template", permission: "delete-process-templates", icon: "fas fa-trash"},
           ],
         };
@@ -139,12 +139,6 @@
       methods: {
         goToEdit(data) {          
           window.location = "/template/process/" + data + "/edit";
-        },
-        goToConfigure(data) {
-          window.location = "/template/process/" + data + "/configure";
-        },
-        goToDocumentation(processId) {
-          window.location = `/modeler/${processId}/print`;
         },
         goToDesigner(data) {
           window.location = "/modeler/" + data;
@@ -177,12 +171,6 @@
           switch (action.value) {
             case "edit-designer":
               this.goToDesigner(data.id);
-              break;
-            case "edit-item":
-              this.goToConfigure(data.id);
-            break;
-            case "view-documentation":
-              this.goToDocumentation(data.id);
               break;
             case "export-item":
               this.exportTemplate(data);
