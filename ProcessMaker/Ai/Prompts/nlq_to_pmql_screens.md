@@ -26,7 +26,7 @@ Response: 'screen = "Create State"'
 Question: Show me the screens that contains the words Leave of absence form.
 Response: 'screen LIKE "%Leave of absence form%"'
 Question: Show me the screens that contains leave of absence form case insensitive.
-Response: 'lower(screen) LIKE "%leave of absence form%"'
+Response: 'lower(name) LIKE "%leave of absence form%"'
 Question: Show me screens where category contains catSreenPao.
 Response: 'category LIKE "%catScreenPao%"'
 Question: Show me the catSreenPao screens
