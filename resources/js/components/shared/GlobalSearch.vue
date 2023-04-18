@@ -194,7 +194,7 @@ export default {
         return `Home / ${this.capitalize(item.type)} / ${item.response.collection.name}`;
       }
 
-      if (item.type === "screens") {
+      if (item.type === "screens" || item.type === "scripts") {
         return `Home / Designer / ${this.capitalize(item.type)}`;
       }
 
@@ -222,7 +222,7 @@ export default {
         return `/${item.type}/all`;
       }
 
-      if (item.type === "screens") {
+      if (item.type === "screens" || item.type === "scripts") {
         return `/designer/${item.type}`;
       }
 

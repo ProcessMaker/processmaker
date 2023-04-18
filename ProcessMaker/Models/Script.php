@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Contracts\ScriptInterface;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
@@ -10,6 +11,7 @@ use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
 use ProcessMaker\ScriptRunners\ScriptRunner;
 use ProcessMaker\Traits\Exportable;
+use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\HideSystemResources;
@@ -64,6 +66,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
     use HasCategories;
     use HasVersioning;
     use Exportable;
+    use ExtendedPMQL;
 
     const categoryClass = ScriptCategory::class;
 
@@ -311,5 +314,111 @@ class Script extends ProcessMakerModel implements ScriptInterface
         if (empty($this->language)) {
             $this->language = $this->scriptExecutor->language;
         }
+    }
+
+    /**
+     * PMQL field (id = scripts.id)
+     *
+     * @return string
+     */
+    public function fieldAliasId()
+    {
+        return 'scripts.id';
+    }
+
+    /**
+     * @return string
+     */
+    public function fieldAliasName()
+    {
+        return 'scripts.title';
+    }
+
+    /**
+     * @return string
+     */
+    public function fieldAliasStatus()
+    {
+        return 'scripts.status';
+    }
+
+    /**
+     * PMQL value alias for category field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasCategory($value, $expression)
+    {
+        return function ($query) use ($value, $expression) {
+            $categoryAssignment = DB::table('category_assignments')->leftJoin('screen_categories', function ($join) {
+                $join->on('screen_categories.id', '=', 'category_assignments.category_id');
+                $join->where('category_assignments.category_type', '=', ScreenCategory::class);
+                $join->where('category_assignments.assignable_type', '=', self::class);
+            })
+            ->where('name', $expression->operator, $value);
+            $query->whereIn('screens.id', $categoryAssignment->pluck('assignable_id'));
+        };
+    }
+
+    /**
+     * PMQL value alias for fulltext field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasFullText($value, $expression)
+    {
+        return function ($query) use ($value) {
+            $this->scopeFilter($query, $value);
+        };
+    }
+
+    /**
+     * Filter script with a string
+     *
+     * @param $query
+     *
+     * @param $filter string
+     */
+    public function scopeFilter($query, $filterStr)
+    {
+        $filter = '%' . $filterStr . '%';
+        $query->where(function ($query) use ($filter) {
+            $query->Where('title', 'like', $filter)
+                ->orWhere('description', 'like', $filter)
+                ->orWhere('language', 'like', $filter)
+                ->orWhereIn('scripts.id', function ($qry) use ($filter) {
+                    $qry->select('assignable_id')
+                        ->from('category_assignments')
+                        ->leftJoin('script_categories', function ($join) {
+                            $join->on('script_categories.id', '=', 'category_assignments.category_id');
+                            $join->where('category_assignments.category_type', '=', ScriptCategory::class);
+                            $join->where('category_assignments.assignable_type', '=', Script::class);
+                        })
+                        ->where('script_categories.name', 'like', $filter);
+                });
+        });
+
+        return $query;
+    }
+
+    /**
+     * Filter script with a string for select lists
+     *
+     * @param $query
+     *
+     * @param $filter string
+     */
+    public function scopeFilterForSelectList($query, $filterStr)
+    {
+        $filter = '%' . $filterStr . '%';
+        $query->where(function ($query) use ($filter) {
+            $query->Where('title', 'like', $filter);
+        });
+
+        return $query;
     }
 }
