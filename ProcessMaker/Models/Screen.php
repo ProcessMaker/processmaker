@@ -307,20 +307,20 @@ class Screen extends ProcessMakerModel implements ScreenInterface
         return $query;
     }
 
-     /**
-      * Filter screen with a string for select lists
-      *
-      * @param $query
-      *
-      * @param $filter string
-      */
-     public function scopeFilterForSelectList($query, $filterStr)
-     {
-         $filter = '%' . $filterStr . '%';
-         $query->where(function ($query) use ($filter) {
-             $query->where('title', 'like', $filter);
-         });
+    /**
+     * Filter screen with a string for select lists
+     *
+     * @param $query
+     *
+     * @param $filter string
+     */
+    public function scopeFilterForSelectList($query, $filterStr)
+    {
+        $filter = '%' . $filterStr . '%';
+        $query->where(function ($query) use ($filter) {
+            $query->where('title', 'like', $filter);
+        });
 
-         return $query;
-     }
+        return $query;
+    }
 }
