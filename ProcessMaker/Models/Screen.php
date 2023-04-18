@@ -298,7 +298,7 @@ class Screen extends ProcessMakerModel implements ScreenInterface
                         ->leftJoin('screen_categories', function ($join) {
                             $join->on('screen_categories.id', '=', 'category_assignments.category_id');
                             $join->where('category_assignments.category_type', '=', ScreenCategory::class);
-                            $join->where('category_assignments.assignable_type', '=', Screen::class);
+                            $join->where('category_assignments.assignable_type', '=', self::class);
                         })
                         ->where('screen_categories.name', 'like', $filter);
                 });
@@ -316,11 +316,11 @@ class Screen extends ProcessMakerModel implements ScreenInterface
       */
      public function scopeFilterForSelectList($query, $filterStr)
      {
-        $filter = '%' . $filterStr . '%';
-        $query->where(function ($query) use ($filter) {
-            $query->where('title', 'like', $filter);
-        });
+         $filter = '%' . $filterStr . '%';
+         $query->where(function ($query) use ($filter) {
+             $query->where('title', 'like', $filter);
+         });
 
-        return $query;
+         return $query;
      }
 }
