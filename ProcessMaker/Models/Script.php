@@ -396,7 +396,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
                         ->leftJoin('script_categories', function ($join) {
                             $join->on('script_categories.id', '=', 'category_assignments.category_id');
                             $join->where('category_assignments.category_type', '=', ScriptCategory::class);
-                            $join->where('category_assignments.assignable_type', '=', Script::class);
+                            $join->where('category_assignments.assignable_type', '=', self::class);
                         })
                         ->where('script_categories.name', 'like', $filter);
                 });
