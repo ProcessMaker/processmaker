@@ -22,7 +22,7 @@
       >
         <template slot="title" slot-scope="props">
           <b-link
-            @click="onAction('edit-screen', props.rowData, props.rowIndex)"
+            :href="onAction('edit-screen', props.rowData, props.rowIndex)"
             v-if="permission.includes('edit-screens')"
           ><span v-uni-id="props.rowData.id.toString()">{{props.rowData.title}}</span></b-link>
           <span v-uni-id="props.rowData.id.toString()" v-else="permission.includes('edit-screens')">{{props.rowData.title}}</span>
@@ -104,12 +104,16 @@ export default {
         {
           value: "edit-screen",
           content: "Edit Screen",
+          link: true,
+          href: "/designer/screen-builder/{{id}}/edit",
           permission: "edit-screens",
           icon: "fas fa-pen-square",
         },
         {
           value: "edit-item",
           content: "Configure",
+          link: true,
+          href: "/designer/screens/{{id}}/edit",
           permission: "edit-screens",
           icon: "fas fa-cog",
         },
@@ -122,6 +126,8 @@ export default {
         {
           value: "export-item",
           content: "Export",
+          link: true,
+          href: "/designer/screens/{{id}}/export",
           permission: "export-screens",
           icon: "fas fa-file-export",
         },
@@ -222,13 +228,6 @@ export default {
     onAction(actionType, data, index) {
       if (actionType.value) {
         switch (actionType.value) {
-        case "edit-screen":
-          window.location.href =
-            "/designer/screen-builder/" + data.id + "/edit";
-          break;
-        case "edit-item":
-          window.location.href = "/designer/screens/" + data.id + "/edit";
-          break;
         case "duplicate-item":
           this.dupScreen.title = data.title + ' ' + this.$t('Copy');
           this.dupScreen.type = data.type;
@@ -237,9 +236,6 @@ export default {
           this.dupScreen.description = data.description;
           this.dupScreen.id = data.id;
           this.showModal();
-          break;
-        case "export-item":
-          window.location.href = "/designer/screens/" + data.id + "/export";
           break;
         case "remove-item":
           let that = this;
@@ -266,45 +262,9 @@ export default {
     } else {
         switch (actionType) {
         case "edit-screen":
-          window.location.href =
-            "/designer/screen-builder/" + data.id + "/edit";
+          let link = "/designer/screen-builder/" + data.id + "/edit";
+          return link;
           break;
-        case "edit-item":
-          window.location.href = "/designer/screens/" + data.id + "/edit";
-          break;
-        case "duplicate-item":
-          this.dupScreen.title = data.title + ' ' + this.$t('Copy');
-          this.dupScreen.type = data.type;
-          this.dupScreen.category = data.category;
-          this.dupScreen.screen_category_id = data.screen_category_id;
-          this.dupScreen.description = data.description;
-          this.dupScreen.id = data.id;
-          this.showModal();
-          break;
-        case "export-item":
-          window.location.href = "/designer/screens/" + data.id + "/export";
-          break;
-        case "remove-item":
-          let that = this;
-          ProcessMaker.confirmModal(
-            this.$t("Caution!"),
-             this.$t("Are you sure you want to delete the screen {{item}}? Deleting this asset will break any active tasks that are assigned.", {
-                item: data.title,
-              }),
-              "",
-            function() {
-              ProcessMaker.apiClient
-                .delete("screens/" + data.id)
-                .then(response => {
-                  ProcessMaker.alert(
-                    this.$t("The screen was deleted."),
-                    "success"
-                  );
-                  that.fetch();
-                });
-            }
-          );
-            break;
         }
     }
   },
