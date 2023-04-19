@@ -42,24 +42,24 @@ trait ExtendedPMQL
         }
     }
 
-    public function getFields($query)
+    public static function getFields($query)
     {
         $parser = new Parser;
         $tree = $parser->parse($query);
         $fields = [];
 
-        $fields = collect($this->getFromExpression($tree, $fields))
+        $fields = collect(self::getFromExpression($tree, $fields))
             ->flatten()
             ->unique();
 
         return $fields;
     }
 
-    private function getFromExpression($values, $fields)
+    private static function getFromExpression($values, $fields)
     {
         foreach ($values as $value) {
             if ($value && !property_exists($value, 'field')) {
-                $fields[] = $this->getFromExpression($value, $fields);
+                $fields[] = self::getFromExpression($value, $fields);
             } else {
                 $fields[] = $value->field->getField();
             }
