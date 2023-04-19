@@ -54,5 +54,18 @@ class ProcessTemplatesSeeder extends Seeder
                 'is_system' => 0,
                 'key' => 'default_templates',
             ]);
+        ProcessTemplates::updateOrCreate(
+            ['name' => 'Expense Approval'],
+            [
+                'name' => 'Expense Approval',
+                'description' => 'Extract the information from any payment slip picture and submit an expense approval request.',
+                'process_id' => null,
+                'user_id' => null,
+                'process_category_id' => ProcessCategory::where('name', 'Default Templates')->firstOrFail()->getKey(),
+                'manifest' => file_get_contents(app_path('Templates/Fixtures/process-expense-approval.json')),
+                'svg' => file_get_contents(app_path('Templates/Fixtures/process-expense-approval.svg')),
+                'is_system' => 0,
+                'key' => 'default_templates',
+            ]);
     }
 }
