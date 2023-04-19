@@ -6,6 +6,7 @@ use DB;
 use Facades\ProcessMaker\JsonColumnIndex;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use ProcessMaker\Models\ProcessRequest;
 
 class JsonColumnIndexTest extends TestCase
 {
@@ -53,5 +54,15 @@ class JsonColumnIndexTest extends TestCase
         $this->assertEquals('data_$.num', $result[0]->possible_keys);
 
         Schema::dropIfExists($this->table);
+    }
+
+    public function testCustomMysqlGrammar()
+    {
+        $processRequest = ProcessRequest::where('data->firstname', 'Agustin')->toSql();
+        $this->assertEquals(
+            "select * from `process_requests` where `data`->>\"$.\", '$.\"firstname\"' = ?", 
+            $processRequest
+        ); 
+
     }
 }
