@@ -28,7 +28,6 @@
           <ellipsis-menu 
             @navigate="onNavigate"
             :actions="actions"
-            :permission="permission"
             :data="props.rowData"
             :divider="true"
           />
