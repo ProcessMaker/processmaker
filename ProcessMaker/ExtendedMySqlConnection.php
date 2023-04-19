@@ -1,10 +1,9 @@
-<?php 
+<?php
 
 namespace ProcessMaker;
 
 class ExtendedMySqlConnection extends \Illuminate\Database\MySqlConnection
 {
-
     /**
      * @return ExtendedMySqlGrammar
      */
@@ -12,5 +11,4 @@ class ExtendedMySqlConnection extends \Illuminate\Database\MySqlConnection
     {
         return $this->withTablePrefix(new ExtendedMySqlGrammar());
     }
-
 }
