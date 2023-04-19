@@ -7,7 +7,7 @@
             :empty-desc="$t('')"
             empty-icon="noData"
     />
-    <div v-show="!shouldShowLoader"  class="card card-body table-card" data-cy="env-table">
+    <div v-show="!shouldShowLoader"  class="card card-body env-table-card" data-cy="env-table">
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
@@ -155,4 +155,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .env-table-card {
+    padding: -0.25;
+  }
 </style>
