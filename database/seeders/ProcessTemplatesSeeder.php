@@ -29,10 +29,10 @@ class ProcessTemplatesSeeder extends Seeder
         );
         // create process templates seed data
         ProcessTemplates::updateOrCreate(
-            ['name' => 'Employee Onboarding 2023'],
+            ['name' => 'New hire onboarding'],
             [
-                'name' => 'Employee Onboarding 2023',
-                'description' => 'New version of the employee onboarding process from veggieDonuts',
+                'name' => 'New hire onboarding',
+                'description' => 'Automate request for any absences, paid or unpaid from your employees and contractors',
                 'process_id' => null,
                 'user_id' => null,
                 'process_category_id' => ProcessCategory::where('name', 'Default Templates')->firstOrFail()->getKey(),
@@ -42,10 +42,10 @@ class ProcessTemplatesSeeder extends Seeder
                 'key' => 'default_templates',
             ]);
         ProcessTemplates::updateOrCreate(
-            ['name' => 'Leave of Absence 2023'],
+            ['name' => 'Leave of Absence'],
             [
-                'name' => 'Leave of Absence 2023',
-                'description' => 'New Version of the Leave of Absence request.',
+                'name' => 'Leave of Absence',
+                'description' => 'Automate request for any absences, paid or unpaid from your employees and contractors',
                 'process_id' => null,
                 'user_id' => null,
                 'process_category_id' => ProcessCategory::where('name', 'Default Templates')->firstOrFail()->getKey(),
