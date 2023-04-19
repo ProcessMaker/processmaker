@@ -2,13 +2,15 @@
 
 namespace ProcessMaker;
 
+use ProcessMaker\Grammars\MySqlGrammar;
+
 class ExtendedMySqlConnection extends \Illuminate\Database\MySqlConnection
 {
     /**
-     * @return ExtendedMySqlGrammar
+     * @return MySqlGrammar
      */
     protected function getDefaultQueryGrammar()
     {
-        return $this->withTablePrefix(new ExtendedMySqlGrammar());
+        return $this->withTablePrefix(new MySqlGrammar());
     }
 }

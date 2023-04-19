@@ -1,10 +1,10 @@
 <?php
 
-namespace ProcessMaker;
+namespace ProcessMaker\Grammars;
 
-use Illuminate\Database\Query\Grammars\MySqlGrammar as IlluminateMySqlGrammar;
+use Illuminate\Database\Query\Grammars\MySqlGrammar as BaseMySqlGrammar;
 
-class ExtendedMySqlGrammar extends IlluminateMySqlGrammar
+class MySqlGrammar extends BaseMySqlGrammar
 {
     protected function wrapJsonSelector($value)
     {
