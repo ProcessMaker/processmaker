@@ -60,9 +60,8 @@ class JsonColumnIndexTest extends TestCase
     {
         $processRequest = ProcessRequest::where('data->firstname', 'Agustin')->toSql();
         $this->assertEquals(
-            "select * from `process_requests` where `data`->>\"$.\", '$.\"firstname\"' = ?", 
+            "select * from `process_requests` where `data`->>\"$.\", '$.\"firstname\"' = ?",
             $processRequest
-        ); 
-
+        );
     }
 }
