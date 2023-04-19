@@ -44,6 +44,7 @@ trait Indexable
                 break;
             case 'collection':
                 $collectionId = $this->meta->collection_id;
+
                 return 'collection_' . $collectionId;
                 break;
         }
