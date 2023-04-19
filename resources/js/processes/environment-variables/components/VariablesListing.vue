@@ -24,30 +24,13 @@
           <span v-uni-id="props.rowData.id.toString()">{{props.rowData.name}}</span>
         </template>
         <template slot="actions" slot-scope="props">
-          <div class="actions">
-            <div class="popout">
-              <b-btn
-                variant="link"
-                @click="onAction('edit-item', props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
-                :title="$t('Edit')"
-                v-if="permission.includes('edit-environment_variables')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-pen-square fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                variant="link"
-                @click="onAction('remove-item', props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
-                :title="$t('Delete')"
-                v-if="permission.includes('delete-environment_variables')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-trash-alt fa-lg fa-fw"></i>
-              </b-btn>
-            </div>
-          </div>
+          <ellipsis-menu
+              @navigate="onAction"
+              :actions="actions"
+              :permission="permission"
+              :data="props.rowData"
+              :divider="false"
+            />
         </template>
       </vuetable>
       <pagination
@@ -66,9 +49,12 @@
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import { createUniqIdsMixin } from "vue-uniq-ids";
+import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
+
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
+  components: { EllipsisMenu },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   props: ["filter", "permission"],
   data() {
@@ -109,16 +95,28 @@ export default {
           name: "__slot:actions",
           title: ""
         }
-      ]
+      ],
+      actions: [
+        {
+          value: "edit-item",
+          content: "Edit Variable",
+          link: true,
+          href: "/designer/environment-variables/{{id}}/edit",
+          permission: "edit-environment_variables",
+          icon: "fas fa-pen-square",
+        },
+        {
+          value: "remove-item",
+          content: "Delete",
+          permission: "delete-environment_variables",
+          icon: "fas fa-trash-alt",
+        },
+      ],
     };
   },
   methods: {
     onAction(action, data, index) {
-      switch (action) {
-        case "edit-item":
-          window.location =
-            "/designer/environment-variables/" + data.id + "/edit";
-          break;
+      switch (action.value) {
         case "remove-item":
           ProcessMaker.confirmModal(
             this.$t("Caution!"),
