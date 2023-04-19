@@ -7,6 +7,7 @@
     class="dropdown-right ellipsis-dropdown-main"
     @show="onShow"
     @hide="onHide"
+    v-if="filterActions.length > 0"    
   >
     <template v-if="customButton" #button-content>
       <i
@@ -88,7 +89,7 @@ export default {
   computed: {
     filterActions() {
       let btns = this.actions.filter(action => {
-        if (!action.hasOwnProperty('permission') || action.hasOwnProperty('permission') && this.permission.includes(action.permission)) {
+        if (!action.hasOwnProperty('permission') || action.hasOwnProperty('permission') && this.permission[action.permission] || action.hasOwnProperty('permission') && this.permission.includes(action.permission)) {
           return action;
         }
       });
