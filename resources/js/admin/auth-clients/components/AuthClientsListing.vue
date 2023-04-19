@@ -25,28 +25,13 @@
           <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.name }}</span>
         </template>
         <template slot="actions" slot-scope="props">
-          <div class="actions">
-            <div class="popout">
-              <b-btn
-                variant="link"
-                @click="edit(props.rowData)"
-                v-b-tooltip.hover
-                :title="$t('Edit')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-pen-square fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                variant="link"
-                @click="doDelete(props.rowData)"
-                v-b-tooltip.hover
-                :title="$t('Remove')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-trash-alt fa-lg fa-fw"></i>
-              </b-btn>
-            </div>
-          </div>
+          <ellipsis-menu 
+            @navigate="onNavigate"
+            :actions="actions"
+            :permission="permission"
+            :data="props.rowData"
+            :divider="true"
+          />
         </template>
         <template slot="secret" slot-scope="props">
           <b-btn
@@ -78,10 +63,12 @@
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
+import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
+  components: {EllipsisMenu},
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   props: ["filter"],
   data() {
@@ -94,7 +81,10 @@ export default {
           direction: "asc",
         },
       ],
-
+      actions: [
+        { value: "edit-item", content: "Edit Auth Client", icon: "fas fa-pen-square", ariaDescribedBy: 'data.id'},
+        { value: "delete-item", content: "Delete Auth Client", icon: "fas fa-trash-alt",  ariaDescribedBy: 'data.id'},
+      ],
       fields: [
         {
           title: () => this.$t("Client ID"),
@@ -194,14 +184,21 @@ export default {
       }
       this.fetch();
     },
-    edit(row) {
-      this.$emit("edit", Object.assign({}, row));
-    },
     copySecret(secret) {
       this.$refs.copytext.value = secret;
       this.$refs.copytext.select();
       document.execCommand("copy");
     },
+    onNavigate(action, data) {
+      switch (action.value) {
+        case 'edit-item':
+          this.$emit("edit", Object.assign({}, data));
+          break;
+        case 'delete-item':
+          this.doDelete(data);
+          break;
+      }
+    },  
     doDelete(item) {
       ProcessMaker.confirmModal(
         this.$t("Caution!"),
