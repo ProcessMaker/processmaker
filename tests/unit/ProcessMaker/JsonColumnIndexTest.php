@@ -36,13 +36,6 @@ class JsonColumnIndexTest extends TestCase
         $indexes = collect(DB::select("SHOW INDEXES FROM {$this->table}"));
         $this->assertEquals($originalCount, $indexes->count());
 
-        // Make sure we're using the index
-        // $result = DB::select("EXPLAIN SELECT * FROM {$this->table} WHERE (json_unquote(json_extract(`data`, '$.\"stringValue\"')) = 'foo')");
-        // $result = DB::select("EXPLAIN SELECT * FROM {$this->table} WHERE data->>\"$.stringNumberValue\" < '100'");
-        $result = ProcessRequest::pmql('data.numberValue = 123')->explain();
-        // dd(ProcessRequest::pmql('data.numberValue = 123')->toSql());
-        // $this->assertEquals('data_$.stringNumberValue', $result[0]->possible_keys);
-
         // Assert PMQL works
         DB::beginTransaction();
 
@@ -56,35 +49,27 @@ class JsonColumnIndexTest extends TestCase
             'data' => ['stringValue' => 'bar', 'numberValue' => 42, 'stringNumberValue' => '42'],
         ]);
 
-        // dump(ProcessRequest::pmql('data.numberValue > 100')->getBindings());
-        dump(ProcessRequest::pmql('data.numberValue > "100"')->toSql());
-        dd('tmp');
-
-        $this->assertEquals(1, ProcessRequest::pmql('data.stringValue = "foo"')->count());
-        $this->assertEquals(1, ProcessRequest::pmql('data.numberValue = "99"')->count());
-        $this->assertEquals(1, ProcessRequest::pmql('data.numberValue = 99')->count());
-        $this->assertEquals(1, ProcessRequest::pmql('data.stringNumberValue = "42"')->count());
-        $this->assertEquals(1, ProcessRequest::pmql('data.stringNumberValue = 42')->count());
-
-        $this->assertEquals(2, ProcessRequest::pmql('data.numberValue < 100')->count());
-        // $this->assertEquals(2, ProcessRequest::pmql('data.numberValue < "100"')->count());
-        //dd(ProcessRequest::pmql('data.numberValue < "100"')->toSql());
-
-        $this->assertEquals(1, ProcessRequest::pmql('data.numberValue > 50')->count());
-        $this->assertEquals(2, ProcessRequest::pmql('data.stringNumberValue < 100')->count());
-        // $this->assertEquals(2, ProcessRequest::pmql('data.stringNumberValue < "100"')->count());
-        $this->assertEquals(1, ProcessRequest::pmql('data.stringNumberValue > 50')->count());
-
-        $this->assertEquals(2, ProcessRequest::pmql('data.stringNumberValue in [42,99]')->count());
-        $this->assertEquals(2, ProcessRequest::pmql('data.stringNumberValue in ["42","99"]')->count());
-        $this->assertEquals(2, ProcessRequest::pmql('data.numberValue in [42,99]')->count());
-        $this->assertEquals(2, ProcessRequest::pmql('data.numberValue in ["42","99"]')->count());
+        $this->assertPMQLResult(1, 'data.stringValue = "foo"', 'data_$.stringValue');
+        $this->assertPMQLResult(1, 'data.numberValue = "99"', 'data_$.numberValue');
+        $this->assertPMQLResult(1, 'data.numberValue = 99', null); // does not use index on integers
+        $this->assertPMQLResult(1, 'data.stringNumberValue = "42"', 'data_$.stringNumberValue');
+        $this->assertPMQLResult(1, 'data.stringNumberValue = 42', null); // does not use index on integers
+        $this->assertPMQLResult(2, 'data.stringNumberValue in ["42","99"]', 'data_$.stringNumberValue');
 
         // Cleanup
         DB::rollback();
         foreach ($fields as $field) {
             JsonColumnIndex::remove($this->table, 'data', '$.' . $field);
         }
+    }
+
+    private function assertPMQLResult($expected, $query, $index = null)
+    {
+        if ($index) {
+            $explain = ProcessRequest::pmql($query)->explain();
+            $this->assertEquals($index, $explain[0]->key);
+        }
+        $this->assertEquals($expected, ProcessRequest::pmql($query)->count());
     }
 
     public function testCustomMysqlGrammar()
