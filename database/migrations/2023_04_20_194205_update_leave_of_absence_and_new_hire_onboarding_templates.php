@@ -2,6 +2,7 @@
 
 use Database\Seeders\ProcessTemplatesSeeder;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\ProcessTemplates;
 
 class UpdateLeaveOfAbsenceAndNewHireOnboardingTemplates extends Migration
@@ -13,6 +14,9 @@ class UpdateLeaveOfAbsenceAndNewHireOnboardingTemplates extends Migration
      */
     public function up()
     {
+        ProcessTemplates::where('name', 'Employee Onboarding 2023')->where('key', 'default_templates')->delete();
+        ProcessTemplates::where('name', 'Leave of Absence 2023')->where('key', 'default_templates')->delete();
+
         Artisan::call('db:seed', [
             '--class' => ProcessTemplatesSeeder::class,
             '--force' => true,
