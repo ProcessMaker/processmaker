@@ -29,9 +29,9 @@ class ProcessTemplatesSeeder extends Seeder
         );
         // create process templates seed data
         ProcessTemplates::updateOrCreate(
-            ['name' => 'New hire onboarding'],
+            ['name' => 'New Hire Onboarding'],
             [
-                'name' => 'New hire onboarding',
+                'name' => 'New Hire Onboarding',
                 'description' => 'Reduce time and effort in the processes in which new hires are integrated within the company',
                 'process_id' => null,
                 'user_id' => null,
