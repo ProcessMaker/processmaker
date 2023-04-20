@@ -61,7 +61,7 @@ export default {
           file.ignored = false;
         }
         if (file.ignored) {
-          ProcessMaker.alert(this.$t("File not allowed."), "danger");
+          ProcessMaker.alert(this.$t("The selected file is invalid or not supported. Please verify that this file is in JSON format."), "danger");
           return false
         }
       }
