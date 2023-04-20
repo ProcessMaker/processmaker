@@ -32,7 +32,7 @@ class ProcessTemplatesSeeder extends Seeder
             ['name' => 'New hire onboarding'],
             [
                 'name' => 'New hire onboarding',
-                'description' => 'Automate request for any absences, paid or unpaid from your employees and contractors',
+                'description' => 'Reduce time and effort in the processes in which new hires are integrated within the company',
                 'process_id' => null,
                 'user_id' => null,
                 'process_category_id' => ProcessCategory::where('name', 'Default Templates')->firstOrFail()->getKey(),
