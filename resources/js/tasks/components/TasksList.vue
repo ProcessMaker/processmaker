@@ -7,7 +7,7 @@
       :empty-desc="$t('You don\'t currently have any tasks assigned to you')"
       empty-icon="beach"
     />
-    <div v-show="!shouldShowLoader" class="card card-body table-card" data-cy="tasks-table">
+    <div v-show="!shouldShowLoader" class="card card-body tasks-table-card" data-cy="tasks-table">
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
@@ -55,28 +55,12 @@
         </template>
 
         <template slot="actions" slot-scope="props">
-          <div class="actions">
-            <div class="popout">
-              <b-btn
-                variant="link"
-                :href="onAction('edit', props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
-                :title="$t('Open Task')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-caret-square-right fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                variant="link"
-                :href="onAction('showRequestSummary', props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
-                :title="$t('Open Request')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-clipboard fa-lg fa-fw"></i>
-              </b-btn>
-            </div>
-          </div>
+          <ellipsis-menu
+            :actions="actions"
+            :data="props.rowData"
+            :divider="false"
+            @navigate="onNavigate"
+          />
         </template>
       </vuetable>
       <pagination
@@ -94,6 +78,7 @@
 <script>
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
+import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 import AvatarImage from "../../components/AvatarImage";
 import isPMQL from "../../modules/isPMQL";
 import moment from "moment";
@@ -103,6 +88,7 @@ const uniqIdsMixin = createUniqIdsMixin();
 Vue.component("avatar-image", AvatarImage);
 
 export default {
+  components: { EllipsisMenu },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   props: {
     filter: {},
@@ -114,6 +100,18 @@ export default {
   },
   data() {
     return {
+      actions: [
+        {
+          value: "edit",
+          content: "Open Task",
+          icon: "fas fa-caret-square-right",
+        },
+        {
+          value: "showRequestSummary",
+          content: "Open Request",
+          icon: "fas fa-clipboard",
+        },
+      ],
       orderBy: "ID",
       order_direction: "DESC",
       status: "",
@@ -269,6 +267,15 @@ export default {
         return link;
       }
     },
+    onNavigate(action, data) {
+      if (action.value === "edit") {
+        window.location = "/tasks/" + data.id + "/edit";
+      }
+
+      if (action.value === "showRequestSummary") {
+        window.location = "/requests/" + data.process_request.id;
+      }
+    },
     statusColor(props) {
       let status = props.status, isSelfService = props.is_self_service;
       if (status == 'ACTIVE' && isSelfService) {
@@ -404,4 +411,7 @@ export default {
 </script>
 
 <style>
+.tasks-table-card {
+    padding: 0;
+}
 </style>
