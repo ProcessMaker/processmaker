@@ -14,28 +14,49 @@ trait Indexable
     public function addJsonColumnsIndex($fields)
     {
         foreach ($fields as $field) {
-            $exploded = explode('.', $field);
-            $table = $this->table();
+            $table = $this->table($this->table, $this->type, $this->meta);
 
-            // Only columns in format data.field
-            if (count($exploded) > 1) {
-                $column = $exploded[0];
-                array_shift($exploded);
-                $path = '$.' . implode('.', $exploded);
+            [$column, $path] = $this->getColumnAndPath($field);
+
+            if ($column && $path) {
                 \Log::info('Updating JSON path: ' . $path . ' indexes for table: ' . $table);
                 JsonColumnIndex::add($table, $column, $path);
             }
         }
     }
 
-    public function table()
+    public function addJsonColumnsIndexBatch($indexes)
     {
-        if ($this->table !== 'saved_searches') {
-            return $this->table;
+        foreach ($indexes as $index) {
+            [$column, $path] = $this->getColumnAndPath($index['field']);
+            JsonColumnIndex::add($index['table'], $column, $path);
+        }
+    }
+
+    private function getColumnAndPath($field)
+    {
+        $exploded = explode('.', $field);
+
+        // Only columns in format data.field
+        if (count($exploded) > 1) {
+            $column = $exploded[0];
+            array_shift($exploded);
+            $path = '$.' . implode('.', $exploded);
+
+            return [$column, $path];
+        }
+
+        return null;
+    }
+
+    public function table($table, $type, $meta)
+    {
+        if ($table !== 'saved_searches') {
+            return $table;
         }
 
         // If table is saved search, return the corresponding table
-        switch ($this->type) {
+        switch ($type) {
             case 'request':
                 return 'process_requests';
                 break;
@@ -43,7 +64,7 @@ trait Indexable
                 return 'process_request_tokens';
                 break;
             case 'collection':
-                $collectionId = $this->meta->collection_id;
+                $collectionId = $meta->collection_id;
 
                 return 'collection_' . $collectionId;
                 break;
