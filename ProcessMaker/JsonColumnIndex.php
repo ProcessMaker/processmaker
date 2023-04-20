@@ -34,4 +34,11 @@ class JsonColumnIndex
     {
         return collect(DB::select("SHOW INDEXES FROM {$table}"));
     }
+
+    public function remove(string $table, string $column, string $path)
+    {
+        $indexName = $column . '_' . $path;
+
+        return DB::statement("ALTER TABLE `{$table}` DROP INDEX `{$indexName}`");
+    }
 }
