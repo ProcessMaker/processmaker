@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Providers;
 
-use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Notifications\Events\BroadcastNotificationCreated;
@@ -13,7 +12,6 @@ use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
 use ProcessMaker\Events\ScreenBuilderStarting;
-use ProcessMaker\ExtendedMySqlConnection;
 use ProcessMaker\Helpers\PmHash;
 use ProcessMaker\ImportExport\Extension;
 use ProcessMaker\ImportExport\SignalHelper;
@@ -42,8 +40,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
     public function register(): void
     {
-        $this->setCustomResolverForMySql();
-
         // Dusk, if env is appropriate
         // TODO Remove Dusk references and remove from composer dependencies
         if (!$this->app->environment('production')) {
@@ -311,13 +307,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
     {
         Facades\Hash::extend('pm', function () {
             return resolve(PmHash::class);
-        });
-    }
-
-    private function setCustomResolverForMySql()
-    {
-        Connection::resolverFor('mysql', function ($connection, $database, $prefix, $config) {
-            return new ExtendedMySqlConnection($connection, $database, $prefix, $config);
         });
     }
 }

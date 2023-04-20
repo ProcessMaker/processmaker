@@ -89,15 +89,9 @@ class JsonColumnIndexTest extends TestCase
 
     public function testCustomMysqlGrammar()
     {
-        $processRequest = ProcessRequest::where('data->firstname', 'Agustin')->toSql();
-        $this->assertEquals(
-            'select * from `process_requests` where `data`->>"$."firstname" = ?',
-            $processRequest
-        );
-
         $processRequest = ProcessRequest::pmql('data.firstname = "Agustin"')->toSql();
         $this->assertEquals(
-            'select * from `process_requests` where (`data`->>"$.firstname" = ?)',
+            'select * from `process_requests` where (data->>"$.firstname" = ?)',
             $processRequest
         );
     }
