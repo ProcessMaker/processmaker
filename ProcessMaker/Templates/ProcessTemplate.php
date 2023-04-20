@@ -84,7 +84,7 @@ class ProcessTemplate implements TemplateInterface
         // Loop through each asset in the "export" array and set postOptions "mode" accordingly
         $postOptions = [];
         foreach ($export as $key => $asset) {
-            $mode = 'update';
+            $mode = 'copy';
             $saveMode = 'saveAllAssets';
             if (array_key_exists('saveAssetsMode', $asset) && $asset['saveAssetsMode'] === 'saveModelOnly') {
                 $saveMode = 'saveModelOnly';
@@ -205,7 +205,7 @@ class ProcessTemplate implements TemplateInterface
         $postOptions = [];
         foreach ($payload['export'] as $key => $asset) {
             $postOptions[$key] = [
-                'mode' => $asset['mode'],
+                'mode' => 'copy',
                 'isTemplate' => false,
                 'saveAssetsMode' => 'saveAllAssets',
             ];
@@ -221,6 +221,8 @@ class ProcessTemplate implements TemplateInterface
                 $payload['export'][$key]['process_category_id'] = $request['process_category_id'];
                 $payload['export'][$key]['process_manager_id'] = $request['manager_id'];
             }
+            $payload['export'][$key]['attributes']['is_template'] = false;
+            $payload['export'][$key]['is_template'] = false;
         }
 
         $options = new Options($postOptions);
