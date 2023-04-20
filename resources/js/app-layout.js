@@ -90,6 +90,7 @@ window.ProcessMaker.navbar = new Vue({
       sessionTime: "",
       sessionWarnSeconds: "",
       taskTitle: "",
+      isMobile: false,
     };
   },
   watch: {
@@ -100,6 +101,9 @@ window.ProcessMaker.navbar = new Vue({
   mounted() {
     Vue.nextTick() // This is needed to override the default alert method.
       .then(() => {
+        this.onResize();
+        window.addEventListener("resize", this.onResize, { passive: true });
+
         if (document.querySelector("meta[name='alert']")) {
           ProcessMaker.alert(
             document.querySelector("meta[name='alertMessage']").getAttribute("content"),
@@ -146,6 +150,9 @@ window.ProcessMaker.navbar = new Vue({
         return this.$refs.breadcrumbs.updateRoutes(routes);
       }
       return false;
+    },
+    onResize() {
+      this.isMobile = window.innerWidth < 992;
     },
   },
 });
