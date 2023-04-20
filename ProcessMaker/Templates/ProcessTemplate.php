@@ -112,8 +112,11 @@ class ProcessTemplate implements TemplateInterface
                 $payload['export'][$key]['name'] = $template->name;
                 $payload['export'][$key]['description'] = $template->description;
             }
-            $payload['export'][$key]['attributes']['is_template'] = true; // set attributes for all assets
-            $payload['export'][$key]['is_template'] = true; // set attributes for all assets
+
+            if (in_array($asset['type'], ['Process', 'Screen', 'Scripts', 'Collections', 'DataConnector'])) {
+                $payload['export'][$key]['attributes']['is_template'] = true; // set attributes for all assets
+                $payload['export'][$key]['is_template'] = true; // set attributes for all assets
+            }
         }
 
         $options = new Options($postOptions);
