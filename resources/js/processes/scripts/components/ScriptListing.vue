@@ -23,7 +23,7 @@
         <template slot="title" slot-scope="props">
           <b-link
             v-if="permission.includes('edit-scripts')"
-            @click="onAction('edit-script', props.rowData, props.rowIndex)"
+            :href="onAction('edit-script', props.rowData, props.rowIndex)"
             v-uni-id="props.rowData.id.toString()"
           >{{props.rowData.title}}</b-link>
           <span v-uni-id="props.rowData.id.toString()" v-else="permission.includes('edit-scripts')">{{props.rowData.title}}</span>
@@ -99,12 +99,16 @@ export default {
         {
           value: "edit-script",
           content: "Edit Script",
+          link: true,
+          href: "/designer/scripts/{{id}}/builder",
           permission: "edit-scripts",
           icon: "fas fa-pen-square",
         },
         {
           value: "edit-item",
           content: "Configure",
+          link: true,
+          href: "/designer/scripts/{{id}}/edit",
           permission: "edit-scripts",
           icon: "fas fa-cog",
         },
@@ -186,9 +190,6 @@ export default {
   },
 
   methods: {
-    goToEdit(data) {
-      window.location = "/designer/scripts/" + data + "/edit";
-    },
     showModal() {
       this.$refs.myModalRef.show();
     },
@@ -212,12 +213,6 @@ export default {
     onAction(action, data, index) {
       if (action.value) {
         switch (action.value) {
-        case "edit-script":
-          window.location.href = "/designer/scripts/" + data.id + "/builder";
-          break;
-        case "edit-item":
-          this.goToEdit(data.id);
-          break;
         case "duplicate-item":
           this.dupScript.title = data.title + " Copy";
           this.dupScript.language = data.language;
@@ -245,33 +240,8 @@ export default {
       } else {
         switch (action) {
         case "edit-script":
-          window.location.href = "/designer/scripts/" + data.id + "/builder";
-          break;
-        case "edit-item":
-          this.goToEdit(data.id);
-          break;
-        case "duplicate-item":
-          this.dupScript.title = data.title + " Copy";
-          this.dupScript.language = data.language;
-          this.dupScript.code = data.code;
-          this.dupScript.description = data.description;
-          this.dupScript.category = data.category;
-          this.dupScript.script_category_id = data.script_category_id;
-          this.dupScript.id = data.id;
-          this.dupScript.run_as_user_id = data.run_as_user_id;
-          this.showModal();
-          break;
-        case "remove-item":
-          ProcessMaker.confirmModal(
-            this.$t("Caution!"),
-            this.$t("Are you sure you want to delete {{item}}? Deleting this asset will break any active tasks that are assigned.", {
-              item: data.title
-            }),
-            "",
-            () => {
-              this.$emit("delete", data);
-            }
-          );
+          let link = "/designer/scripts/" + data.id + "/builder";
+          return link;
           break;
         }
       }

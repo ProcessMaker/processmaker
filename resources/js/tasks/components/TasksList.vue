@@ -59,7 +59,6 @@
             :actions="actions"
             :data="props.rowData"
             :divider="false"
-            @navigate="onNavigate"
           />
         </template>
       </vuetable>
@@ -105,11 +104,15 @@ export default {
           value: "edit",
           content: "Open Task",
           icon: "fas fa-caret-square-right",
+          link: true,
+          href: "/tasks/{{id}}/edit"
         },
         {
           value: "showRequestSummary",
           content: "Open Request",
           icon: "fas fa-clipboard",
+          link: true,
+          href: "/requests/{{process_request.id}}"
         },
       ],
       orderBy: "ID",
@@ -265,15 +268,6 @@ export default {
       if (action === "showRequestSummary") {
         let link = "/requests/" + rowData.process_request.id;
         return link;
-      }
-    },
-    onNavigate(action, data) {
-      if (action.value === "edit") {
-        window.location = "/tasks/" + data.id + "/edit";
-      }
-
-      if (action.value === "showRequestSummary") {
-        window.location = "/requests/" + data.process_request.id;
       }
     },
     statusColor(props) {

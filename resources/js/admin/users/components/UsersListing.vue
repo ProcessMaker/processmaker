@@ -27,30 +27,13 @@
           <avatar-image size="25" :input-data="props.rowData" hide-name="true"></avatar-image>
         </template>
         <template slot="actions" slot-scope="props">
-          <div class="actions">
-            <div class="popout">
-              <b-btn
-                variant="link"
-                @click="onAction('edit-item', props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
-                :title="$t('Edit')"
-                v-if="permission.includes('edit-users')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-pen-square fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                variant="link"
-                @click="onAction('remove-item', props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
-                :title="$t('Delete')"
-                v-if="permission.includes('delete-users')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-trash-alt fa-lg fa-fw"></i>
-              </b-btn>
-            </div>
-          </div>
+          <ellipsis-menu 
+            @navigate="onNavigate"
+            :actions="actions"
+            :permission="permission"
+            :data="props.rowData"
+            :divider="true"
+          />
         </template>
       </vuetable>
       <pagination
@@ -70,11 +53,13 @@
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import AvatarImage from "../../../components/AvatarImage";
+import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 Vue.component("avatar-image", AvatarImage);
 
 export default {
+  components: {EllipsisMenu},
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   props: ["filter", "permission"],
   data() {
@@ -89,6 +74,10 @@ export default {
           sortField: "username",
           direction: "asc"
         },
+      ],
+      actions: [
+        { value: "edit-item", content: "Edit User", link: true, href: '/admin/users/{{id}}/edit', icon: "fas fa-pen-square", permission:'edit-users', ariaDescribedBy: 'data.id'},
+        { value: "delete-item", content: "Delete User", icon: "fas fa-trash-alt", permission: 'delete-users'},
       ],
       fields: [
         {
@@ -175,12 +164,12 @@ export default {
     goToEdit(data) {
       window.location = "/admin/users/" + data + "/edit";
     },
-    onAction(action, data, index) {
-      switch (action) {
+    onNavigate(action, data, index) {
+      switch (action.value) {
         case "edit-item":
           this.goToEdit(data.id);
           break;
-        case "remove-item":
+        case "delete-item":
           ProcessMaker.confirmModal(
             this.$t("Caution!"),
             this.$t("Are you sure you want to delete the user") +
