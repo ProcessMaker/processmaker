@@ -123,10 +123,10 @@
             }
           ],
           actions: [
-            { value: "edit-designer", content: "Edit Template", permission: "edit-process-templates", icon: "fas fa-edit"},
-            { value: "view-documentation", content: "Template Documentation", permission: "view-process-templates", icon: "fas fa-sign", isDocumenterInstalled: "if('isDocumenterInstalled' == true, true, false)"},
+            { value: "view-documentation", content: "Template Documentation", link: true, href:"/modeler/template/{{id}}/print", permission: "view-process-templates", icon: "fas fa-sign", conditional: "isDocumenterInstalled"},
+            { value: "edit-designer", content: "Edit Template", link: true, href:"/modeler/templates/{{id}}", permission: "edit-process-templates", icon: "fas fa-edit"},
             { value: "export-item", content: "Export Template", permission: "export-process-templates", icon: "fas fa-file-export"},
-            { value: "edit-item", content: "Configure Template", permission: "edit-process-templates", icon: "fas fa-cog"},
+            { value: "edit-item", content: "Configure Template", link: true, href:"/template/process/{{id}}/configure", permission: "edit-process-templates", icon: "fas fa-cog"},
             { value: "delete-item", content: "Delete Template", permission: "delete-process-templates", icon: "fas fa-trash"},
           ],
         };
@@ -137,18 +137,6 @@
         });
       },
       methods: {
-        goToEdit(data) {          
-          window.location = "/template/process/" + data + "/edit";
-        },
-        goToConfigure(data) {
-          window.location = "/template/process/" + data + "/configure";
-        },
-        goToDocumentation(templateId) {
-          window.location = `/modeler/template/${templateId}/print`;
-        },
-        goToDesigner(templateId) {
-          window.location = `/modeler/templates/${templateId}`;
-        },
         exportTemplate(template) {
           ProcessMaker.apiClient({
             method: 'POST',
@@ -176,14 +164,7 @@
           };
           switch (action.value) {
             case "edit-designer":
-              console.log('data', data);
               this.goToDesigner(data.id);
-              break;
-            case "edit-item":
-              this.goToConfigure(data.id);
-            break;
-            case "view-documentation":
-              this.goToDocumentation(data.id);
               break;
             case "export-item":
               this.exportTemplate(data);
@@ -238,9 +219,6 @@
               user.fullname +
               "</span>"
           );
-        },
-        getCategoryId(id) {
-          console.log('id', id);
         },
         createImg(properties) {
           let container = document.createElement("div");

@@ -7,6 +7,7 @@
     class="dropdown-right ellipsis-dropdown-main"
     @show="onShow"
     @hide="onHide"
+    v-if="filterActions.length > 0"    
   >
     <template v-if="customButton" #button-content>
       <i
@@ -22,8 +23,9 @@
       <b-dropdown-item
         v-for="action in filterAboveDivider"
         :key="action.value"
+        :href="action.link ? itemLink(action, data) : null"
         class="ellipsis-dropdown-item mx-auto"
-        @click="onClick(action, data)"
+        @click="!action.link ? onClick(action, data) : null"
       >
         <div class="ellipsis-dropdown-content">
           <i
@@ -37,8 +39,9 @@
       <b-dropdown-item
         v-for="action in filterBelowDivider"
         :key="action.value"
+        :href="action.link ? itemLink(action, data) : null"
         class="ellipsis-dropdown-item mx-auto"
-        @click="onClick(action, data)"
+        @click="!action.link ? onClick(action, data) : null"
       >
         <div class="ellipsis-dropdown-content">
           <i
@@ -53,8 +56,9 @@
       <b-dropdown-item
         v-for="action in filterActions"
         :key="action.value"
+        :href="action.link ? itemLink(action, data) : null"
         class="ellipsis-dropdown-item mx-auto"
-        @click="onClick(action, data)"
+        @click="!action.link ? onClick(action, data) : null"
       >
         <div class="ellipsis-dropdown-content">
           <i
@@ -70,6 +74,7 @@
 
 <script>
 import { Parser } from "expr-eval";
+import Mustache from 'mustache';
 
 export default {
   components: { },
@@ -84,7 +89,7 @@ export default {
   computed: {
     filterActions() {
       let btns = this.actions.filter(action => {
-        if (!action.hasOwnProperty('permission') || action.hasOwnProperty('permission') && this.permission.includes(action.permission)) {
+        if (!action.hasOwnProperty('permission') || action.hasOwnProperty('permission') && this.permission[action.permission] || action.hasOwnProperty('permission') && this.permission.includes(action.permission)) {
           return action;
         }
       });
@@ -123,6 +128,9 @@ export default {
   methods: {
     onClick(action, data) {
       this.$emit("navigate", action, data);
+    },
+    itemLink(action, data) {
+      return Mustache.render(action.href, data);
     },
     onShow() {
       this.$emit('show');

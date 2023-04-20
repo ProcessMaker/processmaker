@@ -7,7 +7,7 @@
             :empty-desc="$t('')"
             empty-icon="noData"
     />
-    <div v-show="!shouldShowLoader" class="card card-body table-card" data-cy="screens-table">
+    <div v-show="!shouldShowLoader" class="card card-body screen-table-card" data-cy="screens-table">
       <vuetable
         :dataManager="dataManager"
         :noDataTemplate="$t('No Data Available')"
@@ -22,67 +22,20 @@
       >
         <template slot="title" slot-scope="props">
           <b-link
-            @click="onAction('edit-screen', props.rowData, props.rowIndex)"
+            :href="onAction('edit-screen', props.rowData, props.rowIndex)"
             v-if="permission.includes('edit-screens')"
           ><span v-uni-id="props.rowData.id.toString()">{{props.rowData.title}}</span></b-link>
           <span v-uni-id="props.rowData.id.toString()" v-else="permission.includes('edit-screens')">{{props.rowData.title}}</span>
         </template>
 
         <template slot="actions" slot-scope="props">
-          <div class="actions">
-            <div class="popout">
-              <b-btn
-                variant="link"
-                @click="onAction('edit-screen', props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
-                :title="$t('Edit')"
-                v-if="permission.includes('edit-screens')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-pen-square fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                variant="link"
-                @click="onAction('edit-item', props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
-                :title="$t('Configure')"
-                v-if="permission.includes('edit-screens')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-cog fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                variant="link"
-                @click="onAction('duplicate-item', props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
-                :title="$t('Copy')"
-                v-if="permission.includes('create-screens')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-copy fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                variant="link"
-                @click="onAction('export-item', props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
-                :title="$t('Export')"
-                v-if="permission.includes('export-screens')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-file-export fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                variant="link"
-                @click="onAction('remove-item', props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
-                :title="$t('Delete')"
-                v-if="permission.includes('delete-screens')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-trash-alt fa-lg fa-fw"></i>
-              </b-btn>
-            </div>
-          </div>
+          <ellipsis-menu
+            :actions="actions"
+            :permission="permission"
+            :data="props.rowData"
+            :divider="true"
+            @navigate="onAction"
+          />
         </template>
       </vuetable>
       <pagination
@@ -137,14 +90,54 @@
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
+import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
+  components: { EllipsisMenu },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   props: ["filter", "id", "permission"],
   data() {
     return {
+      actions: [
+        {
+          value: "edit-screen",
+          content: "Edit Screen",
+          link: true,
+          href: "/designer/screen-builder/{{id}}/edit",
+          permission: "edit-screens",
+          icon: "fas fa-pen-square",
+        },
+        {
+          value: "edit-item",
+          content: "Configure",
+          link: true,
+          href: "/designer/screens/{{id}}/edit",
+          permission: "edit-screens",
+          icon: "fas fa-cog",
+        },
+        {
+          value: "duplicate-item",
+          content: "Copy",
+          permission: "create-screens",
+          icon: "fas fa-copy",
+        },
+        {
+          value: "export-item",
+          content: "Export",
+          link: true,
+          href: "/designer/screens/{{id}}/export",
+          permission: "export-screens",
+          icon: "fas fa-file-export",
+        },
+        {
+          value: "remove-item",
+          content: "Delete",
+          permission: "delete-screens",
+          icon: "fas fa-trash-alt",
+        },
+      ],
       orderBy: "title",
       dupScreen: {
         title: "",
@@ -233,14 +226,8 @@ export default {
         });
     },
     onAction(actionType, data, index) {
-      switch (actionType) {
-        case "edit-screen":
-          window.location.href =
-            "/designer/screen-builder/" + data.id + "/edit";
-          break;
-        case "edit-item":
-          window.location.href = "/designer/screens/" + data.id + "/edit";
-          break;
+      if (actionType.value) {
+        switch (actionType.value) {
         case "duplicate-item":
           this.dupScreen.title = data.title + ' ' + this.$t('Copy');
           this.dupScreen.type = data.type;
@@ -249,9 +236,6 @@ export default {
           this.dupScreen.description = data.description;
           this.dupScreen.id = data.id;
           this.showModal();
-          break;
-        case "export-item":
-          window.location.href = "/designer/screens/" + data.id + "/export";
           break;
         case "remove-item":
           let that = this;
@@ -273,9 +257,17 @@ export default {
                 });
             }
           );
+            break;
+        }
+    } else {
+        switch (actionType) {
+        case "edit-screen":
+          let link = "/designer/screen-builder/" + data.id + "/edit";
+          return link;
           break;
-      }
-    },
+        }
+    }
+  },
     fetch() {
       this.loading = true;
       //change method sort by slot name
@@ -322,5 +314,9 @@ export default {
   border-radius: 50% !important;
   height: 1.5em;
   margin-right: 0.5em;
+}
+
+.screen-table-card {
+    padding: 0;
 }
 </style>
