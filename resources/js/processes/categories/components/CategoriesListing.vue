@@ -24,30 +24,13 @@
                   <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.name }}</span>
                 </template>
                 <template slot="actions" slot-scope="props">
-                    <div class="actions">
-                        <div class="popout">
-                            <b-btn
-                                variant="link"
-                                @click="onAction('edit-item', props.rowData, props.rowIndex)"
-                                v-b-tooltip.hover
-                                :title="$t('Edit')"
-                                v-if="permissions.edit"
-                                v-uni-aria-describedby="props.rowData.id.toString()"
-                            >
-                                <i class="fas fa-pen-square fa-lg fa-fw"></i>
-                            </b-btn>
-                            <b-btn
-                                variant="link"
-                                @click="onAction('remove-item', props.rowData, props.rowIndex)"
-                                v-b-tooltip.hover
-                                :title="$t('Delete')"
-                                v-if="permissions.delete && props.rowData[count] == 0"
-                                v-uni-aria-describedby="props.rowData.id.toString()"
-                            >
-                                <i class="fas fa-trash-alt fa-lg fa-fw"></i>
-                            </b-btn>
-                        </div>
-                    </div>
+                  <ellipsis-menu 
+                    @navigate="onNavigate"
+                    :actions="actions"
+                    :permission="permissions"
+                    :data="props.rowData"
+                    :divider="true"
+                  />
                 </template>
             </vuetable>
             <pagination
@@ -66,9 +49,11 @@
   import datatableMixin from "../../../components/common/mixins/datatable";
   import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
   import { createUniqIdsMixin } from "vue-uniq-ids";
+  import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
   const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
+    components: {EllipsisMenu},
     mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
     props: ["filter", "permissions", "apiRoute", "include", "labelCount", "count", "loadOnStart"],
     data () {
@@ -81,6 +66,10 @@
             sortField: "name",
             direction: "asc"
           }
+        ],
+        actions: [
+          { value: "edit-item", content: "Edit Category", icon: "fas fa-edit", permission:'edit'},
+          { value: "delete-item", content: "Delete Category", icon: "fas fa-trash", permission: 'delete'},
         ],
         fields: [
           {
@@ -160,12 +149,12 @@
             }
           });
       },
-      onAction (action, data, index) {
-        switch (action) {
+      onNavigate (action, data, index) {
+        switch (action.value) {
           case "edit-item":
             this.$emit('edit', data);
             break;
-          case "remove-item":
+          case "delete-item":
             ProcessMaker.confirmModal(
               this.$t("Caution!"),
               "<b>" +
