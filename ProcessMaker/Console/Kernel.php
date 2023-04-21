@@ -30,6 +30,9 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('package-data-sources:delete-logs')
             ->weekly();
+
+        $schedule->command('package-savedsearches:delete-json-indexes')
+            ->dailyAt('00:00');
     }
 
     /**
