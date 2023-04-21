@@ -14,7 +14,7 @@ trait Indexable
     public function addJsonColumnsIndex($fields)
     {
         foreach ($fields as $field) {
-            $table = $this->table($this->table, $this->type, $this->meta);
+            $table = $this->getTableToLook($this->table, $this->type, $this->meta);
 
             [$column, $path] = $this->getColumnAndPath($field);
 
@@ -30,6 +30,14 @@ trait Indexable
         foreach ($indexes as $index) {
             [$column, $path] = $this->getColumnAndPath($index['field']);
             JsonColumnIndex::add($index['table'], $column, $path);
+        }
+    }
+
+    public function deleteJsonColumnsIndexBatch($indexes)
+    {
+        foreach ($indexes as $index) {
+            [$column, $path] = $this->getColumnAndPath($index['field']);
+            JsonColumnIndex::remove($index['table'], $column, $path);
         }
     }
 
@@ -49,7 +57,7 @@ trait Indexable
         return null;
     }
 
-    public function table($table, $type, $meta)
+    public function getTableToLook($table, $type, $meta)
     {
         if ($table !== 'saved_searches') {
             return $table;
