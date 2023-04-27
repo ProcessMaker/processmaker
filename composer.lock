@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fcc2aabd373e1503b72c95e8ec224856",
+    "content-hash": "50248cd5f8de3db6a36f36314769f4a4",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -3092,6 +3092,7 @@
                 "issues": "https://github.com/LaravelCollective/html/issues",
                 "source": "https://github.com/LaravelCollective/html"
             },
+            "abandoned": "spatie/laravel-html",
             "time": "2022-02-08T21:02:54+00:00"
         },
         {
