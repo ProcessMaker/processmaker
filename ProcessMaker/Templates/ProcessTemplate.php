@@ -149,7 +149,10 @@ class ProcessTemplate implements TemplateInterface
         $model = (new ExportController)->getModel('process')->findOrFail($data['asset_id']);
 
         // Get the process manifest
-        $manifest = $this->getManifest('process', $data['asset_id']);
+        $response = $this->getManifest('process', $data['asset_id']);
+        if (array_key_exists('error', $response)) {
+            return response()->json(['model' => $processTemplate]);
+        }
 
         // Array of post options
         $uuid = $model->uuid;
