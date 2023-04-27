@@ -32,7 +32,7 @@
             class="pr-1 fa-fw"
             :class="action.icon"
           />
-          <span>{{ action.content }}</span>
+          <span>{{ $t(action.content) }}</span>
         </div>
       </b-dropdown-item>
       <b-dropdown-divider />
@@ -48,7 +48,7 @@
             class="pr-1 fa-fw"
             :class="action.icon"
           />
-          <span>{{ action.content }}</span>
+          <span>{{ $t(action.content) }}</span>
         </div>
       </b-dropdown-item>
     </div>
@@ -65,7 +65,7 @@
             class="pr-1 fa-fw"
             :class="action.icon"
           />
-          <span>{{ action.content }}</span>
+          <span>{{ $t(action.content) }}</span>
         </div>
       </b-dropdown-item>
     </div>
