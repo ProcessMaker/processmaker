@@ -289,7 +289,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
      */
     public function getScriptCategoryIdAttribute($value)
     {
-        return implode(',', $this->categories()->pluck('category_id')->toArray()) ?: $value;
+        return implode(',', $this->categories->pluck('category_id')->toArray()) ?: $value;
     }
 
     /**

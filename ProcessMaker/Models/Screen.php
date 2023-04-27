@@ -180,7 +180,7 @@ class Screen extends ProcessMakerModel implements ScreenInterface
      */
     public function getScreenCategoryIdAttribute($value)
     {
-        return implode(',', $this->categories()->pluck('category_id')->toArray()) ?: $value;
+        return implode(',', $this->categories->pluck('category_id')->toArray()) ?: $value;
     }
 
     public function builderComponent()

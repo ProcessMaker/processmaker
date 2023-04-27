@@ -48,6 +48,6 @@ class ProcessTemplates extends Template
      */
     public function getProcessCategoryIdAttribute($value)
     {
-        return implode(',', $this->categories()->pluck('category_id')->toArray()) ?: $value;
+        return implode(',', $this->categories->pluck('category_id')->toArray()) ?: $value;
     }
 }
