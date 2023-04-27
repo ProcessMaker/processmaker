@@ -46,7 +46,7 @@
         :key="`external-${index}`"
         :options="component.options"
       />
-      <create-template-modal ref="create-template-modal" />
+      <create-template-modal ref="create-template-modal" assetType="process" :assetName="processName" :assetId="processId" :currentUserId="currentUserId"/>
     </b-card>
   </b-container>
 </template>
@@ -79,6 +79,9 @@ export default {
       validationErrors: {},
       warnings: [],
       xmlManager: null,
+      processName: window.ProcessMaker.modeler.process.name,
+      processId: window.ProcessMaker.modeler.process.id,
+      currentUserId: window.ProcessMaker.modeler.process.user_id,
     };
   },
   watch: {
