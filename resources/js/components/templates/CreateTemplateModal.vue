@@ -172,6 +172,10 @@ export default {
             this.toggleButtons();
             this.existingAssetId = error.response.data.id;
             this.existingAssetName = error.response.data.templateName;
+          } else {
+            const str = error.response.data.message;
+            const message = str.charAt(0).toUpperCase() + str.slice(1);
+            ProcessMaker.alert(this.$t(message), "danger");
           }
         });
       },  

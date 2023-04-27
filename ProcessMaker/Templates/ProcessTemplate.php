@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Templates;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -170,21 +171,25 @@ class ProcessTemplate implements TemplateInterface
         $options = new Options($postOptions);
 
         // Create an exporter instance
-        $exporter = new Exporter();
-        $exporter->export($model, ProcessExporter::class, $options);
-        $payload = $exporter->payload();
+        try {
+            $exporter = new Exporter();
+            $exporter->export($model, ProcessExporter::class, $options);
+            $payload = $exporter->payload();
 
-        // Create a new process template
-        $processTemplate = ProcessTemplates::make($data)->fill([
-            'manifest' => json_encode($payload),
-            'svg' => Arr::get($payload, "export.{$payload['root']}.attributes.svg"),
-            'process_id' => $data['asset_id'],
-            'user_id' => \Auth::user()->id,
-        ]);
+            // Create a new process template
+            $processTemplate = ProcessTemplates::make($data)->fill([
+                'manifest' => json_encode($payload),
+                'svg' => Arr::get($payload, "export.{$payload['root']}.attributes.svg"),
+                'process_id' => $data['asset_id'],
+                'user_id' => \Auth::user()->id,
+            ]);
 
-        $processTemplate->saveOrFail();
+            $processTemplate->saveOrFail();
 
-        return response()->json(['model' => $processTemplate]);
+            return response()->json(['model' => $processTemplate]);
+        } catch (ModelNotFoundException $error) {
+            return $error;
+        }
     }
 
     /**
