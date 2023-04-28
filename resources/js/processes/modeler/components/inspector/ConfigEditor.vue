@@ -28,6 +28,7 @@
       centered
       :title="$t('Script Config Editor')"
       header-close-content="&times;"
+      @hide="handleHide"
     >
       <div class="editor-container">
         <monaco-editor
@@ -82,6 +83,11 @@ export default {
     },
     closePopup() {
       this.showPopup = false;
+    },
+    handleHide() {
+      // Update the undoStack when the modal is hidden to trigger the autosave.
+      const child = this.$root.$children.find((c) => c.$refs.modeler);
+      child.$refs.modeler.pushToUndoStack();
     },
   },
 };
