@@ -204,7 +204,7 @@ export default {
       const url = this.getUrl(search);
       let { pmql } = search.response;
 
-      window.location.href = `${url}?pmql=${pmql}`;
+      window.location.href = `${url}?pmql=${encodeURIComponent(pmql)}`;
     },
     getUrl(item) {
       if (item.type === "collections" && !item.response.collectionError) {
