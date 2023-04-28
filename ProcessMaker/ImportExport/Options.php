@@ -15,6 +15,8 @@ class Options
             ],
             'default' => 'update',
         ],
+        'isTemplate' => false,
+        'saveAssetsMode' => ['saveModelOnly', 'saveAllAssets'],
     ];
 
     public $options;
@@ -29,6 +31,19 @@ class Options
     {
         $assetOptions = Arr::get($this->options, $uuid, []);
 
-        return Arr::get($assetOptions, $name, self::IMPORT_OPTIONS[$name]['default']);
+        $option = self::IMPORT_OPTIONS[$name];
+        $importOptions = null;
+
+        if ($name === 'mode') {
+            $importOptions = self::IMPORT_OPTIONS[$name]['default'];
+        } else {
+            if (count($assetOptions) === 0) {
+                $importOptions = self::IMPORT_OPTIONS[$name][1];
+            } else {
+                $importOptions = self::IMPORT_OPTIONS[$name];
+            }
+        }
+
+        return Arr::get($assetOptions, $name, $importOptions);
     }
 }

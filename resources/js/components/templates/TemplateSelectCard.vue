@@ -1,11 +1,11 @@
 <template>
   <div class="pb-2">
-    <b-card no-body class="template-select-card" @click="showDetails()">
+    <b-card no-body class="template-select-card" @click="showDetails()" @mouseenter="addHoverClass" @mouseleave="removeHoverClass">
       <b-card-body :title="template.name | str_limit(30)" class="card-body">
         <b-card-text>
           {{ template.description | str_limit(150) }}
         </b-card-text>
-        <b-badge v-for="category in categories" :key="category.id" pill variant="success" class="category-badge mb-3 mr-1"> 
+        <b-badge v-for="category in categories" :key="category.id" pill class="category-badge mb-3 mr-1"> 
           {{ category.name }}
         </b-badge>
         <small v-if="template.categories.length > 3" class="text-muted">+{{ catCount }}</small>
@@ -49,6 +49,12 @@ export default {
   methods: {
     showDetails() {      
       this.$emit('show-details', {"template": this.template});
+    },
+    addHoverClass(event) {
+      event.target.classList.add('hover')
+    },
+    removeHoverClass(event) {
+      event.target.classList.remove('hover')
     }
   },
   mounted() {
@@ -60,9 +66,10 @@ export default {
 .template-select-card {
   width: 277px;
   height: 180px;
-  border-radius: 2px;
+  border-radius: 4px;
   padding: 10px 8px 10px 8px;
   overflow: hidden;
+  border: 2px solid rgba(0, 0, 0, 0.125);
 }
 
 .card-title {
@@ -87,9 +94,14 @@ export default {
 }
 
 .category-badge {
-  background-color: #E6FFEB;
-  color: #006644;
-  font-size: 10px;
+  background-color: #DEEBFF;
+  color: #104A75;
+  font-size: 12px;
+}
+
+.hover {
+  border-color: #1572C2;
+  cursor: pointer;
 }
 
 </style>

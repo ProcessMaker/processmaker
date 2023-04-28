@@ -37,7 +37,7 @@ export default {
       this.ioState = Object.fromEntries(
         Object.entries(assets)
           .map(([uuid, asset]) => {
-            return [uuid, { mode: this.defaultMode, discardedByParent: false }];
+            return [uuid, { mode: this.defaultMode, discardedByParent: false, saveAssetsMode: 'saveAllAssets' }];
           })
       );
     },

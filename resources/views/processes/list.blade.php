@@ -6,12 +6,12 @@
                 ref="pmql_input"
                 search-type="processes"
                 :value="pmql"
+                :url-pmql="urlPmql"
                 :filters-value="pmql"
                 :ai-enabled="false"
                 :show-filters="false"
                 :aria-label="$t('Search')"
-                @submit="onNLQConversion"
-                @pmqlchange="onChange">
+                @submit="onNLQConversion">
               </pmql-input>
             </div>
             @canany(['import-processes', 'create-processes'])

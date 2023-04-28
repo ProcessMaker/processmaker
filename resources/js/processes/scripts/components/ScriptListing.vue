@@ -7,7 +7,7 @@
             :empty-desc="$t('')"
             empty-icon="noData"
     />
-    <div v-show="!shouldShowLoader" class="card card-body table-card" data-cy="scripts-table">
+    <div v-show="!shouldShowLoader" class="card card-body scripts-table-card" data-cy="scripts-table">
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
@@ -23,57 +23,20 @@
         <template slot="title" slot-scope="props">
           <b-link
             v-if="permission.includes('edit-scripts')"
-            @click="onAction('edit-script', props.rowData, props.rowIndex)"
+            :href="onAction('edit-script', props.rowData, props.rowIndex)"
             v-uni-id="props.rowData.id.toString()"
           >{{props.rowData.title}}</b-link>
           <span v-uni-id="props.rowData.id.toString()" v-else="permission.includes('edit-scripts')">{{props.rowData.title}}</span>
         </template>
 
         <template slot="actions" slot-scope="props">
-          <div class="actions">
-            <div class="popout">
-              <b-btn
-                variant="link"
-                @click="onAction('edit-script', props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
-                :title="$t('Edit')"
-                v-if="permission.includes('edit-scripts')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-pen-square fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                variant="link"
-                @click="onAction('edit-item', props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
-                :title="$t('Configure')"
-                v-if="permission.includes('edit-scripts')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-cog fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                variant="link"
-                @click="onAction('duplicate-item', props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
-                :title="$t('Copy')"
-                v-if="permission.includes('create-scripts')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-copy fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                variant="link"
-                @click="onAction('remove-item', props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
-                :title="$t('Delete')"
-                v-if="permission.includes('delete-scripts')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-trash-alt fa-lg fa-fw"></i>
-              </b-btn>
-            </div>
-          </div>
+          <ellipsis-menu
+            :actions="actions"
+            :permission="permission"
+            :data="props.rowData"
+            :divider="true"
+            @navigate="onAction"
+          />
         </template>
       </vuetable>
       <pagination
@@ -122,14 +85,46 @@
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
+import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
+  components: { EllipsisMenu },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   props: ["filter", "id", "permission", "scriptExecutors"],
   data() {
     return {
+      actions: [
+        {
+          value: "edit-script",
+          content: "Edit Script",
+          link: true,
+          href: "/designer/scripts/{{id}}/builder",
+          permission: "edit-scripts",
+          icon: "fas fa-pen-square",
+        },
+        {
+          value: "edit-item",
+          content: "Configure",
+          link: true,
+          href: "/designer/scripts/{{id}}/edit",
+          permission: "edit-scripts",
+          icon: "fas fa-cog",
+        },
+        {
+          value: "duplicate-item",
+          content: "Copy",
+          permission: "create-scripts",
+          icon: "fas fa-copy",
+        },
+        {
+          value: "remove-item",
+          content: "Delete",
+          permission: "delete-scripts",
+          icon: "fas fa-trash-alt",
+        },
+      ],
       dupScript: {
         title: "",
         type: "",
@@ -195,9 +190,6 @@ export default {
   },
 
   methods: {
-    goToEdit(data) {
-      window.location = "/designer/scripts/" + data + "/edit";
-    },
     showModal() {
       this.$refs.myModalRef.show();
     },
@@ -219,13 +211,8 @@ export default {
         });
     },
     onAction(action, data, index) {
-      switch (action) {
-        case "edit-script":
-          window.location.href = "/designer/scripts/" + data.id + "/builder";
-          break;
-        case "edit-item":
-          this.goToEdit(data.id);
-          break;
+      if (action.value) {
+        switch (action.value) {
         case "duplicate-item":
           this.dupScript.title = data.title + " Copy";
           this.dupScript.language = data.language;
@@ -249,7 +236,14 @@ export default {
             }
           );
           break;
+        }
+      } else {
+        switch (action) {
+        case "edit-script":
+          let link = "/designer/scripts/" + data.id + "/builder";
+          return link;
           break;
+        }
       }
     },
     formatLanguage(language) {
@@ -293,4 +287,8 @@ export default {
 :deep(th#_description) {
   width: 250px;
 }
+
+.scripts-table-card {
+    padding: 0;
+  }
 </style>

@@ -159,6 +159,10 @@ export default {
                 });
             }
             return [];
+        },
+        importType() {
+            const assetType = document.querySelector("meta[name='import-template-asset-type']") ? _.get(document.querySelector('meta[name="import-template-asset-type"]'),"content") : null;
+            return assetType  && assetType === 'process' ? 'process_templates' : 'processes';
         }
     },
     methods: {
@@ -269,6 +273,19 @@ export default {
                 formData.append('password', this.password);
             }
 
+
+            switch (this.importType) {
+                case 'process_templates':
+                    this.validateProcessTemplateFile(formData);
+                break;
+            
+                default:
+                this.validateProcessFile(formData);
+            }
+
+
+        },
+        validateProcessFile(formData) {
             ProcessMaker.apiClient.post('/processes/import/validation', formData,
                 {
                     headers: {
@@ -281,13 +298,6 @@ export default {
                     this.$root.manifest = response.data.manifest;
                     this.$root.rootUuid = response.data.rootUuid;
                     this.processVersion = response.data.processVersion;
-                    const model = response.data.manifest[response.data.rootUuid].model;
-                    
-                    if (model === 'ProcessMaker\\Models\\ProcessTemplates') {
-                        // disable 'custom' import type for templates
-                        this.importTypeOptions[1].disabled = true;
-                        this.showTemplateWarning = true;
-                    }
                 }  
                
                 if (this.processVersion === null) {
@@ -310,6 +320,33 @@ export default {
                     ProcessMaker.alert(message, 'danger');
                 }
             });
+        },
+        validateProcessTemplateFile(formData) {
+            ProcessMaker.apiClient.post('/templates/process/import/validation', formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            )
+            .then(response => {   
+                if (typeof response.data === 'object') {
+                    this.$root.manifest = response.data.manifest;
+                    this.$root.rootUuid = response.data.rootUuid;
+                    this.processVersion = response.data.processVersion;
+                    
+                    // disable 'custom' import type for templates
+                    this.importTypeOptions[1].disabled = true;
+                    this.showTemplateWarning = true;
+                }  
+               
+                this.fileIsValid = true;
+                this.$root.setInitialState(this.$root.manifest, this.$root.rootUuid);
+
+            }).catch(error => {
+                const message = error.response?.data?.error || error.response?.data?.message || error.message;
+                ProcessMaker.alert(message, 'danger');
+            });       
         },
          removeFile() {
             this.file = '';
@@ -349,21 +386,48 @@ export default {
             this.loading = true;
             this.submitted = true;
 
+            switch (this.importType) {
+                case 'process_templates':
+                    this.handleProcessTemplateImport();
+                break;
+            
+                default:
+                    this.handleProcessImport();
+            }
+
+        },
+        handleProcessImport() {
             DataProvider.doImport(this.file, this.$root.exportOptions(), this.password)
             .then((response) => {
                 if (response?.data) {
                     const { processId } = response.data;
-                    const successMessage =
-                        processId
-                            ? this.$t('Process was successfully imported')
-                            : this.$t('Process Template was successfully imported');
+                    const successMessage = this.$t('Process was successfully imported');
 
                     ProcessMaker.alert(successMessage, 'success');
                     window.location.href = processId ? `/modeler/${processId}` : '/processes/';
                     this.submitted = false; // the form was successfully submitted
                 } else {
                     // the request was successful but did not return expected data
-                    throw new Error(this.$t('Unknown error while importing the process.'));
+                    throw new Error(this.$t('Unknown error while importing the Process.'));
+                }
+            })
+            .catch((error) => {
+                this.handleError(error); // a shared method that displays the error message and resets loading/submitted
+            });
+        },
+        handleProcessTemplateImport() {
+            DataProvider.doImportTemplate(this.file, this.$root.exportOptions(), 'process')
+            .then((response) => {
+                if (response?.data) {
+                    const { processId } = response.data;
+                    const successMessage = this.$t('Process Template was successfully imported');
+
+                    ProcessMaker.alert(successMessage, 'success');
+                    window.location.href = processId ? `/modeler/${processId}` : '/processes/';
+                    this.submitted = false; // the form was successfully submitted
+                } else {
+                    // the request was successful but did not return expected data
+                    throw new Error(this.$t('Unknown error while importing the Process Template.'));
                 }
             })
             .catch((error) => {
@@ -381,11 +445,13 @@ export default {
                 if (window.location.pathname === '/template/process/import') {
                     return this.$t('Import Process Template');
                 }
+                return this.$t('Import Process');
         },
         subtitle() {
             if (window.location.pathname === '/template/process/import') {
                 return this.$t('Import a Process Template and its associated assets into this ProcessMaker environment');
             }
+            return this.$t('Import a Process and its associated assets into this ProcessMaker environment');
         },
     },
     mounted() {

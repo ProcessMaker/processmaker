@@ -3,10 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use ProcessMaker\Models\Group;
-use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\User;
 
 class PermissionSeeder extends Seeder
 {
@@ -77,6 +74,7 @@ class PermissionSeeder extends Seeder
             'edit-users',
             'view-users',
             'view-other-users-profiles',
+            'edit-personal-profile',
         ],
         'Requests' => [
             'view-all_requests',

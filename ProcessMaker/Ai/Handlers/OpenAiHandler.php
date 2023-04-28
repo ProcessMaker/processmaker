@@ -71,6 +71,7 @@ abstract class OpenAiHandler
         $aiSearch->type = $type;
         $aiSearch->search = $this->question;
         $aiSearch->response = $response;
+        $aiSearch->user_id = \Auth::user()->id;
         $aiSearch->save();
     }
 

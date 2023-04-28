@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Templates\Api;
 
+use Database\Seeders\ProcessTemplatesSeeder;
+use Database\Seeders\UserSeeder;
 use Exception;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Arr;
@@ -23,6 +25,43 @@ class ProcessTemplateTest extends TestCase
     use RequestHelper;
     use HelperTrait;
     use WithFaker;
+
+    public function testNotAllowingToSaveDuplicateTemplateWithTheSameName()
+    {
+        $this->addGlobalSignalProcess();
+
+        // // Create Process Screens
+        $screen = $this->createScreen('basic-form-screen', ['title' => 'Test Screen']);
+        $screenCategory = ScreenCategory::factory()->create(['name' => 'screen category', 'status' => 'ACTIVE']);
+        $screen->screen_category_id = $screenCategory->id;
+        $screen->save();
+
+        $process = $this->createProcess('process-with-task-screen', ['name' => 'Test Process']);
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:screenRef', $screen->id);
+        $process->save();
+        $templateA = ProcessTemplates::factory()->create(['name' => 'Test Duplicate Name Template']);
+
+        $response = $this->apiCall(
+            'POST',
+            route('api.template.store', [
+                'type' => 'process',
+                'id' => $process->id,
+            ]),
+            [
+                'asset_id' => $process->id,
+                'user_id' => null,
+                'name' => 'Test Duplicate Name Template',
+                'description' => 'Test template description',
+                'process_category_id' => 1,
+                'mode' => 'new',
+                'saveAssetsMode' => 'saveAllAssets',
+            ]
+        );
+
+        $response->assertStatus(409);
+        $content = json_decode($response->getContent());
+        $this->assertEquals('The template name must be unique.', $content->name[0]);
+    }
 
     public function testSaveProcessAssetsAsTemplate()
     {
@@ -55,9 +94,10 @@ class ProcessTemplateTest extends TestCase
                 'asset_id' => $process->id,
                 'user_id' => $user->id,
                 'name' => 'Test Template',
-                'description' => 'Test template description',
+                'description' => 'description 1',
                 'process_category_id' => $process->process_category_id,
                 'mode' => 'copy',
+                'saveAssetsMode' => 'saveAllAssets',
             ]
         );
 
@@ -65,46 +105,6 @@ class ProcessTemplateTest extends TestCase
         $response->assertStatus(200);
         // Assert that our database has the process we need
         $this->assertDatabaseHas('process_templates', ['name' => 'Test Template']);
-    }
-
-    public function testNotAllowingToSaveDuplicateTemplateWithTheSameName()
-    {
-        $this->addGlobalSignalProcess();
-
-        // Create User
-        $user = User::factory()->create();
-
-        // Create Process Screens
-        $screen = $this->createScreen('basic-form-screen', ['title' => 'Test Screen']);
-        $screenCategory = ScreenCategory::factory()->create(['name' => 'screen category', 'status' => 'ACTIVE']);
-        $screen->screen_category_id = $screenCategory->id;
-        $screen->save();
-
-        $process = $this->createProcess('process-with-task-screen', ['name' => 'Test Process']);
-        $processCategory = ProcessCategory::factory()->create(['name' => 'process category', 'status' => 'ACTIVE']);
-        $process->process_category_id = $processCategory->id;
-        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:screenRef', $screen->id);
-        $process->save();
-        ProcessTemplates::factory()->create(['name' => 'Test Duplicate Name Template', 'process_id' => $process->id]);
-
-        $response = $this->apiCall(
-            'POST',
-            route('api.template.store', [
-                'type' => 'process',
-                'id' => $process->id,
-            ]),
-            [
-                'asset_id' => $process->id,
-                'user_id' => $user->id,
-                'name' => 'Test Duplicate Name Template',
-                'description' => 'Test template description',
-                'process_category_id' => 1,
-                'mode' => 'new',
-            ]
-        );
-
-        $response->assertStatus(422);
-        $this->assertEquals('The Name has already been taken.', $response->getOriginalContent()['errors']['name'][0]);
     }
 
     public function testSaveProcessModelAsTemplate()
@@ -138,6 +138,7 @@ class ProcessTemplateTest extends TestCase
                 'description' => 'Test template description',
                 'process_category_id' => $process->process_category_id,
                 'mode' => 'discard',
+                'saveAssetsMode' => 'saveAllAssets',
             ]
         );
 
@@ -167,34 +168,12 @@ class ProcessTemplateTest extends TestCase
         $screen->screen_category_id = $screenCategory->id;
         $screen->save();
 
-        $processCategory = ProcessCategory::factory()->create(['name' => 'process category', 'status' => 'ACTIVE']);
+        $processCategory = ProcessCategory::factory()->create(['name' => 'Default Templates', 'status' => 'ACTIVE']);
         $process = $this->createProcess('process-with-task-screen', ['name' => 'Test Process', 'process_category_id' => $processCategory->id]);
-
         Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:screenRef', $screen->id);
         $process->save();
-        $response = $this->apiCall(
-            'POST',
-            route('api.template.store', [
-                'type' => 'process',
-                'id' => $process->id,
-            ]),
-            [
-                'asset_id' => $process->id,
-                'user_id' => $user->id,
-                'name' => 'Test Template',
-                'description' => 'Test template description',
-                'process_category_id' => $process->process_category_id,
-                'mode' => 'copy',
-            ]
-        );
 
-        // Validate the header status code
-        $response->assertStatus(200);
-        // // Assert that our database has the process we need
-        $this->assertDatabaseHas('process_templates', ['name' => 'Test Template']);
-
-        // Create Process Templates
-        $template = ProcessTemplates::where('name', 'Test Template')->firstOrFail();
+        $template = ProcessTemplates::factory()->create(['name' => 'Test Duplicate Name Template', 'process_id' => $process->id, 'process_category_id' => $process->process_category_id]);
 
         $response = $this->apiCall(
             'POST',
@@ -206,17 +185,32 @@ class ProcessTemplateTest extends TestCase
                 'user_id' => $user->id,
                 'name' => 'Test Create Process from Template',
                 'description' => 'Process from template description',
-                'process_category_id' => $processCategory->id,
+                'process_category_id' => $template['process_category_id'],
                 'mode' => 'copy',
+                'saveAssetMode' => 'saveAllAssets',
             ]
         );
 
         $response->assertStatus(200);
         $id = json_decode($response->getContent(), true)['processId'];
-
         $newProcess = Process::where('id', $id)->firstOrFail();
+        $newCategory = ProcessCategory::where('id', $template['process_category_id'])->firstOrFail();
 
         $this->assertEquals('Test Create Process from Template', $newProcess->name);
         $this->assertEquals('Process from template description', $newProcess->description);
+        $this->assertEquals('Default Templates', $newCategory->name);
+    }
+
+    public function testSeededTemplate()
+    {
+        $this->seed(UserSeeder::class);
+        $this->seed(ProcessTemplatesSeeder::class);
+        $template = ProcessTemplates::where('name', 'New Hire Onboarding')->firstOrFail();
+        $this->assertEquals('New Hire Onboarding', $template->name);
+
+        $template = ProcessTemplates::where('name', 'Leave of Absence')->firstOrFail();
+        $this->assertEquals('Leave of Absence', $template->name);
+
+        $this->assertEquals('Default Templates', ProcessCategory::where('id', $template['process_category_id'])->firstOrFail()->name);
     }
 }

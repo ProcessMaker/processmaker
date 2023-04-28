@@ -6,6 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\ImportExport\Exporter;
@@ -26,6 +27,13 @@ class ProcessTemplate implements TemplateInterface
 {
     use HasControllerAddons;
 
+    /**
+     * List process templates
+     *
+     * @param Request $request The request object.
+     *
+     * @return array An array containing the list of process templates.
+     */
     public function index(Request $request)
     {
         $orderBy = $this->getRequestSortBy($request, 'name');
@@ -59,9 +67,79 @@ class ProcessTemplate implements TemplateInterface
     }
 
     /**
-     * Summary of save
-     * @param mixed $request
-     * @return JsonResponse
+     * Show process template in modeler
+     *
+     * @param mixed $request Request object
+     * @return array Returns an array with the process ID
+     */
+    public function show($request) : array
+    {
+        $template = ProcessTemplates::find($request->id);
+        $payload = json_decode($template->manifest, true);
+
+        $export = array_filter($payload['export'], function ($asset) {
+            return $asset['type'] !== 'CommentConfiguration';
+        });
+
+        // Loop through each asset in the "export" array and set postOptions "mode" accordingly
+        $postOptions = [];
+        foreach ($export as $key => $asset) {
+            $mode = 'copy';
+            $saveMode = 'saveAllAssets';
+            if (array_key_exists('saveAssetsMode', $asset) && $asset['saveAssetsMode'] === 'saveModelOnly') {
+                $saveMode = 'saveModelOnly';
+            }
+            if ($payload['root'] != $key && $saveMode === 'saveModelOnly' && substr($asset['type'], -8) === 'Category') {
+                $mode = 'discard'; // set mode to 'discard' for category assets that are not the root
+            }
+            $postOptions[$key] = [
+                'mode' => $mode,
+                'isTemplate' => true,
+                'saveAssetsMode' => $saveMode,
+            ];
+
+            if ($payload['root'] === $key) {
+                // Set name, description, and user_id attributes for root asset
+                $payload['export'][$key]['attributes'] = [
+                    'name' => $template->name,
+                    'description' => $template->description,
+                    'is_template' => true,
+                    'bpmn' => $asset['attributes']['bpmn'],
+                    'user_id' => $template->user_id ?? \Auth::user()->getKey(),
+                ];
+
+                // Also set the name, description, and is_template directly on the asset
+                $payload['export'][$key]['name'] = $template->name;
+                $payload['export'][$key]['description'] = $template->description;
+            }
+
+            if (in_array($asset['type'], ['Process', 'Screen', 'Scripts', 'Collections', 'DataConnector'])) {
+                $payload['export'][$key]['attributes']['is_template'] = true; // set attributes for all assets
+                $payload['export'][$key]['is_template'] = true; // set attributes for all assets
+            }
+        }
+
+        $options = new Options($postOptions);
+        $importer = new Importer($payload, $options);
+        $process = Process::where('name', $template->name)->where('is_template', 1)->first();
+        if ($process) {
+            $manifest = $importer->doImport($process->id);
+
+            return ['id' => $process->id];
+        }
+
+        $manifest = $importer->doImport();
+        $rootLog = $manifest[$payload['root']]->log;
+        $processId = $rootLog['newId'];
+
+        // Return an array with the process ID
+        return ['id' => $processId];
+    }
+
+    /**
+     * Save new process template
+     * @param mixed $request The HTTP request containing the template data
+     * @return JsonResponse The JSON response with the saved template model
      */
     public function save($request) : JsonResponse
     {
@@ -74,7 +152,21 @@ class ProcessTemplate implements TemplateInterface
         $manifest = $this->getManifest('process', $data['asset_id']);
 
         // Array of post options
-        $postOptions = array_map(fn ($value) => ['mode' => $data['mode']], $manifest['export']);
+        $uuid = $model->uuid;
+
+        // Loop through each asset in the "export" array and set postOptions "mode" accordingly
+        $postOptions = [];
+        foreach ($manifest['export'] as $key => $asset) {
+            $mode = $data['saveAssetsMode'] === 'saveAllAssets' ? 'copy' : 'discard';
+            if ($key === $uuid) {
+                $mode = 'copy';
+            }
+            $postOptions[$key] = [
+                'mode' => $mode,
+                'isTemplate' => true,
+                'saveAssetsMode' => $data['saveAssetsMode'],
+            ];
+        }
         $options = new Options($postOptions);
 
         // Create an exporter instance
@@ -82,28 +174,30 @@ class ProcessTemplate implements TemplateInterface
         $exporter->export($model, ProcessExporter::class, $options);
         $payload = $exporter->payload();
 
-        // Extract svg from payload
-        $svg = Arr::get($payload, 'export.' . $payload['root'] . '.attributes.svg');
-
         // Create a new process template
-        $processTemplate = ProcessTemplates::make($data);
-
-        // Fill the manifest and svg attributes
-        $processTemplate->fill($data);
-        $processTemplate->manifest = json_encode($payload);
-        $processTemplate->svg = $svg;
-        $processTemplate->process_id = $data['asset_id'];
-        $processTemplate->user_id = \Auth::user()->id;
+        $processTemplate = ProcessTemplates::make($data)->fill([
+            'manifest' => json_encode($payload),
+            'svg' => Arr::get($payload, "export.{$payload['root']}.attributes.svg"),
+            'process_id' => $data['asset_id'],
+            'user_id' => \Auth::user()->id,
+        ]);
 
         $processTemplate->saveOrFail();
 
-        // Return response
         return response()->json(['model' => $processTemplate]);
     }
 
+    /**
+     * Create a process from the selected process template
+     *
+     * @param mixed $request The HTTP request data
+     * @return JsonResponse The JSON response containing the new process ID
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException if the process template is not found
+     */
     public function create($request) : JsonResponse
     {
-        $templateId = $request->id;
+        $templateId = (int) $request->id;
         $template = ProcessTemplates::where('id', $templateId)->firstOrFail();
         $template->fill($request->except('id'));
 
@@ -114,8 +208,11 @@ class ProcessTemplate implements TemplateInterface
         $postOptions = [];
         foreach ($payload['export'] as $key => $asset) {
             $postOptions[$key] = [
-                'mode' => $asset['mode'],
+                'mode' => 'copy',
+                'isTemplate' => false,
+                'saveAssetsMode' => 'saveAllAssets',
             ];
+
             if ($payload['root'] === $key) {
                 // Set name and description for the new process
                 $payload['export'][$key]['attributes']['name'] = $request['name'];
@@ -126,6 +223,10 @@ class ProcessTemplate implements TemplateInterface
                 $payload['export'][$key]['description'] = $request['description'];
                 $payload['export'][$key]['process_category_id'] = $request['process_category_id'];
                 $payload['export'][$key]['process_manager_id'] = $request['manager_id'];
+            }
+            if (in_array($asset['type'], ['Process', 'Screen', 'Scripts', 'Collections', 'DataConnector'])) {
+                $payload['export'][$key]['attributes']['is_template'] = false;
+                $payload['export'][$key]['is_template'] = false;
             }
         }
 
@@ -138,44 +239,29 @@ class ProcessTemplate implements TemplateInterface
         return response()->json(['processId' => $processId]);
     }
 
-    public function view() : bool
-    {
-        dd('PROCESS TEMPLATE VIEW');
-    }
-
-    public function edit($template) : JsonResponse
-    {
-        dd('PROCESS TEMPLATE EDIT');
-    }
-
+    /**
+     *  Update process template bpmn.
+     * @param mixed $request
+     * @return JsonResponse
+     */
     public function updateTemplate($request) : JsonResponse
     {
         $id = (int) $request->id;
         $template = ProcessTemplates::where('id', $id)->firstOrFail();
-        // Get process manifest
-        $processId = $request->process_id;
-        $mode = $request->mode;
 
-        $rootUuid = null;
-        $export = null;
-        $manifest = $this->getManifest('process', $processId);
-        if (is_array($manifest)) {
-            $rootUuid = Arr::get($manifest, 'root');
-            $export = Arr::get($manifest, 'export');
-        } else {
-            $rootUuid = $manifest->getData()->root;
-            $export = $manifest->getData()->export;
-        }
+        $manifest = $this->getManifest('process', $request->process_id);
+        $rootUuid = Arr::get($manifest, 'root');
+        $export = Arr::get($manifest, 'export');
+        $svg = Arr::get($export, $rootUuid . '.attributes.svg', null);
 
-        $svg = Arr::get($export, $rootUuid . '.attributes.svg');
-
-        $template->fill($request->except('id'));
+        $template->fill($request->all());
         $template->svg = $svg;
         $template->manifest = json_encode($manifest);
 
-        // Catch errors to send more specific status
         try {
             $template->saveOrFail();
+
+            return response()->json();
         } catch (Exception $e) {
             return response(
                 ['message' => $e->getMessage(),
@@ -183,19 +269,29 @@ class ProcessTemplate implements TemplateInterface
                 422
             );
         }
-
-        return response()->json();
     }
 
+    /**
+     *  Update process template configurations
+     * @param Request
+     * @return JsonResponse
+     */
     public function updateTemplateConfigs($request) : JsonResponse
     {
         $id = (int) $request->id;
         $template = ProcessTemplates::where('id', $id)->firstOrFail();
+        $oldTemplateName = $template->name;
         $template->fill($request->except('id'));
+        $template->user_id = Auth::user()->id;
+        $process = Process::where('name', $oldTemplateName)->where('is_template', 1)->first();
+        if ($process) {
+            $process->fill($request->except('id'));
+        }
 
-        // Catch errors to send more specific status
         try {
             $template->saveOrFail();
+
+            return response()->json();
         } catch (\Exception $e) {
             return response([
                 'message' => $e->getMessage(),
@@ -204,10 +300,53 @@ class ProcessTemplate implements TemplateInterface
                 ],
             ], 422);
         }
+    }
+
+    public function updateTemplateManifest(int $processId, $request)  : JsonResponse
+    {
+        $data = $request->all();
+
+        $model = (new ExportController)->getModel('process')->findOrFail($processId);
+        $model->fill($data);
+        $model->saveOrFail();
+
+        $manifest = $this->getManifest('process', $processId);
+
+        $postOptions = [];
+        foreach ($manifest['export'] as $key => $asset) {
+            $postOptions[$key] = [
+                'mode' => 'update',
+                'isTemplate' => true,
+                'saveAssetsMode' => 'saveAllAssets',
+            ];
+        }
+        $options = new Options($postOptions);
+
+        // Create an exporter instance
+        $exporter = new Exporter();
+        $exporter->export($model, ProcessExporter::class, $options);
+        $payload = $exporter->payload();
+
+        // Extract svg from payload
+        $svg = Arr::get($payload, 'export.' . $payload['root'] . '.attributes.svg');
+
+        // Update the process template manifest, svg, and user_id
+        $processTemplate = ProcessTemplates::where('name', $data['name'])->update([
+            'manifest' => json_encode($payload),
+            'svg' => $svg,
+            'user_id' => \Auth::user()->id,
+        ]);
 
         return response()->json();
     }
 
+    /**
+     * Displays Template Configurations
+     *
+     * @param int $id ID of the process template
+     * @return array An array containing the template object, addons, and categories
+     * @throws Illuminate\Database\Eloquent\ModelNotFoundException If no template is found with the given ID
+     */
     public function configure(int $id) : array
     {
         $template = (object) [];
@@ -228,6 +367,11 @@ class ProcessTemplate implements TemplateInterface
         return [$template, $addons, $categories];
     }
 
+    /**
+     *  Delete process template
+     * @param mixed $request
+     * @return bool
+     */
     public function destroy(int $id) : bool
     {
         $response = ProcessTemplates::where('id', $id)->delete();
@@ -236,13 +380,13 @@ class ProcessTemplate implements TemplateInterface
     }
 
     /**
-     * Get process manifest.
+     * Get process template manifest.
      *
      * @param string $type
      *
      * @param Request $request
      *
-     * @return JSON
+     * @return array
      */
     public function getManifest(string $type, int $id) : array
     {
@@ -259,7 +403,7 @@ class ProcessTemplate implements TemplateInterface
      *
      * @return array
      */
-    protected function getRequestSortBy(Request $request, $default)
+    protected function getRequestSortBy(Request $request, $default) : array
     {
         $column = $request->input('order_by', $default);
         $direction = $request->input('order_direction', 'asc');
@@ -274,14 +418,22 @@ class ProcessTemplate implements TemplateInterface
      *
      * @return array
      */
-    protected function getRequestInclude(Request $request)
+    protected function getRequestInclude(Request $request) : array
     {
         $include = $request->input('include');
 
         return $include ? explode(',', $include) : [];
     }
 
-    public function existingTemplate($request)
+    /**
+     * Check if an existing process template with the same name exists.
+     * If exists, return an array with the existing template ID and name.
+     * Otherwise, return null.
+     * @param Request $request
+     *
+     * @return array|null Array containing the existing template ID and name or null if no existing template found
+     */
+    public function existingTemplate($request) : ?array
     {
         $templateId = $request->id;
         $name = $request->name;
