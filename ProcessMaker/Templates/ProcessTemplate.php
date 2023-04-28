@@ -151,7 +151,7 @@ class ProcessTemplate implements TemplateInterface
         // Get the process manifest
         $response = $this->getManifest('process', $data['asset_id']);
         if (array_key_exists('error', $response)) {
-            return response()->json(['model' => $processTemplate]);
+            return response()->json($response, 400);
         }
 
         // Array of post options
