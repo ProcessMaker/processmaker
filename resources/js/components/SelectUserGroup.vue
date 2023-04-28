@@ -17,6 +17,7 @@
             :searchable="true"
             :internal-search="false"
             @open="load(null)"
+            @input="updateSeletected"
             @search-change="load">
 
             <template slot="noResult">
@@ -132,12 +133,6 @@
       }
     },
     watch: {
-      content: {
-        handler () {
-          this.lastEmitted = JSON.stringify(this.selected);
-          this.$emit("input", this.selected);
-        }
-      },
       value: {
         immediate: true,
         deep: true,
@@ -199,6 +194,10 @@
       }
     },
     methods: {
+      updateSeletected() {
+        this.lastEmitted = JSON.stringify(this.selected);
+        this.$emit("input", this.selected);
+      },
       addUsernameToFullName(user) {
         if (!user.fullname || ! user.username)
         {
