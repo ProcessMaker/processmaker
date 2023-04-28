@@ -159,7 +159,7 @@ class ProcessTemplate implements TemplateInterface
 
         // Loop through each asset in the "export" array and set postOptions "mode" accordingly
         $postOptions = [];
-        foreach ($manifest['export'] as $key => $asset) {
+        foreach ($response['export'] as $key => $asset) {
             $mode = $data['saveAssetsMode'] === 'saveAllAssets' ? 'copy' : 'discard';
             if ($key === $uuid) {
                 $mode = 'copy';
