@@ -1616,7 +1616,7 @@
   "Template Author": "Template Author",
   "Start a new Process from a blank canvas or select a template": "Start a new Process from a blank canvas or select a template",
   "Publish Template": "Publish Template",
-  "This will create a re-usable template based on the <strong></strong> process": "This will create a re-usable template based on the <strong></strong> process",
+  "This will create a re-usable template based on the process": "This will create a re-usable template based on the process",
   "Template Name": "Template Name",
   "The template name must be unique.": "The template name must be unique.",
   "New Process": "New Process",
