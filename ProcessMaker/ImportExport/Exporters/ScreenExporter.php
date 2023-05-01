@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\ImportExport\Exporters;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ProcessMaker\Assets\ScreensInScreen;
@@ -81,7 +82,7 @@ class ScreenExporter extends ExporterBase
         foreach ($screenFinder->referencesToExport($this->model, [], null, false) as $screen) {
             try {
                 $screens[] = Screen::findOrFail($screen[1]);
-            } catch (\Exception $error) {
+            } catch (ModelNotFoundException $error) {
                 \Log::error($error->getMessage());
                 continue;
             }
