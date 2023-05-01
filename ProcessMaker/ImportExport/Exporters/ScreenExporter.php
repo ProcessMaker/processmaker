@@ -79,7 +79,12 @@ class ScreenExporter extends ExporterBase
         $screens = [];
         $screenFinder = new ScreensInScreen();
         foreach ($screenFinder->referencesToExport($this->model, [], null, false) as $screen) {
-            $screens[] = Screen::findOrFail($screen[1]);
+            try {
+                $screens[] = Screen::findOrFail($screen[1]);
+            } catch (\Exception $error) {
+                \Log::error($error->getMessage());
+                continue;
+            }
         }
 
         return $screens;
