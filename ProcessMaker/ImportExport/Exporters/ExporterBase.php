@@ -188,7 +188,7 @@ abstract class ExporterBase implements ExporterInterface
             $this->export();
             $extensions->runExtensions($this, 'postExport');
         } catch (ModelNotFoundException $e) {
-            throw new ExportModelNotFoundException($e, $this);
+            \Log::error($e->getMessage());
         }
     }
 
