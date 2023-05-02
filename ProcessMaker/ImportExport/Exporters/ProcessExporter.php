@@ -284,6 +284,7 @@ class ProcessExporter extends ExporterBase
 
             $screenId = $element->getAttribute('pm:screenRef');
             $interstitialScreenId = $element->getAttribute('pm:interstitialScreenRef');
+            $allowInterstitial = $element->getAttribute('pm:allowInterstitial');
 
             if (is_numeric($screenId)) {
                 $screen = Screen::findOrFail($screenId);
@@ -291,7 +292,7 @@ class ProcessExporter extends ExporterBase
             }
 
             // Let's check if interstitialScreen exist
-            if (is_numeric($interstitialScreenId)) {
+            if (is_numeric($interstitialScreenId) && $allowInterstitial === "true") {
                 $interstitialScreen = Screen::findOrFail($interstitialScreenId);
                 $this->addDependent(DependentType::INTERSTITIAL_SCREEN, $interstitialScreen, ScreenExporter::class, $meta);
             }
