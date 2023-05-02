@@ -88,8 +88,11 @@ export default {
   },
   computed: {
     filterActions() {
+      console.log('filter actions');
       let btns = this.actions.filter(action => {
-        if (!action.hasOwnProperty('permission') || action.hasOwnProperty('permission') && this.permission[action.permission] || action.hasOwnProperty('permission') && this.permission.includes(action.permission)) {
+        if (!action.hasOwnProperty('permission')
+            || action.hasOwnProperty('permission') && this.permission[action.permission]
+            || Array.isArray(this.permission) && action.hasOwnProperty('permission') && this.permission.includes(action.permission)) {
           return action;
         }
       });
