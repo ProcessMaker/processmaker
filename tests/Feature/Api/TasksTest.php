@@ -73,6 +73,51 @@ class TasksTest extends TestCase
     }
 
     /**
+     * Test to get the list of overdue tasks.
+     */
+    public function testGetListOfOverdueTasks()
+    {
+        $user = User::factory()->create(['is_administrator' => true]);
+        $request = ProcessRequest::factory()->create();
+
+        // Create some tokens.
+        ProcessRequestToken::factory()->count(10)->create([
+            'process_request_id' => $request->id,
+            'user_id' => $user->id,
+            'status' => 'CLOSED',
+        ]);
+
+        // Create 5 overdue tasks.
+        ProcessRequestToken::factory()->overdue()->count(5)->create([
+            'process_request_id' => $request->id,
+            'user_id' => $user->id,
+        ]);
+
+        $route = route('api.tasks.index', [
+            'user_id' => $user->id,
+            'pmql' => '(status = "In Progress") AND (due < NOW)',
+        ]);
+        $response = $this->actingAs($user, 'api')->get($route);
+        $meta = $response->json('meta');
+
+        // Assert that we have 5 overdue tasks for the given user.
+        $this->assertEquals(5, $meta['in_overdue']);
+
+        // Create 5 overdue self service tasks.
+        ProcessRequestToken::factory()->overdue()->count(5)->create([
+            'process_request_id' => $request->id,
+            'user_id' => $user->id,
+            'is_self_service' => true,
+        ]);
+
+        $response = $this->actingAs($user, 'api')->get($route);
+        $meta = $response->json('meta');
+
+        // Assert that we still have 5 overdue tasks for the given user.
+        $this->assertEquals(5, $meta['in_overdue']);
+    }
+
+    /**
      * You only see tasks that belong to you if you are not admin
      */
     public function testGetListAssignedTasks()
