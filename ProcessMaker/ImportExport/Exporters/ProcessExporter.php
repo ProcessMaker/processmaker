@@ -292,7 +292,7 @@ class ProcessExporter extends ExporterBase
             }
 
             // Let's check if interstitialScreen exist
-            if (is_numeric($interstitialScreenId) && $allowInterstitial === "true") {
+            if (is_numeric($interstitialScreenId) && $allowInterstitial === 'true') {
                 $interstitialScreen = Screen::findOrFail($interstitialScreenId);
                 $this->addDependent(DependentType::INTERSTITIAL_SCREEN, $interstitialScreen, ScreenExporter::class, $meta);
             }

@@ -43,6 +43,7 @@ class Utils
     {
         try {
             $xpath = new DOMXPath($document);
+
             return $xpath->query($path);
         } catch (Exception $e) {
             if ($e->getMessage() === 'DOMXPath::query(): Undefined namespace prefix') {
