@@ -88,7 +88,6 @@ export default {
   },
   computed: {
     filterActions() {
-      console.log('filter actions');
       let btns = this.actions.filter(action => {
         if (!action.hasOwnProperty('permission')
             || action.hasOwnProperty('permission') && this.permission[action.permission]
