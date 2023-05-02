@@ -310,12 +310,8 @@ class User extends Authenticatable implements HasMedia
      */
     public function getAvatar()
     {
-        $mediaFile = $this->getMedia(self::COLLECTION_PROFILE);
-        $url = '';
-        foreach ($mediaFile as $media) {
-            $url = $media->getFullUrl();
-        }
-
+        $media = $this->getMedia(self::COLLECTION_PROFILE);
+        $url = $media->last()->getFullUrl();
         return $url;
     }
 
