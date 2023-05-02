@@ -63,12 +63,12 @@ class TasksTest extends TestCase
         ProcessRequestToken::factory()->count(20)->create([
             'process_request_id' => $request->id,
         ]);
-        //Get a page of tokens
+        // Get a page of tokens
         $route = route('api.' . $this->resource . '.index', ['per_page' => 10, 'page' => 2]);
         $response = $this->apiCall('GET', $route);
-        //Verify the status
+        // Verify the status
         $response->assertStatus(200);
-        //Verify the structure
+        // Verify the structure
         $response->assertJsonStructure(['data' => ['*' => $this->structure]]);
     }
 
@@ -93,8 +93,8 @@ class TasksTest extends TestCase
             'status' => 'ACTIVE',
             'user_id' => $user_2->id,
         ]);
-        //Get a page of tokens
-        //Since PR #3470, user_id is required as parameter
+        // Get a page of tokens
+        // Since PR #3470, user_id is required as parameter
         $route = route('api.' . $this->resource . '.index', ['user_id' => $user_1->id]);
         $response = $this->apiCall('GET', $route);
 
@@ -108,7 +108,7 @@ class TasksTest extends TestCase
      */
     public function testGetListClosedTasks()
     {
-        //Run the permission seeder
+        // Run the permission seeder
         (new PermissionSeeder)->run();
 
         // Reboot our AuthServiceProvider. This is necessary so that it can
@@ -137,7 +137,7 @@ class TasksTest extends TestCase
             'status' => 'ACTIVE',
             'user_id' => $user_2->id,
         ]);
-        //Get a page of tokens
+        // Get a page of tokens
         $route = route('api.' . $this->resource . '.index', ['status' => 'CLOSED']);
         $response = $this->apiCall('GET', $route);
 
@@ -229,12 +229,12 @@ class TasksTest extends TestCase
             'process_request_id' => $request->id,
         ]);
 
-        //Get active tokens
+        // Get active tokens
         $route = route('api.' . $this->resource . '.index', ['per_page' => 10, 'status' => 'ACTIVE']);
         $response = $this->apiCall('GET', $route);
-        //Verify the status
+        // Verify the status
         $response->assertStatus(200);
-        //Verify the structure
+        // Verify the structure
         $response->assertJsonStructure(['data' => ['*' => $this->structure]]);
     }
 
@@ -263,14 +263,14 @@ class TasksTest extends TestCase
             'process_request_id' => $request->id,
         ]);
 
-        //Get tasks
+        // Get tasks
         $route = route('api.' . $this->resource . '.index', ['per_page' => 100]);
         $response = $this->apiCall('GET', $route);
 
-        //Verify the status
+        // Verify the status
         $response->assertStatus(200);
 
-        //Verify the element types
+        // Verify the element types
         $types = collect($response->json()['data'])->pluck('element_type')->unique()->toArray();
         $this->assertEquals($types, ['task']);
     }
@@ -293,21 +293,21 @@ class TasksTest extends TestCase
             'process_request_id' => $request->id,
         ]);
 
-        //List sorted by completed_at returns as first row {"completed_at": null}
+        // List sorted by completed_at returns as first row {"completed_at": null}
         $route = route('api.' . $this->resource . '.index', ['order_by' => 'completed_at', 'order_direction' => 'asc']);
         $response = $this->apiCall('GET', $route);
-        //Verify the status
+        // Verify the status
         $response->assertStatus(200);
-        //Verify the structure
+        // Verify the structure
         $response->assertJsonStructure(['data' => ['*' => $this->structure]]);
-        //Verify the first row
+        // Verify the first row
         $firstRow = $response->json('data')[0];
         $this->assertArraySubset(['completed_at' => null], $firstRow);
     }
 
     public function testSortByRequestName()
     {
-        //$request = ProcessRequest::factory()->create();
+        // $request = ProcessRequest::factory()->create();
 
         ProcessRequestToken::factory()->count(5)->create([
             'user_id' => $this->user->id,
@@ -379,17 +379,17 @@ class TasksTest extends TestCase
     public function testShowTask()
     {
         $request = ProcessRequest::factory()->create();
-        //Create a new process without category
+        // Create a new process without category
         $token = ProcessRequestToken::factory()->create([
             'process_request_id' => $request->id,
         ]);
 
-        //Test that is correctly displayed
+        // Test that is correctly displayed
         $route = route('api.' . $this->resource . '.show', [$token->id]);
         $response = $this->apiCall('GET', $route);
-        //Check the status
+        // Check the status
         $response->assertStatus(200);
-        //Check the structure
+        // Check the structure
         $response->assertJsonStructure($this->structure);
     }
 
@@ -399,17 +399,17 @@ class TasksTest extends TestCase
     public function testShowTaskWithUser()
     {
         $request = ProcessRequest::factory()->create();
-        //Create a new process without category
+        // Create a new process without category
         $token = ProcessRequestToken::factory()->create([
             'process_request_id' => $request->id,
         ]);
 
-        //Test that is correctly displayed
+        // Test that is correctly displayed
         $route = route('api.' . $this->resource . '.show', [$token->id, 'include' => 'user,definition']);
         $response = $this->apiCall('GET', $route);
-        //Check the status
+        // Check the status
         $this->assertStatus(200, $response);
-        //Check the structure
+        // Check the structure
         $response->assertJsonStructure($this->structure);
         $response->assertJsonStructure(['user' => ['id', 'email'], 'definition' => []]);
     }
@@ -427,12 +427,12 @@ class TasksTest extends TestCase
             'user_id' => $this->user->id,
         ]);
 
-        //Test that is correctly displayed
+        // Test that is correctly displayed
         $route = route('api.' . $this->resource . '.show', [$token->id, 'include' => 'processRequestParent']);
         $response = $this->apiCall('GET', $route);
-        //Check the status
+        // Check the status
         $this->assertStatus(200, $response);
-        //Check the structure
+        // Check the structure
         $json = $response->json();
         $this->assertFalse($json['can_view_parent_request']);
 
@@ -506,13 +506,13 @@ class TasksTest extends TestCase
         // We'll test viewing a new task with someone that is not authenticated
         $request = ProcessRequest::factory()->create();
 
-        //Create a new process without category
+        // Create a new process without category
         $token = ProcessRequestToken::factory()->create([
             'process_request_id' => $request->id,
         ]);
         $url = route('api.' . $this->resource . '.show', [$token->id, 'include' => 'user,definition']);
 
-        //The call is done without an authenticated user so it should return 401
+        // The call is done without an authenticated user so it should return 401
         $response = $this->actingAs(User::factory()->create())
             ->json('GET', $url, []);
         $response->assertStatus(401);
