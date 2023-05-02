@@ -57,6 +57,11 @@ export default {
       return this.formatAssets(assets, rootUuid, response.data.passwordRequired);
     }).catch((error) => {
       let message = error.response?.data?.error;
+
+      if (error.response?.data?.exception === "ProcessMaker\\Exception\\ExportEmptyProcessException") {
+        message = error.response?.data?.message;
+      }
+
       if (!message) {
         message = error.message;
       }
