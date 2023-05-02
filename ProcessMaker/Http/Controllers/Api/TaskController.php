@@ -195,12 +195,6 @@ class TaskController extends Controller
             return $query->count();
         }
 
-        $inOverdueQuery = ProcessRequestToken::where('user_id', $user->id)
-            ->where('status', 'ACTIVE')
-            ->where('due_at', '<', Carbon::now());
-
-        $inOverdue = $inOverdueQuery->count();
-
         try {
             $response = $this->handleOrderByRequestName($request, $query->get());
         } catch (\Illuminate\Database\QueryException $e) {
@@ -226,7 +220,11 @@ class TaskController extends Controller
             return new Resource($processRequestToken);
         });
 
-        $response->inOverdue = $inOverdue;
+        $inOverdueQuery = ProcessRequestToken::query()
+            ->whereIn('id', $response->pluck('id'))
+            ->where('due_at', '<', Carbon::now());
+
+        $response->inOverdue = $inOverdueQuery->count();
 
         return new TaskCollection($response);
     }
