@@ -325,11 +325,6 @@ export default {
 
     fetch() {
         Vue.nextTick(() => {
-            if (this.cancelToken) {
-              this.cancelToken();
-              this.cancelToken = null;
-            }
-            const CancelToken = ProcessMaker.apiClient.CancelToken;
 
             let pmql = '';
 
@@ -378,12 +373,7 @@ export default {
                   this.perPage +
                   filterParams +
                   this.getSortParam() +
-                  "&non_system=true",
-                {
-                  cancelToken: new CancelToken(c => {
-                    this.cancelToken = c;
-                  })
-                }
+                  "&non_system=true"
               )
               .then(response => {
                 this.data = this.transform(response.data);
@@ -392,9 +382,6 @@ export default {
                 }
               })
               .catch(error => {
-                if (error.code === "ERR_CANCELED") {
-                  return;
-                }
                 window.ProcessMaker.alert(error.response.data.message, "danger");
                 this.data = [];
               });
