@@ -41,7 +41,7 @@ class ExportController extends Controller
 
             return response()->json($exporter->payload(true), 200);
         } catch (ExportModelNotFoundException $error) {
-            return response()->json(['error' => $error->getMessage()], 400);
+            \Log::error(response()->json(['error' => $error->getMessage()], 400));
         }
     }
 
