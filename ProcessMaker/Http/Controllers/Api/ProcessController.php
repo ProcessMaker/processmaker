@@ -424,6 +424,11 @@ class ProcessController extends Controller
             $process->warnings = null;
         }
 
+        // Save any task notification settings...
+        if ($request->has('task_notifications')) {
+            $this->saveTaskNotifications($process, $request);
+        }
+
         $process->fill($request->except('task_notifications'));
 
         try {

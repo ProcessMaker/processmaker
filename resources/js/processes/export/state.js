@@ -185,8 +185,7 @@ export default {
           this.setInitialState(response.assets, response.rootUuid);
         })
         .catch((error) => {
-          console.log(error);
-          ProcessMaker.alert(error, "danger");
+          ProcessMaker.alert(this.$t(error), "danger");
         });
     },
   },

@@ -56,7 +56,7 @@ export default {
       const assets = response.data.export;
       return this.formatAssets(assets, rootUuid, response.data.passwordRequired);
     }).catch((error) => {
-      let message = error.response?.data?.message;
+      let message = error.response?.data?.error;
       if (!message) {
         message = error.message;
       }
