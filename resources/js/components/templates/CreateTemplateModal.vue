@@ -118,7 +118,7 @@ export default {
           return asset + ' Template with the same name already exists';
       },
       descriptionText() {
-        return this.$t(`This will create a re-usable template based on the <strong>${this.assetName}</strong> ${this.assetType}`)
+        return this.$t('This will create a re-usable template based on the {{assetName}} {{assetType}}', {assetName: this.assetName, assetType: this.assetType});
       }
     },
     watch: {
