@@ -19,7 +19,7 @@ def main():
             if key not in translated_data or translated_data[key] != value:
                 data = {'source': 'en', 'target': lang, 'text': value}
                 response = requests.post(url, headers=headers, json=data)
-                translated_data[key] = response.json()['translatedText']
+                translated_data[key] = response.json()['choices'][0]['text'].strip()
                 changed = True
 
         if changed:
