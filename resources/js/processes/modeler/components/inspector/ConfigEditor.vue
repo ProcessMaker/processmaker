@@ -28,7 +28,6 @@
       centered
       :title="$t('Script Config Editor')"
       header-close-content="&times;"
-      @hide="handleHide"
     >
       <div class="editor-container">
         <monaco-editor
@@ -36,6 +35,7 @@
           :options="monacoLargeOptions"
           language="json"
           class="editor"
+          @focusout.native="handleBlur"
         />
       </div>
       <div slot="modal-footer">
@@ -84,7 +84,7 @@ export default {
     closePopup() {
       this.showPopup = false;
     },
-    handleHide() {
+    handleBlur() {
       // Update the undoStack when the modal is hidden to trigger the autosave.
       const child = this.$root.$children.find((c) => c.$refs.modeler);
       child.$refs.modeler.pushToUndoStack();
