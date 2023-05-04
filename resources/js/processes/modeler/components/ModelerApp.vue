@@ -19,7 +19,7 @@
           @warnings="warnings = $event"
           @saveBpmn="emitSaveEvent"
           @discard="emitDiscardEvent"
-          @close="close"
+          @close="onClose"
           @publishTemplate="publishTemplate"
           @set-xml-manager="xmlManager = $event"
         />
@@ -54,6 +54,7 @@
 <script>
 import { Modeler, ValidationStatus } from "@processmaker/modeler";
 import CreateTemplateModal from "../../../components/templates/CreateTemplateModal.vue";
+import { showLeaveWarning } from "../../../leave-warning";
 
 export default {
   name: "ModelerApp",
@@ -100,16 +101,15 @@ export default {
   },
   mounted() {
     ProcessMaker.$modeler = this.$refs.modeler;
-
     window.ProcessMaker.EventBus.$emit("modeler-app-init", this);
 
     window.ProcessMaker.EventBus.$on("modeler-save", (onSuccess, onError) => {
       this.saveProcess(onSuccess, onError);
     });
     window.ProcessMaker.EventBus.$on("modeler-change", () => {
-      this.refreshSession();
-      this.autoSaveProcess();
       window.ProcessMaker.EventBus.$emit("new-changes");
+      this.refreshSession();
+      this.handleAutosave();
     });
     window.ProcessMaker.EventBus.$on("modeler-discard", () => {
       this.discardDraft();
@@ -173,8 +173,14 @@ export default {
       }
       window.ProcessMaker.EventBus.$emit("modeler-save");
     },
-    close() {
-      window.location.href = "/processes";
+    onClose() {
+      window.removeEventListener("beforeunload", showLeaveWarning);
+      const forceAutosave = true;
+      this.handleAutosave(forceAutosave).then(() => {
+        window.location.href = "/processes";
+      }).catch(() => {
+        window.addEventListener("beforeunload", showLeaveWarning);
+      });
     },
     emitDiscardEvent() {
       if (this.externalEmit.includes("open-versions-discard-modal")) {
@@ -202,15 +208,15 @@ export default {
       const savedSuccessfully = (response) => {
         this.process.updated_at = response.data.updated_at;
         // Now show alert
-        let type = 'process';
+        let type = "process";
         if (this.process.is_template) {
-          type = 'process template';
+          type = "process template";
         }
-        ProcessMaker.alert(this.$t(`The ${type} was saved.`, {'type': type}), 'success');
+        ProcessMaker.alert(this.$t(`The ${type} was saved.`, { type }), "success");
         // Set published status.
         this.setVersionIndicator(false);
-        window.ProcessMaker.EventBus.$emit('save-changes');
-        this.$set(this, 'warnings', response.data.warnings || []);
+        window.ProcessMaker.EventBus.$emit("save-changes");
+        this.$set(this, "warnings", response.data.warnings || []);
         if (response.data.warnings && response.data.warnings.length > 0) {
           this.$refs.validationStatus.autoValidate = true;
         }
@@ -232,7 +238,7 @@ export default {
         .then(savedSuccessfully)
         .catch(saveFailed);
     },
-    async autoSaveProcess() {
+    async handleAutosave(force = false) {
       if (this.isVersionsInstalled === false) {
         return;
       }
@@ -245,11 +251,7 @@ export default {
       const svgString = new XMLSerializer().serializeToString(svg);
       const xml = await this.$refs.modeler.getXmlFromDiagram();
 
-      if (this.debounceTimeout) {
-        clearTimeout(this.debounceTimeout);
-      }
-
-      this.debounceTimeout = setTimeout(() => {
+      const apiCall = () => {
         this.setLoadingState(true);
         ProcessMaker.apiClient.put(`/processes/${this.process.id}/draft`, {
           name: this.process.name,
@@ -269,13 +271,27 @@ export default {
             this.setVersionIndicator(true);
           })
           .catch((error) => {
-            const { message } = error.response.data;
-            ProcessMaker.alert(message, "danger");
+            if (error.response) {
+              const { message } = error.response.data;
+              ProcessMaker.alert(message, "danger");
+            }
           })
           .finally(() => {
             this.setLoadingState(false);
           });
-      }, this.autoSaveDelay);
+      };
+
+      if (force) {
+        apiCall();
+      } else {
+        if (this.debounceTimeout) {
+          clearTimeout(this.debounceTimeout);
+        }
+
+        this.debounceTimeout = setTimeout(() => {
+          apiCall();
+        }, this.autoSaveDelay);
+      }
     },
     setVersionIndicator(isDraft = null) {
       if (this.isVersionsInstalled) {
