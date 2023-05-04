@@ -124,7 +124,6 @@ class User extends Authenticatable implements HasMedia
 
     protected $appends = [
         'fullname',
-        'avatar',
     ];
 
     protected $casts = [
@@ -277,43 +276,15 @@ class User extends Authenticatable implements HasMedia
     }
 
     /**
-     * Get the avatar URL
-     *
-     * @return string
-     */
-    public function getAvatarAttribute()
-    {
-        return $this->getAvatar();
-    }
-
-    /**
-     * Define the avatar mutator. Within, we set the avatar attribute only if
-     * it is not null. This prevents the model from attempting to send an
-     * avatar field to the database on update, which has been known to
-     * cause errors from time to time.
-     *
-     * @return string
-     */
-    public function setAvatarAttribute($value = null)
-    {
-        if ($value) {
-            $this->attributes['avatar'] = $value;
-        }
-    }
-
-    /**
      * Get url Avatar
      *
      * @return string
      */
     public function getAvatar()
     {
-        $mediaFile = $this->getMedia(self::COLLECTION_PROFILE);
-        $url = '';
-        foreach ($mediaFile as $media) {
-            $url = $media->getFullUrl();
-        }
-
+        $media = $this->getMedia(self::COLLECTION_PROFILE);
+        $lastUpload = $media->last();
+        $url = $lastUpload ? $lastUpload->getFullUrl() : "";
         return $url;
     }
 

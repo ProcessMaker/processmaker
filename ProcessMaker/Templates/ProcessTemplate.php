@@ -149,14 +149,17 @@ class ProcessTemplate implements TemplateInterface
         $model = (new ExportController)->getModel('process')->findOrFail($data['asset_id']);
 
         // Get the process manifest
-        $manifest = $this->getManifest('process', $data['asset_id']);
+        $response = $this->getManifest('process', $data['asset_id']);
+        if (array_key_exists('error', $response)) {
+            return response()->json($response, 400);
+        }
 
         // Array of post options
         $uuid = $model->uuid;
 
         // Loop through each asset in the "export" array and set postOptions "mode" accordingly
         $postOptions = [];
-        foreach ($manifest['export'] as $key => $asset) {
+        foreach ($response['export'] as $key => $asset) {
             $mode = $data['saveAssetsMode'] === 'saveAllAssets' ? 'copy' : 'discard';
             if ($key === $uuid) {
                 $mode = 'copy';

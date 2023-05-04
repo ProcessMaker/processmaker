@@ -18,7 +18,7 @@
   <div class="px-3 page-content mb-0" id="tasks">
     <div class="row">
       <div class="col" align="right">
-          <b-alert class="align-middle" show variant="danger" v-cloak v-if="inOverdueMessage.length>0"
+          <b-alert v-if="inOverdueMessage.length>0" class="align-middle" show variant="danger" v-cloak
             style="text-align: center;" data-cy="tasks-alert">
             @{{ inOverdueMessage }}
           </b-alert>
@@ -39,8 +39,8 @@
                 :ai-enabled="false"
                 :show-filters="true"
                 :aria-label="$t('Advanced Search (PMQL)')"
-                :param-status="status" 
-                :permission="{{ Auth::user()->hasPermissionsFor('users', 'groups') }}" 
+                :param-status="status"
+                :permission="{{ Auth::user()->hasPermissionsFor('users', 'groups') }}"
                 @submit="onNLQConversion"
                 @filterspmqlchange="onFiltersPmqlChange">
 

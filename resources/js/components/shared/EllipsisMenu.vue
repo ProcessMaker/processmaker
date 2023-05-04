@@ -32,7 +32,7 @@
             class="pr-1 fa-fw"
             :class="action.icon"
           />
-          <span>{{ action.content }}</span>
+          <span>{{ $t(action.content) }}</span>
         </div>
       </b-dropdown-item>
       <b-dropdown-divider />
@@ -48,7 +48,7 @@
             class="pr-1 fa-fw"
             :class="action.icon"
           />
-          <span>{{ action.content }}</span>
+          <span>{{ $t(action.content) }}</span>
         </div>
       </b-dropdown-item>
     </div>
@@ -65,7 +65,7 @@
             class="pr-1 fa-fw"
             :class="action.icon"
           />
-          <span>{{ action.content }}</span>
+          <span>{{ $t(action.content) }}</span>
         </div>
       </b-dropdown-item>
     </div>
@@ -89,7 +89,9 @@ export default {
   computed: {
     filterActions() {
       let btns = this.actions.filter(action => {
-        if (!action.hasOwnProperty('permission') || action.hasOwnProperty('permission') && this.permission[action.permission] || action.hasOwnProperty('permission') && this.permission.includes(action.permission)) {
+        if (!action.hasOwnProperty('permission')
+            || action.hasOwnProperty('permission') && this.permission[action.permission]
+            || Array.isArray(this.permission) && action.hasOwnProperty('permission') && this.permission.includes(action.permission)) {
           return action;
         }
       });
