@@ -1,0 +1,61 @@
+name: Translate Changed Lines
+
+on:
+  push:
+    paths:
+      - 'resources/lang/en.json'
+
+jobs:
+  translate_and_create_pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Translate changed lines in en.json to multiple languages
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python -c "import requests; from os import getenv, path; import json; \
+          with open('resources/lang/en.json', 'r') as f: en_data = json.load(f); \
+          headers = {'Authorization': f'Bearer {getenv('OPENAI_API_KEY')}'}; \
+          url = 'https://api.openai.com/v1/translations'; \
+          languages = {'es': 'Spanish', 'de': 'German', 'fr': 'French', 'ja': 'Japanese'}; \
+          for lang, lang_name in languages.items(): \
+            file_path = f'resources/lang/{lang}.json'; \
+            translated_data = json.load(open(file_path, 'r')) if path.exists(file_path) else {}; \
+            changed = False; \
+            for key, value in en_data.items(): \
+              if key not in translated_data or translated_data[key] != value: \
+                data = {'source': 'en', 'target': lang, 'text': value}; \
+                response = requests.post(url, headers=headers, json=data); \
+                translated_data[key] = response.json()['translatedText']; \
+                changed = True; \
+            if changed: \
+              with open(file_path, 'w') as f: json.dump(translated_data, f, ensure_ascii=False, indent=2)"
+
+      - name: Create PR for updated translated files
+        id: create_pr
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'Update translations for changed lines'
+          title: 'Update translations for changed lines'
+          body: 'This PR updates translations for the changed lines in en.json for Spanish, German, French, and Japanese.'
+          branch: 'translate/changed-lines'
+          labels: 'translation, automated'
+
+      - name: Check if PR was created
+        if: steps.create_pr.outputs.pull-request-number == ''
+        run: echo "No changes to translations, no PR created."
