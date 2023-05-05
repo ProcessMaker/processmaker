@@ -25,8 +25,7 @@ class ExportEmptyProcessException extends Exception
     {
         return response()->json([
             'message' => __('The process to export is empty.'),
-            'exception' => 'ProcessMaker\\Exception\\ExportEmptyProcessException'
+            'exception' => 'ProcessMaker\\Exception\\ExportEmptyProcessException',
         ], 500);
     }
-    
 }
