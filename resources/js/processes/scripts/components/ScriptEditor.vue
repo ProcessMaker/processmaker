@@ -188,6 +188,7 @@ import _ from "lodash";
 import TopMenu from "../../../components/Menu.vue";
 // eslint-disable-next-line no-unused-vars
 import customFilters from "../customFilters";
+import { showLeaveWarning } from "../../../leave-warning";
 
 export default {
   components: {
@@ -277,7 +278,10 @@ export default {
   },
   watch: {
     "preview.output": "handlePreviewOutputChange",
-    code: "handleAutosave",
+    code() {
+      window.ProcessMaker.EventBus.$emit("new-changes");
+      this.handleAutosave();
+    },
   },
   mounted() {
     ProcessMaker.EventBus.$emit("script-builder-init", this);
@@ -285,7 +289,7 @@ export default {
       this.save(onSuccess, onError);
     });
     ProcessMaker.EventBus.$on("script-close", () => {
-      window.location.href = "/designer/scripts";
+      this.onClose();
     });
     ProcessMaker.EventBus.$on("script-discard", () => {
       this.discardDraft();
@@ -397,17 +401,21 @@ export default {
           }
         });
     },
-    handleAutosave() {
+    onClose() {
+      window.removeEventListener("beforeunload", showLeaveWarning);
+      const forceAutosave = true;
+      this.handleAutosave(forceAutosave).then(() => {
+        window.location.href = "/designer/scripts";
+      }).catch(() => {
+        window.addEventListener("beforeunload", showLeaveWarning);
+      });
+    },
+    async handleAutosave(force = false) {
       if (this.isVersionsInstalled === false) {
         return;
       }
 
-      if (this.debounceTimeout) {
-        clearTimeout(this.debounceTimeout);
-      }
-
-      this.debounceTimeout = setTimeout(() => {
-        // Start saving state.
+      const apiCall = () => {
         this.setLoadingState(true);
         ProcessMaker.apiClient
           .put(`scripts/${this.script.id}/draft`, {
@@ -421,12 +429,24 @@ export default {
           .then(() => {
             // Set draft status.
             this.setVersionIndicator(true);
+            window.ProcessMaker.EventBus.$emit("save-changes");
           })
           .finally(() => {
-            // Stop saving state.
             this.setLoadingState(false);
           });
-      }, this.autoSaveDelay);
+      };
+
+      if (force) {
+        apiCall();
+      } else {
+        if (this.debounceTimeout) {
+          clearTimeout(this.debounceTimeout);
+        }
+
+        this.debounceTimeout = setTimeout(() => {
+          apiCall();
+        }, this.autoSaveDelay);
+      }
     },
     discardDraft() {
       ProcessMaker.apiClient
