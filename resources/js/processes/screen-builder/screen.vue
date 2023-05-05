@@ -282,7 +282,7 @@ import TopMenu from "../../components/Menu.vue";
 import mockMagicVariables from "./mockMagicVariables";
 import formTypes from "./formTypes";
 import DataLoadingBasic from "../../components/shared/DataLoadingBasic.vue";
-import { showLeaveWarning } from "../../leave-warning";
+import autosaveMixins from "../../modules/autosave/mixins";
 
 // To include another language in the Validator with variable processmaker
 if (
@@ -310,6 +310,7 @@ export default {
     TopMenu,
     DataLoadingBasic,
   },
+  mixins: [...autosaveMixins],
   props: {
     screen: {
       type: Object,
@@ -490,6 +491,7 @@ export default {
           },
         ],
       },
+      closeHref: "/designer/screens",
     };
   },
   computed: {
@@ -545,6 +547,35 @@ export default {
         });
       }
       return warnings;
+    },
+    autosaveApiCall() {
+      return () => {
+        this.setLoadingState(true);
+        ProcessMaker.apiClient
+          .put(`screens/${this.screen.id}/draft`, {
+            title: this.screen.title,
+            description: this.screen.description,
+            type: this.screen.type,
+            config: this.config,
+            computed: this.computed,
+            custom_css: this.customCSS,
+            watchers: this.watchers,
+          })
+          .then(() => {
+            // Set draft status.
+            this.setVersionIndicator(true);
+            ProcessMaker.EventBus.$emit("save-changes");
+          })
+          .catch((error) => {
+            if (error.response) {
+              const { message } = error.response.data;
+              ProcessMaker.alert(message, "danger");
+            }
+          })
+          .finally(() => {
+            this.setLoadingState(false);
+          });
+      };
     },
   },
   watch: {
@@ -892,15 +923,6 @@ export default {
         baseURL: "/",
       });
     }, 60000),
-    onClose() {
-      window.removeEventListener("beforeunload", showLeaveWarning);
-      const forceAutosave = true;
-      this.handleAutosave(forceAutosave).then(() => {
-        window.location.href = "/designer/screens";
-      }).catch(() => {
-        window.addEventListener("beforeunload", showLeaveWarning);
-      });
-    },
     onInput() {
       ProcessMaker.EventBus.$emit("screen-change");
     },
@@ -921,51 +943,6 @@ export default {
         .then(() => {
           window.location.reload();
         });
-    },
-    async handleAutosave(force = false) {
-      if (this.isVersionsInstalled === false) {
-        return;
-      }
-
-      const apiCall = () => {
-        this.setLoadingState(true);
-        ProcessMaker.apiClient
-          .put(`screens/${this.screen.id}/draft`, {
-            title: this.screen.title,
-            description: this.screen.description,
-            type: this.screen.type,
-            config: this.config,
-            computed: this.computed,
-            custom_css: this.customCSS,
-            watchers: this.watchers,
-          })
-          .then(() => {
-            // Set draft status.
-            this.setVersionIndicator(true);
-            ProcessMaker.EventBus.$emit("save-changes");
-          })
-          .catch((error) => {
-            if (error.response) {
-              const { message } = error.response.data;
-              ProcessMaker.alert(message, "danger");
-            }
-          })
-          .finally(() => {
-            this.setLoadingState(false);
-          });
-      };
-
-      if (force) {
-        apiCall();
-      } else {
-        if (this.debounceTimeout) {
-          clearTimeout(this.debounceTimeout);
-        }
-
-        this.debounceTimeout = setTimeout(() => {
-          apiCall();
-        }, this.autoSaveDelay);
-      }
     },
     saveScreen(exportScreen, onSuccess, onError) {
       if (this.allErrors !== 0) {

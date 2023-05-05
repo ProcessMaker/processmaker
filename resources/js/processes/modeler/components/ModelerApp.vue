@@ -54,7 +54,7 @@
 <script>
 import { Modeler, ValidationStatus } from "@processmaker/modeler";
 import CreateTemplateModal from "../../../components/templates/CreateTemplateModal.vue";
-import { showLeaveWarning } from "../../../leave-warning";
+import autosaveMixins from "../../../modules/autosave/mixins";
 
 export default {
   name: "ModelerApp",
@@ -63,6 +63,7 @@ export default {
     ValidationStatus,
     CreateTemplateModal,
   },
+  mixins: [...autosaveMixins],
   data() {
     return {
       self: this,
@@ -83,7 +84,49 @@ export default {
       processName: window.ProcessMaker.modeler.process.name,
       processId: window.ProcessMaker.modeler.process.id,
       currentUserId: window.ProcessMaker.modeler.process.user_id,
+      closeHref: "/processes",
     };
+  },
+  computed: {
+    autosaveApiCall() {
+      return async () => {
+        const svg = document.querySelector(".mini-paper svg");
+        const css = "text { font-family: sans-serif; }";
+        const style = document.createElement("style");
+        style.textContent = css;
+        svg.appendChild(style);
+        const svgString = new XMLSerializer().serializeToString(svg);
+        const xml = await this.$refs.modeler.getXmlFromDiagram();
+
+        this.setLoadingState(true);
+        ProcessMaker.apiClient.put(`/processes/${this.process.id}/draft`, {
+          name: this.process.name,
+          description: this.process.description,
+          task_notifications: this.getTaskNotifications(),
+          bpmn: xml,
+          svg: svgString,
+        })
+          .then((response) => {
+            this.process.updated_at = response.data.updated_at;
+            window.ProcessMaker.EventBus.$emit("save-changes");
+            this.$set(this, "warnings", response.data.warnings || []);
+            if (response.data.warnings && response.data.warnings.length > 0) {
+              this.$refs.validationStatus.autoValidate = true;
+            }
+            // Set draft status.
+            this.setVersionIndicator(true);
+          })
+          .catch((error) => {
+            if (error.response) {
+              const { message } = error.response.data;
+              ProcessMaker.alert(message, "danger");
+            }
+          })
+          .finally(() => {
+            this.setLoadingState(false);
+          });
+      };
+    },
   },
   watch: {
     validationErrors: {
@@ -173,15 +216,6 @@ export default {
       }
       window.ProcessMaker.EventBus.$emit("modeler-save");
     },
-    onClose() {
-      window.removeEventListener("beforeunload", showLeaveWarning);
-      const forceAutosave = true;
-      this.handleAutosave(forceAutosave).then(() => {
-        window.location.href = "/processes";
-      }).catch(() => {
-        window.addEventListener("beforeunload", showLeaveWarning);
-      });
-    },
     emitDiscardEvent() {
       if (this.externalEmit.includes("open-versions-discard-modal")) {
         window.ProcessMaker.EventBus.$emit("open-versions-discard-modal");
@@ -237,61 +271,6 @@ export default {
       ProcessMaker.apiClient.put(`/processes/${this.process.id}`, data)
         .then(savedSuccessfully)
         .catch(saveFailed);
-    },
-    async handleAutosave(force = false) {
-      if (this.isVersionsInstalled === false) {
-        return;
-      }
-
-      const svg = document.querySelector(".mini-paper svg");
-      const css = "text { font-family: sans-serif; }";
-      const style = document.createElement("style");
-      style.textContent = css;
-      svg.appendChild(style);
-      const svgString = new XMLSerializer().serializeToString(svg);
-      const xml = await this.$refs.modeler.getXmlFromDiagram();
-
-      const apiCall = () => {
-        this.setLoadingState(true);
-        ProcessMaker.apiClient.put(`/processes/${this.process.id}/draft`, {
-          name: this.process.name,
-          description: this.process.description,
-          task_notifications: this.getTaskNotifications(),
-          bpmn: xml,
-          svg: svgString,
-        })
-          .then((response) => {
-            this.process.updated_at = response.data.updated_at;
-            window.ProcessMaker.EventBus.$emit("save-changes");
-            this.$set(this, "warnings", response.data.warnings || []);
-            if (response.data.warnings && response.data.warnings.length > 0) {
-              this.$refs.validationStatus.autoValidate = true;
-            }
-            // Set draft status.
-            this.setVersionIndicator(true);
-          })
-          .catch((error) => {
-            if (error.response) {
-              const { message } = error.response.data;
-              ProcessMaker.alert(message, "danger");
-            }
-          })
-          .finally(() => {
-            this.setLoadingState(false);
-          });
-      };
-
-      if (force) {
-        apiCall();
-      } else {
-        if (this.debounceTimeout) {
-          clearTimeout(this.debounceTimeout);
-        }
-
-        this.debounceTimeout = setTimeout(() => {
-          apiCall();
-        }, this.autoSaveDelay);
-      }
     },
     setVersionIndicator(isDraft = null) {
       if (this.isVersionsInstalled) {
