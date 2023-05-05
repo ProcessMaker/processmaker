@@ -25,19 +25,19 @@ jobs:
           python -m pip install --upgrade pip
           pip install openai
 
-      - name: Translate changed lines to Spanish
+      - name: Translate changed strings to Spanish
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_ORG: ${{ secrets.OPENAI_ORG }}
         run: python .github/workflows/scripts/translate.py es
         
-      - name: Translate changed lines to French
+      - name: Translate changed strings to French
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_ORG: ${{ secrets.OPENAI_ORG }}
         run: python .github/workflows/scripts/translate.py fr
         
-      - name: Translate changed lines to German
+      - name: Translate changed strings to German
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_ORG: ${{ secrets.OPENAI_ORG }}
@@ -54,13 +54,13 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: 'Update translations for changed lines'
-          title: 'Update translations for changed lines'
-          body: 'This PR translates changed lines in en.json to Spanish, French, and German.'
-          branch: 'translate/changed-lines'
+          commit-message: 'Update translations for changed strings'
+          title: 'Update translations for changed strings'
+          body: 'This PR translates changed strings in en.json to Spanish, French, and German.'
+          branch: 'translate/changed-strings'
           delete-branch: true
           labels: 'translation, automated'
 
       - name: Check if PR was created
         if: steps.create_pr.outputs.pull-request-number == ''
-        run: echo "No changes to translations, no PR created."
+        run: echo "No changes to translations. No PR created."
