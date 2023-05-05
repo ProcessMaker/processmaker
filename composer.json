@@ -1,7 +1,7 @@
 {
     "name": "processmaker/processmaker",
     "version": "4.6.0-RC7",
-    "description": "BPM PHP Software",
+    "description": "BPM PHP Software Bleeding Edge Edition",
     "keywords": [
         "php bpm processmaker"
     ],
