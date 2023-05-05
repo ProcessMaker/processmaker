@@ -509,7 +509,9 @@ class ImportProcess implements ShouldQueue
                         $ids[] = $category->id;
                     }
                 }
-                $new->screen_category_id = implode(',', $ids);
+                if (!empty($ids)) {
+                    $new->screen_category_id = implode(',', $ids);
+                }
                 $new->save();
             }
 
