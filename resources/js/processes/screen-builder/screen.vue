@@ -282,6 +282,7 @@ import TopMenu from "../../components/Menu.vue";
 import mockMagicVariables from "./mockMagicVariables";
 import formTypes from "./formTypes";
 import DataLoadingBasic from "../../components/shared/DataLoadingBasic.vue";
+import { showLeaveWarning } from "../../leave-warning";
 
 // To include another language in the Validator with variable processmaker
 if (
@@ -692,10 +693,10 @@ export default {
           that.saveScreen(value, onSuccess, onError);
         });
         ProcessMaker.EventBus.$on("screen-change", () => {
-          this.autoSaveScreen();
+          this.handleAutosave();
         });
         ProcessMaker.EventBus.$on("screen-close", () => {
-          window.location.href = "/designer/screens";
+          this.onClose();
         });
         ProcessMaker.EventBus.$on("screen-discard", () => {
           that.discardDraft();
@@ -892,7 +893,13 @@ export default {
       });
     }, 60000),
     onClose() {
-      window.location.href = "/designer/screens";
+      window.removeEventListener("beforeunload", showLeaveWarning);
+      const forceAutosave = true;
+      this.handleAutosave(forceAutosave).then(() => {
+        window.location.href = "/designer/screens";
+      }).catch(() => {
+        window.addEventListener("beforeunload", showLeaveWarning);
+      });
     },
     onInput() {
       ProcessMaker.EventBus.$emit("screen-change");
@@ -915,17 +922,12 @@ export default {
           window.location.reload();
         });
     },
-    autoSaveScreen() {
+    async handleAutosave(force = false) {
       if (this.isVersionsInstalled === false) {
         return;
       }
 
-      if (this.debounceTimeout) {
-        clearTimeout(this.debounceTimeout);
-      }
-
-      this.debounceTimeout = setTimeout(() => {
-        // Start saving state.
+      const apiCall = () => {
         this.setLoadingState(true);
         ProcessMaker.apiClient
           .put(`screens/${this.screen.id}/draft`, {
@@ -943,14 +945,27 @@ export default {
             ProcessMaker.EventBus.$emit("save-changes");
           })
           .catch((error) => {
-            const { message } = error.response.data;
-            ProcessMaker.alert(message, "danger");
+            if (error.response) {
+              const { message } = error.response.data;
+              ProcessMaker.alert(message, "danger");
+            }
           })
           .finally(() => {
-            // Stop saving state.
             this.setLoadingState(false);
           });
-      }, this.autoSaveDelay);
+      };
+
+      if (force) {
+        apiCall();
+      } else {
+        if (this.debounceTimeout) {
+          clearTimeout(this.debounceTimeout);
+        }
+
+        this.debounceTimeout = setTimeout(() => {
+          apiCall();
+        }, this.autoSaveDelay);
+      }
     },
     saveScreen(exportScreen, onSuccess, onError) {
       if (this.allErrors !== 0) {
