@@ -7,6 +7,7 @@ on:
 
 jobs:
   translate_and_create_pr:
+    name: Translate and create PR
     runs-on: ubuntu-latest
 
     steps:
@@ -26,16 +27,19 @@ jobs:
       - name: Translate changed lines to Spanish
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_ORG: ${{ secrets.OPENAI_ORG }}
         run: python .github/workflows/scripts/translate.py es
         
       - name: Translate changed lines to French
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_ORG: ${{ secrets.OPENAI_ORG }}
         run: python .github/workflows/scripts/translate.py fr
         
       - name: Translate changed lines to German
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_ORG: ${{ secrets.OPENAI_ORG }}
         run: python .github/workflows/scripts/translate.py de
 
       - name: Create PR for updated translated files
@@ -45,7 +49,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: 'Update translations for changed lines'
           title: 'Update translations for changed lines'
-          body: 'This PR updates translations for the changed lines in en.json for Spanish, German, French, and Japanese.'
+          body: 'This PR updates translations for the changed lines in en.json for Spanish, French, and German.'
           branch: 'translate/changed-lines'
           labels: 'translation, automated'
 
