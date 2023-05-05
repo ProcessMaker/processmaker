@@ -47,8 +47,8 @@ jobs:
         
       - name: Delete existing branch if it exists
         run: |
-          if git show-ref --quiet refs/remotes/origin/translate/changed-lines; then
-            git push origin --delete translate/changed-lines
+          if git show-ref --quiet refs/remotes/origin/translate/changed-strings; then
+            git push origin --delete translate/changed-strings
           fi
 
       - name: Create PR for updated translated files
