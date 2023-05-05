@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'resources/lang/en.json'
+  workflow_dispatch:
 
 jobs:
   translate_and_create_pr:
