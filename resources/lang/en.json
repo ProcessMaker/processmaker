@@ -1632,6 +1632,7 @@
   "This file is password protected. Enter the password below to continue with the import.": "This file is password protected. Enter the password below to continue with the import.",
   "Import As New": "Import As New",
   "Update": "Update",
+  " another change goes here {{user}}": " another change goes here {{user}}",
   "Please, :name, use the AI feature": "Please, :name, use the AI feature",
   "Please click the button to continue": "Please click the button to continue",
   "Test String for GitHub Actions": "Test String for GitHub Actions"
