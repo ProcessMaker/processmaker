@@ -1631,6 +1631,5 @@
   "Import a Process and its associated assets into this ProcessMaker environment": "Import a Process and its associated assets into this ProcessMaker environment",
   "This file is password protected. Enter the password below to continue with the import.": "This file is password protected. Enter the password below to continue with the import.",
   "Import As New": "Import As New",
-  "Update": "Update",
-  "New Translation String": "New Translation String"
+  "Update": "Update"
 }
