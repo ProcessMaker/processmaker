@@ -14,7 +14,7 @@ if (window.ProcessMaker) {
   EventBus.$on("new-changes", () => { noUnsavedChanges = false; });
 }
 
-window.addEventListener("beforeunload", (event) => {
+const showLeaveWarning = (event) => {
   if (isTimedOut || noUnsavedChanges) {
     return;
   }
@@ -22,6 +22,8 @@ window.addEventListener("beforeunload", (event) => {
   event.preventDefault();
   const confirmationMessage = __("Are you sure you want to leave?");
   event.returnValue = confirmationMessage; // Gecko, Trident, Chrome 34+
+};
 
-  return confirmationMessage;
-});
+window.addEventListener("beforeunload", showLeaveWarning);
+
+export { showLeaveWarning };

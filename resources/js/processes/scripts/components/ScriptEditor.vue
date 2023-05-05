@@ -188,12 +188,14 @@ import _ from "lodash";
 import TopMenu from "../../../components/Menu.vue";
 // eslint-disable-next-line no-unused-vars
 import customFilters from "../customFilters";
+import autosaveMixins from "../../../modules/autosave/mixins";
 
 export default {
   components: {
     MonacoEditor,
     TopMenu,
   },
+  mixins: [...autosaveMixins],
   props: {
     script: {
       type: Object,
@@ -268,16 +270,41 @@ export default {
           },
         ],
       },
+      closeHref: "/designer/scripts",
     };
   },
   computed: {
     language() {
       return this.scriptExecutor.language;
     },
+    autosaveApiCall() {
+      return () => {
+        this.setLoadingState(true);
+        ProcessMaker.apiClient
+          .put(`scripts/${this.script.id}/draft`, {
+            code: this.code,
+            title: this.script.title,
+            description: this.script.description,
+            script_executor_id: this.script.script_executor_id,
+            run_as_user_id: this.script.run_as_user_id,
+            timeout: this.script.timeout,
+          })
+          .then(() => {
+            this.setVersionIndicator(true);
+            window.ProcessMaker.EventBus.$emit("save-changes");
+          })
+          .finally(() => {
+            this.setLoadingState(false);
+          });
+      };
+    },
   },
   watch: {
     "preview.output": "handlePreviewOutputChange",
-    code: "handleAutosave",
+    code() {
+      window.ProcessMaker.EventBus.$emit("new-changes");
+      this.handleAutosave();
+    },
   },
   mounted() {
     ProcessMaker.EventBus.$emit("script-builder-init", this);
@@ -285,7 +312,7 @@ export default {
       this.save(onSuccess, onError);
     });
     ProcessMaker.EventBus.$on("script-close", () => {
-      window.location.href = "/designer/scripts";
+      this.onClose();
     });
     ProcessMaker.EventBus.$on("script-discard", () => {
       this.discardDraft();
@@ -396,37 +423,6 @@ export default {
             onError(err);
           }
         });
-    },
-    handleAutosave() {
-      if (this.isVersionsInstalled === false) {
-        return;
-      }
-
-      if (this.debounceTimeout) {
-        clearTimeout(this.debounceTimeout);
-      }
-
-      this.debounceTimeout = setTimeout(() => {
-        // Start saving state.
-        this.setLoadingState(true);
-        ProcessMaker.apiClient
-          .put(`scripts/${this.script.id}/draft`, {
-            code: this.code,
-            title: this.script.title,
-            description: this.script.description,
-            script_executor_id: this.script.script_executor_id,
-            run_as_user_id: this.script.run_as_user_id,
-            timeout: this.script.timeout,
-          })
-          .then(() => {
-            // Set draft status.
-            this.setVersionIndicator(true);
-          })
-          .finally(() => {
-            // Stop saving state.
-            this.setLoadingState(false);
-          });
-      }, this.autoSaveDelay);
     },
     discardDraft() {
       ProcessMaker.apiClient
