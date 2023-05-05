@@ -1,4 +1,4 @@
-name: Translate Changed Lines
+name: Translate Strings
 
 on:
   push:
