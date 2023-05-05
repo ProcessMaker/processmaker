@@ -47,7 +47,7 @@ class Utils
             return $xpath->query($path);
         } catch (Exception $e) {
             if ($e->getMessage() === 'DOMXPath::query(): Undefined namespace prefix') {
-                throw new ExportEmptyProcessException($e);
+                throw new ExportEmptyProcessException;
             }
             throw $e;
         }

@@ -6,8 +6,27 @@ use Exception;
 
 class ExportEmptyProcessException extends Exception
 {
-    public function __construct(Exception $e)
+    /**
+     * Report the exception.
+     *
+     * @return bool|null
+     */
+    public function report()
     {
-        parent::__construct('The process to export is empty.');
     }
+
+    /**
+     * Render the exception into an HTTP response.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function render($request)
+    {
+        return response()->json([
+            'message' => __('The process to export is empty.'),
+            'exception' => 'ProcessMaker\\Exception\\ExportEmptyProcessException'
+        ], 500);
+    }
+    
 }
