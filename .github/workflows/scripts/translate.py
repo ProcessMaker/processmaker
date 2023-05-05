@@ -12,7 +12,7 @@ languages = {
   'de': 'German',
   'fr': 'French',
   'ja': 'Japanese',
-  'nl': 'Dutch',
+  'nl': 'Dutch'
 }
 
 # Check if the script received the expected number of arguments
