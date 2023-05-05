@@ -120,7 +120,7 @@
     },
     computed: {
       okTitleWithDefault() {
-        return this.okTitle || this.$t('Save');
+        return this.okTitle || this.$t('Saved');
       }
     }
   };
