@@ -41,6 +41,12 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_ORG: ${{ secrets.OPENAI_ORG }}
         run: python .github/workflows/scripts/translate.py de
+        
+      - name: Delete existing branch if it exists
+        run: |
+          if git show-ref --quiet refs/remotes/origin/translate/changed-lines; then
+            git push origin --delete translate/changed-lines
+          fi
 
       - name: Create PR for updated translated files
         id: create_pr
@@ -52,6 +58,7 @@ jobs:
           body: 'This PR updates translations for the changed lines in en.json for Spanish, French, and German.'
           branch: 'translate/changed-lines'
           labels: 'translation, automated'
+          update: true
 
       - name: Check if PR was created
         if: steps.create_pr.outputs.pull-request-number == ''
