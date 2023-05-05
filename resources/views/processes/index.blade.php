@@ -30,23 +30,28 @@
             __('Templates'),
             __('Categories'),
             __('Archived Processes'),
+            __('Translations'),
         ],
         'listConfig' => $listConfig,
         'catConfig' => $catConfig,
         'listTemplates' => $listTemplates,
+        'listTranslations' => $listTranslations,
     ])
         @slot('itemList')
             @component('processes.list', ['config' => $listConfig])
             @endcomponent
         @endslot
-
        
         @slot('templatesList')
             @component('templates.list', ['config' => $listTemplates])
             @endcomponent
         @endslot
-    
 
+        @slot('translationsList')
+            @component('translations.list', ['config' => $listTranslations])
+            @endcomponent
+        @endslot
+    
         @slot('categoryList')
             @component('categories.list', ['config' => $catConfig])
             @endcomponent
