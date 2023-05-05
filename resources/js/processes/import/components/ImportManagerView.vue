@@ -107,8 +107,8 @@ export default {
             loading: false,
             status: 'ACTIVE',
             importTypeOptions: [
-                {"value": "basic", "content": "Basic", "helper": "Import all assets from the uploaded package.", "disabled": false},
-                {"value": "custom", "content": "Custom", "helper": "Select which assets from the uploaded package should be imported to this environment.", "disabled": false},
+                {"value": "basic", "content": "Basic", "helper": this.$t(`Import all assets from the uploaded package.`), "disabled": false},
+                {"value": "custom", "content": "Custom", "helper": this.$t(`Select which assets from the uploaded package should be imported to this environment.`), "disabled": false},
             ],
             fileIsValid: false,
             selectedImportOption: "basic",

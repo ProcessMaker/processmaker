@@ -1631,5 +1631,17 @@
   "Import a Process and its associated assets into this ProcessMaker environment": "Import a Process and its associated assets into this ProcessMaker environment",
   "This file is password protected. Enter the password below to continue with the import.": "This file is password protected. Enter the password below to continue with the import.",
   "Import As New": "Import As New",
-  "Update": "Update"
+  "Update": "Update",
+  "The selected file is invalid or not supported for the Process importer. Please verify that this file is a Process.":"The selected file is invalid or not supported for the Process importer. Please verify that this file is a Process.",
+  "The file you are importing was made with an older version of ProcessMaker. Advanced import is not available. All assets will be copied.":"The file you are importing was made with an older version of ProcessMaker. Advanced import is not available. All assets will be copied.",
+  "Select Import Type":"Select Import Type",
+  "Import all assets from the uploaded package.":"Import all assets from the uploaded package.",
+  "Custom":"Custom",
+  "Select which assets from the uploaded package should be imported to this environment.":"Select which assets from the uploaded package should be imported to this environment.",
+  "You are about to import":"You are about to import",
+  "Process was successfully imported":"Process was successfully imported",
+  "Select Import Type":"Select Import Type",
+  "You are about to import":"You are about to import",
+  "The selected file is invalid or not supported for the Templates importer. Please verify that this file is a Template.":"The selected file is invalid or not supported for the Templates importer. Please verify that this file is a Template.",
+  "The selected file is invalid or not supported for the Process importer. Please verify that this file is a Process.":"The selected file is invalid or not supported for the Process importer. Please verify that this file is a Process.",
 }
