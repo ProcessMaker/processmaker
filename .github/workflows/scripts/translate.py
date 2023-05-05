@@ -39,7 +39,6 @@ def main():
     changed = False
 
     for key, value in en_data.items():
-        # print (key)
         if key not in translated_data:
             prompt='You are an i18n-compatible translation service. Translate the English string on the next line to {lang}. Maintain whitespace. Do not modify or translate interpolated variables in any way.\n"{text}"'.format(lang=lang_name, text=value)
             response=openai.ChatCompletion.create(
