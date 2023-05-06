@@ -45,7 +45,7 @@ def main():
 
             max_retries = 3
             retry_count = 0
-            timeout = 30
+            timeout = 15
 
             while retry_count < max_retries:
                 try:
