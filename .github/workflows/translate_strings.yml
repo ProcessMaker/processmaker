@@ -48,6 +48,9 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_ORG: ${{ secrets.OPENAI_ORG }}
         run: python translate.py de
+
+      - name: Remove translation script
+        run: rm -rf translate.py
         
       - name: Delete existing branch if it exists
         run: |
