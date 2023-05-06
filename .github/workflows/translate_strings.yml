@@ -27,24 +27,30 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install openai
+          
+      - name: Download translation script
+        run: wget https://raw.githubusercontent.com/ProcessMaker/processmaker/develop/.github/workflows/scripts/translate.py
 
       - name: Translate changed strings to Spanish
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_ORG: ${{ secrets.OPENAI_ORG }}
-        run: python .github/workflows/scripts/translate.py es
+        run: python translate.py es
         
       - name: Translate changed strings to French
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_ORG: ${{ secrets.OPENAI_ORG }}
-        run: python .github/workflows/scripts/translate.py fr
+        run: python translate.py fr
         
       - name: Translate changed strings to German
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_ORG: ${{ secrets.OPENAI_ORG }}
-        run: python .github/workflows/scripts/translate.py de
+        run: python translate.py de
+
+      - name: Remove translation script
+        run: rm -rf translate.py
         
       - name: Delete existing branch if it exists
         run: |
