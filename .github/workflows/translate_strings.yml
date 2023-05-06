@@ -7,6 +7,7 @@ on:
     paths:
       - 'resources/lang/en.json'
   workflow_dispatch:
+  workflow_call:
 
 jobs:
   translate_and_create_pr:
