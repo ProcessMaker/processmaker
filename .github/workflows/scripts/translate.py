@@ -2,6 +2,7 @@ import json
 import os
 import openai
 import sys
+import time
 
 openai.api_key = os.environ["OPENAI_API_KEY"]
 openai.organization = os.environ["OPENAI_ORG"]
@@ -41,21 +42,42 @@ def main():
     for key, value in en_data.items():
         if key not in translated_data:
             prompt='You are an i18n-compatible translation service. Translate the English string on the next line to {lang}. Maintain whitespace. Do not modify or translate interpolated variables in any way.\n"{text}"'.format(lang=lang_name, text=value)
-            response=openai.ChatCompletion.create(
-                model='gpt-4',
-                messages=[
-                  {
-                    "role": "user",
-                    "content": prompt
-                  }
-                ],
-                temperature=0.3,
-                max_tokens=500,
-                n=1,
-                stop=None
-            )
-            translated_data[key] = response.choices[0].message.content.strip('"')
-            changed = True
+
+            max_retries = 3
+            retry_count = 0
+            timeout = 30
+
+            while retry_count < max_retries:
+                try:
+                    start_time = time.time()
+                    response=openai.ChatCompletion.create(
+                        model='gpt-4',
+                        messages=[
+                          {
+                            "role": "user",
+                            "content": prompt
+                          }
+                        ],
+                        temperature=0.3,
+                        max_tokens=500,
+                        n=1,
+                        stop=None
+                    )
+                    elapsed_time = time.time() - start_time
+                    if elapsed_time < timeout:
+                        translated_data[key] = response.choices[0].message.content.strip('"')
+                        changed = True
+                        break
+                    else:
+                        raise Exception("API call took too long")
+                except Exception as e:
+                    print(f"Error: {e}")
+                    retry_count += 1
+                    if retry_count < max_retries:
+                        print(f"Retrying... ({retry_count}/{max_retries})")
+                    else:
+                        print("Max retries reached. Exiting.")
+                        sys.exit(1)
 
     if changed:
         with open(file_path, 'w') as f:
