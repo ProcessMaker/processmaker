@@ -1640,5 +1640,21 @@
   "Select which assets from the uploaded package should be imported to this environment.": "Wählen Sie, welche Assets aus dem hochgeladenen Paket in diese Umgebung importiert werden sollen.",
   "You are about to import": "Sie sind im Begriff zu importieren",
   "Process was successfully imported": "Prozess wurde erfolgreich importiert",
-  "The selected file is invalid or not supported for the Templates importer. Please verify that this file is a Template.": "Die ausgewählte Datei ist ungültig oder wird für den Vorlagen-Importeur nicht unterstützt. Bitte stellen Sie sicher, dass diese Datei eine Vorlage ist."
+  "The selected file is invalid or not supported for the Templates importer. Please verify that this file is a Template.": "Die ausgewählte Datei ist ungültig oder wird für den Vorlagen-Importeur nicht unterstützt. Bitte stellen Sie sicher, dass diese Datei eine Vorlage ist.",
+  "Host URL": "Host-URL",
+  "Enter the integration key from ProcessMaker IDP": "Geben Sie den Integrationsschlüssel von ProcessMaker IDP ein",
+  "Enter the secret key from ProcessMaker IDP": "Geben Sie den geheimen Schlüssel von ProcessMaker IDP ein",
+  "Enter the address of your ProcessMaker IDP server": "Geben Sie die Adresse Ihres ProcessMaker IDP-Servers ein",
+  "Select Available Folders": "Wähle verfügbare Ordner",
+  "You must authorize your account before configuring folders": "Sie müssen Ihr Konto autorisieren, bevor Sie Ordner konfigurieren",
+  "Token URL": "Token-URL",
+  "Enter your OAuth2 token URL": "Geben Sie Ihre OAuth2-Token-URL ein",
+  "Empty": "Leer",
+  "Select Destination": "Wähle Ziel",
+  "Use Request Variable": "Request Variable verwenden",
+  "Document Type": "Dokumenttyp",
+  "Intelligent Document Processing": "Intelligente Dokumentenverarbeitung",
+  "Variable containing the file to be sent": "Variable, die die zu sendende Datei enthält",
+  "Enter the document type": "Geben Sie den Dokumenttyp ein",
+  "Authorize Account": "Konto autorisieren"
 }
