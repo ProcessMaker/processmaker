@@ -1656,5 +1656,10 @@
   "Intelligent Document Processing": "Procesamiento Inteligente de Documentos",
   "Variable containing the file to be sent": "Variable que contiene el archivo a enviar",
   "Enter the document type": "Ingrese el tipo de documento",
-  "Authorize Account": "Autorizar Cuenta"
+  "Authorize Account": "Autorizar Cuenta",
+  "Search result": "Resultado de búsqueda",
+  "Nothing searched yet": "Nada buscado aún",
+  "Recently searched": "Buscado recientemente",
+  "The history is empty": "El historial está vacío",
+  "Powered by ProcessMaker AI": "Desarrollado por ProcessMaker AI"
 }
