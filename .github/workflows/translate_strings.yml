@@ -29,7 +29,7 @@ jobs:
           pip install openai
           
       - name: Download translation script
-        run: wget https://raw.githubusercontent.com/ProcessMaker/processmaker/develop/.github/workflows/scripts/translate.py
+        run: wget https://raw.githubusercontent.com/ProcessMaker/processmaker/automated-translations-updates/.github/workflows/scripts/translate.py
 
       - name: Translate changed strings to Spanish
         env:
