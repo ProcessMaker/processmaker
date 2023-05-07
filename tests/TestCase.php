@@ -28,11 +28,28 @@ abstract class TestCase extends BaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->disableSetContentMiddleware();
+
         foreach (get_class_methods($this) as $method) {
             $imethod = strtolower($method);
             if (strpos($imethod, 'setup') === 0 && $imethod !== 'setup') {
                 $this->$method();
             }
+        }
+    }
+
+    /**
+     * Disable middleware that calls setContent() otherwise we can't use assertViewIs()
+     */
+    private function disableSetContentMiddleware()
+    {
+        if (class_exists(\ProcessMaker\Package\SavedSearch\Http\Middleware\InjectJavascript::class)) {
+            $this->withoutMiddleware(\ProcessMaker\Package\SavedSearch\Http\Middleware\InjectJavascript::class);
+        }
+
+        if (class_exists(\ProcessMaker\Package\ProductAnalytics\Http\Middleware\ProductAnalyticsMiddleware::class)) {
+            $this->withoutMiddleware(\ProcessMaker\Package\ProductAnalytics\Http\Middleware\ProductAnalyticsMiddleware::class);
         }
     }
 
