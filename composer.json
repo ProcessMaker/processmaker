@@ -111,7 +111,7 @@
                 "package-comments": "1.5.1",
                 "package-conversational-forms": "1.2.2",
                 "package-data-sources": "1.16.1",
-                "package-decision-engine": "0.5.1",
+                "package-decision-engine": "1.0.0",
                 "package-dynamic-ui": "1.9.1",
                 "package-files": "1.7.1",
                 "package-googleplaces": "1.4.1",
