@@ -41,4 +41,21 @@ class ModelerController extends Controller
             'isDraft' => $draft !== null,
         ]);
     }
+
+    /**
+     * Invokes the Modeler for In-flight Process Map rendering.
+     */
+    public function inflight(ModelerManager $manager, Process $process, Request $request)
+    {
+        event(new ModelerStarting($manager));
+
+        return view('processes.modeler.inflight', [
+            'process' => $process->append('notifications', 'task_notifications'),
+            'manager' => $manager,
+            'signalPermissions' => SignalManager::permissions($request->user()),
+            'autoSaveDelay' => config('versions.delay.process', 5000),
+            'isVersionsInstalled' => false,
+            'isDraft' => false,
+        ]);
+    }
 }
