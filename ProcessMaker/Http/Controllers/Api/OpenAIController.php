@@ -92,7 +92,7 @@ class OpenAIController extends Controller
         ]);
     }
 
-    public function languageTranslation(Request $request) 
+    public function languageTranslation(Request $request)
     {
         // $languageTranslationHandler = new LanguageTranslationHandler();
         // [$result, $usage, $targetLanguage] = $languageTranslationHandler->generatePrompt(

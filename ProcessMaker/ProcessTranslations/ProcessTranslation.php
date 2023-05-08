@@ -68,7 +68,7 @@ class ProcessTranslation
         // }
 
         $fields = array_merge(['id', 'translations'], $withScreenData);
-        
+
         return Screen::whereIn('id', $screensInProcess)
             ->get()
             ->map
