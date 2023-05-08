@@ -224,7 +224,7 @@
                                 {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                             </div>
 
-                            <create-process-translation-modal ref="create-process-translation-modal" />
+                            <create-process-translation-modal ref="create-process-translation-modal" :process-id="{{ $process->id }}" />
                         </div>
 
                         {{-- Notifications --}}
