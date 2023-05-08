@@ -78,19 +78,7 @@ class ProcessController extends Controller
             ],
         ];
 
-        $listTranslations = (object) [
-            'process-translations' => [],
-            'permissions' => [
-                'view'   => $request->user()->can('view-process-translations'),
-                'create' => $request->user()->can('create-process-translations'),
-                'edit'   => $request->user()->can('edit-process-translations'),
-                'delete' => $request->user()->can('delete-process-translations'),
-                'import' => $request->user()->can('import-process-translations'),
-                'export' => $request->user()->can('export-process-translations'),
-            ],
-        ];
-
-        return view('processes.index', compact('listConfig', 'catConfig', 'listTemplates', 'listTranslations'));
+        return view('processes.index', compact('listConfig', 'catConfig', 'listTemplates'));
     }
 
     /**
