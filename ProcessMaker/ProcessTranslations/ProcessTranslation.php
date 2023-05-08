@@ -29,9 +29,9 @@ class ProcessTranslation
         $this->process = $process;
     }
 
-    public function getTranslations()
+    public function getTranslations($withScreenData = [])
     {
-        return $this->getScreens();
+        return $this->getScreens($withScreenData);
     }
 
     public function getLanguageList($screensTranslations)
@@ -59,7 +59,7 @@ class ProcessTranslation
         return collect($languages)->sortByDesc('updated_at')->unique('language');
     }
 
-    private function getScreens() : SupportCollection
+    private function getScreens($withScreenData) : SupportCollection
     {
         $screensInProcess = collect($this->getScreenIds())->unique();
 
@@ -67,7 +67,13 @@ class ProcessTranslation
         //     $nestedScreens = $this->getNestedScreens($screenInProcess);
         // }
 
-        return Screen::whereIn('id', $screensInProcess)->get()->map->only(['id', 'translations'])->values();
+        $fields = array_merge(['id', 'translations'], $withScreenData);
+        
+        return Screen::whereIn('id', $screensInProcess)
+            ->get()
+            ->map
+            ->only($fields)
+            ->values();
     }
 
     private function getScreenIds()
