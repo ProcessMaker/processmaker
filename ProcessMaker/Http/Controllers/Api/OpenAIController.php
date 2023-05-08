@@ -5,12 +5,15 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use OpenAI\Client;
+use ProcessMaker\Ai\Handlers\LanguageTranslationHandler;
 use ProcessMaker\Ai\Handlers\NlqToCategoryHandler;
 use ProcessMaker\Ai\Handlers\NlqToPmqlHandler;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\AiSearch;
+use ProcessMaker\Models\Process;
 use ProcessMaker\OpenAI\OpenAIHelper;
 use ProcessMaker\Plugins\Collections\Models\Collection;
+use ProcessMaker\ProcessTranslations\ProcessTranslation;
 
 class OpenAIController extends Controller
 {
@@ -87,6 +90,39 @@ class OpenAIController extends Controller
             'collection' => isset($collection) ? $collection : null,
             'recentSearches' => $recentSearches,
         ]);
+    }
+
+    public function languageTranslation(Request $request) 
+    {
+        // $languageTranslationHandler = new LanguageTranslationHandler();
+        // [$result, $usage, $targetLanguage] = $languageTranslationHandler->generatePrompt(
+        //     $request->input('type'),
+        //     $request->input('language')
+        // )->execute();
+
+        // Find process to translate
+        $process = Process::findOrFail($request->input('processId'));
+
+        // Find process screens and translations for each screen
+        $processTranslation = new ProcessTranslation($process);
+        $screensTranslations = $processTranslation->getTranslations(['title', 'description', 'type']);
+
+        // Translate all strings for all screens
+        foreach ($screensTranslations as $screen) {
+            // Search all element inside the screen
+            // Create an array of labels to translate for all string elements
+            // Create an array of strings to translate for textareas
+        }
+
+        return response()->json([
+            'processTranslation' => $processTranslation,
+            'screensTranslations' => $screensTranslations,
+        ]);
+        // return response()->json([
+        //     'result' => $result,
+        //     'usage' => $usage,
+        //     'targetLanguage' => $targetLanguage,
+        // ]);
     }
 
     public function recentSearches(Request $request)
