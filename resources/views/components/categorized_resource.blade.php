@@ -46,14 +46,6 @@
                     </a>
                 </li>
             @endisset
-            @isset($tabs[4])
-                <li class="nav-item">
-                    <a class="nav-item nav-link" id="nav-translations-tab" data-toggle="tab" href="#nav-translations"
-                        role="tab" onclick="loadTranslations()" aria-controls="nav-translations" aria-selected="true">
-                        {{ $tabs[4] ?? __('Translations') }}
-                    </a>
-                </li>
-            @endisset
         @else
             @if ($catConfig->permissions['view'])
             <li class="nav-item">
@@ -68,14 +60,6 @@
                     <a class="nav-item nav-link" id="nav-archived-tab" data-toggle="tab" href="#nav-archived"
                     role="tab" onclick="loadProcess()" aria-controls="nav-archived" aria-selected="true">
                         {{ $tabs[2] ?? __('Archived Processes') }}
-                    </a>
-                </li>
-            @endisset
-            @isset($tabs[3])
-                <li class="nav-item">
-                    <a class="nav-item nav-link" id="nav-translations-tab" data-toggle="tab" href="#nav-translations"
-                        role="tab" onclick="loadProcess()" aria-controls="nav-translations" aria-selected="true">
-                        {{ $tabs[3] ?? __('Translations') }}
                     </a>
                 </li>
             @endisset
@@ -109,13 +93,6 @@
                         </div>
                     </div>
                 @endisset
-                @isset($tabs[4])
-                    <div class="tab-pane fade" id="nav-translations" role="tabpanel" aria-labelledby="nav-translations-tab">
-                        <div class="card card-body p-3 border-top-0">
-                            {{ $translationsList }}
-                        </div>
-                    </div>
-                @endisset
             @else
                 <div class="{{$secondContent}}" id="nav-categories" role="tabpanel" aria-labelledby="nav-categories-tab">
                     <div class="card card-body p-3 border-top-0">
@@ -126,13 +103,6 @@
                     <div class="tab-pane fade" id="nav-archived" role="tabpanel" aria-labelledby="nav-archived-tab">
                         <div class="card card-body p-3 border-top-0">
                             {{ $archivedList }}
-                        </div>
-                    </div>
-                @endisset
-                @isset($tabs[3])
-                    <div class="tab-pane fade" id="nav-translations" role="tabpanel" aria-labelledby="nav-translations-tab">
-                        <div class="card card-body p-3 border-top-0">
-                            {{ $translationsList }}
                         </div>
                     </div>
                 @endisset
@@ -152,9 +122,6 @@
       loadTemplates = function () {
         ProcessMaker.EventBus.$emit("api-data-process-templates");
       }
-      loadTranslations = function () {
-        ProcessMaker.EventBus.$emit("api-data-translations");
-      };
       if ({{$listConfig->countCategories}} === 0) loadCategory();
     </script>
 @append
