@@ -15,9 +15,9 @@ class ProcessTranslationController extends Controller
     public function index(Request $request)
     {
         $processId = $request->input('process_id', '');
-        
+
         $process = Process::findOrFail($processId);
-        
+
         $processTranslation = new ProcessTranslation($process);
         $screensTranslations = $processTranslation->getTranslations();
         $languageList = $processTranslation->getLanguageList($screensTranslations);
@@ -33,7 +33,7 @@ class ProcessTranslationController extends Controller
         foreach (Languages::ALL as $key => $value) {
             $availableLanguages[] = [
                 'humanLanguage' => $value,
-                'language' => $key
+                'language' => $key,
             ];
         }
 
@@ -41,5 +41,4 @@ class ProcessTranslationController extends Controller
             'availableLanguages' => $availableLanguages,
         ]);
     }
-
 }

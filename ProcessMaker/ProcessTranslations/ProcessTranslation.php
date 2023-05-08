@@ -21,29 +21,29 @@ class ProcessTranslation
         'de' => 'German',
         'fr' => 'French',
         'ja' => 'Japanese',
-        'nl' => 'Dutch'
+        'nl' => 'Dutch',
     ];
 
     public function __construct(Process $process)
     {
-        $this->process = $process;    
+        $this->process = $process;
     }
 
-    public function getTranslations() 
+    public function getTranslations()
     {
         return $this->getScreens();
     }
 
-    public function getLanguageList($screensTranslations) 
+    public function getLanguageList($screensTranslations)
     {
         return $this->getTranslatedLanguageList($screensTranslations);
     }
 
-    public function getTranslatedLanguageList($screensTranslations) 
+    public function getTranslatedLanguageList($screensTranslations)
     {
         $languages = [];
 
-        foreach($screensTranslations as $screenTranslation) {
+        foreach ($screensTranslations as $screenTranslation) {
             if ($screenTranslation['translations']) {
                 foreach ($screenTranslation['translations'] as $translation) {
                     $languages[] = [
@@ -66,7 +66,7 @@ class ProcessTranslation
         // foreach ($screensInProcess as $screenInProcess) {
         //     $nestedScreens = $this->getNestedScreens($screenInProcess);
         // }
-        
+
         return Screen::whereIn('id', $screensInProcess)->get()->map->only(['id', 'translations'])->values();
     }
 
@@ -78,7 +78,7 @@ class ProcessTranslation
             'bpmn:startEvent',
             'bpmn:endEvent',
             'bpmn:serviceTask',
-            'bpmn:callActivity'
+            'bpmn:callActivity',
         ];
 
         foreach (Utils::getElementByMultipleTags($this->process->getDefinitions(true), $tags) as $element) {
@@ -86,7 +86,7 @@ class ProcessTranslation
             $interstitialScreenId = $element->getAttribute('pm:interstitialScreenRef');
             $allowInterstitial = $element->getAttribute('pm:allowInterstitial');
             $pmConfig = $element->getAttribute('pm:config');
-            
+
             if ($pmConfig) {
                 $pmConfig = json_decode($pmConfig, true);
             }

@@ -248,7 +248,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('templates/{type}/import/validation', [TemplateController::class, 'preImportValidation'])->name('template.preImportValidation')->middleware('template-authorization');
 
     // Process Translations
-    Route::get('process/translations', [ProcessTranslationController::class, 'index'])->name('process-translation.index');//->middleware('translation-authorization');
+    Route::get('process/translations', [ProcessTranslationController::class, 'index'])->name('process-translation.index'); //->middleware('translation-authorization');
     Route::get('process/translations/languages', [ProcessTranslationController::class, 'getAvailableLanguages'])->name('process-translation.languages');
 
     // debugging javascript errors
