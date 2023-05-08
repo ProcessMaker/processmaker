@@ -12,6 +12,7 @@
           ref="modeler"
           :owner="self"
           :decorations="decorations"
+          :inflight="true"
           @validate="validationErrors = $event"
           @warnings="warnings = $event"
           @set-xml-manager="xmlManager = $event"
