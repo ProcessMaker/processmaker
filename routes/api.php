@@ -18,6 +18,7 @@ use ProcessMaker\Http\Controllers\Api\ProcessCategoryController;
 use ProcessMaker\Http\Controllers\Api\ProcessController;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestController;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestFileController;
+use ProcessMaker\Http\Controllers\Api\ProcessTranslationController;
 use ProcessMaker\Http\Controllers\Api\ScreenCategoryController;
 use ProcessMaker\Http\Controllers\Api\ScreenController;
 use ProcessMaker\Http\Controllers\Api\ScriptCategoryController;
@@ -245,6 +246,10 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('modeler/templates/{type}/{id}', [TemplateController::class, 'show'])->name('modeler.template.show')->middleware('template-authorization');
     Route::post('template/do-import/{type}', [ImportController::class, 'importTemplate'])->name('import.do_importTemplate')->middleware('template-authorization');
     Route::post('templates/{type}/import/validation', [TemplateController::class, 'preImportValidation'])->name('template.preImportValidation')->middleware('template-authorization');
+
+    // Process Translations
+    Route::get('process/translations', [ProcessTranslationController::class, 'index'])->name('process-translation.index');//->middleware('translation-authorization');
+    Route::get('process/translations/languages', [ProcessTranslationController::class, 'getAvailableLanguages'])->name('process-translation.languages');
 
     // debugging javascript errors
     Route::post('debug', [DebugController::class, 'store'])->name('debug.store')->middleware('throttle');
