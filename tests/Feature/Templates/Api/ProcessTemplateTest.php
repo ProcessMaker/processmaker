@@ -205,8 +205,12 @@ class ProcessTemplateTest extends TestCase
     {
         $this->seed(UserSeeder::class);
         $this->seed(ProcessTemplatesSeeder::class);
-        $template = ProcessTemplates::where('name', 'Employee Onboarding 2023')->firstOrFail();
-        $this->assertEquals('Employee Onboarding 2023', $template->name);
+        $template = ProcessTemplates::where('name', 'New Hire Onboarding')->firstOrFail();
+        $this->assertEquals('New Hire Onboarding', $template->name);
+
+        $template = ProcessTemplates::where('name', 'Leave of Absence')->firstOrFail();
+        $this->assertEquals('Leave of Absence', $template->name);
+
         $this->assertEquals('Default Templates', ProcessCategory::where('id', $template['process_category_id'])->firstOrFail()->name);
     }
 }

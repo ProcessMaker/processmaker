@@ -7,7 +7,7 @@
       :empty-desc="$t('You don\'t currently have any tasks assigned to you')"
       empty-icon="beach"
     />
-    <div v-show="!shouldShowLoader" class="card card-body table-card" data-cy="tasks-table">
+    <div v-show="!shouldShowLoader" class="card card-body tasks-table-card" data-cy="tasks-table">
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
@@ -55,28 +55,11 @@
         </template>
 
         <template slot="actions" slot-scope="props">
-          <div class="actions">
-            <div class="popout">
-              <b-btn
-                variant="link"
-                :href="onAction('edit', props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
-                :title="$t('Open Task')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-caret-square-right fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                variant="link"
-                :href="onAction('showRequestSummary', props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
-                :title="$t('Open Request')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-clipboard fa-lg fa-fw"></i>
-              </b-btn>
-            </div>
-          </div>
+          <ellipsis-menu
+            :actions="actions"
+            :data="props.rowData"
+            :divider="false"
+          />
         </template>
       </vuetable>
       <pagination
@@ -94,6 +77,7 @@
 <script>
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
+import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 import AvatarImage from "../../components/AvatarImage";
 import isPMQL from "../../modules/isPMQL";
 import moment from "moment";
@@ -103,6 +87,7 @@ const uniqIdsMixin = createUniqIdsMixin();
 Vue.component("avatar-image", AvatarImage);
 
 export default {
+  components: { EllipsisMenu },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   props: {
     filter: {},
@@ -114,6 +99,22 @@ export default {
   },
   data() {
     return {
+      actions: [
+        {
+          value: "edit",
+          content: "Open Task",
+          icon: "fas fa-caret-square-right",
+          link: true,
+          href: "/tasks/{{id}}/edit"
+        },
+        {
+          value: "showRequestSummary",
+          content: "Open Request",
+          icon: "fas fa-clipboard",
+          link: true,
+          href: "/requests/{{process_request.id}}"
+        },
+      ],
       orderBy: "ID",
       order_direction: "DESC",
       status: "",
@@ -324,11 +325,6 @@ export default {
 
     fetch() {
         Vue.nextTick(() => {
-            if (this.cancelToken) {
-              this.cancelToken();
-              this.cancelToken = null;
-            }
-            const CancelToken = ProcessMaker.apiClient.CancelToken;
 
             let pmql = '';
 
@@ -377,23 +373,13 @@ export default {
                   this.perPage +
                   filterParams +
                   this.getSortParam() +
-                  "&non_system=true",
-                {
-                  cancelToken: new CancelToken(c => {
-                    this.cancelToken = c;
-                  })
-                }
+                  "&non_system=true"
               )
               .then(response => {
                 this.data = this.transform(response.data);
-                if (response.data.meta.in_overdue > 0) {
-                  this.$emit("in-overdue", response.data.meta.in_overdue);
-                }
+                this.$emit("in-overdue", response.data.meta.in_overdue);
               })
               .catch(error => {
-                if (error.code === "ERR_CANCELED") {
-                  return;
-                }
                 window.ProcessMaker.alert(error.response.data.message, "danger");
                 this.data = [];
               });
@@ -404,4 +390,7 @@ export default {
 </script>
 
 <style>
+.tasks-table-card {
+    padding: 0;
+}
 </style>

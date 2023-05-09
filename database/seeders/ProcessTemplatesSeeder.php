@@ -29,10 +29,10 @@ class ProcessTemplatesSeeder extends Seeder
         );
         // create process templates seed data
         ProcessTemplates::updateOrCreate(
-            ['name' => 'Employee Onboarding 2023'],
+            ['name' => 'New Hire Onboarding'],
             [
-                'name' => 'Employee Onboarding 2023',
-                'description' => 'New version of the employee onboarding process from veggieDonuts',
+                'name' => 'New Hire Onboarding',
+                'description' => 'Reduce time and effort in the processes in which new hires are integrated within the company',
                 'process_id' => null,
                 'user_id' => null,
                 'process_category_id' => ProcessCategory::where('name', 'Default Templates')->firstOrFail()->getKey(),
@@ -42,15 +42,42 @@ class ProcessTemplatesSeeder extends Seeder
                 'key' => 'default_templates',
             ]);
         ProcessTemplates::updateOrCreate(
-            ['name' => 'Leave of Absence 2023'],
+            ['name' => 'Leave of Absence'],
             [
-                'name' => 'Leave of Absence 2023',
-                'description' => 'New Version of the Leave of Absence request.',
+                'name' => 'Leave of Absence',
+                'description' => 'Automate request for any absences, paid or unpaid from your employees and contractors',
                 'process_id' => null,
                 'user_id' => null,
                 'process_category_id' => ProcessCategory::where('name', 'Default Templates')->firstOrFail()->getKey(),
                 'manifest' => file_get_contents(app_path('Templates/Fixtures/process-leave-of-absence-template.json')),
                 'svg' => file_get_contents(app_path('Templates/Fixtures/process-leave-of-absence-template.svg')),
+                'is_system' => 0,
+                'key' => 'default_templates',
+            ]);
+        ProcessTemplates::updateOrCreate(
+            ['name' => 'Expense Approval'],
+            [
+                'name' => 'Expense Approval',
+                'description' => 'Extract the information from any payment slip picture and submit an expense approval request.',
+                'process_id' => null,
+                'user_id' => null,
+                'process_category_id' => ProcessCategory::where('name', 'Default Templates')->firstOrFail()->getKey(),
+                'manifest' => file_get_contents(app_path('Templates/Fixtures/process-expense-approval.json')),
+                'svg' => file_get_contents(app_path('Templates/Fixtures/process-expense-approval.svg')),
+                'is_system' => 0,
+                'key' => 'default_templates',
+            ]);
+
+        ProcessTemplates::updateOrCreate(
+            ['name' => 'Vendor Onboarding'],
+            [
+                'name' => 'Vendor Onboarding',
+                'description' => 'Collect all information needed to approve a company as your new vendor.',
+                'process_id' => null,
+                'user_id' => null,
+                'process_category_id' => ProcessCategory::where('name', 'Default Templates')->firstOrFail()->getKey(),
+                'manifest' => file_get_contents(app_path('Templates/Fixtures/process-vendor-onboarding-template.json')),
+                'svg' => file_get_contents(app_path('Templates/Fixtures/process-vendor-onboarding.svg')),
                 'is_system' => 0,
                 'key' => 'default_templates',
             ]);

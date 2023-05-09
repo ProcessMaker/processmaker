@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0e91bbc943585d875143e33efa5ebe89",
+    "content-hash": "4efa02222eb3e25f2261283e545e214c",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -3092,6 +3092,7 @@
                 "issues": "https://github.com/LaravelCollective/html/issues",
                 "source": "https://github.com/LaravelCollective/html"
             },
+            "abandoned": "spatie/laravel-html",
             "time": "2022-02-08T21:02:54+00:00"
         },
         {
@@ -6022,16 +6023,16 @@
         },
         {
             "name": "processmaker/docker-executor-php",
-            "version": "1.1.0",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/docker-executor-php.git",
-                "reference": "7669e9d8e22e43d369160dae6ebe86efaecd1f7f"
+                "reference": "92949d9a7524054901926f1523587030f8c5a686"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-php/zipball/7669e9d8e22e43d369160dae6ebe86efaecd1f7f",
-                "reference": "7669e9d8e22e43d369160dae6ebe86efaecd1f7f",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-php/zipball/92949d9a7524054901926f1523587030f8c5a686",
+                "reference": "92949d9a7524054901926f1523587030f8c5a686",
                 "shasum": ""
             },
             "type": "library",
@@ -6055,9 +6056,9 @@
             "description": "PHP script executor for processmaker 4",
             "support": {
                 "issues": "https://github.com/ProcessMaker/docker-executor-php/issues",
-                "source": "https://github.com/ProcessMaker/docker-executor-php/tree/v1.1.0"
+                "source": "https://github.com/ProcessMaker/docker-executor-php/tree/v1.2.0"
             },
-            "time": "2023-02-01T01:24:54+00:00"
+            "time": "2023-04-29T06:11:07+00:00"
         },
         {
             "name": "processmaker/laravel-i18next",
@@ -6151,16 +6152,16 @@
         },
         {
             "name": "processmaker/pmql",
-            "version": "1.8.0",
+            "version": "1.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/pmql.git",
-                "reference": "0975a286ff1a49cfb0472fa91d2e3ec3d8e66f49"
+                "reference": "2e1a2a8a9d8e74ab5763515304e8cd2267d0f659"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/0975a286ff1a49cfb0472fa91d2e3ec3d8e66f49",
-                "reference": "0975a286ff1a49cfb0472fa91d2e3ec3d8e66f49",
+                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/2e1a2a8a9d8e74ab5763515304e8cd2267d0f659",
+                "reference": "2e1a2a8a9d8e74ab5763515304e8cd2267d0f659",
                 "shasum": ""
             },
             "require": {
@@ -6191,9 +6192,9 @@
             "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent",
             "support": {
                 "issues": "https://github.com/ProcessMaker/pmql/issues",
-                "source": "https://github.com/ProcessMaker/pmql/tree/v1.8.0"
+                "source": "https://github.com/ProcessMaker/pmql/tree/v1.9.0"
             },
-            "time": "2022-10-18T21:33:41+00:00"
+            "time": "2023-05-04T04:21:46+00:00"
         },
         {
             "name": "psr/cache",

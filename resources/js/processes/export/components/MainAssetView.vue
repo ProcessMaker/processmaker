@@ -146,6 +146,8 @@ export default {
                     const asset = this.$root.manifest[uuid];  
                     return {
                         type: asset.type,
+                        typeHuman: asset.type_human,
+                        typeHumanPlural: asset.type_human_plural,
                         existingName: asset.existing_name, 
                         importingName: asset.name,
                         existingId: asset.existing_id,

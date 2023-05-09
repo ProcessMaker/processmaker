@@ -17,8 +17,9 @@
         </div>
         <button type="button" :aria-label="$t('Close')" class="close" @click="onCancel">×</button>
       </template>
-      <div v-if="!ui('single')" class="position-absolute w-100 d-flex justify-content-end">
-        <b-button class="setting-add-button" @click="onAdd()" variant="secondary" size="sm"><i class="fa fa-plus"></i> Add</b-button>
+      <div v-if="!ui('single')" class="position-absolute w-100 ml-n3 d-flex">
+        <div class="w-75"></div>
+        <div class="w-25 ml-n3 d-flex justify-content-end"><b-button class="setting-add-button" @click="onAdd()" variant="secondary" size="sm"><i class="fa fa-plus"></i> Add</b-button></div>
       </div>
       <b-table class="setting-object-table" :items="table" :fields="fields" striped>
         <template #cell(key)="data">

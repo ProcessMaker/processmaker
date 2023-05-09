@@ -390,8 +390,8 @@ ProcessMaker.EventBus.$on(
                 label: "Previous Task Assignee",
               },
               {
-                value: "user_by_id",
-                label: "By User ID",
+                value: "process_variable",
+                label: "Process Variable",
               },
             ],
           },

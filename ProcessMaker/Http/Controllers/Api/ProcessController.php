@@ -424,6 +424,11 @@ class ProcessController extends Controller
             $process->warnings = null;
         }
 
+        // Save any task notification settings...
+        if ($request->has('task_notifications')) {
+            $this->saveTaskNotifications($process, $request);
+        }
+
         $process->fill($request->except('task_notifications'));
 
         try {
@@ -902,7 +907,7 @@ class ProcessController extends Controller
 
         if (!$result = $this->validateImportedFile($content, $request)) {
             return response(
-                ['message' => __('The selected file is invalid or not supported for import.')],
+                ['message' => __('The selected file is invalid or not supported for the Process importer. Please verify that this file is a Process.')],
                 422
             );
         }
@@ -1336,7 +1341,7 @@ class ProcessController extends Controller
         $validVersion = $hasVersion && method_exists(ImportProcess::class, "parseFileV{$decoded->version}");
         $useNewImporter = $decoded !== null && property_exists($decoded, 'version') && (int) $decoded->version === 2;
 
-        if ($useNewImporter) {
+        if ($validType && $useNewImporter) {
             return (new ImportController())->preview($request, $decoded->version);
         }
 

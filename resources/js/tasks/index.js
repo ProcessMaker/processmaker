@@ -74,8 +74,12 @@ new Vue({
       }
     },
     setInOverdueMessage(inOverdue) {
-      const taskText = (inOverdue > 1) ? this.$t("Tasks").toLowerCase() : this.$t("Task").toLowerCase();
-      this.inOverdueMessage = this.$t("You have {{ inOverDue }} overdue {{ taskText }} pending", { inOverDue: inOverdue, taskText });
+      let inOverdueMessage = '';
+      if (inOverdue) {
+        const taskText = (inOverdue > 1) ? this.$t("Tasks").toLowerCase() : this.$t("Task").toLowerCase();
+        inOverdueMessage = this.$t("You have {{ inOverDue }} overdue {{ taskText }} pending", { inOverDue: inOverdue, taskText });
+      }
+      this.inOverdueMessage = inOverdueMessage;
     },
     getFullPmql() {
       let fullPmqlString = "";

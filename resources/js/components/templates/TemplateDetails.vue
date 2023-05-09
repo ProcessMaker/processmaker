@@ -1,19 +1,20 @@
 <template>
     <div>
-      <p class="text-muted">{{ template.description }}</p>
+      <div id="svg-container" v-html="svg" class="d-flex justify-content-center align-items-center mb-2"></div>
       <div>
-        <p class="text-muted">{{ $t("Created By:") }}
+        <p class="mb-2">
+          <span class="text-muted">{{ $t("Created By:") }}</span>
           <avatar-image
             size="25"
             :hideName="false"
             :input-data="template.user"
           ></avatar-image>
         </p>
-      <b-badge pill v-for="category in categories" :key="category.id" class="category-badge mb-3 mr-1">
+      <b-badge pill v-for="category in categories" :key="category.id" class="category-badge mb-2 mr-1">
         {{ category.name }}
       </b-badge>
       </div>
-      <div id="svg-container" v-html="svg"></div>
+      <p class="">{{ template.description }}</p>
     </div>
 </template>
 
@@ -33,8 +34,13 @@ import svgPanZoom from 'svg-pan-zoom';
     methods: {},
     computed: {
       svg() {
+        if(this.template.svg === null) {
+          return "Sorry, the template preview is unavailable. Please try resaving the template.";
+        }
+
         let parser = new DOMParser();
         let svg = parser.parseFromString(this.template.svg, "image/svg+xml");
+
         return svg.documentElement.outerHTML;
       },
       categories() {
@@ -42,6 +48,9 @@ import svgPanZoom from 'svg-pan-zoom';
       },
     },   
     mounted() {
+      if(this.template.svg === null) {
+          return;
+      }
       svgPanZoom('#svg-container > svg', {
         controlIconsEnabled: true,
         fit: true,
@@ -69,5 +78,7 @@ import svgPanZoom from 'svg-pan-zoom';
     /* height: 51vh; */
     background: #fafafa;
     cursor: all-scroll;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
   }
 </style>

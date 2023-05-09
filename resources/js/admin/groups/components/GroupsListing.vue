@@ -24,30 +24,13 @@
           <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.name }}</span>
         </template>
         <template slot="actions" slot-scope="props">
-          <div class="actions">
-            <div class="popout">
-              <b-btn
-                variant="link"
-                @click="onEdit(props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
-                :title="$t('Edit')"
-                v-if="permission.includes('edit-groups')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-pen-square fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                variant="link"
-                @click="onDelete( props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
-                :title="$t('Delete')"
-                v-if="permission.includes('delete-groups')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
-              >
-                <i class="fas fa-trash-alt fa-lg fa-fw"></i>
-              </b-btn>
-            </div>
-          </div>
+          <ellipsis-menu 
+            @navigate="onNavigate"
+            :actions="actions"
+            :permission="permission"
+            :data="props.rowData"
+            :divider="true"
+          />
         </template>
       </vuetable>
       <pagination
@@ -65,10 +48,12 @@
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
+import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
+  components: {EllipsisMenu},
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   props: ["filter", "permission"],
   data() {
@@ -81,6 +66,10 @@ export default {
           sortField: "name",
           direction: "asc"
         }
+      ],
+      actions: [
+        { value: "edit-item", content: "Edit Group", link: true, href: '/admin/groups/{{id}}/edit', icon: "fas fa-pen-square", permission:'edit-groups', ariaDescribedBy: 'data.id'},
+        { value: "delete-item", content: "Delete Group", icon: "fas fa-trash-alt", permission: 'delete-groups',  ariaDescribedBy: 'data.id'},
       ],
       fields: [
         {
@@ -146,10 +135,7 @@ export default {
         '</span>'
       );
     },
-    onEdit(data, index) {
-      window.location = "/admin/groups/" + data.id + "/edit";
-    },
-    onDelete(data, index) {
+    onDelete(data) {
       let that = this;
       ProcessMaker.confirmModal(
         this.$t('Caution!'),
@@ -163,13 +149,10 @@ export default {
         }
       );
     },
-    onAction(action, data, index) {
-      switch (action) {
-        case "users-item":
-          //todo
-          break;
-        case "permissions-item":
-          //todo
+    onNavigate(action, data) {
+      switch (action.value) {
+        case "delete-item":
+          this.onDelete(data);
           break;
       }
     },
