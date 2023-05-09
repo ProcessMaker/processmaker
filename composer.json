@@ -1,7 +1,7 @@
 {
     "name": "processmaker/processmaker",
     "version": "4.3.0+patch-2-les-schwab",
-    "description": "BPM PHP Software",
+    "description": "BPM PHP Software Test",
     "keywords": [
         "php bpm processmaker"
     ],
