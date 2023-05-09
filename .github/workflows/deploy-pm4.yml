@@ -7,7 +7,7 @@ on:
   #  types: [opened, reopened, synchronize, edited]
   #schedule:
   #  - cron: '0 0 * * *'  # every day at midnight     
-  #workflow_dispatch:
+  workflow_dispatch:
   #pull_request:
   #  branches:
   #    - main
@@ -61,8 +61,8 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: AKIAI3EZWK42QVYDQOGA
-          aws-secret-access-key: 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
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       #- name: Login to ECR
       #  run: |
