@@ -33,29 +33,8 @@ class ProcessRequestPolicy
      */
     public function view(User $user, ProcessRequest $processRequest)
     {
-        if ($processRequest->user_id == $user->id) {
-            return true;
-        }
-
-        if ($processRequest->hasUserParticipated($user)) {
-            return true;
-        }
-
-        if ($user->hasPermission('edit-request_data')) {
-            return true;
-        }
-
-        if ($processRequest->canUserClaimASelfServiceTask($user)) {
-            return true;
-        }
-
-        if ($processRequest->processVersion->usersCanEditData()->where('id', $user->id)->exists()) {
-            return true;
-        }
-
-        if ($user->can('view-all_requests')) {
-            return true;
-        }
+        // Policy defined in ForUserScope
+        return $processRequest->forUser($user)->exists();
     }
 
     /**

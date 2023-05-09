@@ -41,7 +41,7 @@ class ProcessManualTaskTest extends TestCase
     /**
      * Initialize the controller tests
      */
-    protected function withUserSetUp()
+    protected function withUserSetup()
     {
         $this->process = $this->createTestProcess();
     }

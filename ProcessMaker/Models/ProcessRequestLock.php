@@ -19,8 +19,6 @@ class ProcessRequestLock extends ProcessMakerModel
 {
     use SqlsrvSupportTrait;
 
-    protected $connection = 'data';
-
     /**
      * The attributes that aren't mass assignable.
      *

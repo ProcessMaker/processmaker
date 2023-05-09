@@ -399,7 +399,6 @@ class UserController extends Controller
             }
 
             file_put_contents("/tmp/img.{$type}", $data);
-
             $user->addMedia("/tmp/img.{$type}")
                 ->toMediaCollection(User::COLLECTION_PROFILE, User::DISK_PROFILE);
         } elseif (isset($data['avatar']) && !empty($data['avatar'])) {
@@ -410,6 +409,8 @@ class UserController extends Controller
             $user->addMedia($request->avatar)
                 ->toMediaCollection(User::COLLECTION_PROFILE, User::DISK_PROFILE);
         }
+        $user->avatar = $user->getAvatar();
+        $user->saveOrFail();
     }
 
     /**

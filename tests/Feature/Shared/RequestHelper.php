@@ -35,7 +35,7 @@ trait RequestHelper
             $asp->boot();
         }
 
-        if (method_exists($this, 'withUserSetUp')) {
+        if (method_exists($this, 'withUserSetup')) {
             $this->withUserSetup();
         }
     }
