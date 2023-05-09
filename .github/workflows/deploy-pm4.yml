@@ -17,53 +17,136 @@ env:
   BODY: ${{github.event.pull_request.body}}
   PACKAGE_URL: ${{github.event.pull_request.head.repo.ssh_url}}
   PACKAGE_BRANCH: ${{github.event.pull_request.head.ref}}
-  MY_GITHUB_TOKEN: ${{ secrets.GH_STATUS_TOKEN }}
-  GITHUB_TOKEN: ${{ secrets.MY_GH_TOKEN }}
-  GIT_TOKEN: ${{ secrets.MY_GH_TOKEN }}
+  MY_GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+  GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
   OWNER: ${{ github.event.pull_request.head.repo.owner.login }}  
   #Other Parameters
   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  aws-region: us-east-1
-  CI_PACKAGE_BRANCH: ${{github.event.pull_request.head.ref}}
-  CI_PROJECT: ${{github.event.pull_request.head.repo.name}}
+  aws-region: ${{ secrets.AWS_REGION }}  
+  aws-url: ${{ secrets.AWS_URL }}
+  STM_TOKEN: ${{ secrets.STM_TOKEN }}
+  CI_PACKAGE_BRANCH: 4.6.0-RC7-product #rc5-test #feature/FOUR-7380 #${{github.event.pull_request.head.ref}}
+  CI_PROJECT: processmaker #${{github.event.pull_request.head.repo.name}}
+  CI_TEST: $CI_PROJECT
+  IMAGE_TAG1: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
 jobs:
-  job1:
-    name: set-init-github-status
-    runs-on: ubuntu-20.04
-    steps:
-      - run: ls -la
-      - uses: actions/checkout@v3
-      - run: ls -la 
+  #job1:
+  #  name: set-init-github-status
+  #  runs-on: ubuntu-20.04
+  #  steps:
+  #    - run: ls -la
+  #    - uses: actions/checkout@v3
+  #    - run: ls -la 
   job2:
     name: build-stm-image
-    needs: job1
-    runs-on: ubuntu-20.04
-    env:
-      # set image tag
-      IMAGE_TAG: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g") #"${CI_PROJECT}-test"
+    #needs: job1
+    runs-on: ubuntu-20.04      
     steps:     
-      - name: Push the image to ECR                
+      - name: Export Params                
+        run: |          
+          echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
+          echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
+          echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
+          #Additional
+          echo "CI_PR_BODY=1" >> $GITHUB_ENV
+          echo "CI_PROJECT=processmaker" >> $GITHUB_ENV
+          #echo "CI_PACKAGE_BRANCH=feature/FOUR-7380" >> $GITHUB_ENV
+          echo "CACHEBUSTER=abc" >> $GITHUB_ENV
+      - name: Clone Repo STM
         run: |
-          echo "Second Step"
+          git clone --depth 1 -b cicd "https://$GIT_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
+          cd pm4-stm-docker          
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1     
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Build and Push the image to ECR
+        run: |
+          cd pm4-stm-docker
+          docker stop $(docker ps -a -q) || true
+          docker container prune -f
+          docker-compose down -v
+          if [ $build_base_image = true ]; then
+            docker-compose build base --no-cache
+            docker-compose build cache --no-cache
+          fi
+          echo "FALSE OPTION"          
+          docker-compose build processmaker
+          docker push ${IMAGE}
   job3: 
-    name: deploy-stm
+    name: deploy-stm    
     needs: job2
     runs-on: ubuntu-20.04
-    steps:
-      - name: my-step
+    container:
+      image:  cimg/php:7.4
+      options: --user root
+    steps:      
+      - name: Export Params                
         run: |
-          ls -la
-          pwd
-          echo "third Step"
+          echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
+          echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
+          echo "IMAGE_TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
+          echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
+          echo "STM_TOKEN=${{env.STM_TOKEN}}" >> $GITHUB_ENV 
+      - name: Clone Repo STM
+        run: |
+          git clone --depth 1 -b cicd "https://$GIT_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
+          cd pm4-stm-docker          
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1     
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Deploy STM
+        run: |          
+          mkdir -p /tmp/workspace          
+          cd pm4-stm-docker/deploy-stm         
+          composer install --no-dev                  
+          php -i | grep "Loaded Configuration File"          
+          php run.php
+          php -v          
   job4: 
     name: run-phpunit
     needs: job2
     runs-on: ubuntu-20.04
     steps:
-      - name: my-step
+      - name: Export Params                
         run: |
-          echo "fourth Step"
+          echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
+          echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
+          echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV          
+      - name: Clone Repo STM
+        run: |
+          git clone --depth 1 -b cicd "https://$GIT_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
+          cd pm4-stm-docker          
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1     
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: PHPUnits
+        run: |
+          echo $IMAGE 
+          cd pm4-stm-docker
+          docker pull $IMAGE
+          docker-compose down -v
+          docker-compose build
+          docker-compose run phpunit 
   job5: 
     name: run-benchmarks
     needs: job3
