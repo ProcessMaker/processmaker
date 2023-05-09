@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.3.0+patch-1-les-schwab",
+    "version": "4.3.0+patch-2-les-schwab",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -87,7 +87,7 @@
             ]
         },
         "processmaker": {
-            "build": "c4a1afbc",
+            "build": "350fe443",
             "custom": {
                 "package-ellucian-ethos": "1.8.1"
             },
