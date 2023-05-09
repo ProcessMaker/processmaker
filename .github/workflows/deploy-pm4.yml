@@ -31,6 +31,8 @@ env:
   CI_PROJECT: processmaker #${{github.event.pull_request.head.repo.name}}
   CI_TEST: $CI_PROJECT
   IMAGE_TAG1: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
+permissions:
+  contents: read
 jobs:
   #job1:
   #  name: set-init-github-status
