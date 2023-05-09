@@ -42,7 +42,7 @@ jobs:
   job2:
     name: build-stm-image
     #needs: job1
-    runs-on: ubuntu-20.04      
+    runs-on: ubuntu-22.04      
     steps:     
       - name: Export Params                
         run: |          
@@ -54,16 +54,16 @@ jobs:
           echo "CI_PROJECT=processmaker" >> $GITHUB_ENV
           #echo "CI_PACKAGE_BRANCH=feature/FOUR-7380" >> $GITHUB_ENV
           echo "CACHEBUSTER=abc" >> $GITHUB_ENV
-      - name: Clone Repo STM
-        run: |
-          git clone --depth 1 -b cicd "https://$GIT_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
-          cd pm4-stm-docker 
-      #- name: Configure AWS Credentials
-      #  uses: aws-actions/configure-aws-credentials@v1
-      #  with:
-      #    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #    aws-region: us-east-1
+      #- name: Clone Repo STM
+      #  run: |
+      #    git clone --depth 1 -b cicd "https://$GIT_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
+      #    cd pm4-stm-docker 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
       #- name: Login to ECR
       #  run: |
       #    aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/processmaker        
