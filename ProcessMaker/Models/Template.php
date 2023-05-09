@@ -13,6 +13,7 @@ use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasUuids;
 use ProcessMaker\Traits\HideSystemResources;
+use ProcessMaker\Traits\SerializeToIso8601;
 
 class Template extends ProcessMakerModel
 {
@@ -21,6 +22,7 @@ class Template extends ProcessMakerModel
     use HideSystemResources;
     use HasCategories;
     use Exportable;
+    use SerializeToIso8601;
 
     protected $guarded = [
         'id',

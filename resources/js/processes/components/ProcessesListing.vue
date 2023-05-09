@@ -89,7 +89,7 @@
         { value: "unpause-start-timer", content: "Unpause Start Timer Events", icon: "fas fa-play", conditional: "if(has_timer_start_events and pause_timer_start, true, false)" },
         { value: "pause-start-timer", content: "Pause Start Timer Events", icon: "fas fa-pause", conditional: "if(has_timer_start_events and not(pause_timer_start), true, false)"},
         { value: "edit-designer", content: "Edit Process", link: true, href:"/modeler/{{id}}", permission: "edit-processes", icon: "fas fa-edit", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
-        { value: "create-template", content: "Publish as Template", permission: "create-process-templates", icon: "fas fa-layer-group" },
+        { value: "create-template", content: "Save as Template", permission: "create-process-templates", icon: "fas fa-layer-group" },
         { value: "edit-item", content: "Configure", link: true, href:"/processes/{{id}}/edit", permission: "edit-processes", icon: "fas fa-cog", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
         { value: "view-documentation", content: "View Documentation", link: true, href:"/modeler/{{id}}/print", permission: "view-processes", icon: "fas fa-sign", conditional: "isDocumenterInstalled"},
         { value: "export-item", content: "Export", link: true, href:"/processes/{{id}}/export", permission: "export-processes", icon: "fas fa-file-export"},

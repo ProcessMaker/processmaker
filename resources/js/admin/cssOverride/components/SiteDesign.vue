@@ -226,32 +226,32 @@ export default {
       colorDefault: [
         {
           id: '$primary',
-          value: '#3397E1',
+          value: '#0872C2',
           title: this.$t('Primary')
         },
         {
           id: '$secondary',
-          value: '#788793',
+          value: '#6C757D',
           title: this.$t('Secondary')
         },
         {
           id: '$success',
-          value: '#00BF9C',
+          value: '#00875A',
           title: this.$t('Success')
         },
         {
           id: '$info',
-          value: '#17A2B8',
+          value: '#104A75',
           title: this.$t('Info')
         },
         {
           id: '$warning',
-          value: '#FBBE02',
+          value: '#FFAB00',
           title: this.$t('Warning')
         },
         {
           id: '$danger',
-          value: '#ED4757',
+          value: '#E50130',
           title: this.$t('Danger')
         },
         {

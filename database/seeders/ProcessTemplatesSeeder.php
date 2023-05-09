@@ -77,6 +77,17 @@ class ProcessTemplatesSeeder extends Seeder
                 'process_category_id' => ProcessCategory::where('name', 'Default Templates')->firstOrFail()->getKey(),
                 'manifest' => file_get_contents(app_path('Templates/Fixtures/process-share-sales-proposal.json')),
                 'svg' => file_get_contents(app_path('Templates/Fixtures/process-share-sales-proposal.svg')),
+
+        ProcessTemplates::updateOrCreate(
+            ['name' => 'Vendor Onboarding'],
+            [
+                'name' => 'Vendor Onboarding',
+                'description' => 'Collect all information needed to approve a company as your new vendor.',
+                'process_id' => null,
+                'user_id' => null,
+                'process_category_id' => ProcessCategory::where('name', 'Default Templates')->firstOrFail()->getKey(),
+                'manifest' => file_get_contents(app_path('Templates/Fixtures/process-vendor-onboarding-template.json')),
+                'svg' => file_get_contents(app_path('Templates/Fixtures/process-vendor-onboarding.svg')),
                 'is_system' => 0,
                 'key' => 'default_templates',
             ]);

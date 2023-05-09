@@ -3,8 +3,10 @@
 namespace ProcessMaker\ImportExport;
 
 use DOMXPath;
+use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use ProcessMaker\Exception\ExportEmptyProcessException;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Nayra\Storage\BpmnElement;
 
@@ -39,9 +41,16 @@ class Utils
 
     public static function getElementsByPath($document, $path)
     {
-        $xpath = new DOMXPath($document);
+        try {
+            $xpath = new DOMXPath($document);
 
-        return $xpath->query($path);
+            return $xpath->query($path);
+        } catch (Exception $e) {
+            if ($e->getMessage() === 'DOMXPath::query(): Undefined namespace prefix') {
+                throw new ExportEmptyProcessException($e);
+            }
+            throw $e;
+        }
     }
 
     public static function getElementByMultipleTags($document, array $tags = [])

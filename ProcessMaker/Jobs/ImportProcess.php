@@ -502,10 +502,17 @@ class ImportProcess implements ShouldQueue
 
             // save categories
             if (isset($screen->categories)) {
+                $ids = [];
                 foreach ($screen->categories as $categoryDef) {
                     $category = $this->saveCategory('screen', $categoryDef);
-                    $new->categories()->save($category);
+                    if ($category) {
+                        $ids[] = $category->id;
+                    }
                 }
+                if (!empty($ids)) {
+                    $new->screen_category_id = implode(',', $ids);
+                }
+                $new->save();
             }
 
             return $new;

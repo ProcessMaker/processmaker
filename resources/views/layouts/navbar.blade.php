@@ -9,7 +9,7 @@
     </div>
 
     <div class="d-flex d-lg-none w-100">
-      <global-search class="w-100 small-screen"></global-search>
+      <global-search v-if="isMobile" class="w-100 small-screen"></global-search>
     </div>
 
     <b-collapse is-nav id="nav-collapse">
@@ -98,7 +98,7 @@
         <b-navbar-nav class="d-flex align-items-center ml-auto">
 
             @if (config('app.open_ai_nlq_to_pmql') && shouldShow('globalSearchBar'))
-            <global-search class="d-none d-lg-block"></global-search>
+            <global-search v-if="!isMobile" class="d-none d-lg-block"></global-search>
             @endif
             @if (shouldShow('requestButton'))
             <component v-bind:is="'request-modal'" url="{{ route('processes.index') }}" v-bind:permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"></component>
