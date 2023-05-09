@@ -59,7 +59,7 @@ jobs:
           git clone --depth 1 -b cicd "https://$GIT_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
           cd pm4-stm-docker          
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -100,7 +100,7 @@ jobs:
           git clone --depth 1 -b cicd "https://$GIT_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
           cd pm4-stm-docker          
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -131,7 +131,7 @@ jobs:
           git clone --depth 1 -b cicd "https://$GIT_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
           cd pm4-stm-docker          
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
