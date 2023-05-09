@@ -58,5 +58,5 @@
 @foreach($manager->getScripts() as $script)
     <script src="{{ $script }}"></script>
 @endforeach
-<script src="{{ mix('js/processes/modeler/index.js') }}"></script>
+<script src="{{ mix('js/processes/modeler/process-map.js') }}"></script>
 @endsection

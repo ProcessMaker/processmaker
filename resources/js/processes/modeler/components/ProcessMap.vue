@@ -26,7 +26,7 @@
 import { Modeler } from "@processmaker/modeler";
 
 export default {
-  name: "ModelerApp",
+  name: "ProcessMap",
   components: {
     Modeler,
   },
