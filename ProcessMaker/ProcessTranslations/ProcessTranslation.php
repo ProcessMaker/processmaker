@@ -45,18 +45,33 @@ class ProcessTranslation
 
         foreach ($screensTranslations as $screenTranslation) {
             if ($screenTranslation['translations']) {
-                foreach ($screenTranslation['translations'] as $translation) {
-                    $languages[] = [
-                        'language' => $translation['language'],
-                        'human_language' => Languages::ALL[$translation['language']],
-                        'created_at' => $translation['created_at'],
-                        'updated_at' => $translation['updated_at'],
+                foreach ($screenTranslation['translations'] as $key => $translation) {
+
+                    $createdAt = $translation['created_at'];
+                    $updatedAt = $translation['updated_at'];
+
+                    // If updated is greater than existing in array, modify it with the newest
+                    if (array_key_exists($key, $languages)) {
+                        $createdAt = $languages[$key]['created_at'];
+                        $updatedAt = $languages[$key]['updated_at'];
+                        if ($languages[$key]['updated_at'] < $translation['updated_at']) {
+                            $createdAt = $translation['created_at'];
+                            $updatedAt = $translation['updated_at'];
+                        }   
+                    }
+
+                    // Add, Update languages array
+                    $languages[$key] = [
+                        'language' => $key,
+                        'human_language' => Languages::ALL[$key],
+                        'created_at' => $createdAt,
+                        'updated_at' => $updatedAt,
                     ];
                 }
             }
         }
 
-        return collect($languages)->sortByDesc('updated_at')->unique('language');
+        return array_values($languages);
     }
 
     private function getScreens($withScreenData) : SupportCollection
