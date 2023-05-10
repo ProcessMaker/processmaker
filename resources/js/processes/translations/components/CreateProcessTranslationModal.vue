@@ -237,6 +237,8 @@ export default {
     },
     showTranslations() {
       this.step = "showTranslations";
+      this.customModalButtons[1].hidden = true;
+      this.customModalButtons[2].hidden = false;
       this.modalTitle = this.$t(`${this.processName} ${this.selectedLanguage.humanLanguage} Translation`);
     },
     getAvailableLanguages() {
