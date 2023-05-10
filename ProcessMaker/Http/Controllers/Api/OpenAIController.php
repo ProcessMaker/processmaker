@@ -110,8 +110,8 @@ class OpenAIController extends Controller
         // Translate all strings for all screens
         foreach ($screensTranslations as $screen) {
             // Search all element inside the screen
-            // Create an array of labels to translate for all string elements
-            // Create an array of strings to translate for textareas
+            // Create an array of all strings to translate
+            // Create an array of all textareas to translate
         }
 
         return response()->json([
