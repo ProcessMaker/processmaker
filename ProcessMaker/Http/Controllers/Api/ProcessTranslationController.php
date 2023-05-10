@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Models\Process;
@@ -15,6 +16,7 @@ class ProcessTranslationController extends Controller
     public function index(Request $request)
     {
         $processId = $request->input('process_id', '');
+        $filter = $request->input('filter', '');
 
         $process = Process::findOrFail($processId);
 
@@ -22,9 +24,14 @@ class ProcessTranslationController extends Controller
         $screensTranslations = $processTranslation->getTranslations();
         $languageList = $processTranslation->getLanguageList($screensTranslations);
 
+        if ($filter != '') {
+            $languageList = array_values(collect($languageList)->filter(function ($item) use ($filter) {
+                return false !== stristr($item['human_language'], $filter);
+            })->toArray());
+        }
+
         return response()->json([
             'translatedLanguages' => $languageList,
-            // 'meta' => $meta,
         ]);
     }
 
