@@ -62,7 +62,7 @@
           <small class="text-muted">{{ $t("Select a screen from the process to review and perform translations.") }}</small>
         </div>
         <div class="mt-3">
-          <table class="table table-responsive-lg ">
+          <table class="table table-responsive-lg mb-0">
             <thead>
               <tr>
                   <th class="col-6">{{ $t('String') }}</th>
@@ -202,9 +202,13 @@ export default {
     },
     onClose() {
       this.step = "selectTargetLanguage";
+      this.customModalButtons[1].hidden = false;
+      this.customModalButtons[2].hidden = true;
     },
     translateProcess() {
       this.step = "translating";
+      this.customModalButtons[1].hidden = true;
+      this.customModalButtons[2].hidden = true;
       this.aiLoading = true;
       this.endpointErrors = false;
       this.modalTitle = this.$t(`${this.processName} Translate`);
@@ -288,6 +292,11 @@ td textarea {
   top: 0;
   bottom: 0;
 }
+
+textarea {
+  resize: none;
+}
+
 .power-loader .text {
   color: #42516e;
   font-size: .8rem;
