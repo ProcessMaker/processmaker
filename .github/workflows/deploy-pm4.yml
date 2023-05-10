@@ -56,19 +56,19 @@ jobs:
           echo "CI_PROJECT=processmaker" >> $GITHUB_ENV
           #echo "CI_PACKAGE_BRANCH=feature/FOUR-7380" >> $GITHUB_ENV
           echo "CACHEBUSTER=abc" >> $GITHUB_ENV
-      #- name: Clone Repo STM
-      #  run: |
-      #    git clone --depth 1 -b cicd "https://$GIT_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
-      #    cd pm4-stm-docker 
+      - name: Clone Repo STM
+        run: |
+          git clone --depth 1 -b cicd "https://$GIT_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
+          cd pm4-stm-docker 
       - name: Configure AWS Credentials1
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-      #- name: Login to ECR
-      #  run: |
-      #    aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/processmaker        
+      - name: Login to ECR
+        run: |
+          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/processmaker        
       #- name: Configure AWS Credentials
       #  uses: aws-actions/configure-aws-credentials@v2
       #  with:
@@ -110,15 +110,15 @@ jobs:
         run: |
           git clone --depth 1 -b cicd "https://$GIT_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
           cd pm4-stm-docker  
-      #- name: Configure AWS Credentials
-      #  uses: aws-actions/configure-aws-credentials@v1
-      #  with:
-      #    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #    aws-region: us-east-1
-      #- name: Login to ECR
-      #  run: |
-      #    aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/processmaker                 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Login to ECR
+        run: |
+          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/processmaker                 
       #- name: Configure AWS Credentials
       #  uses: aws-actions/configure-aws-credentials@v2
       #  with:
@@ -136,37 +136,37 @@ jobs:
           php -i | grep "Loaded Configuration File"          
           php run.php
           php -v          
-  #job4: 
-  #  name: run-phpunit
-  #  needs: job2
-  #  runs-on: ubuntu-20.04
-  #  steps:
-  #    - name: Export Params                
-  #      run: |
-  #        echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
-  #        echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
-  #        echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV          
-  #    - name: Clone Repo STM
-  #      run: |
-  #        git clone --depth 1 -b cicd "https://$GIT_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
-  #        cd pm4-stm-docker          
-  #    - name: Configure AWS Credentials
-  #      uses: aws-actions/configure-aws-credentials@v2
-  #      with:
-  #        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #        aws-region: us-east-1     
-  #    - name: Login to Amazon ECR
-  #      id: login-ecr
-  #      uses: aws-actions/amazon-ecr-login@v1
-  #    - name: PHPUnits
-  #      run: |
-  #        echo $IMAGE 
-  #        cd pm4-stm-docker
-  #        docker pull $IMAGE
-  #        docker-compose down -v
-  #        docker-compose build
-  #        docker-compose run phpunit 
+  job4: 
+    name: run-phpunit
+    needs: job2
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Export Params                
+        run: |
+          echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
+          echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
+          echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV          
+      - name: Clone Repo STM
+        run: |
+          git clone --depth 1 -b cicd "https://$GIT_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
+          cd pm4-stm-docker          
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1     
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: PHPUnits
+        run: |
+          echo $IMAGE 
+          cd pm4-stm-docker
+          docker pull $IMAGE
+          docker-compose down -v
+          docker-compose build
+          docker-compose run phpunit 
   job5: 
     name: run-benchmarks
     needs: job3
