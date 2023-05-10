@@ -143,6 +143,11 @@ class User extends Authenticatable implements HasMedia
     public static function boot()
     {
         parent::boot();
+        static::retrieved(function ($user) {
+            if (null === $user->avatar) {
+                $user->avatar = '';
+            }
+        });
         static::deleted(function ($user) {
             $user->removeFromGroups();
         });
