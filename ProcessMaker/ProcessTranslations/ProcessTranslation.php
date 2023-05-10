@@ -46,7 +46,6 @@ class ProcessTranslation
         foreach ($screensTranslations as $screenTranslation) {
             if ($screenTranslation['translations']) {
                 foreach ($screenTranslation['translations'] as $key => $translation) {
-
                     $createdAt = $translation['created_at'];
                     $updatedAt = $translation['updated_at'];
 
@@ -57,7 +56,7 @@ class ProcessTranslation
                         if ($languages[$key]['updated_at'] < $translation['updated_at']) {
                             $createdAt = $translation['created_at'];
                             $updatedAt = $translation['updated_at'];
-                        }   
+                        }
                     }
 
                     // Add, Update languages array
