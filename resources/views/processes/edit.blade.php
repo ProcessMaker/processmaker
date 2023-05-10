@@ -207,13 +207,13 @@
                                     </div>
                                 </div>
                             
-                            
                                 <div class="container-fluid">
                                     <process-translation-listing
                                         ref="translationsListing"
                                         :filter="filterTranslations"
                                         :permission="['edit-process-translation', 'export-process-translation', 'delete-process-translation']"
                                         {{-- :permission="{{ \Auth::user()->hasPermissionsFor('process-translations') }}" --}}
+                                        @translated-languages-changed="onTranslatedLanguagesChanged"
                                         :process-id="{{ $process->id }}"
                                     ></process-translation-listing>
                                 </div>
@@ -224,7 +224,11 @@
                                 {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                             </div>
 
-                            <create-process-translation-modal ref="create-process-translation-modal" :process-id="{{ $process->id }}" />
+                            <create-process-translation-modal 
+                                ref="create-process-translation-modal" 
+                                :process-id="{{ $process->id }}"
+                                process-name="{{ $process->name }}"
+                                :translated-languages="translatedLanguages" />
                         </div>
 
                         {{-- Notifications --}}
@@ -381,7 +385,8 @@
             screenCancel: @json($screenCancel),
             activeUsersAndGroups: @json($list),
             pause_timer_start_events: false,
-            manager: @json($process->manager)
+            manager: @json($process->manager),
+            translatedLanguages: [],
           }
         },
         mounted() {
@@ -415,6 +420,9 @@
           },
           onClose() {
             window.location.href = '/processes';
+          },
+          onTranslatedLanguagesChanged(translatedLanguages) {
+            this.translatedLanguages = translatedLanguages;
           },
           formatAssigneePermissions(data) {
             let response = {};
