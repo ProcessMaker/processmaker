@@ -87,7 +87,7 @@
             ]
         },
         "processmaker": {
-            "build": "350fe443",
+            "build": "a167dbac",
             "custom": {
                 "package-ellucian-ethos": "1.8.1"
             },
