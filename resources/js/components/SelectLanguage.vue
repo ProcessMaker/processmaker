@@ -28,35 +28,16 @@
 
 <script>
 export default {
-  props: {
-    value: null,
-    multiple: {
-      type: Boolean,
-      default: false,
-    },
-  },
+  props: ["value", "multiple", "options"],
   data() {
     return {
-      options: [],
     };
   },
   mounted() {
-    this.fetch();
   },
   methods: {
     change(value) {
       this.$emit("input", value);
-    },
-    fetch() {
-      this.loading = true;
-
-      // Load from our api client
-      ProcessMaker.apiClient
-        .get("process/translations/languages")
-        .then((response) => {
-          this.options = JSON.parse(JSON.stringify(response.data.availableLanguages));
-          this.loading = false;
-        });
     },
   },
 };
