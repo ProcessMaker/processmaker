@@ -1,6 +1,6 @@
 <template>
   <div class="data-table">
-    <div v-if="!loading && !languageList.length">
+    <div v-if="!loading && !translatedLanguages.length">
       <div class="d-flex flew-grow-1 flex-column align-items-center no-results-container">
         <div class="icon-lg text-secondary">
           <i class="fa fa-language" />
@@ -11,7 +11,7 @@
       </div>
     </div>
 
-    <table v-if="!loading && languageList.length" id="table-translations" class="table table-hover table-responsive-lg ">
+    <table v-if="!loading && translatedLanguages.length" id="table-translations" class="table table-hover table-responsive-lg ">
       <thead>
         <tr>
             <th class="notify">{{ $t('Target Language') }}</th>
@@ -21,7 +21,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(item, index) in languageList" :key="index">
+        <tr v-for="(item, index) in translatedLanguages" :key="index">
           <td class="notify">{{ item.human_language }}</td>
           <td class="action">{{ item.created_at }}</td>
           <td class="action">{{ item.updated_at }}</td>
@@ -37,47 +37,7 @@
         </tr>
       </tbody>
     </table>
-    <!-- v-show="!loading && languageList.length" -->
-    <!-- <div class="card card-body process-translation-table-card"
-      data-cy="processes-translation-table">
-
-      <div class="form-group p-0">
-
-        <table id="table-translations" class="table">
-          <thead>
-            <tr>
-                <th class="notify">{{__('Target Language')}}</th>
-                <th class="action">{{__('Created')}}</th>
-                <th class="action">{{__('Updated')}}</th>
-                <th class="action"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(key, language) in languageList" :key="key">
-              <td class="notify">{{ language }}</td>
-              <td class="action"></td>
-              <td class="action"></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-   -->
   </div>
-
-  <!-- <template
-          slot="actions"
-          slot-scope="props"
-        >
-          <ellipsis-menu
-            :actions="actions"
-            :permission="permission"
-            :data="props.rowData"
-            :is-documenter-installed="isDocumenterInstalled"
-            :divider="true"
-            @navigate="onNavigate"
-          />
-        </template> -->
 </template>
 
 <script>
@@ -92,7 +52,7 @@ export default {
   props: ["filter", "id", "status", "permission", "processId"],
   data() {
     return {
-      languageList: [],
+      translatedLanguages: null,
       orderBy: "language",
       loading: false,
       sortOrder: [
@@ -116,12 +76,20 @@ export default {
       ],
     };
   },
+
+  watch: {
+    filter() {
+      this.fetch();
+    },
+  },
+
   created() {
     this.fetch();
     ProcessMaker.EventBus.$on("api-data-process-translations", () => {
       this.fetch();
     });
   },
+
   methods: {
     onNavigate(action, data, index) {
       switch (action.value) {
@@ -158,7 +126,8 @@ export default {
           "&include="
         )
         .then((response) => {
-          this.languageList = JSON.parse(JSON.stringify(response.data.translatedLanguages));
+          this.translatedLanguages = response.data.translatedLanguages;
+          this.$emit("translated-languages-changed", this.translatedLanguages);
           this.loading = false;
         });
     },
