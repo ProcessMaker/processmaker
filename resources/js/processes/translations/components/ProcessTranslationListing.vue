@@ -65,7 +65,7 @@ export default {
 
       actions: [
         {
-          value: "edit-translation", content: "Edit Translation", link: true, href: "/modeler/translation/{{id}}", permission: "edit-process-translation", icon: "fas fa-edit",
+          value: "edit-translation", content: "Edit Translation", link: false, href: "", permission: "edit-process-translation", icon: "fas fa-edit",
         },
         {
           value: "export-translation", content: "Export Translation", permission: "export-process-translation", icon: "fas fa-file-export",
