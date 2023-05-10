@@ -278,7 +278,7 @@ td.bg-light {
   background-color: #F7F9FB !important;
 }
 td > .form-control:focus {
-  border: 0 !important;
+  border: 2px solid #1572C2 !important;
   box-shadow: none !important;
 }
 
@@ -291,6 +291,7 @@ td textarea {
   left: 0;
   top: 0;
   bottom: 0;
+  border-color: #1572C2 !important;
 }
 
 textarea {
