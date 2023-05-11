@@ -9,6 +9,10 @@
       @ok.prevent="onSubmit"
       @hidden="onClose"
       @translateProcess="translateProcess"
+      @showSelectTargetLanguage="showSelectTargetLanguage"
+      :hasTitleButtons="hasTitleButtons"
+      :hasHeaderButtons="hasHeaderButtons"
+      :headerButtons="headerButtons"
       :customButtons="customModalButtons"
       :setCustomButtons="true"
     >
@@ -61,7 +65,20 @@
           />
           <small class="text-muted">{{ $t("Select a screen from the process to review and perform translations.") }}</small>
         </div>
-        <div class="mt-3">
+        <div>
+          <translate-options-popup @retranslate="onReTranslate"/>
+        </div>
+        <div class="mt-3 position-relative">
+          <div v-if="step === 'showTranslations'" class="d-flex justify-content-center align-items-center">
+            <div v-if="aiLoading" 
+              class="d-flex justify-content-center align-items-center flex-column h-100 position-absolute preloader-container">
+              <span class="power-loader mt-3 mb-2" />
+              <span class="ml-2 text-muted small">
+                {{ $t("Re Translation in progress ...") }}
+              </span>
+            </div>
+          </div>
+
           <table class="table table-responsive-lg mb-0">
             <thead>
               <tr>
@@ -96,9 +113,15 @@
 import { FormErrorsMixin, Modal } from "SharedComponents";
 import SelectLanguage from "../../../components/SelectLanguage"
 import SelectScreen from "../../../components/SelectScreen"
+import TranslateOptionsPopup from './TranslateOptionsPopup.vue';
 
 export default {
-  components: { Modal, SelectLanguage, SelectScreen },
+  components: {
+    Modal,
+    SelectLanguage,
+    SelectScreen,
+    TranslateOptionsPopup,
+  },
   mixins: [FormErrorsMixin],
   props: ["processId", "processName", "translatedLanguages"],
   data() {
@@ -115,6 +138,11 @@ export default {
       manualTranslation: false,
       modalTitle: this.$t("Add Process Translation"),
       step: "selectTargetLanguage",
+      hasHeaderButtons: false,
+      hasTitleButtons: false,
+      headerButtons: [
+        {'content': '< Back', 'action': 'showSelectTargetLanguage', 'variant': 'link', 'disabled': false, 'hidden': true, 'ariaLabel': 'Back to select language'},
+      ],
       customModalButtons: [
         {'content': 'Cancel', 'action': 'hide()', 'variant': 'outline-secondary', 'disabled': false, 'hidden': false},
         {'content': 'Translate Process', 'action': 'translateProcess', 'variant': 'secondary', 'disabled': true, 'hidden': false},
@@ -201,12 +229,11 @@ export default {
       this.$bvModal.show("createProcessTranslation");
     },
     onClose() {
-      this.step = "selectTargetLanguage";
-      this.customModalButtons[1].hidden = false;
-      this.customModalButtons[2].hidden = true;
+      this.showSelectTargetLanguage();
     },
     translateProcess() {
       this.step = "translating";
+      this.headerButtons[0].hidden = true;
       this.customModalButtons[1].hidden = true;
       this.customModalButtons[2].hidden = true;
       this.aiLoading = true;
@@ -237,10 +264,34 @@ export default {
           this.aiLoading = false;
         });
     },
-    saveTranslations() {
+
+    onReTranslate(option) {
+      this.aiLoading = true;
+
+      function sleep(time) {
+        // eslint-disable-next-line no-promise-executor-return
+        return new Promise((resolve) => setTimeout(resolve, time));
+      }
+
+      // Usage!
+      sleep(2000).then(() => {
+        this.aiLoading = false;
+      });
+    },
+
+    showSelectTargetLanguage() {
+      this.step = "selectTargetLanguage";
+      this.hasHeaderButtons = false;
+      this.hasTitleButtons = false;
+      this.headerButtons[0].hidden = true;
+      this.customModalButtons[1].hidden = false;
+      this.customModalButtons[2].hidden = true;
     },
     showTranslations() {
       this.step = "showTranslations";
+      this.hasHeaderButtons = true;
+      this.hasTitleButtons = true;
+      this.headerButtons[0].hidden = false;
       this.customModalButtons[1].hidden = true;
       this.customModalButtons[2].hidden = false;
       this.modalTitle = this.$t(`${this.processName} ${this.selectedLanguage.humanLanguage} Translation`);
@@ -256,11 +307,21 @@ export default {
           this.loading = false;
         });
     },
+    saveTranslations() {
+    },
   },
 };
 </script>
 
 <style scoped>
+.preloader-container {
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 1;
+  background: #ffffffd6;
+}
+
 table {
   border: 1px solid #e9edf1;
 }
