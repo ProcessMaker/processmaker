@@ -15,7 +15,7 @@
               value="all"
               :disabled="false"
             >
-              <span class="fw-medium">Auto Translate All</span>
+              <span class="fw-medium">{{ $t('Auto Translate') }} <strong>{{ $t('All') }}</strong></span>
               <div>
                 <small class="text-muted">
                   Automatically translate all strings for this screen. All manual translation changes will be overwritten.
@@ -29,7 +29,7 @@
               value="empty"
               :disabled="false"
             >
-              <span class="fw-medium">Auto Translate Empty</span>
+              <span class="fw-medium">{{ $t('Auto Translate') }} <strong>{{ $t('Empty') }}</strong></span>
               <div>
                 <small class="text-muted">
                   Automatically translate any empty fields for this screen.
