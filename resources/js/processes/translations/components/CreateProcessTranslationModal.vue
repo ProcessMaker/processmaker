@@ -330,7 +330,7 @@ table {
 }
 tbody {
   display: block;
-  height: 50vh;
+  height: 43vh;
   overflow-y: auto;
 }
 thead, tbody tr {
