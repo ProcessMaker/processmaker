@@ -6,7 +6,7 @@
           <font-awesome-icon :icon="['fpm', 'fa-translations']" />
         </div>
         <div class="text-secondary">
-          {{ $t("No translations have been created for this process") }}
+          {{ $t("No translations found") }}
         </div>
       </div>
     </div>
