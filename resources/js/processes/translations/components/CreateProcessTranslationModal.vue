@@ -110,10 +110,13 @@
 </template>
 
 <script>
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FormErrorsMixin, Modal } from "SharedComponents";
 import SelectLanguage from "../../../components/SelectLanguage"
 import SelectScreen from "../../../components/SelectScreen"
 import TranslateOptionsPopup from './TranslateOptionsPopup.vue';
+
+Vue.component("font-awesome-icon", FontAwesomeIcon);
 
 export default {
   components: {

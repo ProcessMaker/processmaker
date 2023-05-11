@@ -2,7 +2,7 @@
   <div>
     <div class="position-relative">
       <button ref="optionsButton" class="btn btn-secondary mr-1 mt-3 d-flex align-items-center" @click="toggleOptionsPopup">
-        <i class="fa fa-language mr-1"></i>
+        <font-awesome-icon :icon="['fpm', 'fa-translations']" class="mr-1" />
         <span class="text-capitalize">{{$t('Translation Options')}}</span>
       </button>
       <div v-if="showOptionsPopup" class="filter-dropdown-panel-container card" v-click-outside="closeOptionsPopup">

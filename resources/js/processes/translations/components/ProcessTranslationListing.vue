@@ -3,7 +3,7 @@
     <div v-if="!loading && !translatedLanguages.length">
       <div class="d-flex flew-grow-1 flex-column align-items-center no-results-container">
         <div class="icon-lg text-secondary">
-          <i class="fa fa-language" />
+          <font-awesome-icon :icon="['fpm', 'fa-translations']" />
         </div>
         <div class="text-secondary">
           {{ $t("No translations have been created for this process") }}
@@ -42,7 +42,9 @@
 
 <script>
 import { createUniqIdsMixin } from "vue-uniq-ids";
+import { library } from "@fortawesome/fontawesome-svg-core";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
+import { faTranslations } from "../../../components/shared/customIcons/faTranslations";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -83,6 +85,9 @@ export default {
   },
 
   created() {
+    // Add custom translations icon
+    library.add(faTranslations);
+
     this.fetch();
     ProcessMaker.EventBus.$on("api-data-process-translations", () => {
       this.fetch();
