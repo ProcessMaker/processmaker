@@ -103,6 +103,9 @@ export default {
         case "export-translation":
           // this.exportTranslation(data);
           break;
+        case "delete-translation":
+          this.deleteTranslation(data);
+          break;
         default:
           break;
       }
@@ -134,6 +137,21 @@ export default {
           this.$emit("translated-languages-changed", this.translatedLanguages);
           this.loading = false;
         });
+    },
+
+    deleteTranslation(translation) {
+      console.log(translation);
+      ProcessMaker.confirmModal(
+        this.$t("Caution!"),
+        this.$t(`Are you sure you want to delete the translations for ${translation.human_language} language?`),
+        "",
+        () => {
+          ProcessMaker.apiClient
+            .delete(`/process/translations/${translation}`)
+            .then(() => {
+            });
+        },
+      );
     },
   },
 };
