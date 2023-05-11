@@ -8,14 +8,12 @@
         class="overflow-hidden position-relative p-0 vh-100"
         data-test="body-container"
       >
-        <modeler
+        <ModelerReadonly
           ref="modeler"
           :owner="self"
           :decorations="decorations"
-          :inflight="true"
-          @validate="validationErrors = $event"
-          @warnings="warnings = $event"
           @set-xml-manager="xmlManager = $event"
+          @click="handleClick"
         />
       </b-card-body>
     </b-card>
@@ -23,30 +21,21 @@
 </template>
 
 <script>
-import { Modeler } from "@processmaker/modeler";
+import { ModelerReadonly } from "@processmaker/modeler";
 
 export default {
   name: "ProcessMap",
   components: {
-    Modeler,
+    ModelerReadonly,
   },
   data() {
     return {
       self: this,
+      process: window.ProcessMaker.modeler.process,
+      xmlManager: null,
       decorations: {
         borderOutline: {},
       },
-      process: window.ProcessMaker.modeler.process,
-      autoSaveDelay: window.ProcessMaker.modeler.autoSaveDelay,
-      isVersionsInstalled: window.ProcessMaker.modeler.isVersionsInstalled,
-      isDraft: window.ProcessMaker.modeler.isDraft,
-      validationErrors: {},
-      warnings: [],
-      xmlManager: null,
-      processName: window.ProcessMaker.modeler.process.name,
-      processId: window.ProcessMaker.modeler.process.id,
-      currentUserId: window.ProcessMaker.modeler.process.user_id,
-      closeHref: "/processes",
     };
   },
   mounted() {
@@ -61,15 +50,9 @@ export default {
         baseURL: "/",
       });
     }, 60000),
-    updateBpmnValidations() {},
-    getTaskNotifications() {},
-    emitSaveEvent() {},
-    emitDiscardEvent() {},
-    discardDraft() {},
-    saveProcess() {},
-    setVersionIndicator() {},
-    setLoadingState() {},
-    publishTemplate() {},
+    handleClick() {
+      //
+    },
   },
 };
 </script>

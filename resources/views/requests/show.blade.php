@@ -87,6 +87,12 @@
 									{{__('Forms')}}
 								</a>
 							</li>
+              <li class="nav-item">
+								<a class="nav-link" id="overview-tab" data-toggle="tab" href="#overview"
+								   role="tab" aria-controls="forms" aria-selected="false" @click="switchTab('overview')">
+									{{__('Overview')}}
+								</a>
+							</li>
 							@isset($addons)
 								@foreach ($addons as $addon)
 									<li class="nav-item">
@@ -228,6 +234,10 @@
 							<request-screens :id="requestId" :information="dataSummary" :screens="screenRequested"
 											 ref="forms">
 							</request-screens>
+						</div>
+            <div class="tab-pane fade card card-body border-top-0 p-0" id="overview" role="tabpanel"
+							 aria-labelledby="overview-tab">
+               <iframe src="{{ route('modeler.inflight', ['process' => $request->process->id]) }}" width="100%" height="600px" frameborder="0" style="border:0" allowfullscreen></iframe>
 						</div>
 
 						@isset($addons)
