@@ -26,7 +26,7 @@
           <select-language
             v-model="selectedLanguage"
             :multiple="false"
-            :options="notTranslatedAvailableLanguages"
+            :options="availableLanguages"
             :aria-label="$t('Select a target language')"
             class="w-50"
           />
@@ -165,17 +165,7 @@ export default {
       ],
     };
   },
-  computed: {
-    notTranslatedAvailableLanguages() {
-      let { translatedLanguages } = this;
-      translatedLanguages = translatedLanguages.map((item) => ({
-        humanLanguage: item.human_language,
-        language: item.language,
-      }));
 
-      return this.availableLanguages.filter((f) => translatedLanguages.every((e) => f.language !== e.language));
-    },
-  },
   watch: {
     screensTranslations(val) {
       this.allScreensTranslations = [];
@@ -301,10 +291,12 @@ export default {
     },
     getAvailableLanguages() {
       this.loading = true;
+      const params = {
+        process_id: this.processId,
+      };
 
       // Load from our api client
-      ProcessMaker.apiClient
-        .get("process/translations/languages")
+      ProcessMaker.apiClient.post("/process/translations/languages", params)
         .then((response) => {
           this.availableLanguages = JSON.parse(JSON.stringify(response.data.availableLanguages));
           this.loading = false;

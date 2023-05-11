@@ -35,17 +35,36 @@ class ProcessTranslationController extends Controller
         ]);
     }
 
-    public function getAvailableLanguages()
+    public function getAvailableLanguages(Request $request)
     {
+        $processId = $request->input('process_id');
+
+        $process = Process::findOrFail($processId);
+
+        $processTranslation = new ProcessTranslation($process);
+        $screensTranslations = $processTranslation->getTranslations();
+        $languageList = $processTranslation->getLanguageList($screensTranslations);
+
         foreach (Languages::ALL as $key => $value) {
-            $availableLanguages[] = [
-                'humanLanguage' => $value,
-                'language' => $key,
-            ];
+            if (!$this->languageInTranslatedList($key, $languageList)) {
+                $availableLanguages[] = [
+                    'humanLanguage' => $value,
+                    'language' => $key,
+                ];
+            }
         }
 
         return response()->json([
             'availableLanguages' => $availableLanguages,
         ]);
+    }
+
+    private function languageInTranslatedList($key, $languageList)  {
+        foreach ($languageList as $value) {
+            if ($value['language'] === $key) {
+                return true;
+            }
+        }
+        return false;
     }
 }
