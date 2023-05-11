@@ -62,7 +62,6 @@ export default {
           direction: "asc",
         },
       ],
-
       actions: [
         {
           value: "edit-translation", content: "Edit Translation", link: false, href: "", permission: "edit-process-translation", icon: "fas fa-edit",
