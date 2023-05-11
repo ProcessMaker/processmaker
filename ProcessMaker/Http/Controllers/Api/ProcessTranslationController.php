@@ -59,12 +59,14 @@ class ProcessTranslationController extends Controller
         ]);
     }
 
-    private function languageInTranslatedList($key, $languageList)  {
+    private function languageInTranslatedList($key, $languageList)
+    {
         foreach ($languageList as $value) {
             if ($value['language'] === $key) {
                 return true;
             }
         }
+
         return false;
     }
 }
