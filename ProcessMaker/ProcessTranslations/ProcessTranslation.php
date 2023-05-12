@@ -34,6 +34,33 @@ class ProcessTranslation
         return $this->getScreens($withScreenData);
     }
 
+    private function getScreens($withScreenData) : SupportCollection
+    {
+        $screensInProcess = collect($this->getScreenIds())->unique();
+
+        $fields = array_merge(['id', 'translations', 'config'], $withScreenData);
+
+        $screens = Screen::whereIn('id', $screensInProcess)
+            ->get()
+            ->map
+            ->only($fields)
+            ->values();
+
+        return $this->getStrings($screens);
+    }
+
+    public function getStrings($screens) : SupportCollection
+    {
+        $screensArr = [];
+        foreach ($screens as $screen) {
+            $screen['availableStrings'] = $this->getStringsInScreen($screen);
+            unset($screen['config']);
+            $screensArr[] = $screen;
+        }
+
+        return collect($screensArr)->forget('config');
+    }
+
     public function getLanguageList($screensTranslations)
     {
         return $this->getTranslatedLanguageList($screensTranslations);
@@ -73,21 +100,89 @@ class ProcessTranslation
         return array_values($languages);
     }
 
-    private function getScreens($withScreenData) : SupportCollection
+    private function getStringsInScreen($screen)
     {
-        $screensInProcess = collect($this->getScreenIds())->unique();
+        $strings = [];
+        if (!$screen) {
+            return $strings;
+        }
 
-        // foreach ($screensInProcess as $screenInProcess) {
-        //     $nestedScreens = $this->getNestedScreens($screenInProcess);
-        // }
+        $config = $screen['config'];
 
-        $fields = array_merge(['id', 'translations'], $withScreenData);
+        if ($config) {
+            foreach ($config as $page) {
+                if (isset($page['items']) && is_array($page['items'])) {
+                    $strings = array_merge($strings, self::getStringElements($page['items']));
+                }
+            }
+        }
 
-        return Screen::whereIn('id', $screensInProcess)
-            ->get()
-            ->map
-            ->only($fields)
-            ->values();
+        return $strings;
+    }
+
+    private static function getStringElements($items, $parent = null)
+    {
+        $elements = [];
+        
+        foreach ($items as $item) {
+            if (isset($item['items']) && is_array($item['items'])) {
+                // If have items and is a loop ..
+                if ($item['component'] == 'FormLoop') {
+                    $elements = array_merge($elements, self::getStringElements($item['items']));
+                }
+                // If have items and is a table ..
+                if ($item['component'] == 'FormMultiColumn') {
+                    foreach ($item['items'] as $cell) {
+                        if (is_array($cell)) {
+                            $elements = array_merge($elements, self::getStringElements($cell));
+                        }
+                    }
+                }
+            } else {
+                if (!isset($item['component'])){
+                    continue;
+                }
+
+                if ($item['component'] === 'FormNestedScreen') {
+                    continue;
+                }
+                
+                if ($item['component'] === 'FormImage') {
+                    continue;
+                }
+
+                // Specific for Rich text
+                if ($item['component'] === 'FormHtmlViewer') {
+                    $elements[] = $item['config']['content'];
+                }
+
+                // Specific for Select list
+                if ($item['component'] === 'FormSelectList') {
+                    if (isset($item['config']) && isset($item['config']['options']) && isset($item['config']['options']['optionsList'])) {
+                        foreach ($item['config']['options']['optionsList'] as $option) {
+                            $elements[] = $option['content'];
+                        }
+                    }
+                }
+
+                // Look for label strings
+                if (isset($item['config']) && isset($item['config']['label'])) {
+                    $elements[] = $item['config']['label'];
+                }
+
+                // Look for helper strings
+                if (isset($item['config']) && isset($item['config']['helper'])) {
+                    $elements[] = $item['config']['helper'];
+                }
+
+                // Look for placeholder strings
+                if (isset($item['config']) && isset($item['config']['placeholder'])) {
+                    $elements[] = $item['config']['placeholder'];
+                }
+            }
+        }
+
+        return $elements;
     }
 
     private function getScreenIds()
