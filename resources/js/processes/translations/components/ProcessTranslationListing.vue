@@ -22,9 +22,9 @@
       </thead>
       <tbody>
         <tr v-for="(item, index) in translatedLanguages" :key="index">
-          <td class="notify">{{ item.human_language }}</td>
-          <td class="action">{{ item.created_at }}</td>
-          <td class="action">{{ item.updated_at }}</td>
+          <td class="notify">{{ item.humanLanguage }}</td>
+          <td class="action">{{ item.createdAt }}</td>
+          <td class="action">{{ item.updatedAt }}</td>
           <td class="action">
             <ellipsis-menu
               :actions="actions"
@@ -55,6 +55,7 @@ export default {
   data() {
     return {
       translatedLanguages: null,
+      editTranslation: null,
       orderBy: "language",
       loading: false,
       sortOrder: [
@@ -98,13 +99,13 @@ export default {
     onNavigate(action, data, index) {
       switch (action.value) {
         case "edit-translation":
-          // this.goToTranslation(data.id);
+          this.handleEditTranslation(data);
           break;
         case "export-translation":
           // this.exportTranslation(data);
           break;
         case "delete-translation":
-          this.deleteTranslation(data);
+          this.handleDeleteTranslation(data);
           break;
         default:
           break;
@@ -139,11 +140,16 @@ export default {
         });
     },
 
-    deleteTranslation(translation) {
+    handleEditTranslation(data) {
+      this.editTranslation = data;
+      this.$emit("edit-translation", this.editTranslation);
+    },
+
+    handleDeleteTranslation(translation) {
       console.log(translation);
       ProcessMaker.confirmModal(
         this.$t("Caution!"),
-        this.$t(`Are you sure you want to delete the translations for ${translation.human_language} language?`),
+        this.$t(`Are you sure you want to delete the translations for ${translation.humanLanguage} language?`),
         "",
         () => {
           ProcessMaker.apiClient

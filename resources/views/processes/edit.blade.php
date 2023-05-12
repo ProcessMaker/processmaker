@@ -214,6 +214,7 @@
                                         :permission="['edit-process-translation', 'export-process-translation', 'delete-process-translation']"
                                         {{-- :permission="{{ \Auth::user()->hasPermissionsFor('process-translations') }}" --}}
                                         @translated-languages-changed="onTranslatedLanguagesChanged"
+                                        @edit-translation="onEditTranslation"
                                         :process-id="{{ $process->id }}"
                                     ></process-translation-listing>
                                 </div>
@@ -228,7 +229,9 @@
                                 ref="create-process-translation-modal" 
                                 :process-id="{{ $process->id }}"
                                 process-name="{{ $process->name }}"
-                                :translated-languages="translatedLanguages" />
+                                :translated-languages="translatedLanguages"
+                                :edit-translation="editTranslation"
+                                @create-process-translation-closed="onCreateProcessTranslationClosed" />
                         </div>
 
                         {{-- Notifications --}}
@@ -387,6 +390,7 @@
             pause_timer_start_events: false,
             manager: @json($process->manager),
             translatedLanguages: [],
+            editTranslation: null,
           }
         },
         mounted() {
@@ -423,6 +427,13 @@
           },
           onTranslatedLanguagesChanged(translatedLanguages) {
             this.translatedLanguages = translatedLanguages;
+          },
+          onEditTranslation(editTranslation) {
+            this.editTranslation = editTranslation;
+            this.$bvModal.show("createProcessTranslation");
+          },
+          onCreateProcessTranslationClosed() {
+            this.editTranslation = null;
           },
           formatAssigneePermissions(data) {
             let response = {};

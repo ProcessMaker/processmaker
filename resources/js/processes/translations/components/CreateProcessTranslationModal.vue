@@ -126,7 +126,7 @@ export default {
     TranslateOptionsPopup,
   },
   mixins: [FormErrorsMixin],
-  props: ["processId", "processName", "translatedLanguages"],
+  props: ["processId", "processName", "translatedLanguages", "editTranslation"],
   data() {
     return {
       showModal: false,
@@ -204,6 +204,13 @@ export default {
       this.validateLanguageSelected();
     },
 
+    editTranslation(val) {
+      if (val) {
+        this.selectedLanguage = val;
+        this.showTranslations();
+        console.log(val);
+      }
+    },
     // currentScreenTranslations(val) {
     //   this.fillScreensTranslationsArr(val);
     // },
@@ -223,6 +230,7 @@ export default {
     },
     onClose() {
       this.showSelectTargetLanguage();
+      this.$emit("create-process-translation-closed");
     },
     translateProcess() {
       this.step = "translating";
@@ -247,8 +255,17 @@ export default {
           // this.translations = response.data.result.translations;
           // this.usage = response.data.usage;
           // this.$emit("submit", this.pmql);
-          this.aiLoading = false;
-          this.showTranslations();
+
+          // REMOVE FUNCTION!
+          // REMOVE FUNCTION
+          // REMOVE FUNCTION
+          this.sleep(2000).then(() => {
+            this.aiLoading = false;
+            this.showTranslations();
+          });
+
+          // this.aiLoading = false;
+          // this.showTranslations();
         })
         .catch(error => {
           const $errorMsg = this.$t("An error ocurred while calling OpenAI endpoint.");
@@ -261,15 +278,20 @@ export default {
     onReTranslate(option) {
       this.aiLoading = true;
 
-      function sleep(time) {
-        // eslint-disable-next-line no-promise-executor-return
-        return new Promise((resolve) => setTimeout(resolve, time));
-      }
-
-      // Usage!
-      sleep(2000).then(() => {
+      // REMOVE FUNCTION!
+      // REMOVE FUNCTION
+      // REMOVE FUNCTION
+      this.sleep(2000).then(() => {
         this.aiLoading = false;
       });
+    },
+    
+    // REMOVE FUNCTION
+    // REMOVE FUNCTION
+    // REMOVE FUNCTION
+    sleep(time) {
+      // eslint-disable-next-line no-promise-executor-return
+      return new Promise((resolve) => setTimeout(resolve, time));
     },
 
     showSelectTargetLanguage() {

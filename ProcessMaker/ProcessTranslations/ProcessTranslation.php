@@ -51,9 +51,9 @@ class ProcessTranslation
 
                     // If updated is greater than existing in array, modify it with the newest
                     if (array_key_exists($key, $languages)) {
-                        $createdAt = $languages[$key]['created_at'];
-                        $updatedAt = $languages[$key]['updated_at'];
-                        if ($languages[$key]['updated_at'] < $translation['updated_at']) {
+                        $createdAt = $languages[$key]['createdAt'];
+                        $updatedAt = $languages[$key]['updatedAt'];
+                        if ($languages[$key]['updatedAt'] < $translation['updated_at']) {
                             $createdAt = $translation['created_at'];
                             $updatedAt = $translation['updated_at'];
                         }
@@ -62,9 +62,9 @@ class ProcessTranslation
                     // Add, Update languages array
                     $languages[$key] = [
                         'language' => $key,
-                        'human_language' => Languages::ALL[$key],
-                        'created_at' => $createdAt,
-                        'updated_at' => $updatedAt,
+                        'humanLanguage' => Languages::ALL[$key],
+                        'createdAt' => $createdAt,
+                        'updatedAt' => $updatedAt,
                     ];
                 }
             }

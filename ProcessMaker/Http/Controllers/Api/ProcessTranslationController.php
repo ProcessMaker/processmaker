@@ -26,7 +26,7 @@ class ProcessTranslationController extends Controller
 
         if ($filter != '') {
             $languageList = array_values(collect($languageList)->filter(function ($item) use ($filter) {
-                return false !== stristr($item['human_language'], $filter);
+                return false !== stristr($item['humanLanguage'], $filter);
             })->toArray());
         }
 
