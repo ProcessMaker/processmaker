@@ -88,23 +88,23 @@
             </thead>
             <tbody>
               <!-- <tr v-for="item, index in currentScreenTranslations" :key="index"> -->
-              <tr v-for="item, index in currentScreenTranslations_SAMPLE_DATA" :key="index">
-                <td class="bg-light">{{ item.key }}</td>
+              <tr v-for="(value, key, index)  in stringsWithTranslations" :key="index">
+                <td class="bg-light">{{ key }}</td>
                 <td class="py-1 px-2">
                   <b-form-textarea
-                    v-model="item.value"
+                    v-model="stringsWithTranslations[key]"
+                    :value="value"
                     class="form-control border-0"
-                    :aria-label="$t('Add a translation for ') + item.value"
+                    :aria-label="$t('Add a translation for ') + key"
                     @focus="$event.target.select()"
                     autocomplete="off"
-                  ></b-form-textarea>
+                  />
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
-
     </modal>
   </div>
 </template>
@@ -137,7 +137,9 @@ export default {
       selectedScreen: null,
       screensTranslations: [],
       currentScreenTranslations: [],
+      stringsWithTranslations: {},
       allScreensTranslations: [],
+      availableStrings: [],
       manualTranslation: false,
       modalTitle: this.$t("Add Process Translation"),
       step: "selectTargetLanguage",
@@ -151,57 +153,72 @@ export default {
         {'content': 'Translate Process', 'action': 'translateProcess', 'variant': 'secondary', 'disabled': true, 'hidden': false},
         {'content': 'Save Translation', 'action': 'saveTranslations', 'variant': 'secondary', 'disabled': false, 'hidden': true},
       ],
-
-      currentScreenTranslations_SAMPLE_DATA: [
-        { key: "First Name", value: "" },
-        { key: "Last Name", value: "" },
-        { key: "Email", value: "Correo electrónico" },
-        { key: "Complete for client", value: "" },
-        { key: "Client primary contact", value: "Contacto principal" },
-        { key: "Additional notes to customer", value: "" },
-        { key: "Send Blank Application to Client", value: "" },
-        { key: "How would you like to complete the application?", value: "" },
-        { key: "Here you can optionally add information you want to share with the customer.", value: "" },
-      ],
     };
   },
 
   watch: {
-    screensTranslations(val) {
-      this.allScreensTranslations = [];
+    // screensTranslations(val) {
+    //   this.allScreensTranslations = [];
 
-      // For each screen add to the general array in the format [{screen_id: screen_id, translations: translationsArr}]
-      val.forEach((screenTranslations) => {
-        const translations = [];
-        if (screenTranslations.translations) {
-          screenTranslations.translations.forEach((language) => {
-            console.log(language);
-            // translations[screenTranslations.id][language.language] = language.strings[0];
-            translations.push({ screenId: screenTranslations.id, language: language.language, translations: language.strings[0] });
-          });
-        }
-        console.log("translations");
-        console.log(translations);
-        this.$set(this.allScreensTranslations, screenTranslations.id, translations);
-      });
-      console.log("this.allScreensTranslations");
-      console.log(this.allScreensTranslations);
-    },
+    //   // For each screen add to the general array in the format [{screen_id: screen_id, translations: translationsArr}]
+    //   val.forEach((screenTranslations) => {
+    //     const translations = [];
+    //     console.log(screenTranslations);
+    //     console.log("screenTranslations.translations");
+    //     console.log(screenTranslations.translations);
+    //     if (screenTranslations.translations) {
+    //       console.log(screenTranslations.translations);
+    //       Object.keys(screenTranslations.translations).forEach((key) => {
+    //       // screenTranslations.translations.forEach((language) => {
+    //         const language = screenTranslations.translations[key];
+    //         console.log(key, language);
+    //         // translations[screenTranslations.id][language.language] = language.strings[0];
+    //         translations.push({ screenId: screenTranslations.id, language: language.language, translations: language.strings[0] });
+    //       });
+    //     }
+    //     console.log("translations");
+    //     console.log(translations);
+    //     this.$set(this.allScreensTranslations, screenTranslations.id, translations);
+    //   });
+    //   console.log("this.allScreensTranslations");
+    //   console.log(this.allScreensTranslations);
+    // },
 
     selectedScreen(val) {
       this.currentScreenTranslations = [];
+      this.availableStrings = val.availableStrings;
 
-      if (this.selectedLanguage.language in this.allScreensTranslations[val.id]) {
-        const translations = this.allScreensTranslations[val.id][this.selectedLanguage.language];
+      if (!val.translations) {
+        this.currentScreenTranslations = [];
+        return;
+      }
 
-        Object.entries(translations).forEach(([key, value]) => {
-          this.currentScreenTranslations.push({ key, value });
+      if (this.selectedLanguage.language in val.translations) {
+        const translations = val.translations[this.selectedLanguage.language];
+
+        Object.keys(translations.strings).forEach((key) => {
+          this.currentScreenTranslations.push(translations.strings[key]);
         });
       }
     },
 
     selectedLanguage() {
       this.validateLanguageSelected();
+    },
+
+    currentScreenTranslations(val) {
+      this.stringsWithTranslations = {};
+
+      // For each string look into the translations if some exists
+      this.availableStrings.forEach((string) => {
+        this.$set(this.stringsWithTranslations, string, "");
+
+        val.forEach((translation) => {
+          if (translation.key === string) {
+            this.$set(this.stringsWithTranslations, string, translation.string);
+          }
+        });
+      });
     },
 
     editTranslation(val) {
@@ -211,9 +228,6 @@ export default {
         console.log(val);
       }
     },
-    // currentScreenTranslations(val) {
-    //   this.fillScreensTranslationsArr(val);
-    // },
   },
   mounted() {
     this.getAvailableLanguages();
@@ -250,22 +264,13 @@ export default {
 
       ProcessMaker.apiClient.post("/openai/language-translation", params)
         .then((response) => {
-          console.log(response.data);
           this.screensTranslations = response.data.screensTranslations;
           // this.translations = response.data.result.translations;
           // this.usage = response.data.usage;
-          // this.$emit("submit", this.pmql);
 
-          // REMOVE FUNCTION!
-          // REMOVE FUNCTION
-          // REMOVE FUNCTION
-          this.sleep(2000).then(() => {
-            this.aiLoading = false;
-            this.showTranslations();
-          });
 
-          // this.aiLoading = false;
-          // this.showTranslations();
+          this.aiLoading = false;
+          this.showTranslations();
         })
         .catch(error => {
           const $errorMsg = this.$t("An error ocurred while calling OpenAI endpoint.");
