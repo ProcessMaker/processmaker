@@ -23,7 +23,7 @@
         <b-card-group id="template-options" deck class="d-flex">
           <template-select-card
             v-show="component === 'template-select-card'"
-            v-for="(template, index) in dividedTemplates"
+            v-for="(template, index) in templates"
             :key="index"
             :template="template"
             @show-details="showDetails($event)"
@@ -34,14 +34,15 @@
       <template v-else>
         <b-pagination
           v-model="currentPage"
+          v-if="templates.length > 0"
           class="template-modal-pagination"
           :total-rows="totalRow"
           :per-page="perPage"
           :limit="limit"
           prev-class="caretBtn"
           next-class="caretBtn"
-          hide-goto-end-buttons
-          @click="console.log(currentPage)"
+          last-number
+          first-number
         ></b-pagination>
       </template>
     </div>
@@ -68,15 +69,16 @@ export default {
       currentPage: 1,
       totalRow: null,
       perPage: 18,
-      limit: 8,
+      limit: 7,
     };
   },
-  computed: {
-    dividedTemplates() {
-      return this.templates.slice(18 * (this.currentPage-1), 18 * (this.currentPage));
-    },
-  },
   watch: {
+    currentPage() {
+      this.fetch();
+    },
+    perPage() {
+      this.fetch();
+    },
     filter() {
       this.fetch();
     },
@@ -107,8 +109,10 @@ export default {
             .get(
                 url +
                 "page=" +
-                this.page +
-                "&per_page=0&filter=" +
+                this.currentPage +
+                "&per_page=" +
+                this.perPage + 
+                "&filter=" +
                 this.filter +
                 "&order_by=" +
                 this.orderBy +
@@ -117,11 +121,11 @@ export default {
                 "&include=user,categories,category"
             )
             .then(response => {
-              if(response.data.length === 0) {
+              if(response.data.data.length === 0) {
                 this.noResults = true;
               } else {
-                this.templates = response.data;
-                this.totalRow = response.data.length;
+                this.templates = response.data.data;
+                this.totalRow = response.data.meta.total;
                 this.apiDataLoading = false;
                 this.apiNoResults = false;
                 this.loading = false;
