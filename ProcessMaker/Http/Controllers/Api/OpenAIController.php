@@ -109,7 +109,6 @@ class OpenAIController extends Controller
 
         // Search in each screen in the translation column if we have translations for each label
 
-
         if (!$request->input('manualTranslation')) {
             // Translate all strings for all screens
             foreach ($screensTranslations as $screen) {

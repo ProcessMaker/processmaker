@@ -123,7 +123,7 @@ class ProcessTranslation
     private static function getStringElements($items, $parent = null)
     {
         $elements = [];
-        
+
         foreach ($items as $item) {
             if (isset($item['items']) && is_array($item['items'])) {
                 // If have items and is a loop ..
@@ -139,14 +139,14 @@ class ProcessTranslation
                     }
                 }
             } else {
-                if (!isset($item['component'])){
+                if (!isset($item['component'])) {
                     continue;
                 }
 
                 if ($item['component'] === 'FormNestedScreen') {
                     continue;
                 }
-                
+
                 if ($item['component'] === 'FormImage') {
                     continue;
                 }
