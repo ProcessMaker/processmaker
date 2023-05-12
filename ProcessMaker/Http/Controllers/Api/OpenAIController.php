@@ -105,13 +105,18 @@ class OpenAIController extends Controller
 
         // Find process screens and translations for each screen
         $processTranslation = new ProcessTranslation($process);
-        $screensTranslations = $processTranslation->getTranslations(['title', 'description', 'type']);
+        $screensTranslations = $processTranslation->getTranslations(['title', 'description', 'type', 'config']);
 
-        // Translate all strings for all screens
-        foreach ($screensTranslations as $screen) {
-            // Search all element inside the screen
-            // Create an array of all strings to translate
-            // Create an array of all textareas to translate
+        // Search in each screen in the translation column if we have translations for each label
+
+
+        if (!$request->input('manualTranslation')) {
+            // Translate all strings for all screens
+            foreach ($screensTranslations as $screen) {
+                // Search all element inside the screen
+                // Create an array of all strings to translate
+                // Create an array of all textareas to translate
+            }
         }
 
         return response()->json([
