@@ -914,3 +914,33 @@ nav {
     }
   }
 }
+
+//Select Template Modal Pagination styling
+.template-modal-pagination .page-link {
+  background-color: #ffffff;
+  color: #0872c2;
+  margin-top: 10px;
+
+  &:hover {
+    background: #ebeef2;
+    color: #104a75;
+    border-radius: 2px;
+  }
+}
+
+.template-modal-pagination .page-item.disabled .page-link {
+  background-color: #ffffff;
+  color: #0872c2;
+}
+
+.template-modal-pagination .page-item.active .page-link {
+  background: #0872c2;
+  color: #ffffff;
+  border-radius: 2px;
+}
+
+.caretBtn > span, .caretBtn > button {
+  font-size: 2em;
+  margin-top: 0 !important;
+  padding-top: 5px;
+}
