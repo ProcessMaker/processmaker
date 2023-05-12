@@ -20,11 +20,30 @@
         </div>
       </template>
       <template v-else>
-        <b-card-group deck class="d-flex">
-          <template-select-card v-show="component === 'template-select-card'" v-for="(template, index) in templates" :key="index" :template="template" @show-details="showDetails($event)"/>
+        <b-card-group id="template-options" deck class="d-flex">
+          <template-select-card
+            v-show="component === 'template-select-card'"
+            v-for="(template, index) in dividedTemplates"
+            :key="index"
+            :template="template"
+            @show-details="showDetails($event)"
+          />
         </b-card-group>
       </template>
       <template-details v-if="component === 'template-details'" :template="template"></template-details>
+      <template v-else>
+        <b-pagination
+          v-model="currentPage"
+          class="template-modal-pagination"
+          :total-rows="totalRow"
+          :per-page="perPage"
+          :limit="limit"
+          prev-class="caretBtn"
+          next-class="caretBtn"
+          hide-goto-end-buttons
+          @click="console.log(currentPage)"
+        ></b-pagination>
+      </template>
     </div>
   </div>
 </template>
@@ -36,7 +55,7 @@ import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 
 export default {
-  components: { TemplateSelectCard, TemplateDetails},
+  components: { TemplateSelectCard, TemplateDetails },
   mixins: [datatableMixin, dataLoadingMixin],
   props: ['type', 'component'],
   data() {
@@ -46,13 +65,21 @@ export default {
       currentdata: [],
       template: {},
       noResults: false,
+      currentPage: 1,
+      totalRow: null,
+      perPage: 18,
+      limit: 8,
     };
   },
-  computed: {},
+  computed: {
+    dividedTemplates() {
+      return this.templates.slice(18 * (this.currentPage-1), 18 * (this.currentPage));
+    },
+  },
   watch: {
     filter() {
       this.fetch();
-    }
+    },
   },
   beforeMount() {},
   methods: {
@@ -81,7 +108,7 @@ export default {
                 url +
                 "page=" +
                 this.page +
-                "&per_page=300&filter=" +
+                "&per_page=0&filter=" +
                 this.filter +
                 "&order_by=" +
                 this.orderBy +
@@ -90,10 +117,11 @@ export default {
                 "&include=user,categories,category"
             )
             .then(response => {
-              if(response.data.data.length === 0) {
+              if(response.data.length === 0) {
                 this.noResults = true;
               } else {
-                this.templates = response.data.data;
+                this.templates = response.data;
+                this.totalRow = response.data.length;
                 this.apiDataLoading = false;
                 this.apiNoResults = false;
                 this.loading = false;
