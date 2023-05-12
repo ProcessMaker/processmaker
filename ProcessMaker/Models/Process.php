@@ -59,6 +59,7 @@ use Throwable;
  * @property int $manager_id
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
+ * @method static Process find(string $id)
  *
  * @OA\Schema(
  *   schema="ProcessEditable",

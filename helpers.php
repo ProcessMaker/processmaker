@@ -220,3 +220,8 @@ if (!function_exists('shouldShow')) {
         }
     }
 }
+
+function makeUuid()
+{
+    return uniqid('', true);
+}

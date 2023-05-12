@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Providers;
 
+use App\Listeners\KafkaEventHandler;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Mustache_Engine;
 use Mustache_LambdaHelper;
@@ -41,6 +42,13 @@ use ProcessMaker\WebServices\SoapRequestBuilder;
 use ProcessMaker\WebServices\SoapResponseMapper;
 use ProcessMaker\WebServices\SoapServiceCaller;
 use ProcessMaker\WebServices\WebServiceRequest;
+use Junges\Kafka\Consumers\Consumer;
+use Junges\Kafka\Contracts\KafkaConsumerMessage;
+use Junges\Kafka\Facades\Kafka;
+use ProcessMaker\Managers\WorkflowNayraManager;
+use ProcessMaker\Nayra\QueueService\KafkaQueueService;
+use ProcessMaker\Nayra\QueueService\QueueServiceInterface;
+use ProcessMaker\Nayra\QueueService\RabbitQueueService;
 
 class WorkflowServiceProvider extends ServiceProvider
 {
@@ -70,7 +78,8 @@ class WorkflowServiceProvider extends ServiceProvider
          * BPMN Workflow Manager
          */
         $this->app->singleton('workflow.manager', function ($app) {
-            return new WorkflowManager();
+            // return new WorkflowManager();
+            return new WorkflowNayraManager();
         });
 
         $this->app->bind(BpmnEngine::class, function ($app, $params) {
@@ -223,6 +232,15 @@ class WorkflowServiceProvider extends ServiceProvider
                 $dataSource
             );
         });
+
+        $this->app->bind(
+            QueueServiceInterface::class,
+            function ($app, $param) {
+                // return new KafkaQueueService;
+                return new RabbitQueueService;
+            }
+        );
+        // $this->app->make(QueueServiceInterface::class)->config();
 
         parent::register();
     }
