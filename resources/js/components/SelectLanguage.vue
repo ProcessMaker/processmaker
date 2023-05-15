@@ -6,7 +6,7 @@
     :options="options"
     :multiple="multiple"
     :show-labels="false"
-    :searchable="false"
+    :searchable="true"
     :allow-empty="false"
     track-by="language"
     label="humanLanguage"
