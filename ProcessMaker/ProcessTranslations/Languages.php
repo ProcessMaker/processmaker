@@ -113,6 +113,6 @@ abstract class Languages
         'xh' => 'Xhosa',
         'yi' => 'Yiddish',
         'yo' => 'Yoruba',
-        'zu' => 'Zulu'
+        'zu' => 'Zulu',
     ];
 }
