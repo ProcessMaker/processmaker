@@ -8,11 +8,11 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use ProcessMaker\ImportExport\Importer;
-use ProcessMaker\ImportExport\Options;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Http;
+use ProcessMaker\ImportExport\Importer;
+use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
 
@@ -41,17 +41,15 @@ class SyncDefaultTemplates implements ShouldQueue
     {
         $config = config('services.github');
         $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/index.json';
-        
+
         $response = Http::get($url);
-        
+
         if ($response->successful()) {
             $data = $response->json();
             foreach ($data as $category => $templates) {
                 foreach ($templates as $template) {
-                    $query = ProcessTemplates::where('uuid', $template['uuid']);
-                    $count = $query->count();
-                    
-                    if (!$count) {
+                    $query = ProcessTemplates::where('uuid', $template['uuid'])->first();
+                    if (is_null($query) || is_null($query->user_id)) {
                         $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/' . $template['relative_path'];
                         $response = Http::get($url);
                         if ($response->successful()) {
@@ -63,13 +61,13 @@ class SyncDefaultTemplates implements ShouldQueue
                             ]);
                             $importer = new Importer($payload, $options);
                             $manifest = $importer->doImport();
-                            
+
                             $template = ProcessTemplates::where('uuid', $template['uuid'])->first();
                             $template->setRawAttributes([
                                 'key' => 'default_templates',
                                 'process_id' => null,
                                 'user_id' => null,
-                                'process_category_id' => ProcessCategory::where('name', 'Default Templates')->firstOrFail()->getKey()
+                                'process_category_id' => ProcessCategory::where('name', 'Default Templates')->firstOrFail()->getKey(),
                             ]);
                             $template->save();
                         } else {

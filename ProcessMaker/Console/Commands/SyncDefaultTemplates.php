@@ -44,6 +44,7 @@ class SyncDefaultTemplates extends Command
         } else {
             Job::dispatchNow();
         }
+
         return 0;
     }
 }
