@@ -6,10 +6,12 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use ProcessMaker\Events\UserGroupMembershipUpdated;
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Users as UserResource;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Models\User;
 
 class UserController extends Controller
@@ -309,14 +311,14 @@ class UserController extends Controller
                 if (!is_array($groups)) {
                     $groups = array_map('intval', explode(',', $request->groups));
                 }
-                $user->groups()->sync($groups);
+                $data = $user->groups()->sync($groups);
             } else {
                 $user->groups()->detach();
             }
         } else {
             return response([], 400);
         }
-
+        event(new UserGroupMembershipUpdated($data, $user));
         return response([], 204);
     }
 
