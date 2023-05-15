@@ -30,6 +30,12 @@ class EventServiceProvider extends ServiceProvider
         'Illuminate\Database\Events\MigrationsEnded' => [
             'ProcessMaker\Listeners\UpdateDataLakeViews',
         ],
+        'ProcessMaker\Events\TokenCreated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\TokenDeleted' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
     ];
 
     /**

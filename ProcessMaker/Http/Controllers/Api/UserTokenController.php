@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Passport\Passport;
 use Laravel\Passport\TokenRepository;
+use ProcessMaker\Events\TokenCreated;
+use ProcessMaker\Events\TokenDeleted;
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
@@ -153,6 +155,8 @@ class UserTokenController extends Controller
             $request->scopes ?: []
         );
 
+        TokenCreated::dispatch($user, $token);
+
         return new UserTokenResource($token);
     }
 
@@ -259,6 +263,8 @@ class UserTokenController extends Controller
         }
 
         $token->revoke();
+
+        TokenDeleted::dispatch($user, $tokenId);
 
         return response([], 204);
     }
