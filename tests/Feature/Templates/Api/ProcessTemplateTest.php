@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Templates\Api;
 
-use Database\Seeders\ProcessTemplatesSeeder;
 use Database\Seeders\UserSeeder;
 use Exception;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -204,7 +203,6 @@ class ProcessTemplateTest extends TestCase
     public function testSeededTemplate()
     {
         $this->seed(UserSeeder::class);
-        $this->seed(ProcessTemplatesSeeder::class);
         $template = ProcessTemplates::where('name', 'New Hire Onboarding')->firstOrFail();
         $this->assertEquals('New Hire Onboarding', $template->name);
 
