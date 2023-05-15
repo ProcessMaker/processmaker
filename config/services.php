@@ -38,5 +38,6 @@ return [
         'base_url' => 'https://raw.githubusercontent.com/processmaker/',
         'template_repo' => env('DEFAULT_TEMPLATE_REPO', 'process-templates'),
         'template_branch' => env('DEFAULT_TEMPLATE_BRANCH', 'main'),
+        'template_categories' => env('DEFAULT_TEMPLATE_CATEGORIES', 'all'),
     ],
 ];

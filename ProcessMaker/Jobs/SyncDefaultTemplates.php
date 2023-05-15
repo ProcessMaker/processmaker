@@ -41,48 +41,56 @@ class SyncDefaultTemplates implements ShouldQueue
     {
         $config = config('services.github');
         $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/index.json';
+        $categories = (strpos($config['template_categories'], ',') !== false) ? explode(',', $config['template_categories']) : [$config['template_categories']];
+        $processCategoryId = ProcessCategory::firstOrCreate(
+            ['name' => 'Default Templates'],
+            [
+                'name' => 'Default Templates',
+                'status' => 'ACTIVE',
+                'is_system' => 0,
+            ]
+        )->getKey();
 
         $response = Http::get($url);
 
-        if ($response->successful()) {
-            $data = $response->json();
-            foreach ($data as $category => $templates) {
-                foreach ($templates as $template) {
-                    $query = ProcessTemplates::where('uuid', $template['uuid'])->first();
-                    if (is_null($query) || is_null($query->user_id)) {
-                        $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/' . $template['relative_path'];
-                        $response = Http::get($url);
-                        if ($response->successful()) {
-                            $payload = $response->json();
-                            $options = new Options([
-                                'mode' => 'update',
-                                'isTemplate' => true,
-                                'saveAssetsMode' => 'saveAllAssets',
-                            ]);
-                            $importer = new Importer($payload, $options);
-                            $manifest = $importer->doImport();
-
-                            $template = ProcessTemplates::where('uuid', $template['uuid'])->first();
-                            $categoryId = ProcessCategory::firstOrCreate(['name' => 'Default Templates'], [
-                                'name' => 'Default Templates',
-                                'status' => 'ACTIVE',
-                                'is_system' => 0,
-                            ])->getKey();
-                            $template->setRawAttributes([
-                                'key' => 'default_templates',
-                                'process_id' => null,
-                                'user_id' => null,
-                                'process_category_id' => $categoryId,
-                            ]);
-                            $template->save();
-                        } else {
-                            throw new Exception("Unable to fetch default template {$template['name']}.");
-                        }
-                    }
-                }
-            }
-        } else {
+        if (!$response->successful()) {
             throw new Exception('Unable to fetch default template list.');
+        }
+
+        $data = $response->json();
+        foreach ($data as $templateCategory => $templates) {
+            if (!in_array($templateCategory, $categories)) {
+                continue;
+            }
+            foreach ($templates as $template) {
+                $existingTemplate = ProcessTemplates::where('uuid', $template['uuid'])->first();
+                if (!is_null($existingTemplate) && !is_null($existingTemplate->user_id)) {
+                    continue;
+                }
+
+                $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/' . $template['relative_path'];
+                $response = Http::get($url);
+                if (!$response->successful()) {
+                    throw new Exception("Unable to fetch default template {$template['name']}.");
+                }
+                $payload = $response->json();
+                $options = new Options([
+                    'mode' => 'update',
+                    'isTemplate' => true,
+                    'saveAssetsMode' => 'saveAllAssets',
+                ]);
+                $importer = new Importer($payload, $options);
+                $manifest = $importer->doImport();
+
+                $template = ProcessTemplates::where('uuid', $template['uuid'])->first();
+                $template->setRawAttributes([
+                    'key' => 'default_templates',
+                    'process_id' => null,
+                    'user_id' => null,
+                    'process_category_id' => $processCategoryId,
+                ]);
+                $template->save();
+            }
         }
     }
 }
