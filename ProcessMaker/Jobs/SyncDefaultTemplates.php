@@ -63,11 +63,16 @@ class SyncDefaultTemplates implements ShouldQueue
                             $manifest = $importer->doImport();
 
                             $template = ProcessTemplates::where('uuid', $template['uuid'])->first();
+                            $categoryId = ProcessCategory::firstOrCreate(['name' => 'Default Templates'], [
+                                'name' => 'Default Templates',
+                                'status' => 'ACTIVE',
+                                'is_system' => 0,
+                            ])->getKey();
                             $template->setRawAttributes([
                                 'key' => 'default_templates',
                                 'process_id' => null,
                                 'user_id' => null,
-                                'process_category_id' => ProcessCategory::where('name', 'Default Templates')->firstOrFail()->getKey(),
+                                'process_category_id' => $categoryId,
                             ]);
                             $template->save();
                         } else {
