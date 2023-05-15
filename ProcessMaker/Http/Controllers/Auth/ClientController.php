@@ -4,6 +4,9 @@ namespace ProcessMaker\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
 use Laravel\Passport\Http\Controllers\ClientController as PassportClientController;
+use ProcessMaker\Events\AuthClientCreated;
+use ProcessMaker\Events\AuthClientDeleted;
+use ProcessMaker\Events\AuthClientUpdated;
 use ProcessMaker\Http\Resources\AuthClient as AuthClientResource;
 
 class ClientController extends PassportClientController
@@ -54,6 +57,8 @@ class ClientController extends PassportClientController
             $request->user()->getKey(), $request->name, $redirect, null, $personalAccess, $password
         )->makeVisible('secret');
 
+        AuthClientCreated::dispatch($client);
+
         return new AuthClientResource($client);
     }
 
@@ -67,11 +72,12 @@ class ClientController extends PassportClientController
     public function update(Request $request, $clientId)
     {
         $client = $this->clients->find($clientId);
-
         if (!$client) {
             return new Response('', 404);
         }
 
+        $original_values = $client->getAttributes();
+        
         $this->validate($request);
 
         $personalAccess = in_array('personal_access_client', $request->types);
@@ -84,6 +90,8 @@ class ClientController extends PassportClientController
             'personal_access_client' => $personalAccess,
             'password_client' => $password,
         ])->save();
+
+        AuthClientUpdated::dispatch($original_values, $client);
 
         return new AuthClientResource($client);
     }
@@ -104,6 +112,7 @@ class ClientController extends PassportClientController
         }
 
         $this->clients->delete($client);
+        AuthClientDeleted::dispatch($client);
 
         return response('', 204);
     }
