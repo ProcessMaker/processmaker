@@ -939,8 +939,6 @@ nav {
   border-radius: 2px;
 }
 
-.caretBtn > span, .caretBtn > button {
-  font-size: 2em;
-  margin-top: 0 !important;
-  padding-top: 5px;
+.prevBtn > span, .prevBtn > button {
+  padding-left: 0px !important;
 }

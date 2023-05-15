@@ -32,15 +32,16 @@
       </template>
       <template-details v-if="component === 'template-details'" :template="template"></template-details>
       <template v-else>
-        <b-pagination
+          <b-pagination
           v-model="currentPage"
           v-if="templates.length > 0"
           class="template-modal-pagination"
           :total-rows="totalRow"
           :per-page="perPage"
           :limit="limit"
-          prev-class="caretBtn"
-          next-class="caretBtn"
+          prev-class="caretBtn prevBtn"
+          next-class="caretBtn nextBtn"
+          size="sm"
           last-number
           first-number
         ></b-pagination>
