@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
+use Laravel\Passport\Token;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityCompleted;
 use ProcessMaker\Events\BuildScriptExecutor;
@@ -14,6 +15,8 @@ use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Events\ScriptResponseEvent;
 use ProcessMaker\Events\SessionStarted as SessionStartedEvent;
 use ProcessMaker\Events\TestStatusEvent;
+use ProcessMaker\Events\TokenCreated;
+use ProcessMaker\Events\TokenDeleted;
 use ProcessMaker\Managers\ModelerManager as Modeler;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Managers\ScreenBuilderManager as ScreenBuilder;
@@ -219,5 +222,31 @@ class BroadcastTest extends TestCase
         ]);
         $user = User::factory()->create();
         event(new ScriptResponseEvent($user, 200, ['foo' => 'bar'], ['config_one' => 1], 'nonce001'));
+    }
+
+    /**
+     * Asserts that the TokenCreated broadcast event works.
+     */
+    public function testTokenCreatedBroadcast()
+    {
+        $token = new Token([]);
+
+        $this->expectsEvents([
+            TokenCreated::class,
+        ]);
+        event(new TokenCreated($token));
+    }
+
+    /**
+     * Asserts that the TokenDeleted broadcast event works.
+     */
+    public function testTokenDeletedBroadcast()
+    {
+        $token = new Token([]);
+
+        $this->expectsEvents([
+            TokenDeleted::class,
+        ]);
+        event(new TokenDeleted($token));
     }
 }
