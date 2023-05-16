@@ -74,6 +74,7 @@ class SyncDefaultTemplates implements ShouldQueue
                     throw new Exception("Unable to fetch default template {$template['name']}.");
                 }
                 $payload = $response->json();
+                data_set($payload, 'export.' . $payload['root'] . '.attributes.process_category_id', $processCategoryId);
                 $options = new Options([
                     'mode' => 'update',
                     'isTemplate' => true,
