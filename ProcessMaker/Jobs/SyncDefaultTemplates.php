@@ -59,7 +59,7 @@ class SyncDefaultTemplates implements ShouldQueue
 
         $data = $response->json();
         foreach ($data as $templateCategory => $templates) {
-            if (!in_array($templateCategory, $categories)) {
+            if (!in_array($templateCategory, $categories) && !in_array('all', $categories)) {
                 continue;
             }
             foreach ($templates as $template) {
