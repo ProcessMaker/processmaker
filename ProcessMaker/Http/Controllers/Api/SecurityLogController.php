@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
+use ProcessMaker\Http\Resources\SecurityLogs;
 use ProcessMaker\Models\SecurityLog;
 
 class SecurityLogController extends Controller
@@ -118,5 +119,17 @@ class SecurityLogController extends Controller
     public function show(SecurityLog $securityLog)
     {
         return new ApiResource($securityLog);
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate(SecurityLog::rules());
+
+        $securityLog = new SecurityLog;
+        $fields = $request->json()->all();
+        $securityLog->fill($fields);
+        $securityLog->saveOrFail();
+
+        return new SecurityLogs($securityLog->refresh());
     }
 }
