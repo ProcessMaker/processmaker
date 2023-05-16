@@ -236,7 +236,7 @@
                   <h4>
                     {{ __(':name In-Flight Map', ['name' => $request->process->name]) }}
                   </h4>
-                  <iframe class="card" src="{{ route('modeler.inflight', ['process' => $request->process->id]) }}"
+                  <iframe class="card" src="{{ route('modeler.inflight', ['process' => $request->process->id, 'request_id' => $request->id]) }}"
                     width="100%" height="640px" frameborder="0" style="border-radius: 4px;"></iframe>
                 </div>
               </div>

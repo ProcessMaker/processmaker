@@ -30,7 +30,7 @@
     window.ProcessMaker.modeler = {
       process: @json($process),
       processName: @json($process->name),
-      xml: @json($process->bpmn),
+      xml: @json($bpmn),
     }
 
     window.ProcessMaker.EventBus.$on('modeler-start', ({
