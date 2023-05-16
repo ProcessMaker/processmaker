@@ -1,10 +1,10 @@
 name: BUILD-PM4
 on: 
-  push:
-    branches:
-      - kr-github-actions
-  #pull_request:
-  #  types: [opened, reopened, synchronize, edited]
+  #push:
+  #  branches:
+  #    - kr-github-actions
+  pull_request:
+    types: [opened, reopened, synchronize, edited]
   #schedule:
   #  - cron: '0 0 * * *'  # every day at midnight     
   #workflow_dispatch:
@@ -27,8 +27,8 @@ env:
   aws-region: ${{ secrets.AWS_REGION }}  
   aws-url: ${{ secrets.AWS_URL }}
   STM_TOKEN: ${{ secrets.STM_TOKEN }}
-  CI_PACKAGE_BRANCH: 4.6.0-RC7-product #4.6.0-RC7-product #rc5-test #feature/FOUR-7380 #${{github.event.pull_request.head.ref}}
-  CI_PROJECT: processmaker #${{github.event.pull_request.head.repo.name}}
+  CI_PACKAGE_BRANCH: ${{github.event.pull_request.head.ref}} #4.6.0-RC7-product #4.6.0-RC7-product #rc5-test #feature/FOUR-7380 #${{github.event.pull_request.head.ref}}
+  CI_PROJECT: ${{github.event.pull_request.head.repo.name}} #processmaker 
   CI_TEST: $CI_PROJECT
   IMAGE_TAG1: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
 jobs:
