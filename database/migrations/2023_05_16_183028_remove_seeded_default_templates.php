@@ -1,9 +1,8 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use ProcessMaker\Models\ProcessTemplates;
 use Illuminate\Support\Facades\Artisan;
-
+use ProcessMaker\Models\ProcessTemplates;
 
 class RemoveSeededDefaultTemplates extends Migration
 {
