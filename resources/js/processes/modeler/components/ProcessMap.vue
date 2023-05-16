@@ -1,10 +1,7 @@
 <template>
-  <b-container class="container p-0">
-    <b-card
-      no-body
-      class="h-100 border-top-0"
-    >
-      <b-card-body
+  <div>
+    <div class="h-100">
+      <div
         class="overflow-hidden position-relative p-0 vh-100"
         data-test="body-container"
       >
@@ -15,9 +12,9 @@
           @set-xml-manager="xmlManager = $event"
           @click="handleClick"
         />
-      </b-card-body>
-    </b-card>
-  </b-container>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>

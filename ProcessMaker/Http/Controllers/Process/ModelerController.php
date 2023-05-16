@@ -45,17 +45,13 @@ class ModelerController extends Controller
     /**
      * Invokes the Modeler for In-flight Process Map rendering.
      */
-    public function inflight(ModelerManager $manager, Process $process, Request $request)
+    public function inflight(ModelerManager $manager, Process $process)
     {
         event(new ModelerStarting($manager));
 
         return view('processes.modeler.inflight', [
-            'process' => $process->append('notifications', 'task_notifications'),
+            'process' => $process,
             'manager' => $manager,
-            'signalPermissions' => SignalManager::permissions($request->user()),
-            'autoSaveDelay' => config('versions.delay.process', 5000),
-            'isVersionsInstalled' => false,
-            'isDraft' => false,
         ]);
     }
 }

@@ -229,10 +229,17 @@
                 ref="forms">
               </request-screens>
             </div>
-            <div class="tab-pane fade card card-body border-top-0 p-0" id="overview" role="tabpanel"
-              aria-labelledby="overview-tab">
-              <iframe src="{{ route('modeler.inflight', ['process' => $request->process->id]) }}" width="100%"
-                height="600px" frameborder="0" style="border:0" allowfullscreen></iframe>
+            <div class="tab-pane fade p-0" id="overview" role="tabpanel" aria-labelledby="overview-tab"
+              style="height: 720px">
+              <div class="card" style="border-top: none !important;">
+                <div class="card-body">
+                  <h4>
+                    {{ __(':name In-Flight Map', ['name' => $request->process->name]) }}
+                  </h4>
+                  <iframe class="card" src="{{ route('modeler.inflight', ['process' => $request->process->id]) }}"
+                    width="100%" height="640px" frameborder="0" style="border-radius: 4px;"></iframe>
+                </div>
+              </div>
             </div>
 
             @isset($addons)

@@ -8,10 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta name="app-url" content="{{ config('app.url') }}">
-  <meta name="open-ai-nlq-to-pmql" content="{{ config('app.open_ai_nlq_to_pmql') }}">
   <meta name="i18n-mdate" content='{!! json_encode(ProcessMaker\i18nHelper::mdates()) !!}'>
-  <meta name="screen-cache-enabled" content="{{ config('app.screen.cache_enabled') ? 'true' : 'false' }}">
-  <meta name="screen-cache-timeout" content="{{ config('app.screen.cache_timeout') }}">
   @if (Auth::user())
     <meta name="user-id" content="{{ Auth::user()->id }}">
     <meta name="datetime-format" content="{{ Auth::user()->datetime_format ?: config('app.dateformat') }}">
@@ -36,7 +33,6 @@
 
   <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
   <link href="{{ mix('css/app.css') }}" rel="stylesheet">
-  <link href="{{ mix('css/sidebar.css') }}" rel="stylesheet">
   <link href="/css/bpmn-symbols/css/bpmn.css" rel="stylesheet">
   @yield('css')
   <script type="text/javascript">
@@ -82,15 +78,13 @@
 </head>
 
 <body>
-  <a class="skip-navigation alert alert-info" role="link" href="#main"
-    tabindex="1">{{ __('Skip to Content') }}</a>
-  <div class="d-flex w-100 mw-100 h-100 mh-100" id="app-container">
+  <div id="app-container" class="d-flex w-100 mw-100 h-100 mh-100">
     <div class="d-flex flex-grow-1 flex-column overflow-hidden">
       <div class="flex-grow-1">
         <div id="navbar"></div>
       </div>
       <div class="flex-grow-1 d-flex flex-column h-100 overflow-hidden" id="mainbody">
-        <div id="main" class="main flex-grow-1 h-100 {{ $content_margin ?? 'py-3' }} overflow-auto">
+        <div id="main" class="main flex-grow-1 h-100 overflow-hidden">
           @yield('content')
         </div>
       </div>
@@ -108,8 +102,6 @@
     window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
   </script>
   <script src="{{ mix('js/process-map-layout.js') }}"></script>
-
-  @include('shared.monaco')
 
   @foreach (GlobalScripts::getScripts() as $script)
     <script src="{{ $script }}"></script>
