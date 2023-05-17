@@ -231,7 +231,8 @@
                                 process-name="{{ $process->name }}"
                                 :translated-languages="translatedLanguages"
                                 :edit-translation="editTranslation"
-                                @create-process-translation-closed="onCreateProcessTranslationClosed" />
+                                @create-process-translation-closed="onCreateProcessTranslationClosed"
+                                @translating-language="onTranslatingLanguage" />
                         </div>
 
                         {{-- Notifications --}}
@@ -434,6 +435,9 @@
           },
           onCreateProcessTranslationClosed() {
             this.editTranslation = null;
+          },
+          onTranslatingLanguage() {
+            this.$refs.translationsListing.fetchPending();
           },
           formatAssigneePermissions(data) {
             let response = {};
