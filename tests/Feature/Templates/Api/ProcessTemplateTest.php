@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
@@ -200,15 +201,58 @@ class ProcessTemplateTest extends TestCase
         $this->assertEquals('Default Templates', $newCategory->name);
     }
 
-    public function testSeededTemplate()
+    public function testTemplateSync()
     {
-        $this->seed(UserSeeder::class);
-        $template = ProcessTemplates::where('name', 'New Hire Onboarding')->firstOrFail();
-        $this->assertEquals('New Hire Onboarding', $template->name);
+        /**
+         * Work in progress
+         *
+         * fetch default template list from github
+         * compare count with template list
+         * create process form all templates
+         * check if process is created from templates
+         * compare count of new processes with templates
+         */
 
-        $template = ProcessTemplates::where('name', 'Leave of Absence')->firstOrFail();
-        $this->assertEquals('Leave of Absence', $template->name);
+        //  $config = config('services.github');
+        //  $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/index.json';
+        //  $response = Http::get($url);
+        //  if (!$response->successful()) {
+        //      throw new Exception('Unable to fetch default template list.');
+        //  }
+        //  $data = $response->json();
+        //  dd($data->count());
 
-        $this->assertEquals('Default Templates', ProcessCategory::where('id', $template['process_category_id'])->firstOrFail()->name);
+        $user = User::factory()->create();
+        // run Artisan command
+        $templates = ProcessTemplates::select('id', 'name', 'description', 'process_category_id')->get();
+
+        foreach ($templates as $template) {
+            $response = $this->apiCall(
+                'POST',
+                route('api.template.create', [
+                    'type' => 'process',
+                    'id' => $template->id,
+                ]),
+                [
+                    'user_id' => $user->id,
+                    'name' => $template->name,
+                    'description' => $template->description . 'Process',
+                    'process_category_id' => $template['process_category_id'],
+                    'mode' => 'copy',
+                    'saveAssetMode' => 'saveAllAssets',
+                ]
+            );
+
+            $response->assertStatus(200);
+            $id = json_decode($response->getContent(), true)['processId'];
+            $newProcess = Process::where('id', $id)->firstOrFail();
+            // $newCategory = ProcessCategory::where('id', $template['process_category_id'])->firstOrFail();
+
+            $this->assertEquals($template->name, $newProcess->title);
+            $this->assertEquals($template->description, $newProcess->description);
+            // $this->assertEquals($template->, $newCategory->name);
+        }
+
+        $this->assertEquals(Process::count(), $templates->count());
     }
 }
