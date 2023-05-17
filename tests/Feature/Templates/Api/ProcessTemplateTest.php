@@ -14,6 +14,7 @@ use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
+use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\Templates;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
@@ -199,5 +200,30 @@ class ProcessTemplateTest extends TestCase
         $this->assertEquals('Test Create Process from Template', $newProcess->name);
         $this->assertEquals('Process from template description', $newProcess->description);
         $this->assertEquals('Default Templates', $newCategory->name);
+    }
+
+    public function testTemplateSync()
+    {
+        /**
+         * Compare GitHub ProcessCount and database  with template list.
+         */
+
+        // Fetch all templates from github
+        $config = config('services.github');
+        $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/index.json';
+        $response = Http::get($url);
+        if (!$response->successful()) {
+            throw new Exception('Unable to fetch default template list.');
+        }
+        $data = $response->json();
+
+        // Compare count of github Processes with templates in database
+        $count = 0;
+        foreach ($data as $subArray) {
+            if (is_array($subArray)) {
+                $count += count($subArray);
+            }
+        }
+        $this->assertEquals($count, ProcessTemplates::count());
     }
 }
