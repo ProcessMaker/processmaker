@@ -3,11 +3,9 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ProcessTranslationToken;
 use ProcessMaker\ProcessTranslations\Languages;
 use ProcessMaker\ProcessTranslations\ProcessTranslation;
 
@@ -32,6 +30,24 @@ class ProcessTranslationController extends Controller
 
         return response()->json([
             'translatedLanguages' => $languageList,
+        ]);
+    }
+
+    public function pending(Request $request)
+    {
+        $processId = $request->input('process_id', '');
+        $filter = $request->input('filter', '');
+
+        $processTranslationTokens = ProcessTranslationToken::where('process_id', $processId)->get();
+
+        $translatingLanguages = [];
+        foreach ($processTranslationTokens as $processTranslationToken) {
+            $processTranslationToken->humanLanguage = Languages::ALL[$processTranslationToken['language']];
+            $translatingLanguages[] = $processTranslationToken;
+        }
+        
+        return response()->json([
+            'translatingLanguages' => $processTranslationTokens,
         ]);
     }
 
@@ -68,5 +84,16 @@ class ProcessTranslationController extends Controller
         }
 
         return false;
+    }
+
+    public function show(Request $request, $processId)
+    {
+        $process = Process::findOrFail($processId);
+        $processTranslation = new ProcessTranslation($process);
+        $screensTranslations = $processTranslation->getTranslations();
+
+        return response()->json([
+            'translations' => $screensTranslations,
+        ]);
     }
 }
