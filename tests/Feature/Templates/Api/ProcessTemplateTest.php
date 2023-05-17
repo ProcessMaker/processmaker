@@ -14,7 +14,6 @@ use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
-use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\Templates;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
