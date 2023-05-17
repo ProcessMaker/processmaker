@@ -65,8 +65,8 @@
           />
           <small class="text-muted">{{ $t("Select a screen from the process to review and perform translations.") }}</small>
         </div>
-        <div>
-          <translate-options-popup @retranslate="onReTranslate"/>
+        <div v-if="stringsWithTranslations && Object.keys(stringsWithTranslations).length !== 0">
+          <translate-options-popup  @retranslate="onReTranslate"/>
         </div>
         <div class="mt-3 position-relative">
           <div v-if="step === 'showTranslations'" class="d-flex justify-content-center align-items-center">
@@ -79,7 +79,7 @@
             </div>
           </div>
 
-          <table class="table table-responsive-lg mb-0">
+          <table v-if="stringsWithTranslations && Object.keys(stringsWithTranslations).length !== 0" class="table table-responsive-lg mb-0">
             <thead>
               <tr>
                   <th class="col-6">{{ $t('String') }}</th>
@@ -87,7 +87,6 @@
               </tr>
             </thead>
             <tbody>
-              <!-- <tr v-for="item, index in currentScreenTranslations" :key="index"> -->
               <tr v-for="(value, key, index)  in stringsWithTranslations" :key="index">
                 <td class="bg-light">{{ key }}</td>
                 <td class="py-1 px-2">
@@ -103,6 +102,7 @@
               </tr>
             </tbody>
           </table>
+          <div v-else class="text-muted small text-center py-5">{{ $t("Select a screen to show the translations.") }}</div>
         </div>
       </div>
     </modal>
@@ -186,12 +186,13 @@ export default {
 
     selectedScreen(val) {
       this.currentScreenTranslations = [];
-      this.availableStrings = val.availableStrings;
+      this.availableStrings = [];
 
-      if (!val.translations) {
-        this.currentScreenTranslations = [];
+      if (!val || !val.translations) {
         return;
       }
+
+      this.availableStrings = val.availableStrings;
 
       if (this.selectedLanguage.language in val.translations) {
         const translations = val.translations[this.selectedLanguage.language];
@@ -224,8 +225,8 @@ export default {
     editTranslation(val) {
       if (val) {
         this.selectedLanguage = val;
-        this.showTranslations();
-        console.log(val);
+        this.manualTranslation = true;
+        this.translateProcess();
       }
     },
   },
@@ -265,11 +266,15 @@ export default {
       ProcessMaker.apiClient.post("/openai/language-translation", params)
         .then((response) => {
           this.screensTranslations = response.data.screensTranslations;
-          // this.translations = response.data.result.translations;
-          // this.usage = response.data.usage;
-
 
           this.aiLoading = false;
+
+          if (!this.manualTranslation) {
+            this.showSelectTargetLanguage();
+            this.$bvModal.hide("createProcessTranslation");
+            this.$emit("translating-language");
+          }
+
           this.showTranslations();
         })
         .catch(error => {
@@ -309,6 +314,7 @@ export default {
     },
     showTranslations() {
       this.step = "showTranslations";
+      this.selectedScreen = this.screensTranslations[0];
       this.hasHeaderButtons = true;
       this.hasTitleButtons = true;
       this.headerButtons[0].hidden = false;
