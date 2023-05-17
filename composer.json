@@ -35,6 +35,7 @@
         "mustache/mustache": "^2.14",
         "openai-php/client": "^0.3.0",
         "phing/phing": "^2.17",
+        "php-amqplib/php-amqplib": "^3.5",
         "pion/laravel-chunk-upload": "^1.5",
         "predis/predis": "^2.0",
         "processmaker/docker-executor-lua": "^1.0",
