@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Listeners;
 
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Helpers\SensitiveDataHelper;
 use ProcessMaker\Models\SecurityLog;
@@ -31,7 +32,7 @@ class SecurityLogger
                 'event' => $event->getEventName(),
                 'ip' => request()->ip(),
                 'meta' => $this->getMeta(),
-                'user_id' => isset($event->user) ? $event->user->id : null,
+                'user_id' => isset($event->user) ? $event->user->id : Auth::id(),
                 'data' => $data ? SensitiveDataHelper::parseArray($data) : null
             ]);
         } elseif (array_key_exists($class, $this->eventTypes)) {
