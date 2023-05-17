@@ -6,13 +6,15 @@ use OpenAI\Client;
 
 class LanguageTranslationHandler extends OpenAiHandler
 {
+    protected $targetLanguage = 'Spanish';
+
     public function __construct()
     {
         parent::__construct();
         $this->config = [
             'model' => 'text-davinci-003',
-            'max_tokens' => 1900,
-            'temperature' => 0,
+            'max_tokens' => 1500,
+            'temperature' => 0.7,
             'top_p' => 1,
             'n' => 1,
             'frequency_penalty' => 0,
@@ -21,19 +23,22 @@ class LanguageTranslationHandler extends OpenAiHandler
         ];
     }
 
+    public function setTargetLanguage($language) 
+    {
+        $this->targetLanguage = $language;
+    }
     public function getPromptFile($type = null)
     {
-        return file_get_contents($this->getPromptsPath() . 'language_translation' . $type . '.md');
+        return file_get_contents($this->getPromptsPath() . 'language_translation_' . $type . '.md');
     }
 
-    public function generatePrompt(String $type = null, String $question) : Object
+    public function generatePrompt(String $type = null, String $json_list) : Object
     {
-        $this->question = $question;
+        $this->$json_list = $json_list;
         $prompt = $this->getPromptFile($type);
-        $prompt = $this->replaceQuestion($prompt, $question);
+        $prompt = $this->replaceJsonList($prompt, $json_list);
+        $prompt = $this->replaceLanguage($prompt, $this->targetLanguage);
         $prompt = $this->replaceStopSequence($prompt);
-        $prompt = $this->replaceWithCurrentYear($prompt);
-
         $this->config['prompt'] = $prompt;
 
         return $this;
@@ -66,18 +71,56 @@ class LanguageTranslationHandler extends OpenAiHandler
         return $replaced;
     }
 
-    public function replaceQuestion($prompt, $question)
+    public function replaceJsonList($prompt, $json_list)
     {
-        $replaced = str_replace('{question}', $question . " \n", $prompt);
+        $replaced = str_replace('{json_list}', $json_list . " \n", $prompt);
 
         return $replaced;
     }
 
-    public function replaceWithCurrentYear($prompt)
+    public function replaceLanguage($prompt, $language)
     {
-        $currentYearReplaced = str_replace('{currentYear}', date('Y'), $prompt);
-        $pastYearReplaced = str_replace('{pastYear}', date('Y') - 1, $currentYearReplaced);
+        $replaced = str_replace('{language}', $language . " \n", $prompt);
 
-        return $pastYearReplaced;
+        return $replaced;
+    }
+
+    public function prepareData($screens)
+    {
+        $notHtmlStrings = [];
+        $htmlStrings = [];
+        foreach ($screens as $screen) {
+            $notHtmlStrings[$screen['id']] = [];
+            $htmlStrings[$screen['id']] = [];
+            foreach ($screen['availableStrings'] as $string) {
+                if ($this->isHTML($string)) {
+                    $htmlStrings[$screen['id']][] = $string;
+                } else {
+                    $notHtmlStrings[$screen['id']][] = $string;
+                }
+            }
+        }
+
+        return [json_encode($notHtmlStrings), json_encode($htmlStrings)];
+    }
+
+    public function isHTML($string) : bool
+    {
+        if ($string != strip_tags($string)){
+            // is HTML
+            return true;
+        } else{
+            // not HTML
+            return false;
+        }
+    }
+
+    public function chunkTranslations($translations) 
+    {
+        // 1000 tokens ~= 750words
+        $totalWords = str_word_count($translations);
+        $tokensUsage = $totalWords * 1000 / 750;
+
+        dd($tokensUsage);
     }
 }
