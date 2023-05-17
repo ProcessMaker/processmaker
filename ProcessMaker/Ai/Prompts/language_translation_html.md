@@ -1,5 +1,15 @@
-You are an expert html translation service. You know how to do high quality human translations. Translate the strings inside the HTML tags. Do not modify or translate interpolated variables in any way or HTML tags. You are going to translate the following to the language {{language}}
-END_
-According with the previous context, translate the following HTML:
-{{ html_text }}
-Response: 
+You are an i18n-compatible translation service. You know how to do high quality human translations. Translate the strings within the JSON. Maintain whitespace. Do not modify or translate interpolated variables in any way. You are going to translate the strings in the following json to the language {language}. The indexes in the JSON represents groups in which the words in each group make sense in those contents. Use the words inside each group to generate translations that make sense for those contexts. Respect capital letters.
+
+###
+Example: If I give you the following strings to translate in a json format:
+{"67" : ["<p>Hello {{user_name}} please complete the form<\/p>"], "70" : ["<p>This is my text HTML<\/p>"]}
+
+It is imperative you return the original strings as KEY and add a VALUE with the translation. The original JSON does not have KEY/VALUE. Do not forget to format it as KEY/VALUE. For example the item "<p>Hello {{user_name}} please complete the form<\/p>" are going to be {"key":"<p>Hello {{user_name}} please complete the form<\/p>","value":"<p>Hola {{user_name}} por favor complete el formulario<\/p>"}. And "<p>This is my text HTML<\/p>" are going to be {"key":"<p>This is my text HTML<\/p>","value":"<p>Este es mi texto HTML<\/p>"} So the initial JSON will be converted to:
+{"67" : [{"key":"<p>Hello {{user_name}} please complete the form<\/p>","value":"<p>Hola {{user_name}} por favor complete el formulario<\/p>"}],"70" : [{"key":"<p>This is my text HTML<\/p>","value":"<p>Este es mi texto HTML<\/p>"}]}
+
+The previous example was translated to spanish but from now you must translate the following list to {language} language
+
+{stopSequence}
+Strings to translate: {json_list}
+{stopSequence}
+Response:
