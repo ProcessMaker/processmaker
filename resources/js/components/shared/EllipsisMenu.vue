@@ -11,7 +11,7 @@
   >
     <template v-if="customButton" #button-content>
       <i
-        class="pr-1 ellipsis-menu-icon"
+        class="pr-1 ellipsis-menu-icon no-padding"
         :class="customButton.icon"
       />
       <span>{{ customButton.content }}</span>
@@ -162,4 +162,7 @@ export default {
     margin-left: -15px;
 }
 
+.ellipsis-menu-icon.no-padding {
+  padding: 0 !important;
+}
 </style>
