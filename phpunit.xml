@@ -69,5 +69,10 @@
 
       <env name="THEMES_CACHE" value="false" />
       <env name="SESSION_SECURE_COOKIE" value="true" />
+
+      <!-- DefaultTemplate Variables -->
+      <env name="DEFAULT_TEMPLATE_REPO" value="process-templates" />
+      <env name="DEFAULT_TEMPLATE_BRANCH" value="develop" />
+      <env name="DEFAULT_TEMPLATE_CATEGORIES" value="banking" />
     </php>
 </phpunit>
