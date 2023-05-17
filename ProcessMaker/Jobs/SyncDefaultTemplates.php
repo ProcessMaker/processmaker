@@ -20,8 +20,6 @@ class SyncDefaultTemplates implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private const GITHUB_URL = 'https://raw.githubusercontent.com/processmaker/';
-
     /**
      * Create a new job instance.
      *
@@ -34,14 +32,18 @@ class SyncDefaultTemplates implements ShouldQueue
 
     /**
      * Execute the job.
-     *
+     * Function to handle the execution of this job when it is run.
+     * Here the function fetches default templates list from Github and saves them to the database.
      * @return void
      */
     public function handle()
     {
         $config = config('services.github');
         $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/index.json';
+
+        // If there are multiple categories of templates defined in the .env then separate them into an array.
         $categories = (strpos($config['template_categories'], ',') !== false) ? explode(',', $config['template_categories']) : [$config['template_categories']];
+
         $processCategoryId = ProcessCategory::firstOrCreate(
             ['name' => 'Default Templates'],
             [
@@ -51,12 +53,14 @@ class SyncDefaultTemplates implements ShouldQueue
             ]
         )->getKey();
 
+        // Get the default template list from Github.
         $response = Http::get($url);
 
         if (!$response->successful()) {
             throw new Exception('Unable to fetch default template list.');
         }
 
+        // Extract the json data from the response and iterate over the categories and templates to retrieve them.
         $data = $response->json();
         foreach ($data as $templateCategory => $templates) {
             if (!in_array($templateCategory, $categories) && !in_array('all', $categories)) {
@@ -64,6 +68,7 @@ class SyncDefaultTemplates implements ShouldQueue
             }
             foreach ($templates as $template) {
                 $existingTemplate = ProcessTemplates::where('uuid', $template['uuid'])->first();
+                // If the template already exists in the database with a user then skip it, since we don't want to overwrite their changes.
                 if (!is_null($existingTemplate) && !is_null($existingTemplate->user_id)) {
                     continue;
                 }
