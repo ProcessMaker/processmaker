@@ -4,15 +4,18 @@ namespace ProcessMaker\Events;
 
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Models\Process;
+use Illuminate\Foundation\Events\Dispatchable;
 
 class ProcessCreated implements SecurityLogEventInterface
 {
+    use Dispatchable;
+
     private Process $process;
 
     /**
      * Create a new event instance.
      *
-     * @return void
+     * @param Process $process
      */
     public function __construct(Process $process)
     {
@@ -34,6 +37,6 @@ class ProcessCreated implements SecurityLogEventInterface
 
     public function getEventName(): string
     {
-        return 'Process Created';
+        return 'ProcessCreated';
     }
 }

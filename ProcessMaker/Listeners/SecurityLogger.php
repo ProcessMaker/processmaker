@@ -3,6 +3,7 @@
 namespace ProcessMaker\Listeners;
 
 use ProcessMaker\Contracts\SecurityLogEventInterface;
+use ProcessMaker\Helpers\SensitiveDataHelper;
 use ProcessMaker\Models\SecurityLog;
 use WhichBrowser\Parser;
 
@@ -22,26 +23,25 @@ class SecurityLogger
      */
     public function handle($event)
     {
-        if (config('auth.log_auth_events')) {
-            $class = get_class($event);
+        $class = get_class($event);
 
-            if ($event instanceof SecurityLogEventInterface) {
-                SecurityLog::create([
-                    'event' => $event->getEventName(),
-                    'ip' => request()->ip(),
-                    'meta' => $this->getMeta(),
-                    'user_id' => isset($event->user) ? $event->user->id : null,
-                    'data' => $event->getData()
-                ]);
-            } elseif (array_key_exists($class, $this->eventTypes)) {
-                $eventType = $this->eventTypes[$class];
-                SecurityLog::create([
-                    'event' => $eventType,
-                    'ip' => request()->ip(),
-                    'meta' => $this->getMeta(),
-                    'user_id' => isset($event->user) ? $event->user->id : null
-                ]);
-            }
+        if ($event instanceof SecurityLogEventInterface) {
+            $data = $event->getData();
+            SecurityLog::create([
+                'event' => $event->getEventName(),
+                'ip' => request()->ip(),
+                'meta' => $this->getMeta(),
+                'user_id' => isset($event->user) ? $event->user->id : null,
+                'data' => $data ? SensitiveDataHelper::parseArray($data) : null
+            ]);
+        } elseif (array_key_exists($class, $this->eventTypes)) {
+            $eventType = $this->eventTypes[$class];
+            SecurityLog::create([
+                'event' => $eventType,
+                'ip' => request()->ip(),
+                'meta' => $this->getMeta(),
+                'user_id' => isset($event->user) ? $event->user->id : null
+            ]);
         }
     }
 

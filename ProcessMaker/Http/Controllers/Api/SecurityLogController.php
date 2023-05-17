@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use DB;
 use Illuminate\Http\Request;
+use ProcessMaker\Helpers\SensitiveDataHelper;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -126,7 +127,7 @@ class SecurityLogController extends Controller
         $request->validate(SecurityLog::rules());
 
         $securityLog = new SecurityLog;
-        $fields = $request->json()->all();
+        $fields = SensitiveDataHelper::parseArray($request->json()->all());
         $securityLog->fill($fields);
         $securityLog->saveOrFail();
 
