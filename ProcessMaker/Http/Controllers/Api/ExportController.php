@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use ProcessMaker\Exception\ExportModelNotFoundException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ExporterBase;
@@ -34,11 +35,14 @@ class ExportController extends Controller
     public function manifest(string $type, int $id): JsonResponse
     {
         $model = $this->getModel($type)->findOrFail($id);
+        try {
+            $exporter = new Exporter(true);
+            $exporter->export($model, $this->types[$type][1]);
 
-        $exporter = new Exporter(true);
-        $exporter->export($model, $this->types[$type][1]);
-
-        return response()->json($exporter->payload(true), 200);
+            return response()->json($exporter->payload(true), 200);
+        } catch (ExportModelNotFoundException $error) {
+            \Log::error(response()->json(['error' => $error->getMessage()], 400));
+        }
     }
 
     /**

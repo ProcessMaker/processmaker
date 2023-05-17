@@ -20,6 +20,22 @@ export default {
         }
     });
   },
+  doImportTemplate(file, options, type) {
+    let formData = new FormData();
+    const optionsBlob = new Blob([JSON.stringify(options)], {
+        type: 'application/json'
+    });
+  
+    formData.append('file', file);
+    formData.append('options', optionsBlob);
+    
+    return ProcessMaker.apiClient.post(`/template/do-import/${type}`, formData,
+    {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+  },
   importOlderVersion(file) {
     let formData = new FormData();
     formData.append('file', file);
@@ -40,7 +56,12 @@ export default {
       const assets = response.data.export;
       return this.formatAssets(assets, rootUuid, response.data.passwordRequired);
     }).catch((error) => {
-      let message = error.response?.data?.message;
+      let message = error.response?.data?.error;
+
+      if (error.response?.data?.exception === "ProcessMaker\\Exception\\ExportEmptyProcessException") {
+        message = error.response?.data?.message;
+      }
+
       if (!message) {
         message = error.message;
       }

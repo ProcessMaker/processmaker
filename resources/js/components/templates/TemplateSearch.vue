@@ -81,9 +81,7 @@ export default {
                 url +
                 "page=" +
                 this.page +
-                "&per_page=" +
-                this.perPage +
-                "&filter=" +
+                "&per_page=300&filter=" +
                 this.filter +
                 "&order_by=" +
                 this.orderBy +

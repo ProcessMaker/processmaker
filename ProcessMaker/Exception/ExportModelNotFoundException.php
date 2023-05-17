@@ -13,6 +13,6 @@ class ExportModelNotFoundException extends Exception
         $id = implode(',', $e->getIds());
         $type = $exporter->getClassName();
         $name = $exporter->getName($exporter->model);
-        parent::__construct("the $notFoundClass with id $id could not be found while exporting the $type '$name'.");
+        parent::__construct("The $notFoundClass with id $id could not be found while exporting the $type '$name'.");
     }
 }

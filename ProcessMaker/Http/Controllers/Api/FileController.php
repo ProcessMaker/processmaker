@@ -183,9 +183,20 @@ class FileController extends Controller
         }
 
         $mediaCollection = $request->input('collection', 'local');
+        $file = $model->addMediaFromRequest('file');
+        $user = pmUser();
+        $originalCreatedBy = $user ? $user->id : null;
+        $data_name = $request->input('data_name', '');
+        $rowId = $request->input('row_id', null);
+        $parent = (int) $request->input('parent', null);
 
-        $addedMedia = $model->addMediaFromRequest('file')
-            ->withCustomProperties(['data_name' => $request->input('data_name', '')])
+        $addedMedia = $file
+            ->withCustomProperties([
+                'data_name' => $data_name,
+                'parent' => $parent != 0 ? $parent : null,
+                'row_id' => $rowId,
+                'createdBy' => $originalCreatedBy,
+            ])
             ->toMediaCollection($mediaCollection);
 
         return response([
