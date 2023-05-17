@@ -249,7 +249,9 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     // Process Translations
     Route::get('process/translations', [ProcessTranslationController::class, 'index'])->name('process-translation.index'); //->middleware('translation-authorization');
+    Route::get('process/translations/pending', [ProcessTranslationController::class, 'pending'])->name('process-translation.pending');
     Route::post('process/translations/languages', [ProcessTranslationController::class, 'getAvailableLanguages'])->name('process-translation.languages');
+    Route::get('process/translations/{processId}', [ProcessTranslationController::class, 'show'])->name('process-translation.show'); //->middleware('translation-authorization');
 
     // debugging javascript errors
     Route::post('debug', [DebugController::class, 'store'])->name('debug.store')->middleware('throttle');
