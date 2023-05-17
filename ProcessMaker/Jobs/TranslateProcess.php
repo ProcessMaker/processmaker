@@ -20,9 +20,13 @@ class TranslateProcess implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private $process;
+
     private $screens;
+
     private $targetLanguage;
+
     private $code;
+
     private $user;
 
     /**
@@ -30,7 +34,7 @@ class TranslateProcess implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($process, $screens, $targetLanguage, $code, $user) 
+    public function __construct($process, $screens, $targetLanguage, $code, $user)
     {
         $this->process = $process;
         $this->screens = $screens;
@@ -44,12 +48,12 @@ class TranslateProcess implements ShouldQueue
      *
      * @return void
      */
-    public function handle() 
+    public function handle()
     {
         $languageTranslationHandler = new LanguageTranslationHandler();
         $languageTranslationHandler->setTargetLanguage($this->targetLanguage['humanLanguage']);
         [$notHtmlStrings, $htmlStrings] = $languageTranslationHandler->prepareData($this->screens);
-        
+
         // Translate regular strings
         [$resultNotHtmlStrings, $usage, $targetLanguage] = $languageTranslationHandler->generatePrompt(
             'regular',
@@ -61,14 +65,13 @@ class TranslateProcess implements ShouldQueue
         //     'html',
         //     $htmlStrings
         // )->execute();
-        
+
         \Log::info('$resultNotHtmlStrings');
         \Log::info($resultNotHtmlStrings);
         // \Log::info('$resultHtmlStrings');
         // \Log::info($resultHtmlStrings);
         \Log::info('================================================================');
 
-        
         // Save translations in database
         $resultNotHtmlStringsDecoded = json_decode($resultNotHtmlStrings, true);
         $resultHtmlStringsDecoded = json_decode('[]', true);
@@ -82,19 +85,19 @@ class TranslateProcess implements ShouldQueue
         $this->broadcastResponse();
     }
 
-    function mergeResults($resultNotHtmlStrings = [], $resultHtmlStrings = []) 
+    public function mergeResults($resultNotHtmlStrings = [], $resultHtmlStrings = [])
     {
         $allTranslations = [];
 
-        foreach($resultNotHtmlStrings as $key => $value) {
-            if(array_key_exists($key, $resultHtmlStrings)) {
+        foreach ($resultNotHtmlStrings as $key => $value) {
+            if (array_key_exists($key, $resultHtmlStrings)) {
                 $allTranslations[$key] = array_merge($resultNotHtmlStrings[$key], $resultHtmlStrings[$key]);
             } else {
                 $allTranslations[$key] = $value;
             }
         }
-        foreach($resultHtmlStrings as $key => $value) {
-            if(!array_key_exists($key, $resultNotHtmlStrings)) {
+        foreach ($resultHtmlStrings as $key => $value) {
+            if (!array_key_exists($key, $resultNotHtmlStrings)) {
                 $allTranslations[$key] = $value;
             }
         }
@@ -111,7 +114,7 @@ class TranslateProcess implements ShouldQueue
 
             if (!$screenTranslations || !array_key_exists($this->targetLanguage['language'], $screenTranslations)) {
                 $screenTranslations[$this->targetLanguage['language']]['strings'] = [];
-            } 
+            }
 
             // For each of the result translations of the screen
             $strings = [];
@@ -139,7 +142,7 @@ class TranslateProcess implements ShouldQueue
             $screen->save();
         }
     }
-    
+
     private function broadcastResponse()
     {
         \Log::info('Notify process translation to ' . $this->targetLanguage['humanLanguage'] . ' completed for process: ' . $this->process->name);

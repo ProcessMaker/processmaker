@@ -45,7 +45,7 @@ class ProcessTranslationController extends Controller
             $processTranslationToken->humanLanguage = Languages::ALL[$processTranslationToken['language']];
             $translatingLanguages[] = $processTranslationToken;
         }
-        
+
         return response()->json([
             'translatingLanguages' => $processTranslationTokens,
         ]);

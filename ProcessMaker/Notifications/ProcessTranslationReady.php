@@ -11,10 +11,11 @@ class ProcessTranslationReady extends Notification
     use Queueable;
 
     private $code;
+
     private $process;
+
     private $targetLanguage;
 
-  
     /**
      * Create a new notification instance.
      *

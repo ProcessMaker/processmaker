@@ -23,10 +23,11 @@ class LanguageTranslationHandler extends OpenAiHandler
         ];
     }
 
-    public function setTargetLanguage($language) 
+    public function setTargetLanguage($language)
     {
         $this->targetLanguage = $language;
     }
+
     public function getPromptFile($type = null)
     {
         return file_get_contents($this->getPromptsPath() . 'language_translation_' . $type . '.md');
@@ -106,16 +107,16 @@ class LanguageTranslationHandler extends OpenAiHandler
 
     public function isHTML($string) : bool
     {
-        if ($string != strip_tags($string)){
+        if ($string != strip_tags($string)) {
             // is HTML
             return true;
-        } else{
+        } else {
             // not HTML
             return false;
         }
     }
 
-    public function chunkTranslations($translations) 
+    public function chunkTranslations($translations)
     {
         // 1000 tokens ~= 750words
         $totalWords = str_word_count($translations);
