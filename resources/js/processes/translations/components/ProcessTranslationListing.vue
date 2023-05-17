@@ -1,6 +1,6 @@
 <template>
   <div class="data-table">
-    <div v-if="!loading && !translatedLanguages.length">
+    <div v-if="!loading && !translatedLanguages.length && !translatingLanguages.length">
       <div class="d-flex flew-grow-1 flex-column align-items-center no-results-container">
         <div class="icon-lg text-secondary">
           <font-awesome-icon :icon="['fpm', 'fa-translations']" />
@@ -11,7 +11,7 @@
       </div>
     </div>
 
-    <table v-if="!loading && translatedLanguages.length" id="table-translations" class="table table-hover table-responsive-lg ">
+    <table v-if="!loading && ((translatedLanguages && translatedLanguages.length) || (translatingLanguages && translatingLanguages.length))" id="table-translations" class="table table-hover table-responsive-lg ">
       <thead>
         <tr>
             <th class="notify">{{ $t('Target Language') }}</th>
@@ -21,6 +21,21 @@
         </tr>
       </thead>
       <tbody>
+        <tr v-for="(item, index) in translatingLanguages" :key="'pending' + index">
+          <td class="notify">{{ item.humanLanguage }}</td>
+          <td class="action">{{ item.createdAt }}</td>
+          <td class="action">{{ item.updatedAt }}</td>
+          <td class="action">
+            <ellipsis-menu
+              :actions="actionsInProgress"
+              :permission="permission"
+              :data="item"
+              :divider="true"
+              :customButton="inProgressButton"
+              @navigate="onNavigate"
+            />
+          </td>
+        </tr>
         <tr v-for="(item, index) in translatedLanguages" :key="index">
           <td class="notify">{{ item.humanLanguage }}</td>
           <td class="action">{{ item.createdAt }}</td>
@@ -54,7 +69,8 @@ export default {
   props: ["filter", "id", "status", "permission", "processId"],
   data() {
     return {
-      translatedLanguages: null,
+      translatedLanguages: [],
+      translatingLanguages: [],
       editTranslation: null,
       orderBy: "language",
       loading: false,
@@ -67,7 +83,7 @@ export default {
       ],
       actions: [
         {
-          value: "edit-translation", content: "Edit Translation", link: false, href: "", permission: "edit-process-translation", icon: "fas fa-edit",
+          value: "edit-translation", content: "Edit Translation", permission: "edit-process-translation", icon: "fas fa-edit",
         },
         {
           value: "export-translation", content: "Export Translation", permission: "export-process-translation", icon: "fas fa-file-export",
@@ -76,12 +92,25 @@ export default {
           value: "delete-translation", content: "Delete Translation", permission: "delete-process-translation", icon: "fas fa-trash",
         },
       ],
+      actionsInProgress: [
+        {
+          value: "retry-translation", content: "Retry Translation", link: false, href: "", permission: "edit-process-translation", icon: "fas fa-redo",
+        },
+        {
+          value: "delete-translation", content: "Delete Translation", permission: "delete-process-translation", icon: "fas fa-trash",
+        },
+      ],
+      inProgressButton: {
+        icon: "fas fa-spinner fa-spin p-0",
+        content: "Translation in progress",
+      },
     };
   },
 
   watch: {
     filter() {
       this.fetch();
+      this.fetchPending();
     },
   },
 
@@ -90,8 +119,19 @@ export default {
     library.add(faTranslations);
 
     this.fetch();
+    this.fetchPending();
     ProcessMaker.EventBus.$on("api-data-process-translations", () => {
       this.fetch();
+      this.fetchPending();
+    });
+  },
+
+  mounted() {
+    window.Echo.private(`ProcessMaker.Models.User.${window.ProcessMaker.user.id}`).notification((response) => {
+      if (response.processId === this.processId) {
+        this.fetchPending();
+        this.fetch();
+      }
     });
   },
 
@@ -106,6 +146,9 @@ export default {
           break;
         case "delete-translation":
           this.handleDeleteTranslation(data);
+          break;
+        case "retry-translation":
+          this.handleRetryTranslation(data);
           break;
         default:
           break;
@@ -140,9 +183,40 @@ export default {
         });
     },
 
+    fetchPending() {
+      this.loading = true;
+
+      const url = "process/translations/pending?process_id=" + this.processId;
+
+      // Load from our api client
+      ProcessMaker.apiClient
+        .get(
+          url +
+          "&page=" +
+          this.page +
+          "&per_page=" +
+          this.perPage +
+          "&filter=" +
+          this.filter +
+          "&order_by=" +
+          this.orderBy +
+          "&order_direction=" +
+          this.orderDirection +
+          "&include="
+        )
+        .then((response) => {
+          this.translatingLanguages = response.data.translatingLanguages;
+          this.loading = false;
+        });
+    },
+
     handleEditTranslation(data) {
       this.editTranslation = data;
       this.$emit("edit-translation", this.editTranslation);
+    },
+
+    handleRetryTranslation(data) {
+      console.log("Retrying translation");
     },
 
     handleDeleteTranslation(translation) {
@@ -164,6 +238,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+  .ellipsis-menu-icon {
+    padding: 0 !important;
+  }
   .icon-lg {
     font-size: 5rem;
   }
