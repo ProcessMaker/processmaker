@@ -29,14 +29,23 @@ class ProcessTranslation
         $this->process = $process;
     }
 
-    public function getTranslations($withScreenData = [])
+    public function getProcessScreensWithTranslations($withScreenData = [])
     {
-        return $this->getScreens($withScreenData);
+        return $this->getScreens($withScreenData, null);
     }
 
-    private function getScreens($withScreenData) : SupportCollection
+    public function getScreensWithTranslations($withScreenData = [], Array $screenIds)
     {
-        $screensInProcess = collect($this->getScreenIds())->unique();
+        return $this->getScreens($withScreenData, $screenIds);
+    }
+
+    private function getScreens($withScreenData, $screenIds = null) : SupportCollection
+    {
+        if (!$screenIds) {
+            $screensInProcess = collect($this->getScreenIds())->unique();
+        } else {
+            $screensInProcess = $screenIds;
+        }
 
         $fields = array_merge(['id', 'translations', 'config'], $withScreenData);
 
