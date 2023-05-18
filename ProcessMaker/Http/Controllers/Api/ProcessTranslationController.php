@@ -19,13 +19,23 @@ class ProcessTranslationController extends Controller
         $process = Process::findOrFail($processId);
 
         $processTranslation = new ProcessTranslation($process);
-        $screensTranslations = $processTranslation->getTranslations();
+        $screensTranslations = $processTranslation->getProcessScreensWithTranslations();
         $languageList = $processTranslation->getLanguageList($screensTranslations);
 
         if ($filter != '') {
             $languageList = array_values(collect($languageList)->filter(function ($item) use ($filter) {
                 return false !== stristr($item['humanLanguage'], $filter);
             })->toArray());
+        }
+
+        // Verify if there are some pending translation for the language and remove it from the list)
+        foreach ($languageList as $key => $language) {
+            $processTranslationToken = ProcessTranslationToken::where('process_id', $processId)
+                ->where('language', $language['language'])
+                ->count();
+            if ($processTranslationToken) {
+                unset($languageList[$key]);
+            }
         }
 
         return response()->json([
@@ -58,7 +68,7 @@ class ProcessTranslationController extends Controller
         $process = Process::findOrFail($processId);
 
         $processTranslation = new ProcessTranslation($process);
-        $screensTranslations = $processTranslation->getTranslations();
+        $screensTranslations = $processTranslation->getProcessScreensWithTranslations();
         $languageList = $processTranslation->getLanguageList($screensTranslations);
 
         foreach (Languages::ALL as $key => $value) {
@@ -90,7 +100,7 @@ class ProcessTranslationController extends Controller
     {
         $process = Process::findOrFail($processId);
         $processTranslation = new ProcessTranslation($process);
-        $screensTranslations = $processTranslation->getTranslations();
+        $screensTranslations = $processTranslation->getProcessScreensWithTranslations();
 
         return response()->json([
             'translations' => $screensTranslations,
