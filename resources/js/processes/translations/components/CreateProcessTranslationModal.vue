@@ -8,7 +8,7 @@
       :size="'lg'"
       @ok.prevent="onSubmit"
       @hidden="onClose"
-      @translateProcess="translateProcess"
+      @translate="translate"
       @showSelectTargetLanguage="showSelectTargetLanguage"
       :hasTitleButtons="hasTitleButtons"
       :hasHeaderButtons="hasHeaderButtons"
@@ -150,7 +150,7 @@ export default {
       ],
       customModalButtons: [
         {'content': 'Cancel', 'action': 'hide()', 'variant': 'outline-secondary', 'disabled': false, 'hidden': false},
-        {'content': 'Translate Process', 'action': 'translateProcess', 'variant': 'secondary', 'disabled': true, 'hidden': false},
+        {'content': 'Translate Process', 'action': 'translate', 'variant': 'secondary', 'disabled': true, 'hidden': false},
         {'content': 'Save Translation', 'action': 'saveTranslations', 'variant': 'secondary', 'disabled': false, 'hidden': true},
       ],
     };
@@ -226,7 +226,7 @@ export default {
       if (val) {
         this.selectedLanguage = val;
         this.manualTranslation = true;
-        this.translateProcess();
+        this.translate();
       }
     },
   },
@@ -247,7 +247,7 @@ export default {
       this.showSelectTargetLanguage();
       this.$emit("create-process-translation-closed");
     },
-    translateProcess() {
+    translate() {
       this.step = "translating";
       this.headerButtons[0].hidden = true;
       this.customModalButtons[1].hidden = true;
@@ -260,7 +260,6 @@ export default {
         language: this.selectedLanguage,
         processId: this.processId,
         manualTranslation: this.manualTranslation,
-        type: "screen",
       };
 
       ProcessMaker.apiClient.post("/openai/language-translation", params)
@@ -286,22 +285,29 @@ export default {
     },
 
     onReTranslate(option) {
+      this.$bvModal.hide("createProcessTranslation");
       this.aiLoading = true;
 
-      // REMOVE FUNCTION!
-      // REMOVE FUNCTION
-      // REMOVE FUNCTION
-      this.sleep(2000).then(() => {
-        this.aiLoading = false;
-      });
-    },
-    
-    // REMOVE FUNCTION
-    // REMOVE FUNCTION
-    // REMOVE FUNCTION
-    sleep(time) {
-      // eslint-disable-next-line no-promise-executor-return
-      return new Promise((resolve) => setTimeout(resolve, time));
+      const params = {
+        language: this.selectedLanguage,
+        processId: this.processId,
+        screenId: this.selectedScreen.id,
+        option,
+      };
+
+      ProcessMaker.apiClient.post("/openai/language-translation", params)
+        .then((response) => {
+          this.screensTranslations = response.data.screensTranslations;
+          this.aiLoading = false;
+          this.showSelectTargetLanguage();
+          this.$emit("translating-language");
+        })
+        .catch((error) => {
+          const $errorMsg = this.$t("An error ocurred while calling OpenAI endpoint.");
+          window.ProcessMaker.alert($errorMsg, "danger");
+          this.endpointErrors = $errorMsg;
+          this.aiLoading = false;
+        });
     },
 
     showSelectTargetLanguage() {
