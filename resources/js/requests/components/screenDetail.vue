@@ -177,7 +177,7 @@
       disableForm(json) {
         if (json instanceof Array) {
           for (let i = json.length - 1; i >= 0; i--) {
-            if (json[i].component === 'FormButton' || json[i].component === 'FileUpload') {
+            if (json[i].component === 'FormButton' || json[i].component === 'FileUpload' || json[i].component === 'PhotoVideo') {
               json.splice(i, 1);
             } else {
               this.disableForm(json[i]);
