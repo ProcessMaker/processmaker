@@ -24,16 +24,31 @@ class EventServiceProvider extends ServiceProvider
         'Illuminate\Auth\Events\Logout' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
-        'ProcessMaker\Events\SessionStarted' => [
-            'ProcessMaker\Listeners\ActiveUserListener',
-        ],
         'Illuminate\Database\Events\MigrationsEnded' => [
             'ProcessMaker\Listeners\UpdateDataLakeViews',
+        ],
+        'ProcessMaker\Events\EnvironmentVariablesCreated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\EnvironmentVariablesDeleted' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\EnvironmentVariablesUpdated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\GroupCreated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
         ],
         'ProcessMaker\Events\ProcessUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
+        'ProcessMaker\Events\SessionStarted' => [
+            'ProcessMaker\Listeners\ActiveUserListener',
+        ],
         'ProcessMaker\Events\SettingsUpdated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\UserCreated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
     ];

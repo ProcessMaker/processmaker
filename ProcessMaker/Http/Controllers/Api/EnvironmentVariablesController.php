@@ -3,6 +3,9 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use ProcessMaker\Events\EnvironmentVariablesCreated;
+use ProcessMaker\Events\EnvironmentVariablesDeleted;
+use ProcessMaker\Events\EnvironmentVariablesUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\EnvironmentVariables as EnvironmentVariableResource;
@@ -102,6 +105,8 @@ class EnvironmentVariablesController extends Controller
     {
         $request->validate(EnvironmentVariable::rules(), EnvironmentVariable::messages());
         $environment_variable = EnvironmentVariable::create($request->all());
+        // Register the Event
+        EnvironmentVariablesCreated::dispatch($request->all());
 
         return new EnvironmentVariableResource($environment_variable);
     }
@@ -175,6 +180,9 @@ class EnvironmentVariablesController extends Controller
         $environment_variable->fill($request->only($fields));
         $environment_variable->save();
 
+        // Register the Event
+        EnvironmentVariablesUpdated::dispatch($environment_variable);
+
         return new EnvironmentVariableResource($environment_variable);
     }
 
@@ -202,6 +210,9 @@ class EnvironmentVariablesController extends Controller
     public function destroy(EnvironmentVariable $environment_variable)
     {
         $environment_variable->delete();
+
+        // Register the Event
+        EnvironmentVariablesDeleted::dispatch($environment_variable);
 
         return response('', 200);
     }

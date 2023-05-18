@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Events\GroupCreated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Groups as GroupResource;
@@ -136,6 +137,8 @@ class GroupController extends Controller
         $group = new Group();
         $group->fill($request->input());
         $group->saveOrFail();
+        // Register the Event
+        GroupCreated::dispatch($group);
 
         return new GroupResource($group);
     }

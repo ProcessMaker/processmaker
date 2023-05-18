@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityCompleted;
 use ProcessMaker\Events\BuildScriptExecutor;
+use ProcessMaker\Events\GroupCreated;
 use ProcessMaker\Events\ImportedScreenSaved;
 use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Events\ProcessCompleted;
@@ -14,9 +15,11 @@ use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Events\ScriptResponseEvent;
 use ProcessMaker\Events\SessionStarted as SessionStartedEvent;
 use ProcessMaker\Events\TestStatusEvent;
+use ProcessMaker\Events\UserCreated;
 use ProcessMaker\Managers\ModelerManager as Modeler;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Managers\ScreenBuilderManager as ScreenBuilder;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Models\ProcessRequest as Request;
 use ProcessMaker\Models\ProcessRequestToken as Task;
 use ProcessMaker\Models\Screen;
@@ -219,5 +222,29 @@ class BroadcastTest extends TestCase
         ]);
         $user = User::factory()->create();
         event(new ScriptResponseEvent($user, 200, ['foo' => 'bar'], ['config_one' => 1], 'nonce001'));
+    }
+
+    /**
+     * Asserts that the UserCreated event works.
+     */
+    public function testUserCreatedEventBroadcast()
+    {
+        $this->expectsEvents([
+            UserCreated::class,
+        ]);
+        $user = User::factory()->create();
+        UserCreated::dispatch($user);
+    }
+
+    /**
+     * Asserts that the GroupCreated event works.
+     */
+    public function testGroupCreatedEventBroadcast()
+    {
+        $this->expectsEvents([
+            GroupCreated::class,
+        ]);
+        $group = Group::factory()->create();
+        GroupCreated::dispatch($group);
     }
 }

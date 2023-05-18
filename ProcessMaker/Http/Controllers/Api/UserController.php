@@ -6,6 +6,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use ProcessMaker\Events\UserCreated;
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
@@ -161,6 +162,8 @@ class UserController extends Controller
         $user->fill($fields);
         $user->setTimezoneAttribute($request->input('timezone', ''));
         $user->saveOrFail();
+        // Register the Event
+        UserCreated::dispatch($user->refresh());
 
         return new UserResource($user->refresh());
     }
