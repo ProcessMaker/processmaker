@@ -98,10 +98,17 @@ class OpenAIController extends Controller
     {
         // Find process to translate
         $process = Process::findOrFail($request->input('processId'));
+        $screenId = $request->input('screenId');
 
         // Find process screens and translations for each screen
         $processTranslation = new ProcessTranslation($process);
-        $screensTranslations = $processTranslation->getTranslations(['title', 'description', 'type', 'config']);
+        $columns = ['title', 'description', 'type', 'config'];
+
+        if ($screenId) {
+            $screensTranslations = $processTranslation->getScreensWithTranslations($columns, [$screenId]);
+        } else {
+            $screensTranslations = $processTranslation->getProcessScreensWithTranslations($columns);
+        }
 
         if (!$request->input('manualTranslation')) {
             $code = uniqid('procress-translation', true);
