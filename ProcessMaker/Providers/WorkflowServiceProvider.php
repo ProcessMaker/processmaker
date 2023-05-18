@@ -70,7 +70,7 @@ class WorkflowServiceProvider extends ServiceProvider
          * BPMN Workflow Manager
          */
         $this->app->singleton('workflow.manager', function ($app) {
-            return new WorkflowManager();
+            return WorkflowManager::create();
         });
 
         $this->app->bind(BpmnEngine::class, function ($app, $params) {

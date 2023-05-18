@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "46c663e865e620fb6b1a66b77173e397",
+    "content-hash": "0feae537dcb4825b14e12a2ce023e1f3",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -272,6 +272,73 @@
                 }
             ],
             "time": "2023-03-04T11:01:40+00:00"
+        },
+        {
+            "name": "beberlei/assert",
+            "version": "v3.3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/beberlei/assert.git",
+                "reference": "cb70015c04be1baee6f5f5c953703347c0ac1655"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/beberlei/assert/zipball/cb70015c04be1baee6f5f5c953703347c0ac1655",
+                "reference": "cb70015c04be1baee6f5f5c953703347c0ac1655",
+                "shasum": ""
+            },
+            "require": {
+                "ext-ctype": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "ext-simplexml": "*",
+                "php": "^7.0 || ^8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "*",
+                "phpstan/phpstan": "*",
+                "phpunit/phpunit": ">=6.0.0",
+                "yoast/phpunit-polyfills": "^0.1.0"
+            },
+            "suggest": {
+                "ext-intl": "Needed to allow Assertion::count(), Assertion::isCountable(), Assertion::minCount(), and Assertion::maxCount() to operate on ResourceBundles"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "lib/Assert/functions.php"
+                ],
+                "psr-4": {
+                    "Assert\\": "lib/Assert"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-2-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Benjamin Eberlei",
+                    "email": "kontakt@beberlei.de",
+                    "role": "Lead Developer"
+                },
+                {
+                    "name": "Richard Quadling",
+                    "email": "rquadling@gmail.com",
+                    "role": "Collaborator"
+                }
+            ],
+            "description": "Thin assertion library for input validation in business models.",
+            "keywords": [
+                "assert",
+                "assertion",
+                "validation"
+            ],
+            "support": {
+                "issues": "https://github.com/beberlei/assert/issues",
+                "source": "https://github.com/beberlei/assert/tree/v3.3.2"
+            },
+            "time": "2021-12-16T21:41:27+00:00"
         },
         {
             "name": "brick/math",
@@ -1575,6 +1642,192 @@
             "time": "2023-05-12T15:47:07+00:00"
         },
         {
+            "name": "flix-tech/avro-php",
+            "version": "4.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/flix-tech/avro-php.git",
+                "reference": "5936698fab7d3593ef73b6632f2c0d07ba2267f6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/flix-tech/avro-php/zipball/5936698fab7d3593ef73b6632f2c0d07ba2267f6",
+                "reference": "5936698fab7d3593ef73b6632f2c0d07ba2267f6",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4|>=8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~8.5"
+            },
+            "suggest": {
+                "ext-gmp": "Large integer support for 32-bit platforms.",
+                "ext-snappy": "Snappy support for Snappy codec (mainly Google).",
+                "ext-zlib": "Zlib support for Deflate codec."
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "lib/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "description": "Avro schema encoder/decoder. Fork of rg/avro-php",
+            "support": {
+                "source": "https://github.com/flix-tech/avro-php/tree/4.3.0"
+            },
+            "time": "2022-08-10T07:34:07+00:00"
+        },
+        {
+            "name": "flix-tech/avro-serde-php",
+            "version": "1.7.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/flix-tech/avro-serde-php.git",
+                "reference": "b6b6baaf01a54d314ed957598c0740064b572aad"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/flix-tech/avro-serde-php/zipball/b6b6baaf01a54d314ed957598c0740064b572aad",
+                "reference": "b6b6baaf01a54d314ed957598c0740064b572aad",
+                "shasum": ""
+            },
+            "require": {
+                "beberlei/assert": "^2.9.9|~3.0",
+                "flix-tech/avro-php": "^4.1.0",
+                "flix-tech/confluent-schema-registry-api": "^7.3.1",
+                "guzzlehttp/promises": "^1.4.0",
+                "php": "^7.3|^8.0",
+                "widmogrod/php-functional": "^6.0"
+            },
+            "require-dev": {
+                "doctrine/annotations": "^1.11",
+                "phpbench/phpbench": "1.0.0-alpha2",
+                "phpunit/phpunit": "^8.2.3|^9.4.2",
+                "symfony/serializer": "^3.4|^4.3",
+                "vlucas/phpdotenv": "~2.4"
+            },
+            "suggest": {
+                "doctrine/annotations": "To enable the generation of avro schemas from annotations",
+                "symfony/serializer": "To integrate avro-serde-php into symfony ecosystem"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev",
+                    "dev-1.x": "1.x-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/Protocol.php",
+                    "src/Serialize.php",
+                    "src/Common.php"
+                ],
+                "psr-4": {
+                    "FlixTech\\AvroSerializer\\Objects\\": "src/Objects",
+                    "FlixTech\\AvroSerializer\\Integrations\\": "integrations/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Thomas Ploch",
+                    "email": "thomas.ploch@flixbus.com"
+                }
+            ],
+            "description": "A library to serialize and deserialize Avro records making use of the confluent schema registry",
+            "keywords": [
+                "Confluent",
+                "avro",
+                "confluent-platform",
+                "deserialization",
+                "kafka",
+                "schema-evolution",
+                "schema-registry",
+                "serialization",
+                "serializer",
+                "symfony",
+                "symfony-serializer"
+            ],
+            "support": {
+                "issues": "https://github.com/flix-tech/avro-serde-php/issues",
+                "source": "https://github.com/flix-tech/avro-serde-php/tree/1.7.2"
+            },
+            "time": "2022-06-30T14:21:32+00:00"
+        },
+        {
+            "name": "flix-tech/confluent-schema-registry-api",
+            "version": "7.6.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/flix-tech/schema-registry-php-client.git",
+                "reference": "89817110145f6bc4690bbeb190c3e5b4f733ba12"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/flix-tech/schema-registry-php-client/zipball/89817110145f6bc4690bbeb190c3e5b4f733ba12",
+                "reference": "89817110145f6bc4690bbeb190c3e5b4f733ba12",
+                "shasum": ""
+            },
+            "require": {
+                "beberlei/assert": "~2.7|~3.0",
+                "ext-curl": "*",
+                "ext-json": "*",
+                "flix-tech/avro-php": "^4.3",
+                "guzzlehttp/guzzle": "^7.0",
+                "guzzlehttp/promises": "^1.4.0",
+                "guzzlehttp/psr7": "^1.7|^2.1",
+                "php": "^7.4|^8.0|^8.1"
+            },
+            "require-dev": {
+                "doctrine/cache": "~1.3",
+                "phpunit/phpunit": "^9.4.2",
+                "psr/cache": "^1.0",
+                "psr/simple-cache": "^1.0",
+                "raphhh/trex-reflection": "~1.0",
+                "symfony/cache": "^5.1"
+            },
+            "suggest": {
+                "doctrine/cache": "If you want to use the DoctrineCacheAdapter",
+                "psr/cache": "If you want to use the CacheItemPoolAdapter",
+                "psr/simple-cache": "If you want to use the SimpleCacheAdapter"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Requests/Functions.php",
+                    "src/Constants/Constants.php"
+                ],
+                "psr-4": {
+                    "FlixTech\\SchemaRegistryApi\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Thomas Ploch",
+                    "email": "thomas.ploch@flixbus.com"
+                }
+            ],
+            "description": "A PHP 7.4+ library to consume the Confluent Schema Registry REST API.",
+            "support": {
+                "issues": "https://github.com/flix-tech/schema-registry-php-client/issues",
+                "source": "https://github.com/flix-tech/schema-registry-php-client/tree/7.6.1"
+            },
+            "time": "2022-08-24T08:12:15+00:00"
+        },
+        {
             "name": "fruitcake/laravel-cors",
             "version": "v2.2.0",
             "source": {
@@ -1655,39 +1908,86 @@
             "time": "2022-02-23T14:25:13+00:00"
         },
         {
-            "name": "google/apiclient",
-            "version": "v2.14.0",
+            "name": "functional-php/fantasy-land",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/googleapis/google-api-php-client.git",
-                "reference": "789c8b07cad97f420ac0467c782036f955a2ad89"
+                "url": "https://github.com/functional-php/fantasy-land.git",
+                "reference": "1e2366e68057bbc7a65d58dd663324eb9b299775"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-api-php-client/zipball/789c8b07cad97f420ac0467c782036f955a2ad89",
-                "reference": "789c8b07cad97f420ac0467c782036f955a2ad89",
+                "url": "https://api.github.com/repos/functional-php/fantasy-land/zipball/1e2366e68057bbc7a65d58dd663324eb9b299775",
+                "reference": "1e2366e68057bbc7a65d58dd663324eb9b299775",
                 "shasum": ""
             },
             "require": {
-                "firebase/php-jwt": "~2.0||~3.0||~4.0||~5.0||~6.0",
-                "google/apiclient-services": "~0.200",
-                "google/auth": "^1.10",
-                "guzzlehttp/guzzle": "~5.3.3||~6.0||~7.0",
-                "guzzlehttp/psr7": "^1.8.4||^2.2.1",
-                "monolog/monolog": "^1.17||^2.0||^3.0",
-                "php": "^5.6|^7.0|^8.0",
-                "phpseclib/phpseclib": "~2.0||^3.0.2"
+                "php": ">=7.1"
             },
             "require-dev": {
-                "cache/filesystem-adapter": "^0.3.2|^1.1",
+                "friendsofphp/php-cs-fixer": "^2",
+                "giorgiosironi/eris": "^0.9",
+                "phpunit/phpunit": "^5"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/FantasyLand/functions.php"
+                ],
+                "psr-4": {
+                    "FunctionalPHP\\": "./src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Gabriel Habryn",
+                    "email": "widmogrod+github@gmail.com"
+                }
+            ],
+            "description": "Specification for interoperability of common algebraic structures in PHP",
+            "support": {
+                "issues": "https://github.com/functional-php/fantasy-land/issues",
+                "source": "https://github.com/functional-php/fantasy-land/tree/1.0.1"
+            },
+            "time": "2021-01-19T18:06:19+00:00"
+        },
+        {
+            "name": "google/apiclient",
+            "version": "v2.15.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/googleapis/google-api-php-client.git",
+                "reference": "49787fa30b8d8313146a61efbf77ed1fede723c2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/googleapis/google-api-php-client/zipball/49787fa30b8d8313146a61efbf77ed1fede723c2",
+                "reference": "49787fa30b8d8313146a61efbf77ed1fede723c2",
+                "shasum": ""
+            },
+            "require": {
+                "firebase/php-jwt": "~6.0",
+                "google/apiclient-services": "~0.200",
+                "google/auth": "^1.28",
+                "guzzlehttp/guzzle": "~6.5||~7.0",
+                "guzzlehttp/psr7": "^1.8.4||^2.2.1",
+                "monolog/monolog": "^2.9||^3.0",
+                "php": "^7.4|^8.0",
+                "phpseclib/phpseclib": "^3.0.2"
+            },
+            "require-dev": {
+                "cache/filesystem-adapter": "^1.1",
                 "composer/composer": "^1.10.22",
                 "phpcompatibility/php-compatibility": "^9.2",
-                "phpspec/prophecy-phpunit": "^1.1||^2.0",
-                "phpunit/phpunit": "^5.7.21 || ^6.0 || ^7.0 || ^8.0 || ^9.0",
+                "phpspec/prophecy-phpunit": "^2.0",
+                "phpunit/phpunit": "^9.5",
                 "squizlabs/php_codesniffer": "^3.0",
                 "symfony/css-selector": "~2.1",
-                "symfony/dom-crawler": "~2.1",
-                "yoast/phpunit-polyfills": "^1.0"
+                "symfony/dom-crawler": "~2.1"
             },
             "suggest": {
                 "cache/filesystem-adapter": "For caching certs and tokens (using Google\\Client::setCache)"
@@ -1720,9 +2020,9 @@
             ],
             "support": {
                 "issues": "https://github.com/googleapis/google-api-php-client/issues",
-                "source": "https://github.com/googleapis/google-api-php-client/tree/v2.14.0"
+                "source": "https://github.com/googleapis/google-api-php-client/tree/v2.15.0"
             },
-            "time": "2023-05-11T21:54:55+00:00"
+            "time": "2023-05-18T13:51:33+00:00"
         },
         {
             "name": "google/apiclient-services",
@@ -4157,6 +4457,72 @@
                 }
             ],
             "time": "2022-12-08T12:29:14+00:00"
+        },
+        {
+            "name": "mateusjunges/laravel-kafka",
+            "version": "v1.9.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mateusjunges/laravel-kafka.git",
+                "reference": "c81dd1b45d54c28912817bbd1fb325ec7a8fb973"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mateusjunges/laravel-kafka/zipball/c81dd1b45d54c28912817bbd1fb325ec7a8fb973",
+                "reference": "c81dd1b45d54c28912817bbd1fb325ec7a8fb973",
+                "shasum": ""
+            },
+            "require": {
+                "ext-rdkafka": "^4.0|^5.0|^6.0",
+                "flix-tech/avro-serde-php": "^1.7",
+                "illuminate/contracts": "^8.0|^9.0",
+                "illuminate/support": "^8.0|^9.0",
+                "monolog/monolog": "^2.3",
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.0",
+                "kwn/php-rdkafka-stubs": "^2.2",
+                "orchestra/testbench": "^6.20",
+                "phpunit/phpunit": "^9.5",
+                "predis/predis": "^1.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Junges\\Kafka\\Providers\\LaravelKafkaServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Junges\\Kafka\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "mateusjunges",
+                    "email": "mateus@junges.dev",
+                    "role": "Senior Software Engineer"
+                }
+            ],
+            "description": "A kafka driver for laravel",
+            "support": {
+                "issues": "https://github.com/mateusjunges/laravel-kafka/issues",
+                "source": "https://github.com/mateusjunges/laravel-kafka/tree/v1.9.3"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/mateusjunges",
+                    "type": "github"
+                }
+            ],
+            "time": "2022-11-29T22:24:42+00:00"
         },
         {
             "name": "microsoft/microsoft-graph",
@@ -6753,16 +7119,16 @@
         },
         {
             "name": "pusher/pusher-php-server",
-            "version": "7.2.2",
+            "version": "7.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pusher/pusher-http-php.git",
-                "reference": "4ace4873873b06c25cecb2dd6d9fdcbf2f20b640"
+                "reference": "416e68dd5f640175ad5982131c42a7a666d1d8e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pusher/pusher-http-php/zipball/4ace4873873b06c25cecb2dd6d9fdcbf2f20b640",
-                "reference": "4ace4873873b06c25cecb2dd6d9fdcbf2f20b640",
+                "url": "https://api.github.com/repos/pusher/pusher-http-php/zipball/416e68dd5f640175ad5982131c42a7a666d1d8e9",
+                "reference": "416e68dd5f640175ad5982131c42a7a666d1d8e9",
                 "shasum": ""
             },
             "require": {
@@ -6808,9 +7174,9 @@
             ],
             "support": {
                 "issues": "https://github.com/pusher/pusher-http-php/issues",
-                "source": "https://github.com/pusher/pusher-http-php/tree/7.2.2"
+                "source": "https://github.com/pusher/pusher-http-php/tree/7.2.3"
             },
-            "time": "2022-12-20T19:52:36+00:00"
+            "time": "2023-05-17T16:00:06+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
@@ -10747,6 +11113,76 @@
                 "source": "https://github.com/WhichBrowser/Parser-PHP/tree/v2.1.7"
             },
             "time": "2022-04-19T20:14:54+00:00"
+        },
+        {
+            "name": "widmogrod/php-functional",
+            "version": "6.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/widmogrod/php-functional.git",
+                "reference": "a1a4edc7f135c4b9364afadcb23d91629255b06c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/widmogrod/php-functional/zipball/a1a4edc7f135c4b9364afadcb23d91629255b06c",
+                "reference": "a1a4edc7f135c4b9364afadcb23d91629255b06c",
+                "shasum": ""
+            },
+            "require": {
+                "functional-php/fantasy-land": "^1",
+                "php": "^7.1|^8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2",
+                "giorgiosironi/eris": "^0.9",
+                "phpunit/phpunit": "^6"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Functional/array.php",
+                    "src/Functional/functions.php",
+                    "src/Functional/miscellaneous.php",
+                    "src/Functional/listt.php",
+                    "src/Functional/zipping.php",
+                    "src/Functional/sublist.php",
+                    "src/Functional/infinit.php",
+                    "src/Functional/predicates.php",
+                    "src/Functional/strings.php",
+                    "src/Functional/monoid.php",
+                    "src/Functional/setoid.php",
+                    "src/Monad/Either/functions.php",
+                    "src/Monad/Maybe/functions.php",
+                    "src/Monad/Free/functions.php",
+                    "src/Monad/IO/functions.php",
+                    "src/Monad/IO/errors.php",
+                    "src/Monad/Reader/functions.php",
+                    "src/Monad/State/functions.php",
+                    "src/Monad/Writer/functions.php",
+                    "src/Monad/Control/Doo/actions.php",
+                    "src/Monad/Control/Doo/interpretation.php",
+                    "src/Useful/match.php"
+                ],
+                "psr-4": {
+                    "Widmogrod\\": "./src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Gabriel Habryn",
+                    "email": "widmogrod@gmail.com"
+                }
+            ],
+            "description": "Functors, Applicative and Monads are fascinating concept. Purpose of this library is to explore them in OOP PHP world.",
+            "support": {
+                "issues": "https://github.com/widmogrod/php-functional/issues",
+                "source": "https://github.com/widmogrod/php-functional/tree/6.0.0"
+            },
+            "time": "2020-10-18T19:52:00+00:00"
         },
         {
             "name": "zircote/swagger-php",
