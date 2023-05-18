@@ -34,7 +34,7 @@ class ProcessTranslation
         return $this->getScreens($withScreenData, null);
     }
 
-    public function getScreensWithTranslations($withScreenData = [], Array $screenIds)
+    public function getScreensWithTranslations($withScreenData, array $screenIds)
     {
         return $this->getScreens($withScreenData, $screenIds);
     }

@@ -52,17 +52,17 @@ class TranslateProcess implements ShouldQueue
         $languageTranslationHandler = new LanguageTranslationHandler();
         $languageTranslationHandler->setTargetLanguage($this->targetLanguage['humanLanguage']);
         [$notHtmlChunks, $htmlChunks] = $this->prepareData($this->screens, $languageTranslationHandler);
- 
+
         // Execute requests for each regular chunk
         foreach ($notHtmlChunks as $chunk) {
-           $responses[] = $this->executeRequest($languageTranslationHandler, 'regular', $chunk);
+            $responses[] = $this->executeRequest($languageTranslationHandler, 'regular', $chunk);
         }
 
         // Execute requests for each HTML chunk
         foreach ($htmlChunks as $chunk) {
             $responses[] = $this->executeRequest($languageTranslationHandler, 'html', $chunk);
-         }
-     
+        }
+
         // Save translations in the database
         foreach ($responses as $response) {
             $saved = $this->saveTranslationsInScreen(json_decode($response[0], true));
@@ -78,8 +78,8 @@ class TranslateProcess implements ShouldQueue
     public function prepareData($screens, $handler)
     {
         // !IMPORTANT:
-        // Chunk max size should be near 1600. 
-        // In handler max_token for response is 2400. 
+        // Chunk max size should be near 1600.
+        // In handler max_token for response is 2400.
         // Total sum is 4000. Just under 4096 allowed for text-davinci-003
         $maxChunkSize = 1600;
         $handler->generatePrompt('html', '');
@@ -136,6 +136,7 @@ class TranslateProcess implements ShouldQueue
 
         \Log::info('response');
         \Log::info($response);
+
         return [$response, $usage, $targetLanguage];
     }
 
@@ -150,25 +151,25 @@ class TranslateProcess implements ShouldQueue
         }
     }
 
-    public function calcTokens($model = 'text-davinci-003', $string)
-    {   
-        /** 
-        *    # The following code is in case we need in the future to use gpt-4 or gpt-3.5.-turbo
-        *    # The script to calculate for those models it's available for python: ProcessMaker/Ai/Scripts/token_counter.py
-        *
-        *    $cmd = "python3";
-        *    $args = [
-        *        "ProcessMaker/Ai/Scripts/token_counter.py",
-        *        $model,
-        *        $string
-        *    ];
-        *
-        *    $escaped_args = implode(" ", array_map("escapeshellarg", $args));
-        *    $command = "$cmd $escaped_args 2>&1";
-        *    $tokensUsage = trim(shell_exec($command));
-        *
-        *    return $tokensUsage;
-        */
+    public function calcTokens($model, $string)
+    {
+        /**
+         *    # The following code is in case we need in the future to use gpt-4 or gpt-3.5.-turbo
+         *    # The script to calculate for those models it's available for python: ProcessMaker/Ai/Scripts/token_counter.py
+         *
+         *    $cmd = "python3";
+         *    $args = [
+         *        "ProcessMaker/Ai/Scripts/token_counter.py",
+         *        $model,
+         *        $string
+         *    ];
+         *
+         *    $escaped_args = implode(" ", array_map("escapeshellarg", $args));
+         *    $command = "$cmd $escaped_args 2>&1";
+         *    $tokensUsage = trim(shell_exec($command));
+         *
+         *    return $tokensUsage;
+         */
 
         return $tokensUsage = count(gpt_encode($string));
     }
