@@ -4,7 +4,6 @@ namespace ProcessMaker\Jobs;
 
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -19,13 +18,13 @@ class TranslateProcess implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    private $code;
+
     private $process;
 
     private $screens;
 
     private $targetLanguage;
-
-    private $code;
 
     private $user;
 
@@ -52,31 +51,22 @@ class TranslateProcess implements ShouldQueue
     {
         $languageTranslationHandler = new LanguageTranslationHandler();
         $languageTranslationHandler->setTargetLanguage($this->targetLanguage['humanLanguage']);
-        [$notHtmlStrings, $htmlStrings] = $languageTranslationHandler->prepareData($this->screens);
+        [$notHtmlChunks, $htmlChunks] = $this->prepareData($this->screens, $languageTranslationHandler);
+ 
+        // Execute requests for each regular chunk
+        foreach ($notHtmlChunks as $chunk) {
+           $responses[] = $this->executeRequest($languageTranslationHandler, 'regular', $chunk);
+        }
 
-        // Translate regular strings
-        [$resultNotHtmlStrings, $usage, $targetLanguage] = $languageTranslationHandler->generatePrompt(
-            'regular',
-            $notHtmlStrings
-        )->execute();
-
-        // Translate html
-        // [$resultHtmlStrings, $usage, $targetLanguage] = $languageTranslationHandler->generatePrompt(
-        //     'html',
-        //     $htmlStrings
-        // )->execute();
-
-        \Log::info('$resultNotHtmlStrings');
-        \Log::info($resultNotHtmlStrings);
-        // \Log::info('$resultHtmlStrings');
-        // \Log::info($resultHtmlStrings);
-        \Log::info('================================================================');
-
-        // Save translations in database
-        $resultNotHtmlStringsDecoded = json_decode($resultNotHtmlStrings, true);
-        $resultHtmlStringsDecoded = json_decode('[]', true);
-        $allTranslations = $this->mergeResults($resultNotHtmlStringsDecoded, $resultHtmlStringsDecoded);
-        $saved = $this->saveTranslationsInScreen($allTranslations);
+        // Execute requests for each HTML chunk
+        foreach ($htmlChunks as $chunk) {
+            $responses[] = $this->executeRequest($languageTranslationHandler, 'html', $chunk);
+         }
+     
+        // Save translations in the database
+        foreach ($responses as $response) {
+            $saved = $this->saveTranslationsInScreen(json_decode($response[0], true));
+        }
 
         // Remove job token from database
         $delete = ProcessTranslationToken::where('token', $this->code)->delete();
@@ -85,24 +75,102 @@ class TranslateProcess implements ShouldQueue
         $this->broadcastResponse();
     }
 
-    public function mergeResults($resultNotHtmlStrings = [], $resultHtmlStrings = [])
+    public function prepareData($screens, $handler)
     {
-        $allTranslations = [];
+        // !IMPORTANT:
+        // Chunk max size should be near 1600. 
+        // In handler max_token for response is 2400. 
+        // Total sum is 4000. Just under 4096 allowed for text-davinci-003
+        $maxChunkSize = 1600;
+        $handler->generatePrompt('html', '');
+        $config = $handler->getConfig();
 
-        foreach ($resultNotHtmlStrings as $key => $value) {
-            if (array_key_exists($key, $resultHtmlStrings)) {
-                $allTranslations[$key] = array_merge($resultNotHtmlStrings[$key], $resultHtmlStrings[$key]);
-            } else {
-                $allTranslations[$key] = $value;
+        // Get empty prompt tokens usage
+        $emptyPromptTokens = $this->calcTokens($config['model'], $config['prompt']);
+
+        // For each screen calculate the tokens and the make a sum with the empty prompt tokens usage
+        // If total tokens is less than 1500, continue adding screens to the array
+        $notHtmlChunks = [];
+        $htmlChunks = [];
+        $notHtmlStrings = [];
+        $htmlStrings = [];
+
+        foreach ($screens as $screen) {
+            $notHtmlStrings[$screen['id']] = [];
+            $htmlStrings[$screen['id']] = [];
+            foreach ($screen['availableStrings'] as $string) {
+                if ($this->isHTML($string)) {
+                    $htmlStrings[$screen['id']][] = $string;
+                } else {
+                    $notHtmlStrings[$screen['id']][] = $string;
+                }
+            }
+            $chunkTokens = $this->calcTokens($config['model'], json_encode($notHtmlStrings));
+
+            if (intval($chunkTokens) + intval($emptyPromptTokens) >= $maxChunkSize) {
+                $notHtmlChunks[] = $notHtmlStrings;
+                $notHtmlStrings = [];
+
+                $htmlChunks[] = $htmlStrings;
+                $htmlStrings = [];
             }
         }
-        foreach ($resultHtmlStrings as $key => $value) {
-            if (!array_key_exists($key, $resultNotHtmlStrings)) {
-                $allTranslations[$key] = $value;
-            }
-        }
 
-        return $allTranslations;
+        $notHtmlChunks[] = $notHtmlStrings;
+        $notHtmlStrings = [];
+
+        $htmlChunks[] = $htmlStrings;
+        $htmlStrings = [];
+
+        return [$notHtmlChunks, $htmlChunks];
+    }
+
+    private function executeRequest($languageTranslationHandler, $type, $chunk)
+    {
+        \Log::info('$chunk in executeRequest');
+        \Log::info($chunk);
+        [$response, $usage, $targetLanguage] = $languageTranslationHandler->generatePrompt(
+            $type,
+            json_encode($chunk)
+        )->execute();
+
+        \Log::info('response');
+        \Log::info($response);
+        return [$response, $usage, $targetLanguage];
+    }
+
+    public function isHTML($string) : bool
+    {
+        if ($string != strip_tags($string)) {
+            // is HTML
+            return true;
+        } else {
+            // not HTML
+            return false;
+        }
+    }
+
+    public function calcTokens($model = 'text-davinci-003', $string)
+    {   
+        /** 
+        *    # The following code is in case we need in the future to use gpt-4 or gpt-3.5.-turbo
+        *    # The script to calculate for those models it's available for python: ProcessMaker/Ai/Scripts/token_counter.py
+        *
+        *    $cmd = "python3";
+        *    $args = [
+        *        "ProcessMaker/Ai/Scripts/token_counter.py",
+        *        $model,
+        *        $string
+        *    ];
+        *
+        *    $escaped_args = implode(" ", array_map("escapeshellarg", $args));
+        *    $command = "$cmd $escaped_args 2>&1";
+        *    $tokensUsage = trim(shell_exec($command));
+        *
+        *    return $tokensUsage;
+        */
+
+        return $tokensUsage = count(gpt_encode($string));
     }
 
     private function saveTranslationsInScreen($allTranslations)
@@ -117,7 +185,7 @@ class TranslateProcess implements ShouldQueue
             }
 
             // For each of the result translations of the screen
-            $strings = [];
+            $strings = $screenTranslations[$this->targetLanguage['language']]['strings'];
             foreach ($translations as $item) {
                 $stringFound = false;
 
@@ -134,6 +202,7 @@ class TranslateProcess implements ShouldQueue
                     $strings[] = $stringItem;
                 }
             }
+
             $screenTranslations[$this->targetLanguage['language']]['strings'] = $strings;
             $screenTranslations[$this->targetLanguage['language']]['created_at'] = Carbon::now();
             $screenTranslations[$this->targetLanguage['language']]['updated_at'] = Carbon::now();
