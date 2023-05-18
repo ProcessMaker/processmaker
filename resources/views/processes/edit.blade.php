@@ -437,6 +437,7 @@
             this.editTranslation = null;
           },
           onTranslatingLanguage() {
+            this.$refs.translationsListing.fetch();
             this.$refs.translationsListing.fetchPending();
           },
           formatAssigneePermissions(data) {
