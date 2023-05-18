@@ -13,7 +13,7 @@ class LanguageTranslationHandler extends OpenAiHandler
         parent::__construct();
         $this->config = [
             'model' => 'text-davinci-003',
-            'max_tokens' => 1500,
+            'max_tokens' => 2200,
             'temperature' => 0.7,
             'top_p' => 1,
             'n' => 1,
@@ -84,44 +84,5 @@ class LanguageTranslationHandler extends OpenAiHandler
         $replaced = str_replace('{language}', $language . " \n", $prompt);
 
         return $replaced;
-    }
-
-    public function prepareData($screens)
-    {
-        $notHtmlStrings = [];
-        $htmlStrings = [];
-        foreach ($screens as $screen) {
-            $notHtmlStrings[$screen['id']] = [];
-            $htmlStrings[$screen['id']] = [];
-            foreach ($screen['availableStrings'] as $string) {
-                if ($this->isHTML($string)) {
-                    $htmlStrings[$screen['id']][] = $string;
-                } else {
-                    $notHtmlStrings[$screen['id']][] = $string;
-                }
-            }
-        }
-
-        return [json_encode($notHtmlStrings), json_encode($htmlStrings)];
-    }
-
-    public function isHTML($string) : bool
-    {
-        if ($string != strip_tags($string)) {
-            // is HTML
-            return true;
-        } else {
-            // not HTML
-            return false;
-        }
-    }
-
-    public function chunkTranslations($translations)
-    {
-        // 1000 tokens ~= 750words
-        $totalWords = str_word_count($translations);
-        $tokensUsage = $totalWords * 1000 / 750;
-
-        dd($tokensUsage);
     }
 }
