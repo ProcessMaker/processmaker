@@ -32,8 +32,8 @@ class SettingsUpdated implements SecurityLogEventInterface
     public function getData(): array
     {
         return array_merge([
-            'Group'      => $this->setting->getAttribute('group'),
-            'Name'      => $this->setting->getAttribute('name'),
+            'Group' => $this->setting->getAttribute('group'),
+            'Name' => $this->setting->getAttribute('name'),
         ], $this->formatChanges($this->changes, $this->original));
     }
 

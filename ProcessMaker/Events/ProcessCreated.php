@@ -25,10 +25,10 @@ class ProcessCreated implements SecurityLogEventInterface
     public function getData(): array
     {
         return [
-            'Name'              => $this->process->getAttribute('name'),
-            'Description'       => $this->process->getAttribute('description'),
-            'Category'          => $this->process->category ? $this->process->category->name : null,
-            'Process Manager'   => $this->process->user ? [
+            'Name' => $this->process->getAttribute('name'),
+            'Description' => $this->process->getAttribute('description'),
+            'Category' => $this->process->category ? $this->process->category->name : null,
+            'Process Manager' => $this->process->user ? [
                 'label' => $this->process->user->getAttribute('fullname'),
                 'link' => route('users.edit', $this->process->user),
             ] : null,
