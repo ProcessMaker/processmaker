@@ -12,6 +12,7 @@
     "require": {
         "php": "^8.1",
         "babenkoivan/elastic-scout-driver": "^3.0",
+        "coderevolutionplugins/gpt-3-encoder-php": "dev-main",
         "composer/semver": "^3.3",
         "darkaonline/l5-swagger": "^8.3",
         "doctrine/dbal": "^3.3",
@@ -67,7 +68,8 @@
     },
     "autoload": {
         "files": [
-            "helpers.php"
+            "helpers.php",
+            "vendor/coderevolutionplugins/gpt-3-encoder-php/gpt3-encoder.php"
         ],
         "psr-4": {
             "ProcessMaker\\": [
