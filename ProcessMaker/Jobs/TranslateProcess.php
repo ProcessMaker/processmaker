@@ -139,7 +139,7 @@ class TranslateProcess implements ShouldQueue
         return [$notHtmlChunks, $htmlChunks];
     }
 
-    private function isEmpty($string, $screen) 
+    private function isEmpty($string, $screen)
     {
         $strings = $screen['translations'][$this->targetLanguage['language']]['strings'];
         foreach ($strings as $stringItem) {
@@ -147,6 +147,7 @@ class TranslateProcess implements ShouldQueue
                 return true;
             }
         }
+
         return false;
     }
 
@@ -200,7 +201,6 @@ class TranslateProcess implements ShouldQueue
         foreach ($allTranslations as $screenId => $translations) {
             $screen = Screen::findOrFail($screenId);
             $screenTranslations = $screen->translations;
-
 
             if (!$screenTranslations || !array_key_exists($this->targetLanguage['language'], $screenTranslations)) {
                 $screenTranslations[$this->targetLanguage['language']]['strings'] = [];
