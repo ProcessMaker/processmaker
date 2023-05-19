@@ -28,18 +28,21 @@ class TranslateProcess implements ShouldQueue
 
     private $user;
 
+    private $option;
+
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($process, $screens, $targetLanguage, $code, $user)
+    public function __construct($process, $screens, $targetLanguage, $code, $user, $option)
     {
         $this->process = $process;
         $this->screens = $screens;
         $this->targetLanguage = $targetLanguage;
         $this->code = $code;
         $this->user = $user;
+        $this->option = $option;
     }
 
     /**
@@ -98,11 +101,22 @@ class TranslateProcess implements ShouldQueue
         foreach ($screens as $screen) {
             $notHtmlStrings[$screen['id']] = [];
             $htmlStrings[$screen['id']] = [];
+
             foreach ($screen['availableStrings'] as $string) {
-                if ($this->isHTML($string)) {
-                    $htmlStrings[$screen['id']][] = $string;
-                } else {
-                    $notHtmlStrings[$screen['id']][] = $string;
+                $shouldTranslate = true;
+                // If option selected is 'empty', then should retranslate only empties strings
+                if ($this->option === 'empty') {
+                    if (!$this->isEmpty($string, $screen)) {
+                        $shouldTranslate = false;
+                    }
+                }
+
+                if ($shouldTranslate) {
+                    if ($this->isHTML($string)) {
+                        $htmlStrings[$screen['id']][] = $string;
+                    } else {
+                        $notHtmlStrings[$screen['id']][] = $string;
+                    }
                 }
             }
             $chunkTokens = $this->calcTokens($config['model'], json_encode($notHtmlStrings));
@@ -125,17 +139,23 @@ class TranslateProcess implements ShouldQueue
         return [$notHtmlChunks, $htmlChunks];
     }
 
+    private function isEmpty($string, $screen) 
+    {
+        $strings = $screen['translations'][$this->targetLanguage['language']]['strings'];
+        foreach ($strings as $stringItem) {
+            if ($stringItem['key'] === $string && $stringItem['string'] === '') {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private function executeRequest($languageTranslationHandler, $type, $chunk)
     {
-        \Log::info('$chunk in executeRequest');
-        \Log::info($chunk);
         [$response, $usage, $targetLanguage] = $languageTranslationHandler->generatePrompt(
             $type,
             json_encode($chunk)
         )->execute();
-
-        \Log::info('response');
-        \Log::info($response);
 
         return [$response, $usage, $targetLanguage];
     }
@@ -181,6 +201,7 @@ class TranslateProcess implements ShouldQueue
             $screen = Screen::findOrFail($screenId);
             $screenTranslations = $screen->translations;
 
+
             if (!$screenTranslations || !array_key_exists($this->targetLanguage['language'], $screenTranslations)) {
                 $screenTranslations[$this->targetLanguage['language']]['strings'] = [];
             }
@@ -190,17 +211,16 @@ class TranslateProcess implements ShouldQueue
             foreach ($translations as $item) {
                 $stringFound = false;
 
-                foreach ($screenTranslations[$this->targetLanguage['language']]['strings'] as $stringItem) {
+                foreach ($strings as &$stringItem) {
                     if ($stringItem['key'] === $item['key']) {
                         $stringItem['string'] = $item['value'];
-                        $strings[] = $stringItem;
                         $stringFound = true;
                     }
                 }
 
                 if (!$stringFound) {
-                    $stringItem = ['key' => $item['key'], 'string' => $item['value']];
-                    $strings[] = $stringItem;
+                    $newItem = ['key' => $item['key'], 'string' => $item['value']];
+                    $strings[] = $newItem;
                 }
             }
 
