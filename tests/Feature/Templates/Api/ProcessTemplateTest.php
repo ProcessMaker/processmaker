@@ -203,13 +203,11 @@ class ProcessTemplateTest extends TestCase
 
     public function testTemplateSync()
     {
-        /**
-         * Compare GitHub ProcessCount and database  with template list.
-         */
-
-        // Fetch all templates from github
         $config = config('services.github');
         $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/index.json';
+        // dump($config);
+        // dd($url);
+
         $response = Http::get($url);
         if (!$response->successful()) {
             throw new Exception('Unable to fetch default template list.');
@@ -224,5 +222,85 @@ class ProcessTemplateTest extends TestCase
             }
         }
         $this->assertEquals($count, ProcessTemplates::count());
+        dump('Templates count from develop ' . $count . ' - ' . 'Templates count from ' . $config['template_branch'] . ' ' . ProcessTemplates::where(['key' => 'default_templates'])->count());
+
+        $user = User::factory()->create();
+        $processCategoryId = ProcessCategory::factory()->create(['name' => 'Default Templates', 'status' => 'ACTIVE'])->getKey();
+        ProcessCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
+        ScreenCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
+        // Compare with development branch
+        $templatesRepoBranch = env('DEFAULT_TEMPLATE_BRANCH');
+        if ($templatesRepoBranch != 'develop') {
+            $developReadmeFile = $config['base_url'] . $config['template_repo'] . '/' . 'develop' . '/README.md';
+            $newReadmeFile = $config['base_url'] . $config['template_repo'] . '/' . $templatesRepoBranch . '/README.md';
+
+            $indexFileFromDevelop = file_get_contents($developReadmeFile);
+            $indexFileFromEnvBranch = file_get_contents($newReadmeFile);
+            $diffOutput = $this->getAddedLines($indexFileFromDevelop, $indexFileFromEnvBranch);
+
+            dump('New templates from');
+            dump($diffOutput);
+
+            foreach ($diffOutput as $name) {
+                $template = ProcessTemplates::where(['name' => $name, 'key' => 'default_templates'])->firstOrFail();
+
+                $response = $this->apiCall(
+                    'POST',
+                    route('api.template.create', [
+                        'type' => 'process',
+                        'id' => $template->id,
+                    ]),
+                    [
+                        'user_id' => $user->getKey(),
+                        'name' => $template->name,
+                        'description' => $template->description,
+                        'process_category_id' => $processCategoryId,
+                        'mode' => 'copy',
+                        'saveAssetMode' => 'saveAllAssets',
+                    ]
+                );
+                // dd($response);
+                $response->assertStatus(200);
+                $id = json_decode($response->getContent(), true)['processId'];
+                $newProcess = Process::where('id', $id)->firstOrFail();
+                $newCategory = ProcessCategory::where('id', $template['process_category_id'])->firstOrFail();
+
+                $this->assertEquals($template->name, $newProcess->name);
+                $this->assertEquals($template->description, $newProcess->description);
+                $this->assertEquals('Default Templates', $newCategory->name);
+            }
+        }
+    }
+
+    /**
+     * Returns an array of titles of the added lines between two index files.
+     *
+     * @param string $indexFileFromDevelop The index file from the develop branch.
+     * @param string $indexFileFromEnvBranch The index file from the environment branch.
+     * @return array An array of titles of the added lines in an array.
+     */
+    private function getAddedLines($indexFileFromDevelop, $indexFileFromEnvBranch)
+    {
+        $lines1 = explode(PHP_EOL, $indexFileFromDevelop);
+        $lines2 = explode(PHP_EOL, $indexFileFromEnvBranch);
+        $addedLines = [];
+
+        foreach ($lines2 as $line) {
+            if (!in_array($line, $lines1)) {
+                $addedLines[] = $line;
+            }
+        }
+
+        // Return only the title of the added lines in an array
+        $pattern = '/\[([^]]+)\]/'; // Regular expression pattern to match the content within square brackets
+
+        foreach ($addedLines as $item) {
+            preg_match($pattern, $item, $match);
+            $content = $match[1] ?? ''; // Extract the matched content within square brackets
+            // Add the extracted content to a new array
+            $extractedContent[] = $content;
+        }
+
+        return $extractedContent;
     }
 }
