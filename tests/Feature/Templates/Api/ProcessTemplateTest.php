@@ -208,7 +208,7 @@ class ProcessTemplateTest extends TestCase
         $templateRepoBaseUrl = $githubConfig['base_url'] . $githubConfig['template_repo'];
 
         if ($templateBranch != 'develop' && $templateBranch != 'master') {
-            $count = $this->compareImportedTemplates($githubConfig);
+            $count = $this->countTemplatesFromRepo($githubConfig);
             $this->assertEquals($count, ProcessTemplates::where(['key' => 'default_templates'])->count());
 
             $developReadmeFile = $templateRepoBaseUrl . '/develop/README.md';
@@ -241,7 +241,7 @@ class ProcessTemplateTest extends TestCase
       * @throws Exception If the default template list could not be fetched.
       * @return int The count of templates.
       */
-     private function compareImportedTemplates($config)
+     private function countTemplatesFromRepo($config)
      {
          $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/index.json';
          $response = Http::get($url);
