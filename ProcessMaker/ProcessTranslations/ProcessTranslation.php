@@ -240,16 +240,16 @@ class ProcessTranslation
         foreach ($screensTranslations as $screenTranslation) {
             if ($screenTranslation['translations']) {
                 $translations = $screenTranslation['translations'];
-                
+
                 if (array_key_exists($language, $translations)) {
                     unset($translations[$language]);
                 }
             }
             $screen = Screen::findOrFail($screenTranslation['id']);
-            
+
             $screen->translations = $translations;
             $screen->save();
-        }   
+        }
 
         return true;
     }
