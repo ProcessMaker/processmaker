@@ -252,6 +252,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('process/translations/pending', [ProcessTranslationController::class, 'pending'])->name('process-translation.pending');
     Route::post('process/translations/languages', [ProcessTranslationController::class, 'getAvailableLanguages'])->name('process-translation.languages');
     Route::get('process/translations/{processId}', [ProcessTranslationController::class, 'show'])->name('process-translation.show'); //->middleware('translation-authorization');
+    Route::delete('process/translations/{processId}/{language}', [ProcessTranslationController::class, 'delete'])->name('process-translation.delete'); //->middleware('translation-authorization');
 
     // debugging javascript errors
     Route::post('debug', [DebugController::class, 'store'])->name('debug.store')->middleware('throttle');

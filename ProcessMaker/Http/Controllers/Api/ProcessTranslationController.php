@@ -106,4 +106,13 @@ class ProcessTranslationController extends Controller
             'translations' => $screensTranslations,
         ]);
     }
+
+    public function delete(Request $request, $processId, $language)
+    {
+        $process = Process::findOrFail($processId);
+        $processTranslation = new ProcessTranslation($process);
+        $processTranslation->deleteTranslations($language);
+
+        return response()->json();
+    }
 }

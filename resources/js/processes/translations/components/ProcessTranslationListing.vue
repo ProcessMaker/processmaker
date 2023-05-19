@@ -227,7 +227,7 @@ export default {
         "",
         () => {
           ProcessMaker.apiClient
-            .delete(`/process/translations/${translation}`)
+            .delete(`process/translations/${this.processId}/${translation.language}`)
             .then(() => {
             });
         },

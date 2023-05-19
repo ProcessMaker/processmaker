@@ -157,33 +157,6 @@ export default {
   },
 
   watch: {
-    // screensTranslations(val) {
-    //   this.allScreensTranslations = [];
-
-    //   // For each screen add to the general array in the format [{screen_id: screen_id, translations: translationsArr}]
-    //   val.forEach((screenTranslations) => {
-    //     const translations = [];
-    //     console.log(screenTranslations);
-    //     console.log("screenTranslations.translations");
-    //     console.log(screenTranslations.translations);
-    //     if (screenTranslations.translations) {
-    //       console.log(screenTranslations.translations);
-    //       Object.keys(screenTranslations.translations).forEach((key) => {
-    //       // screenTranslations.translations.forEach((language) => {
-    //         const language = screenTranslations.translations[key];
-    //         console.log(key, language);
-    //         // translations[screenTranslations.id][language.language] = language.strings[0];
-    //         translations.push({ screenId: screenTranslations.id, language: language.language, translations: language.strings[0] });
-    //       });
-    //     }
-    //     console.log("translations");
-    //     console.log(translations);
-    //     this.$set(this.allScreensTranslations, screenTranslations.id, translations);
-    //   });
-    //   console.log("this.allScreensTranslations");
-    //   console.log(this.allScreensTranslations);
-    // },
-
     selectedScreen(val) {
       this.currentScreenTranslations = [];
       this.availableStrings = [];
