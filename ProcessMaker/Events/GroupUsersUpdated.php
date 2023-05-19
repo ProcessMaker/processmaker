@@ -10,10 +10,11 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\User;
 
-class GroupUsersUpdated
+class GroupUsersUpdated implements SecurityLogEventInterface
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -47,26 +48,38 @@ class GroupUsersUpdated
         switch ($this->action) {
             case 'added':
                 $this->data = [
-                    'Group name' => $group->name,
-                    'User added' => $user->username
+                    'group' => [
+                        'link' => route('groups.edit', $group),
+                        'label' => $group->name
+                    ],
+                    '+ user' => [
+                        'link' => route('users.edit', $user),
+                        'label' => $user->username
+                    ]
                 ];
                 break;
             case 'deleted':
                 $this->data = [
-                    'Group name' => $group->name,
-                    'User deleted' => $user->username
+                    'group' => [
+                        'link' => route('groups.edit', $group),
+                        'label' => $group->name
+                    ],
+                    '- user' => [
+                        'link' => route('users.edit', $user),
+                        'label' => $user->username
+                    ]
                 ];
                 break;
         }
     }
-
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return \Illuminate\Broadcasting\Channel|array
-     */
-    public function broadcastOn()
+    
+    public function getData(): array
     {
-        return new PrivateChannel('channel-name');
+        return $this->data;
+    }
+
+    public function getEventName(): string
+    {
+        return 'GroupUsersUpdated';
     }
 }

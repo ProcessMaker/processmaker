@@ -10,12 +10,13 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Http\Controllers\Admin\GroupController;
 use ProcessMaker\Http\Controllers\Api\GroupController as ApiGroupController;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\User;
 
-class UserGroupMembershipUpdated
+class UserGroupMembershipUpdated implements SecurityLogEventInterface
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -45,31 +46,42 @@ class UserGroupMembershipUpdated
         
         foreach ($data['attached'] as $group_id) {
             $group = Group::findOrFail($group_id);
-            $groups_added[] = $group->name;
+            $groups_added[] = [
+                'link' => route('groups.edit', $group),
+                'label' => $group->name
+            ];
         }
         foreach ($data['detached'] as $group_id) {
             $group = Group::findOrFail($group_id);
-            $groups_deleted[] = $group->name;
+            $groups_deleted[] = [
+                'link' => route('groups.edit', $group),
+                'label' => $group->name
+            ];
         }
 
         $this->data = [
-            'User name' => $this->userUpdated->username,
-            'Groups added' => $groups_added,
-            'Groups deleted' => $groups_deleted
+            'user' => [
+                'link' => route('users.edit', $this->userUpdated),
+                'label' => $this->userUpdated->username
+            ]
         ];
+
+        if (!empty($groups_added)) {
+            $this->data['+ groups'] = $groups_added;
+        };
+
+        if (!empty($groups_deleted)) {
+            $this->data['- groups'] = $groups_deleted;
+        };
+    }
+    
+    public function getData(): array
+    {
+        return $this->data;
     }
 
-    /**
-     * 
-     */
-
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return \Illuminate\Broadcasting\Channel|array
-     */
-    public function broadcastOn()
+    public function getEventName(): string
     {
-        return new PrivateChannel('channel-name');
+        return 'UserGroupMembershipUpdated';
     }
 }
