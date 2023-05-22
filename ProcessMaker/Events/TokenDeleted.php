@@ -10,7 +10,6 @@ class TokenDeleted implements SecurityLogEventInterface
 {
     use Dispatchable;
 
-    public $user;
     public $data;
 
     /**
