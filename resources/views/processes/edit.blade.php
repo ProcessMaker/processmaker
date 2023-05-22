@@ -229,7 +229,6 @@
                                 ref="create-process-translation-modal" 
                                 :process-id="{{ $process->id }}"
                                 process-name="{{ $process->name }}"
-                                :translated-languages="translatedLanguages"
                                 :edit-translation="editTranslation"
                                 @create-process-translation-closed="onCreateProcessTranslationClosed"
                                 @translating-language="onTranslatingLanguage" />
