@@ -10,6 +10,7 @@
       @hidden="onClose"
       @translate="translate"
       @showSelectTargetLanguage="showSelectTargetLanguage"
+      @saveTranslations="saveTranslations"
       :hasTitleButtons="hasTitleButtons"
       :hasHeaderButtons="hasHeaderButtons"
       :headerButtons="headerButtons"
@@ -217,12 +218,18 @@ export default {
         return;
       }
 
+      if (!this.screensTranslations[screenIndex].translations[this.selectedLanguage.language]) {
+        this.screensTranslations[screenIndex].translations[this.selectedLanguage.language] = { strings: [] };
+      }
+
       const stringIndex = this.screensTranslations[screenIndex].translations[this.selectedLanguage.language].strings.findIndex(item => item.key === key);
 
       if (stringIndex !== -1) {
         this.$nextTick(() => {
           this.$set(this.screensTranslations[screenIndex].translations[this.selectedLanguage.language].strings[stringIndex], "string", value);
         });
+      } else {
+        this.screensTranslations[screenIndex].translations[this.selectedLanguage.language].strings.push({ key, string: value });
       }
     },
     validateLanguageSelected() {
@@ -333,6 +340,19 @@ export default {
         });
     },
     saveTranslations() {
+      this.loading = true;
+      this.customModalButtons[2].disabled = true;
+      const params = {
+        process_id: this.processId,
+        screens_translations: this.screensTranslations,
+      };
+
+      // Load from our api client
+      ProcessMaker.apiClient.put("/process/translations/update", params)
+        .then((response) => {
+          this.loading = false;
+          this.customModalButtons[2].disabled = false;
+        });
     },
   },
 };

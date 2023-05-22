@@ -115,4 +115,15 @@ class ProcessTranslationController extends Controller
 
         return response()->json();
     }
+
+    public function update(Request $request)
+    {
+        $processId = $request->input('process_id');
+        $screensTranslations = $request->input('screens_translations');
+
+        $process = Process::findOrFail($processId);
+
+        $processTranslation = new ProcessTranslation($process);
+        // $processTranslation->updateTranslations($screensTranslations);
+    }
 }
