@@ -19,7 +19,7 @@ class UserGroupMembershipUpdated implements SecurityLogEventInterface
      *
      * @return void
      */
-    public function __construct(Array $data, User $userUpdated)
+    public function __construct(array $data, User $userUpdated)
     {
         $this->userUpdated = $userUpdated;
         $this->buildData($data);

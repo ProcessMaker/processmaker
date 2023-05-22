@@ -304,6 +304,7 @@ class UserController extends Controller
      */
     public function updateGroups(User $user, Request $request)
     {
+        $data = [];
         if ($request->has('groups')) {
             if ($request->filled('groups')) {
                 $groups = $request->input('groups');
