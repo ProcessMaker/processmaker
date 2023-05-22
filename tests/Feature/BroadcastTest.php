@@ -223,41 +223,4 @@ class BroadcastTest extends TestCase
         $user = User::factory()->create();
         event(new ScriptResponseEvent($user, 200, ['foo' => 'bar'], ['config_one' => 1], 'nonce001'));
     }
-
-    /**
-     * Asserts that the UserGroupMembershipUpdated broadcast event works.
-     */
-    public function testUserGroupMembershipUpdatedBroadcast()
-    {
-        
-        $user = User::factory()->create();
-        $group1 = Group::factory()->create();
-        $group2 = Group::factory()->create();
-
-        $data = [
-            'attached' => [$group1->id],
-            'detached' => [$group2->id]
-        ];
-
-        $this->expectsEvents([
-            UserGroupMembershipUpdated::class,
-        ]);
-        event(new UserGroupMembershipUpdated($data, $user));
-    }
-
-    /**
-     * Asserts that the GroupUsersUpdated broadcast event works.
-     */
-    public function testGroupUsersUpdatedBroadcast()
-    {
-        
-        $group = Group::factory()->create();
-        $user = User::factory()->create();
-
-        $this->expectsEvents([
-            GroupUsersUpdated::class,
-        ]);
-        
-        event(new GroupUsersUpdated($group->id, $user->id, 'deleted'));
-    }
 }

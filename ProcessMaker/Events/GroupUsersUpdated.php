@@ -2,26 +2,18 @@
 
 namespace ProcessMaker\Events;
 
-use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\User;
 
 class GroupUsersUpdated implements SecurityLogEventInterface
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
 
-    public $user;
     public $data;
     public $groupUpdated;
-    public $user_id;
+    public $userId;
     public $action;
 
     /**
@@ -29,11 +21,10 @@ class GroupUsersUpdated implements SecurityLogEventInterface
      *
      * @return void
      */
-    public function __construct(int $groupUpdated, int $user_id, string $action)
+    public function __construct(int $groupUpdated, int $userId, string $action)
     {
-        $this->user = Auth::user();
         $this->groupUpdated = $groupUpdated;
-        $this->user_id = $user_id;
+        $this->userId = $userId;
         $this->action = $action;
         $this->buildData();
     }
@@ -42,7 +33,7 @@ class GroupUsersUpdated implements SecurityLogEventInterface
      * Building the data
      */
     public function buildData() {
-        $user = User::findOrFail($this->user_id);
+        $user = User::findOrFail($this->userId);
         $group = Group::findOrFail($this->groupUpdated);
 
         switch ($this->action) {
@@ -73,11 +64,17 @@ class GroupUsersUpdated implements SecurityLogEventInterface
         }
     }
     
+    /**
+     * Return event data 
+     */
     public function getData(): array
     {
         return $this->data;
     }
 
+    /**
+     * return event name
+     */
     public function getEventName(): string
     {
         return 'GroupUsersUpdated';
