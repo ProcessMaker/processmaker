@@ -16,5 +16,5 @@ interface ServiceTaskImplementationInterface
      *
      * @return string $tokenId
      */
-    public function run(array $data, array $config, $tokenId = '', $errorHandling = []);
+    public function run(array $data, array $config, $tokenId = '');
 }
