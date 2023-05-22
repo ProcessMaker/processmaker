@@ -203,6 +203,11 @@ class ProcessTemplateTest extends TestCase
 
     public function testTemplateSync()
     {
+        $user = User::factory()->create();
+        $processCategoryId = ProcessCategory::factory()->create(['name' => 'Default Templates', 'status' => 'ACTIVE'])->getKey();
+        ProcessCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
+        ScreenCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
+
         $githubConfig = config('services.github');
         $templateBranch = $githubConfig['template_branch'];
         $templateRepoBaseUrl = $githubConfig['base_url'] . $githubConfig['template_repo'];
@@ -220,7 +225,7 @@ class ProcessTemplateTest extends TestCase
 
             foreach ($diffOutput as $templateName) {
                 $template = ProcessTemplates::where(['name' => $templateName, 'key' => 'default_templates'])->firstOrFail();
-                $response = $this->importProcessesFromTemplates($template);
+                $response = $this->createProcessesFromTemplate($template, $user, $processCategoryId);
                 $response->assertStatus(200);
 
                 $processId = json_decode($response->getContent(), true)['processId'];
@@ -263,19 +268,13 @@ class ProcessTemplateTest extends TestCase
      }
 
     /**
-     * Imports processes from a given template.
+     * Create processes from a given template.
      *
      * @param mixed $template The template to import processes from.
-     * @throws \Some_Exception_Class If the API call fails.
      * @return mixed The response from the API call.
      */
-    private function importProcessesFromTemplates($template)
+    private function createProcessesFromTemplate($template, $user, $processCategoryId)
     {
-        $user = User::factory()->create();
-        $processCategoryId = ProcessCategory::factory()->create(['name' => 'Default Templates', 'status' => 'ACTIVE'])->getKey();
-        ProcessCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
-        ScreenCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
-
         $response = $this->apiCall(
             'POST',
             route('api.template.create', [
