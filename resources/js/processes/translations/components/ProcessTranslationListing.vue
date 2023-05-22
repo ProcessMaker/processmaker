@@ -220,7 +220,6 @@ export default {
     },
 
     handleDeleteTranslation(translation) {
-      console.log(translation);
       ProcessMaker.confirmModal(
         this.$t("Caution!"),
         this.$t(`Are you sure you want to delete the translations for ${translation.humanLanguage} language?`),
