@@ -356,11 +356,11 @@ class WorkflowManager
      *
      * @return mixed
      */
-    public function runServiceImplementation($implementation, array $data, array $config, $tokenId = '')
+    public function runServiceImplementation($implementation, array $data, array $config, $tokenId = '', $errorHandling = [])
     {
         $class = $this->serviceTaskImplementations[$implementation];
         $service = new $class();
 
-        return $service->run($data, $config, $tokenId);
+        return $service->run($data, $config, $tokenId, $errorHandling);
     }
 }
