@@ -11,7 +11,6 @@ use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Users as UserResource;
-use ProcessMaker\Models\Group;
 use ProcessMaker\Models\User;
 
 class UserController extends Controller
