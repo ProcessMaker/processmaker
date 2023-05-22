@@ -97,6 +97,7 @@
                     :aria-label="$t('Add a translation for ') + key"
                     @focus="$event.target.select()"
                     autocomplete="off"
+                    @keyup="updateGlobalString(value, key)"
                   />
                 </td>
               </tr>
@@ -207,6 +208,23 @@ export default {
     this.getAvailableLanguages();
   },
   methods: {
+    // This method updates the corresponding string changed in the variable "screensTranslations", so when changing the screen
+    // it will remember the changes made by the user
+    updateGlobalString(value, key) {
+      const screenIndex = this.screensTranslations.findIndex((screen) => screen.id === this.selectedScreen.id);
+
+      if (screenIndex === -1) {
+        return;
+      }
+
+      const stringIndex = this.screensTranslations[screenIndex].translations[this.selectedLanguage.language].strings.findIndex(item => item.key === key);
+
+      if (stringIndex !== -1) {
+        this.$nextTick(() => {
+          this.$set(this.screensTranslations[screenIndex].translations[this.selectedLanguage.language].strings[stringIndex], "string", value);
+        });
+      }
+    },
     validateLanguageSelected() {
       if (!this.selectedLanguage) {
         this.customModalButtons[1].disabled = true;
