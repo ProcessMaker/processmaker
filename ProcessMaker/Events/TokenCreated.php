@@ -2,21 +2,13 @@
 
 namespace ProcessMaker\Events;
 
-use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Auth;
 use Laravel\Passport\Token;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
-use ProcessMaker\Models\User;
 
 class TokenCreated implements SecurityLogEventInterface
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
 
     public $user;
     public $data;
@@ -28,17 +20,22 @@ class TokenCreated implements SecurityLogEventInterface
      */
     public function __construct(Token $created_values)
     {
-        $this->user = Auth::user();
         $this->data = [
             "Token" => $created_values
         ];
     }
     
+    /**
+     * Return event data 
+     */
     public function getData(): array
     {
         return $this->data;
     }
 
+    /**
+     * return event name
+     */
     public function getEventName(): string
     {
         return 'TokenCreated';
