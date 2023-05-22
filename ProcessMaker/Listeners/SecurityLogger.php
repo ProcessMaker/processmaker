@@ -25,7 +25,7 @@ class SecurityLogger
     public function handle($event)
     {
         $class = get_class($event);
-
+        
         if ($event instanceof SecurityLogEventInterface) {
             $data = $event->getData();
             SecurityLog::create([

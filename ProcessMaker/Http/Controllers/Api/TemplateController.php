@@ -3,8 +3,10 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use ProcessMaker\Events\TemplateChanged;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\TemplateCollection;
+use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Template;
 
 class TemplateController extends Controller
@@ -99,6 +101,12 @@ class TemplateController extends Controller
     {
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
 
+        //Call event to log Template Config changes
+        $queryOldtemplate= ProcessTemplates::select('id', 'name', 'process_category_id','created_at','updated_at')
+        ->where('id', $request->id)
+        ->get()->toArray();
+
+        event(new TemplateChanged ($request,$queryOldtemplate,'configTemplate'));
         return $this->template->updateTemplateConfigs($type, $request);
     }
 
