@@ -77,6 +77,7 @@ class ClientController extends PassportClientController
         }
 
         $original_values = $client->getAttributes();
+        dD(true === 0);
         
         $this->validate($request);
 
@@ -91,7 +92,7 @@ class ClientController extends PassportClientController
             'password_client' => $password,
         ])->save();
 
-        AuthClientUpdated::dispatch($original_values, $client);
+        AuthClientUpdated::dispatch($original_values, $client->getAttributes());
 
         return new AuthClientResource($client);
     }

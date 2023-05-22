@@ -62,6 +62,7 @@ class SecurityLog extends ProcessMakerModel
      * @var array
      */
     protected $casts = [
+        'data' => 'object',
         'meta' => 'object',
     ];
 
@@ -105,5 +106,22 @@ class SecurityLog extends ProcessMakerModel
         });
 
         return $query;
+    }
+
+    public static function rules()
+    {
+        return [
+            'event' => ['required', 'max:40'],
+            'ip' => ['required', 'max:40'],
+            'meta' => ['required', 'array'],
+            'meta.user_agent' => ['required', 'string'],
+            'meta.browser.name' => ['required', 'string'],
+            'meta.browser.version' => ['nullable', 'string'],
+            'meta.os.name' => ['required', 'string'],
+            'meta.os.version' => ['nullable', 'string'],
+            'user_id' => ['required', 'int'],
+            'occurred_at' => ['required', 'int'],
+            'data' => ['nullable', 'array'],
+        ];
     }
 }
