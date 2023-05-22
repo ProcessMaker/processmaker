@@ -11,9 +11,10 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Passport\Token;
+use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Models\User;
 
-class TokenDeleted
+class TokenDeleted implements SecurityLogEventInterface
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -29,17 +30,17 @@ class TokenDeleted
     {
         $this->user = Auth::user();
         $this->data = [
-            "Token deleted" => $deleted_values->id
+            "Token" => $deleted_values->id
         ];
     }
-
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return \Illuminate\Broadcasting\Channel|array
-     */
-    public function broadcastOn()
+    
+    public function getData(): array
     {
-        return new PrivateChannel('channel-name');
+        return $this->data;
+    }
+
+    public function getEventName(): string
+    {
+        return 'TokenDeleted';
     }
 }
