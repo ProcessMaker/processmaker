@@ -77,7 +77,6 @@ class ClientController extends PassportClientController
         }
 
         $original_values = $client->getAttributes();
-        dD(true === 0);
         
         $this->validate($request);
 
