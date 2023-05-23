@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use ProcessMaker\Exception\ImportPasswordException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\ImportExport\ExportEncrypted;
@@ -56,7 +57,12 @@ class ImportController extends Controller
 
         $newProcessId = $manifest[$payload['root']]->log['newId'];
 
-        return response()->json(['processId' => $newProcessId], 200);
+        $messages = [];
+        if (Session::get('_alert')) {
+            $messages[] = Session::get('_alert');
+        }
+
+        return response()->json(['processId' => $newProcessId, 'messages' => $messages], 200);
     }
 
     public function importTemplate(String $type, Request $request): JsonResponse

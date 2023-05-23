@@ -403,9 +403,21 @@ export default {
                     const { processId } = response.data;
                     const successMessage = this.$t('Process was successfully imported');
 
-                    ProcessMaker.alert(successMessage, 'success');
-                    window.location.href = processId ? `/modeler/${processId}` : '/processes/';
-                    this.submitted = false; // the form was successfully submitted
+                    if (response.data.messages.length > 0) {
+                        ProcessMaker.messageModal(
+                            this.$t("Message"),
+                            this.$t(response.data.messages[0].message),
+                            "",
+                            () => {
+                                ProcessMaker.alert(successMessage, 'success');
+                                window.location.href = processId ? `/modeler/${processId}` : '/processes/';
+                                this.submitted = false; // the form was successfully submitted
+                            });
+                    } else {
+                        ProcessMaker.alert(successMessage, 'success');
+                        window.location.href = processId ? `/modeler/${processId}` : '/processes/';
+                        this.submitted = false; // the form was successfully submitted
+                    }
                 } else {
                     // the request was successful but did not return expected data
                     throw new Error(this.$t('Unknown error while importing the Process.'));

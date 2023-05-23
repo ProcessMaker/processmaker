@@ -7,6 +7,7 @@ import notifications from "./components/requests/notifications";
 import sessionModal from "./components/Session";
 import Sidebaricon from "./components/Sidebaricon";
 import ConfirmationModal from "./components/Confirm";
+import MessageModal from "./components/Message";
 import NavbarProfile from "./components/NavbarProfile";
 import SelectStatus from "./components/SelectStatus";
 import SelectUser from "./components/SelectUser";
@@ -73,6 +74,7 @@ window.ProcessMaker.navbar = new Vue({
     notifications,
     sessionModal,
     ConfirmationModal,
+    MessageModal,
     NavbarProfile,
   },
   data() {
@@ -198,6 +200,15 @@ window.ProcessMaker.closeSessionModal = function () {
 window.ProcessMaker.confirmModal = function (title, message, variant, callback) {
   ProcessMaker.navbar.confirmTitle = title || __("Confirm");
   ProcessMaker.navbar.confirmMessage = message || __("Are you sure you want to delete?");
+  ProcessMaker.navbar.confirmVariant = variant;
+  ProcessMaker.navbar.confirmCallback = callback;
+  ProcessMaker.navbar.confirmShow = true;
+};
+
+// Set out own specific message modal.
+window.ProcessMaker.messageModal = function (title, message, variant, callback) {
+  ProcessMaker.navbar.confirmTitle = title || __("Message");
+  ProcessMaker.navbar.confirmMessage = message || __("");
   ProcessMaker.navbar.confirmVariant = variant;
   ProcessMaker.navbar.confirmCallback = callback;
   ProcessMaker.navbar.confirmShow = true;
