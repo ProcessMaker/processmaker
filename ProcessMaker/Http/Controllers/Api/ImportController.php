@@ -57,12 +57,12 @@ class ImportController extends Controller
 
         $newProcessId = $manifest[$payload['root']]->log['newId'];
 
-        $messages = [];
+        $message = null;
         if (Session::get('_alert')) {
-            $messages[] = Session::get('_alert');
+            $message = Session::get('_alert');
         }
 
-        return response()->json(['processId' => $newProcessId, 'messages' => $messages], 200);
+        return response()->json(['processId' => $newProcessId, 'message' => $message], 200);
     }
 
     public function importTemplate(String $type, Request $request): JsonResponse
