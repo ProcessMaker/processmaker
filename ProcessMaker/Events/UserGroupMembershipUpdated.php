@@ -13,6 +13,7 @@ class UserGroupMembershipUpdated implements SecurityLogEventInterface
 
     public $userUpdated;
     public $data;
+    public $changes;
 
     /**
      * Create a new event instance.
@@ -23,6 +24,10 @@ class UserGroupMembershipUpdated implements SecurityLogEventInterface
     {
         $this->userUpdated = $userUpdated;
         $this->buildData($data);
+        $this->changes = [
+            'user' => $userUpdated, 
+            'groups' => $data
+        ];
     }
 
     /**
@@ -71,12 +76,20 @@ class UserGroupMembershipUpdated implements SecurityLogEventInterface
     {
         return $this->data;
     }
+    
+    /**
+     * Return event data 
+     */
+    public function getChanges(): array
+    {
+        return $this->changes;
+    }
 
     /**
      * return event name
      */
     public function getEventName(): string
     {
-        return 'UserGroupMembershipUpdated';
+        return 'Group Added/Removed from User';
     }
 }
