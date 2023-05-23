@@ -39,10 +39,19 @@ class SecurityLogger
             ]);
         } elseif (array_key_exists($class, $this->eventTypes)) {
             $eventType = $this->eventTypes[$class];
+            $meta = $this->getMeta();
+            $data = [
+                'ip_address' => request()->ip(),
+                'browser_name' => $meta['browser']['name'],
+                'browser_version' => $meta['browser']['version'],
+                'os_name' => $meta['os']['name'],
+                'os_version' => $meta['os']['version'],
+            ];
             SecurityLog::create([
                 'event' => $eventType,
                 'ip' => request()->ip(),
-                'meta' => $this->getMeta(),
+                'meta' => $meta,
+                'data' => $data,
                 'user_id' => isset($event->user) ? $event->user->id : null
             ]);
         }
