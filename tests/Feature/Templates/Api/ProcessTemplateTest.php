@@ -222,38 +222,33 @@ class ProcessTemplateTest extends TestCase
         ]);
 
         $githubConfig = config('services.github');
-        $templateBranch = $githubConfig['template_branch'];
 
-        if ($templateBranch != 'develop') {
-            $count = $this->countTemplatesFromRepo($githubConfig);
-            $allTemplates = ProcessTemplates::where(['key' => 'default_templates'])->select(['id', 'description', 'name', 'process_category_id'])->get();
-            $this->assertEquals($count, $allTemplates->count());
-            $failedProcess = [];
+        $count = $this->countTemplatesFromRepo($githubConfig);
+        $allTemplates = ProcessTemplates::where(['key' => 'default_templates'])->select(['id', 'description', 'name', 'process_category_id'])->get();
+        $this->assertEquals($count, $allTemplates->count());
 
-            foreach ($allTemplates as $template) {
-                $response = $this->createProcessesFromTemplate($template, $user, $processCategoryId);
+        $failedProcess = [];
 
-                if ($response->getStatusCode() != 200) {
-                    array_push($failedProcess, $template->name . ' : ' . $template->id);
-                    continue;
-                }
+        foreach ($allTemplates as $template) {
+            $response = $this->createProcessesFromTemplate($template, $user, $processCategoryId);
 
-                $response->assertStatus(200);
-                $processId = json_decode($response->getContent(), true)['processId'];
-                $newProcess = Process::where('id', $processId)->firstOrFail();
-                $newCategory = ProcessCategory::where('id', $template['process_category_id'])->firstOrFail();
-
-                $this->assertEquals($template->name, $newProcess->name);
-                $this->assertEquals($template->description, $newProcess->description);
-                $this->assertEquals('Default Templates', $newCategory->name);
+            if ($response->getStatusCode() != 200) {
+                array_push($failedProcess, $template->name);
+                continue;
             }
-            // dump($failedProcess);
-            // dump(Process::select(['name', 'id'])->get()->toArray());
-            // dump(ProcessTemplates::select(['name', 'id'])->get()->toArray());
 
-            if (count($failedProcess) > 0) {
-                throw new Exception(implode(', ', $failedProcess));
-            }
+            $response->assertStatus(200);
+            $processId = json_decode($response->getContent(), true)['processId'];
+            $newProcess = Process::where('id', $processId)->firstOrFail();
+            $newCategory = ProcessCategory::where('id', $template['process_category_id'])->firstOrFail();
+
+            $this->assertEquals($template->name, $newProcess->name);
+            $this->assertEquals($template->description, $newProcess->description);
+            $this->assertEquals('Default Templates', $newCategory->name);
+        }
+
+        if (count($failedProcess) > 0) {
+            throw new Exception(implode(', ', $failedProcess));
         }
     }
 
