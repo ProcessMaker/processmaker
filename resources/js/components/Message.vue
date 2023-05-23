@@ -42,7 +42,6 @@
                 if (this.callback) {
                     this.callback();
                 }
-                this.$emit('close');
             },
         },
         mounted() {
