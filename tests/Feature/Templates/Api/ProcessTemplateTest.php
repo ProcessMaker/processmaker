@@ -14,6 +14,8 @@ use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
+use ProcessMaker\Models\ScriptCategory;
+use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\Templates;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
@@ -203,31 +205,40 @@ class ProcessTemplateTest extends TestCase
 
     public function testTemplateSync()
     {
+        $this->addGlobalSignalProcess();
         $user = User::factory()->create();
         $processCategoryId = ProcessCategory::factory()->create(['name' => 'Default Templates', 'status' => 'ACTIVE'])->getKey();
         ProcessCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
         ScreenCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
+        ScriptCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
+        Setting::firstOrCreate(['key' => 'idp.token_url'], [
+            'format' => 'text',
+            'group' => 'IDP',
+            'helper' => 'Enter your OAuth2 token URL',
+            'config' => '',
+            'name' => 'Token URL',
+            'hidden' => false,
+            'ui' => null,
+        ]);
 
         $githubConfig = config('services.github');
         $templateBranch = $githubConfig['template_branch'];
-        $templateRepoBaseUrl = $githubConfig['base_url'] . $githubConfig['template_repo'];
 
-        if ($templateBranch != 'develop' && $templateBranch != 'master') {
+        if ($templateBranch != 'develop') {
             $count = $this->countTemplatesFromRepo($githubConfig);
-            $this->assertEquals($count, ProcessTemplates::where(['key' => 'default_templates'])->count());
+            $allTemplates = ProcessTemplates::where(['key' => 'default_templates'])->select(['id', 'description', 'name', 'process_category_id'])->get();
+            $this->assertEquals($count, $allTemplates->count());
+            $failedProcess = [];
 
-            $developReadmeFile = $templateRepoBaseUrl . '/develop/README.md';
-            $newReadmeFile = $templateRepoBaseUrl . '/' . $templateBranch . '/README.md';
-
-            $developIndex = Http::get($developReadmeFile);
-            $envIndex = Http::get($newReadmeFile);
-            $diffOutput = $this->getAddedLines($developIndex, $envIndex);
-
-            foreach ($diffOutput as $templateName) {
-                $template = ProcessTemplates::where(['name' => $templateName, 'key' => 'default_templates'])->firstOrFail();
+            foreach ($allTemplates as $template) {
                 $response = $this->createProcessesFromTemplate($template, $user, $processCategoryId);
-                $response->assertStatus(200);
 
+                if ($response->getStatusCode() != 200) {
+                    array_push($failedProcess, $template->name . ' : ' . $template->id);
+                    continue;
+                }
+
+                $response->assertStatus(200);
                 $processId = json_decode($response->getContent(), true)['processId'];
                 $newProcess = Process::where('id', $processId)->firstOrFail();
                 $newCategory = ProcessCategory::where('id', $template['process_category_id'])->firstOrFail();
@@ -235,6 +246,13 @@ class ProcessTemplateTest extends TestCase
                 $this->assertEquals($template->name, $newProcess->name);
                 $this->assertEquals($template->description, $newProcess->description);
                 $this->assertEquals('Default Templates', $newCategory->name);
+            }
+            // dump($failedProcess);
+            // dump(Process::select(['name', 'id'])->get()->toArray());
+            // dump(ProcessTemplates::select(['name', 'id'])->get()->toArray());
+
+            if (count($failedProcess) > 0) {
+                throw new Exception(implode(', ', $failedProcess));
             }
         }
     }
@@ -292,36 +310,5 @@ class ProcessTemplateTest extends TestCase
         );
 
         return $response;
-    }
-
-    /**
-     * Returns an array of titles of the added lines between two index files.
-     *
-     * @param string $developIndex The index file from the develop branch.
-     * @param string $envIndex The index file from the environment branch.
-     * @return array An array of titles of the added lines in an array.
-     */
-    private function getAddedLines($developIndex, $envIndex)
-    {
-        $developLines = explode(PHP_EOL, $developIndex);
-        $envLines = explode(PHP_EOL, $envIndex);
-        $addedLines = [];
-
-        foreach ($envLines as $line) {
-            if (!in_array($line, $developLines)) {
-                $addedLines[] = $line;
-            }
-        }
-
-        $pattern = '/\[([^]]+)\]/';
-        $extractedContent = [];
-
-        foreach ($addedLines as $item) {
-            preg_match($pattern, $item, $match);
-            $content = $match[1] ?? '';
-            $extractedContent[] = $content;
-        }
-
-        return $extractedContent;
     }
 }
