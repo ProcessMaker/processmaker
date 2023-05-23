@@ -6,6 +6,8 @@ trait FormatSecurityLogChanges
 {
     public function formatChanges(array $changes, array $original)
     {
+        unset($changes['updated_at']);
+        unset($original['updated_at']);
         //return $changes;
         $formatted = [];
         foreach ($changes as $key => $newValue) {
