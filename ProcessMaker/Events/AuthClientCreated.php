@@ -19,7 +19,16 @@ class AuthClientCreated implements SecurityLogEventInterface
      */
     public function __construct(array $created_values)
     {
-        $this->data = $created_values;
+        $this->data = [
+            'auth client id' => $created_values['id'],
+            'name' => $created_values['name'],
+            'user_id' => $created_values['user_id'],
+            'revoked' => $created_values['revoked'],
+            'provider' => $created_values['provider'],
+            'redirect' => $created_values['redirect'],
+            'password_client' => $created_values['password_client'],
+            'personal_access_client' => $created_values['personal_access_client']
+        ];
         $this->changes = $created_values;
     }
     
