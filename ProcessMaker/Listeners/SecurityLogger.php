@@ -13,9 +13,6 @@ class SecurityLogger
         'Illuminate\Auth\Events\Failed' => 'attempt',
         'Illuminate\Auth\Events\Login' => 'login',
         'Illuminate\Auth\Events\Logout' => 'logout',
-        'ProcessMaker\Events\ScriptExecutorCreated' => 'scriptExecutorCreated',
-        'ProcessMaker\Events\ScriptExecutorUpdated' => 'scriptExecutorUpdated',
-        'ProcessMaker\Events\ScriptExecutorDeleted' => 'scriptExecutorDeleted'
     ];
 
     /**
@@ -38,26 +35,6 @@ class SecurityLogger
                     $userId = null;
                 }
 
-                if (isset($event->created_values)) {
-                    $created_values = $event->created_values;
-                } else {
-                    $created_values = null;
-                }
-
-                if(isset($event->original_values) && isset($event->changed_values)) {
-                    $original_values = $event->original_values;
-                    $changed_values = $event->changed_values;
-                } else {
-                    $original_values = null;
-                    $changed_values = null;
-                }
-
-                if (isset($event->deleted_values)) {
-                    $deleted_values = $event->deleted_values;
-                } else {
-                    $deleted_values = null;
-                }
-
                 $userAgent = $this->userAgent();
 
                 SecurityLog::create([
@@ -73,10 +50,6 @@ class SecurityLogger
                             'name' => $userAgent->os->name,
                             'version' => $userAgent->os->version,
                         ],
-                        'created_values' => $created_values,
-                        'original_values' => $original_values,
-                        'changed_values' => $changed_values,
-                        'deleted_values' => $deleted_values
                     ],
                     'user_id' => $userId,
                 ]);
