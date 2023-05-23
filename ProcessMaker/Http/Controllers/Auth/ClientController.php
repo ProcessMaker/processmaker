@@ -57,7 +57,7 @@ class ClientController extends PassportClientController
             $request->user()->getKey(), $request->name, $redirect, null, $personalAccess, $password
         )->makeVisible('secret');
 
-        AuthClientCreated::dispatch($client);
+        AuthClientCreated::dispatch($client->getAttributes());
 
         return new AuthClientResource($client);
     }
@@ -112,7 +112,7 @@ class ClientController extends PassportClientController
         }
 
         $this->clients->delete($client);
-        AuthClientDeleted::dispatch($client);
+        AuthClientDeleted::dispatch($client->getAttributes());
 
         return response('', 204);
     }

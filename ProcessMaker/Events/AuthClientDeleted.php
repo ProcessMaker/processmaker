@@ -17,9 +17,10 @@ class AuthClientDeleted implements SecurityLogEventInterface
      *
      * @return void
      */
-    public function __construct($deleted_values)
+    public function __construct(array $deleted_values)
     {
         $this->data = $deleted_values;
+        $this->changes = $deleted_values;
     }
     
     /**

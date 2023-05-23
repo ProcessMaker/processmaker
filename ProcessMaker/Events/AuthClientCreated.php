@@ -17,9 +17,10 @@ class AuthClientCreated implements SecurityLogEventInterface
      *
      * @return void
      */
-    public function __construct($created_values)
+    public function __construct(array $created_values)
     {
         $this->data = $created_values;
+        $this->changes = $created_values;
     }
     
     /**

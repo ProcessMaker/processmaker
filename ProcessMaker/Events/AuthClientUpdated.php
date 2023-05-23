@@ -24,6 +24,7 @@ class AuthClientUpdated implements SecurityLogEventInterface
         $this->original_values = $original_values;
         $this->changed_values = $changed_values;
         $this->buildData();
+        $this->changes = $changed_values;
     }
 
     /**
