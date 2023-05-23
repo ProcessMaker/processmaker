@@ -102,11 +102,11 @@ class TemplateController extends Controller
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
 
         //Call event to log Template Config changes
-        $queryOldtemplate= ProcessTemplates::select('id', 'name', 'process_category_id','created_at','updated_at')
-        ->where('id', $request->id)
-        ->get()->toArray();
-
-        event(new TemplateChanged ($request,$queryOldtemplate,'configTemplate'));
+        // $queryOldtemplate= ProcessTemplates::select('id', 'name', 'process_category_id','created_at','updated_at')
+        // ->where('id', $request->id)
+        // ->get()->toArray();
+   
+        event(new TemplateChanged ($request,'configTemplate'));
         return $this->template->updateTemplateConfigs($type, $request);
     }
 
