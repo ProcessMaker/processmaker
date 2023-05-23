@@ -63,8 +63,16 @@ class SecurityLog extends ProcessMakerModel
      */
     protected $casts = [
         'data' => 'object',
+        'changes' => 'object',
         'meta' => 'object',
     ];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = ['changes'];
 
     /**
      * Get the associated user, if any.
@@ -122,6 +130,7 @@ class SecurityLog extends ProcessMakerModel
             'user_id' => ['required', 'int'],
             'occurred_at' => ['required', 'int'],
             'data' => ['nullable', 'array'],
+            'changes' => ['nullable', 'array'],
         ];
     }
 }
