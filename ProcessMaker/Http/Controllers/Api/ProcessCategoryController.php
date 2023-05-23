@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use ProcessMaker\Events\CategoryChanged;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ProcessCategory as Resource;
@@ -187,8 +188,13 @@ class ProcessCategoryController extends Controller
     {
         $request->validate(ProcessCategory::rules($processCategory));
         $processCategory->fill($request->json()->all());
-        $processCategory->saveOrFail();
 
+        //call Event to store changes in Log
+        event(new CategoryChanged($request,$processCategory));
+        $processCategory->saveOrFail();
+        
+        
+        $processCategory->saveOrFail();
         return new Resource($processCategory);
     }
 
