@@ -1,10 +1,9 @@
 <template>
   <div>
     <div class="h-100">
-      <panZoom
+      <div
         class="overflow-hidden position-relative p-0 vh-100"
         data-test="body-container"
-        :options="panZoomOptions"
       >
         <ModelerReadonly
           ref="modeler"
@@ -13,7 +12,7 @@
           @set-xml-manager="xmlManager = $event"
           @click="handleClick"
         />
-      </panZoom>
+      </div>
     </div>
   </div>
 </template>
@@ -33,14 +32,6 @@ export default {
       xmlManager: null,
       decorations: {
         borderOutline: {},
-      },
-      panZoomOptions: {
-        minZoom: 0.5,
-        maxZoom: 1.5,
-        bounds: true,
-        draggable: true,
-        scalable: true,
-        zoomOnDoubleClick: true,
       },
     };
   },
