@@ -4,6 +4,7 @@ namespace ProcessMaker\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
+use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class EnvironmentVariablesCreated implements SecurityLogEventInterface
@@ -11,16 +12,18 @@ class EnvironmentVariablesCreated implements SecurityLogEventInterface
     use Dispatchable;
     use FormatSecurityLogChanges;
 
-    private $variables = [];
+    private EnvironmentVariable $enVariable;
+    private $variable = [];
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($newData)
+    public function __construct(array $data)
     {
-        $this->variables = $newData;
+        $this->variable = $data;
+        $this->enVariable = EnvironmentVariable::where('name', $data['name'])->first();
     }
 
     /**
@@ -30,12 +33,25 @@ class EnvironmentVariablesCreated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        $this->variables['name'] = [
-            'label' => $this->variables['name'],
-            'link' => ''//route('environment-variables.edit', $this->variables),
+        $this->variable['name'] = [
+            'label' => $this->variable['name'],
+            'link' => route('environment-variables.edit', $this->enVariable),
         ];
+
         return [
-            $this->variables
+            $this->variable
+        ];
+    }
+
+    /**
+     * Get specific changes without format related to the event
+     *
+     * @return array
+     */
+    public function getChanges(): array
+    {
+        return [
+            $this->enVariable
         ];
     }
 

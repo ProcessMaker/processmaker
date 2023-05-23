@@ -18,9 +18,9 @@ class GroupCreated implements SecurityLogEventInterface
      *
      * @return void
      */
-    public function __construct(Group $newData)
+    public function __construct(Group $data)
     {
-        $this->group = $newData;
+        $this->group = $data;
     }
 
     /**
@@ -30,7 +30,25 @@ class GroupCreated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        return [$this->group->getAttributes()];
+        return [
+            'name' => [
+                'label' => $this->group->getAttribute('name'),
+                'link' => route('groups.edit', $this->group),
+            ],
+            'description' => $this->group->getAttribute('description'),
+        ];
+    }
+
+    /**
+     * Get specific changes without format related to the event
+     *
+     * @return array
+     */
+    public function getChanges(): array
+    {
+        return [
+            $this->group->getAttributes()
+        ];
     }
 
     /**
@@ -40,6 +58,6 @@ class GroupCreated implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'Created Group';
+        return 'CreatedGroup';
     }
 }

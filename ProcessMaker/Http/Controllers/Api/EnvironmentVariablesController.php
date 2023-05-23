@@ -177,11 +177,14 @@ class EnvironmentVariablesController extends Controller
         }
         // Validate the request, passing in the existing variable to tweak unique rule on name
         $request->validate(EnvironmentVariable::rules($environment_variable));
+        $original = $environment_variable->getOriginal();
         $environment_variable->fill($request->only($fields));
         $environment_variable->save();
 
+        $changes = $environment_variable->getChanges();
+
         // Register the Event
-        EnvironmentVariablesUpdated::dispatch($environment_variable);
+        EnvironmentVariablesUpdated::dispatch($environment_variable, $changes, $original);
 
         return new EnvironmentVariableResource($environment_variable);
     }

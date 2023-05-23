@@ -4,6 +4,7 @@ namespace ProcessMaker\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
+use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class EnvironmentVariablesDeleted implements SecurityLogEventInterface
@@ -11,16 +12,16 @@ class EnvironmentVariablesDeleted implements SecurityLogEventInterface
     use Dispatchable;
     use FormatSecurityLogChanges;
 
-    private $variables = [];
+    private EnvironmentVariable $enVariable;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($newData)
+    public function __construct(EnvironmentVariable $data)
     {
-        $this->variables = $newData;
+        $this->enVariable = $data;
     }
 
     /**
@@ -31,7 +32,20 @@ class EnvironmentVariablesDeleted implements SecurityLogEventInterface
     public function getData(): array
     {
         return [
-            $this->variables
+            'name' => $this->enVariable->getAttribute('name'),
+            'description' => $this->enVariable->getAttribute('description'),
+        ];
+    }
+
+    /**
+     * Get specific changes without format related to the event
+     *
+     * @return array
+     */
+    public function getChanges(): array
+    {
+        return [
+            $this->enVariable
         ];
     }
 

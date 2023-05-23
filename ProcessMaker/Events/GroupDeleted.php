@@ -14,19 +14,21 @@ class GroupDeleted implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private Group $group;
-    private $userMembers = [];
-    private $groupMembers = [];
+    private array $userIds;
+    private array $userMembers;
+    private array $groupIds;
+    private array $groupMembers;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Group $dataDeleted, $users = [], $groups = [])
+    public function __construct(Group $dataDeleted, array $users, array $groups)
     {
         $this->group = $dataDeleted;
-        $this->userMembers = $users;
-        $this->groupMembers = $groups;
+        $this->userIds = $users;
+        $this->groupIds = $groups;
     }
 
     /**
@@ -36,20 +38,24 @@ class GroupDeleted implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        $userMembersInfo = [];
-        foreach ($this->userMembers as $user) {
+        // Get information about the users assigned in the group
+        $usersInfo = [];
+        foreach ($this->userIds as $user) {
             $user = User::find($user['member_id']);
-            $userMembersInfo[] = [
+            $this->userMembers[] = $user;
+            $usersInfo[] = [
                 'username' => [
                     'label' => $user->username,
                     'link' => route('users.edit', $user),
                 ]
             ];
         }
-        $groupMembersInfo = [];
-        foreach ($this->groupMembers as $group) {
+        // Get information about the groups assigned in the group
+        $groupsInfo = [];
+        foreach ($this->groupIds as $group) {
             $group = Group::find($group['member_id']);
-            $groupMembersInfo[] = [
+            $this->groupMembers[] = $group;
+            $groupsInfo[] = [
                 'name' => [
                     'label' => $group->name,
                     'link' => route('groups.edit', $group),
@@ -58,12 +64,32 @@ class GroupDeleted implements SecurityLogEventInterface
         }
 
         return [
-            'group_name' => $this->group->getAttribute('name'),
+            'name' => $this->group->getAttribute('name'),
             'user_members' => [
-                $userMembersInfo
+                $usersInfo
             ],
             'group_members' => [
-                $groupMembersInfo
+                $groupsInfo
+            ]
+        ];
+    }
+
+    /**
+     * Get specific changes without format related to the event
+     *
+     * @return array
+     */
+    public function getChanges(): array
+    {
+        return [
+            'group_name' => [
+                $this->group
+            ],
+            'user_members' => [
+                $this->userMembers
+            ],
+            'group_members' => [
+                $this->groupMembers
             ]
         ];
     }

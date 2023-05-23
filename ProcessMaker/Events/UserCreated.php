@@ -31,17 +31,28 @@ class UserCreated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        // Only specific changes to show
         return [
             'username' => [
                 'label' => $this->user->getAttribute('username'),
                 'link' => route('users.edit', $this->user),
             ],
-            'first_name' => $this->user->getAttribute('first_name'),
-            'last_name' => $this->user->getAttribute('last_name'),
+            'firstname' => $this->user->getAttribute('firstname'),
+            'lastname' => $this->user->getAttribute('lastname'),
             'title' => $this->user->getAttribute('title'),
             'status' => $this->user->getAttribute('status'),
             'email' => $this->user->getAttribute('email'),
+        ];
+    }
+
+    /**
+     * Get specific changes without format related to the event
+     *
+     * @return array
+     */
+    public function getChanges(): array
+    {
+        return [
+            $this->user->getAttributes()
         ];
     }
 
