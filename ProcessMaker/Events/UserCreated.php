@@ -31,7 +31,18 @@ class UserCreated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        return [$this->user->getAttributes()];
+        // Only specific changes to show
+        return [
+            'username' => [
+                'label' => $this->user->getAttribute('username'),
+                'link' => route('users.edit', $this->user),
+            ],
+            'first_name' => $this->user->getAttribute('first_name'),
+            'last_name' => $this->user->getAttribute('last_name'),
+            'title' => $this->user->getAttribute('title'),
+            'status' => $this->user->getAttribute('status'),
+            'email' => $this->user->getAttribute('email'),
+        ];
     }
 
     /**
@@ -41,6 +52,6 @@ class UserCreated implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'Created User';
+        return 'UserCreated';
     }
 }

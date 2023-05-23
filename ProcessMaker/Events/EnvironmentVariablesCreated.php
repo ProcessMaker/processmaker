@@ -4,7 +4,6 @@ namespace ProcessMaker\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
-use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class EnvironmentVariablesCreated implements SecurityLogEventInterface
@@ -31,7 +30,13 @@ class EnvironmentVariablesCreated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        return [$this->variables];
+        $this->variables['name'] = [
+            'label' => $this->variables['name'],
+            'link' => ''//route('environment-variables.edit', $this->variables),
+        ];
+        return [
+            $this->variables
+        ];
     }
 
     /**
@@ -41,6 +46,6 @@ class EnvironmentVariablesCreated implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'Created Environment Variables';
+        return 'EnvironmentVariablesCreated';
     }
 }

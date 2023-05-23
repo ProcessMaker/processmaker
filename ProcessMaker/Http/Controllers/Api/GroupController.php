@@ -6,6 +6,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Events\GroupCreated;
+use ProcessMaker\Events\GroupDeleted;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Groups as GroupResource;
@@ -256,7 +257,21 @@ class GroupController extends Controller
      */
     public function destroy(Group $group)
     {
+        // Get the current user members
+        $usersMembers = GroupMember::where([
+            ['group_id', '=', $group->id],
+            ['member_type', '=', User::class],
+        ])->get()->toArray();
+        // Get the current group members
+        $groupMembers = GroupMember::where([
+            ['group_id', '=', $group->id],
+            ['member_type', '=', Group::class],
+        ])->get()->toArray();
+
         $group->delete();
+
+        // Register the Event
+        GroupDeleted::dispatch($group, $usersMembers, $groupMembers);
 
         return response([], 204);
     }

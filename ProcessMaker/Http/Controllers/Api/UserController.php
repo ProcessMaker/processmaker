@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Events\UserCreated;
+use ProcessMaker\Events\UserDeleted;
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
@@ -355,6 +356,8 @@ class UserController extends Controller
     {
         try {
             $user->delete();
+            // Register the Event
+            UserDeleted::dispatch($user);
 
             return response([], 204);
         } catch (\Exception $e) {
