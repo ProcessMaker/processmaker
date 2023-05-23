@@ -52,11 +52,9 @@ class TemplateChanged implements SecurityLogEventInterface
             ->get()->toArray();
 
             return [
-                '+ id' => $this->request['id'],
                 '+ name' => $this->request['name'],
                 '+ process_category_id' => $this->request['process_category_id'],
                 '+ description' => $this->request['description'],
-                '- id' => $queryOldtemplate[0]['id'],
                 '- name' => $queryOldtemplate[0]['name'],
                 '- process_category_id' => $queryOldtemplate[0]['process_category_id']
             ];
@@ -68,6 +66,12 @@ class TemplateChanged implements SecurityLogEventInterface
     public function getEventName(): string
     {
         return 'TemplateChanged';
+    }
+
+    public function getChanges(): array
+    {
+        // return $this->changes;
+        return array($this->request['id'],$this->request['name'],$this->request['process_category_id'],$this->request['description']);
     }
 
     /**

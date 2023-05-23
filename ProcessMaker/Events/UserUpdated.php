@@ -11,10 +11,11 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Models\User;
+use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class UserUpdated implements SecurityLogEventInterface
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable, InteractsWithSockets, SerializesModels, FormatSecurityLogChanges;
 
  
     private User $user;
@@ -31,29 +32,21 @@ class UserUpdated implements SecurityLogEventInterface
     }
 
     public function getData(): array
-    {
-        $old_data = array_diff_assoc($this->user->getOriginal(), $this->user->getAttributes());
-        $prefixOld = "- ";
-        $newOldKeys = array_map(function($key) use ($prefixOld) {
-            return $prefixOld . $key;
-        }, array_keys($old_data));
-        $prefix_old_data  = array_combine($newOldKeys, array_values($old_data));
-
-        $new_data = array_diff_assoc($this->user->getAttributes(),$this->user->getOriginal());
-        $prefixNew = "+ ";
-        $newNewKeys = array_map(function($key) use ($prefixNew) {
-            return $prefixNew . $key;
-        }, array_keys($new_data));
-        $prefix_new_data  = array_combine($newNewKeys, array_values($new_data));
-
-        
-        
-      
+    {   
+         $old_data = array_diff_assoc($this->user->getOriginal(), $this->user->getAttributes());
+         $new_data = array_diff_assoc($this->user->getAttributes(),$this->user->getOriginal());
+           
         return [
             'username' => $this->user->getAttribute('username'),
-            array_merge($prefix_old_data,$prefix_new_data)
+            $this->formatChanges($new_data,$old_data)
         ];
 
+    }
+
+    public function getChanges(): array
+    {
+        // return $this->changes;
+        return $this->user->getAttributes();
     }
 
     public function getEventName(): string

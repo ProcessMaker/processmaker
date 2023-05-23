@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use ProcessMaker\Events\PermissionChanged;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Models\Group;
@@ -89,11 +90,16 @@ class PermissionController extends Controller
             $entity = Group::findOrFail($request->input('group_id'));
         }
 
+       
         //Obtain the requested permission names for that entity
         $requestPermissions = $request->input('permission_names');
 
         //Convert permission names into a collection of Permission models
         $permissions = Permission::whereIn('name', $requestPermissions)->get();
+
+        //Call event to Log Permissions Information
+        //event(new PermissionChanged($requestPermissions,$oldPermission));
+        event(new PermissionChanged($request,$requestPermissions));
 
         //Sync the entity's permissions with the database
         $entity->permissions()->sync($permissions->pluck('id')->toArray());

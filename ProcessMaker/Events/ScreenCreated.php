@@ -11,46 +11,47 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Http\Request;
 use Illuminate\Queue\SerializesModels;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
-use ProcessMaker\Models\ProcessCategory;
-use ProcessMaker\Traits\FormatSecurityLogChanges;
 
-class CategoryChanged implements SecurityLogEventInterface
+class ScreenCreated implements SecurityLogEventInterface
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels, FormatSecurityLogChanges;
+    use Dispatchable, InteractsWithSockets, SerializesModels;
 
     private Request $request;
-    private ProcessCategory $processCategory;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Request $request,ProcessCategory $processCategory)
+    public function __construct(Request $request)
     {
-        $this->request = $request;
-        $this->processCategory =  $processCategory; 
+        $this->request =  $request;
     }
 
     public function getData(): array
     {   
-        
+   
        return [
-        '+ name' => $this->processCategory->getAttributes()['name'],
-        '+ status' => $this->processCategory->getAttributes()['status'],
-        '- name' => $this->processCategory->getOriginal()['name'],
-        '- status' => $this->processCategory->getOriginal()['status']               
+            'name' => $this->request->input('name'),
+            'description' => $this->request->input('description'),        
+            'type' => $this->request->input('type'),
+            'screen_category_id' => $this->request->input('screen_category_id')   
        ];
 
     }
 
     public function getEventName(): string
     {
-        return 'CategoryChanged';
+        return 'ScreenCreated';
     }
 
     public function getChanges(): array
     {
-        return $this->formatChanges($this->processCategory->getAttributes(), $this->processCategory->getOriginal());
+       return [
+            'name' => $this->request->input('name'),
+            'description' => $this->request->input('description'),        
+            'type' => $this->request->input('type'),
+            'screen_category_id' => $this->request->input('screen_category_id')   
+       ];
     }
 
     /**

@@ -3,6 +3,9 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use ProcessMaker\Events\ScreenChanged;
+use ProcessMaker\Events\ScreenCreated;
+use ProcessMaker\Events\ScreenDeleted;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -212,6 +215,7 @@ class ScreenController extends Controller
         $screen = new Screen();
         $screen->fill($request->input());
 
+        event(new ScreenCreated($request));
         $screen->saveOrFail();
 
         return new ApiResource($screen);
@@ -253,6 +257,10 @@ class ScreenController extends Controller
     {
         $request->validate(Screen::rules($screen));
         $screen->fill($request->input());
+
+        //Call event to store Screem Changes into Log
+        event(new ScreenChanged($screen,$request));
+
         $screen->saveOrFail();
 
         return response([], 204);
@@ -396,6 +404,7 @@ class ScreenController extends Controller
      */
     public function destroy(Screen $screen)
     {
+        event(new ScreenDeleted($screen));
         $screen->delete();
 
         return response([], 204);
