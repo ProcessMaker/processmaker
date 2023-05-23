@@ -3,6 +3,9 @@
 namespace ProcessMaker\Managers;
 
 use ProcessMaker\Contracts\WorkflowManagerInterface;
+use ProcessMaker\Nayra\Managers\WorkflowManagerDefault;
+use ProcessMaker\Nayra\Managers\WorkflowManagerKafka;
+use ProcessMaker\Nayra\Managers\WorkflowManagerRabbitMq;
 
 class WorkflowManager
 {
@@ -13,7 +16,7 @@ class WorkflowManager
      */
     public static function create(): WorkflowManagerInterface
     {
-        $type = env('MESSAGE_BROKER_DRIVER');
+        $type = config('app.message_broker_driver');
 
         switch ($type) {
             case 'rabbitmq':

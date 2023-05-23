@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Managers;
+namespace ProcessMaker\Nayra\Managers;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
