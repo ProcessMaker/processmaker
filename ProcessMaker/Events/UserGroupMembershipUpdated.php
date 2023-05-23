@@ -78,7 +78,7 @@ class UserGroupMembershipUpdated implements SecurityLogEventInterface
     }
     
     /**
-     * Return event data 
+     * Return event changes 
      */
     public function getChanges(): array
     {
