@@ -18,6 +18,7 @@ use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\Templates;
 use ProcessMaker\Models\User;
+use ProcessMaker\Packages\Connectors\DataSources\Models\DataSourceCategory;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Templates\HelperTrait;
 use Tests\TestCase;
@@ -211,6 +212,7 @@ class ProcessTemplateTest extends TestCase
         ProcessCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
         ScreenCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
         ScriptCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
+        DataSourceCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
         Setting::firstOrCreate(['key' => 'idp.token_url'], [
             'format' => 'text',
             'group' => 'IDP',
@@ -224,7 +226,9 @@ class ProcessTemplateTest extends TestCase
         $githubConfig = config('services.github');
 
         $count = $this->countTemplatesFromRepo($githubConfig);
-        $allTemplates = ProcessTemplates::where(['key' => 'default_templates'])->select(['id', 'description', 'name', 'process_category_id'])->get();
+        $allTemplates = ProcessTemplates::where(['key' => 'default_templates', 'user_id' => null])
+                                        ->select(['id', 'description', 'name', 'process_category_id'])
+                                        ->get();
         $this->assertEquals($count, $allTemplates->count());
 
         $failedProcess = [];
@@ -233,7 +237,7 @@ class ProcessTemplateTest extends TestCase
             $response = $this->createProcessesFromTemplate($template, $user, $processCategoryId);
 
             if ($response->getStatusCode() != 200) {
-                array_push($failedProcess, $template->name);
+                array_push($failedProcess, $template->name . ': ' . $response->getContent());
                 continue;
             }
 
