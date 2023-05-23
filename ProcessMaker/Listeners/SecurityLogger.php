@@ -29,21 +29,14 @@ class SecurityLogger
        
         if ($event instanceof SecurityLogEventInterface) {
             $data = $event->getData();
-            //var_dump('entra if');
-            //dd($data);
-            // dd([
-            //     'event' => $event->getEventName(),
-            //     'ip' => request()->ip(),
-            //     'meta' => $this->getMeta(),
-            //     'user_id' => isset($event->user) ? $event->user->id : Auth::id(),
-            //     'data' => $data ? SensitiveDataHelper::parseArray($data) : null
-            // ]);
+            $changes = $event->getChanges();
             SecurityLog::create([
                 'event' => $event->getEventName(),
                 'ip' => request()->ip(),
                 'meta' => $this->getMeta(),
                 'user_id' => isset($event->user) ? $event->user->id : Auth::id(),
-                'data' => $data ? SensitiveDataHelper::parseArray($data) : null
+                'data' => $data ? SensitiveDataHelper::parseArray($data) : null,
+                'changes' => $changes ? SensitiveDataHelper::parseArray($changes) : null
             ]);
         } elseif (array_key_exists($class, $this->eventTypes)) {
             $eventType = $this->eventTypes[$class];
