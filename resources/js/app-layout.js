@@ -87,6 +87,7 @@ window.ProcessMaker.navbar = new Vue({
       confirmCallback: "",
       confirmShow: false,
       sessionShow: false,
+      messageShow: false,
       sessionTitle: "",
       sessionMessage: "",
       sessionTime: "",
@@ -211,7 +212,7 @@ window.ProcessMaker.messageModal = function (title, message, variant, callback) 
   ProcessMaker.navbar.confirmMessage = message || __("");
   ProcessMaker.navbar.confirmVariant = variant;
   ProcessMaker.navbar.confirmCallback = callback;
-  ProcessMaker.navbar.confirmShow = true;
+  ProcessMaker.navbar.messageShow = true;
 };
 
 // flags print forms
