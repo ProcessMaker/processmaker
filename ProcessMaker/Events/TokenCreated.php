@@ -11,6 +11,7 @@ class TokenCreated implements SecurityLogEventInterface
     use Dispatchable;
 
     public $data;
+    public $changes;
 
     /**
      * Create a new event instance.
@@ -20,8 +21,9 @@ class TokenCreated implements SecurityLogEventInterface
     public function __construct(Token $created_values)
     {
         $this->data = [
-            "Token" => $created_values
+            "Token Id" => $created_values->id
         ];
+        $this->changes = [$created_values];
     }
     
     /**
@@ -30,6 +32,14 @@ class TokenCreated implements SecurityLogEventInterface
     public function getData(): array
     {
         return $this->data;
+    }
+    
+    /**
+     * Return event changes 
+     */
+    public function getChanges(): array
+    {
+        return $this->changes;
     }
 
     /**
