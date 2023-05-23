@@ -29,6 +29,11 @@ class SettingsUpdated implements SecurityLogEventInterface
         $this->original = $original;
     }
 
+    public function getChanges(): array
+    {
+        return $this->changes;
+    }
+
     public function getData(): array
     {
         return array_merge([
