@@ -42,6 +42,9 @@
         "processmaker/docker-executor-php": "1.2.0",
         "processmaker/laravel-i18next": "dev-master",
         "processmaker/nayra": "1.9.4",
+        "processmaker/package-comments": "^1.5",
+        "processmaker/package-product-analytics": "^1.2",
+        "processmaker/package-webentry": "^2.13",
         "processmaker/pmql": "1.9.0",
         "pusher/pusher-php-server": "^7.0",
         "ralouphie/getallheaders": "^3.0",
@@ -151,6 +154,15 @@
         {
             "type": "vcs",
             "url": "https://github.com/ProcessMaker/SocialiteProviders"
+        },
+        {   "type": "path",
+            "url": "/opt/packages/package-product-analytics"
+        },
+        {   "type": "path",
+            "url": "/opt/packages/package-comments"
+        },
+        {   "type": "path",
+            "url": "/opt/packages/package-webentry"
         }
     ],
     "config": {

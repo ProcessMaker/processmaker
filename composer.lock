@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4efa02222eb3e25f2261283e545e214c",
+    "content-hash": "1fbfc620877c2bd0c4de0ae2bbb09ebc",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -6149,6 +6149,123 @@
                 "source": "https://github.com/ProcessMaker/nayra/tree/v1.9.4"
             },
             "time": "2022-09-03T00:32:24+00:00"
+        },
+        {
+            "name": "processmaker/package-comments",
+            "version": "1.5.1",
+            "dist": {
+                "type": "path",
+                "url": "/opt/packages/package-comments",
+                "reference": "950d37b8509f72511097ec742e426e96c1f4057b"
+            },
+            "type": "project",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\PackageComments\\PackageServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\PackageComments\\": "src"
+                }
+            },
+            "scripts": {
+                "post-create-project-cmd": [
+                    "@php rename-project.php"
+                ]
+            },
+            "license": [
+                "AGPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "DevOps",
+                    "email": "devops@processmaker.com"
+                }
+            ],
+            "description": "Add comments to your ProcessMaker 4 project",
+            "transport-options": {
+                "relative": false
+            }
+        },
+        {
+            "name": "processmaker/package-product-analytics",
+            "version": "1.2.1",
+            "dist": {
+                "type": "path",
+                "url": "/opt/packages/package-product-analytics",
+                "reference": "363e9e9c4461b4a8bd57fe102070b85e03e86ae3"
+            },
+            "type": "project",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\ProductAnalytics\\PackageServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\ProductAnalytics\\": "src",
+                    "Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "AGPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "DevOps",
+                    "email": "devops@processmaker.com"
+                }
+            ],
+            "description": "Provides the ProcessMaker Product department with usage analytics.",
+            "transport-options": {
+                "relative": false
+            }
+        },
+        {
+            "name": "processmaker/package-webentry",
+            "version": "2.13.0",
+            "dist": {
+                "type": "path",
+                "url": "/opt/packages/package-webentry",
+                "reference": "15073dbe7576cbc8605e1a493a85bea4ed2f6535"
+            },
+            "require-dev": {
+                "processmaker/processmaker": "^4.1"
+            },
+            "type": "project",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\WebEntry\\WebEntryServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\WebEntry\\": "src",
+                    "Tests\\": "tests/",
+                    "TestHelpers\\": "tests/Helpers"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Nolan Ehrstrom",
+                    "email": "nolan.ehrstrom@processmaker.com"
+                },
+                {
+                    "name": "Dante Loayza",
+                    "email": "dante.loayza@processmaker.com"
+                }
+            ],
+            "description": "Provide to end users the ability to complete tasks from outside the core system",
+            "transport-options": {
+                "relative": false
+            }
         },
         {
             "name": "processmaker/pmql",

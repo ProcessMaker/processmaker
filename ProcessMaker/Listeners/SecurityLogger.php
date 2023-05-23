@@ -25,9 +25,19 @@ class SecurityLogger
     public function handle($event)
     {
         $class = get_class($event);
-        
+        //dd($event->getData());
+       
         if ($event instanceof SecurityLogEventInterface) {
             $data = $event->getData();
+            //var_dump('entra if');
+            //dd($data);
+            // dd([
+            //     'event' => $event->getEventName(),
+            //     'ip' => request()->ip(),
+            //     'meta' => $this->getMeta(),
+            //     'user_id' => isset($event->user) ? $event->user->id : Auth::id(),
+            //     'data' => $data ? SensitiveDataHelper::parseArray($data) : null
+            // ]);
             SecurityLog::create([
                 'event' => $event->getEventName(),
                 'ip' => request()->ip(),
@@ -37,6 +47,8 @@ class SecurityLogger
             ]);
         } elseif (array_key_exists($class, $this->eventTypes)) {
             $eventType = $this->eventTypes[$class];
+            var_dump('entra else');
+            dd($eventType);
             SecurityLog::create([
                 'event' => $eventType,
                 'ip' => request()->ip(),

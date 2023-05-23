@@ -306,7 +306,7 @@ class ProcessController extends Controller
     public function update(Request $request, Process $process)
     {
         //Call Event to Log Template Changes
-        event(new TemplateChanged($request,'updateProcess'));
+        event(new TemplateChanged($request,$process,'updateProcess'));
 
         $request->validate(Process::rules($process));
 
