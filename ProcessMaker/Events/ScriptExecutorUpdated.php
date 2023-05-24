@@ -77,6 +77,6 @@ class ScriptExecutorUpdated implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'TokenCreated';
+        return 'ScriptExecutorUpdated';
     }
 }

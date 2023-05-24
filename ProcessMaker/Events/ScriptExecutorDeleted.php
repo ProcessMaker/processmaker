@@ -44,6 +44,6 @@ class ScriptExecutorDeleted implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'TokenCreated';
+        return 'ScriptExecutorDeleted';
     }
 }

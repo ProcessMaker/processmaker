@@ -50,6 +50,6 @@ class ScriptExecutorCreated implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'TokenCreated';
+        return 'ScriptExecutorCreated';
     }
 }

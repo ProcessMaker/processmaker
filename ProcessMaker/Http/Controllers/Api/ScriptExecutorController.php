@@ -175,7 +175,7 @@ class ScriptExecutorController extends Controller
             $request->only($scriptExecutor->getFillable())
         );
         
-        ScriptExecutorUpdated::dispatch($original_values, $scriptExecutor->getAttributes());
+        ScriptExecutorUpdated::dispatch($original_values, $scriptExecutor->getChanges());
 
         BuildScriptExecutor::dispatch($scriptExecutor->id, $request->user()->id);
 
