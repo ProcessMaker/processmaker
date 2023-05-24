@@ -204,37 +204,43 @@ class ProcessTemplateTest extends TestCase
         $this->assertEquals('Default Templates', $newCategory->name);
     }
 
-    public function testTemplateSync()
+    /**
+     * Check of environment variables exist
+     * @doesNotPerformAssertions
+     */
+    public function testCondition()
     {
-        $this->addGlobalSignalProcess();
-        $user = User::factory()->create();
-        $processCategoryId = ProcessCategory::factory()->create(['name' => 'Default Templates', 'status' => 'ACTIVE'])->getKey();
-        ProcessCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
-        ScreenCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
-        ScriptCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
-        DataSourceCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
-        Setting::firstOrCreate(['key' => 'idp.token_url'], [
-            'format' => 'text',
-            'group' => 'IDP',
-            'helper' => 'Enter your OAuth2 token URL',
-            'config' => '',
-            'name' => 'Token URL',
-            'hidden' => false,
-            'ui' => null,
-        ]);
+        $env1 = env('DEFAULT_TEMPLATE_REPO');
+        $env2 = env('DEFAULT_TEMPLATE_BRANCH');
+        $env3 = env('DEFAULT_TEMPLATE_CATEGORIES');
+        $condition = isset($env1) && isset($env2) && isset($env3) ? true : false;
 
+        return $condition;
+    }
+
+    /**
+     * @depends testCondition
+     */
+    public function testTemplateSyncCount()
+    {
+        $fixtures = $this->fixtures();
         $githubConfig = config('services.github');
 
         $count = $this->countTemplatesFromRepo($githubConfig);
-        $allTemplates = ProcessTemplates::where(['key' => 'default_templates', 'user_id' => null])
-                                        ->select(['id', 'description', 'name', 'process_category_id'])
-                                        ->get();
-        $this->assertEquals($count, $allTemplates->count());
+        $this->assertEquals($count, $fixtures['allTemplates']->count());
+    }
+
+    /**
+     * @depends testCondition
+     */
+    public function testTemplateToProcessSync()
+    {
+        $this->addGlobalSignalProcess();
+        $fixtures = $this->fixtures();
 
         $failedProcess = [];
-
-        foreach ($allTemplates as $template) {
-            $response = $this->createProcessesFromTemplate($template, $user, $processCategoryId);
+        foreach ($fixtures['allTemplates'] as $template) {
+            $response = $this->createProcessesFromTemplate($template, $fixtures['user'], $fixtures['processCategoryId']);
 
             if ($response->getStatusCode() != 200) {
                 array_push($failedProcess, $template->name . ': ' . $response->getContent());
@@ -254,6 +260,36 @@ class ProcessTemplateTest extends TestCase
         if (count($failedProcess) > 0) {
             throw new Exception(implode(', ', $failedProcess));
         }
+    }
+
+    /**
+     * Tests the fixtures of the private PHP function.
+     *
+     * @return array Associative array containing the generated user and process category ID
+     */
+    private function fixtures()
+    {
+        $user = User::factory()->create();
+        $processCategoryId = ProcessCategory::factory()->create(['name' => 'Default Templates', 'status' => 'ACTIVE'])->getKey();
+        ProcessCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
+        ScreenCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
+        ScriptCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
+        DataSourceCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
+        Setting::firstOrCreate(['key' => 'idp.token_url'], [
+            'format' => 'text',
+            'group' => 'IDP',
+            'helper' => 'Enter your OAuth2 token URL',
+            'config' => '',
+            'name' => 'Token URL',
+            'hidden' => false,
+            'ui' => null,
+        ]);
+
+        $allTemplates = ProcessTemplates::where(['key' => 'default_templates', 'user_id' => null])
+        ->select(['id', 'description', 'name', 'process_category_id'])
+        ->get();
+
+        return ['user' => $user, 'processCategoryId' => $processCategoryId, 'allTemplates' => $allTemplates];
     }
 
      /**
