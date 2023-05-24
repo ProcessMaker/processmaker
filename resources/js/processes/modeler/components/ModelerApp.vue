@@ -15,7 +15,6 @@
           ref="modeler"
           :owner="self"
           :decorations="decorations"
-          :testToken="testToken"
           @validate="validationErrors = $event"
           @warnings="warnings = $event"
           @saveBpmn="emitSaveEvent"
@@ -68,7 +67,6 @@ export default {
   data() {
     return {
       self: this,
-      testToken: "abc123admin",
       validationBar: [],
       external: [],
       externalEmit: [],
