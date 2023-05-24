@@ -120,10 +120,11 @@ class ProcessTranslationController extends Controller
     {
         $processId = $request->input('process_id');
         $screensTranslations = $request->input('screens_translations');
+        $language = $request->input('language');
 
         $process = Process::findOrFail($processId);
 
         $processTranslation = new ProcessTranslation($process);
-        // $processTranslation->updateTranslations($screensTranslations);
+        $processTranslation->updateTranslations($screensTranslations, $language);
     }
 }
