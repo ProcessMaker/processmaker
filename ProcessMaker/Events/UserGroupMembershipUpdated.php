@@ -25,7 +25,7 @@ class UserGroupMembershipUpdated implements SecurityLogEventInterface
         $this->userUpdated = $userUpdated;
         $this->buildData($data);
         $this->changes = [
-            'user' => $userUpdated, 
+            'user' => $userUpdated->id, 
             'groups' => $data
         ];
     }
