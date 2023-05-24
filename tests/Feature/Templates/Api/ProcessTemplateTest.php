@@ -205,7 +205,7 @@ class ProcessTemplateTest extends TestCase
     }
 
     /**
-     * Check of environment variables exist
+     * Check if environment variables exist
      * @doesNotPerformAssertions
      */
     public function testCondition()
