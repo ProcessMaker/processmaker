@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\ProcessTranslations;
 
+use Carbon\Carbon;
 use DOMXPath;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -10,6 +11,7 @@ use ProcessMaker\Assets\ScreensInProcess;
 use ProcessMaker\Assets\ScreensInScreen;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessTranslationToken;
 use ProcessMaker\Models\Screen;
 
 class ProcessTranslation
@@ -251,6 +253,33 @@ class ProcessTranslation
             $screen->save();
         }
 
+        // Remove pending tokens
+        $processTranslationToken = ProcessTranslationToken::where('process_id', $this->process->id)
+            ->where('language', $language)
+            ->first();
+
+        if ($processTranslationToken) {
+            $processTranslationToken->delete();
+        }
+
         return true;
+    }
+
+    public function updateTranslations($screenTranslations, $language)
+    {
+        foreach ($screenTranslations as $screenTranslation) {
+            foreach ($screenTranslation['translations'] as $key => $value) {
+                if ($key === $language) {
+                    $screenTranslation['translations'][$key]['updated_at'] = Carbon::now();
+                    if (!array_key_exists('created_at', $screenTranslation['translations'][$key])) {
+                        $screenTranslation['translations'][$key]['created_at'] = $screenTranslation['translations'][$key]['updated_at'];
+                    }
+                }
+            }
+
+            $screen = Screen::findOrFail($screenTranslation['id']);
+            $screen->translations = $screenTranslation['translations'];
+            $screen->save();
+        }
     }
 }
