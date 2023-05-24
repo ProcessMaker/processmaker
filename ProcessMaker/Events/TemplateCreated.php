@@ -43,7 +43,7 @@ class TemplateCreated implements SecurityLogEventInterface
 
     public function getChanges(): array
     {
-        // return $this->screen->getAttributes();
+        
         return [
             'type' => $this->payload['type'],
             'version' => $this->payload['version'],

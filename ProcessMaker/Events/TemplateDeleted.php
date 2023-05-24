@@ -32,8 +32,7 @@ class TemplateDeleted implements SecurityLogEventInterface
     {  
 
        return [
-         'template_name' => $this->templateName
-        //  'description' => $this->screen->getAttributes()['description']             
+         'template_name' => $this->templateName        
        ];
 
     }
@@ -45,7 +44,7 @@ class TemplateDeleted implements SecurityLogEventInterface
 
     public function getChanges(): array
     {
-        // return $this->screen->getAttributes();
+
         return ['template_name' => $this->templateName];
     }
 

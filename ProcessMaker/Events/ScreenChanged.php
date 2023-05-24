@@ -43,11 +43,7 @@ class ScreenChanged implements SecurityLogEventInterface
         $new_screen['updated_at'] = date('Y-m-d H:i:s', strtotime($new_screen['updated_at']));
         $this->new_screen_data = array_intersect_key($this->screen->getAttributes(), array_flip(['title', 'description','screen_category_id']));
 
-            // return array_merge([
-            //     'title' => $new_screen['title'],
-            //     'ocurred_at' => $new_screen['updated_at'],
-            //     $this->formatChanges($new_screen,$old_screen)
-            // ]);
+
             return array_merge([
                 'title' => $new_screen['title'],
             ], $this->formatChanges($new_screen,$old_screen));
