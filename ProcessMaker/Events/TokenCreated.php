@@ -18,12 +18,12 @@ class TokenCreated implements SecurityLogEventInterface
      *
      * @return void
      */
-    public function __construct(Token $created_values)
+    public function __construct(Token $token)
     {
         $this->data = [
-            "Token Id" => $created_values->id
+            "Token Id" => $token->getKey()
         ];
-        $this->changes = [$created_values];
+        $this->changes = $token->toArray();
     }
     
     /**
