@@ -18,12 +18,13 @@ class TokenDeleted implements SecurityLogEventInterface
      *
      * @return void
      */
-    public function __construct(Token $deleted_values)
+    public function __construct(Token $token)
     {
         $this->data = [
-            "Token Id" => $deleted_values->id
-        ];
-        $this->changes = [$deleted_values];
+            "Token Id" => $token->getKey()
+        ];        
+        $this->changes = $token->toArray();
+
     }
     
     /**
