@@ -89,9 +89,13 @@ class ClientController extends PassportClientController
             'redirect' => $redirect,
             'personal_access_client' => $personalAccess,
             'password_client' => $password,
-        ])->save();
+        ]);
+        
+        $original = array_intersect_key($client->getOriginal(), $client->getDirty());
 
-        AuthClientUpdated::dispatch($original_values, $client->getAttributes());
+        $client->save();
+
+        AuthClientUpdated::dispatch($clientId, $original, $client->getChanges());
 
         return new AuthClientResource($client);
     }
