@@ -23,8 +23,8 @@
       <tbody>
         <tr v-for="(item, index) in translatingLanguages" :key="'pending' + index">
           <td class="notify">{{ item.humanLanguage }}</td>
-          <td class="action">{{ item.createdAt }}</td>
-          <td class="action">{{ item.updatedAt }}</td>
+          <td class="action">{{ formatDate(item.createdAt) }}</td>
+          <td class="action">{{ formatDate(item.updatedAt) }}</td>
           <td class="action">
             <ellipsis-menu
               :actions="actionsInProgress"
@@ -37,9 +37,9 @@
           </td>
         </tr>
         <tr v-for="(item, index) in translatedLanguages" :key="index">
-          <td class="notify">{{ item.humanLanguage }}</td>
-          <td class="action">{{ item.createdAt }}</td>
-          <td class="action">{{ item.updatedAt }}</td>
+          <td class="notify"><a role="button" class="link" @click="handleEditTranslation(item)">{{ item.humanLanguage }}</a></td>
+          <td class="action">{{ formatDate(item.createdAt) }}</td>
+          <td class="action">{{ formatDate(item.updatedAt) }}</td>
           <td class="action">
             <ellipsis-menu
               :actions="actions"
@@ -155,6 +155,15 @@ export default {
       }
     },
 
+    formatDate(value, format) {
+      format = format || "";
+      if (value) {
+        return window.moment(value)
+          .format(format);
+      }
+      return "n/a";
+    },
+
     fetch() {
       this.loading = true;
 
@@ -221,13 +230,16 @@ export default {
 
     handleDeleteTranslation(translation) {
       ProcessMaker.confirmModal(
-        this.$t("Caution!"),
+      this.$t("Caution!"),
         this.$t(`Are you sure you want to delete the translations for ${translation.humanLanguage} language?`),
         "",
         () => {
           ProcessMaker.apiClient
             .delete(`process/translations/${this.processId}/${translation.language}`)
             .then(() => {
+              this.fetch();
+              this.fetchPending();
+              ProcessMaker.alert(this.$t(`The ${translation.humanLanguage} translations were deleted.`), 'success', 5, true);
             });
         },
       );
@@ -244,19 +256,16 @@ export default {
   .icon-lg {
     font-size: 5rem;
   }
-
   .no-results-container {
     padding: 8rem 0rem;
   }
-
   :deep(th#_updated_at) {
     width: 14%;
   }
-
   :deep(th#_created_at) {
     width: 14%;
   }
-  .process-template-table-card {
-    padding: 0;
+  td {
+    vertical-align: middle;
   }
 </style>
