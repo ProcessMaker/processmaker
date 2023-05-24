@@ -34,6 +34,8 @@ trait MakeHttpRequests
 
     private $mustache = null;
 
+    private $timeout = 0;
+
     private function getMustache()
     {
         if ($this->mustache === null) {
@@ -96,6 +98,23 @@ trait MakeHttpRequests
         $request = $this->addAuthorizationHeaders(...$request);
 
         return $request;
+    }
+
+    /**
+     * Set timeout from endpoint config or from BPMN errorHandling
+     *
+     * @param array $endpoint
+     * @param array $config
+     *
+     * @return void
+     */
+    private function setTimeout(array $endpoint, array $config)
+    {
+        $this->timeout = (int) Arr::get($endpoint, 'timeout', 0);
+        $bpmnTimeout = Arr::get($config, 'errorHandling.timeout', null);
+        if ($bpmnTimeout) {
+            $this->timeout = (int) $bpmnTimeout;
+        }
     }
 
     /**
@@ -201,6 +220,8 @@ trait MakeHttpRequests
 
         $request = [$method, $url, $headers, $body, $bodyType];
         $request = $this->addAuthorizationHeaders(...$request);
+
+        $this->setTimeout($endpoint, $config);
 
         return $request;
     }
@@ -427,7 +448,13 @@ trait MakeHttpRequests
      */
     private function call($method, $url, array $headers, $body, $bodyType)
     {
-        $client = $this->client ?? new Client(['verify' => $this->verifySsl]);
+        $client = $this->client ?? app()->make(Client::class, [
+            'config' => [
+                'verify' => $this->verifySsl,
+                'timeout' => $this->timeout,
+            ],
+        ]);
+
         $options = [];
         if ($bodyType === 'form-data') {
             $options['form_params'] = json_decode($body, true);
