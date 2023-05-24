@@ -7,6 +7,7 @@ use DOMXPath;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection as SupportCollection;
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Assets\ScreensInProcess;
 use ProcessMaker\Assets\ScreensInScreen;
 use ProcessMaker\ImportExport\Utils;
@@ -220,7 +221,31 @@ class ProcessTranslation
         return $elements;
     }
 
-    public function applyTranslations($key, $translatedString, $config)
+    public function applyTranslations($screen)
+    {
+        $config = $screen['config'];
+        $translations = $screen['translations'];
+        $targetLanguage = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+        $targetLanguage = in_array($targetLanguage, Languages::ALL) ? $targetLanguage : 'en';
+
+        if (Auth::user()) {
+            $targetLanguage = Auth::user()->language;
+        }
+
+        $targetLanguage = 'es';
+
+        if (array_key_exists($targetLanguage, $translations)) {
+            foreach ($translations[$targetLanguage]['strings'] as $translation) {
+                $this->applyTranslations2($translation['key'], $translation['string'], $config);
+            }
+        }
+
+        dd($config);
+
+        return $config;
+    }
+
+    public function applyTranslations2($key, $translatedString, $config)
     {
         if ($config) {
             foreach ($config as $page) {
