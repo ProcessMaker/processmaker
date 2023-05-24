@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use ProcessMaker\Events\TemplateCreated;
 use ProcessMaker\Exception\ImportPasswordException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\ImportExport\ExportEncrypted;
@@ -63,6 +64,9 @@ class ImportController extends Controller
     {
         $jsonData = $request->file('file')->get();
         $payload = json_decode($jsonData, true);
+
+         //Call new event to Store new Templates on LOG
+         event(new TemplateCreated($payload));
 
         $options = new Options(json_decode(file_get_contents(utf8_decode($request->file('options'))), true));
         $importer = new Importer($payload, $options);

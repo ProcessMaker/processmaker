@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Events\UserCreated;
 use ProcessMaker\Events\UserDeleted;
+use ProcessMaker\Events\UserUpdated;
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
@@ -256,6 +257,10 @@ class UserController extends Controller
             // user must be an admin to make another user an admin
             $user->is_administrator = $request->get('is_administrator');
         }
+
+        //Call new Event to store User Changes in LOG
+        event(new  UserUpdated($user));
+
         $user->saveOrFail();
         if ($request->has('avatar')) {
             $this->uploadAvatar($user, $request);

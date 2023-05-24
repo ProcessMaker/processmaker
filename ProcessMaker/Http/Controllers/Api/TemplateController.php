@@ -3,8 +3,11 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use ProcessMaker\Events\TemplateChanged;
+use ProcessMaker\Events\TemplateDeleted;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\TemplateCollection;
+use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Template;
 
 class TemplateController extends Controller
@@ -99,6 +102,9 @@ class TemplateController extends Controller
     {
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
 
+        //Call event to log Template Config changes
+        event(new TemplateChanged ($request,null,'configTemplate'));
+
         return $this->template->updateTemplateConfigs($type, $request);
     }
 
@@ -124,6 +130,10 @@ class TemplateController extends Controller
      */
     public function delete(string $type, Request $request)
     {
+        //Call evento to Store Template Deleted on LOG
+        $query=ProcessTemplates::find($request->id);
+        $templateName=$query->toArray()['name'];
+        event(new TemplateDeleted($templateName));
         return $this->template->deleteTemplate($type, $request);
     }
 
