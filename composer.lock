@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4efa02222eb3e25f2261283e545e214c",
+    "content-hash": "0e8757284f0f618a6dbce8c7a418a57c",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -5504,6 +5504,7 @@
                 "issues": "https://github.com/php-http/message-factory/issues",
                 "source": "https://github.com/php-http/message-factory/tree/master"
             },
+            "abandoned": "psr/http-factory",
             "time": "2015-12-19T14:08:53+00:00"
         },
         {
