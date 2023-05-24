@@ -144,7 +144,7 @@ class TranslateProcess implements ShouldQueue
     {
         $isEmpty = true;
 
-        if (!array_key_exists($this->targetLanguage['language'], $screen['translations'])) {
+        if (!$screen['translations'] || !array_key_exists($this->targetLanguage['language'], $screen['translations'])) {
             $screen['translations'][$this->targetLanguage['language']] = ['strings' => []];
         }
 
