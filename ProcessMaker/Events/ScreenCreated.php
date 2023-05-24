@@ -29,9 +29,9 @@ class ScreenCreated implements SecurityLogEventInterface
 
     public function getData(): array
     {   
-   
+        
        return [
-            'name' => $this->request->input('name'),
+            'name' => $this->request->input('title'),
             'description' => $this->request->input('description'),        
             'type' => $this->request->input('type'),
             'screen_category_id' => $this->request->input('screen_category_id')   

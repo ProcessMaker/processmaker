@@ -35,11 +35,10 @@ class UserUpdated implements SecurityLogEventInterface
     {   
          $old_data = array_diff_assoc($this->user->getOriginal(), $this->user->getAttributes());
          $new_data = array_diff_assoc($this->user->getAttributes(),$this->user->getOriginal());
-           
-        return [
+
+        return array_merge([
             'username' => $this->user->getAttribute('username'),
-            $this->formatChanges($new_data,$old_data)
-        ];
+        ], $this->formatChanges($new_data,$old_data));
 
     }
 

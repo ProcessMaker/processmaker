@@ -47,7 +47,7 @@ class TemplateChanged implements SecurityLogEventInterface
             
         }else{
             //For config Changes
-            $queryOldtemplate= ProcessTemplates::select('id', 'name', 'process_category_id','created_at','updated_at')
+            $queryOldtemplate= ProcessTemplates::select('id', 'name', 'description','process_category_id','created_at','updated_at')
             ->where('id', $this->request['id'])
             ->get()->toArray();
 
@@ -56,7 +56,8 @@ class TemplateChanged implements SecurityLogEventInterface
                 '+ process_category_id' => $this->request['process_category_id'],
                 '+ description' => $this->request['description'],
                 '- name' => $queryOldtemplate[0]['name'],
-                '- process_category_id' => $queryOldtemplate[0]['process_category_id']
+                '- process_category_id' => $queryOldtemplate[0]['process_category_id'],
+                '- description' => $queryOldtemplate[0]['description']
             ];
             
         }
