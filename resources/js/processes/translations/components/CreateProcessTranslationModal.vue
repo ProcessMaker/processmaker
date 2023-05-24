@@ -345,11 +345,23 @@ export default {
       const params = {
         process_id: this.processId,
         screens_translations: this.screensTranslations,
+        language: this.selectedLanguage.language,
       };
 
       // Load from our api client
       ProcessMaker.apiClient.put("/process/translations/update", params)
         .then((response) => {
+          this.loading = false;
+          this.customModalButtons[2].disabled = false;
+          this.$bvModal.hide("createProcessTranslation");
+          this.$emit("language-saved");
+          ProcessMaker.alert(this.$t('The process translations were saved.'), 'success', 5, true);
+        })
+        .catch((error) => {
+          if (error.response && error.response.data && error.response.data.error) {
+            let message = this.$t(error.response.data.error);
+            ProcessMaker.alert(message, "danger");
+          }
           this.loading = false;
           this.customModalButtons[2].disabled = false;
         });
