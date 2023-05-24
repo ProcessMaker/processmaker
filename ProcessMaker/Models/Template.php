@@ -75,7 +75,6 @@ class Template extends ProcessMakerModel
     public function deleteTemplate(string $type, Request $request)
     {
         $id = $request->id;
-
         return (new $this->types[$type][1])->destroy($id);
     }
 

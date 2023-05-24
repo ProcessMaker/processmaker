@@ -10,28 +10,28 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
+use ProcessMaker\Models\ProcessCategory;
 
 class CategoryDeleted implements SecurityLogEventInterface
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    private Screen $screen;
+    private ProcessCategory $processCategory;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Screen $screen)
+    public function __construct(ProcessCategory $processCategory)
     {
-        $this->screen =  $screen;
+        $this->processCategory =  $processCategory;
     }
 
     public function getData(): array
     {   
-       //dd($this->screen); 
+
        return [
-         'title' => $this->screen->getAttributes()['title'],
-         'description' => $this->screen->getAttributes()['description']             
+         'category_deleted' => $this->processCategory->getAttribute('name')         
        ];
 
     }
@@ -43,7 +43,11 @@ class CategoryDeleted implements SecurityLogEventInterface
 
     public function getChanges(): array
     {
-        return $this->screen->getAttributes();
+        return [
+            'id' => $this->processCategory->getAttribute('id'),
+            'name' => $this->processCategory->getAttribute('name'),
+            'status' => $this->processCategory->getAttribute('status')
+        ];
     }
 
     /**

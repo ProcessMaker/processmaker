@@ -29,7 +29,7 @@ class ScreenDeleted implements SecurityLogEventInterface
 
     public function getData(): array
     {   
-       //dd($this->screen); 
+
        return [
          'title' => $this->screen->getAttributes()['title'],
          'description' => $this->screen->getAttributes()['description']             

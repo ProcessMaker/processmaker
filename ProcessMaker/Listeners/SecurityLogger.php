@@ -25,7 +25,6 @@ class SecurityLogger
     public function handle($event)
     {
         $class = get_class($event);
-        //dd($event->getData());
        
         if ($event instanceof SecurityLogEventInterface) {
             $data = $event->getData();
@@ -40,8 +39,6 @@ class SecurityLogger
             ]);
         } elseif (array_key_exists($class, $this->eventTypes)) {
             $eventType = $this->eventTypes[$class];
-            var_dump('entra else');
-            dd($eventType);
             SecurityLog::create([
                 'event' => $eventType,
                 'ip' => request()->ip(),

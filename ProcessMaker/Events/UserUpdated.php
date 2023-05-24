@@ -26,7 +26,7 @@ class UserUpdated implements SecurityLogEventInterface
      */
     public function __construct(User $user)
     {
-        //dd($user->getAttributes());
+
         $this->user = $user;
 
     }

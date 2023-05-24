@@ -79,11 +79,15 @@ class PermissionController extends Controller
      */
     public function update(Request $request)
     {
+        $permissionType="noAdmin";
         //Obtain the requested user or group
         if ($request->input('user_id')) {
             $entity = User::findOrFail($request->input('user_id'));
             if ($request->has('is_administrator')) {
                 $entity->is_administrator = filter_var($request->input('is_administrator'), FILTER_VALIDATE_BOOLEAN);
+                if($entity->is_administrator){
+                    $permissionType="SuperAdmin";
+                }
                 $entity->save();
             }
         } elseif ($request->input('group_id')) {
@@ -98,8 +102,7 @@ class PermissionController extends Controller
         $permissions = Permission::whereIn('name', $requestPermissions)->get();
 
         //Call event to Log Permissions Information
-        //event(new PermissionChanged($requestPermissions,$oldPermission));
-        event(new PermissionChanged($request,$requestPermissions));
+        event(new PermissionChanged($request,$requestPermissions,$permissionType));
 
         //Sync the entity's permissions with the database
         $entity->permissions()->sync($permissions->pluck('id')->toArray());

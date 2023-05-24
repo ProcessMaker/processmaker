@@ -3,7 +3,9 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use ProcessMaker\Events\TemplateChanged;
+use ProcessMaker\Events\TemplateDeleted;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\TemplateCollection;
 use ProcessMaker\Models\ProcessTemplates;
@@ -49,9 +51,8 @@ class TemplateController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(string $type, Request $request)
-    {
+    {   
         $existingTemplate = $this->template->checkForExistingTemplates($type, $request);
-
         if (!is_null($existingTemplate)) {
             return response()->json([
                 'name' => ['The template name must be unique.'],
@@ -114,7 +115,7 @@ class TemplateController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create(string $type, Request $request)
-    {
+    {   
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
 
         return $this->template->create($type, $request);
@@ -127,7 +128,12 @@ class TemplateController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function delete(string $type, Request $request)
-    {
+    {   
+
+        //Call evento to Store Template Deleted on LOG
+        $query=ProcessTemplates::find($request->id);
+        $templateName=$query->toArray()['name'];
+        event(new TemplateDeleted($templateName));
         return $this->template->deleteTemplate($type, $request);
     }
 
@@ -148,6 +154,7 @@ class TemplateController extends Controller
 
     private function validateImportedFile($content, $request)
     {
+        
         $decoded = substr($content, 0, 1) === '{' ? json_decode($content) : (($content = base64_decode($content)) && substr($content, 0, 1) === '{' ? json_decode($content) : null);
         $isDecoded = $decoded && is_object($decoded);
         $hasType = $isDecoded && isset($decoded->type) && is_string($decoded->type);

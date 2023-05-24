@@ -4,6 +4,8 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use ProcessMaker\Events\CategoryChanged;
+use ProcessMaker\Events\CategoryCreated;
+use ProcessMaker\Events\CategoryDeleted;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ProcessCategory as Resource;
@@ -147,6 +149,8 @@ class ProcessCategoryController extends Controller
         $request->validate(ProcessCategory::rules());
         $category = new ProcessCategory();
         $category->fill($request->json()->all());
+        //Call event to store New Categories on LOG
+        event(new CategoryCreated($request));
         $category->saveOrFail();
 
         return new Resource($category);
@@ -228,6 +232,8 @@ class ProcessCategoryController extends Controller
      */
     public function destroy(ProcessCategory $processCategory)
     {
+        //Call Event to store Deleted Category on LOG
+        event(new CategoryDeleted($processCategory));
         if ($processCategory->processes->count() !== 0) {
             return response(
                 ['message'=>'The item should not have associated processes',

@@ -20,15 +20,17 @@ class PermissionChanged implements SecurityLogEventInterface
 
     private Request $request;
     private $requestPermissions;
+    private $permissionType;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Request $request,$requestPermissions)
+    public function __construct(Request $request,$requestPermissions,$permissionType)
     {
         $this->request = $request;
         $this->requestPermissions = $requestPermissions;
+        $this->permissionType = $permissionType;
     }
 
     public function getData(): array
@@ -38,19 +40,27 @@ class PermissionChanged implements SecurityLogEventInterface
 
         //get User profile data
         $userData=User::find($this->request->input('user_id'));
-            
-        return [
-            'username' => $userData->getAttribute('username'),
-            '+ permission_names' => $this->requestPermissions,
-            '- permission_names' => isset($oldPermission) ? $oldPermission : null
-        ];
+        if($this->permissionType=="SuperAdmin"){
+            return [
+                'username' => $userData->getAttribute('username'),
+                '+ permission_names' => 'Super Admin - All Permissions',
+                '- permission_names' => isset($oldPermission) ? $oldPermission : null
+            ];
+        }else{
+            return [
+                'username' => $userData->getAttribute('username'),
+                '+ permission_names' => $this->requestPermissions,
+                '- permission_names' => isset($oldPermission) ? $oldPermission : null
+            ];
+        }
+        
 
     }
 
     public function getChanges(): array
     {
         // return $this->changes;
-        return $this->requestPermissions;
+        return isset($this->requestPermissions) ? $this->requestPermissions : [];
     }
 
     public function getEventName(): string
