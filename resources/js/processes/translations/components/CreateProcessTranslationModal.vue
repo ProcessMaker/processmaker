@@ -163,11 +163,15 @@ export default {
       this.currentScreenTranslations = [];
       this.availableStrings = [];
 
-      if (!val || !val.translations) {
+      if (!val) {
         return;
       }
 
       this.availableStrings = val.availableStrings;
+
+      if (!val.translations) {
+        return;
+      }
 
       if (this.selectedLanguage.language in val.translations) {
         const translations = val.translations[this.selectedLanguage.language];

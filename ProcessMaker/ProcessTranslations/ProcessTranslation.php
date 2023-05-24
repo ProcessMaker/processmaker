@@ -44,10 +44,17 @@ class ProcessTranslation
     private function getScreens($withScreenData, $screenIds = null) : SupportCollection
     {
         if (!$screenIds) {
-            $screensInProcess = collect($this->getScreenIds())->unique();
+            $screensInProcess = collect($this->getScreenIds())->unique()->toArray();
         } else {
             $screensInProcess = $screenIds;
         }
+
+        $nestedScreens = [];
+        foreach ($screensInProcess as $screen) {
+            $nestedScreens = array_merge($nestedScreens, $this->getNestedScreens($screen));
+        }
+
+        $screensInProcess = collect(array_merge($screensInProcess, $nestedScreens))->unique();
 
         $fields = array_merge(['id', 'translations', 'config'], $withScreenData);
 
@@ -58,6 +65,23 @@ class ProcessTranslation
             ->values();
 
         return $this->getStrings($screens);
+    }
+
+    private function getNestedScreens($screen) : array
+    {
+        $screen = Screen::findOrFail($screen);
+        $screensIds = [];
+        $screenFinder = new ScreensInScreen();
+        foreach ($screenFinder->referencesToExport($screen, [], null, false) as $screenFound) {
+            try {
+                $screensIds[] = $screenFound[1];
+            } catch (ModelNotFoundException $error) {
+                \Log::error($error->getMessage());
+                continue;
+            }
+        }
+
+        return $screensIds;
     }
 
     public function getStrings($screens) : SupportCollection
@@ -194,6 +218,86 @@ class ProcessTranslation
         }
 
         return $elements;
+    }
+
+    public function applyTranslations($key, $translatedString, $config)
+    {
+        if ($config) {
+            foreach ($config as $page) {
+                if (isset($page['items']) && is_array($page['items'])) {
+                    $replaced = self::applyTranslationToElement($page['items'], $key, $translatedString);
+                }
+            }
+        }
+
+        return $config;
+    }
+
+    private static function applyTranslationToElement($items, $key, $translatedString)
+    {
+        foreach ($items as &$item) {
+            if (isset($item['items']) && is_array($item['items'])) {
+                // If have items and is a loop ..
+                if ($item['component'] == 'FormLoop') {
+                    $replaced = self::applyTranslationToElement($item['items'], $key, $translatedString);
+                }
+                // If have items and is a table ..
+                if ($item['component'] == 'FormMultiColumn') {
+                    foreach ($item['items'] as $cell) {
+                        if (is_array($cell)) {
+                            $replaced = self::applyTranslationToElement($cell, $key, $translatedString);
+                        }
+                    }
+                }
+            } else {
+                if (!isset($item['component'])) {
+                    continue;
+                }
+
+                if ($item['component'] === 'FormNestedScreen') {
+                    continue;
+                }
+
+                if ($item['component'] === 'FormImage') {
+                    continue;
+                }
+
+                // Specific for Rich text
+                if ($item['component'] === 'FormHtmlViewer' && $item['config']['content'] === $key) {
+                    $item['config']['content'] = $translatedString;
+                }
+
+                // Specific for Select list
+                if ($item['component'] === 'FormSelectList') {
+                    if (isset($item['config']) && isset($item['config']['options']) && isset($item['config']['options']['optionsList'])) {
+                        foreach ($item['config']['options']['optionsList'] as $option) {
+                            if ($option['content'] === $key) {
+                                $option['content'] = $translatedString;
+                            }
+                        }
+                    }
+                }
+
+                // Look for label strings
+                if (isset($item['config']) && isset($item['config']['label']) && $item['config']['label'] === $key) {
+                    $item['config']['label'] = $translatedString;
+                }
+
+                // Look for helper strings
+                if (isset($item['config']) && isset($item['config']['helper']) && $item['config']['helper'] === $key) {
+                    $item['config']['helper'] = $translatedString;
+                }
+
+                // Look for placeholder strings
+                if (isset($item['config']) && isset($item['config']['placeholder']) && $item['config']['placeholder'] === $key) {
+                    $item['config']['placeholder'] = $translatedString;
+                }
+            }
+        }
+
+        dd($items);
+
+        return $items;
     }
 
     private function getScreenIds()
