@@ -48,9 +48,6 @@ class EventServiceProvider extends ServiceProvider
         'ProcessMaker\Events\ScriptDeleted' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
-        'ProcessMaker\Events\DataSourceScriptSaved' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
     ];
 
     /**
