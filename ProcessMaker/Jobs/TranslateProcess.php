@@ -119,6 +119,7 @@ class TranslateProcess implements ShouldQueue
                     }
                 }
             }
+
             $chunkTokens = $this->calcTokens($config['model'], json_encode($notHtmlStrings));
 
             if (intval($chunkTokens) + intval($emptyPromptTokens) >= $maxChunkSize) {
@@ -141,14 +142,21 @@ class TranslateProcess implements ShouldQueue
 
     private function isEmpty($string, $screen)
     {
+        $isEmpty = true;
+
+        if (!array_key_exists($this->targetLanguage['language'], $screen['translations'])) {
+            $screen['translations'][$this->targetLanguage['language']] = ['strings' => []];
+        }
+
         $strings = $screen['translations'][$this->targetLanguage['language']]['strings'];
+
         foreach ($strings as $stringItem) {
-            if ($stringItem['key'] === $string && $stringItem['string'] === '') {
-                return true;
+            if ($stringItem['key'] === $string && $stringItem['string'] !== '') {
+                $isEmpty = false;
             }
         }
 
-        return false;
+        return $isEmpty;
     }
 
     private function executeRequest($languageTranslationHandler, $type, $chunk)
