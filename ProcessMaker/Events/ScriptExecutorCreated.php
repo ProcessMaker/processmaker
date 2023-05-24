@@ -2,40 +2,54 @@
 
 namespace ProcessMaker\Events;
 
-use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Contracts\SecurityLogEventInterface;
 
-class ScriptExecutorCreated
+class ScriptExecutorCreated implements SecurityLogEventInterface
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
 
-    public $user;
-    public $created_values;
+    public $data;
+    public $changes;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($created_values)
+    public function __construct(array $created_values)
     {
-        $this->user = Auth::user();
-        $this->created_values = $created_values;
+        $this->changes = $created_values;
+        $this->data = [
+            'script executor id' => $created_values['id'],
+            'title' => $created_values['title'],
+            'description' => $created_values['description'],
+            'language' => $created_values['language'],
+            'config' => $created_values['config']
+        ];
+    }
+    
+    /**
+     * Return event data 
+     */
+    public function getData(): array
+    {
+        return $this->data;
+    }
+    
+    /**
+     * Return event changes 
+     */
+    public function getChanges(): array
+    {
+        return $this->changes;
     }
 
     /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return \Illuminate\Broadcasting\Channel|array
+     * return event name
      */
-    public function broadcastOn()
+    public function getEventName(): string
     {
-        return new PrivateChannel('channel-name');
+        return 'TokenCreated';
     }
 }

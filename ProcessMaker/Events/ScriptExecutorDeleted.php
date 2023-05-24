@@ -2,40 +2,48 @@
 
 namespace ProcessMaker\Events;
 
-use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Contracts\SecurityLogEventInterface;
 
-class ScriptExecutorDeleted
+class ScriptExecutorDeleted implements SecurityLogEventInterface
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
 
-    public $user;
-    public $deleted_values;
+    public $data;
+    public $changes;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($deleted_values)
+    public function __construct(array $deleted_values)
     {
-        $this->user = Auth::user();
-        $this->deleted_values = $deleted_values;
+        $this->changes = $deleted_values;
+        $this->data = ['script executor id' => $deleted_values['id']];
+    }
+    
+    /**
+     * Return event data 
+     */
+    public function getData(): array
+    {
+        return $this->data;
+    }
+    
+    /**
+     * Return event changes 
+     */
+    public function getChanges(): array
+    {
+        return $this->changes;
     }
 
     /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return \Illuminate\Broadcasting\Channel|array
+     * return event name
      */
-    public function broadcastOn()
+    public function getEventName(): string
     {
-        return new PrivateChannel('channel-name');
+        return 'TokenCreated';
     }
 }

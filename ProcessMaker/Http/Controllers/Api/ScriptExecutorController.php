@@ -110,7 +110,7 @@ class ScriptExecutorController extends Controller
             $request->only((new ScriptExecutor)->getFillable())
         );
 
-        ScriptExecutorCreated::dispatch($scriptExecutor);
+        ScriptExecutorCreated::dispatch($scriptExecutor->getAttributes());
 
         BuildScriptExecutor::dispatch($scriptExecutor->id, $request->user()->id);
 
@@ -243,7 +243,7 @@ class ScriptExecutorController extends Controller
             }
         }
 
-        ScriptExecutorDeleted::dispatch($scriptExecutor);
+        ScriptExecutorDeleted::dispatch($scriptExecutor->getAttributes());
 
         ScriptExecutor::destroy($scriptExecutor->id);
 
