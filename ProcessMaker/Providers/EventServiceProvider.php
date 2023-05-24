@@ -36,6 +36,21 @@ class EventServiceProvider extends ServiceProvider
         'ProcessMaker\Events\SettingsUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
+        'ProcessMaker\Events\ScriptUpdated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\ScriptCreated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\ScriptDuplicated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\ScriptDeleted' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\DataSourceScriptSaved' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
     ];
 
     /**
