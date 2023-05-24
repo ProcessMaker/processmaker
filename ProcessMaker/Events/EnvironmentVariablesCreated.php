@@ -33,13 +33,13 @@ class EnvironmentVariablesCreated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        $this->variable['name'] = [
-            'label' => $this->variable['name'],
-            'link' => route('environment-variables.edit', $this->enVariable),
-        ];
-
         return [
-            $this->variable
+            'name' => [
+                'label' => $this->variable['name'],
+                'link' => route('environment-variables.edit', $this->enVariable),
+            ],
+            'description' => $this->variable['description'],
+            'created_at' => $this->enVariable->getAttribute('created_at'),
         ];
     }
 

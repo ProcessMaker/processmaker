@@ -41,6 +41,7 @@ class UserCreated implements SecurityLogEventInterface
             'title' => $this->user->getAttribute('title'),
             'status' => $this->user->getAttribute('status'),
             'email' => $this->user->getAttribute('email'),
+            'created_at' => $this->user->getAttribute('created_at'),
         ];
     }
 

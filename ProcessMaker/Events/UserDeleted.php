@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Events;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Models\User;
@@ -34,6 +35,7 @@ class UserDeleted implements SecurityLogEventInterface
         return [
             'firstname' => $this->user->getAttribute('firstname'),
             'lastname' => $this->user->getAttribute('lastname'),
+            'deleted_at' => Carbon::now()
         ];
     }
 

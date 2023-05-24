@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Events;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Models\EnvironmentVariable;
@@ -34,6 +35,7 @@ class EnvironmentVariablesDeleted implements SecurityLogEventInterface
         return [
             'name' => $this->enVariable->getAttribute('name'),
             'description' => $this->enVariable->getAttribute('description'),
+            'deleted_at' => Carbon::now()
         ];
     }
 

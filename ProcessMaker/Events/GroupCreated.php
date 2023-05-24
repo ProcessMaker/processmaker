@@ -36,6 +36,7 @@ class GroupCreated implements SecurityLogEventInterface
                 'link' => route('groups.edit', $this->group),
             ],
             'description' => $this->group->getAttribute('description'),
+            'created_at' => $this->group->getAttribute('created_at'),
         ];
     }
 

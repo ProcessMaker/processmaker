@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Events;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Models\Group;
@@ -29,6 +30,28 @@ class GroupDeleted implements SecurityLogEventInterface
         $this->group = $dataDeleted;
         $this->userIds = $users;
         $this->groupIds = $groups;
+        // Get information about the users assigned in the group
+        $this->userMembers = [];
+        foreach ($this->userIds as $user) {
+            $user = User::find($user['member_id']);
+            $this->userMembers[] = [
+                'username' => [
+                    'label' => $user->username,
+                    'link' => route('users.edit', $user),
+                ]
+            ];
+        }
+        // Get information about the groups assigned in the group
+        $this->groupMembers = [];
+        foreach ($this->groupIds as $group) {
+            $group = Group::find($group['member_id']);
+            $this->groupMembers[] = [
+                'name' => [
+                    'label' => $group->name,
+                    'link' => route('groups.edit', $group),
+                ]
+            ];
+        }
     }
 
     /**
@@ -38,39 +61,15 @@ class GroupDeleted implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        // Get information about the users assigned in the group
-        $usersInfo = [];
-        foreach ($this->userIds as $user) {
-            $user = User::find($user['member_id']);
-            $this->userMembers[] = $user;
-            $usersInfo[] = [
-                'username' => [
-                    'label' => $user->username,
-                    'link' => route('users.edit', $user),
-                ]
-            ];
-        }
-        // Get information about the groups assigned in the group
-        $groupsInfo = [];
-        foreach ($this->groupIds as $group) {
-            $group = Group::find($group['member_id']);
-            $this->groupMembers[] = $group;
-            $groupsInfo[] = [
-                'name' => [
-                    'label' => $group->name,
-                    'link' => route('groups.edit', $group),
-                ]
-            ];
-        }
-
         return [
             'name' => $this->group->getAttribute('name'),
             'user_members' => [
-                $usersInfo
+                $this->userMembers
             ],
             'group_members' => [
-                $groupsInfo
-            ]
+                $this->groupMembers
+            ],
+            'deleted_at' => Carbon::now()
         ];
     }
 

@@ -40,7 +40,8 @@ class EnvironmentVariablesUpdated implements SecurityLogEventInterface
             'name' => [
                 'label' => $this->enVariable->getAttribute('name'),
                 'link' => route('environment-variables.edit', $this->enVariable),
-            ]
+            ],
+            'last_modified' => $this->enVariable->getAttribute('updated_at'),
         ], $this->formatChanges($this->changes, $this->original));
     }
 
