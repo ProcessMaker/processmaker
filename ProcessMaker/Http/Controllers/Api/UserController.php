@@ -236,8 +236,11 @@ class UserController extends Controller
             throw new AuthorizationException(__('Not authorized to update this user.'));
         }
 
-        return $user->meta['pinnedControls'];
+        return $user->meta && array_key_exists('pinnedControls', $user->meta)
+                ? $user->meta['pinnedControls']
+                : [];
     }
+
 
     /**
      * Update a user
