@@ -135,7 +135,7 @@ class GroupMemberController extends Controller
         $group_member->member()->associate($member);
         $group_member->saveOrFail();
 
-        event(new GroupUsersUpdated($group->id , $request->input('member_id'), 'added'));
+        event(new GroupUsersUpdated($group->id , $request->input('member_id'), 'added', $request->input('member_type')));
 
         return response(new GroupMemberResource($group_member), 201);
     }
@@ -207,7 +207,7 @@ class GroupMemberController extends Controller
         $group_member->delete();
 
 
-        event(new GroupUsersUpdated($group_member->group_id , $group_member->member_id, 'deleted'));
+        event(new GroupUsersUpdated($group_member->group_id , $group_member->member_id, 'deleted', $group_member->member_type));
         return response([], 204);
     }
 

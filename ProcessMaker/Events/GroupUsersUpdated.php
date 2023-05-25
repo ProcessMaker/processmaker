@@ -13,34 +13,44 @@ class GroupUsersUpdated implements SecurityLogEventInterface
 
     public $data;
     public $groupUpdated;
-    public $userId;
+    public $member;
     public $action;
     public $changes;
+    public $memberType;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(int $groupUpdated, int $userId, string $action)
+    public function __construct(int $groupUpdated, int $memberId, string $action, $memberType)
     {
         $this->groupUpdated = $groupUpdated;
-        $this->userId = $userId;
         $this->action = $action;
+        $this->memberType = $memberType;
+        $this->member = $memberType::find($memberId);
+        $this->buildData();
         $this->changes = [
-            'user' => $userId,
+            'memberType' => $memberType,
+            'memberId' => $memberId,
             'group' => $groupUpdated,
             'action' => $action
         ];
-        $this->buildData();
     }
 
     /**
      * Building the data
      */
     public function buildData() {
-        $user = User::findOrFail($this->userId);
         $group = Group::findOrFail($this->groupUpdated);
+        
+        if ($this->memberType === "ProcessMaker\Models\User") {
+            $type = 'user';
+            $link = 'users.edit';
+        } else {
+            $type = 'group';
+            $link = 'groups.edit';
+        } 
 
         switch ($this->action) {
             case 'added':
@@ -49,9 +59,9 @@ class GroupUsersUpdated implements SecurityLogEventInterface
                         'link' => route('groups.edit', $group),
                         'label' => $group->name
                     ],
-                    '+ user' => [
-                        'link' => route('users.edit', $user),
-                        'label' => $user->username
+                    '+ ' . $type => [
+                        'link' => route($link, $this->member),
+                        'label' => $this->member->name
                     ]
                 ];
                 break;
@@ -61,9 +71,9 @@ class GroupUsersUpdated implements SecurityLogEventInterface
                         'link' => route('groups.edit', $group),
                         'label' => $group->name
                     ],
-                    '- user' => [
-                        'link' => route('users.edit', $user),
-                        'label' => $user->username
+                    '- ' . $type => [
+                        'link' => route( $link, $this->member),
+                        'label' => $this->member->name
                     ]
                 ];
                 break;
