@@ -95,6 +95,11 @@
             ></b-form-input>
           </div>
         </b-form-group>
+        <error-handling-settings
+          :timeout="timeout"
+          @update:timeout="timeout = $event"
+          :error="errorState('timeout', addError) ? null : errorMessage('timeout', addError)"
+        ></error-handling-settings>
         <component
           v-for="(cmp,index) in createScriptHooks"
           :key="`create-script-hook-${index}`"
@@ -115,9 +120,10 @@
 
 <script>
   import { FormErrorsMixin, Modal, Required } from "SharedComponents";
+  import ErrorHandlingSettings from "../../../components/shared/ErrorHandlingSettings";
 
   export default {
-    components: { Modal, Required },
+    components: { Modal, Required, ErrorHandlingSettings },
     mixins: [ FormErrorsMixin ],
     props: ["countCategories", "scriptExecutors"],
     data: function() {

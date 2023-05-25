@@ -18,6 +18,7 @@ import PTabs from "./PTabs";
 import Required from "./Required";
 import SidebarButton from "./SidebarButton";
 import SidebarNav from "./SidebarNav";
+import ErrorHandlingSettings from "./ErrorHandlingSettings";
 
 export {
   BasicSearch,
@@ -40,4 +41,5 @@ export {
   Required,
   SidebarButton,
   SidebarNav,
+  ErrorHandlingSettings,
 };
