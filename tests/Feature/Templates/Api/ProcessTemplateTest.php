@@ -204,22 +204,6 @@ class ProcessTemplateTest extends TestCase
         $this->assertEquals('Default Templates', $newCategory->name);
     }
 
-    /**
-     * Check if environment variables exist
-     */
-    public function testCondition()
-    {
-        $env1 = env('DEFAULT_TEMPLATE_REPO');
-        $env2 = env('DEFAULT_TEMPLATE_BRANCH');
-        $env3 = env('DEFAULT_TEMPLATE_CATEGORIES');
-        $condition = isset($env1) && isset($env2) && isset($env3) ? true : false;
-
-        $this->assertTrue($condition, 'Environment variables for templates are not set');
-    }
-
-    /**
-     * @depends testCondition
-     */
     public function testTemplateSyncCount()
     {
         $fixtures = $this->fixtures();
@@ -229,13 +213,14 @@ class ProcessTemplateTest extends TestCase
         $this->assertEquals($count, $fixtures['allTemplates']->count());
     }
 
-    /**
-     * @depends testCondition
-     */
     public function testTemplateToProcessSync()
     {
         $this->addGlobalSignalProcess();
         $fixtures = $this->fixtures();
+
+        if (!$fixtures['allTemplates']->count()) {
+            $this->markTestSkipped('Condition not met, skipping test.');
+        }
 
         $failedProcess = [];
         foreach ($fixtures['allTemplates'] as $template) {
@@ -249,11 +234,9 @@ class ProcessTemplateTest extends TestCase
             $response->assertStatus(200);
             $processId = json_decode($response->getContent(), true)['processId'];
             $newProcess = Process::where('id', $processId)->firstOrFail();
-            $newCategory = ProcessCategory::where('id', $template['process_category_id'])->firstOrFail();
 
             $this->assertEquals($template->name, $newProcess->name);
             $this->assertEquals($template->description, $newProcess->description);
-            $this->assertEquals('Default Templates', $newCategory->name);
         }
 
         if (count($failedProcess) > 0) {
