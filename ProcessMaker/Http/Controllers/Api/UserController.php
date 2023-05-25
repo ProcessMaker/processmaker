@@ -345,7 +345,7 @@ class UserController extends Controller
         }
         
         if ($request->has('pinnedNodes')) {
-            $meta = $user->meta ?? [];
+            $meta = $user->meta ? (array) $user->meta : [];
             $meta['pinnedControls'] = $request->get('pinnedNodes');
             $user->meta = $meta;
         }
