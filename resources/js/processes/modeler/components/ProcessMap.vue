@@ -37,7 +37,6 @@ export default {
   },
   mounted() {
     ProcessMaker.$modeler = this.$refs.modeler;
-    window.ProcessMaker.EventBus.$emit("modeler-app-init", this);
   },
   methods: {
     refreshSession: _.throttle(() => {
