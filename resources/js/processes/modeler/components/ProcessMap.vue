@@ -5,6 +5,7 @@
         class="overflow-hidden position-relative p-0 vh-100"
         data-test="body-container"
       >
+        <ProcessMapTooltip/>
         <ModelerReadonly
           ref="modeler"
           :owner="self"
@@ -12,6 +13,7 @@
           @set-xml-manager="xmlManager = $event"
           @click="handleClick"
         />
+        
       </div>
     </div>
   </div>
@@ -19,11 +21,13 @@
 
 <script>
 import { ModelerReadonly } from "@processmaker/modeler";
+import ProcessMapTooltip from "./ProcessMapTooltip.vue";
 
 export default {
   name: "ProcessMap",
   components: {
     ModelerReadonly,
+    ProcessMapTooltip
   },
   data() {
     return {
