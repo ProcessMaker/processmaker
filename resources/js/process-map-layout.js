@@ -20,8 +20,8 @@ window.moment = moment;
 window.ProcessMaker.events = new Vue();
 
 window.ProcessMaker.nodeTypes = [];
-window.ProcessMaker.nodeTypes.get = (id) => {
-  this.find((node) => node.id === id);
+window.ProcessMaker.nodeTypes.get = function (id) {
+  return this.find((node) => node.id === id);
 };
 
 window.ProcessMaker.navbar = new Vue({

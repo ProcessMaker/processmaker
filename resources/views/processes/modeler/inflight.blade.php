@@ -31,6 +31,7 @@
       process: @json($process),
       processName: @json($process->name),
       xml: @json($bpmn),
+      configurables: [],
     }
 
     window.ProcessMaker.EventBus.$on('modeler-start', ({
