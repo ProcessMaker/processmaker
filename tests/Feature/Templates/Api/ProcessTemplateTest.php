@@ -206,7 +206,6 @@ class ProcessTemplateTest extends TestCase
 
     /**
      * Check if environment variables exist
-     * @doesNotPerformAssertions
      */
     public function testCondition()
     {
@@ -215,7 +214,7 @@ class ProcessTemplateTest extends TestCase
         $env3 = env('DEFAULT_TEMPLATE_CATEGORIES');
         $condition = isset($env1) && isset($env2) && isset($env3) ? true : false;
 
-        return $condition;
+        $this->assertTrue($condition, 'Environment variables for templates are not set');
     }
 
     /**
