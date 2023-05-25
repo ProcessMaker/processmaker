@@ -11,9 +11,9 @@ class UserGroupMembershipUpdated implements SecurityLogEventInterface
 {
     use Dispatchable;
 
-    public $userUpdated;
-    public $data;
-    public $changes;
+    public User $userUpdated;
+    public array $data;
+    public array $changes;
 
     /**
      * Create a new event instance.

@@ -11,19 +11,19 @@ class GroupUsersUpdated implements SecurityLogEventInterface
 {
     use Dispatchable;
 
-    public $data;
-    public $groupUpdated;
-    public $member;
-    public $action;
-    public $changes;
-    public $memberType;
+    public array $data;
+    public int $groupUpdated;
+    public User|Group $member;
+    public string $action;
+    public array $changes;
+    public string $memberType;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(int $groupUpdated, int $memberId, string $action, $memberType)
+    public function __construct(int $groupUpdated, int $memberId, string $action, string $memberType)
     {
         $this->groupUpdated = $groupUpdated;
         $this->action = $action;
