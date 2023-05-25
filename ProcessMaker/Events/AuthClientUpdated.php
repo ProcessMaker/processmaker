@@ -13,14 +13,14 @@ class AuthClientUpdated implements SecurityLogEventInterface
     public $original;
     public $data;
     public $changes;
-    private int $clientId;
+    private string $clientId;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(array $clientId, array $original_values, array $changed_values)
+    public function __construct(string $clientId, array $original_values, array $changed_values)
     {
         $this->original = $original_values;
         $this->changes = $changed_values;
@@ -33,7 +33,7 @@ class AuthClientUpdated implements SecurityLogEventInterface
      */
     public function buildData() {
         $this->data = array_merge([
-            'Auth Client Id' => $this->original['id']
+            'Auth Client Id' => $this->clientId
         ], $this->formatChanges($this->changes, $this->original));
     }
     
