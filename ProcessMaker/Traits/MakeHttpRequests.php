@@ -112,7 +112,7 @@ trait MakeHttpRequests
     {
         $this->timeout = (int) Arr::get($endpoint, 'timeout', 0);
         $bpmnTimeout = Arr::get($config, 'errorHandling.timeout', null);
-        if ($bpmnTimeout) {
+        if (is_numeric($bpmnTimeout)) {
             $this->timeout = (int) $bpmnTimeout;
         }
     }
