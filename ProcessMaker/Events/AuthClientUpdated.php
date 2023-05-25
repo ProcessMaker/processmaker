@@ -33,7 +33,7 @@ class AuthClientUpdated implements SecurityLogEventInterface
      */
     public function buildData() {
         $this->data = array_merge([
-            'Auth Client Id' => $this->clientId
+            'auth_client_id' => $this->clientId
         ], $this->formatChanges($this->changes, $this->original));
     }
     
