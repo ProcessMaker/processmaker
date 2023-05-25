@@ -11,6 +11,9 @@ class GroupUsersUpdated implements SecurityLogEventInterface
 {
     use Dispatchable;
 
+    const ADDED = 'added';
+    const DELETED = 'deleted';
+
     public array $data;
     public int $groupUpdated;
     public User|Group $member;
@@ -44,16 +47,18 @@ class GroupUsersUpdated implements SecurityLogEventInterface
     public function buildData() {
         $group = Group::findOrFail($this->groupUpdated);
         
-        if ($this->memberType === "ProcessMaker\Models\User") {
+        if ($this->memberType === User::class) {
             $type = 'user';
             $link = 'users.edit';
+            $label = $this->member->username;
         } else {
             $type = 'group';
             $link = 'groups.edit';
+            $label = $this->member->name;
         } 
 
         switch ($this->action) {
-            case 'added':
+            case GroupUsersUpdated::ADDED:
                 $this->data = [
                     'group' => [
                         'link' => route('groups.edit', $group),
@@ -61,11 +66,11 @@ class GroupUsersUpdated implements SecurityLogEventInterface
                     ],
                     '+ ' . $type => [
                         'link' => route($link, $this->member),
-                        'label' => $this->member->name
+                        'label' => $label
                     ]
                 ];
                 break;
-            case 'deleted':
+            case GroupUsersUpdated::DELETED:
                 $this->data = [
                     'group' => [
                         'link' => route('groups.edit', $group),
@@ -73,7 +78,7 @@ class GroupUsersUpdated implements SecurityLogEventInterface
                     ],
                     '- ' . $type => [
                         'link' => route( $link, $this->member),
-                        'label' => $this->member->name
+                        'label' => $label
                     ]
                 ];
                 break;
@@ -101,6 +106,6 @@ class GroupUsersUpdated implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'User Added/Removed from Group';
+        return 'GroupMembersUpdated';
     }
 }
