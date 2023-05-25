@@ -22,7 +22,7 @@ class ScriptExecutorUpdated implements SecurityLogEventInterface
      */
     public function __construct(int $scriptId, array $original_values, array $changed_values)
     {
-        $this->original = array_diff_key($original_values, $changed_values);
+        $this->original = array_intersect_key($original_values, $changed_values);
         $this->changes = $changed_values;
         $this->scriptId = $scriptId;
         $this->buildData();
