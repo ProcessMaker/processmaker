@@ -9,7 +9,8 @@ use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class ScriptCreated implements SecurityLogEventInterface
 {
-    use Dispatchable, FormatSecurityLogChanges;
+    use Dispatchable;
+    use FormatSecurityLogChanges;
 
     private array $changes;
     private array $original;
@@ -27,6 +28,11 @@ class ScriptCreated implements SecurityLogEventInterface
         $this->changes = $changes;
     }
 
+    /**
+     * Get specific changes without format related to the event
+     *
+     * @return array
+     */
     public function getChanges(): array
     {
         return array_merge([
@@ -34,9 +40,14 @@ class ScriptCreated implements SecurityLogEventInterface
         ], $this->changes);
     }
 
+    /**
+     * Get specific data related to the event
+     *
+     * @return array
+     */
     public function getData(): array
     {
-        $basic = isset($this->changes['code']) ?  [
+        $basic = isset($this->changes['code']) ? [
             'Name' => $this->script->getAttribute('title'),
             'Script Last Modified' => $this->script->getAttribute('updated_at'),
         ] : [

@@ -9,7 +9,8 @@ use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class ScriptDeleted implements SecurityLogEventInterface
 {
-    use Dispatchable, FormatSecurityLogChanges;
+    use Dispatchable;
+    use FormatSecurityLogChanges;
 
     private Script $script;
 
@@ -23,6 +24,11 @@ class ScriptDeleted implements SecurityLogEventInterface
         $this->script = $script;
     }
 
+    /**
+     * Get specific changes without format related to the event
+     *
+     * @return array
+     */
     public function getChanges(): array
     {
         return [
@@ -30,6 +36,11 @@ class ScriptDeleted implements SecurityLogEventInterface
         ];
     }
 
+    /**
+     * Get specific data related to the event
+     *
+     * @return array
+     */
     public function getData(): array
     {
         return [
