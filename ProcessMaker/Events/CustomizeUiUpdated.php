@@ -23,7 +23,7 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
     {
         $changes = array_diff_assoc($changes, $original);
         $original = array_intersect_key($original, $changes);
-        
+        dd($original, $changes);
         $this->original = $original;
         $this->changes = $changes;
         $this->buildData();
