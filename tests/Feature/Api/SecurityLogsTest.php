@@ -150,8 +150,8 @@ class SecurityLogsTest extends TestCase
         ]);
         $response->assertStatus(201);
         $collection = SecurityLog::where('user_id', $this->user->id)->get();
-        $this->assertCount(1, $collection);
-        $securityLog = $collection->first();
+        $this->assertCount(2, $collection);
+        $securityLog = $collection->skip(1)->first();
         $this->assertEquals([
             'fullname' => $this->user->getAttribute('fullname')
         ], (array)$securityLog->data);
