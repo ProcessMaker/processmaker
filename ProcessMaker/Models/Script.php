@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Hamcrest\Type\IsNumeric;
 use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Contracts\ScriptInterface;
@@ -129,7 +130,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
      * @param array $data
      * @param array $config
      */
-    public function runScript(array $data, array $config, $tokenId = '', array $errorHandling = [])
+    public function runScript(array $data, array $config, $tokenId = '', $errorHandling = [])
     {
         if (!$this->scriptExecutor) {
             throw new ScriptLanguageNotSupported($this->language);
