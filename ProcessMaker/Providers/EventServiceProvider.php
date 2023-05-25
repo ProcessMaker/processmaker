@@ -42,6 +42,9 @@ class EventServiceProvider extends ServiceProvider
         'ProcessMaker\Events\GroupDeleted' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
+        'ProcessMaker\Events\GroupUsersUpdated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
         'ProcessMaker\Events\ProcessUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
@@ -51,12 +54,6 @@ class EventServiceProvider extends ServiceProvider
         'ProcessMaker\Events\SettingsUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ], 
-        'ProcessMaker\Events\UserGroupMembershipUpdated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\GroupUsersUpdated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
         'ProcessMaker\Events\UnauthorizedAccessAttempt' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
@@ -64,6 +61,9 @@ class EventServiceProvider extends ServiceProvider
             'ProcessMaker\Listeners\SecurityLogger',
         ],
         'ProcessMaker\Events\UserDeleted' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\UserGroupMembershipUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
     ];
