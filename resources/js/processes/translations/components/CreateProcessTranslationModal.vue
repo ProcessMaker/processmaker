@@ -222,8 +222,8 @@ export default {
         return;
       }
 
-      if (!this.screensTranslations[screenIndex].translations[this.selectedLanguage.language]) {
-        this.screensTranslations[screenIndex].translations[this.selectedLanguage.language] = { strings: [] };
+      if (!this.screensTranslations[screenIndex].translations || !this.screensTranslations[screenIndex].translations[this.selectedLanguage.language]) {
+        this.screensTranslations[screenIndex].translations = { [this.selectedLanguage.language]: { strings: [] } };
       }
 
       const stringIndex = this.screensTranslations[screenIndex].translations[this.selectedLanguage.language].strings.findIndex(item => item.key === key);

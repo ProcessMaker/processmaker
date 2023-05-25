@@ -397,17 +397,26 @@ class ProcessTranslation
     public function updateTranslations($screenTranslations, $language)
     {
         foreach ($screenTranslations as $screenTranslation) {
+            $screen = Screen::findOrFail($screenTranslation['id']);
+            $translations = $screen->translations;
+
+            if (!$screenTranslation['translations']) {
+                $screenTranslation['translations'][$language] = [];
+            }
+
             foreach ($screenTranslation['translations'] as $key => $value) {
                 if ($key === $language) {
+                    unset($translations[$key]);
+                    $screenTranslation['translations'][$key] = $value;
                     $screenTranslation['translations'][$key]['updated_at'] = Carbon::now();
                     if (!array_key_exists('created_at', $screenTranslation['translations'][$key])) {
                         $screenTranslation['translations'][$key]['created_at'] = $screenTranslation['translations'][$key]['updated_at'];
                     }
+                    $translations[$key] = $screenTranslation['translations'][$key];
                 }
             }
 
-            $screen = Screen::findOrFail($screenTranslation['id']);
-            $screen->translations = $screenTranslation['translations'];
+            $screen->translations = $translations;
             $screen->save();
         }
     }
