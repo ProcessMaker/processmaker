@@ -21,7 +21,7 @@ class TokenDeleted implements SecurityLogEventInterface
     public function __construct(Token $token)
     {
         $this->data = [
-            "Token Id" => $token->getKey()
+            "token_id" => $token->getKey()
         ];        
         $this->changes = $token->toArray();
 
