@@ -9,8 +9,8 @@ class AuthClientCreated implements SecurityLogEventInterface
 {
     use Dispatchable;
 
-    public array $data;
-    public array $changes;
+    private array $data;
+    private array $changes;
 
     /**
      * Create a new event instance.
