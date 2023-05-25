@@ -68,7 +68,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         'ProcessMaker\Events\UserDeleted' => [
             'ProcessMaker\Listeners\SecurityLogger',
-        ]
+        ],
         'ProcessMaker\Events\ScriptExecutorCreated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
