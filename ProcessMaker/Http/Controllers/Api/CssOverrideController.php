@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
+use ProcessMaker\Events\CustomizeUiUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Jobs\CompileSass;
@@ -89,6 +90,7 @@ class CssOverrideController extends Controller
 
         $request->validate(Setting::rules($setting));
         $setting->fill($request->input());
+        $original = array_intersect_key($setting->getOriginal(), $setting->getDirty())['config'];
         $setting->saveOrFail();
 
         $this->setLoginFooter($request);
@@ -97,6 +99,8 @@ class CssOverrideController extends Controller
         $this->writeColors(json_decode($request->input('variables', '[]'), true));
         $this->writeFonts(json_decode($request->input('sansSerifFont', '')));
         $this->compileSass($request->user('api')->id, json_decode($request->input('variables', '[]'), true));
+
+        event(new CustomizeUiUpdated($original, (array)json_decode($setting->getChanges()['config'])));
 
         return new ApiResource($setting);
     }
