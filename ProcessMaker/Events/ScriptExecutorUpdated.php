@@ -4,56 +4,37 @@ namespace ProcessMaker\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
+use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class ScriptExecutorUpdated implements SecurityLogEventInterface
 {
-    use Dispatchable;
+    use Dispatchable, FormatSecurityLogChanges;
 
-    public $data;
-    public $changes;
-    public $original_values;
-    public $changed_values;
+    private array $data;
+    private array $changes;
+    private array $original;
+    private int $scriptId;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(array $original_values, array $changed_values)
+    public function __construct(int $scriptId, array $original_values, array $changed_values)
     {
-        $this->original_values = $original_values;
-        $this->changed_values = $changed_values;
-        $this->buildData();
+        $this->original = array_diff_key($original_values, $changed_values);
         $this->changes = $changed_values;
+        $this->scriptId = $scriptId;
+        $this->buildData();
     }
 
     /**
      * Building the data
      */
     public function buildData() {
-        $this->data = [
-            'script executor id' => $this->original_values['id']
-        ];
-
-        if ($this->original_values['title'] !== $this->changed_values['title']) {
-            $this->data['- title'] = $this->original_values['title'];
-            $this->data['+ title'] = $this->changed_values['title'];
-        }
-
-        if ($this->original_values['description'] !== $this->changed_values['description']) {
-            $this->data['- description'] = $this->original_values['description'];
-            $this->data['+ description'] = $this->changed_values['description'];
-        }
-
-        if ($this->original_values['language'] !== $this->changed_values['language']) {
-            $this->data['- language'] = $this->original_values['language'];
-            $this->data['+ language'] = $this->changed_values['language'];
-        }
-
-        if ($this->original_values['config'] !== $this->changed_values['config']) {
-            $this->data['- config'] = $this->original_values['config'];
-            $this->data['+ config'] = $this->changed_values['config'];
-        }
+        $this->data = array_merge([
+            'script_executor_id' => $this->scriptId
+        ], $this->formatChanges($this->changes, $this->original));
     }
     
     /**

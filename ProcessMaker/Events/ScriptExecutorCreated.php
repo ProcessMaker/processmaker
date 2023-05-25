@@ -9,8 +9,8 @@ class ScriptExecutorCreated implements SecurityLogEventInterface
 {
     use Dispatchable;
 
-    public $data;
-    public $changes;
+    private array $data;
+    private array $changes;
 
     /**
      * Create a new event instance.
@@ -21,7 +21,7 @@ class ScriptExecutorCreated implements SecurityLogEventInterface
     {
         $this->changes = $created_values;
         $this->data = [
-            'script executor id' => $created_values['id'],
+            'script_executor_id' => $created_values['id'],
             'title' => $created_values['title'],
             'description' => $created_values['description'],
             'language' => $created_values['language'],
