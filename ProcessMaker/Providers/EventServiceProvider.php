@@ -60,6 +60,12 @@ class EventServiceProvider extends ServiceProvider
         'ProcessMaker\Events\SettingsUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
+        'ProcessMaker\Events\TokenCreated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\TokenDeleted' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
         'ProcessMaker\Events\UnauthorizedAccessAttempt' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
@@ -68,13 +74,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         'ProcessMaker\Events\UserDeleted' => [
             'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\TokenCreated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\TokenDeleted' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
+        ]
     ];
 
     /**
