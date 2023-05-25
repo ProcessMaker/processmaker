@@ -10,9 +10,9 @@ class AuthClientUpdated implements SecurityLogEventInterface
 {
     use Dispatchable, FormatSecurityLogChanges;
 
-    public $original;
-    public $data;
-    public $changes;
+    public array $original;
+    public array $data;
+    public array $changes;
     private string $clientId;
 
     /**
