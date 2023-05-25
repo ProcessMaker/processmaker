@@ -54,6 +54,15 @@ class EventServiceProvider extends ServiceProvider
         'ProcessMaker\Events\ProcessUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
+        'ProcessMaker\Events\ScriptExecutorCreated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\ScriptExecutorDeleted' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\ScriptExecutorUpdated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
         'ProcessMaker\Events\SessionStarted' => [
             'ProcessMaker\Listeners\ActiveUserListener',
         ],
@@ -73,15 +82,6 @@ class EventServiceProvider extends ServiceProvider
             'ProcessMaker\Listeners\SecurityLogger',
         ],
         'ProcessMaker\Events\UserDeleted' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\ScriptExecutorCreated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\ScriptExecutorUpdated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\ScriptExecutorDeleted' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
     ];
