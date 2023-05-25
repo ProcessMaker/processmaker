@@ -241,7 +241,7 @@
                     <div id="map-legend" class="card">
                       <div style="padding-top: 0px; padding-bottom: 0px; padding-left: 5px;" class="card-body">
                         <p style="font-weight: bold;"><span class="in-progress-line"></span>In Progress</p>
-                        <p style="font-weight: bold;"><span class="completed-line"></span>Completed</p>
+                        <p style="font-weight: bold; margin-bottom:1rem !important;"><span class="completed-line"></span>Completed</p>
                       </div>
                     </div>                    
                 </div>
