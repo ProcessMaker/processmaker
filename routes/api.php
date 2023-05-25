@@ -43,7 +43,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('users', [UserController::class, 'store'])->name('users.store')->middleware('can:create-users');
     Route::put('users/restore', [UserController::class, 'restore'])->name('users.restore')->middleware('can:create-users');
     Route::put('users/{user}', [UserController::class, 'update'])->name('users.update'); // Permissions handled in the controller
-    Route::put('users/{user}/update_pinnned_controls', [UserController::class, 'updatePinnnedControls'])->name('users.updatePinnnedControls'); // Permissions handled in the controller
+    Route::put('users/{user}/update_pinned_controls', [UserController::class, 'updatePinnedControls'])->name('users.updatePinnnedControls'); // Permissions handled in the controller
     Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy')->middleware('can:delete-users');
     Route::put('password/change', [ChangePasswordController::class, 'update'])->name('password.update');
     // User Groups

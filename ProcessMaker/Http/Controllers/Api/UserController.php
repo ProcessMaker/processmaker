@@ -232,12 +232,15 @@ class UserController extends Controller
      */
     public function getPinnnedControls(User $user)
     {
-        if (!Auth::user()->can('view', $user)) {
+        $user = Auth::user();
+        if (!$user->can('view', $user)) {
             throw new AuthorizationException(__('Not authorized to update this user.'));
         }
 
-        return $user->meta && array_key_exists('pinnedControls', $user->meta)
-                ? $user->meta['pinnedControls']
+        $meta = $user->meta ? (array) $user->meta : [];
+
+        return array_key_exists('pinnedControls', $meta)
+                ? $meta['pinnedControls']
                 : [];
     }
 
@@ -336,12 +339,15 @@ class UserController extends Controller
      */
     public function updatePinnedControls(User $user, Request $request)
     {
-        if (!Auth::user()->can('edit', $user)) {
+        $user = Auth::user();
+        if (!$user->can('edit', $user)) {
             throw new AuthorizationException(__('Not authorized to update this user.'));
         }
         
         if ($request->has('pinnedNodes')) {
-            $user->meta['pinnedControls'] = $request->get('pinnedNodes');
+            $meta = $user->meta ?? [];
+            $meta['pinnedControls'] = $request->get('pinnedNodes');
+            $user->meta = $meta;
         }
 
         $user->saveOrFail();
