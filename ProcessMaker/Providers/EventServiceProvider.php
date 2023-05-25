@@ -27,6 +27,15 @@ class EventServiceProvider extends ServiceProvider
         'Illuminate\Database\Events\MigrationsEnded' => [
             'ProcessMaker\Listeners\UpdateDataLakeViews',
         ],
+        'ProcessMaker\Events\AuthClientUpdated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\AuthClientCreated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\AuthClientDeleted' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
         'ProcessMaker\Events\EnvironmentVariablesCreated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
@@ -54,6 +63,12 @@ class EventServiceProvider extends ServiceProvider
         'ProcessMaker\Events\SettingsUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ], 
+        'ProcessMaker\Events\TokenCreated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\TokenDeleted' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
         'ProcessMaker\Events\UnauthorizedAccessAttempt' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
