@@ -10,15 +10,27 @@ class SensitiveDataHelper
 
     const MASK = '*';
 
-    public static function parseArray(array $data)
+    public static function parseArray(array|object $data)
     {
-        foreach ($data as $key => $value) {
-            if (is_array($value)) {
-                $data[$key] = static::parseArray($value);
-            } elseif(is_string($value) && static::isSensitiveKey($key)) {
-                $data[$key] = static::parseString($value);
-            } else {
-                $data[$key] = $value;
+        if (is_array($data)) {
+            foreach ($data as $key => $value) {
+                if (is_array($value) || is_object($value)) {
+                    $data[$key] = static::parseArray($value);
+                } elseif(is_string($value) && static::isSensitiveKey($key)) {
+                    $data[$key] = static::parseString($value);
+                } else {
+                    $data[$key] = $value;
+                }
+            }
+        } else {
+            foreach ($data as $key => $value) {
+                if (is_array($value) || is_object($value)) {
+                    $data->$key = static::parseArray($value);
+                } elseif(is_string($value) && static::isSensitiveKey($key)) {
+                    $data->$key = static::parseString($value);
+                } else {
+                    $data->$key = $value;
+                }
             }
         }
 
