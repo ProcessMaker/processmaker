@@ -11,9 +11,9 @@ class UserGroupMembershipUpdated implements SecurityLogEventInterface
 {
     use Dispatchable;
 
-    public User $userUpdated;
-    public array $data;
-    public array $changes;
+    private User $userUpdated;
+    private array $data;
+    private array $changes;
 
     /**
      * Create a new event instance.
@@ -90,6 +90,6 @@ class UserGroupMembershipUpdated implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'Group Added/Removed from User';
+        return 'UserGroupsUpdated';
     }
 }

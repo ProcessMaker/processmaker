@@ -14,12 +14,12 @@ class GroupUsersUpdated implements SecurityLogEventInterface
     const ADDED = 'added';
     const DELETED = 'deleted';
 
-    public array $data;
-    public int $groupUpdated;
-    public User|Group $member;
-    public string $action;
-    public array $changes;
-    public string $memberType;
+    private array $data;
+    private int $groupUpdated;
+    private User|Group $member;
+    private string $action;
+    private array $changes;
+    private string $memberType;
 
     /**
      * Create a new event instance.
