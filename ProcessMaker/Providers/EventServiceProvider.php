@@ -78,9 +78,6 @@ class EventServiceProvider extends ServiceProvider
         'ProcessMaker\Events\ScriptExecutorUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
-        'ProcessMaker\Events\ScriptUpdated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
         'ProcessMaker\Events\SessionStarted' => [
             'ProcessMaker\Listeners\ActiveUserListener',
         ],
