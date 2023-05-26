@@ -31,7 +31,6 @@ class CategoryCreated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-
         return [
             'name' => [
                 'label' => $this->variable['name'],

@@ -371,7 +371,7 @@ class ProcessController extends Controller
         }
 
         //Call Event to Log Template Changes
-        TemplateUpdated::dispatch([],$process,'Update Template Process');
+        TemplateUpdated::dispatch([], $process, 'Update Template Process');
 
         return new Resource($process->refresh());
     }

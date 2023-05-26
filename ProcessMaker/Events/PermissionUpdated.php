@@ -11,16 +11,17 @@ class PermissionUpdated implements SecurityLogEventInterface
 {
     use Dispatchable, FormatSecurityLogChanges;
 
-    private $changedPermissions;
-    private $originalPermissions;
-    private $permissionType;
-    private $userId;
+    private array $changedPermissions;
+    private array $originalPermissions;
+    private bool $permissionType;
+    private string $userId;
+    
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(array $changedPermissions, array $originalPermissions, bool $permissionType, $user_id)
+    public function __construct(array $changedPermissions, array $originalPermissions, bool $permissionType, string $user_id)
     {
         $this->changedPermissions = $changedPermissions;
         $this->originalPermissions = $originalPermissions;

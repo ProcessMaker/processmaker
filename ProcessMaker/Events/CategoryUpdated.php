@@ -15,6 +15,7 @@ class CategoryUpdated implements SecurityLogEventInterface
 
     private array $changes;
     private array $original;
+    
     /**
      * Create a new event instance.
      *

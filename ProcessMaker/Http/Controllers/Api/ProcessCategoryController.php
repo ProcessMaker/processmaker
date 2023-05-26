@@ -3,7 +3,6 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use OpenAI\Enums\Moderations\Category;
 use ProcessMaker\Events\CategoryCreated;
 use ProcessMaker\Events\CategoryDeleted;
 use ProcessMaker\Events\CategoryUpdated;

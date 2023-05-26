@@ -11,6 +11,7 @@ class TemplateDeleted implements SecurityLogEventInterface
     use Dispatchable;
 
     private $templateName;
+
     /**
      * Create a new event instance.
      *
@@ -28,12 +29,10 @@ class TemplateDeleted implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-
         return [
             'template_name' => $this->templateName,
             'deleted_at' => Carbon::now()
         ];
-
     }
 
     /**

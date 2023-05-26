@@ -12,6 +12,7 @@ class CategoryDeleted implements SecurityLogEventInterface
     use Dispatchable;
 
     private ProcessCategory $processCategory;
+
     /**
      * Create a new event instance.
      *
@@ -34,6 +35,7 @@ class CategoryDeleted implements SecurityLogEventInterface
             'deleted_at' => Carbon::now()
         ];
     }
+
     /**
      * Get the Event name with the syntax ‘[Past-test Action] [Object]’
      *
@@ -43,11 +45,13 @@ class CategoryDeleted implements SecurityLogEventInterface
     {
         return 'CategoryDeleted';
     }
+
     /**
      * Get specific changes without format related to the event
      *
      * @return array
      */
+    
     public function getChanges(): array
     {
         return [

@@ -11,7 +11,6 @@ class ScreenUpdated implements SecurityLogEventInterface
 {
     use Dispatchable, FormatSecurityLogChanges;
 
-    
     private Screen $screen;
     private $changes;
     private $original;

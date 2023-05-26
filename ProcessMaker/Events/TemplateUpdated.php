@@ -15,6 +15,7 @@ class TemplateUpdated implements SecurityLogEventInterface
     private $changes;
     private $process;
     private $processType;
+
     /**
      * Create a new event instance.
      *
@@ -46,7 +47,6 @@ class TemplateUpdated implements SecurityLogEventInterface
                 '+ Process/Template_Last_Modified' => Carbon::now()
             ];
         } else {
-
             $queryOldtemplate = ProcessTemplates::select('id', 'name', 'description', 'process_category_id')
             ->where('id', $this->changes['id'])
                 ->get()->first()->toArray();

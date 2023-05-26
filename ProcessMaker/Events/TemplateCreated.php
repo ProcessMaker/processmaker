@@ -9,7 +9,7 @@ class TemplateCreated implements SecurityLogEventInterface
 {
     use Dispatchable;
     private $payload;
-    
+
     /**
      * Create a new event instance.
      *
@@ -27,7 +27,6 @@ class TemplateCreated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-
         return [
             'type' => $this->payload['type'],
             'version' => $this->payload['version'],
@@ -52,7 +51,6 @@ class TemplateCreated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-
         return [
             'type' => $this->payload['type'],
             'version' => $this->payload['version'],
