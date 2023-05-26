@@ -13,6 +13,7 @@ class CategoryCreated implements SecurityLogEventInterface
 
     private ProcessCategory $enVariable;
     private $variable = [];
+    
     /**
      * Create a new event instance.
      *
