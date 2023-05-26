@@ -51,6 +51,9 @@ class EventServiceProvider extends ServiceProvider
         'ProcessMaker\Events\GroupDeleted' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
+        'ProcessMaker\Events\GroupUsersUpdated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
         'ProcessMaker\Events\ProcessUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
@@ -86,7 +89,10 @@ class EventServiceProvider extends ServiceProvider
         ],
         'ProcessMaker\Events\UserDeleted' => [
             'ProcessMaker\Listeners\SecurityLogger',
-        ]
+        ],
+        'ProcessMaker\Events\UserGroupMembershipUpdated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
     ];
 
     /**
