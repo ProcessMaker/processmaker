@@ -118,6 +118,16 @@ trait MakeHttpRequests
     }
 
     /**
+     * Return the value of $this->timeout
+     *
+     * @return int
+     */
+    public function getTimeout()
+    {
+        return $this->timeout;
+    }
+
+    /**
      * Prepare data to be used in body (mustache)
      *
      * @param array $requestData
@@ -451,7 +461,7 @@ trait MakeHttpRequests
         $client = $this->client ?? app()->make(Client::class, [
             'config' => [
                 'verify' => $this->verifySsl,
-                'timeout' => $this->timeout,
+                'timeout' => $this->getTimeout(),
             ],
         ]);
 
