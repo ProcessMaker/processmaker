@@ -176,6 +176,11 @@ export default {
       if (this.selectedLanguage.language in val.translations) {
         const translations = val.translations[this.selectedLanguage.language];
 
+        if (!translations.strings) {
+          this.currentScreenTranslations = {};
+          return;
+        }
+
         Object.keys(translations.strings).forEach((key) => {
           this.currentScreenTranslations.push(translations.strings[key]);
         });
@@ -192,6 +197,10 @@ export default {
       // For each string look into the translations if some exists
       this.availableStrings.forEach((string) => {
         this.$set(this.stringsWithTranslations, string, "");
+
+        if (!val.length) {
+          return;
+        }
 
         val.forEach((translation) => {
           if (translation.key === string) {
@@ -222,7 +231,11 @@ export default {
         return;
       }
 
-      if (!this.screensTranslations[screenIndex].translations || !this.screensTranslations[screenIndex].translations[this.selectedLanguage.language]) {
+      if (
+        !this.screensTranslations[screenIndex].translations
+        || !this.screensTranslations[screenIndex].translations[this.selectedLanguage.language]
+        || !this.screensTranslations[screenIndex].translations[this.selectedLanguage.language].strings
+      ) {
         this.screensTranslations[screenIndex].translations = { [this.selectedLanguage.language]: { strings: [] } };
       }
 
