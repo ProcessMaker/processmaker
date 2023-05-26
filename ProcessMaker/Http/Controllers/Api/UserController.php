@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Events\UserCreated;
 use ProcessMaker\Events\UserDeleted;
+use ProcessMaker\Events\UserGroupMembershipUpdated;
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
@@ -307,20 +308,21 @@ class UserController extends Controller
      */
     public function updateGroups(User $user, Request $request)
     {
+        $data = [];
         if ($request->has('groups')) {
             if ($request->filled('groups')) {
                 $groups = $request->input('groups');
                 if (!is_array($groups)) {
                     $groups = array_map('intval', explode(',', $request->groups));
                 }
-                $user->groups()->sync($groups);
+                $data = $user->groups()->sync($groups);
             } else {
                 $user->groups()->detach();
             }
         } else {
             return response([], 400);
         }
-
+        event(new UserGroupMembershipUpdated($data, $user));
         return response([], 204);
     }
 
