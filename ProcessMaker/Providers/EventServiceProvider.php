@@ -27,6 +27,15 @@ class EventServiceProvider extends ServiceProvider
         'Illuminate\Database\Events\MigrationsEnded' => [
             'ProcessMaker\Listeners\UpdateDataLakeViews',
         ],
+        'ProcessMaker\Events\CategoryCreated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\CategoryDeleted' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\CategoryUpdated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
         'ProcessMaker\Events\EnvironmentVariablesCreated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
@@ -42,34 +51,10 @@ class EventServiceProvider extends ServiceProvider
         'ProcessMaker\Events\GroupDeleted' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
+        'ProcessMaker\Events\PermissionUpdated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
         'ProcessMaker\Events\ProcessUpdated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\SessionStarted' => [
-            'ProcessMaker\Listeners\ActiveUserListener',
-        ],
-        'ProcessMaker\Events\SettingsUpdated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\UserCreated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\UserDeleted' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\CategoryChanged' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\CategoryCreated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\CategoryDeleted' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\PermissionChanged' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\ScreenChanged' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
         'ProcessMaker\Events\ScreenCreated' => [
@@ -78,13 +63,28 @@ class EventServiceProvider extends ServiceProvider
         'ProcessMaker\Events\ScreenDeleted' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
-        'ProcessMaker\Events\TemplateChanged' => [
+        'ProcessMaker\Events\ScreenUpdated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\SessionStarted' => [
+            'ProcessMaker\Listeners\ActiveUserListener',
+        ],
+        'ProcessMaker\Events\SettingsUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
         'ProcessMaker\Events\TemplateCreated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
         'ProcessMaker\Events\TemplateDeleted' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\TemplateUpdated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\UserCreated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\UserDeleted' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
         'ProcessMaker\Events\UserUpdated' => [

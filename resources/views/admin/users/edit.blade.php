@@ -428,7 +428,6 @@
             ProcessMaker.apiClient.put("/permissions", {
               is_administrator: this.formData.is_administrator,
               permission_names: this.selectedPermissions,
-              user_old_permission: this.userPermissionNames,
               user_id: this.formData.id
             })
               .then(response => {

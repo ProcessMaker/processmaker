@@ -2,60 +2,62 @@
 
 namespace ProcessMaker\Events;
 
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Http\Request;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 
 class ScreenCreated implements SecurityLogEventInterface
 {
     use Dispatchable;
-
-    private Request $request;
+    private $newScreen;
+    
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Request $request)
+    public function __construct(array $newScreen)
     {
-        $this->request =  $request;
+        $this->newScreen =  $newScreen;
     }
 
+    /**
+     * Get specific data related to the event
+     *
+     * @return array
+     */
     public function getData(): array
-    {   
-        
-       return [
-            'name' => $this->request->input('title'),
-            'description' => $this->request->input('description'),        
-            'type' => $this->request->input('type'),
-            'screen_category_id' => $this->request->input('screen_category_id')   
-       ];
+    {
 
+        return [
+            'name' => $this->newScreen['title'],
+            'description' => $this->newScreen['description'],
+            'type' => $this->newScreen['type'],
+            'screen_category_id' => $this->newScreen['screen_category_id']
+        ];
     }
 
+    /**
+     * Get the Event name with the syntax ‘[Past-test Action] [Object]’
+     *
+     * @return string
+     */
     public function getEventName(): string
     {
         return 'ScreenCreated';
     }
 
+    /**
+     * Get specific changes without format related to the event
+     *
+     * @return array
+     */
     public function getChanges(): array
     {
-       return [
-            'name' => $this->request->input('name'),
-            'description' => $this->request->input('description'),        
-            'type' => $this->request->input('type'),
-            'screen_category_id' => $this->request->input('screen_category_id')   
-       ];
-    }
-
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return \Illuminate\Broadcasting\Channel|array
-     */
-    public function broadcastOn()
-    {
-        return new PrivateChannel('channel-name');
+        return [
+            'name' => $this->newScreen['title'],
+            'description' => $this->newScreen['description'],
+            'type' => $this->newScreen['type'],
+            'screen_category_id' => $this->newScreen['screen_category_id']
+        ];
     }
 }

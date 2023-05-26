@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Events;
 
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 
@@ -20,6 +19,11 @@ class TemplateCreated implements SecurityLogEventInterface
         $this->payload = $payload;
     }
 
+    /**
+     * Get specific data related to the event
+     *
+     * @return array
+     */
     public function getData(): array
     {
 
@@ -28,14 +32,23 @@ class TemplateCreated implements SecurityLogEventInterface
             'version' => $this->payload['version'],
             'name' => $this->payload['name']
         ];
-
     }
 
+    /**
+     * Get the Event name with the syntax ‘[Past-test Action] [Object]’
+     *
+     * @return string
+     */
     public function getEventName(): string
     {
         return 'TemplateCreated';
     }
 
+    /**
+     * Get specific changes without format related to the event
+     *
+     * @return array
+     */
     public function getChanges(): array
     {
 
@@ -45,15 +58,5 @@ class TemplateCreated implements SecurityLogEventInterface
             'name' => $this->payload['name'],
             'root' => $this->payload['root']
         ];
-    }
-
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return \Illuminate\Broadcasting\Channel|array
-     */
-    public function broadcastOn()
-    {
-        return new PrivateChannel('channel-name');
     }
 }

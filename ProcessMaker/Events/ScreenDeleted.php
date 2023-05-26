@@ -2,18 +2,16 @@
 
 namespace ProcessMaker\Events;
 
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PrivateChannel;
+use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Queue\SerializesModels;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Models\Screen;
 
 class ScreenDeleted implements SecurityLogEventInterface
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
-
+    use Dispatchable;
     private Screen $screen;
+
     /**
      * Create a new event instance.
      *
@@ -24,33 +22,39 @@ class ScreenDeleted implements SecurityLogEventInterface
         $this->screen =  $screen;
     }
 
+    /**
+     * Get specific data related to the event
+     *
+     * @return array
+     */
     public function getData(): array
-    {   
+    {
 
-       return [
-         'title' => $this->screen->getAttributes()['title'],
-         'description' => $this->screen->getAttributes()['description']             
-       ];
+        return [
+            'title' => $this->screen->getAttributes()['title'],
+            'description' => $this->screen->getAttributes()['description'],
+            'deleted_at' => Carbon::now()
+        ];
 
     }
 
+    /**
+     * Get the Event name with the syntax ‘[Past-test Action] [Object]’
+     *
+     * @return string
+     */
     public function getEventName(): string
     {
         return 'ScreenDeleted';
     }
 
+    /**
+     * Get specific changes without format related to the event
+     *
+     * @return array
+     */
     public function getChanges(): array
     {
         return $this->screen->getAttributes();
-    }
-
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return \Illuminate\Broadcasting\Channel|array
-     */
-    public function broadcastOn()
-    {
-        return new PrivateChannel('channel-name');
     }
 }

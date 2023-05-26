@@ -6,7 +6,7 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use ProcessMaker\Events\TemplateChanged;
+use ProcessMaker\Events\TemplateUpdated;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Api\TemplateController;
@@ -18,7 +18,6 @@ use ProcessMaker\Http\Resources\ProcessRequests;
 use ProcessMaker\Jobs\ExportProcess;
 use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
@@ -307,7 +306,7 @@ class ProcessController extends Controller
     public function update(Request $request, Process $process)
     {
         //Call Event to Log Template Changes
-        event(new TemplateChanged($request,$process,'updateProcess'));
+        TemplateUpdated::dispatch([],$process,'Update Template Process');
         $request->validate(Process::rules($process));
 
         // bpmn validation

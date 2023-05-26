@@ -7,21 +7,24 @@ use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
-class CategoryCreated implements SecurityLogEventInterface
+class CategoryUpdated implements SecurityLogEventInterface
 {
     use Dispatchable, FormatSecurityLogChanges;
 
     private ProcessCategory $enVariable;
-    private $variable = [];
+
+    private array $changes;
+    private array $original;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(array $data)
+    public function __construct(ProcessCategory $data, array $changes, array $original)
     {
-        $this->variable = $data;
-        $this->enVariable = ProcessCategory::where('name', $data['name'])->first();
+        $this->enVariable = $data;
+        $this->changes = $changes;
+        $this->original = $original;
     }
 
     /**
@@ -31,25 +34,18 @@ class CategoryCreated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-
-        return [
+        return array_merge([
             'name' => [
-                'label' => $this->variable['name'],
-                'link' => route('processes.create', $this->enVariable),
+                'label' => $this->enVariable->getAttribute('name'),
+                'link' => route('processes.index', $this->enVariable) . '#nav-categories',
             ],
-            'name' => $this->variable['name'],
-            'created_at' => $this->enVariable->getAttribute('created_at'),
-        ];
+            'last_modified' => $this->enVariable->getAttribute('updated_at'),
+        ], $this->formatChanges($this->changes, $this->original));
     }
 
-    /**
-     * Get the Event name with the syntax ‘[Past-test Action] [Object]’
-     *
-     * @return string
-     */
     public function getEventName(): string
     {
-        return 'CategoryCreated';
+        return 'CategoryUpdated';
     }
 
     /**
@@ -59,8 +55,6 @@ class CategoryCreated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return [
-            $this->enVariable
-        ];
+        return $this->formatChanges($this->changes, $this->original);
     }
 }

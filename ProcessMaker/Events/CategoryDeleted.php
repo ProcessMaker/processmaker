@@ -2,7 +2,7 @@
 
 namespace ProcessMaker\Events;
 
-use Illuminate\Broadcasting\PrivateChannel;
+use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Models\ProcessCategory;
@@ -17,25 +17,38 @@ class CategoryDeleted implements SecurityLogEventInterface
      *
      * @return void
      */
-    public function __construct(ProcessCategory $processCategory)
+    public function __construct(ProcessCategory $data)
     {
-        $this->processCategory =  $processCategory;
+        $this->processCategory =  $data;
     }
 
+    /**
+     * Get specific data related to the event
+     *
+     * @return array
+     */
     public function getData(): array
-    {   
+    {
 
-       return [
-         'category_deleted' => $this->processCategory->getAttribute('name')         
-       ];
-
+        return [
+            'category_name' => $this->processCategory->getAttribute('name'),
+            'deleted_at' => Carbon::now()
+        ];
     }
-
+    /**
+     * Get the Event name with the syntax ‘[Past-test Action] [Object]’
+     *
+     * @return string
+     */
     public function getEventName(): string
     {
         return 'CategoryDeleted';
     }
-
+    /**
+     * Get specific changes without format related to the event
+     *
+     * @return array
+     */
     public function getChanges(): array
     {
         return [
@@ -43,15 +56,5 @@ class CategoryDeleted implements SecurityLogEventInterface
             'name' => $this->processCategory->getAttribute('name'),
             'status' => $this->processCategory->getAttribute('status')
         ];
-    }
-
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return \Illuminate\Broadcasting\Channel|array
-     */
-    public function broadcastOn()
-    {
-        return new PrivateChannel('channel-name');
     }
 }

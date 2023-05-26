@@ -259,7 +259,7 @@ class UserController extends Controller
         }
 
         //Call new Event to store User Changes in LOG
-        event(new  UserUpdated($user));
+        UserUpdated::dispatch($user);
 
         $user->saveOrFail();
         if ($request->has('avatar')) {
