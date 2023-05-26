@@ -27,6 +27,15 @@ class EventServiceProvider extends ServiceProvider
         'Illuminate\Database\Events\MigrationsEnded' => [
             'ProcessMaker\Listeners\UpdateDataLakeViews',
         ],
+        'ProcessMaker\Events\AuthClientUpdated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\AuthClientCreated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\AuthClientDeleted' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
         'ProcessMaker\Events\CategoryCreated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
@@ -51,6 +60,9 @@ class EventServiceProvider extends ServiceProvider
         'ProcessMaker\Events\GroupDeleted' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
+        'ProcessMaker\Events\GroupUsersUpdated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
         'ProcessMaker\Events\PermissionUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
@@ -64,6 +76,18 @@ class EventServiceProvider extends ServiceProvider
             'ProcessMaker\Listeners\SecurityLogger',
         ],
         'ProcessMaker\Events\ScreenUpdated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\ScriptUpdated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\ScriptCreated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\ScriptDuplicated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\ScriptDeleted' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
         'ProcessMaker\Events\SessionStarted' => [
@@ -81,15 +105,28 @@ class EventServiceProvider extends ServiceProvider
         'ProcessMaker\Events\TemplateUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
+        'ProcessMaker\Events\TokenCreated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\TokenDeleted' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\UnauthorizedAccessAttempt' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
         'ProcessMaker\Events\UserCreated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
         'ProcessMaker\Events\UserDeleted' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
+        'ProcessMaker\Events\UserGroupMembershipUpdated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
         'ProcessMaker\Events\UserUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
+      
     ];
 
     /**
