@@ -8,7 +8,8 @@ use ProcessMaker\Nayra\Repositories\EntityRepositoryFactory;
 
 class ServiceRabbitMq
 {
-    const QUEUE_NAME = 'nayra-store';
+    const QUEUE_NAME_CONSUME = 'nayra-store';
+    const QUEUE_NAME_PUBLISH = 'requests';
 
     private $connection;
     private $channel;
@@ -18,7 +19,7 @@ class ServiceRabbitMq
      *
      * @return void
      */
-    public function connect()
+    public function connect(): void
     {
         // Get configuration
         $rabbitMqHost = config('rabbitmq.host');
@@ -31,8 +32,9 @@ class ServiceRabbitMq
         $this->channel = $this->connection->channel();
 
 
-        // Declares queue name and set callback to process the transactions
-        $this->channel->queue_declare(self::QUEUE_NAME, false, true, false, false);
+        // Set channel config
+        $this->channel->queue_declare(self::QUEUE_NAME_PUBLISH, false, true, false, false);
+        $this->channel->queue_declare(self::QUEUE_NAME_CONSUME, false, true, false, false);
     }
 
     /*
@@ -40,7 +42,7 @@ class ServiceRabbitMq
      *
      * @return void
      */
-    public function disconnect()
+    public function disconnect(): void
     {
         // Close connections
         $this->channel->close();
@@ -55,13 +57,18 @@ class ServiceRabbitMq
      * @param mixed $body
      * @return void
      */
-    public function sendMessage(string $subject, string $collaborationId, mixed $body)
+    public function sendMessage(string $subject, string $collaborationId, mixed $body): void
     {
+        // Connect to RabbitMQ
         $this->connect();
-        $msg = new AMQPMessage(json_encode(['data' => $body]), [
-            'collaboration_id' => $collaborationId,
-        ]);
-        $this->channel->basic_publish($msg, '', $subject);
+
+        // Prepare the message to send
+        $message = new AMQPMessage(json_encode(['data' => $body, 'collaboration_id' => $collaborationId]));
+
+        // Publish the message
+        $this->channel->basic_publish($message, '', self::QUEUE_NAME_PUBLISH);
+
+        // Close connection to RabbitMQ
         $this->disconnect();
     }
 
@@ -79,7 +86,7 @@ class ServiceRabbitMq
     /**
      * Run worker
      */
-    public function worker()
+    public function worker(): void
     {
         // Connect to service
         $this->connect();
@@ -98,7 +105,7 @@ class ServiceRabbitMq
 
         // Consume messages from the queue
         $this->channel->basic_qos(null, 1, null);
-        $this->channel->basic_consume(self::QUEUE_NAME, '', false, false, false, false, $callback);
+        $this->channel->basic_consume(self::QUEUE_NAME_CONSUME, '', false, false, false, false, $callback);
 
         // Wait for incoming messages
         while ($this->channel->is_consuming()) {
@@ -114,7 +121,7 @@ class ServiceRabbitMq
      *
      * @param array $transactions
      */
-    private function storeData(array $transactions)
+    private function storeData(array $transactions): void
     {
         foreach ($transactions as $transaction) {
             EntityRepositoryFactory::createRepository($transaction['entity'])->save($transaction);

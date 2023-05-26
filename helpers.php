@@ -220,13 +220,3 @@ if (!function_exists('shouldShow')) {
         }
     }
 }
-
-if (!function_exists('makeUuid')) {
-    /**
-     * @return string
-     */
-    function makeUuid()
-    {
-        return uniqid('', true);
-    }
-}

@@ -12,7 +12,9 @@ use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 
 class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements WorkflowManagerInterface
 {
-	/**
+    const ACTION_START_PROCESS = 'START_PROCESS';
+
+    /**
      * Trigger a start event and return the process request instance.
      *
      * @param Definitions $definitions
@@ -29,28 +31,29 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         $version = $definitions->getLatestVersion();
         $userId = $this->getCurrentUserId();
 
-        // Generate UID
-        $uid = makeUuid();
-
         // Create inmediatly a new process request
         $request = ProcessRequest::create([
-            'uuid' => $uid,
-            'callable_id' => $event->getProcess()->getId(),
             'process_id' => $definitions->id,
-            'process_version_id' => $version->getKey(),
             'user_id' => $userId,
-            'name' => $definitions->name,
+            'callable_id' => $event->getProcess()->getId(),
             'status' => 'ACTIVE',
-            'initiated_at' => Carbon::now(),
             'data' => $data,
+            'name' => $definitions->name,
+            'do_not_sanitize' => [],
+            'initiated_at' => Carbon::now(),
+            'process_version_id' => $version->getKey(),
+            'signal_events' => [],
         ]);
+
+        // Create triggered
+        // TO DO:
 
         // Dispatch start process event
         $this->dispatchAction([
             'bpmn' => $version->getKey(),
-            'action' => 'START_PROCESS',
+            'action' => self::ACTION_START_PROCESS,
             'params' => [
-                'instance_id' => $uid,
+                'instance_id' => $request->uuid,
                 'request_id' => $request->getKey(),
                 'element_id' => $event->getId(),
                 'data'=> $data,
@@ -62,8 +65,8 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             ],
             'state' => [
                 'requests' => [
-                    $uid => [
-                        'id' => $uid,
+                    $request->uuid => [
+                        'id' => $request->uuid,
                         'callable_id' => $request->callable_id,
                         'data' => $request->data,
                         'tokens' => [],
@@ -94,7 +97,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
      *
      * @param array $action
      */
-    private function dispatchAction(array $action)
+    private function dispatchAction(array $action): void
     {
         $subject = $action['action'];
         $thread = $action['collaboration_id'] ?? 0;

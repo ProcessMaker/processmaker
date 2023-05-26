@@ -9,11 +9,11 @@ abstract class EntityRepository
 {
     private static $uid2id = [];
 
-    abstract public function create(array $transaction): ?Model;
+    abstract public function create(array $transaction): ? Model;
 
-    abstract public function update(array $transaction): ?Model;
+    abstract public function update(array $transaction): ? Model;
 
-    abstract public function save(array $transaction): ?Model;
+    abstract public function save(array $transaction): ? Model;
 
     public function resolveId($uid)
     {
