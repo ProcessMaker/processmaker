@@ -20,7 +20,12 @@ class ScriptExecutorDeleted implements SecurityLogEventInterface
     public function __construct(array $deleted_values)
     {
         $this->changes = $deleted_values;
-        $this->data = ['script_executor_id' => $deleted_values['id']];
+        $this->data = 
+        $this->data = [
+            'script_executor_id' => $deleted_values['id'],
+            'title' => $deleted_values['title'],
+            'description' => $deleted_values['description']
+        ];;
     }
     
     /**
