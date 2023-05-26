@@ -19,7 +19,6 @@ class TemplateDeleted implements SecurityLogEventInterface
     public function __construct($templateName)
     {
         $this->templateName = $templateName;
-
     }
 
     /**

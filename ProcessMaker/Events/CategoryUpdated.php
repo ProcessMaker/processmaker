@@ -43,6 +43,11 @@ class CategoryUpdated implements SecurityLogEventInterface
         ], $this->formatChanges($this->changes, $this->original));
     }
 
+    /**
+     * Get the Event name with the syntax ‘[Past-test Action] [Object]’
+     *
+     * @return string
+     */
     public function getEventName(): string
     {
         return 'CategoryUpdated';

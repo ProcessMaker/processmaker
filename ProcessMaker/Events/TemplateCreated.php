@@ -9,6 +9,7 @@ class TemplateCreated implements SecurityLogEventInterface
 {
     use Dispatchable;
     private $payload;
+    
     /**
      * Create a new event instance.
      *

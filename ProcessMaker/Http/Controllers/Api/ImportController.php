@@ -65,7 +65,7 @@ class ImportController extends Controller
         $jsonData = $request->file('file')->get();
         $payload = json_decode($jsonData, true);
 
-        //Call new event to Store new Templates on LOG
+        // Call Event to store Template Changes in Log
         TemplateCreated::dispatch($payload);
 
         $options = new Options(json_decode(file_get_contents(utf8_decode($request->file('options'))), true));

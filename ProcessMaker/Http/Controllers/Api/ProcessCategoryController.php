@@ -153,7 +153,7 @@ class ProcessCategoryController extends Controller
         
         $category->saveOrFail();
 
-         //Call event to store New Categories on LOG
+        // Call Event to store Category Created in Log
         CategoryCreated::dispatch($request->all());
 
         return new Resource($category);

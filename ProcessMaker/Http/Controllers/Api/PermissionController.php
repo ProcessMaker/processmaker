@@ -102,7 +102,7 @@ class PermissionController extends Controller
         //Convert permission names into a collection of Permission models
         $permissions = Permission::whereIn('name', $requestPermissions)->get();
 
-        //Call event to Log Permissions Information
+        // Call Event to store Permissions Changes in Log
         PermissionUpdated::dispatch($requestPermissions, $originalPermissionNames, $entity->is_administrator, $request->input('user_id'));
         
         //Sync the entity's permissions with the database

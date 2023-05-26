@@ -20,7 +20,7 @@ class PermissionUpdated implements SecurityLogEventInterface
      *
      * @return void
      */
-    public function __construct(array $changedPermissions,array $originalPermissions,bool $permissionType,$user_id)
+    public function __construct(array $changedPermissions, array $originalPermissions, bool $permissionType, $user_id)
     {
         $this->changedPermissions = $changedPermissions;
         $this->originalPermissions = $originalPermissions;
@@ -35,7 +35,6 @@ class PermissionUpdated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-
         //get User profile data
         $userData = User::find($this->userId);
         if ($this->permissionType == true) {

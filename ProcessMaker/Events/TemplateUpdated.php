@@ -20,7 +20,7 @@ class TemplateUpdated implements SecurityLogEventInterface
      *
      * @return void
      */
-    public function __construct(array $changes,$process = null,$processType)
+    public function __construct(array $changes, $process = null, $processType)
     {   
         $this->changes = $changes;
         $this->process = $process;
@@ -76,7 +76,6 @@ class TemplateUpdated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        // return $this->changes;
         return $this->changes;
     }
 }

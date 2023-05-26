@@ -305,8 +305,6 @@ class ProcessController extends Controller
      */
     public function update(Request $request, Process $process)
     {
-        //Call Event to Log Template Changes
-        TemplateUpdated::dispatch([],$process,'Update Template Process');
         $request->validate(Process::rules($process));
 
         // bpmn validation
@@ -371,6 +369,9 @@ class ProcessController extends Controller
                 422
             );
         }
+
+        //Call Event to Log Template Changes
+        TemplateUpdated::dispatch([],$process,'Update Template Process');
 
         return new Resource($process->refresh());
     }

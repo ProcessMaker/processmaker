@@ -29,7 +29,6 @@ class CategoryDeleted implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-
         return [
             'category_name' => $this->processCategory->getAttribute('name'),
             'deleted_at' => Carbon::now()
