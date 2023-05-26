@@ -36,10 +36,6 @@ class TemplateUpdated implements SecurityLogEventInterface
     public function getData(): array
     {
         if ($this->processType == "Update Template Process") {
-            //for process Changes
-            $old_template_data = array_intersect_key($this->process->getOriginal(), array_flip(['updated_at']));
-            $old_template_data['updated_at'] = date('Y-m-d H:i:s', strtotime($old_template_data['updated_at']));
-
             return [
                 'name' => [
                     'label' => $this->processType
@@ -51,11 +47,14 @@ class TemplateUpdated implements SecurityLogEventInterface
             ->where('id', $this->changes['id'])
                 ->get()->first()->toArray();
 
+            $old_data = array_diff_assoc($queryOldtemplate, $this->changes);
+            $new_data = array_diff_assoc($this->changes, $queryOldtemplate);
+
             return array_merge([
                 'name' => [
                     'label' => $this->processType
                 ],
-            ], $this->formatChanges($this->changes, $queryOldtemplate));
+            ], $this->formatChanges($new_data, $old_data));
         }
     }
 
