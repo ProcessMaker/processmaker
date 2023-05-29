@@ -94,7 +94,7 @@ class CssOverrideController extends Controller
         $setting->saveOrFail();
 
         $footer = $this->setLoginFooter($request);
-        $altText= $this->setAltText($request);
+        $altText = $this->setAltText($request);
 
         $this->writeColors(json_decode($request->input('variables', '[]'), true));
         $this->writeFonts(json_decode($request->input('sansSerifFont', '')));
@@ -104,8 +104,10 @@ class CssOverrideController extends Controller
         if (isset($setting->getChanges()['config'])) {
             $changes = (array)json_decode($setting->getChanges()['config']);
         }
-
-        event(new CustomizeUiUpdated($original, array_merge($footer, $altText, $changes)));
+        
+        if (!empty($changes)) {
+            event(new CustomizeUiUpdated($original, array_merge($footer, $altText, $changes), $setting->getChanges()['updated_at']));
+        }
 
         return new ApiResource($setting);
     }
@@ -125,7 +127,7 @@ class CssOverrideController extends Controller
 
         $response = [];
 
-        if((!$setting->wasRecentlyCreated && $setting->wasChanged()) || $setting->wasRecentlyCreated){
+        if ((!$setting->wasRecentlyCreated && $setting->wasChanged()) || $setting->wasRecentlyCreated) {
             $response = ['html' => $setting->getAttributes()['config']['html']];
         }
 
@@ -148,7 +150,7 @@ class CssOverrideController extends Controller
 
         $response = [];
 
-        if((!$setting->wasRecentlyCreated && $setting->wasChanged()) || $setting->wasRecentlyCreated){
+        if ((!$setting->wasRecentlyCreated && $setting->wasChanged()) || $setting->wasRecentlyCreated) {
             $response = ['altText' => $setting->getAttributes()['config']];
         }
 
