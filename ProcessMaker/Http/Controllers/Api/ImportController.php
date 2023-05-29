@@ -10,8 +10,6 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\ImportExport\ExportEncrypted;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessTemplates;
 
 class ImportController extends Controller
 {
