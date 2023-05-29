@@ -54,21 +54,23 @@ class TranslateProcess implements ShouldQueue
     {
         $languageTranslationHandler = new LanguageTranslationHandler();
         $languageTranslationHandler->setTargetLanguage($this->targetLanguage['humanLanguage']);
-        [$notHtmlChunks, $htmlChunks] = $this->prepareData($this->screens, $languageTranslationHandler);
+        [$screensWithChunks, $chunksCount] = $this->prepareData($this->screens, $languageTranslationHandler);
 
         // Execute requests for each regular chunk
-        foreach ($notHtmlChunks as $chunk) {
-            $responses[] = $this->executeRequest($languageTranslationHandler, 'regular', $chunk);
-        }
-
-        // Execute requests for each HTML chunk
-        foreach ($htmlChunks as $chunk) {
-            $responses[] = $this->executeRequest($languageTranslationHandler, 'html', $chunk);
+        $executingChunk = 0;
+        foreach ($screensWithChunks as $screenId => $screenWithChunks) {
+            foreach ($screenWithChunks as $chunk) {
+                $executingChunk++;
+                \Log::info('Translating to ' . $this->targetLanguage['humanLanguage'] . '. Executing chunk ' . $executingChunk . ' of ' . $chunksCount);
+                $responses[$screenId][] = $this->executeRequest($languageTranslationHandler, 'html', $chunk);
+            }
         }
 
         // Save translations in the database
-        foreach ($responses as $response) {
-            $saved = $this->saveTranslationsInScreen(json_decode($response[0], true));
+        foreach ($responses as $screenId => $response) {
+            foreach ($response as $responseChunk) {
+                $saved = $this->saveTranslationsInScreen($screenId, json_decode($responseChunk[0]));
+            }
         }
 
         // Remove job token from database
@@ -80,7 +82,6 @@ class TranslateProcess implements ShouldQueue
 
     public function prepareData($screens, $handler)
     {
-        // !IMPORTANT:
         // Chunk max size should be near 1600.
         // In handler max_token for response is 2400.
         // Total sum is 4000. Just under 4096 allowed for text-davinci-003
@@ -89,55 +90,38 @@ class TranslateProcess implements ShouldQueue
         $config = $handler->getConfig();
 
         // Get empty prompt tokens usage
-        $emptyPromptTokens = $this->calcTokens($config['model'], $config['prompt']);
+        $emptyPromptTokens = intval($this->calcTokens($config['model'], $config['prompt']));
 
-        // For each screen calculate the tokens and the make a sum with the empty prompt tokens usage
-        // If total tokens is less than 1500, continue adding screens to the array
-        $notHtmlChunks = [];
-        $htmlChunks = [];
-        $notHtmlStrings = [];
-        $htmlStrings = [];
+        $chunksCount = 0;
+        $chunks = [];
 
+        // foreach screen iterate over each available string
         foreach ($screens as $screen) {
-            $notHtmlStrings[$screen['id']] = [];
-            $htmlStrings[$screen['id']] = [];
-
+            // create a chunk empty
+            $chunk = [];
+            $chunkTokens = 0;
             foreach ($screen['availableStrings'] as $string) {
-                $shouldTranslate = true;
-                // If option selected is 'empty', then should retranslate only empties strings
-                if ($this->option === 'empty') {
-                    if (!$this->isEmpty($string, $screen)) {
-                        $shouldTranslate = false;
-                    }
+                // calculate tokens with that string
+                $stringTokens = intval($this->calcTokens($config['model'], '{"' . $string . '"},'));
+                $chunkTokens = intval($this->calcTokens($config['model'], json_encode($chunk)));
+                if ($emptyPromptTokens + $chunkTokens + $stringTokens <= $maxChunkSize) {
+                    // if tokens are less than the allowed tokens add to current chunk
+                } else {
+                    $chunksCount++;
+                    // if tokens are greater than the allowed add previous chunk to chunks and empty chunk and add the current string
+                    $chunks[$screen['id']][] = $chunk;
+                    $chunk = [];
+                    $chunkTokens = 0;
                 }
-
-                if ($shouldTranslate) {
-                    if ($this->isHTML($string)) {
-                        $htmlStrings[$screen['id']][] = $string;
-                    } else {
-                        $notHtmlStrings[$screen['id']][] = $string;
-                    }
-                }
+                $chunk[] = $string;
             }
 
-            $chunkTokens = $this->calcTokens($config['model'], json_encode($notHtmlStrings));
-
-            if (intval($chunkTokens) + intval($emptyPromptTokens) >= $maxChunkSize) {
-                $notHtmlChunks[] = $notHtmlStrings;
-                $notHtmlStrings = [];
-
-                $htmlChunks[] = $htmlStrings;
-                $htmlStrings = [];
-            }
+            // Add the last chunk to chunks array
+            $chunks[$screen['id']][] = $chunk;
+            $chunksCount++;
         }
 
-        $notHtmlChunks[] = $notHtmlStrings;
-        $notHtmlStrings = [];
-
-        $htmlChunks[] = $htmlStrings;
-        $htmlStrings = [];
-
-        return [$notHtmlChunks, $htmlChunks];
+        return [$chunks, $chunksCount];
     }
 
     private function isEmpty($string, $screen)
@@ -151,7 +135,7 @@ class TranslateProcess implements ShouldQueue
         $strings = $screen['translations'][$this->targetLanguage['language']]['strings'];
 
         foreach ($strings as $stringItem) {
-            if ($stringItem['key'] === $string && $stringItem['string'] !== '') {
+            if ($stringItem['key'] === $string && ($stringItem['string'] !== '' && $stringItem['string'] !== null)) {
                 $isEmpty = false;
             }
         }
@@ -161,10 +145,18 @@ class TranslateProcess implements ShouldQueue
 
     private function executeRequest($languageTranslationHandler, $type, $chunk)
     {
-        [$response, $usage, $targetLanguage] = $languageTranslationHandler->generatePrompt(
-            $type,
-            json_encode($chunk)
-        )->execute();
+        $languageTranslationHandler->generatePrompt($type, json_encode($chunk));
+
+        try {
+            [$response, $usage, $targetLanguage] = $languageTranslationHandler->generatePrompt(
+                $type,
+                json_encode($chunk)
+            )->execute();
+        } catch (\Throwable $e) {
+            \Log::error('An error occurred while executing the request. Trying again');
+            \Log::error($e->getMessage());
+            $this->executeRequest($languageTranslationHandler, $type, $chunk);
+        }
 
         return [$response, $usage, $targetLanguage];
     }
@@ -203,42 +195,40 @@ class TranslateProcess implements ShouldQueue
         return $tokensUsage = count(gpt_encode($string));
     }
 
-    private function saveTranslationsInScreen($allTranslations)
+    private function saveTranslationsInScreen($screenId, $chunkResponse)
     {
         // For each the screens
-        foreach ($allTranslations as $screenId => $translations) {
-            $screen = Screen::findOrFail($screenId);
-            $screenTranslations = $screen->translations;
+        $screen = Screen::findOrFail($screenId);
+        $screenTranslations = $screen->translations;
 
-            if (!$screenTranslations || !array_key_exists($this->targetLanguage['language'], $screenTranslations)) {
-                $screenTranslations[$this->targetLanguage['language']]['strings'] = [];
-            }
-
-            // For each of the result translations of the screen
-            $strings = $screenTranslations[$this->targetLanguage['language']]['strings'];
-            foreach ($translations as $item) {
-                $stringFound = false;
-
-                foreach ($strings as &$stringItem) {
-                    if ($stringItem['key'] === $item['key']) {
-                        $stringItem['string'] = $item['value'];
-                        $stringFound = true;
-                    }
-                }
-
-                if (!$stringFound) {
-                    $newItem = ['key' => $item['key'], 'string' => $item['value']];
-                    $strings[] = $newItem;
-                }
-            }
-
-            $screenTranslations[$this->targetLanguage['language']]['strings'] = $strings;
-            $screenTranslations[$this->targetLanguage['language']]['created_at'] = Carbon::now();
-            $screenTranslations[$this->targetLanguage['language']]['updated_at'] = Carbon::now();
-
-            $screen->translations = $screenTranslations;
-            $screen->save();
+        if (!$screenTranslations || !array_key_exists($this->targetLanguage['language'], $screenTranslations)) {
+            $screenTranslations[$this->targetLanguage['language']]['strings'] = [];
         }
+
+        $strings = $screenTranslations[$this->targetLanguage['language']]['strings'];
+        // For each of the result chunkResponse translations of the screen
+        foreach ($chunkResponse as $item) {
+            $stringFound = false;
+
+            foreach ($strings as &$stringItem) {
+                if ($stringItem['key'] === $item->key) {
+                    $stringItem['string'] = $item->value;
+                    $stringFound = true;
+                }
+            }
+
+            if (!$stringFound) {
+                $newItem = ['key' => $item->key, 'string' => $item->value];
+                $strings[] = $newItem;
+            }
+        }
+
+        $screenTranslations[$this->targetLanguage['language']]['strings'] = $strings;
+        $screenTranslations[$this->targetLanguage['language']]['created_at'] = Carbon::now();
+        $screenTranslations[$this->targetLanguage['language']]['updated_at'] = Carbon::now();
+
+        $screen->translations = $screenTranslations;
+        $screen->save();
     }
 
     private function broadcastResponse()
