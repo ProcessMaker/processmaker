@@ -346,7 +346,7 @@ Please add/change the next configuration in .env file to define the message brok
 # Message broker driver, possible values: rabbitmq, kafka, this is optional, if not exists or is empty, the Nayra will be work as normally with local execution
 MESSAGE_BROKER_DRIVER=rabbitmq
 
-# Rabbit MQ connection, onñy when you use RabbitMQ
+# Rabbit MQ connection, only when you use RabbitMQ
 RABBITMQ_HOST=127.0.0.1
 RABBITMQ_PORT=30672
 RABBITMQ_LOGIN=guest
