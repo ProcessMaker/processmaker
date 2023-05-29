@@ -4,8 +4,73 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0e8757284f0f618a6dbce8c7a418a57c",
+    "content-hash": "0f4cc99bc3b5edbdd0eeb3b2fd2ef609",
     "packages": [
+        {
+            "name": "aacotroneo/laravel-saml2",
+            "version": "2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/aacotroneo/laravel-saml2.git",
+                "reference": "6ed350b37aec3470655335a33e24496e15bde9b7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/aacotroneo/laravel-saml2/zipball/6ed350b37aec3470655335a33e24496e15bde9b7",
+                "reference": "6ed350b37aec3470655335a33e24496e15bde9b7",
+                "shasum": ""
+            },
+            "require": {
+                "ext-openssl": "*",
+                "illuminate/support": ">=5.0.0",
+                "onelogin/php-saml": "^3.0.0",
+                "php": ">=5.5.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "0.9.*",
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Aacotroneo\\Saml2\\Saml2ServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Aacotroneo\\Saml2\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "aacotroneo",
+                    "email": "aacotroneo@gmail.com"
+                },
+                {
+                    "name": "Niraj Patkar",
+                    "email": "niraj@alphonso.in"
+                }
+            ],
+            "description": "A Laravel package for Saml2 integration as a SP (service provider) for multiple IdPs, based on OneLogin toolkit which is much more lightweight than simplesamlphp.",
+            "homepage": "https://github.com/aacotroneo/laravel-saml2",
+            "keywords": [
+                "SAML2",
+                "laravel",
+                "onelogin",
+                "saml"
+            ],
+            "support": {
+                "issues": "https://github.com/aacotroneo/laravel-saml2/issues",
+                "source": "https://github.com/aacotroneo/laravel-saml2/tree/master"
+            },
+            "time": "2019-10-01T23:05:14+00:00"
+        },
         {
             "name": "asm89/stack-cors",
             "version": "v2.1.1",
@@ -2826,6 +2891,75 @@
             "time": "2022-09-08T13:45:54+00:00"
         },
         {
+            "name": "laravel/socialite",
+            "version": "v5.6.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/socialite.git",
+                "reference": "a14a177f2cc71d8add71e2b19e00800e83bdda09"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/socialite/zipball/a14a177f2cc71d8add71e2b19e00800e83bdda09",
+                "reference": "a14a177f2cc71d8add71e2b19e00800e83bdda09",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "guzzlehttp/guzzle": "^6.0|^7.0",
+                "illuminate/contracts": "^6.0|^7.0|^8.0|^9.0|^10.0",
+                "illuminate/http": "^6.0|^7.0|^8.0|^9.0|^10.0",
+                "illuminate/support": "^6.0|^7.0|^8.0|^9.0|^10.0",
+                "league/oauth1-client": "^1.10.1",
+                "php": "^7.2|^8.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.0",
+                "orchestra/testbench": "^4.0|^5.0|^6.0|^7.0|^8.0",
+                "phpunit/phpunit": "^8.0|^9.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.x-dev"
+                },
+                "laravel": {
+                    "providers": [
+                        "Laravel\\Socialite\\SocialiteServiceProvider"
+                    ],
+                    "aliases": {
+                        "Socialite": "Laravel\\Socialite\\Facades\\Socialite"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\Socialite\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                }
+            ],
+            "description": "Laravel wrapper around OAuth 1 & OAuth 2 libraries.",
+            "homepage": "https://laravel.com",
+            "keywords": [
+                "laravel",
+                "oauth"
+            ],
+            "support": {
+                "issues": "https://github.com/laravel/socialite/issues",
+                "source": "https://github.com/laravel/socialite"
+            },
+            "time": "2023-01-20T15:42:35+00:00"
+        },
+        {
             "name": "laravel/telescope",
             "version": "v4.12.0",
             "source": {
@@ -3820,6 +3954,82 @@
                 }
             ],
             "time": "2022-04-17T13:12:02+00:00"
+        },
+        {
+            "name": "league/oauth1-client",
+            "version": "v1.10.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/oauth1-client.git",
+                "reference": "d6365b901b5c287dd41f143033315e2f777e1167"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/oauth1-client/zipball/d6365b901b5c287dd41f143033315e2f777e1167",
+                "reference": "d6365b901b5c287dd41f143033315e2f777e1167",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-openssl": "*",
+                "guzzlehttp/guzzle": "^6.0|^7.0",
+                "guzzlehttp/psr7": "^1.7|^2.0",
+                "php": ">=7.1||>=8.0"
+            },
+            "require-dev": {
+                "ext-simplexml": "*",
+                "friendsofphp/php-cs-fixer": "^2.17",
+                "mockery/mockery": "^1.3.3",
+                "phpstan/phpstan": "^0.12.42",
+                "phpunit/phpunit": "^7.5||9.5"
+            },
+            "suggest": {
+                "ext-simplexml": "For decoding XML-based responses."
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev",
+                    "dev-develop": "2.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "League\\OAuth1\\Client\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ben Corlett",
+                    "email": "bencorlett@me.com",
+                    "homepage": "http://www.webcomm.com.au",
+                    "role": "Developer"
+                }
+            ],
+            "description": "OAuth 1.0 Client Library",
+            "keywords": [
+                "Authentication",
+                "SSO",
+                "authorization",
+                "bitbucket",
+                "identity",
+                "idp",
+                "oauth",
+                "oauth1",
+                "single sign on",
+                "trello",
+                "tumblr",
+                "twitter"
+            ],
+            "support": {
+                "issues": "https://github.com/thephpleague/oauth1-client/issues",
+                "source": "https://github.com/thephpleague/oauth1-client/tree/v1.10.1"
+            },
+            "time": "2022-04-15T14:02:14+00:00"
         },
         {
             "name": "league/oauth2-server",
@@ -4861,6 +5071,61 @@
                 }
             ],
             "time": "2022-06-22T07:13:36+00:00"
+        },
+        {
+            "name": "onelogin/php-saml",
+            "version": "3.6.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/onelogin/php-saml.git",
+                "reference": "a7328b11887660ad248ea10952dd67a5aa73ba3b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/onelogin/php-saml/zipball/a7328b11887660ad248ea10952dd67a5aa73ba3b",
+                "reference": "a7328b11887660ad248ea10952dd67a5aa73ba3b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4",
+                "robrichards/xmlseclibs": ">=3.1.1"
+            },
+            "require-dev": {
+                "pdepend/pdepend": "^2.5.0",
+                "php-coveralls/php-coveralls": "^1.0.2 || ^2.0",
+                "phploc/phploc": "^2.1 || ^3.0 || ^4.0",
+                "phpunit/phpunit": "<7.5.18",
+                "sebastian/phpcpd": "^2.0 || ^3.0 || ^4.0",
+                "squizlabs/php_codesniffer": "^3.1.1"
+            },
+            "suggest": {
+                "ext-curl": "Install curl lib to be able to use the IdPMetadataParser for parsing remote XMLs",
+                "ext-gettext": "Install gettext and php5-gettext libs to handle translations",
+                "ext-openssl": "Install openssl lib in order to handle with x509 certs (require to support sign and encryption)"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "OneLogin\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "OneLogin PHP SAML Toolkit",
+            "homepage": "https://developers.onelogin.com/saml/php",
+            "keywords": [
+                "SAML2",
+                "onelogin",
+                "saml"
+            ],
+            "support": {
+                "email": "sixto.garcia@onelogin.com",
+                "issues": "https://github.com/onelogin/php-saml/issues",
+                "source": "https://github.com/onelogin/php-saml/"
+            },
+            "time": "2021-03-02T10:13:07+00:00"
         },
         {
             "name": "openai-php/client",
@@ -6152,6 +6417,169 @@
             "time": "2022-09-03T00:32:24+00:00"
         },
         {
+            "name": "processmaker/package-auth",
+            "version": "1.10.1",
+            "dist": {
+                "type": "path",
+                "url": "/opt/packages/package-auth",
+                "reference": "c21555a63feaa9dee2e415adf7a44a3d8a279b72"
+            },
+            "require": {
+                "laravel/socialite": "^5.1",
+                "socialiteproviders/providers": "dev-saml",
+                "theiconic/name-parser": "^1.2"
+            },
+            "require-dev": {
+                "processmaker/processmaker": "^4.2"
+            },
+            "type": "project",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\Auth\\PackageServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\Auth\\": "src",
+                    "ProcessMaker\\Package\\Auth\\Database\\Seeds\\": "database/seeds",
+                    "Database\\Factories\\ProcessMaker\\Package\\Auth\\": "database/factories",
+                    "Tests\\Auth\\": "tests"
+                }
+            },
+            "license": [
+                "AGPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "DevOps",
+                    "email": "devops@processmaker.com"
+                }
+            ],
+            "description": "Authentication package for ProcessMaker 4",
+            "transport-options": {
+                "relative": false
+            }
+        },
+        {
+            "name": "processmaker/package-comments",
+            "version": "1.5.1",
+            "dist": {
+                "type": "path",
+                "url": "/opt/packages/package-comments",
+                "reference": "950d37b8509f72511097ec742e426e96c1f4057b"
+            },
+            "type": "project",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\PackageComments\\PackageServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\PackageComments\\": "src"
+                }
+            },
+            "scripts": {
+                "post-create-project-cmd": [
+                    "@php rename-project.php"
+                ]
+            },
+            "license": [
+                "AGPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "DevOps",
+                    "email": "devops@processmaker.com"
+                }
+            ],
+            "description": "Add comments to your ProcessMaker 4 project",
+            "transport-options": {
+                "relative": false
+            }
+        },
+        {
+            "name": "processmaker/package-product-analytics",
+            "version": "1.2.1",
+            "dist": {
+                "type": "path",
+                "url": "/opt/packages/package-product-analytics",
+                "reference": "363e9e9c4461b4a8bd57fe102070b85e03e86ae3"
+            },
+            "type": "project",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\ProductAnalytics\\PackageServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\ProductAnalytics\\": "src",
+                    "Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "AGPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "DevOps",
+                    "email": "devops@processmaker.com"
+                }
+            ],
+            "description": "Provides the ProcessMaker Product department with usage analytics.",
+            "transport-options": {
+                "relative": false
+            }
+        },
+        {
+            "name": "processmaker/package-webentry",
+            "version": "2.13.0",
+            "dist": {
+                "type": "path",
+                "url": "/opt/packages/package-webentry",
+                "reference": "15073dbe7576cbc8605e1a493a85bea4ed2f6535"
+            },
+            "require-dev": {
+                "processmaker/processmaker": "^4.1"
+            },
+            "type": "project",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\WebEntry\\WebEntryServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\WebEntry\\": "src",
+                    "Tests\\": "tests/",
+                    "TestHelpers\\": "tests/Helpers"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Nolan Ehrstrom",
+                    "email": "nolan.ehrstrom@processmaker.com"
+                },
+                {
+                    "name": "Dante Loayza",
+                    "email": "dante.loayza@processmaker.com"
+                }
+            ],
+            "description": "Provide to end users the ability to complete tasks from outside the core system",
+            "transport-options": {
+                "relative": false
+            }
+        },
+        {
             "name": "processmaker/pmql",
             "version": "1.9.0",
             "source": {
@@ -7014,6 +7442,170 @@
                 }
             ],
             "time": "2023-01-12T18:13:24+00:00"
+        },
+        {
+            "name": "robrichards/xmlseclibs",
+            "version": "3.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/robrichards/xmlseclibs.git",
+                "reference": "f8f19e58f26cdb42c54b214ff8a820760292f8df"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/robrichards/xmlseclibs/zipball/f8f19e58f26cdb42c54b214ff8a820760292f8df",
+                "reference": "f8f19e58f26cdb42c54b214ff8a820760292f8df",
+                "shasum": ""
+            },
+            "require": {
+                "ext-openssl": "*",
+                "php": ">= 5.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "RobRichards\\XMLSecLibs\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "A PHP library for XML Security",
+            "homepage": "https://github.com/robrichards/xmlseclibs",
+            "keywords": [
+                "security",
+                "signature",
+                "xml",
+                "xmldsig"
+            ],
+            "support": {
+                "issues": "https://github.com/robrichards/xmlseclibs/issues",
+                "source": "https://github.com/robrichards/xmlseclibs/tree/3.1.1"
+            },
+            "time": "2020-09-05T13:00:25+00:00"
+        },
+        {
+            "name": "socialiteproviders/manager",
+            "version": "v4.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SocialiteProviders/Manager.git",
+                "reference": "47402cbc5b7ef445317e799bf12fd5a12062206c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SocialiteProviders/Manager/zipball/47402cbc5b7ef445317e799bf12fd5a12062206c",
+                "reference": "47402cbc5b7ef445317e799bf12fd5a12062206c",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0",
+                "laravel/socialite": "~5.0",
+                "php": "^7.4 || ^8.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.2",
+                "phpunit/phpunit": "^6.0 || ^9.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "SocialiteProviders\\Manager\\ServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "SocialiteProviders\\Manager\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Andy Wendt",
+                    "email": "andy@awendt.com"
+                },
+                {
+                    "name": "Anton Komarev",
+                    "email": "a.komarev@cybercog.su"
+                },
+                {
+                    "name": "Miguel Piedrafita",
+                    "email": "soy@miguelpiedrafita.com"
+                },
+                {
+                    "name": "atymic",
+                    "email": "atymicq@gmail.com",
+                    "homepage": "https://atymic.dev"
+                }
+            ],
+            "description": "Easily add new or override built-in providers in Laravel Socialite.",
+            "homepage": "https://socialiteproviders.com",
+            "keywords": [
+                "laravel",
+                "manager",
+                "oauth",
+                "providers",
+                "socialite"
+            ],
+            "support": {
+                "issues": "https://github.com/socialiteproviders/manager/issues",
+                "source": "https://github.com/socialiteproviders/manager"
+            },
+            "time": "2023-01-26T23:11:27+00:00"
+        },
+        {
+            "name": "socialiteproviders/providers",
+            "version": "dev-saml",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/SocialiteProviders.git",
+                "reference": "806ebebdaf91056fa92f6dac6a34c894da54658f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/SocialiteProviders/zipball/806ebebdaf91056fa92f6dac6a34c894da54658f",
+                "reference": "806ebebdaf91056fa92f6dac6a34c894da54658f",
+                "shasum": ""
+            },
+            "require": {
+                "aacotroneo/laravel-saml2": "^2.1",
+                "ext-json": "*",
+                "league/oauth1-client": "^1.9",
+                "php": "^7.2 || ^8.0",
+                "socialiteproviders/manager": "~4.0"
+            },
+            "require-dev": {
+                "kitetail/zttp": "^0.6.0",
+                "symplify/monorepo-builder": "^6.1 || ^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SocialiteProviders\\": "src/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "phpunit"
+                ],
+                "test:ci": [
+                    "phpunit --coverage-clover build/logs/clover.xml"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Collection of all OAuth2 Providers for Laravel Socialite",
+            "support": {
+                "source": "https://github.com/ProcessMaker/SocialiteProviders/tree/saml"
+            },
+            "time": "2021-09-14T19:18:22+00:00"
         },
         {
             "name": "spatie/fractalistic",
@@ -10329,6 +10921,54 @@
                 }
             ],
             "time": "2022-02-22T10:35:34+00:00"
+        },
+        {
+            "name": "theiconic/name-parser",
+            "version": "v1.2.11",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/theiconic/name-parser.git",
+                "reference": "9a54a713bf5b2e7fd990828147d42de16bf8a253"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/theiconic/name-parser/zipball/9a54a713bf5b2e7fd990828147d42de16bf8a253",
+                "reference": "9a54a713bf5b2e7fd990828147d42de16bf8a253",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "php-coveralls/php-coveralls": "^2.1",
+                "php-mock/php-mock-phpunit": "^2.1",
+                "phpunit/phpunit": "^7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "TheIconic\\NameParser\\": [
+                        "src/",
+                        "tests/"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "The Iconic",
+                    "email": "engineering@theiconic.com.au"
+                }
+            ],
+            "description": "PHP library for parsing a string containing a full name into its parts",
+            "support": {
+                "issues": "https://github.com/theiconic/name-parser/issues",
+                "source": "https://github.com/theiconic/name-parser/tree/v1.2.11"
+            },
+            "time": "2019-11-14T14:08:48+00:00"
         },
         {
             "name": "tijsverkoyen/css-to-inline-styles",

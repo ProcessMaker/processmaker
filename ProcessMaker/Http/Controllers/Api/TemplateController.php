@@ -105,7 +105,7 @@ class TemplateController extends Controller
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
         //Call event to log Template Config changes
         $changes = $request->only(['id', 'name', 'description', 'process_category_id']);
-        TemplateUpdated::dispatch($changes, null, TemplateController::CONFIGURE_TEMPLATE);
+        TemplateUpdated::dispatch($changes, TemplateController::CONFIGURE_TEMPLATE);
 
         return $this->template->updateTemplateConfigs($type, $request);
     }
@@ -136,6 +136,7 @@ class TemplateController extends Controller
         $query = ProcessTemplates::find($request->id);
         $templateName = $query->toArray()['name'];
         TemplateDeleted::dispatch($templateName);
+        
         return $this->template->deleteTemplate($type, $request);
     }
 

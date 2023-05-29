@@ -12,19 +12,17 @@ class TemplateUpdated implements SecurityLogEventInterface
 {
     use Dispatchable, FormatSecurityLogChanges;
 
-    private $changes;
-    private $process;
-    private $processType;
+    private array $changes;
+    private string $processType;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(array $changes, $process = null, $processType)
+    public function __construct(array $changes, string $processType)
     {   
         $this->changes = $changes;
-        $this->process = $process;
         $this->processType = $processType;
     }
 
@@ -40,7 +38,7 @@ class TemplateUpdated implements SecurityLogEventInterface
                 'name' => [
                     'label' => $this->processType
                 ],
-                '+ Process/Template_Last_Modified' => Carbon::now()
+                'updated_at' => Carbon::now()
             ];
         } else {
             $queryOldtemplate = ProcessTemplates::select('id', 'name', 'description', 'process_category_id')

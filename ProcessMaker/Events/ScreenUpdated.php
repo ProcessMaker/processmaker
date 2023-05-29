@@ -12,15 +12,15 @@ class ScreenUpdated implements SecurityLogEventInterface
     use Dispatchable, FormatSecurityLogChanges;
 
     private Screen $screen;
-    private $changes;
-    private $original;
+    private array $changes;
+    private array $original;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Screen $screen, $changes, $original)
+    public function __construct(Screen $screen,array $changes,array $original)
     {  
         $this->screen = $screen;
         $this->changes = $changes;
@@ -34,9 +34,15 @@ class ScreenUpdated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        return array_merge([
-            'last_modified' => $this->screen->getAttribute('updated_at'),
-        ], $this->formatChanges($this->changes, $this->original));
+        if (array_key_exists("config", $this->changes)) {
+            return array_merge([
+                'last_modified' => $this->screen->getAttribute('updated_at'),
+            ]);
+        } else {
+            return array_merge([
+                'last_modified' => $this->screen->getAttribute('updated_at'),
+            ], $this->formatChanges($this->changes, $this->original));
+        }
     }
 
     /**

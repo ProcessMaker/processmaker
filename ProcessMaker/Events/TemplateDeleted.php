@@ -10,14 +10,14 @@ class TemplateDeleted implements SecurityLogEventInterface
 {
     use Dispatchable;
 
-    private $templateName;
+    private string $templateName;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($templateName)
+    public function __construct(string $templateName)
     {
         $this->templateName = $templateName;
     }
