@@ -44,8 +44,10 @@
         "processmaker/nayra": "1.9.4",
         "processmaker/package-auth": "^1.10",
         "processmaker/package-comments": "^1.5",
+        "processmaker/package-dynamic-ui": "^1.9",
         "processmaker/package-product-analytics": "^1.2",
         "processmaker/package-webentry": "^2.13",
+        "processmaker/packages": "^4.2@RC",
         "processmaker/pmql": "1.9.0",
         "pusher/pusher-php-server": "^7.0",
         "ralouphie/getallheaders": "^3.0",
@@ -158,6 +160,10 @@
         },
         {
             "type": "path",
+            "url": "/opt/packages/packages"
+        },
+        {
+            "type": "path",
             "url": "/opt/packages/package-product-analytics"
         },
         {
@@ -171,6 +177,14 @@
         {
             "type": "path",
             "url": "/opt/packages/package-auth"
+        },
+        {
+            "type": "path",
+            "url": "/opt/packages/package-dynamic-ui"
+        },
+        {
+            "type": "path",
+            "url": "/opt/packages/package-translations"
         }
     ],
     "config": {
