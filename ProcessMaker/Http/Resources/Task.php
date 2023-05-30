@@ -63,9 +63,9 @@ class Task extends ApiResource
                 $array['screen'] = null;
             }
 
-            // $process = Process::findOrFail($this->processRequest->process_id);
-            // $processTranslation = new ProcessTranslation($process);
-            // $array['screen'] = $processTranslation->applyTranslations($array['screen'], $this->processRequest->process_id);
+            $process = Process::findOrFail($this->processRequest->process_id);
+            $processTranslation = new ProcessTranslation($process);
+            $array['screen'] = $processTranslation->applyTranslations($array['screen'], $this->processRequest->process_id);
         }
 
         if (in_array('requestData', $include)) {

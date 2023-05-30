@@ -232,11 +232,16 @@ class ProcessTranslation
             $targetLanguage = Auth::user()->language;
         }
 
+        /**
+         * IMPORTANT!
+         *
+         * */
+        // REMOVE THIS LINE
         $targetLanguage = 'es';
 
         if (array_key_exists($targetLanguage, $translations)) {
             foreach ($translations[$targetLanguage]['strings'] as $translation) {
-                $this->applyTranslations2($translation['key'], $translation['string'], $config);
+                $this->applyTranslationsToScreen($translation['key'], $translation['string'], $config);
             }
         }
 
@@ -245,7 +250,7 @@ class ProcessTranslation
         return $config;
     }
 
-    public function applyTranslations2($key, $translatedString, $config)
+    public function applyTranslationsToScreen($key, $translatedString, $config)
     {
         if ($config) {
             foreach ($config as $page) {
@@ -260,7 +265,7 @@ class ProcessTranslation
 
     private static function applyTranslationToElement($items, $key, $translatedString)
     {
-        foreach ($items as &$item) {
+        foreach ($items as $item) {
             if (isset($item['items']) && is_array($item['items'])) {
                 // If have items and is a loop ..
                 if ($item['component'] == 'FormLoop') {
@@ -306,21 +311,22 @@ class ProcessTranslation
                 // Look for label strings
                 if (isset($item['config']) && isset($item['config']['label']) && $item['config']['label'] === $key) {
                     $item['config']['label'] = $translatedString;
+                    \Log::info($item['config']['label']);
                 }
 
                 // Look for helper strings
                 if (isset($item['config']) && isset($item['config']['helper']) && $item['config']['helper'] === $key) {
                     $item['config']['helper'] = $translatedString;
+                    \Log::info($item['config']['helper']);
                 }
 
                 // Look for placeholder strings
                 if (isset($item['config']) && isset($item['config']['placeholder']) && $item['config']['placeholder'] === $key) {
                     $item['config']['placeholder'] = $translatedString;
+                    \Log::info($item['config']['placeholder']);
                 }
             }
         }
-
-        dd($items);
 
         return $items;
     }
