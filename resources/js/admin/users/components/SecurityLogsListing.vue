@@ -12,13 +12,22 @@
         />
       </b-col>
       <b-col cols="2">
-        <b-button
-          id="downloadLogUser"
-          variant="primary"
-          @click="prepareDownloadLogs"
-        >
-          {{ $t('Download') }}
-        </b-button>
+        <div>
+          <b-button
+            id="downloadLogUser"
+            variant="primary"
+            @click="prepareDownloadLogs"
+          >
+            {{ $t('CSV') }}
+          </b-button>
+          <b-button
+            id="downloadLogUser"
+            variant="primary"
+            @click="downloadXml"
+          >
+            {{ $t('XML') }}
+          </b-button>
+        </div>
       </b-col>
     </b-row>
     <div class="data-table">
@@ -98,6 +107,7 @@ import datatableMixin from "../../../components/common/mixins/datatable";
 import isPMQL from "../../../modules/isPMQL";
 import PmqlInput from "../../../components/shared/PmqlInput";
 import SecurityLogsModal from "./SecurityLogsModal.vue";
+import { json2xml } from "xml-js";
 
 export default {
   components: { BasicSearch, PmqlInput, SecurityLogsModal },
@@ -145,6 +155,7 @@ export default {
           name: "__slot:actions",
         },
       ],
+      fileTitle: "security-logs",
     };
   },
   computed: {
@@ -232,12 +243,12 @@ export default {
 
       const fileTitle = "security-logs"; // or 'my-unique-title'
 
-      this.exportCSVFile(headers, itemsFormatted, fileTitle);
+      this.exportCSVFile(headers, itemsFormatted);
     },
     /**
      * Export the JSON data to CSV
      */
-    exportCSVFile(headers, items, fileTitle) {
+    exportCSVFile(headers, items) {
       if (headers) {
         items.unshift(headers);
       }
@@ -245,7 +256,7 @@ export default {
       // Convert Object to JSON
       const jsonObject = JSON.stringify(items);
       const csv = this.convertToCSV(jsonObject);
-      const exportedFilenmae = `${fileTitle}.csv` || "export.csv";
+      const exportedFilenmae = `${this.fileTitle}.csv` || "export.csv";
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
 
       if (navigator.msSaveBlob) {
@@ -284,6 +295,29 @@ export default {
         str += `${line}\r\n`;
       }
       return str;
+    },
+    /**
+     * Download the data in a XML file
+     */
+    downloadXml() {
+      const logXml = json2xml(this.data.data, { compact: true });
+      const exportedFilenmae = `${this.fileTitle}.xml` || "export.xml";
+      const blob = new Blob([logXml], { type: ".xml" });
+
+      if (navigator.msSaveBlob) {
+        navigator.msSaveBlob(blob, exportedFilenmae);
+      } else {
+        const link = document.createElement("a");
+        if (link.download !== undefined) {
+          const url = URL.createObjectURL(blob);
+          link.setAttribute("href", url);
+          link.setAttribute("download", exportedFilenmae);
+          link.style.visibility = "hidden";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      }
     },
   },
 };
