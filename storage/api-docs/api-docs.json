@@ -1735,49 +1735,6 @@
                 }
             }
         },
-        "/processes/{processId}/draft": {
-            "put": {
-                "tags": [
-                    "Processes"
-                ],
-                "summary": "Update a draft process",
-                "description": "Update draft process.",
-                "operationId": "updateDraftProcess",
-                "parameters": [
-                    {
-                        "name": "processId",
-                        "in": "path",
-                        "description": "ID of process to return",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ProcessEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Process"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/start_processes": {
             "get": {
                 "tags": [
@@ -2891,42 +2848,6 @@
                 }
             }
         },
-        "/screens/{screens_id}/draft": {
-            "put": {
-                "tags": [
-                    "Screens"
-                ],
-                "summary": "Update a draft screen",
-                "description": "Update a draft Screen.",
-                "operationId": "updateDraftScreen",
-                "parameters": [
-                    {
-                        "name": "screens_id",
-                        "in": "path",
-                        "description": "ID of screen to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/screensEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "204": {
-                        "description": "success"
-                    }
-                }
-            }
-        },
         "/screens/{screens_id}/duplicate": {
             "put": {
                 "tags": [
@@ -3583,49 +3504,13 @@
                 }
             }
         },
-        "/scripts/{script_id}/draft": {
-            "put": {
-                "tags": [
-                    "Scripts"
-                ],
-                "summary": "Update a draft script",
-                "description": "Update a draft script.",
-                "operationId": "updateDraftScript",
-                "parameters": [
-                    {
-                        "name": "script_id",
-                        "in": "path",
-                        "description": "ID of script to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/scriptsEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "204": {
-                        "description": "success"
-                    }
-                }
-            }
-        },
         "/scripts/{scripts_id}/duplicate": {
             "put": {
                 "tags": [
                     "Scripts"
                 ],
                 "summary": "duplicate a script",
-                "description": "Duplicate a Script.",
+                "description": "duplicate a Script.",
                 "operationId": "duplicateScript",
                 "parameters": [
                     {
@@ -6930,9 +6815,9 @@
                 "description": "Laravel passport oauth2 security.",
                 "flows": {
                     "authorizationCode": {
-                        "authorizationUrl": "http://172.16.3.48:9090/oauth/authorize",
-                        "tokenUrl": "http://172.16.3.48:9090/oauth/token",
-                        "refreshUrl": "http://172.16.3.48:9090/token/refresh",
+                        "authorizationUrl": "http://localhost/oauth/authorize",
+                        "tokenUrl": "http://localhost/oauth/token",
+                        "refreshUrl": "http://localhost/token/refresh",
                         "scopes": {}
                     }
                 }
