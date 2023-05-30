@@ -236,14 +236,10 @@
                   <h4>
                     {{ __(':name In-Flight Map', ['name' => $request->process->name]) }}
                   </h4>
-                    <iframe class="card" src="{{ route('modeler.inflight', ['process' => $request->process->id, 'request_id' => $request->id]) }}"
+                  <iframe class="card"
+                    src="{{ route('modeler.inflight', ['process' => $request->process->id, 'request_id' => $request->id]) }}"
                     width="100%" height="640px" frameborder="0" style="border-radius: 4px;"></iframe>
-                    <div id="map-legend" class="card">
-                      <div style="padding-top: 0px; padding-bottom: 0px; padding-left: 5px;" class="card-body">
-                        <p style="font-weight: bold;"><span class="in-progress-line"></span>In Progress</p>
-                        <p style="font-weight: bold; margin-bottom:1rem !important;"><span class="completed-line"></span>Completed</p>
-                      </div>
-                    </div>                    
+                  @include('processes.modeler.partials.map-legend')
                 </div>
               </div>
             </div>
@@ -719,34 +715,4 @@
       },
     });
   </script>
-@endsection
-@section('css')
-  <style>
-    #map-legend {
-      display: block;
-      position: absolute !important;
-      top: 70px;
-      right: 35px;
-    }
-    .in-progress-line {
-      width: 25px;
-      height: 30px;
-      margin-right: 20px;
-      display: inline-block;
-      border-right-style: dashed;
-      border-right-color: #00875A;
-      border-right-width: 3px;
-      transform: rotate(45deg);
-    }
-    .completed-line {
-      width: 25px;
-      height: 30px;
-      margin-right: 20px;
-      display: inline-block;
-      border-right-style: solid;
-      border-right-color: #5faaee;
-      border-right-width: 3px;
-      transform: rotate(45deg);      
-    }
-  </style>
 @endsection
