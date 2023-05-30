@@ -103,11 +103,12 @@ class TemplateController extends Controller
     public function updateTemplateConfigs(string $type, Request $request)
     {
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
+        $response = $this->template->updateTemplateConfigs($type, $request);
         //Call event to log Template Config changes
         $changes = $request->only(['id', 'name', 'description', 'process_category_id']);
         TemplateUpdated::dispatch($changes, TemplateController::CONFIGURE_TEMPLATE);
 
-        return $this->template->updateTemplateConfigs($type, $request);
+        return $response;
     }
 
     /**
@@ -132,12 +133,13 @@ class TemplateController extends Controller
      */
     public function delete(string $type, Request $request)
     {
+        $response = $this->template->deleteTemplate($type, $request);
         //Call event to Store Template Deleted on LOG
         $query = ProcessTemplates::find($request->id);
         $templateName = $query->toArray()['name'];
         TemplateDeleted::dispatch($templateName);
-        
-        return $this->template->deleteTemplate($type, $request);
+
+        return $response;
     }
 
     public function preimportValidation(string $type, Request $request)

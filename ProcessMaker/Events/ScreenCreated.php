@@ -8,7 +8,7 @@ use ProcessMaker\Contracts\SecurityLogEventInterface;
 class ScreenCreated implements SecurityLogEventInterface
 {
     use Dispatchable;
-    private $newScreen;
+    private array $newScreen;
     
     /**
      * Create a new event instance.

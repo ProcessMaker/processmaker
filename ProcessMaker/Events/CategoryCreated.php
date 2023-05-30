@@ -12,7 +12,7 @@ class CategoryCreated implements SecurityLogEventInterface
     use Dispatchable, FormatSecurityLogChanges;
 
     private ProcessCategory $enVariable;
-    private $variable = [];
+    private array $variable = [];
     
     /**
      * Create a new event instance.

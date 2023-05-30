@@ -8,14 +8,15 @@ use ProcessMaker\Contracts\SecurityLogEventInterface;
 class TemplateCreated implements SecurityLogEventInterface
 {
     use Dispatchable;
-    private $payload;
+    
+    private array $payload;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($payload)
+    public function __construct(array $payload)
     {
         $this->payload = $payload;
     }
