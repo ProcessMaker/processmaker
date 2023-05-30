@@ -3,8 +3,10 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use ProcessMaker\Events\ProcessCreated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\TemplateCollection;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Template;
 
 class TemplateController extends Controller
@@ -116,8 +118,14 @@ class TemplateController extends Controller
     public function create(string $type, Request $request)
     {
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
+        $response = $this->template->create($type, $request);
+        if (isset($response->getData()->processId) && $type === 'process') {
+            $process = Process::find($response->getData()->processId);
+            // Register the Event
+            ProcessCreated::dispatch($process, ProcessCreated::TEMPLATE_CREATION);
+        }
 
-        return $this->template->create($type, $request);
+        return $response;
     }
 
     /**

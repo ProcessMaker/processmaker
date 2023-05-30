@@ -57,6 +57,18 @@ class EventServiceProvider extends ServiceProvider
         'ProcessMaker\Events\GroupUsersUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
+        'ProcessMaker\Events\ProcessCreated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\ProcessArchived' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\ProcessPublished' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\ProcessRestored' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
         'ProcessMaker\Events\ProcessUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
