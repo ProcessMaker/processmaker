@@ -5,16 +5,14 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use OpenAI\Client;
-use ProcessMaker\Ai\Handlers\LanguageTranslationHandler;
 use ProcessMaker\Ai\Handlers\NlqToCategoryHandler;
 use ProcessMaker\Ai\Handlers\NlqToPmqlHandler;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Jobs\TranslateProcess;
 use ProcessMaker\Models\AiSearch;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessTranslationToken;
-use ProcessMaker\OpenAI\OpenAIHelper;
 use ProcessMaker\Plugins\Collections\Models\Collection;
+use ProcessMaker\ProcessTranslations\BatchesJobHandler;
 use ProcessMaker\ProcessTranslations\ProcessTranslation;
 
 class OpenAIController extends Controller
@@ -120,7 +118,8 @@ class OpenAIController extends Controller
             $processTranslationToken->token = $code;
             $processTranslationToken->language = $request->input('language')['language'];
             $processTranslationToken->save();
-            TranslateProcess::dispatch($process, $screensTranslations, $request->input('language'), $code, Auth::id(), $option);
+            $translateProcess = new BatchesJobHandler($process, $screensTranslations, $request->input('language'), $code, Auth::id(), $option);
+            $translateProcess->handle();
         }
 
         return response()->json([

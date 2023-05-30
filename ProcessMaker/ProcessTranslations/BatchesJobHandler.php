@@ -1,23 +1,18 @@
 <?php
 
-namespace ProcessMaker\Jobs;
+namespace ProcessMaker\ProcessTranslations;
 
-use Carbon\Carbon;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Bus\Batch;
+use Illuminate\Support\Facades\Bus;
 use ProcessMaker\Ai\Handlers\LanguageTranslationHandler;
+use ProcessMaker\Jobs\ExecuteTranslationRequest;
 use ProcessMaker\Models\ProcessTranslationToken;
-use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\ProcessTranslationReady;
+use Throwable;
 
-class TranslateProcess implements ShouldQueue
+class BatchesJobHandler
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
     private $code;
 
     private $process;
@@ -57,35 +52,56 @@ class TranslateProcess implements ShouldQueue
         [$screensWithChunks, $chunksCount] = $this->prepareData($this->screens, $languageTranslationHandler);
 
         // Execute requests for each regular chunk
-        $executingChunk = 0;
+        
+        $batch = Bus::batch([])
+            ->then(function (Batch $batch) {
+                \Log::info('All jobs in batch completed');
+                $delete = ProcessTranslationToken::where('token', $batch->id)->delete();
+
+                // Broadcast response
+                $this->broadcastResponse();
+            })->catch(function (Batch $batch, Throwable $e) {
+                // First batch job failure detected...
+                \Log::info('Batch error');
+                \Log::error($e->getMessage());
+                $delete = ProcessTranslationToken::where('token', $batch->id)->delete();
+                $this->broadcastResponse();
+            })->finally(function (Batch $batch) {
+                // The batch has finished executing...
+                \Log::info('Batch finally');
+                // Remove job token from database
+                $delete = ProcessTranslationToken::where('token', $batch->id)->delete();
+                $this->broadcastResponse();
+            })
+            ->allowFailures()
+            ->dispatch();
+
+        // Update with real batch token ...
+        ProcessTranslationToken::where('token', $this->code)->update(['token' => $batch->id]);
+
+        \Log::info($screensWithChunks);
         foreach ($screensWithChunks as $screenId => $screenWithChunks) {
             foreach ($screenWithChunks as $chunk) {
-                $executingChunk++;
-                \Log::info('Translating to ' . $this->targetLanguage['humanLanguage'] . '. Executing chunk ' . $executingChunk . ' of ' . $chunksCount);
-                $responses[$screenId][] = $this->executeRequest($languageTranslationHandler, 'html', $chunk);
+                $batch->add(
+                    new ExecuteTranslationRequest
+                    (
+                        $screenId, 
+                        $languageTranslationHandler, 
+                        'html', 
+                        $chunk, 
+                        $this->targetLanguage
+                    )
+                );
             }
         }
-
-        // Save translations in the database
-        foreach ($responses as $screenId => $response) {
-            foreach ($response as $responseChunk) {
-                $saved = $this->saveTranslationsInScreen($screenId, json_decode($responseChunk[0]));
-            }
-        }
-
-        // Remove job token from database
-        $delete = ProcessTranslationToken::where('token', $this->code)->delete();
-
-        // Broadcast response
-        $this->broadcastResponse();
     }
 
     public function prepareData($screens, $handler)
     {
-        // Chunk max size should be near 1600.
-        // In handler max_token for response is 2400.
-        // Total sum is 4000. Just under 4096 allowed for text-davinci-003
-        $maxChunkSize = 1600;
+        // Chunk max size should be near 1800.
+        // In handler max_token for response is 1200.
+        // Total sum is 3000. Under 4096 allowed for text-davinci-003
+        $maxChunkSize = 1500;
         $handler->generatePrompt('html', '');
         $config = $handler->getConfig();
 
@@ -113,7 +129,19 @@ class TranslateProcess implements ShouldQueue
                     $chunk = [];
                     $chunkTokens = 0;
                 }
-                $chunk[] = $string;
+                
+                $shouldTranslate = true;
+
+                // If option selected is 'empty', then should retranslate only empties strings
+                if ($this->option === 'empty') {
+                    if (!$this->isEmpty($string, $screen)) {
+                        $shouldTranslate = false;
+                    }
+                }
+
+                if ($shouldTranslate) {
+                    $chunk[] = $string;
+                }
             }
 
             // Add the last chunk to chunks array
@@ -141,24 +169,6 @@ class TranslateProcess implements ShouldQueue
         }
 
         return $isEmpty;
-    }
-
-    private function executeRequest($languageTranslationHandler, $type, $chunk)
-    {
-        $languageTranslationHandler->generatePrompt($type, json_encode($chunk));
-
-        try {
-            [$response, $usage, $targetLanguage] = $languageTranslationHandler->generatePrompt(
-                $type,
-                json_encode($chunk)
-            )->execute();
-        } catch (\Throwable $e) {
-            \Log::error('An error occurred while executing the request. Trying again');
-            \Log::error($e->getMessage());
-            $this->executeRequest($languageTranslationHandler, $type, $chunk);
-        }
-
-        return [$response, $usage, $targetLanguage];
     }
 
     public function isHTML($string) : bool
@@ -193,42 +203,6 @@ class TranslateProcess implements ShouldQueue
          */
 
         return $tokensUsage = count(gpt_encode($string));
-    }
-
-    private function saveTranslationsInScreen($screenId, $chunkResponse)
-    {
-        // For each the screens
-        $screen = Screen::findOrFail($screenId);
-        $screenTranslations = $screen->translations;
-
-        if (!$screenTranslations || !array_key_exists($this->targetLanguage['language'], $screenTranslations)) {
-            $screenTranslations[$this->targetLanguage['language']]['strings'] = [];
-        }
-
-        $strings = $screenTranslations[$this->targetLanguage['language']]['strings'];
-        // For each of the result chunkResponse translations of the screen
-        foreach ($chunkResponse as $item) {
-            $stringFound = false;
-
-            foreach ($strings as &$stringItem) {
-                if ($stringItem['key'] === $item->key) {
-                    $stringItem['string'] = $item->value;
-                    $stringFound = true;
-                }
-            }
-
-            if (!$stringFound) {
-                $newItem = ['key' => $item->key, 'string' => $item->value];
-                $strings[] = $newItem;
-            }
-        }
-
-        $screenTranslations[$this->targetLanguage['language']]['strings'] = $strings;
-        $screenTranslations[$this->targetLanguage['language']]['created_at'] = Carbon::now();
-        $screenTranslations[$this->targetLanguage['language']]['updated_at'] = Carbon::now();
-
-        $screen->translations = $screenTranslations;
-        $screen->save();
     }
 
     private function broadcastResponse()
