@@ -14,7 +14,7 @@ class LanguageTranslationHandler extends OpenAiHandler
         $this->config = [
             'model' => 'text-davinci-003',
             'max_tokens' => 2200,
-            'temperature' => 0.7,
+            'temperature' => 0,
             'top_p' => 1,
             'n' => 1,
             'frequency_penalty' => 0,
@@ -58,7 +58,6 @@ class LanguageTranslationHandler extends OpenAiHandler
     private function formatResponse($response)
     {
         $result = ltrim($response->choices[0]->text);
-        $result = explode('Question:', $result)[0];
         $result = rtrim(rtrim(str_replace("\n", '', $result)));
         $result = str_replace('\'', '', $result);
 
