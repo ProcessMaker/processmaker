@@ -31,51 +31,43 @@ env:
   CI_PROJECT: ${{github.event.pull_request.head.repo.name}} 
   CI_TEST: $CI_PROJECT
   IMAGE_TAG1: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
-jobs:
-  #job1:
-  #  name: set-init-github-status
-  #  runs-on: ubuntu-20.04
-  #  steps:
-  #    - run: ls -la
-  #    - uses: actions/checkout@v3
-  #    - run: ls -la 
-  #job2:
-  #  name: build-stm-image
-  #  #needs: job1
-  #  runs-on: ubuntu-22.04    
-  #  steps:     
-  #    - name: Export Params                
-  #      run: |
-  #        echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
-  #        echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
-  #        echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
-  #        #Additional
-  #        echo "CI_PR_BODY=1" >> $GITHUB_ENV
-  #        echo "CACHEBUSTER=abc" >> $GITHUB_ENV
-  #    - name: Clone Repo STM
-  #      run: |
-  #        git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
-  #        cd pm4-stm-docker          
-  #    - name: Configure AWS Credentials
-  #      uses: aws-actions/configure-aws-credentials@v1
-  #      with:
-  #        aws-access-key-id: ${{ env.aws-access-key-id }}
-  #        aws-secret-access-key: ${{ env.aws-secret-access-key }}
-  #        aws-region: ${{ env.aws-region }}
-  #    - name: Login to ECR
-  #      run: |          
-  #        aws ecr get-login-password | docker login --username AWS --password-stdin ${{env.aws-url}}
-  #    - name: Build and Push the image to ECR
-  #      run: |
-  #        cd pm4-stm-docker
-  #        docker stop $(docker ps -a -q) || true
-  #        docker container prune -f
-  #        docker-compose down -v                    
-  #        docker-compose build processmaker
-  #        docker push ${IMAGE}
-  job3: 
+jobs: 
+  job1:
+    name: build-stm-image
+    runs-on: ubuntu-22.04    
+    steps:     
+      - name: Export Params                
+        run: |
+          echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
+          echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
+          echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
+          #Additional
+          echo "CI_PR_BODY=1" >> $GITHUB_ENV
+          echo "CACHEBUSTER=abc" >> $GITHUB_ENV
+      - name: Clone Repo STM
+        run: |
+          git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
+          cd pm4-stm-docker          
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.aws-access-key-id }}
+          aws-secret-access-key: ${{ env.aws-secret-access-key }}
+          aws-region: ${{ env.aws-region }}
+      - name: Login to ECR
+        run: |          
+          aws ecr get-login-password | docker login --username AWS --password-stdin ${{env.aws-url}}
+      - name: Build and Push the image to ECR
+        run: |
+          cd pm4-stm-docker
+          docker stop $(docker ps -a -q) || true
+          docker container prune -f
+          docker-compose down -v                    
+          docker-compose build processmaker
+          docker push ${IMAGE}
+  job2: 
     name: deploy-stm    
-    #needs: job2
+    needs: job1
     runs-on: ubuntu-22.04
     container:
       image:  cimg/php:7.4
@@ -107,55 +99,55 @@ jobs:
           cd pm4-stm-docker/deploy-stm
           composer install --no-dev
           php run.php
-  #job4: 
-  #  name: run-phpunit
-  #  needs: job2
-  #  runs-on: ubuntu-22.04
-  #  steps:
-  #    - name: Export Params                
-  #      run: |
-  #        echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
-  #        echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
-  #        echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV          
-  #    - name: Clone Repo STM
-  #      run: |
-  #        git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
-  #        cd pm4-stm-docker          
-  #    - name: Configure AWS Credentials
-  #      uses: aws-actions/configure-aws-credentials@v1
-  #      with:
-  #        aws-access-key-id: ${{ env.aws-access-key-id }}
-  #        aws-secret-access-key: ${{ env.aws-secret-access-key }}
-  #        aws-region: ${{ env.aws-region }}
-  #    - name: Login to Amazon ECR
-  #      id: login-ecr
-  #      uses: aws-actions/amazon-ecr-login@v1
-  #    - name: PHPUnits
-  #      run: |          
-  #        cd pm4-stm-docker          
-  #        docker pull $IMAGE          
-  #        docker-compose down -v          
-  #        docker-compose build          
-  #        docker-compose run phpunit
-  job5: 
+  job3: 
+    name: run-phpunit
+    needs: job2
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Export Params                
+        run: |
+          echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
+          echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
+          echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV          
+      - name: Clone Repo STM
+        run: |
+          git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
+          cd pm4-stm-docker          
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.aws-access-key-id }}
+          aws-secret-access-key: ${{ env.aws-secret-access-key }}
+          aws-region: ${{ env.aws-region }}
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: PHPUnits
+        run: |          
+          cd pm4-stm-docker          
+          docker pull $IMAGE          
+          docker-compose down -v          
+          docker-compose build          
+          docker-compose run phpunit
+  job4: 
     name: run-benchmarks
-    needs: job3
+    needs: job2
     runs-on: ubuntu-22.04
     steps:
       - name: my-step
         run: |
           echo "Fifth Step"
-  job6: 
+  job5: 
     name: run-cypress
-    needs: job3
+    needs: job2
     runs-on: ubuntu-22.04
     steps:
       - name: my-step
         run: |
           echo "fourth Step"
-  job7: 
+  job6: 
     name: run-cypress-qa
-    needs: job3
+    needs: job2
     runs-on: ubuntu-22.04
     steps:
       - name: my-step
