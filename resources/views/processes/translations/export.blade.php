@@ -57,15 +57,26 @@
             window.location = '{{ route("processes.index") }}';
           },
           onExport() {
-            ProcessMaker.apiClient.post('processes/' + this.processId + '/export/translation/' + this.language.language)
-              .then(response => {
-                window.location = response.data.url;
-                ProcessMaker.alert(this.$t('The process translation was exported.'), 'success');
-              })
-              .catch(error => {
-                ProcessMaker.alert(error.response.data.message, 'danger');
-              });
-          }
+            ProcessMaker.apiClient({
+              method: 'POST',
+              url: 'processes/' + this.processId + '/export/translation/' + this.language.language,
+              responseType: 'blob',
+              data: {}
+            }).then(response => {
+              console.log(response);
+              // const exportInfo = JSON.parse(response.headers['fileName']);
+              const url = window.URL.createObjectURL(new Blob([response]));
+              const link = document.createElement("a");
+              link.href = url;
+
+              // link.setAttribute("download", `${exportInfo.name.replace(' ', '_')}.json`);
+              link.setAttribute("download", `translations.json`);
+              document.body.appendChild(link);
+              link.click();
+              // ProcessMaker.alert(`The translation ${exportInfo.name} was exported`, 'success');
+              ProcessMaker.alert(`The translation was exported`, 'success');
+            });
+          },
         }
       })
     </script>
