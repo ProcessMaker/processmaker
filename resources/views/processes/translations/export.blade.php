@@ -37,7 +37,6 @@
               <button type="button" class="btn btn-primary ml-2" @click="onExport">
                 {{ __("Export") }}
               </button>
-              <export-success-modal ref="export-success-modal" :processName="processName" :processId="processId" :exportInfo="exportInfo" />
             </div>
           </div>
         </div>
