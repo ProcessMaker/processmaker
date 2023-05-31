@@ -417,20 +417,22 @@ class ProcessTranslation
         foreach ($screensTranslations as $screenTranslation) {
             $availableStrings = $screenTranslation['availableStrings'];
 
-            foreach ($availableStrings as $key => $value) {
-                // code...
-            }
-            dd($availableStrings);
             if ($screenTranslation['translations']) {
                 $translations = $screenTranslation['translations'];
+            }
 
-                if (array_key_exists($language, $translations)) {
-                    $exportList[$screenTranslation['id']]['language'] = $translations[$language];
+            foreach ($availableStrings as $availableString) {
+                $translation = ['key' => $availableString, 'string' => ''];
+                if (array_key_exists($language, $translations) && array_key_exists('strings', $translations[$language])) {
+                    foreach ($translations[$language]['strings'] as $item) {
+                        if ($availableString === $item['key']) {
+                            $translation['string'] = $item['string'];
+                        }
+                    }
                 }
+                $exportList[$screenTranslation['id']][$language][] = $translation;
             }
         }
-
-        dd($exportList);
 
         // Generate json file to export
         return $exportList;
