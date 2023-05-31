@@ -52,7 +52,7 @@ class BatchesJobHandler
         [$screensWithChunks, $chunksCount] = $this->prepareData($this->screens, $languageTranslationHandler);
 
         // Execute requests for each regular chunk
-        
+
         $batch = Bus::batch([])
             ->then(function (Batch $batch) {
                 \Log::info('All jobs in batch completed');
@@ -79,16 +79,14 @@ class BatchesJobHandler
         // Update with real batch token ...
         ProcessTranslationToken::where('token', $this->code)->update(['token' => $batch->id]);
 
-        \Log::info($screensWithChunks);
         foreach ($screensWithChunks as $screenId => $screenWithChunks) {
             foreach ($screenWithChunks as $chunk) {
                 $batch->add(
-                    new ExecuteTranslationRequest
-                    (
-                        $screenId, 
-                        $languageTranslationHandler, 
-                        'html', 
-                        $chunk, 
+                    new ExecuteTranslationRequest(
+                        $screenId,
+                        $languageTranslationHandler,
+                        'html',
+                        $chunk,
                         $this->targetLanguage
                     )
                 );
@@ -129,7 +127,7 @@ class BatchesJobHandler
                     $chunk = [];
                     $chunkTokens = 0;
                 }
-                
+
                 $shouldTranslate = true;
 
                 // If option selected is 'empty', then should retranslate only empties strings
