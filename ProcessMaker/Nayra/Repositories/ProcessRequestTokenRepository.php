@@ -55,9 +55,6 @@ class ProcessRequestTokenRepository extends EntityRepository
                 'token_properties' => [],
             ]);
 
-            // Map the uids
-            $this->storeUid($transaction['id'], $token->getKey());
-
             return $token;
         } catch (Exception $e) {
             // Log the error
@@ -74,17 +71,9 @@ class ProcessRequestTokenRepository extends EntityRepository
      */
     public function update(array $transaction): ? Model
     {
-        // Get the id mapped
-        $id = $this->resolveId($transaction['id']);
-
-        // If not exists throws an error
-        if (!$id) {
-            throw new Exception("Cannot find id for uid {$transaction['id']}");
-        }
-
         // Update the request token
         $properties = $transaction['properties'];
-        $model = ProcessRequestToken::find($id);
+        $model = ProcessRequestToken::find($transaction['id']);
         $model->fill($properties);
         $model->save();
 

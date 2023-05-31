@@ -31,9 +31,6 @@ class ProcessRequestRepository extends EntityRepository
             'process_version_id' => $properties['process_version_id'],
         ]);
 
-        // Map the uids
-        $this->storeUid($transaction['id'], $request->getKey());
-
         return $request;
     }
 
@@ -45,17 +42,9 @@ class ProcessRequestRepository extends EntityRepository
      */
     public function update(array $transaction): Model
     {
-        // Get the id mapped
-        $id = $this->uid2id[$transaction['id']];
-
-        // If not exists throws an error
-        if (!$id) {
-            throw new Exception("Cannot find id for uid {$transaction['id']}");
-        }
-
         // Update the request
         $properties = $transaction['properties'];
-        $model = ProcessRequest::find($id);
+        $model = ProcessRequest::find($transaction['id']);
         $model->fill($properties);
         $model->save();
 
