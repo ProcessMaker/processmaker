@@ -136,8 +136,16 @@ class ProcessTranslationController extends Controller
     {
         $process = Process::findOrFail($processId);
         $processTranslation = new ProcessTranslation($process);
-        $processTranslation->exportTranslations($language);
+        $exportList = $processTranslation->exportTranslations($language);
 
-        return response()->json();
+        $fileName = trim($process->name) . '.json';
+
+        $fileContents = file_put_contents($fileName, json_encode($exportList));
+
+        return response()->streamDownload(function () use ($fileContents) {
+            echo $fileContents;
+        }, $fileName, [
+            'Content-type' => 'application/json',
+        ]);
     }
 }
