@@ -279,14 +279,22 @@ export default {
 
       ProcessMaker.apiClient.post("/openai/language-translation", params)
         .then((response) => {
+          if (response.data.error) {
+            window.ProcessMaker.alert(response.data.error, "danger");
+            this.endpointErrors = response.data.error;
+            this.aiLoading = false;
+            this.$bvModal.hide("createProcessTranslation");
+            return;
+          }
+
           this.screensTranslations = response.data.screensTranslations;
 
           this.aiLoading = false;
 
           if (!this.manualTranslation) {
-            this.showSelectTargetLanguage();
             this.$bvModal.hide("createProcessTranslation");
             this.$emit("translating-language");
+            this.showSelectTargetLanguage();
           }
 
           this.showTranslations();
