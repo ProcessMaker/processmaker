@@ -105,6 +105,6 @@ class ExecuteTranslationRequest implements ShouldQueue
         $screen->translations = $screenTranslations;
         $screen->save();
 
-        \Log::info('Chunk translations saved OK.');
+        \Log::info('Translation chunk saved OK.');
     }
 }
