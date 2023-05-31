@@ -53,7 +53,7 @@ class ProcessTranslation
 
         $nestedScreens = [];
         foreach ($screensInProcess as $screen) {
-            $nestedScreens = array_merge($nestedScreens, $this->getNestedScreens($screen));
+            $nestedScreens = array_merge($nestedScreens, Screen::findOrFail($screen)->nestedScreenIds());
         }
 
         $screensInProcess = collect(array_merge($screensInProcess, $nestedScreens))->unique();
@@ -67,23 +67,6 @@ class ProcessTranslation
             ->values();
 
         return $this->getStrings($screens);
-    }
-
-    private function getNestedScreens($screen) : array
-    {
-        $screen = Screen::findOrFail($screen);
-        $screensIds = [];
-        $screenFinder = new ScreensInScreen();
-        foreach ($screenFinder->referencesToExport($screen, [], null, false) as $screenFound) {
-            try {
-                $screensIds[] = $screenFound[1];
-            } catch (ModelNotFoundException $error) {
-                \Log::error($error->getMessage());
-                continue;
-            }
-        }
-
-        return $screensIds;
     }
 
     public function getStrings($screens) : SupportCollection
