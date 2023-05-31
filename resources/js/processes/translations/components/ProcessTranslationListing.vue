@@ -84,19 +84,30 @@ export default {
       ],
       actions: [
         {
-          value: "edit-translation", content: "Edit Translation", permission: "edit-process-translation", icon: "fas fa-edit",
+          value: "edit-translation",
+          content: "Edit Translation",
+          permission: "edit-process-translation",
+          icon: "fas fa-edit",
         },
         {
-          value: "export-translation", content: "Export Translation", permission: "export-process-translation", icon: "fas fa-file-export",
+          value: "export-translation",
+          content: "Export Translation",
+          permission: "export-process-translation",
+          icon: "fas fa-file-export",
+          link: true,
+          href: "/processes/{{processId}}/export/translation/{{language}}",
         },
         {
-          value: "delete-translation", content: "Delete Translation", permission: "delete-process-translation", icon: "fas fa-trash",
+          value: "delete-translation",
+          content: "Delete Translation",
+          permission: "delete-process-translation",
+          icon: "fas fa-trash",
         },
       ],
       actionsInProgress: [
         {
           value: "retry-translation", content: "Retry Translation", link: false, href: "", permission: "edit-process-translation", icon: "fas fa-redo",
-        },
+        },  
         {
           value: "delete-translation", content: "Delete Translation", permission: "delete-process-translation", icon: "fas fa-trash",
         },
@@ -144,9 +155,6 @@ export default {
       switch (action.value) {
         case "edit-translation":
           this.handleEditTranslation(data);
-          break;
-        case "export-translation":
-          // this.exportTranslation(data);
           break;
         case "delete-translation":
           this.handleDeleteTranslation(data);
@@ -231,7 +239,7 @@ export default {
 
     handleDeleteTranslation(translation) {
       ProcessMaker.confirmModal(
-      this.$t("Caution!"),
+        this.$t("Caution!"),
         this.$t(`Are you sure you want to delete the translations for ${translation.humanLanguage} language?`),
         "",
         () => {
