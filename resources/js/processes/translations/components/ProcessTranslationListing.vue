@@ -120,6 +120,7 @@ export default {
     library.add(faTranslations);
 
     this.fetch();
+    this.fetchPending();
     setInterval(() => {
       this.fetchPending();
     }, 3000);
