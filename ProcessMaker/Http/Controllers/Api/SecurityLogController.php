@@ -140,7 +140,7 @@ class SecurityLogController extends Controller
     private function download(Request $request, User $user = null)
     {
         $request->validate([
-            'format' => 'required|string|in:xml,text'
+            'format' => 'required|string|in:xml,csv'
         ]);
         sleep(1);
         $sessionUser = Auth::user();

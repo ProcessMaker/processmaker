@@ -41,7 +41,7 @@ class DownloadSecurityLog implements ShouldQueue
     public function handle()
     {
         //1. Get all data from security_logs table
-        //2. Create a file in specified format: text or xml
+        //2. Create a file in specified format: csv or xml
         //3. Zip this file
         //4. Store in S3, with private visibility, with 24h of lifecycle
         //5. Send email to user with the link or error message
