@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Bus;
 use ProcessMaker\Assets\ScreensInProcess;
 use ProcessMaker\Assets\ScreensInScreen;
 use ProcessMaker\ImportExport\Utils;
@@ -239,21 +240,23 @@ class ProcessTranslation
         // REMOVE THIS LINE
         $targetLanguage = 'es';
 
+        if (!$translations) {
+            return $config;
+        }
+
         if (array_key_exists($targetLanguage, $translations)) {
             foreach ($translations[$targetLanguage]['strings'] as $translation) {
                 $this->applyTranslationsToScreen($translation['key'], $translation['string'], $config);
             }
         }
 
-        dd($config);
-
         return $config;
     }
 
-    public function applyTranslationsToScreen($key, $translatedString, $config)
+    public function applyTranslationsToScreen($key, $translatedString, &$config)
     {
         if ($config) {
-            foreach ($config as $page) {
+            foreach ($config as &$page) {
                 if (isset($page['items']) && is_array($page['items'])) {
                     $replaced = self::applyTranslationToElement($page['items'], $key, $translatedString);
                 }
@@ -263,9 +266,9 @@ class ProcessTranslation
         return $config;
     }
 
-    private static function applyTranslationToElement($items, $key, $translatedString)
+    private static function applyTranslationToElement(&$items, $key, $translatedString)
     {
-        foreach ($items as $item) {
+        foreach ($items as &$item) {
             if (isset($item['items']) && is_array($item['items'])) {
                 // If have items and is a loop ..
                 if ($item['component'] == 'FormLoop') {
@@ -273,7 +276,7 @@ class ProcessTranslation
                 }
                 // If have items and is a table ..
                 if ($item['component'] == 'FormMultiColumn') {
-                    foreach ($item['items'] as $cell) {
+                    foreach ($item['items'] as &$cell) {
                         if (is_array($cell)) {
                             $replaced = self::applyTranslationToElement($cell, $key, $translatedString);
                         }
@@ -394,8 +397,13 @@ class ProcessTranslation
             ->first();
 
         if ($processTranslationToken) {
+            $token = $processTranslationToken->token;
             $processTranslationToken->delete();
         }
+
+        // Cancel pending batch jobs
+        $batch = Bus::findBatch($token);
+        $batch->cancel();
 
         return true;
     }
