@@ -416,6 +416,10 @@ class ProcessTranslation
         $exportList = [];
         foreach ($screensTranslations as $screenTranslation) {
             $availableStrings = $screenTranslation['availableStrings'];
+
+            foreach ($availableStrings as $key => $value) {
+                // code...
+            }
             dd($availableStrings);
             if ($screenTranslation['translations']) {
                 $translations = $screenTranslation['translations'];
