@@ -16,6 +16,7 @@
       :headerButtons="headerButtons"
       :customButtons="customModalButtons"
       :setCustomButtons="true"
+      :show-ai-slogan="true"
     >
       <!-- Select target language section -->
       <div v-if="step === 'selectTargetLanguage'">
