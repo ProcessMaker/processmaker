@@ -19,13 +19,13 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
      *
      * @return void
      */
-    public function __construct(array $original, array $changes, string $update_at)
+    public function __construct(array $original, array $changes, string $updatedAt)
     {
         $changes = array_diff_assoc($changes, $original);
         $original = array_intersect_key($original, $changes);
         $this->original = $original;
         $this->changes = $changes;
-        $this->changes['update_at'] = $update_at;
+        $this->changes['update_at'] = $updatedAt;
         $this->buildData();
     }
 
