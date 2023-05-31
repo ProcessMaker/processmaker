@@ -290,19 +290,16 @@ class ProcessTranslation
                 // Look for label strings
                 if (isset($item['config']) && isset($item['config']['label']) && $item['config']['label'] === $key) {
                     $item['config']['label'] = $translatedString;
-                    \Log::info($item['config']['label']);
                 }
 
                 // Look for helper strings
                 if (isset($item['config']) && isset($item['config']['helper']) && $item['config']['helper'] === $key) {
                     $item['config']['helper'] = $translatedString;
-                    \Log::info($item['config']['helper']);
                 }
 
                 // Look for placeholder strings
                 if (isset($item['config']) && isset($item['config']['placeholder']) && $item['config']['placeholder'] === $key) {
                     $item['config']['placeholder'] = $translatedString;
-                    \Log::info($item['config']['placeholder']);
                 }
             }
         }
@@ -409,5 +406,29 @@ class ProcessTranslation
             $screen->translations = $translations;
             $screen->save();
         }
+    }
+
+    public function exportTranslations($language)
+    {
+        $screensTranslations = $this->getProcessScreensWithTranslations();
+
+        $translations = null;
+        $exportList = [];
+        foreach ($screensTranslations as $screenTranslation) {
+            $availableStrings = $screenTranslation['availableStrings'];
+            dd($availableStrings);
+            if ($screenTranslation['translations']) {
+                $translations = $screenTranslation['translations'];
+
+                if (array_key_exists($language, $translations)) {
+                    $exportList[$screenTranslation['id']]['language'] = $translations[$language];
+                }
+            }
+        }
+
+        dd($exportList);
+
+        // Generate json file to export
+        return $exportList;
     }
 }
