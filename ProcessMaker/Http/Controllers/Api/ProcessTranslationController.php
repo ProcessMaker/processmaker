@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Bus;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessTranslationToken;
@@ -52,7 +53,9 @@ class ProcessTranslationController extends Controller
 
         $translatingLanguages = [];
         foreach ($processTranslationTokens as $processTranslationToken) {
+            $batch = Bus::findBatch($processTranslationToken->token);
             $processTranslationToken->humanLanguage = Languages::ALL[$processTranslationToken['language']];
+            $processTranslationToken->batchInfo = $batch ? $batch : null;
             $translatingLanguages[] = $processTranslationToken;
         }
 

@@ -32,6 +32,7 @@
               :data="item"
               :divider="true"
               :customButton="inProgressButton"
+              :showProgress="true"
               @navigate="onNavigate"
             />
           </td>
@@ -119,7 +120,9 @@ export default {
     library.add(faTranslations);
 
     this.fetch();
-    this.fetchPending();
+    setInterval(() => {
+      this.fetchPending();
+    }, 3000);
     ProcessMaker.EventBus.$on("api-data-process-translations", () => {
       this.fetch();
       this.fetchPending();
@@ -193,8 +196,6 @@ export default {
     },
 
     fetchPending() {
-      this.loading = true;
-
       const url = "process/translations/pending?process_id=" + this.processId;
 
       // Load from our api client
@@ -215,7 +216,6 @@ export default {
         )
         .then((response) => {
           this.translatingLanguages = response.data.translatingLanguages;
-          this.loading = false;
         });
     },
 
