@@ -112,14 +112,23 @@ class OpenAIController extends Controller
         }
 
         if (!$request->input('manualTranslation')) {
-            $code = uniqid('procress-translation', true);
-            $processTranslationToken = new ProcessTranslationToken();
-            $processTranslationToken->process_id = $process->id;
-            $processTranslationToken->token = $code;
-            $processTranslationToken->language = $request->input('language')['language'];
-            $processTranslationToken->save();
-            $translateProcess = new BatchesJobHandler($process, $screensTranslations, $request->input('language'), $code, Auth::id(), $option);
-            $translateProcess->handle();
+            $processTranslationToken = ProcessTranslationToken::where('process_id', $process->id)->where('language', $request->input('language')['language'])->first();
+
+            if (!$processTranslationToken) {
+                $code = uniqid('procress-translation', true);
+                $processTranslationToken = new ProcessTranslationToken();
+                $processTranslationToken->process_id = $process->id;
+                $processTranslationToken->token = $code;
+                $processTranslationToken->language = $request->input('language')['language'];
+                $processTranslationToken->save();
+
+                $translateProcess = new BatchesJobHandler($process, $screensTranslations, $request->input('language'), $code, Auth::id(), $option);
+                $translateProcess->handle();
+            } else {
+                return response()->json([
+                    'error' => 'Already running a translation for this language in background',
+                ]);
+            }
         }
 
         return response()->json([
