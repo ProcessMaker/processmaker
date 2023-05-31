@@ -233,13 +233,6 @@ class ProcessTranslation
             $targetLanguage = Auth::user()->language;
         }
 
-        /**
-         * IMPORTANT!
-         *
-         * */
-        // REMOVE THIS LINE
-        $targetLanguage = 'es';
-
         if (!$translations) {
             return $config;
         }
