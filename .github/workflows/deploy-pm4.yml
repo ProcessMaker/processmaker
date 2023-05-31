@@ -101,7 +101,7 @@ jobs:
           php run.php
   job3: 
     name: run-phpunit
-    needs: job2
+    needs: job1
     runs-on: ubuntu-22.04
     steps:
       - name: Export Params                
