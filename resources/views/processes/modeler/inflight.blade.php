@@ -32,6 +32,8 @@
       processName: @json($process->name),
       xml: @json($bpmn),
       configurables: [],
+      requestCompletedNodes: @json($requestCompletedNodes),
+      requestInProgressNodes: @json($requestInProgressNodes),
     }
 
     window.ProcessMaker.EventBus.$on('modeler-start', ({

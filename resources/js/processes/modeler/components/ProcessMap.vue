@@ -9,6 +9,8 @@
           ref="modeler"
           :owner="self"
           :decorations="decorations"
+          :request-completed-nodes="requestCompletedNodes"
+          :request-in-progress-nodes="requestInProgressNodes"
           @set-xml-manager="xmlManager = $event"
           @click="handleClick"
         />
@@ -34,6 +36,8 @@ export default {
       decorations: {
         borderOutline: {},
       },
+      requestCompletedNodes: window.ProcessMaker.modeler.requestCompletedNodes,
+      requestInProgressNodes: window.ProcessMaker.modeler.requestInProgressNodes,
     };
   },
   mounted() {
