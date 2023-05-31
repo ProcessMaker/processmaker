@@ -29,8 +29,9 @@ class ProcessTranslationController extends Controller
             })->toArray());
         }
 
-        // Verify if there are some pending translation for the language and remove it from the list)
-        foreach ($languageList as $key => $language) {
+        foreach ($languageList as $key => &$language) {
+            $language['processId'] = $processId;
+            // Verify if there are some pending translation for the language and remove it from the list)
             $processTranslationToken = ProcessTranslationToken::where('process_id', $processId)
                 ->where('language', $language['language'])
                 ->count();
@@ -129,5 +130,14 @@ class ProcessTranslationController extends Controller
 
         $processTranslation = new ProcessTranslation($process);
         $processTranslation->updateTranslations($screensTranslations, $language);
+    }
+
+    public function export(Request $request, $processId, $language)
+    {
+        $process = Process::findOrFail($processId);
+        $processTranslation = new ProcessTranslation($process);
+        $processTranslation->exportTranslations($language);
+
+        return response()->json();
     }
 }
