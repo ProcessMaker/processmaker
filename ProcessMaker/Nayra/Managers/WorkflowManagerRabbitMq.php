@@ -31,7 +31,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         $version = $definitions->getLatestVersion();
         $userId = $this->getCurrentUserId();
 
-        // Create inmediatly a new process request
+        // Create immediately a new process request
         $request = ProcessRequest::create([
             'process_id' => $definitions->id,
             'user_id' => $userId,
@@ -99,7 +99,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
      */
     private function dispatchAction(array $action): void
     {
-        $subject = $action['action'];
+        $subject = 'requests';
         $thread = $action['collaboration_id'] ?? 0;
         MessageBrokerService::sendMessage($subject, $thread, $action);
     }
