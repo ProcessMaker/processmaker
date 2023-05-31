@@ -261,7 +261,7 @@ class ScreenController extends Controller
         $original = $screen->getOriginal();
         $screen->saveOrFail();
 
-        //Call event to store Screem Changes into Log
+        //Call event to store Screen Changes into Log
         $request->validate(Screen::rules($screen));
         $changes = $screen->getChanges();
         ScreenUpdated::dispatch($screen, $changes, $original);

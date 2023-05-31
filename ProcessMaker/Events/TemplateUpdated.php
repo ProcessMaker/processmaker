@@ -5,7 +5,6 @@ namespace ProcessMaker\Events;
 use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
-use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class TemplateUpdated implements SecurityLogEventInterface
@@ -13,16 +12,18 @@ class TemplateUpdated implements SecurityLogEventInterface
     use Dispatchable, FormatSecurityLogChanges;
 
     private array $changes;
-    private string $processType;
+    private array $original;
+    private bool $processType;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(array $changes, string $processType)
+    public function __construct(array $changes, array $original, bool $processType)
     {   
         $this->changes = $changes;
+        $this->original = $original;
         $this->processType = $processType;
     }
 
@@ -33,7 +34,7 @@ class TemplateUpdated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        if ($this->processType == "Update Template Process") {
+        if ($this->processType) {
             return [
                 'name' => [
                     'label' => $this->processType
@@ -41,18 +42,14 @@ class TemplateUpdated implements SecurityLogEventInterface
                 'updated_at' => Carbon::now()
             ];
         } else {
-            $queryOldtemplate = ProcessTemplates::select('id', 'name', 'description', 'process_category_id')
-            ->where('id', $this->changes['id'])
-                ->get()->first()->toArray();
-
-            $old_data = array_diff_assoc($queryOldtemplate, $this->changes);
-            $new_data = array_diff_assoc($this->changes, $queryOldtemplate);
+            $oldData = array_diff_assoc($this->original,$this->changes);
+            $newData = array_diff_assoc($this->changes, $this->original);
 
             return array_merge([
                 'name' => [
                     'label' => $this->processType
                 ],
-            ], $this->formatChanges($new_data, $old_data));
+            ], $this->formatChanges($newData, $oldData));
         }
     }
 

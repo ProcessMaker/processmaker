@@ -31,8 +31,6 @@ use Throwable;
 
 class ProcessController extends Controller
 {
-    const UPDATE_TEMPLATE_PROCESS = "Update Template Process";
-
     /**
      * A whitelist of attributes that should not be
      * sanitized by our SanitizeInput middleware.
@@ -356,7 +354,7 @@ class ProcessController extends Controller
                 $response = (new TemplateController(new Template))->updateTemplateManifest('process', $process->id, $request);
                 
                 //Call Event to Log Template Changes
-                TemplateUpdated::dispatch([], ProcessController::UPDATE_TEMPLATE_PROCESS);
+                TemplateUpdated::dispatch([],[], true);
                 
                 return new Resource($process->refresh());
             } catch (\Exception $error) {

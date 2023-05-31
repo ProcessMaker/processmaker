@@ -21,12 +21,12 @@ class PermissionUpdated implements SecurityLogEventInterface
      *
      * @return void
      */
-    public function __construct(array $changedPermissions, array $originalPermissions, bool $permissionType, string $user_id)
+    public function __construct(array $changedPermissions, array $originalPermissions, bool $permissionType, string $userId)
     {
         $this->changedPermissions = $changedPermissions;
         $this->originalPermissions = $originalPermissions;
         $this->permissionType = $permissionType;
-        $this->userId = $user_id;
+        $this->userId = $userId;
     }
 
     /**

@@ -12,7 +12,6 @@ use ProcessMaker\Models\Template;
 
 class TemplateController extends Controller
 {
-    const CONFIGURE_TEMPLATE = "Configure Template";
 
     protected array $types = [
         'process' => [Process::class, ProcessTemplate::class, ProcessCategory::class, 'process_category_id', 'process_templates'],
@@ -103,10 +102,12 @@ class TemplateController extends Controller
     public function updateTemplateConfigs(string $type, Request $request)
     {
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
+        $changes = $request->only(['id', 'name', 'description', 'process_category_id']);
+        $queryOldtemplate = ProcessTemplates::select('id', 'name', 'description', 'process_category_id')
+        ->where('id', $request->id)->get()->first()->toArray();
         $response = $this->template->updateTemplateConfigs($type, $request);
         //Call event to log Template Config changes
-        $changes = $request->only(['id', 'name', 'description', 'process_category_id']);
-        TemplateUpdated::dispatch($changes, TemplateController::CONFIGURE_TEMPLATE);
+        TemplateUpdated::dispatch($changes, $queryOldtemplate, false);
 
         return $response;
     }

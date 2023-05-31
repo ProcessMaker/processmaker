@@ -20,7 +20,7 @@ class ScreenUpdated implements SecurityLogEventInterface
      *
      * @return void
      */
-    public function __construct(Screen $screen,array $changes,array $original)
+    public function __construct(Screen $screen, array $changes, array $original)
     {  
         $this->screen = $screen;
         $this->changes = $changes;
