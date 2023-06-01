@@ -6,6 +6,7 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Arr;
@@ -36,6 +37,14 @@ trait MakeHttpRequests
 
     private $timeout = 0;
 
+    private $retryAttempts = 0;
+
+    private $retryWaitTime = 0;
+
+    private $attemptedRetries = 0;
+
+    private $retryMessage = null;
+
     private function getMustache()
     {
         if ($this->mustache === null) {
@@ -63,9 +72,45 @@ trait MakeHttpRequests
             $request = $this->prepareRequestWithOutboundConfig($data, $config);
 
             return $this->responseWithHeaderData($this->call(...$request), $data, $config);
-        } catch (ClientException $exception) {
-            throw new HttpResponseException($exception->getResponse());
+        } catch (TransferException $exception) {
+            $result = $this->handleRetries($data, $config);
+            if ($result) {
+                // Retry was successful
+                return $result;
+            }
+
+            if ($exception instanceof ClientException) {
+                $response = $exception->getResponse();
+                throw new HttpResponseException($response, $this->retryMessage);
+            } else {
+                $message = $exception->getMessage();
+                throw new \Exception($this->retryMessage ? $this->retryMessage . "\n" . $message : $message);
+            }
         }
+    }
+
+    /**
+     * Handle retry attempts if configured
+     */
+    private function handleRetries(array $data, array $config)
+    {
+        if ($this->retryAttempts === 0) {
+            return false;
+        }
+
+        if ($this->attemptedRetries >= $this->retryAttempts) {
+            $this->retryMessage = __('Failed after :num attempts', ['num' => $this->attemptedRetries]);
+
+            return false;
+        }
+
+        $this->attemptedRetries++;
+
+        if ($this->retryWaitTime > 0) {
+            sleep($this->retryWaitTime);
+        }
+
+        return $this->request($data, $config);
     }
 
     /**
@@ -101,19 +146,27 @@ trait MakeHttpRequests
     }
 
     /**
-     * Set timeout from endpoint config or from BPMN errorHandling
+     * Set error handling properties from endpoint config or from BPMN errorHandling
      *
      * @param array $endpoint
      * @param array $config
      *
      * @return void
      */
-    private function setTimeout(array $endpoint, array $config)
+    private function setErrorHandlingProperties(array $endpoint, array $config)
     {
-        $this->timeout = (int) Arr::get($endpoint, 'timeout', 0);
-        $bpmnTimeout = Arr::get($config, 'errorHandling.timeout', null);
-        if (is_numeric($bpmnTimeout)) {
-            $this->timeout = (int) $bpmnTimeout;
+        $properties = [
+            'timeout' => 'timeout',
+            'retryAttempts' => 'retry_attempts',
+            'retryWaitTime' => 'retry_wait_time',
+        ];
+
+        foreach ($properties as $classProperty => $settingProperty) {
+            $this->$classProperty = (int) Arr::get($endpoint, $settingProperty, 0);
+            $bpmnSetting = Arr::get($config, "errorHandling.{$settingProperty}", null);
+            if (is_numeric($bpmnSetting)) {
+                $this->$classProperty = (int) $bpmnSetting;
+            }
         }
     }
 
@@ -231,7 +284,7 @@ trait MakeHttpRequests
         $request = [$method, $url, $headers, $body, $bodyType];
         $request = $this->addAuthorizationHeaders(...$request);
 
-        $this->setTimeout($endpoint, $config);
+        $this->setErrorHandlingProperties($endpoint, $config);
 
         return $request;
     }
