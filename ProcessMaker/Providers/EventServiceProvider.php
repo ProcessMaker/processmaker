@@ -45,6 +45,9 @@ class EventServiceProvider extends ServiceProvider
         'ProcessMaker\Events\CategoryUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
+        'ProcessMaker\Events\CustomizeUiUpdated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
         'ProcessMaker\Events\EnvironmentVariablesCreated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
@@ -88,6 +91,15 @@ class EventServiceProvider extends ServiceProvider
             'ProcessMaker\Listeners\SecurityLogger',
         ],
         'ProcessMaker\Events\ScriptDeleted' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\ScriptExecutorCreated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\ScriptExecutorDeleted' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\ScriptExecutorUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
         'ProcessMaker\Events\SessionStarted' => [
