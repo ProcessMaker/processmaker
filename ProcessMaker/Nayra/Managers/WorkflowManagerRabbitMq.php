@@ -9,10 +9,13 @@ use ProcessMaker\Facades\MessageBrokerService;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
+use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 
 class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements WorkflowManagerInterface
 {
     const ACTION_START_PROCESS = 'START_PROCESS';
+    const ACTION_COMPLETE_TASK = 'COMPLETE_TASK';
 
     /**
      * Trigger a start event and return the process request instance.
@@ -48,7 +51,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         // Create triggered
         // TO DO:
 
-        // Dispatch start process event
+        // Dispatch start process action
         $this->dispatchAction([
             'bpmn' => $version->getKey(),
             'action' => self::ACTION_START_PROCESS,
@@ -76,6 +79,60 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         ]);
 
         return $request;
+    }
+
+    /**
+     * Complete a task.
+     *
+     * @param Definitions $definitions
+     * @param ExecutionInstanceInterface $instance
+     * @param TokenInterface $token
+     * @param array $data
+     *
+     * @return void
+     */
+    public function completeTask(Definitions $definitions, ExecutionInstanceInterface $instance, TokenInterface $token, array $data)
+    {
+        // Validate data
+        $element = $token->getDefinition(true);
+        $this->validateData($data, $definitions, $element);
+
+        // Get complementary information
+        $version = $definitions->getLatestVersion();
+
+        // Get open tokens
+        $tokensRows = [];
+        $tokens = $instance->tokens()->where('status', '!=', 'CLOSED')->get();
+        foreach ($tokens as $token) {
+            $tokensRows[] = array_merge($token->token_properties ?: [], [
+                'id' => $token->uuid,
+                'status' => $token->status,
+                'index' => $token->element_index,
+                'element_id' => $token->element_id,
+            ]);
+        }
+
+        // Dispatch complete task action
+        $this->dispatchAction([
+            'bpmn' => $version->getKey(),
+            'action' => self::ACTION_COMPLETE_TASK,
+            'params' => [
+                'request_id' => $token->process_request_id,
+                'token_id' => $token->uuid,
+                'element_id' => $token->element_id,
+                'data'=> $data,
+            ],
+            'state' => [
+                'requests' => [
+                    [
+                        'id' => $instance->uuid,
+                        'callable_id' => $instance->callable_id,
+                        'data' => $instance->data,
+                        'tokens' => $tokensRows,
+                    ]
+                ],
+            ]
+        ]);
     }
 
     /**

@@ -18,7 +18,7 @@ class ProcessRequestTokenRepository extends EntityRepository
      */
     public function create(array $transaction): ? Model
     {
-        // Create auxiliar variable
+        // Complete properties
         $properties = $transaction['properties'];
 
         // Get required values if not are in the response
@@ -37,10 +37,10 @@ class ProcessRequestTokenRepository extends EntityRepository
                 $properties['process_id'] = $request->process_id;
             }
         }
+
         try {
             // Create new request token
             $token = ProcessRequestToken::create([
-                'uuid' => $properties['id'],
                 'user_id' => $properties['user_id'] ?? null,
                 'process_id' => $properties['process_id'] ?? null,
                 'process_request_id' => $properties['request_id'],
@@ -55,8 +55,8 @@ class ProcessRequestTokenRepository extends EntityRepository
                 'token_properties' => [],
             ]);
 
-            // Map the uids
-            $this->storeUid($transaction['id'], $token->getKey());
+            // Store temporally the relation between uid and id
+            $this->storeUid($token->uuid, $token->id);
 
             return $token;
         } catch (Exception $e) {
@@ -74,21 +74,27 @@ class ProcessRequestTokenRepository extends EntityRepository
      */
     public function update(array $transaction): ? Model
     {
-        // Get the id mapped
-        $id = $this->resolveId($transaction['id']);
+        try {
+            // Get the id mapped
+            $id = $this->resolveId($transaction['id']);
 
-        // If not exists throws an error
-        if (!$id) {
-            throw new Exception("Cannot find id for uid {$transaction['id']}");
+            // If not exists throws an error
+            if (!$id) {
+                throw new Exception("Cannot find id for uid {$transaction['id']}");
+            }
+
+            // Update the request token
+            $properties = $transaction['properties'];
+            $model = ProcessRequestToken::find($id);
+            $model->fill($properties);
+            $model->save();
+
+            return $model;
+        } catch (Exception $e) {
+            // Log the error
+            Log::error("Cannot update token: {$e->getMessage()}");
+            return null;
         }
-
-        // Update the request token
-        $properties = $transaction['properties'];
-        $model = ProcessRequestToken::find($id);
-        $model->fill($properties);
-        $model->save();
-
-        return $model;
     }
 
     /**
@@ -97,7 +103,8 @@ class ProcessRequestTokenRepository extends EntityRepository
      * @param array $transaction
      * @return \ProcessMaker\Models\ProcessRequestToken
      */
-    public function save(array $transaction): ? Model {
+    public function save(array $transaction): ? Model
+    {
         if ($transaction['type'] === 'create') {
             return $this->create($transaction);
         }

@@ -4,10 +4,13 @@ namespace ProcessMaker\Nayra\Repositories;
 
 use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Nayra\Repositories\ProcessRequestRepository;
+use ProcessMaker\Nayra\Repositories\ProcessRequestTokenRepository;
 
 abstract class EntityRepository
 {
-    private static $uid2id = [];
+    private static $uid2id = ['requests' =>[], 'tokens' =>[]];
 
     abstract public function create(array $transaction): ? Model;
 
@@ -15,19 +18,55 @@ abstract class EntityRepository
 
     abstract public function save(array $transaction): ? Model;
 
-    public function resolveId($uid)
+    /**
+     * Get the corresponding id related to uid
+     *
+     * @param string $uid
+     * @return int $id
+     */
+    public function resolveId(string $uid): int
     {
-        if (!isset(self::$uid2id[$uid])) {
-            $request = ProcessRequest::select('id')->where('uuid', $uid)->first();
-            if ($request) {
-                self::$uid2id[$uid] = $request->getKey();
+        // Set some variables according to the class
+        switch (get_called_class()) {
+            case ProcessRequestRepository::class:
+                $instance = new ProcessRequest();
+                $type = 'requests';
+                break;
+            case ProcessRequestTokenRepository::class:
+                $instance = new ProcessRequestToken();
+                $type = 'tokens';
+                break;
+        }
+
+        // Get record if is not stored previously
+        if (!isset(self::$uid2id[$type][$uid])) {
+            $record = $instance->select('id')->where('uuid', $uid)->first();
+            if ($record) {
+                self::$uid2id[$type][$uid] = $record->getKey();
             }
         }
-        return self::$uid2id[$uid];
+
+        return self::$uid2id[$type][$uid] ?? 0;
     }
 
-    public function storeUid($uid, $id)
+    /**
+     * Store temporally the uid
+     *
+     * @param string $uid
+     * @param int $id
+     */
+    public function storeUid(string $uid, int $id): void
     {
-        self::$uid2id[$uid] = $id;
+        // Set some variables according to the class
+        switch (get_called_class()) {
+            case ProcessRequestRepository::class:
+                $type = 'requests';
+                break;
+            case ProcessRequestTokenRepository::class:
+                $type = 'tokens';
+                break;
+        }
+
+        self::$uid2id[$type][$uid] = $id;
     }
 }
