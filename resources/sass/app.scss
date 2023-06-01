@@ -904,6 +904,7 @@ nav {
     .ellipsis-menu-icon {
       color: #ffffff;
     }
+    color: #ffffff;
   }
 
   &:active {
@@ -912,5 +913,26 @@ nav {
     .ellipsis-menu-icon {
       color: #ffffff;
     }
+    color: #ffffff;
   }
+}
+
+//styles for simple error message
+.simple-error-message-main {
+  text-align: center;
+}
+
+.simple-error-message-icon {
+  color: var(--warning);
+  font-size: 144px;
+  margin-top: 25px;
+}
+
+.simple-error-message-title {
+  font-size: 24px;
+}
+
+.simple-error-message-message {
+  display: inline-block;
+  width: 400px;
 }
