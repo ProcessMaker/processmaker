@@ -102,7 +102,7 @@ jobs:
           cd pm4-stm-docker/deploy-stm
           composer install --no-dev
           php run.php
-      - name: Publish the URL to the Github PR
+      - name: Publish the URL to the Github PR 
         if: success() || steps.stm.conclusion == 'success'
         run: |
           cd pm4-stm-docker
