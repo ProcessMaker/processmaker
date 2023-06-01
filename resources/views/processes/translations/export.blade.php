@@ -54,7 +54,7 @@
         },
         methods: {
           onCancel() {
-            window.location = '{{ route("processes.index") }}';
+            window.location = `/processes/${this.processId}/edit`;
           },
           onExport() {
             ProcessMaker.apiClient({
@@ -63,18 +63,15 @@
               responseType: 'blob',
               data: {}
             }).then(response => {
-              console.log(response);
-              // const exportInfo = JSON.parse(response.headers['fileName']);
-              const url = window.URL.createObjectURL(new Blob([response]));
+              const exportInfo = JSON.parse(response.headers['export-info']);
+              const url = window.URL.createObjectURL(new Blob([response.data]));
               const link = document.createElement("a");
               link.href = url;
 
-              // link.setAttribute("download", `${exportInfo.name.replace(' ', '_')}.json`);
-              link.setAttribute("download", `translations.json`);
+              link.setAttribute("download", `${exportInfo.processName.replaceAll(' ', '_')}-${exportInfo.language.toUpperCase()}.json`);
               document.body.appendChild(link);
               link.click();
-              // ProcessMaker.alert(`The translation ${exportInfo.name} was exported`, 'success');
-              ProcessMaker.alert(`The translation was exported`, 'success');
+              ProcessMaker.alert(`The translation ${exportInfo.humanLanguage} for the process ${exportInfo.processName} was exported`, 'success');
             });
           },
         }
