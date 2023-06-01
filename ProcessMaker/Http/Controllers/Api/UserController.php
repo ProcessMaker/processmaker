@@ -201,6 +201,49 @@ class UserController extends Controller
 
         return new UserResource($user);
     }
+    
+    /**
+     * Return the user's pinned nodes.
+     *
+     * @param  User $user
+     * @return \Illuminate\Http\Response
+     *
+     *     @OA\Get(
+     *     path="/users/{user_id}/get_pinned_controls",
+     *     summary="Get the pinned BPMN elements of a specific user",
+     *     operationId="getPinnnedControls",
+     *     tags={"Users"},
+     *     @OA\Parameter(
+     *         description="ID of user to return the pinned nodes of",
+     *         in="path",
+     *         name="user_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="integer",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Pinned nodes returned succesfully",
+     *         @OA\JsonContent(ref="#/components/schemas/users")
+     *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
+     * )
+     */
+    public function getPinnnedControls(User $user)
+    {
+        $user = Auth::user();
+        if (!$user->can('view', $user)) {
+            throw new AuthorizationException(__('Not authorized to update this user.'));
+        }
+
+        $meta = $user->meta ? (array) $user->meta : [];
+
+        return array_key_exists('pinnedControls', $meta)
+                ? $meta['pinnedControls']
+                : [];
+    }
+
 
     /**
      * Update a user
@@ -257,6 +300,57 @@ class UserController extends Controller
             $this->uploadAvatar($user, $request);
         }
 
+        return response([], 204);
+    }
+
+    /**
+     * Update a user's pinned BPMN elements on Modeler
+     *
+     * @param User $user
+     * @param Request $request
+     *
+     * @return ResponseFactory|Response
+     *
+     *     @OA\Put(
+     *     path="/users/{user_id}/update_pinned_controls",
+     *     summary="Update a user's pinned BPMN elements on Modeler",
+     *     operationId="updatePinnedControls",
+     *     tags={"Users"},
+     *     @OA\Parameter(
+     *         description="ID of user to return",
+     *         in="path",
+     *         name="user_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="integer",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/usersEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="success",
+     *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
+     *     @OA\Response(response=422, ref="#/components/responses/422"),
+     * )
+     */
+    public function updatePinnedControls(User $user, Request $request)
+    {
+        $user = Auth::user();
+        if (!$user->can('edit', $user)) {
+            throw new AuthorizationException(__('Not authorized to update this user.'));
+        }
+        
+        if ($request->has('pinnedNodes')) {
+            $meta = $user->meta ? (array) $user->meta : [];
+            $meta['pinnedControls'] = $request->get('pinnedNodes');
+            $user->meta = $meta;
+        }
+
+        $user->saveOrFail();
         return response([], 204);
     }
 

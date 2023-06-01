@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e1c55fab151a722cb55a18cb99feccb2",
+    "content-hash": "9276ac11e9bc1a3b489727cb5433a70c",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -5557,6 +5557,7 @@
                 "issues": "https://github.com/php-http/message-factory/issues",
                 "source": "https://github.com/php-http/message-factory/tree/master"
             },
+            "abandoned": "psr/http-factory",
             "time": "2015-12-19T14:08:53+00:00"
         },
         {
@@ -13592,6 +13593,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "coderevolutionplugins/gpt-3-encoder-php": 20,
         "processmaker/laravel-i18next": 20
     },
     "prefer-stable": true,
