@@ -20,6 +20,7 @@ use ProcessMaker\Http\Controllers\HomeController;
 use ProcessMaker\Http\Controllers\NotificationController;
 use ProcessMaker\Http\Controllers\Process\EnvironmentVariablesController;
 use ProcessMaker\Http\Controllers\Process\ModelerController;
+use ProcessMaker\Http\Controllers\Process\ProcessTranslationController;
 use ProcessMaker\Http\Controllers\Process\ScreenBuilderController;
 use ProcessMaker\Http\Controllers\Process\ScreenController;
 use ProcessMaker\Http\Controllers\Process\ScriptController;
@@ -92,7 +93,8 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
     Route::put('processes/{process}', [ProcessController::class, 'update'])->name('processes.edit')->middleware('can:edit-processes');
     Route::delete('processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy')->middleware('can:archive-processes');
 
-    Route::get('process_events/{process}', [ProcessController::class, 'triggerStartEventApi'])->middleware('can:start,process');
+    Route::get('processes/{process}/export/translation/{language}', [ProcessTranslationController::class, 'export']);
+    Route::get('processes/{process}/import/translation', [ProcessTranslationController::class, 'import']);
 
     Route::get('about', [AboutController::class, 'index'])->name('about.index');
 
