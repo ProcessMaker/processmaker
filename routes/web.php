@@ -53,6 +53,10 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
         Route::get('customize-ui/{tab?}', [CssOverrideController::class, 'edit'])->name('customize-ui.edit');
 
         Route::get('script-executors', [ScriptExecutorController::class, 'index'])->name('script-executors.index');
+
+        //temporary, should be removed
+        Route::get('security-logs/download/all', [\ProcessMaker\Http\Controllers\Api\SecurityLogController::class, 'downloadForAllUsers'])->middleware('can:view-security-logs');
+        Route::get('security-logs/download/{user}', [\ProcessMaker\Http\Controllers\Api\SecurityLogController::class, 'downloadForUser'])->middleware('can:view-security-logs');
     });
 
     Route::get('admin', [AdminController::class, 'index'])->name('admin.index');

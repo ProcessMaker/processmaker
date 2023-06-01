@@ -6,6 +6,9 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use ProcessMaker\Events\UserCreated;
+use ProcessMaker\Events\UserDeleted;
+use ProcessMaker\Events\UserGroupMembershipUpdated;
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
@@ -161,6 +164,8 @@ class UserController extends Controller
         $user->fill($fields);
         $user->setTimezoneAttribute($request->input('timezone', ''));
         $user->saveOrFail();
+        // Register the Event
+        UserCreated::dispatch($user->refresh());
 
         return new UserResource($user->refresh());
     }
@@ -397,20 +402,21 @@ class UserController extends Controller
      */
     public function updateGroups(User $user, Request $request)
     {
+        $data = [];
         if ($request->has('groups')) {
             if ($request->filled('groups')) {
                 $groups = $request->input('groups');
                 if (!is_array($groups)) {
                     $groups = array_map('intval', explode(',', $request->groups));
                 }
-                $user->groups()->sync($groups);
+                $data = $user->groups()->sync($groups);
             } else {
                 $user->groups()->detach();
             }
         } else {
             return response([], 400);
         }
-
+        event(new UserGroupMembershipUpdated($data, $user));
         return response([], 204);
     }
 
@@ -446,6 +452,8 @@ class UserController extends Controller
     {
         try {
             $user->delete();
+            // Register the Event
+            UserDeleted::dispatch($user);
 
             return response([], 204);
         } catch (\Exception $e) {
