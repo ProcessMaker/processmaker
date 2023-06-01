@@ -24,8 +24,8 @@ class ProcessTranslationController extends Controller
         return view('processes.translations.export', compact('process', 'language'));
     }
 
-    public function import(Screen $screen)
+    public function import(Process $process)
     {
-        return view('processes.translations.import');
+        return view('processes.translations.import', compact('process'));
     }
 }
