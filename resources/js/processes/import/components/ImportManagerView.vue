@@ -403,7 +403,7 @@ export default {
                     const { processId } = response.data;
                     const successMessage = this.$t('Process was successfully imported');
 
-                    if (response.data.message) {
+                    if (response.data.message && response.data.message.type === "warning" && response.data.message.serviceTasksNames.length) {
                         const message = response.data.message;
                         let taskList = "";
 
