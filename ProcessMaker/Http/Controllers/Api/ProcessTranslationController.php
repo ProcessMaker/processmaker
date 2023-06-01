@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
+use function PHPUnit\Framework\isEmpty;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessTranslationToken;
@@ -132,20 +133,71 @@ class ProcessTranslationController extends Controller
         $processTranslation->updateTranslations($screensTranslations, $language);
     }
 
-    public function export(Request $request, $processId, $language)
+    public function export(Request $request, $processId, $languageCode)
     {
         $process = Process::findOrFail($processId);
         $processTranslation = new ProcessTranslation($process);
-        $exportList = $processTranslation->exportTranslations($language);
+        $exportList = $processTranslation->exportTranslations($languageCode);
 
-        $fileName = trim($process->name) . '.json';
+        $fileName = trim($process->name);
 
-        $fileContents = file_put_contents($fileName, json_encode($exportList));
-
-        return response()->streamDownload(function () use ($fileContents) {
-            echo $fileContents;
-        }, $fileName, [
-            'Content-type' => 'application/json',
+        $exportInfo = json_encode([
+            'processName' => $process->name,
+            'language' => $languageCode,
+            'humanLanguage' => Languages::ALL[$languageCode],
         ]);
+
+        return response()->streamDownload(
+            function () use ($exportList) {
+                echo json_encode($exportList);
+            },
+            $fileName . '.json',
+            [
+                'Content-type' => 'application/json',
+                'export-info' => $exportInfo,
+            ]
+        );
+    }
+
+    public function preimportValidation(Request $request, $processId)
+    {
+        $content = $request->file('file')->get();
+        $payload = json_decode($content, true);
+
+        $process = Process::findOrFail($processId);
+        $processTranslation = new ProcessTranslation($process);
+        $importData = $processTranslation->getImportData($payload);
+
+        if (!$importData || !count($importData)) {
+            return response(
+                ['message' => __('Please verify that the file contains translations for this process.')],
+                422
+            );
+        }
+
+        return [
+            'importData' => $importData,
+        ];
+    }
+
+    public function import(Request $request, $processId)
+    {
+        $content = $request->file('file')->get();
+        $payload = json_decode($content, true);
+
+        $process = Process::findOrFail($processId);
+        $processTranslation = new ProcessTranslation($process);
+        $importData = $processTranslation->importTranslations($payload);
+
+        if (!$importData || !count($importData)) {
+            return response(
+                ['message' => __('Please verify that the file contains translations for this process.')],
+                422
+            );
+        }
+
+        return [
+            'importData' => $importData,
+        ];
     }
 }
