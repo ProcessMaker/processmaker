@@ -26,10 +26,10 @@ class HttpResponseException extends Exception implements HttpExceptionInterface
         $this->status = $response->getStatusCode();
         $this->body = $response->getBody()->getContents();
         $this->headers = $response->getHeaders();
-        $body = Str::limit($this->body, 100);
         if ($note) {
-            $body = $note . "\n" . $body;
+            $this->body = $note . "\n" . $this->body;
         }
+        $body = Str::limit($this->body, 100);
         parent::__construct(__("Unexpected response (status=:status)\n:body", [
             'status' => $this->status,
             'body' => $body,
