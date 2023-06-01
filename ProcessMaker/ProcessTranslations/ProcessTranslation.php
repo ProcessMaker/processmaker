@@ -372,11 +372,11 @@ class ProcessTranslation
         if ($processTranslationToken) {
             $token = $processTranslationToken->token;
             $processTranslationToken->delete();
-        }
 
-        // Cancel pending batch jobs
-        $batch = Bus::findBatch($token);
-        $batch->cancel();
+            // Cancel pending batch jobs
+            $batch = Bus::findBatch($token);
+            $batch->cancel();
+        }
 
         return true;
     }
@@ -415,6 +415,9 @@ class ProcessTranslation
         $translations = null;
         $exportList = [];
         foreach ($screensTranslations as $screenTranslation) {
+            $screen = Screen::findOrFail($screenTranslation['id']);
+            $uuid = $screen->uuid;
+
             $availableStrings = $screenTranslation['availableStrings'];
 
             if ($screenTranslation['translations']) {
@@ -430,11 +433,93 @@ class ProcessTranslation
                         }
                     }
                 }
-                $exportList[$screenTranslation['id']][$language][] = $translation;
+                $exportList[$uuid][$language][] = $translation;
             }
         }
 
         // Generate json file to export
         return $exportList;
+    }
+
+    public function getImportData($payload)
+    {
+        $screens = [];
+        foreach ($payload as $screenId => $value) {
+            $languages = [];
+            $screen = Screen::where('uuid', $screenId)->first();
+            if ($screen) {
+                foreach ($value as $languageCode => $translations) {
+                    $languages[] = [
+                        'language' => $languageCode,
+                        'languageHuman' => Languages::ALL[$languageCode],
+                    ];
+                }
+                $screens[] = [
+                    'id' => $screen->id,
+                    'uuid' => $screenId,
+                    'title' => $screen->title,
+                    'languages' => $languages,
+                ];
+            }
+        }
+
+        // Group by language
+        $languageGrouped = [];
+        foreach ($screens as $uuid => $value) {
+            foreach ($value['languages'] as $key => $translations) {
+                $languageGrouped[$translations['language']]['languageHuman'] = $translations['languageHuman'];
+                $languageGrouped[$translations['language']]['screens'][$value['uuid']] = $value['title'];
+            }
+        }
+
+        return $languageGrouped;
+    }
+
+    public function importTranslations($payload)
+    {
+        $screens = [];
+        foreach ($payload as $screenUuid => $value) {
+            $screen = Screen::where('uuid', $screenUuid)->first();
+            if ($screen) {
+                $screenTranslations = $screen->translations;
+                $availableStrings = $this->getStringsInScreen($screen);
+
+                foreach ($value as $languageCode => $translations) {
+                    if (!array_key_exists($languageCode, $screenTranslations)) {
+                        $screenTranslations[$languageCode]['strings'] = [];
+                    }
+
+                    foreach ($translations as $importedTranslation) {
+                        // $found = false;
+                        foreach ($availableStrings as $availableString) {
+                            if ($availableString === $importedTranslation['key']) {
+                            }
+                        }
+                        foreach ($screenTranslations[$languageCode]['strings'] as &$translation) {
+                            if ($translation['key'] === $importedTranslation['key']) {
+                                $translation['string'] = $importedTranslation['string'];
+                                // $found = true;
+                            }
+                        }
+
+                        /**
+                         * Should only add for the elements in the screens. If there are some translation in the file
+                         * for a field that does not exist in the screen should not add it. I.E. If we don't have the field
+                         * "First name" in the screen but we have a key "First name" in the importing file, should not add
+                         * the translation
+                         * */
+                        // if (!$found) {
+                        //     $screenTranslations[$languageCode]['strings'][] = [
+                        //         'key' => $importedTranslation['key'],
+                        //         'string' => $importedTranslation['string'],
+                        //     ];
+                        // }
+                    }
+                }
+            }
+            dd($screenTranslations);
+        }
+
+        dd($screenTranslations);
     }
 }
