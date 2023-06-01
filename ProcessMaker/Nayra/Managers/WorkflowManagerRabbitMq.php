@@ -105,7 +105,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         $tokens = $instance->tokens()->where('status', '!=', 'CLOSED')->get();
         foreach ($tokens as $token) {
             $tokensRows[] = array_merge($token->token_properties ?: [], [
-                'id' => $token->getKey(),
+                'id' => $token->uuid,
                 'status' => $token->status,
                 'index' => $token->element_index,
                 'element_id' => $token->element_id,
@@ -118,19 +118,19 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             'action' => self::ACTION_COMPLETE_TASK,
             'params' => [
                 'request_id' => $token->process_request_id,
-                'token_id' => $token->id,
+                'token_id' => $token->uuid,
                 'element_id' => $token->element_id,
                 'data'=> $data,
             ],
             'state' => [
                 'requests' => [
                     [
-                        'id' => $instance->id,
+                        'id' => $instance->uuid,
                         'callable_id' => $instance->callable_id,
                         'data' => $instance->data,
                         'tokens' => $tokensRows,
                     ]
-                ]
+                ],
             ]
         ]);
     }
