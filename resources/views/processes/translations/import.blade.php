@@ -16,110 +16,165 @@
     ]])
 @endsection
 @section('content')
-    <div class="container" id="importScreen">
-        <div class="row">
-            <div class="col">
-                <div class="card text-center">
-                    <div class="card-header bg-light" align="left">
-                        <h5>{{__('Import Screen')}}</h5>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">{{__('You are about to import a Screen.')}}</h5>
-                        <input id="import-file" type="file" ref="file" class="d-none" @change="handleFile" accept=".json" aria-label="{{__('select file')}}">
-                        <button type="button" @click="$refs.file.click()" class="btn btn-secondary ml-2" data-cy="button-browse">
-                            <i class="fas fa-upload"></i>
-                            {{__('Browse')}}
-                        </button>
-                    </div>
-                    <div class="card-footer bg-light" align="right">
-                        <button type="button" class="btn btn-outline-secondary" @click="onCancel" data-cy="button-cancel">
-                            {{__('Cancel')}}
-                        </button>
-                        <button type="button" class="btn btn-secondary ml-2" @click="importFile"
-                                :disabled="uploaded == false" data-cy="button-import">
-                            {{__('Import')}}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <b-modal ref="responseImport" :title="__('Import Screen')" @hide="reload" ok-only centered v-cloak>
-            <ul v-show="options" class="list-unstyled">
-                <li v-for="item in options">
-                    <i :class="item.success ? 'fas fa-check text-success' : 'fas fa-times text-danger'"></i>
-                    @{{item.label}} - @{{item.message}} 
-                    <span v-if="item.info" :class="'text-danger d-block'"> @{{item.info}}.</span>
-                </li>
-            </ul>
-            <div slot="modal-footer" class="w-100" align="right">
-                <button type="button" class="btn btn-secondary ml-2" @click="onCancel" data-cy="button-list-screen">{{__('List Screens')}}
-                </button>
-            </div>
-        </b-modal>
-
-    </div>
+<div class="container mb-3" id="importProcessTranslation" v-cloak>
+  <div class="row">
+      <div class="col">
+          <div class="card text-center">
+              <div class="card-header bg-light" align="left">
+                  <h5 class="mb-0">Import Process Translation</h5>
+                  <small class="text-muted">Import a Process Translation into process <b>{{ $process->name }}</b> for this ProcessMaker environment</small>
+              </div>
+              <div class="card-body">
+                  <div id="pre-import" v-if="! importing && ! imported">
+                      <draggable-file-upload v-if="!file || file && !fileIsValid" ref="file" v-model="file" :options="{singleFile: true}" :displayUploaderList="false" :accept="['application/json']"></draggable-file-upload>
+                      <div v-else class="text-left">
+                         <h5>You are about to import the following translations for the process <strong>{{$process->name}}</strong>:</h5>
+                          <div class="border-dotted p-3 col-4 text-center font-weight-bold my-3">
+                              @{{file.name}}
+                              <b-button 
+                                  variant="link" 
+                                  @click="removeFile" 
+                                  class="p-0"
+                                  aria-describedby=""
+                              >
+                                  <i class="fas fa-times-circle text-danger"></i>
+                              </b-button>
+                          </div>
+                          <div>
+                            <div v-for="(language, key) in importData" class="mb-3">
+                              <h5 class="mb-1"><b>@{{ key.toUpperCase() + ' - ' + language.languageHuman }}</b></h5>
+                              <li v-for="screen in language.screens">@{{ screen }}</li>
+                            </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div id="card-footer-pre-import" class="card-footer bg-light" align="right"
+                   v-if="! importing && ! imported">
+                  <button type="button" class="btn btn-outline-secondary" @click="onCancel">
+                      {{__('Cancel')}}
+                  </button>
+                  <button type="button" class="btn btn-primary ml-2"
+                      :class="{'disabled': loading}"
+                      :disabled="fileIsValid === false || loading"
+                      @click="onImport">
+                          <span v-if="!loading">{{__('Import')}}</span>
+                          <i v-if="loading" class="fas fa-spinner fa-spin p-0"></i>
+                          <span v-if="loading">{{__('Importing')}}</span>
+                  </button>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
 @endsection
 
 @section('js')
+    <script src="{{mix('js/processes/translations/import.js')}}"></script>
     <script>
       new Vue({
-        el: '#importScreen',
+        el: '#importProcessTranslation',
         data: {
           file: '',
+          process: @json($process),
           uploaded: false,
           submitted: false,
-          options: []
+          importing: false,
+          imported: false,
+          fileIsValid: false,
+          loading: false,
+          options: [],
+          importData: [],
+        },
+        watch: {
+          file() {
+            this.fileIsValid = false;
+            if (!this.file) {
+              return;
+            }
+            this.validateFile();
+            this.processName = this.file.name.split('.').slice(0,-1).toString();
+          }
         },
         methods: {
-          handleFile(e) {
-            this.file = this.$refs.file.files[0];
-            this.uploaded = true;
-            this.submitted = false;
-          },
-          reload() {
-            window.location.reload();
-          },
-          onCancel() {
-            window.location = '{{ route("screens.index") }}';
-          },
-          importFile() {
+          validateFile() {
+            if (!this.file) {
+              return;
+            }
+
             let formData = new FormData();
             formData.append('file', this.file);
+
+            ProcessMaker.apiClient.post(`/processes/${this.process.id}/import/translation/validation`, formData,
+              {
+                headers: {
+                  'Content-Type': 'multipart/form-data'
+                }
+              }
+            )
+            .then(response => {   
+              this.importData = response.data.importData
+              this.fileIsValid = true;
+            }).catch(error => {
+              const message = error.response?.data?.error || error.response?.data?.message || error.message;
+              ProcessMaker.alert(message, 'danger');
+            });
+          },
+          removeFile() {
+
+          },
+          onCancel() {
+            window.location = `/processes/${$processId}/edit`;
+          },
+          onImport() {
+            let formData = new FormData();
+            formData.append('file', this.file);
+            formData.append('processId', this.processId);
+
             if (this.submitted) {
               return
             }
+
             this.submitted = true;
-            ProcessMaker.apiClient.post('/screens/import',
-              formData,
+            ProcessMaker.apiClient.post(`/processes/${this.process.id}/import/translation`, formData,
               {
                 headers: {
                   'Content-Type': 'multipart/form-data'
                 }
               }
             ).then(response => {
-              if (!response.data.status) {
-                ProcessMaker.alert(this.$t('Unable to import the screen.'), 'danger');
-                return;
-              }
-              this.options = response.data.status;
-              let message = this.$t('The screen was imported.');
+              let message = this.$t('The process translation was imported correctly.');
               let variant = 'success';
-              for (let item in this.options) {
-                if (!this.options[item].success) {
-                  message = this.$t('The screen was imported, but with errors.');
-                  variant = 'warning'
-                }
-              }
               ProcessMaker.alert(message, variant);
-              this.$refs.responseImport.show();
             })
-              .catch(error => {
-                this.submitted = false;
-                ProcessMaker.alert(this.$t('Unable to import the screen.')  + (error.response.data.message ? ': ' + error.response.data.message : ''), 'danger');
-              });
-          }
+            .catch((error) => {
+              this.submitted = false;
+              ProcessMaker.alert(this.$t('Unable to import the translations.'), 'danger');
+            });
+          },
         }
       })
     </script>
+
+<style type="text/css" scoped>
+  [v-cloak] {
+      display: none;
+  }
+
+  strong {
+      font-weight: 700;
+  }
+
+  .card-body {
+      transition: all 1s;
+  }
+
+  .border-dotted {
+      border: 3px dotted #e0e0e0;
+  }
+
+  .fw-medium {
+      font-weight:500;
+  }
+</style>
 @endsection

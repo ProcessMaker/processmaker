@@ -188,7 +188,7 @@
                                         </div>
                                          @canany(['import-process-translation', 'create-process-translation'])
                                             <div class="d-flex ml-md-0 flex-column flex-md-row">
-                                                @can('import-process-templates')
+                                                @can('import-process-translation')
                                                     <div class="mb-3 mb-md-0 ml-md-2">
                                                         <a href="#" aria-label="{{ __('Import Translation') }}" id="import_translation" class="btn btn-outline-secondary w-100" @click="importTranslation">
                                                             <i class="fas fa-file-import"></i> {{__('Import')}}
@@ -501,7 +501,7 @@
             this.$bvModal.show("createProcessTranslation");
           },
           importTranslation() {
-
+            window.location = `/processes/${this.formData.id}/import/translation`
           },
         }
       });
