@@ -3,6 +3,7 @@
 namespace Tests\Model;
 
 use Mockery;
+use ProcessMaker\Exception\ScriptTimeoutException;
 use ProcessMaker\Models\Script;
 use ProcessMaker\ScriptRunners\MockRunner;
 use Tests\TestCase;
