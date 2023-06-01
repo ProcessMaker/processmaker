@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4efa02222eb3e25f2261283e545e214c",
+    "content-hash": "9276ac11e9bc1a3b489727cb5433a70c",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -328,6 +328,59 @@
                 }
             ],
             "time": "2022-08-10T22:54:19+00:00"
+        },
+        {
+            "name": "coderevolutionplugins/gpt-3-encoder-php",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/CodeRevolutionPlugins/GPT-3-Encoder-PHP.git",
+                "reference": "2c40d193c1aea4df308b370561e69374d6df7663"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/CodeRevolutionPlugins/GPT-3-Encoder-PHP/zipball/2c40d193c1aea4df308b370561e69374d6df7663",
+                "reference": "2c40d193c1aea4df308b370561e69374d6df7663",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6"
+            },
+            "default-branch": true,
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "CodeRevolution",
+                    "homepage": "https://coderevolution.ro/"
+                }
+            ],
+            "description": "PHP BPE Text Encoder/Decoder for GPT-2 / GPT-3",
+            "keywords": [
+                "GPT-2-Tokenizer",
+                "GPT-3",
+                "GPT-3-Tokenizer",
+                "decoder",
+                "encoder",
+                "gpt-2",
+                "gpt-2-simple",
+                "gpt-2-text-generation",
+                "gpt-3-prompt",
+                "gpt-3-prompts",
+                "gpt-3-text-generation",
+                "gpt3-decoder",
+                "gpt3-encoder",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/CodeRevolutionPlugins/GPT-3-Encoder-PHP/issues",
+                "source": "https://github.com/CodeRevolutionPlugins/GPT-3-Encoder-PHP",
+                "wiki": "https://github.com/CodeRevolutionPlugins/GPT-3-Encoder-PHP/wiki"
+            },
+            "time": "2023-03-14T11:28:27+00:00"
         },
         {
             "name": "composer/semver",
@@ -5504,6 +5557,7 @@
                 "issues": "https://github.com/php-http/message-factory/issues",
                 "source": "https://github.com/php-http/message-factory/tree/master"
             },
+            "abandoned": "psr/http-factory",
             "time": "2015-12-19T14:08:53+00:00"
         },
         {
@@ -13539,6 +13593,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "coderevolutionplugins/gpt-3-encoder-php": 20,
         "processmaker/laravel-i18next": 20
     },
     "prefer-stable": true,
