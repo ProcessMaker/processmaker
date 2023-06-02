@@ -56,24 +56,17 @@
 
       <!-- Show translations section -->
       <div v-if="step === 'showTranslations'">
-        <div class="row">
-          <div class="col-6">
-            <label class="mb-0">Screen</label>
-            <select-screen
-              v-model="selectedScreen"
-              :options="screensTranslations"
-              :multiple="false"
-              :aria-label="$t('Select a screen')"
-              class=""
-            />
-            <small class="text-muted">{{ $t("Select a screen from the process to review and perform translations.") }}</small>
-          </div>
-          <div class="col-6">
-            <label class="mb-0">Screen translation</label>
-            <input v-model="currentScreenTitleTranslation" class="form-control" placeholder="Current screen title translation">
-          </div>
+        <div>
+          <label class="mb-0">Screen</label>
+          <select-screen
+            v-model="selectedScreen"
+            :options="screensTranslations"
+            :multiple="false"
+            :aria-label="$t('Select a screen')"
+            class="w-50"
+          />
+          <small class="text-muted">{{ $t("Select a screen from the process to review and perform translations.") }}</small>
         </div>
-
         <div v-if="stringsWithTranslations && Object.keys(stringsWithTranslations).length !== 0">
           <translate-options-popup  @retranslate="onReTranslate"/>
         </div>
@@ -145,7 +138,6 @@ export default {
       availableLanguages: [],
       selectedLanguage: null,
       selectedScreen: null,
-      currentScreenTitleTranslation: "",
       screensTranslations: [],
       currentScreenTranslations: [],
       stringsWithTranslations: {},
@@ -194,8 +186,6 @@ export default {
           this.currentScreenTranslations.push(translations.strings[key]);
         });
       }
-
-      this.currentScreenTitleTranslation = val.translations[this.selectedLanguage.language].screen_title;
     },
 
     selectedLanguage() {

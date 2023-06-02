@@ -80,10 +80,6 @@ class ExecuteTranslationRequest implements ShouldQueue
             $screenTranslations[$this->targetLanguage['language']]['strings'] = [];
         }
 
-        if (!array_key_exists('strings', $screenTranslations[$this->targetLanguage['language']])) {
-            $screenTranslations[$this->targetLanguage['language']]['strings'] = [];
-        }
-
         $strings = $screenTranslations[$this->targetLanguage['language']]['strings'];
         // For each of the result chunkResponse translations of the screen
         foreach ($chunkResponse as $item) {
@@ -102,9 +98,7 @@ class ExecuteTranslationRequest implements ShouldQueue
             }
         }
 
-        $translatedScreenTitle = $screenTranslations[$this->targetLanguage['language']]['screen_title'];
         $screenTranslations[$this->targetLanguage['language']]['strings'] = $strings;
-        $screenTranslations[$this->targetLanguage['language']]['screen_title'] = ($translatedScreenTitle && $translatedScreenTitle !== '' ? $translatedScreenTitle : '');
         $screenTranslations[$this->targetLanguage['language']]['created_at'] = Carbon::now();
         $screenTranslations[$this->targetLanguage['language']]['updated_at'] = Carbon::now();
 

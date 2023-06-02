@@ -95,17 +95,11 @@ class ProcessTranslation
                 foreach ($screenTranslation['translations'] as $key => $translation) {
                     $createdAt = $translation['created_at'];
                     $updatedAt = $translation['updated_at'];
-                    $screenTitle = '';
-
-                    if (array_key_exists('screen_title', $translation)) {
-                        $screenTitle = $translation['screen_title'];
-                    }
 
                     // If updated is greater than existing in array, modify it with the newest
                     if (array_key_exists($key, $languages)) {
                         $createdAt = $languages[$key]['createdAt'];
                         $updatedAt = $languages[$key]['updatedAt'];
-                        $screenTitle = $languages[$key]['screen_title'];
                         if ($languages[$key]['updatedAt'] < $translation['updated_at']) {
                             $createdAt = $translation['created_at'];
                             $updatedAt = $translation['updated_at'];
@@ -118,7 +112,6 @@ class ProcessTranslation
                         'humanLanguage' => Languages::ALL[$key],
                         'createdAt' => $createdAt,
                         'updatedAt' => $updatedAt,
-                        'screen_title' => $screenTitle,
                     ];
                 }
             }
