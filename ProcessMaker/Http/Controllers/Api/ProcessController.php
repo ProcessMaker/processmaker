@@ -347,15 +347,12 @@ class ProcessController extends Controller
         if ($request->has('task_notifications')) {
             $this->saveTaskNotifications($process, $request);
         }
-        
+
         $isTemplate = Process::select('is_template')->where('id', $process->id)->value('is_template');
         if ($isTemplate) {
             try {
-                $response = (new TemplateController(new Template))->updateTemplateManifest('process', $process->id, $request);
-                
                 //Call Event to Log Template Changes
-                TemplateUpdated::dispatch([],[], true);
-                
+                TemplateUpdated::dispatch([], [], true);
                 return new Resource($process->refresh());
             } catch (\Exception $error) {
                 return ['error' => $error->getMessage()];
