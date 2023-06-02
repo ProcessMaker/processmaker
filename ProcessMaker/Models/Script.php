@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Hamcrest\Type\IsNumeric;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Contracts\ScriptInterface;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
@@ -79,9 +80,13 @@ class Script extends ProcessMakerModel implements ScriptInterface
 
     protected $casts = [
         'timeout' => 'integer',
+        'retryAttempts' => 'integer',
+        'retryWaitTime' => 'integer',
     ];
 
     private $errorHandling = [];
+
+    private $attemptedRetries = 1;
 
     /**
      * Override the default boot method to allow access to lifecycle hooks
@@ -120,6 +125,8 @@ class Script extends ProcessMakerModel implements ScriptInterface
             'description' => 'required',
             'run_as_user_id' => 'required',
             'timeout' => 'integer|min:0|max:65535',
+            'retry_attempts' => 'integer|min:0|max:65535',
+            'retry_wait_time' => 'integer|min:0|max:65535',
             'script_category_id' => [new CategoryRule($existing)],
         ];
     }
@@ -143,7 +150,29 @@ class Script extends ProcessMakerModel implements ScriptInterface
             throw new \RuntimeException('A user is required to run scripts');
         }
 
-        return $runner->run($this->code, $data, $config, $this->timeout(), $user);
+        try {
+            return $runner->run($this->code, $data, $config, $this->timeout(), $user);
+        } catch (\RuntimeException $e) {
+            Log::error($e);
+            if ($this->retryAttempts() !== null && $this->retryWaitTime() !== null) {
+                Log::error('Retry the runScript process.');
+                if ($this->attemptedRetries >= $this->retryAttempts()) {
+                    $message = "Script failed after $this->attemptedRetries attempts";
+                    Log::error($message);
+                    throw new \RuntimeException($message);
+                }
+
+                Log::error('Retry wait time after running the runScript process.');
+                sleep($this->retryWaitTime());
+                $this->attemptedRetries++;
+
+                Log::error('Initiate the execution of the runScript process.');
+                $result = $this->runScript($data, $config, $tokenId, $errorHandling);
+                Log::error('The runScript process has been finalized.');
+
+                return $result;
+            }
+        }
     }
 
     /**
@@ -318,13 +347,43 @@ class Script extends ProcessMakerModel implements ScriptInterface
         }
     }
 
+    /**
+     * This method retrieves the error number by type.
+     * In case of not finding it, -1 is returned.
+     */
+    private function getErrorHandlingNumberByType($type)
+    {
+        $result = Arr::get($this->errorHandling, $type, null);
+        if (is_numeric($result)) {
+            return (int) $result;
+        }
+        return -1;
+    }
+
+    /**
+     * Get the value of the timeout property if there hasn't been a defined error in the errorHandling array.
+     */
     private function timeout()
     {
-        $errorHandlingTimeout = Arr::get($this->errorHandling, 'timeout', null);
-        if (is_numeric($errorHandlingTimeout)) {
-            return (int) $errorHandlingTimeout;
-        }
+        $result = $this->getErrorHandlingNumberByType('timeout');
+        return $result === -1 ? $this->timeout : $result;
+    }
 
-        return $this->timeout;
+    /**
+     * Get the value of the retryAttempts property if there hasn't been a defined error in the errorHandling array.
+     */
+    private function retryAttempts()
+    {
+        $result = $this->getErrorHandlingNumberByType('retryAttempts');
+        return $result === -1 ? $this->retry_attempts : $result;
+    }
+
+    /**
+     * Get the value of the retryWaitTime property if there hasn't been a defined error in the errorHandling array.
+     */
+    private function retryWaitTime()
+    {
+        $result = $this->getErrorHandlingNumberByType('retryWaitTime');
+        return $result === -1 ? $this->retry_wait_time : $result;
     }
 }

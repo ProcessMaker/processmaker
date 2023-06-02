@@ -70,11 +70,33 @@
             name="run_as_user_id"
           ></select-user>
         </b-form-group>
-        <error-handling-settings
-          :timeout="timeout"
-          @update:timeout="timeout = $event"
+        <slider-with-input
+          :label="$t('Timeout')"
+          :description="$t('How many seconds the script should be allowed to run (0 is unlimited).')"
+          :value="timeout"
+          @input="timeout = $event"
           :error="errorState('timeout', addError) ? null : errorMessage('timeout', addError)"
-        ></error-handling-settings>
+          :min="0"
+          :max="300"
+        ></slider-with-input>
+        <slider-with-input
+          :label="$t('Retry Attempts')"
+          :description="$t('How many seconds the script should be allowed to run (0 is unlimited).')"
+          :value="retry_attempts"
+          @input="retry_attempts = $event"
+          :error="errorState('retry_attempts', addError) ? null : errorMessage('retry_attempts', addError)"
+          :min="0"
+          :max="10"
+        ></slider-with-input>
+        <slider-with-input
+          :label="$t('Retry Wait Time')"
+          :description="$t('How many seconds the script should be allowed to run (0 is unlimited).')"
+          :value="retry_wait_time"
+          @input="retry_wait_time = $event"
+          :error="errorState('retry_wait_time', addError) ? null : errorMessage('retry_wait_time', addError)"
+          :min="0"
+          :max="3600"
+        ></slider-with-input>
         <component
           v-for="(cmp,index) in createScriptHooks"
           :key="`create-script-hook-${index}`"
@@ -95,10 +117,10 @@
 
 <script>
   import { FormErrorsMixin, Modal, Required } from "SharedComponents";
-  import ErrorHandlingSettings from "../../../components/shared/ErrorHandlingSettings";
+  import SliderWithInput from "../../../components/shared/SliderWithInput";
 
   export default {
-    components: { Modal, Required, ErrorHandlingSettings },
+    components: { Modal, Required, SliderWithInput },
     mixins: [ FormErrorsMixin ],
     props: ["countCategories", "scriptExecutors"],
     data: function() {
@@ -113,6 +135,8 @@
         selectedUser: '',
         users: [],
         timeout: 60,
+        retry_attempts: 0,
+        retry_wait_time: 5,
         disabled: false,
         createScriptHooks: [],
         script: null,
@@ -127,6 +151,8 @@
         this.script_category_id = '';
         this.code = '';
         this.timeout = 60;
+        this.retry_attempts = 0;
+        this.retry_wait_time = 5;
         this.addError = {};
       },
       onSubmit() {
@@ -148,7 +174,9 @@
           script_category_id: this.script_category_id,
           run_as_user_id: this.selectedUser ? this.selectedUser.id : null,
           code: "[]",
-          timeout: this.timeout
+          timeout: this.timeout,
+          retry_attempts: this.retry_attempts,
+          retry_wait_time: this.retry_wait_time
         })
           .then(response => {
             ProcessMaker.alert(this.$t('The script was created.'), 'success');

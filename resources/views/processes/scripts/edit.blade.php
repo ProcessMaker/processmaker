@@ -72,13 +72,37 @@
                             'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}', 'required', 'aria-required' => 'true']) !!}
                             <div class="invalid-feedback" role="alert" v-if="errors.description">@{{errors.description[0]}}</div>
                         </div>
-                        
-                        <error-handling-settings
+
+                        <slider-with-input
+                            :label="$t('Timeout')"
+                            :description="$t('How many seconds the script should be allowed to run (0 is unlimited).')"
                             :error="errors.timeout ? errors.timeout[0] : null"
-                            :timeout="formData.timeout"
-                            @update:timeout="formData.timeout = $event"
-                        ></error-handling-settings>
-                        
+                            :value="formData.timeout"
+                            :min="0"
+                            :max="300"
+                            @input="formData.timeout = $event"
+                        ></slider-with-input>
+
+                        <slider-with-input
+                            :label="$t('Retry Attempts')"
+                            :description="$t('How many seconds the script should be allowed to run (0 is unlimited).')"
+                            :error="errors.retry_attempts ? errors.retry_attempts[0] : null"
+                            :value="formData.retry_attempts"
+                            :min="0"
+                            :max="10"
+                            @input="formData.retry_attempts = $event"
+                        ></slider-with-input>
+
+                        <slider-with-input
+                            :label="$t('Retry Wait Time')"
+                            :description="$t('How many seconds the script should be allowed to run (0 is unlimited).')"
+                            :error="errors.retry_wait_time ? errors.retry_wait_time[0] : null"
+                            :value="formData.retry_wait_time"
+                            :min="0"
+                            :max="3600"
+                            @input="formData.retry_wait_time = $event"
+                        ></slider-with-input>
+
                         <component
                             v-for="(cmp,index) in editScriptHooks"
                             :key="`edit-script-hook-${index}`"
@@ -122,6 +146,8 @@
               'language': null,
               'description': null,
               'timeout': null,
+              'retry_attempts': null,
+              'retry_wait_time': null,
               'status': null
             },
             editScriptHooks: [],
@@ -148,6 +174,8 @@
               description: this.formData.description,
               run_as_user_id: this.selectedUser === null ? null : this.selectedUser.id,
               timeout: this.formData.timeout,
+              retry_attempts: this.formData.retry_attempts,
+              retry_wait_time: this.formData.retry_wait_time,
               script_executor_id: this.formData.script_executor_id,
             })
               .then(response => {

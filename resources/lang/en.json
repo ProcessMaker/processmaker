@@ -1666,5 +1666,7 @@
   "Recently searched": "Recently searched",
   "The history is empty": "The history is empty",
   "Powered by ProcessMaker AI": "Powered by ProcessMaker AI",
-  "Timeout: :timeout seconds": "Timeout: :timeout seconds"
+  "Timeout: :timeout seconds": "Timeout: :timeout seconds",
+  "Retry Attempts": "Retry Attempts",
+  "Retry Wait Time": "Retry Wait Time"
 }
