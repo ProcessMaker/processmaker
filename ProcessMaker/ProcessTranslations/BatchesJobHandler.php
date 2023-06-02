@@ -5,6 +5,8 @@ namespace ProcessMaker\ProcessTranslations;
 use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
 use ProcessMaker\Ai\Handlers\LanguageTranslationHandler;
+use ProcessMaker\Ai\Handlers\ScreenTitleLanguageTranslationHandler;
+use ProcessMaker\Jobs\ExecuteScreenTitleTranslationRequest;
 use ProcessMaker\Jobs\ExecuteTranslationRequest;
 use ProcessMaker\Models\ProcessTranslationToken;
 use ProcessMaker\Models\User;
@@ -47,12 +49,14 @@ class BatchesJobHandler
      */
     public function handle()
     {
+        $screenTitleLanguageTranslationHandler = new ScreenTitleLanguageTranslationHandler();
+        $screenTitleLanguageTranslationHandler->setTargetLanguage($this->targetLanguage['humanLanguage']);
+
         $languageTranslationHandler = new LanguageTranslationHandler();
         $languageTranslationHandler->setTargetLanguage($this->targetLanguage['humanLanguage']);
         [$screensWithChunks, $chunksCount] = $this->prepareData($this->screens, $languageTranslationHandler);
 
         // Execute requests for each regular chunk
-
         $batch = Bus::batch([])
             ->then(function (Batch $batch) {
                 \Log::info('All jobs in batch completed');
@@ -79,6 +83,19 @@ class BatchesJobHandler
         // Update with real batch token ...
         ProcessTranslationToken::where('token', $this->code)->update(['token' => $batch->id]);
 
+        // Translate screen titles
+        foreach ($this->screens as $screen) {
+            $batch->add(
+                new ExecuteScreenTitleTranslationRequest(
+                    $screen,
+                    $screenTitleLanguageTranslationHandler,
+                    'screen_title',
+                    $this->targetLanguage
+                )
+            );
+        }
+
+        // Translate screen strings chunks
         foreach ($screensWithChunks as $screenId => $screenWithChunks) {
             foreach ($screenWithChunks as $chunk) {
                 $batch->add(
