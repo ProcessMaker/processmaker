@@ -5,13 +5,23 @@
         class="overflow-hidden position-relative p-0 vh-100"
         data-test="body-container"
       >
-        <ProcessMapTooltip/>
+        <ProcessMapTooltip
+          ref="tooltip"
+          v-show="showTooltip"
+          :nodeId="nodeId"
+          :style="{
+            left: newX  + 'px',
+            top: newY  + 'px'
+          }"
+        />       
         <ModelerReadonly
           ref="modeler"
           :owner="self"
           :decorations="decorations"
           @set-xml-manager="xmlManager = $event"
           @click="handleClick"
+          @highlighted-node="handleNode"
+          @click-coordinates="handleCoordinates"
         />
         
       </div>
@@ -37,6 +47,21 @@ export default {
       decorations: {
         borderOutline: {},
       },
+      onHighlightedNode: {},
+      nodeType: null,
+      nodeTypeArray: [
+        'bpmn:Task', 
+        'bpmn:ManualTask', 
+        'bpmn:SequenceFlow', 
+        'bpmn:ScriptTask', 
+        'bpmn:CallActivity'
+      ],
+      nodeId: null,
+      coordinates: {},
+      showTooltip: false,
+      recTooltip: {},
+      newX: 0,
+      newY: 0,
     };
   },
   mounted() {
@@ -54,6 +79,36 @@ export default {
     handleClick() {
       //
     },
+    handleNode(value) {
+      this.onHighlightedNode = value
+    },
+    handleCoordinates(coordinates) {
+      this.coordinates = coordinates;
+    },
+    calculateTooltipPosition() {
+      this.rectTooltip = this.$refs.tooltip.$el.getBoundingClientRect();
+      this.newY = this.coordinates.y - this.rectTooltip.height - 20;
+      if (this.newY <= 0) {
+        this.newY = 10;
+      }
+      this.newX = this.coordinates.x - (this.rectTooltip.width / 2);
+    },    
   },
+  watch: {
+    onHighlightedNode(value) {
+      this.nodeType = value.$type;
+      this.nodeId = value.id;
+      if (this.nodeTypeArray.includes(this.nodeType)) {
+        this.calculateTooltipPosition();
+        this.showTooltip = true;
+      } else 
+        this.showTooltip = false;
+    },
+    coordinates(value) {
+      if (this.showTooltip) {
+        this.calculateTooltipPosition();
+      }
+    },
+  }
 };
 </script>

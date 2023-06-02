@@ -1,7 +1,7 @@
 <template>
-    <div id="tooltip" class="card">
+    <div id="tooltip" class="card shadow-sm">
         <div class="card-body" style="padding-top: 10px; padding-bottom: 5px">
-        <p class="tooltip-title" ><span class="text-info">Submit Request Aproval</span></p>
+        <p class="tooltip-title" ><span class="text-info">{{ nodeId }}</span></p>
         <p class="tooltip-data" ><span class="tooltip-data-title">Status:</span><span class="text-secondary">Complete</span></p>
         <p class="tooltip-data" ><span class="tooltip-data-title">Completed By:</span><span class="text-secondary">UserName</span></p>
         <p class="tooltip-data" ><span class="tooltip-data-title">Time Started:</span><span class="text-secondary">11/21/23 16:51</span></p>
@@ -12,6 +12,15 @@
 <script>
 export default {
     name: "ProcessMapTooltip",
+    props: {
+      nodeId: {
+        type: String,
+        default() {
+          return '';
+        },
+      },
+
+    }
 
 }
 </script>
