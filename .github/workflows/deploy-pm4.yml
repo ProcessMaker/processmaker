@@ -92,7 +92,7 @@ jobs:
           aws-access-key-id: ${{ env.aws-access-key-id }}
           aws-secret-access-key: ${{ env.aws-secret-access-key }}
           aws-region: ${{ env.aws-region }}
-      - name: Login to Amazon ECR
+      - name: Login to Amazon ECR 
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
       - name: Deploy STM
