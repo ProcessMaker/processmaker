@@ -917,6 +917,33 @@ nav {
   }
 }
 
+//Select Template Modal Pagination styling
+.template-modal-pagination .page-link {
+  background-color: #ffffff;
+  color: #0872c2;
+  margin-top: 10px;
+
+  &:hover {
+    background: #ebeef2;
+    color: #104a75;
+    border-radius: 2px;
+  }
+}
+
+.template-modal-pagination .page-item.disabled .page-link {
+  background-color: #ffffff;
+  color: #0872c2;
+}
+
+.template-modal-pagination .page-item.active .page-link {
+  background: #0872c2;
+  color: #ffffff;
+  border-radius: 2px;
+}
+
+.prevBtn > span, .prevBtn > button {
+  padding-left: 0px !important;
+
 //styles for simple error message
 .simple-error-message-main {
   text-align: center;
@@ -935,4 +962,5 @@ nav {
 .simple-error-message-message {
   display: inline-block;
   width: 400px;
+}
 }
