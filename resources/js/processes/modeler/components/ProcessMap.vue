@@ -87,11 +87,13 @@ export default {
     },
     calculateTooltipPosition() {
       this.rectTooltip = this.$refs.tooltip.$el.getBoundingClientRect();
-      this.newY = this.coordinates.y - this.rectTooltip.height - 20;
-      if (this.newY <= 0) {
-        this.newY = 10;
+      if (this.rectTooltip.height != 0) {
+        this.newY = this.coordinates.y - this.rectTooltip.height - 20;
+        if (this.newY <= 0) {
+          this.newY = 10;
+        }
+        this.newX = this.coordinates.x - (this.rectTooltip.width / 2);
       }
-      this.newX = this.coordinates.x - (this.rectTooltip.width / 2);
     },    
   },
   watch: {
@@ -105,9 +107,7 @@ export default {
         this.showTooltip = false;
     },
     coordinates(value) {
-      if (this.showTooltip) {
-        this.calculateTooltipPosition();
-      }
+      this.calculateTooltipPosition();
     },
   }
 };
