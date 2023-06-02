@@ -11,8 +11,9 @@
 @section('breadcrumbs')
     @include('shared.breadcrumbs', ['routes' => [
       __('Designer') => route('processes.index'),
-        __('Screens') => route('screens.index'),
-        __('Import') => null,
+      __('Processes') => route('processes.index'),
+      __('Translations') => route('processes.edit', ['process' => $process->id]),
+      __('Import') => null,
     ]])
 @endsection
 @section('content')

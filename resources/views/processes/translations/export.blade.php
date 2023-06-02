@@ -12,6 +12,7 @@
     @include('shared.breadcrumbs', ['routes' => [
         __('Designer') => route('processes.index'),
         __('Processes') => route('processes.index'),
+        __('Translations') => route('processes.edit', ['process' => $process->id]),
         __('Export' . ' ' . $process->name . ' - ' . $language['humanLanguage']) => null,
     ]])
 @endsection
