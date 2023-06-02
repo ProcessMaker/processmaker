@@ -187,17 +187,8 @@ class ProcessTranslationController extends Controller
 
         $process = Process::findOrFail($processId);
         $processTranslation = new ProcessTranslation($process);
-        $importData = $processTranslation->importTranslations($payload);
+        $processTranslation->importTranslations($payload);
 
-        if (!$importData || !count($importData)) {
-            return response(
-                ['message' => __('Please verify that the file contains translations for this process.')],
-                422
-            );
-        }
-
-        return [
-            'importData' => $importData,
-        ];
+        return response()->json(['processId' => $processId], 200);
     }
 }
