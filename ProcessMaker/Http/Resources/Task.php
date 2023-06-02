@@ -66,11 +66,11 @@ class Task extends ApiResource
             // Apply translations to screen
             $process = Process::findOrFail($this->processRequest->process_id);
             $processTranslation = new ProcessTranslation($process);
-            $array['screen']['config'] = $processTranslation->applyTranslations($array['screen'], $this->processRequest->process_id);
+            $array['screen']['config'] = $processTranslation->applyTranslations($array['screen']);
 
             // Apply translations to nested screens
             foreach ($array['screen']['nested'] as &$nestedScreen) {
-                $nestedScreen['config'] = $processTranslation->applyTranslations($nestedScreen, $this->processRequest->process_id);
+                $nestedScreen['config'] = $processTranslation->applyTranslations($nestedScreen);
             }
         }
 

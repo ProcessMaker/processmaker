@@ -46,7 +46,7 @@
               :actions="actions"
               :permission="permission"
               :data="item"
-              :divider="true"
+              :divider="false"
               @navigate="onNavigate"
             />
           </td>
@@ -105,9 +105,6 @@ export default {
         },
       ],
       actionsInProgress: [
-        {
-          value: "retry-translation", content: "Retry Translation", link: false, href: "", permission: "edit-process-translation", icon: "fas fa-redo",
-        },  
         {
           value: "delete-translation", content: "Delete Translation", permission: "delete-process-translation", icon: "fas fa-trash",
         },

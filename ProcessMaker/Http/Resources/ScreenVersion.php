@@ -2,8 +2,10 @@
 
 namespace ProcessMaker\Http\Resources;
 
-use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\ProcessTranslations\ProcessTranslation;
+use ProcessMaker\ProcessTranslations\ScreenTranslation;
 
 class ScreenVersion extends ApiResource
 {
@@ -32,6 +34,17 @@ class ScreenVersion extends ApiResource
                 $nested[] = $nestedScreen->versionFor($processRequest)->toArray();
             }
             $screenVersion['nested'] = $nested;
+        }
+
+        // If web entry, apply translations
+        if (!$task) {
+            // Apply translations to screen
+            $screenTranslation = new ScreenTranslation($screenVersion);
+            $screenVersion['config'] = $screenTranslation->applyTranslations($screenVersion);
+            // Apply translations to nested screens
+            foreach ($screenVersion['nested'] as &$nestedScreen) {
+                $nestedScreen['config'] = $screenTranslation->applyTranslations($nestedScreen);
+            }
         }
 
         return $screenVersion;
