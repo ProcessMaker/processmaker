@@ -39,6 +39,12 @@
                   @click="switchTab('pending')" href="#pending" role="tab" aria-controls="pending"
                   aria-selected="true">{{ __('Tasks') }}</a>
               </li>
+              <li class="nav-item">
+                <a class="nav-link" id="overview-tab" data-toggle="tab" href="#overview" role="tab"
+                  aria-controls="overview" aria-selected="false" @click="switchTab('overview')">
+                  {{ __('Overview') }}
+                </a>
+              </li>
               <li class="nav-item" v-if="showSummary">
                 <a id="summary-tab" data-toggle="tab" href="#summary" role="tab" aria-controls="summary"
                   @click="switchTab('summary')" aria-selected="false"
@@ -81,12 +87,6 @@
                 <a class="nav-link" id="forms-tab" data-toggle="tab" href="#forms" role="tab" aria-controls="forms"
                   aria-selected="false" @click="switchTab('forms')">
                   {{ __('Forms') }}
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" id="overview-tab" data-toggle="tab" href="#overview" role="tab"
-                  aria-controls="forms" aria-selected="false" @click="switchTab('overview')">
-                  {{ __('Overview') }}
                 </a>
               </li>
               @isset($addons)
