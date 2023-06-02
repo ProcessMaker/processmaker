@@ -480,6 +480,7 @@ class ProcessTranslation
         $screens = [];
         foreach ($payload as $screenUuid => $value) {
             $screen = Screen::where('uuid', $screenUuid)->first();
+            $newScreenTranslations = [];
             if ($screen) {
                 $screenTranslations = $screen->translations;
                 $availableStrings = $this->getStringsInScreen($screen);
@@ -489,37 +490,67 @@ class ProcessTranslation
                         $screenTranslations[$languageCode]['strings'] = [];
                     }
 
-                    foreach ($translations as $importedTranslation) {
-                        // $found = false;
-                        foreach ($availableStrings as $availableString) {
-                            if ($availableString === $importedTranslation['key']) {
-                            }
-                        }
-                        foreach ($screenTranslations[$languageCode]['strings'] as &$translation) {
-                            if ($translation['key'] === $importedTranslation['key']) {
-                                $translation['string'] = $importedTranslation['string'];
-                                // $found = true;
+                    $newTranslations = [];
+                    // For each of the available elements in the screens
+                    foreach ($availableStrings as $availableString) {
+                        // We need to check if there are current translations in the translation
+                        // column (old translations) for that available string
+                        $foundOld = false;
+                        foreach ($screenTranslations[$languageCode]['strings'] as $inDbTranslation) {
+                            if ($availableString === $inDbTranslation['key']) {
+                                $foundOld = true;
+                                $oldTranslation = [
+                                    'key' => $inDbTranslation['key'],
+                                    'string' => $inDbTranslation['string'],
+                                ];
                             }
                         }
 
-                        /**
-                         * Should only add for the elements in the screens. If there are some translation in the file
-                         * for a field that does not exist in the screen should not add it. I.E. If we don't have the field
-                         * "First name" in the screen but we have a key "First name" in the importing file, should not add
-                         * the translation
-                         * */
-                        // if (!$found) {
-                        //     $screenTranslations[$languageCode]['strings'][] = [
-                        //         'key' => $importedTranslation['key'],
-                        //         'string' => $importedTranslation['string'],
-                        //     ];
-                        // }
+                        // We need to check if there are some translation in the translation file
+                        // for that available string
+                        $foundInFile = false;
+                        foreach ($translations as $importedTranslation) {
+                            if ($availableString === $importedTranslation['key']) {
+                                $foundInFile = true;
+                                $inFileTranslation = [
+                                    'key' => $importedTranslation['key'],
+                                    'string' => $importedTranslation['string'],
+                                ];
+                            }
+                        }
+
+                        if ($foundOld && !$foundInFile) {
+                            $newTranslations[] = $oldTranslation;
+                        }
+
+                        if (!$foundOld && $foundInFile) {
+                            $newTranslations[] = $inFileTranslation;
+                        }
+
+                        if ($foundOld && $foundInFile && $inFileTranslation['string'] === '') {
+                            $newTranslations[] = $inFileTranslation;
+                        }
+
+                        if ($foundOld && $foundInFile && $inFileTranslation['string'] === null) {
+                            $newTranslations[] = $oldTranslation;
+                        }
+
+                        if ($foundOld && $foundInFile && $inFileTranslation['string'] && $inFileTranslation['string'] !== '') {
+                            $newTranslations[] = $inFileTranslation;
+                        }
+                    }
+
+                    // Assign new translations to language in screen
+                    // $newScreenTranslations[$languageCode]['strings'] = $newTranslations;
+                    foreach ($screenTranslations as $language => $translations) {
+                        if ($language === $languageCode) {
+                            $screenTranslations[$languageCode]['strings'] = $newTranslations;
+                        }
                     }
                 }
+                $screen->translations = $screenTranslations;
+                $screen->save();
             }
-            dd($screenTranslations);
         }
-
-        dd($screenTranslations);
     }
 }
