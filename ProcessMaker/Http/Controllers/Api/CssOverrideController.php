@@ -90,9 +90,14 @@ class CssOverrideController extends Controller
 
         $request->validate(Setting::rules($setting));
         $setting->fill($request->input());
-        $original = array_intersect_key($setting->getOriginal(), $setting->getDirty())['config'];
-        $setting->saveOrFail();
 
+        $original = array_intersect_key($setting->getOriginal(), $setting->getDirty());
+        if (isset($original['config'])) {
+            $original = $original['config'];
+        }
+        
+        $setting->saveOrFail();
+        
         $footer = $this->setLoginFooter($request);
         $altText = $this->setAltText($request);
 
