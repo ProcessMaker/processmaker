@@ -92,9 +92,6 @@ class CssOverrideController extends Controller
         $setting->fill($request->input());
 
         $original = array_intersect_key($setting->getOriginal(), $setting->getDirty());
-        if (isset($original['config'])) {
-            $original = $original['config'];
-        }
         
         $setting->saveOrFail();
         
