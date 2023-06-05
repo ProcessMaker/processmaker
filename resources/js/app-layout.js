@@ -168,9 +168,6 @@ window.ProcessMaker.alert = function (msg, variant, showValue = 5, stayNextScree
     // Just show it indefinitely, no countdown
     showValue = true;
   }
-  /*if (msgLink) {
-
-  }*/
   // amount of items allowed in array
   if (ProcessMaker.navbar.alerts.length > 5) {
     ProcessMaker.navbar.alerts.shift();
