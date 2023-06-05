@@ -36,6 +36,9 @@ class EventServiceProvider extends ServiceProvider
         'ProcessMaker\Events\AuthClientDeleted' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
+        'ProcessMaker\Events\CustomizeUiUpdated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
         'ProcessMaker\Events\EnvironmentVariablesCreated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],

@@ -39,14 +39,12 @@
             @component('processes.list', ['config' => $listConfig])
             @endcomponent
         @endslot
-
        
         @slot('templatesList')
             @component('templates.list', ['config' => $listTemplates])
             @endcomponent
         @endslot
     
-
         @slot('categoryList')
             @component('categories.list', ['config' => $catConfig])
             @endcomponent
