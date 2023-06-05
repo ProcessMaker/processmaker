@@ -6,14 +6,14 @@
         data-test="body-container"
       >
         <ProcessMapTooltip
-          ref="tooltip"
           v-show="showTooltip"
-          :nodeId="nodeId"
+          ref="tooltip"
+          :node-id="nodeId"
           :style="{
-            left: newX  + 'px',
-            top: newY  + 'px'
+            left: newX + 'px',
+            top: newY + 'px'
           }"
-        />       
+        />
         <ModelerReadonly
           ref="modeler"
           :owner="self"
@@ -23,7 +23,6 @@
           @highlighted-node="handleNode"
           @click-coordinates="handleCoordinates"
         />
-        
       </div>
     </div>
   </div>
@@ -37,7 +36,7 @@ export default {
   name: "ProcessMap",
   components: {
     ModelerReadonly,
-    ProcessMapTooltip
+    ProcessMapTooltip,
   },
   data() {
     return {
@@ -50,11 +49,11 @@ export default {
       onHighlightedNode: {},
       nodeType: null,
       nodeTypeArray: [
-        'bpmn:Task', 
-        'bpmn:ManualTask', 
-        'bpmn:SequenceFlow', 
-        'bpmn:ScriptTask', 
-        'bpmn:CallActivity'
+        "bpmn:Task",
+        "bpmn:ManualTask",
+        "bpmn:SequenceFlow",
+        "bpmn:ScriptTask",
+        "bpmn:CallActivity",
       ],
       nodeId: null,
       coordinates: {},
@@ -63,6 +62,19 @@ export default {
       newX: 0,
       newY: 0,
     };
+  },
+  watch: {
+    onHighlightedNode(value) {
+      this.nodeType = value.$type;
+      this.nodeId = value.id;
+      if (this.nodeTypeArray.includes(this.nodeType)) {
+        this.calculateTooltipPosition();
+        this.showTooltip = true;
+      } else this.showTooltip = false;
+    },
+    coordinates() {
+      this.calculateTooltipPosition();
+    },
   },
   mounted() {
     ProcessMaker.$modeler = this.$refs.modeler;
@@ -80,35 +92,21 @@ export default {
       //
     },
     handleNode(value) {
-      this.onHighlightedNode = value
+      this.onHighlightedNode = value;
     },
     handleCoordinates(coordinates) {
       this.coordinates = coordinates;
     },
     calculateTooltipPosition() {
       this.rectTooltip = this.$refs.tooltip.$el.getBoundingClientRect();
-      if (this.rectTooltip.height != 0) {
+      if (this.rectTooltip.height !== 0) {
         this.newY = this.coordinates.y - this.rectTooltip.height - 20;
         if (this.newY <= 0) {
           this.newY = 10;
         }
         this.newX = this.coordinates.x - (this.rectTooltip.width / 2);
       }
-    },    
+    },
   },
-  watch: {
-    onHighlightedNode(value) {
-      this.nodeType = value.$type;
-      this.nodeId = value.id;
-      if (this.nodeTypeArray.includes(this.nodeType)) {
-        this.calculateTooltipPosition();
-        this.showTooltip = true;
-      } else 
-        this.showTooltip = false;
-    },
-    coordinates(value) {
-      this.calculateTooltipPosition();
-    },
-  }
 };
 </script>
