@@ -97,7 +97,7 @@ const uniqIdsMixin = createUniqIdsMixin();
 export default {
   components: { EllipsisMenu },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
-  props: ["filter", "id", "permission"],
+  props: ["filter", "id", "permission", "pmql"],
   data() {
     return {
       actions: [
@@ -269,30 +269,68 @@ export default {
     }
   },
     fetch() {
-      this.loading = true;
-      //change method sort by slot name
-      this.orderBy = this.orderBy === "__slot:title" ? "title" : this.orderBy;
-      // Load from our api client
-      ProcessMaker.apiClient
-        .get(
-          "screens" +
+
+      Vue.nextTick(() => {
+
+        if (this.cancelToken) {
+          this.cancelToken();
+          this.cancelToken = null;
+        }
+        const CancelToken = ProcessMaker.apiClient.CancelToken;
+
+        this.loading = true;
+
+        let pmql = "";
+        if (this.pmql !== undefined) {
+          pmql = this.pmql;
+        }
+
+        let filter = this.filter;
+
+        if (filter && filter.length) {
+          if (filter.isPMQL()) {
+            pmql = `(${pmql}) and (${filter})`;
+            filter = "";
+          }
+        }
+
+        //change method sort by slot name
+        this.orderBy = this.orderBy === "__slot:title" ? "title" : this.orderBy;
+        // Load from our api client
+        ProcessMaker.apiClient
+          .get(
+            "screens" +
             "?page=" +
             this.page +
             "&per_page=" +
             this.perPage +
+            "&pmql=" +
+            encodeURIComponent(pmql) +
             "&filter=" +
-            this.filter +
+            filter +
             "&order_by=" +
             this.orderBy +
             "&order_direction=" +
             this.orderDirection +
             "&include=categories,category" +
-            "&exclude=config"
-    )
-        .then(response => {
-          this.data = this.transform(response.data);
-          this.loading = false;
-        });
+            "&exclude=config",
+            {
+              cancelToken: new CancelToken(c => {
+                this.cancelToken = c;
+              }),
+            },
+          )
+          .then(response => {
+            this.data = this.transform(response.data);
+            this.loading = false;
+          }).catch(error => {
+            if (error.code === "ERR_CANCELED") {
+              return;
+            }
+            window.ProcessMaker.alert(error.response.data.message, "danger");
+            this.data = [];
+          });
+      });
     },
   },
 

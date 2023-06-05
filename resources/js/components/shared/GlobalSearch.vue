@@ -194,6 +194,10 @@ export default {
         return `Home / ${this.capitalize(item.type)} / ${item.response.collection.name}`;
       }
 
+      if (item.type === "screens" || item.type === "scripts") {
+        return `Home / Designer / ${this.capitalize(item.type)}`;
+      }
+
       if (!item.type || item.type === "") {
         return "";
       }
@@ -218,6 +222,10 @@ export default {
         return `/${item.type}/all`;
       }
 
+      if (item.type === "screens" || item.type === "scripts") {
+        return `/designer/${item.type}`;
+      }
+
       return `/${item.type}`;
     },
     capitalize(str) {
@@ -230,6 +238,9 @@ export default {
       this.expanded = false;
     },
     getContext() {
+      if (window.location.pathname.split("/")[1] === "designer") {
+        return window.location.pathname.split("/")[2];
+      }
       return window.location.pathname.split("/")[1];
     },
     onInput() {

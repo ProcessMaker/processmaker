@@ -2,14 +2,17 @@
         <div id="search-bar" class="search mb-3" vcloak>
             <div class="d-flex flex-column flex-md-row">
                 <div class="flex-grow-1">
-                    <div id="search" class="mb-3 mb-md-0">
-                        <div class="input-group w-100">
-                            <input id="search-box" v-model="filter" class="form-control" placeholder="{{__('Search')}}"  aria-label="{{__('Search')}}" data-cy="input-search">
-                            <div class="input-group-append">
-                                <button type="button" class="btn btn-primary" aria-label="{{__('Search')}}"><i class="fas fa-search"></i></button>
-                            </div>
-                        </div>
-                    </div>
+                    <pmql-input
+                      id="search-box"
+                      ref="pmql_input"
+                      search-type="screens"
+                      :value="filter"
+                      :url-pmql="urlPmql"
+                      :ai-enabled="false"
+                      :show-filters="false"
+                      :aria-label="$t('Search')"
+                      @submit="onNLQConversion">
+                    </pmql-input>
                 </div>
                 @canany(['import-screens', 'create-screens'])
                     <div class="d-flex ml-md-0 flex-column flex-md-row">
@@ -33,6 +36,7 @@
 
         <screen-listing ref="screenListing"
                         :filter="filter"
+                        :pmql="pmql"
                         :permission="{{ \Auth::user()->hasPermissionsFor('screens') }}"
                         v-on:reload="reload">
         </screen-listing>

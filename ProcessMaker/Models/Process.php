@@ -1609,7 +1609,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     }
 
      /**
-      * Filter settings with a string
+      * Filter process with a string
       *
       * @param $query
       *

@@ -13,8 +13,14 @@ new Vue({
   },
   data: {
     filter: "",
+    pmql: "",
+    urlPmql: "",
     screenModal: false,
     screenId: null,
+  },
+  created() {
+    const urlParams = new URLSearchParams(window.location.search);
+    this.urlPmql = urlParams.get("pmql");
   },
   methods: {
     goToImport() {
@@ -23,6 +29,13 @@ new Vue({
     show() {
       this.screenId = null;
       this.screenModal = true;
+    },
+    onNLQConversion(query) {
+      this.onChange(query);
+      this.reload();
+    },
+    onChange(query) {
+      this.pmql = query;
     },
     reload() {
       this.$refs.screenListing.dataManager([

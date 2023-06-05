@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Assets\ScreensInScreen;
 use ProcessMaker\Contracts\ScreenInterface;
@@ -213,6 +214,56 @@ class Screen extends ProcessMakerModel implements ScreenInterface
     }
 
     /**
+     * @return string
+     */
+    public function fieldAliasName()
+    {
+        return 'screens.title';
+    }
+
+    /**
+     * @return string
+     */
+    public function fieldAliasStatus()
+    {
+        return 'screens.status';
+    }
+
+    /**
+     * PMQL value alias for category field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasCategory($value, $expression)
+    {
+        return function ($query) use ($value, $expression) {
+            $categoryAssignment = DB::table('category_assignments')->leftJoin('screen_categories', function ($join) {
+                $join->on('screen_categories.id', '=', 'category_assignments.category_id');
+                $join->where('category_assignments.category_type', '=', ScreenCategory::class);
+                $join->where('category_assignments.assignable_type', '=', self::class);
+            })
+            ->where('name', $expression->operator, $value);
+            $query->whereIn('screens.id', $categoryAssignment->pluck('assignable_id'));
+        };
+    }
+
+    /**
+     * PMQL value alias for fulltext field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasFullText($value, $expression)
+    {
+        return function ($query) use ($value) {
+            $this->scopeFilter($query, $value);
+        };
+    }
+
+    /**
      * Get a recursive list of nested screens IDs in this screen
      *
      * @return int[] nested screen IDs
@@ -227,5 +278,50 @@ class Screen extends ProcessMakerModel implements ScreenInterface
         }
 
         return $screenIds;
+    }
+
+    /**
+     * Filter screen with a string
+     *
+     * @param $query
+     *
+     * @param $filter string
+     */
+    public function scopeFilter($query, $filterStr)
+    {
+        $filter = '%' . $filterStr . '%';
+        $query->where(function ($query) use ($filter) {
+            $query->where('title', 'like', $filter)
+                ->orWhere('description', 'like', $filter)
+                ->orWhereIn('screens.id', function ($qry) use ($filter) {
+                    $qry->select('assignable_id')
+                        ->from('category_assignments')
+                        ->leftJoin('screen_categories', function ($join) {
+                            $join->on('screen_categories.id', '=', 'category_assignments.category_id');
+                            $join->where('category_assignments.category_type', '=', ScreenCategory::class);
+                            $join->where('category_assignments.assignable_type', '=', self::class);
+                        })
+                        ->where('screen_categories.name', 'like', $filter);
+                });
+        });
+
+        return $query;
+    }
+
+    /**
+     * Filter screen with a string for select lists
+     *
+     * @param $query
+     *
+     * @param $filter string
+     */
+    public function scopeFilterForSelectList($query, $filterStr)
+    {
+        $filter = '%' . $filterStr . '%';
+        $query->where(function ($query) use ($filter) {
+            $query->where('title', 'like', $filter);
+        });
+
+        return $query;
     }
 }

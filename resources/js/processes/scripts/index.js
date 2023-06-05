@@ -13,6 +13,12 @@ new Vue({
   },
   data: {
     filter: "",
+    pmql: "",
+    urlPmql: "",
+  },
+  created() {
+    const urlParams = new URLSearchParams(window.location.search);
+    this.urlPmql = urlParams.get("pmql");
   },
   methods: {
     __(variable) {
@@ -24,6 +30,13 @@ new Vue({
           ProcessMaker.alert(this.$t("The script was deleted."), "success");
           this.reload();
         });
+    },
+    onNLQConversion(query) {
+      this.onChange(query);
+      this.reload();
+    },
+    onChange(query) {
+      this.pmql = query;
     },
     reload() {
       this.$refs.listScript.fetch();

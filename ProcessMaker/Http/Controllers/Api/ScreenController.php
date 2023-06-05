@@ -101,28 +101,13 @@ class ScreenController extends Controller
         $filter = $request->input('filter', '');
         $isSelectList = $request->input('selectList', '');
         if (!empty($filter)) {
-            $filter = '%' . $filter . '%';
             if (!$isSelectList) {
-                $query->where(function ($query) use ($filter) {
-                    $query->where('title', 'like', $filter)
-                        ->orWhere('description', 'like', $filter)
-                        ->orWhereIn('screens.id', function ($qry) use ($filter) {
-                            $qry->select('assignable_id')
-                                ->from('category_assignments')
-                                ->leftJoin('screen_categories', function ($join) {
-                                    $join->on('screen_categories.id', '=', 'category_assignments.category_id');
-                                    $join->where('category_assignments.category_type', '=', ScreenCategory::class);
-                                    $join->where('category_assignments.assignable_type', '=', Screen::class);
-                                })
-                                ->where('screen_categories.name', 'like', $filter);
-                        });
-                });
+                $query->filter($filter);
             } else {
-                $query->where(function ($query) use ($filter) {
-                    $query->where('title', 'like', $filter);
-                });
+                $query->filterForSelectList($filter);
             }
         }
+
         $interactive = filter_var($request->input('interactive'), FILTER_VALIDATE_BOOLEAN);
         if ($interactive) {
             $screens = ScreenType::where('is_interactive', $interactive)->get('name');
