@@ -14,7 +14,6 @@
           <b-col>
             <required></required>
             <div v-html="descriptionText" class="my-3"></div>
-            <p class="mb-3" v-if="showWarning"><i class="fas fa-exclamation-triangle text-warning"></i> {{ assetExistsError }}</p>
             <b-form-group
               required
               :label="$t('PM Block Name')"
@@ -94,14 +93,8 @@ export default {
       title() {
         return this.$t('Publish PM Block');
       },
-      assetExistsError() {
-          const capFirst = this.assetType[0].toUpperCase();
-          const reset =  this.assetType.slice(1);
-          const asset = capFirst + reset;
-          return asset + ' PM Block with the same name already exists';
-      },
       descriptionText() {
-        return this.$t('This will create a PM Block based on the {{assetName}} {{assetType}}', {assetName: this.assetName, assetType: this.assetType});
+        return this.$t('This will create a PM Block based on the {{assetName}} Process', {assetName: this.assetName});
       }
     },
     watch: {
@@ -135,7 +128,6 @@ export default {
         formData.append("description", this.description);
         formData.append("user_id", this.currentUserId);
         formData.append("pm_block_category_id", this.pm_block_category_id);
-        console.log(formData);
         ProcessMaker.apiClient.post("pm-blocks/store", formData)
         .then(response => {
           ProcessMaker.alert(this.$t("PM Block successfully created"), "success");
@@ -144,11 +136,6 @@ export default {
           this.errors = error.response.data;
           if (this.errors.hasOwnProperty('errors')) {
             this.errors = this.errors.errors;
-          } else if (_.includes(this.errors.name, 'The template name must be unique.')) {
-            this.showWarning = true;
-            this.toggleButtons();
-            this.existingAssetId = error.response.data.id;
-            this.existingAssetName = error.response.data.templateName;
           } else {
             const message = error.response.data.error;
             ProcessMaker.alert(this.$t(message), "danger");
@@ -157,60 +144,28 @@ export default {
       },  
       toggleButtons() {
         this.customModalButtons[1].hidden = !this.customModalButtons[1].hidden;
-        this.customModalButtons[2].hidden = !this.customModalButtons[2].hidden;
-        this.customModalButtons[3].hidden = !this.customModalButtons[3].hidden;
       },
       validateDescription() {
         if (!_.isEmpty(this.description) && !_.isEmpty(this.name)) {
           this.customModalButtons[1].disabled = false;
-          if (this.showWarning) {
-            if (this.name !== this.existingAssetName) {
-              this.customModalButtons[2].disabled = true;
-              this.customModalButtons[3].disabled = false;  
-            } else {
-              this.customModalButtons[2].disabled = false;
-              this.customModalButtons[3].disabled = true;
-            }
-          }
         } else {
           this.customModalButtons[1].disabled = true;
-          if (this.showWarning) {
-            this.customModalButtons[2].disabled = true;
-            if (this.showWarning) {
-              this.customModalButtons[2].disabled = true;
-              this.customModalButtons[3].disabled = false;  
-            } else {
-              this.customModalButtons[2].disabled = false;
-              this.customModalButtons[3].disabled = true;
-            }
-          }
+        }
+        if (this.description.length > 255) {
+          this.errors.description = ['Description must be less than 255 characters.'];
+          this.customModalButtons[1].disabled = true;
+        } else {
+          this.errors.description = null;
         }
       },
       validateName(newName, oldName) {
         if (!_.isEmpty(this.name) && !_.isEmpty(this.description)) {
           this.customModalButtons[1].disabled = false;         
-          if (this.showWarning) {
-            if (newName !== oldName && newName !== this.existingAssetName) {
-              this.customModalButtons[2].disabled = true;
-              this.customModalButtons[3].disabled = false;
-            } else {
-              this.customModalButtons[2].disabled = false;
-              this.customModalButtons[3].disabled = true;
-            }
-          }
-        } else {
-          this.customModalButtons[1].disabled = true;
-  
-          if (this.showWarning) {
-            this.customModalButtons[2].disabled = true;
-            this.customModalButtons[3].disabled = true;
-          }
-        }
+        }  
         if (this.name.length > 255) {
           this.errors.name = ['Name must be less than 255 characters.'];
           this.customModalButtons[1].disabled = true;
-          this.customModalButtons[3].disabled = true;
-        }else {
+        } else {
           this.errors.name = null;
         }
       }
