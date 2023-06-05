@@ -333,7 +333,6 @@ if (userID) {
         }
       })
       .listen('.SecurityLogDownloadJobCompleted', (e) => {
-        console.log(e);
         if (e.success) {
           const link = e.link;
           const message = e.message;
