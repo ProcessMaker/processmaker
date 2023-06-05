@@ -18,6 +18,8 @@
           ref="modeler"
           :owner="self"
           :decorations="decorations"
+          :request-completed-nodes="requestCompletedNodes"
+          :request-in-progress-nodes="requestInProgressNodes"
           @set-xml-manager="xmlManager = $event"
           @click="handleClick"
         />
@@ -39,6 +41,7 @@ export default {
   data() {
     return {
       self: this,
+      validationBar: [],
       process: window.ProcessMaker.modeler.process,
       xmlManager: null,
       decorations: {
@@ -58,11 +61,12 @@ export default {
         newX: 0,
         newY: 0,
       },
+      requestCompletedNodes: window.ProcessMaker.modeler.requestCompletedNodes,
+      requestInProgressNodes: window.ProcessMaker.modeler.requestInProgressNodes,
     };
   },
   mounted() {
     ProcessMaker.$modeler = this.$refs.modeler;
-    window.ProcessMaker.EventBus.$emit("modeler-app-init", this);
   },
   methods: {
     refreshSession: _.throttle(() => {

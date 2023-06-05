@@ -18,17 +18,21 @@
       top: 70px;
       right: 35px;
     }
+
     .map-legend-body {
       padding-top: 0px;
       padding-bottom: 0px;
       padding-left: 5px;
     }
+
     .map-legend-label {
       font-weight: bold;
     }
+
     .map-legend-label-margin {
       margin-bottom: 1rem !important;
     }
+
     .line {
       width: 25px;
       height: 30px;
@@ -37,10 +41,12 @@
       border-right-width: 3px;
       transform: rotate(45deg);
     }
+
     .in-progress-line {
       border-right-style: dashed;
       border-right-color: #00875A;
     }
+
     .completed-line {
       border-right-style: solid;
       border-right-color: #5faaee;

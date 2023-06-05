@@ -11,10 +11,12 @@
   >
     <template v-if="customButton" #button-content>
       <i
-        class="pr-1 ellipsis-menu-icon"
+        class="pr-1 ellipsis-menu-icon no-padding"
         :class="customButton.icon"
       />
-      <span>{{ customButton.content }}</span>
+      <span>
+        {{ customButton.content }} <b v-if="showProgress"> {{ data.batchInfo.progress }}%</b>
+      </span>
     </template>
     <template v-else #button-content>
       <i class="fas fa-ellipsis-h ellipsis-menu-icon" />
@@ -80,7 +82,7 @@ export default {
   components: { },
   filters: { },
   mixins: [],
-  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "customButton"],
+  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "customButton", "showProgress"],
   data() {
     return {
       active: false,
@@ -162,4 +164,7 @@ export default {
     margin-left: -15px;
 }
 
+.ellipsis-menu-icon.no-padding {
+  padding: 0 !important;
+}
 </style>
