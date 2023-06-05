@@ -118,6 +118,7 @@ window.ProcessMaker.navbar = new Vue({
       this.saveLocalAlerts(this.alerts);
     },
     alertDismissed(alert) {
+      //debugger;
       alert.alertShow = 0;
       const index = this.alerts.indexOf(alert);
       let copy = _.cloneDeep(this.alerts);
@@ -162,17 +163,21 @@ window.ProcessMaker.breadcrumbs = window.ProcessMaker.navbar;
 
 // Set our own specific alert function at the ProcessMaker global object that could
 // potentially be overwritten by some custom theme support
-window.ProcessMaker.alert = function (msg, variant, showValue = 5, stayNextScreen = false, showLoader = false) {
+window.ProcessMaker.alert = function (msg, variant, showValue = 5, stayNextScreen = false, showLoader = false, msgLink = "") {
   if (showValue === 0) {
     // Just show it indefinitely, no countdown
     showValue = true;
   }
+  /*if (msgLink) {
+
+  }*/
   // amount of items allowed in array
   if (ProcessMaker.navbar.alerts.length > 5) {
     ProcessMaker.navbar.alerts.shift();
   }
   ProcessMaker.navbar.alerts.push({
     alertText: msg,
+    alertLink: msgLink,
     alertShow: showValue,
     alertVariant: String(variant),
     showLoader: showLoader,

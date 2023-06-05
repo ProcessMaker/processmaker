@@ -331,6 +331,16 @@ if (userID) {
             }
           }, 100);
         }
+      })
+      .listen('.SecurityLogDownloadJobCompleted', (e) => {
+        console.log(e);
+        if (e.success) {
+          const link = e.link;
+          const message = e.message;
+          window.ProcessMaker.alert(message, "success", 0, false, false, link);
+        } else {
+          window.ProcessMaker.alert(e.message, "warning");
+        }
       });
 }
 
