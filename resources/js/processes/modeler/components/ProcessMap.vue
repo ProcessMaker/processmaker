@@ -6,12 +6,12 @@
         data-test="body-container"
       >
         <ProcessMapTooltip
-          v-show="showTooltip"
+          v-show="tooltip.isActive"
           ref="tooltip"
-          :node-id="nodeId"
+          :node-id="tooltip.nodeId"
           :style="{
-            left: newX + 'px',
-            top: newY + 'px'
+            left: `${tooltip.newX}px`,
+            top: `${tooltip.newY}px`
           }"
         />
         <ModelerReadonly
@@ -20,8 +20,6 @@
           :decorations="decorations"
           @set-xml-manager="xmlManager = $event"
           @click="handleClick"
-          @highlighted-node="handleNode"
-          @click-coordinates="handleCoordinates"
         />
       </div>
     </div>
@@ -46,35 +44,21 @@ export default {
       decorations: {
         borderOutline: {},
       },
-      onHighlightedNode: {},
-      nodeType: null,
-      nodeTypeArray: [
-        "bpmn:Task",
-        "bpmn:ManualTask",
-        "bpmn:SequenceFlow",
-        "bpmn:ScriptTask",
-        "bpmn:CallActivity",
-      ],
-      nodeId: null,
-      coordinates: {},
-      showTooltip: false,
-      recTooltip: {},
-      newX: 0,
-      newY: 0,
+      tooltip: {
+        isActive: false,
+        nodeId: null,
+        allowedNodes: [
+          "bpmn:Task",
+          "bpmn:ManualTask",
+          "bpmn:SequenceFlow",
+          "bpmn:ScriptTask",
+          "bpmn:CallActivity",
+        ],
+        coordinates: { x: 0, y: 0 },
+        newX: 0,
+        newY: 0,
+      },
     };
-  },
-  watch: {
-    onHighlightedNode(value) {
-      this.nodeType = value.$type;
-      this.nodeId = value.id;
-      if (this.nodeTypeArray.includes(this.nodeType)) {
-        this.calculateTooltipPosition();
-        this.showTooltip = true;
-      } else this.showTooltip = false;
-    },
-    coordinates() {
-      this.calculateTooltipPosition();
-    },
   },
   mounted() {
     ProcessMaker.$modeler = this.$refs.modeler;
@@ -88,23 +72,32 @@ export default {
         baseURL: "/",
       });
     }, 60000),
-    handleClick() {
-      //
+    handleClick(payload) {
+      this.setupTooltip(payload);
     },
-    handleNode(value) {
-      this.onHighlightedNode = value;
-    },
-    handleCoordinates(coordinates) {
-      this.coordinates = coordinates;
+    setupTooltip({ event, node }) {
+      this.tooltip.isActive = false;
+      const isNodeTooltipAllowed = this.tooltip.allowedNodes.includes(node.$type);
+      if (isNodeTooltipAllowed) {
+        this.tooltip.nodeId = node.id;
+        this.tooltip.isActive = true;
+        this.$nextTick(() => {
+          this.tooltip.coordinates = { x: event.clientX, y: event.clientY };
+          this.calculateTooltipPosition();
+        });
+      }
     },
     calculateTooltipPosition() {
       this.rectTooltip = this.$refs.tooltip.$el.getBoundingClientRect();
-      if (this.rectTooltip.height !== 0) {
-        this.newY = this.coordinates.y - this.rectTooltip.height - 20;
-        if (this.newY <= 0) {
-          this.newY = 10;
-        }
-        this.newX = this.coordinates.x - (this.rectTooltip.width / 2);
+      this.tooltip.newY = this.tooltip.coordinates.y - this.rectTooltip.height - 20;
+      if (this.tooltip.newY <= 0) {
+        this.tooltip.newY = 10;
+      }
+      this.tooltip.newX = this.tooltip.coordinates.x - (this.rectTooltip.width / 2);
+      if (this.tooltip.newX < 0) {
+        this.tooltip.newX = 0;
+      } else if (this.tooltip.newX + this.rectTooltip.width > window.innerWidth) {
+        this.tooltip.newX = window.innerWidth - this.rectTooltip.width;
       }
     },
   },
