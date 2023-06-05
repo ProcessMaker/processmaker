@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
+use ProcessMaker\Events\CustomizeUiUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Jobs\CompileSass;
@@ -89,14 +90,24 @@ class CssOverrideController extends Controller
 
         $request->validate(Setting::rules($setting));
         $setting->fill($request->input());
+        $original = array_intersect_key($setting->getOriginal(), $setting->getDirty())['config'];
         $setting->saveOrFail();
 
-        $this->setLoginFooter($request);
-        $this->setAltText($request);
+        $footer = $this->setLoginFooter($request);
+        $altText = $this->setAltText($request);
 
         $this->writeColors(json_decode($request->input('variables', '[]'), true));
         $this->writeFonts(json_decode($request->input('sansSerifFont', '')));
         $this->compileSass($request->user('api')->id, json_decode($request->input('variables', '[]'), true));
+
+        $changes = [];
+        if (isset($setting->getChanges()['config'])) {
+            $changes = (array) json_decode($setting->getChanges()['config']);
+        }
+
+        if (!empty($changes)) {
+            event(new CustomizeUiUpdated($original, array_merge($footer, $altText, $changes), $setting->getChanges()['updated_at']));
+        }
 
         return new ApiResource($setting);
     }
@@ -108,11 +119,19 @@ class CssOverrideController extends Controller
             $footerContent = '';
         }
 
-        Setting::updateOrCreate([
+        $setting = Setting::updateOrCreate([
             'key' => 'login-footer',
         ], [
             'config' => ['html' => $footerContent],
         ]);
+
+        $response = [];
+
+        if ((!$setting->wasRecentlyCreated && $setting->wasChanged()) || $setting->wasRecentlyCreated) {
+            $response = ['html' => $setting->getAttributes()['config']['html']];
+        }
+
+        return $response;
     }
 
     private function setAltText(Request $request)
@@ -122,12 +141,20 @@ class CssOverrideController extends Controller
             $altText = '';
         }
 
-        Setting::updateOrCreate([
+        $setting = Setting::updateOrCreate([
             'key' => 'logo-alt-text',
         ], [
             'format' => 'text',
             'config' => $altText,
         ]);
+
+        $response = [];
+
+        if ((!$setting->wasRecentlyCreated && $setting->wasChanged()) || $setting->wasRecentlyCreated) {
+            $response = ['altText' => $setting->getAttributes()['config']];
+        }
+
+        return $response;
     }
 
     public function update(Request $request)
