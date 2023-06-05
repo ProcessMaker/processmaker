@@ -31,10 +31,6 @@ class TemplateController extends Controller
     {
         $templates = $this->template->index($type, $request);
 
-        if ($request->input('per_page') === '0') {
-            return $templates;
-        }
-
         return new TemplateCollection($templates);
     }
 

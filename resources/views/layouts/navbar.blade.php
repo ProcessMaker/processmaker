@@ -17,10 +17,6 @@
                             :variant="confirmVariant" :callback="confirmCallback"
                             @close="confirmShow=false">
         </confirmation-modal>
-        <message-modal class="d-none d-lg-block" id="confirmModal" :show="messageShow" :title="confirmTitle" :message="confirmMessage"
-                            :variant="confirmVariant" :callback="confirmCallback"
-                            @close="messageShow=false">
-        </message-modal>
         <session-modal id="sessionModal" :shown="sessionShow" :title="sessionTitle" :message="sessionMessage" :time="sessionTime" :warn-seconds="sessionWarnSeconds"
                 @close="sessionShow=false">
         </session-modal>

@@ -62,17 +62,8 @@ class SecurityLog extends ProcessMakerModel
      * @var array
      */
     protected $casts = [
-        'data' => 'object',
-        'changes' => 'object',
         'meta' => 'object',
     ];
-
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = ['changes'];
 
     /**
      * Get the associated user, if any.
@@ -114,23 +105,5 @@ class SecurityLog extends ProcessMakerModel
         });
 
         return $query;
-    }
-
-    public static function rules()
-    {
-        return [
-            'event' => ['required', 'max:40'],
-            'ip' => ['required', 'max:40'],
-            'meta' => ['required', 'array'],
-            'meta.user_agent' => ['required', 'string'],
-            'meta.browser.name' => ['required', 'string'],
-            'meta.browser.version' => ['nullable', 'string'],
-            'meta.os.name' => ['required', 'string'],
-            'meta.os.version' => ['nullable', 'string'],
-            'user_id' => ['required', 'int'],
-            'occurred_at' => ['required', 'int'],
-            'data' => ['nullable', 'array'],
-            'changes' => ['nullable', 'array'],
-        ];
     }
 }

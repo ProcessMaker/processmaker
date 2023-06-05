@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "68cdb3fc6a70bfbacdc20de3299d13cb",
+    "content-hash": "520e2545e0a25f5662223c52600db5e3",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -5528,8 +5528,7 @@
                 "issues": "https://github.com/php-http/multipart-stream-builder/issues",
                 "source": "https://github.com/php-http/multipart-stream-builder/tree/1.3.0"
             },
-            "abandoned": "psr/http-factory",
-            "time": "2015-12-19T14:08:53+00:00"
+            "time": "2023-04-28T14:10:22+00:00"
         },
         {
             "name": "php-http/promise",
@@ -13545,7 +13544,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "coderevolutionplugins/gpt-3-encoder-php": 20,
         "processmaker/laravel-i18next": 20
     },
     "prefer-stable": true,

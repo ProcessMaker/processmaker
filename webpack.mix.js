@@ -65,9 +65,7 @@ mix.extract([
   .copy("node_modules/bpmn-font/dist", "public/css/bpmn-symbols");
 
 mix.js("resources/js/app-layout.js", "public/js")
-  .js("resources/js/process-map-layout.js", "public/js")
   .js("resources/js/processes/modeler/index.js", "public/js/processes/modeler")
-  .js("resources/js/processes/modeler/process-map.js", "public/js/processes/modeler")
   .js("resources/js/processes/modeler/initialLoad.js", "public/js/processes/modeler")
   .js("resources/js/admin/auth/passwords/change.js", "public/js/admin/auth/passwords/change.js")
   .js("resources/js/admin/settings/index.js", "public/js/admin/settings")

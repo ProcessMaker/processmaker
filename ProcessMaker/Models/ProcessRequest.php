@@ -699,12 +699,14 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         $user = User::where('username', $value)->get()->first();
 
         if ($user) {
-            return function ($query) use ($user, $expression) {
-                $query->whereIn('id', function ($subquery) use ($user, $expression) {
-                    $subquery->select('process_request_id')->from('process_request_tokens')
-                        ->where('user_id', $expression->operator, $user->id)
-                        ->whereIn('element_type', ['task', 'userTask', 'startEvent']);
-                });
+            $tokens = ProcessRequestToken::select('process_request_id')
+                ->where('user_id', $expression->operator, $user->id)
+                ->whereIn('element_type', ['task', 'userTask', 'startEvent'])
+                ->distinct()
+                ->get();
+
+            return function ($query) use ($tokens) {
+                $query->whereIn('id', $tokens->pluck('process_request_id'));
             };
         } else {
             throw new PmqlMethodException('participant', 'The specified participant username does not exist.');

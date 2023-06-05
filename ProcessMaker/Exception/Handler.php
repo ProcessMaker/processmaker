@@ -9,9 +9,7 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route as RouteFacade;
-use ProcessMaker\Events\UnauthorizedAccessAttempt;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
@@ -48,12 +46,6 @@ class Handler extends ExceptionHandler
             echo $exception->getMessage() . "\n";
             echo $exception->getFile() . ': Line: ' . $exception->getLine() . "\n";
             echo $exception;
-        }
-        if ($exception instanceof \Illuminate\Auth\Access\AuthorizationException) {
-            try {
-                UnauthorizedAccessAttempt::dispatch();
-            } catch (\Exception $e) {
-            }
         }
         parent::report($exception);
     }

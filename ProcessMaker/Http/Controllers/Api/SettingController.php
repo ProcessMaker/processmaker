@@ -6,7 +6,6 @@ use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use ProcessMaker\Events\SettingsUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -208,10 +207,7 @@ class SettingController extends Controller
     {
         $request->validate(Setting::rules($setting, $request->input('key') == 'users.properties'), Setting::messages());
         $setting->config = $request->input('config');
-        $original = array_intersect_key($setting->getOriginal(), $setting->getDirty());
         $setting->save();
-
-        SettingsUpdated::dispatch($setting, $setting->getChanges(), $original);
 
         return response([], 204);
     }

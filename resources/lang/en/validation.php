@@ -158,6 +158,5 @@ return [
         'title' => 'name',
         'firstname' => 'First Name',
         'lastname' => 'Last Name',
-        'config' => 'Config',
     ],
 ];

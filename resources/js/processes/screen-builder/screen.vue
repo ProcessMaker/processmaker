@@ -752,10 +752,6 @@ export default {
           variant: "secondary",
         });
         this.$refs.menuScreen.sectionRight = false;
-
-        if (this.$refs.renderer) {
-          this.$refs.renderer.hasSubmitted(false);
-        }
       }
       this.mode = mode;
       this.setStoreMode(this.mode);
