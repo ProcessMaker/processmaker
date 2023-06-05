@@ -37,22 +37,26 @@
             <p class="old-value">
               <b>- {{ $t(key) }}:</b>
               <template v-if="!isString(info.old)">
-                <span
-                  v-for="(subInfo, skey) in info.old"
-                  :key="skey"
-                >
-                  <span
-                    v-if="isLink(subInfo)"
-                    class="link-value"
+                <div class="subItem">
+                  <template
+                    v-for="(subInfo, skey) in info.old"
                   >
-                    <a :href="subInfo.link">
-                      {{ subInfo.label }}
-                    </a>
-                  </span>
-                  <span v-if="isString(subInfo)">
-                    {{ subInfo }}
-                  </span>
-                </span>
+                    <span
+                      v-if="isLink(subInfo)"
+                      :key="skey"
+                    >
+                      <a :href="subInfo.link">
+                        {{ subInfo.label }}
+                      </a>
+                    </span>
+                    <span
+                      v-if="isString(subInfo)"
+                      :key="skey"
+                    >
+                      {{ subInfo }}
+                    </span>
+                  </template>
+                </div>
               </template>
               <span v-if="isString(info.old)">{{ info.old }}</span>
             </p>
@@ -193,7 +197,7 @@ export default {
      * Verify if value is a string o null
      */
     isString(value) {
-      return typeof value === "string" || value === null;
+      return typeof value === "string" || typeof value === "number" || value === null;
     },
     /**
      * Verify if value has link and label
