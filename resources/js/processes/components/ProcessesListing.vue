@@ -165,8 +165,6 @@
       showPmBlockModal(name, id) {        
         this.processId = id;
         this.pmBlockName = name;
-
-        console.log( this.$refs);
         this.$refs["create-pm-block-modal"].show();
       },
 
@@ -206,7 +204,6 @@
             break;
           case "create-pm-block":
             this.showPmBlockModal(data.name, data.id);
-            console.log('create-pm-block switch case');
             break;
           case "restore-item":
             ProcessMaker.apiClient

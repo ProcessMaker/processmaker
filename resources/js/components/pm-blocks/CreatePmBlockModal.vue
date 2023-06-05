@@ -3,7 +3,6 @@
     <modal
       id="createPmBlock"
       :title="title" 
-      @update="onUpdate"
       @savePmBlock="savePmBlock"
       @close="close"
       :setCustomButtons="true"
@@ -50,25 +49,14 @@
             </b-form-group>
 
               <category-select
-                v-model="process_category_id"
+                v-model="pm_block_category_id"
                 :label="$t('Category')"
-                api-get="process_categories"
-                api-list="process_categories"
+                api-get="pm-blocks-categories"
+                api-list="pm-blocks-categories"
                 name="category"
-                :errors="addError.process_category_id"
+                :errors="addError.pm_block_category_id"
               />
 
-            <b-form-group>
-              <b-form-radio v-model="saveAssetsMode" 
-                            name="save-mode-options" 
-                            value="saveAllAssets">{{ $t('Save all assets') }}
-              </b-form-radio>
-
-              <b-form-radio v-model="saveAssetsMode" 
-                            name="save-mode-options" 
-                            value="saveModelOnly">{{ $t(`Save ${assetType} model only`) }}
-              </b-form-radio>
-            </b-form-group>
           </b-col>
         </b-row>
       </template>
@@ -89,19 +77,16 @@ export default {
       errors: {},
       name: "",
       description: "",
-      process_category_id: "",
+      pm_block_category_id: "",
       addError: {},
       showModal: false,
       disabled: true,
       showWarning: false,
-      saveAssetsMode: "saveAllAssets",
       existingAssetId: null,
       existingAssetName: "",
       customModalButtons: [
         {"content": "Cancel", "action": "close", "variant": "outline-secondary", "disabled": false, "hidden": false},
-        {"content": "Publish", "action": "saveTemplate", "variant": "primary", "disabled": true, "hidden": false},
-        {"content": "Update", "action": "updateTemplate", "variant": "secondary", "disabled": false, "hidden": true},
-        {"content": "Save as New", "action": "saveNewPmBlock", "variant": "primary", "disabled": true, "hidden": true},
+        {"content": "Publish", "action": "savePmBlock", "variant": "primary", "disabled": true, "hidden": false},
       ],
     }
   },
@@ -130,36 +115,30 @@ export default {
     methods: {
       show() {
         this.customModalButtons[1].hidden === true ? this.toggleButtons() : false;
-        this.$bvModal.show('createTemplate');
+        this.$bvModal.show('createPmBlock');
       },
       close() {
-        this.$bvModal.hide('createTemplate');
+        this.$bvModal.hide('createPmBlock');
         this.clear();
         this.errors = {};
       },
       clear() {
         this.name = "";
         this.description = "";
-        this.process_category_id = "";
+        this.pm_block_category_id = "";
         this.showWarning = false;
-        this.saveMode = "copy";
-        this.saveAssetsMode = "saveAllAssets";
       },
-      onUpdate() {
-        this.$emit('update-template');
-        this.close();
-      },
-      savePmBlock() {    
+      savePmBlock() {
         let formData = new FormData();
-        formData.append("asset_id", this.assetId);
+        formData.append("process_id", this.assetId);
         formData.append("name", this.name);
         formData.append("description", this.description);
         formData.append("user_id", this.currentUserId);
-        formData.append("saveAssetsMode", this.saveAssetsMode);
-        formData.append("process_category_id", this.process_category_id);
-        ProcessMaker.apiClient.post("template/" + this.assetType + "/" + this.assetId, formData)
+        formData.append("pm_block_category_id", this.pm_block_category_id);
+        console.log(formData);
+        ProcessMaker.apiClient.post("pm-blocks/store", formData)
         .then(response => {
-          ProcessMaker.alert(this.$t("Template successfully created"), "success");
+          ProcessMaker.alert(this.$t("PM Block successfully created"), "success");
           this.close();
         }).catch(error => {
           this.errors = error.response.data;
@@ -176,31 +155,6 @@ export default {
           }
         });
       },  
-      updateTemplate() {   
-        let putData = {
-        name: this.name,
-        description: this.description,
-        user_id: this.currentUserId,
-        mode: this.saveAssetsMode,
-        process_id: this.assetId,
-        process_category_id: this.process_category_id,
-      };
-      ProcessMaker.apiClient.put("template/" + this.assetType + "/" + this.existingAssetId, putData)
-        .then(response => {
-          ProcessMaker.alert( this.$t("Template successfully updated"),"success");
-          this.close();
-        }).catch(error => {
-          this.errors = error.response.data;
-          if (this.errors.hasOwnProperty('errors')) {
-            this.errors = this.errors.errors;
-          } else if (_.includes(this.errors.name, 'The template name must be unique.')) {
-            this.showWarning = true;
-            this.toggleButtons();
-            this.existingAssetId = error.response.data.id;
-            this.existingAssetName = error.response.data.assetName;
-          }
-        });
-      },
       toggleButtons() {
         this.customModalButtons[1].hidden = !this.customModalButtons[1].hidden;
         this.customModalButtons[2].hidden = !this.customModalButtons[2].hidden;
