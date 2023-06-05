@@ -35,6 +35,7 @@
               :showProgress="true"
               @navigate="onNavigate"
             />
+            <p v-if="item.stream && item.stream.data">{{ item.stream.data }}</p>
           </td>
         </tr>
         <tr v-for="(item, index) in translatedLanguages" :key="index">
@@ -222,9 +223,21 @@ export default {
         )
         .then((response) => {
           this.translatingLanguages = response.data.translatingLanguages;
+          this.subscribeToEvent();
         });
     },
-
+    subscribeToEvent() {
+      this.translatingLanguages.forEach((translatingLanguage, key) => {
+        if (window.Echo.connector.channels[`private-ProcessMaker.Models.Process.${this.processId}.Language.${translatingLanguage.language}`] === undefined) {
+          window.Echo.private(
+            `ProcessMaker.Models.Process.${this.processId}.Language.${translatingLanguage.language}`,
+          ).listen(".ProcessMaker\\Events\\ProcessTranslationChunkEvent", (response) => {
+            this.$set(this.translatingLanguages[key], "stream", response);
+            console.log(this.translatingLanguages[key].stream);
+          });
+        }
+      });
+    },
     handleEditTranslation(data) {
       this.editTranslation = data;
       this.$emit("edit-translation", this.editTranslation);

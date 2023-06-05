@@ -49,7 +49,8 @@ class BatchesJobHandler
     public function handle()
     {
         $languageTranslationHandler = new LanguageTranslationHandler();
-        $languageTranslationHandler->setTargetLanguage($this->targetLanguage['humanLanguage']);
+        $languageTranslationHandler->setTargetLanguage($this->targetLanguage);
+        $languageTranslationHandler->setProcessId($this->process->id);
         [$screensWithChunks, $chunksCount] = $this->prepareData($this->screens, $languageTranslationHandler);
 
         // Execute requests for each regular chunk
