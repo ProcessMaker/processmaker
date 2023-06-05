@@ -93,14 +93,20 @@ class ProcessTranslation
         foreach ($screensTranslations as $screenTranslation) {
             if ($screenTranslation['translations']) {
                 foreach ($screenTranslation['translations'] as $key => $translation) {
-                    $createdAt = $translation['created_at'];
-                    $updatedAt = $translation['updated_at'];
+                    if (array_key_exists('created_at', $translation)) {
+                        $createdAt = $translation['created_at'];
+                    }
+
+                    if (array_key_exists('updated_at', $translation)) {
+                        $updatedAt = $translation['updated_at'];
+                    }
 
                     // If updated is greater than existing in array, modify it with the newest
                     if (array_key_exists($key, $languages)) {
                         $createdAt = $languages[$key]['createdAt'];
                         $updatedAt = $languages[$key]['updatedAt'];
-                        if ($languages[$key]['updatedAt'] < $translation['updated_at']) {
+
+                        if (array_key_exists('updated_at', $translation) && $languages[$key]['updatedAt'] < $translation['updated_at']) {
                             $createdAt = $translation['created_at'];
                             $updatedAt = $translation['updated_at'];
                         }
