@@ -55,7 +55,8 @@
           />
         </template>
       </vuetable>
-      <create-template-modal id="create-template-modal" ref="create-template-modal" assetType="process" :currentUserId="currentUserId" :assetName="processTemplateName" :assetId="processId"/>
+      <create-template-modal id="create-template-modal" ref="create-template-modal" assetType="process" :currentUserId="currentUserId" :assetName="processTemplateName" :assetId="processId" />
+      <create-pm-block-modal id="create-pm-block-modal" ref="create-pm-block-modal" :currentUserId="currentUserId" :assetName="pmBlockName" :assetId="processId" />
       <pagination
               :single="$t('Process')"
               :plural="$t('Processes')"
@@ -75,12 +76,13 @@
   import isPMQL from "../../modules/isPMQL";
   import TemplateExistsModal from "../../components/templates/TemplateExistsModal.vue";
   import CreateTemplateModal from "../../components/templates/CreateTemplateModal.vue";
+  import CreatePmBlockModal from "../../components/pm-blocks/CreatePmBlockModal.vue";
   import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 
   const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
-    components: { TemplateExistsModal, CreateTemplateModal, EllipsisMenu },
+    components: { TemplateExistsModal, CreateTemplateModal, EllipsisMenu, CreatePmBlockModal},
     mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
     props: ["filter", "id", "status", "permission", "isDocumenterInstalled", "pmql", "processName", "currentUserId"],
     data() {
@@ -90,6 +92,7 @@
         { value: "pause-start-timer", content: "Pause Start Timer Events", icon: "fas fa-pause", conditional: "if(has_timer_start_events and not(pause_timer_start), true, false)"},
         { value: "edit-designer", content: "Edit Process", link: true, href:"/modeler/{{id}}", permission: "edit-processes", icon: "fas fa-edit", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
         { value: "create-template", content: "Save as Template", permission: "create-process-templates", icon: "fas fa-layer-group" },
+        { value: "create-pm-block", content: "Save as PM Block", permission: "create-process-templates", icon: "fas nav-icon fa-cube" },
         { value: "edit-item", content: "Configure", link: true, href:"/processes/{{id}}/edit", permission: "edit-processes", icon: "fas fa-cog", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
         { value: "view-documentation", content: "View Documentation", link: true, href:"/modeler/{{id}}/print", permission: "view-processes", icon: "fas fa-sign", conditional: "isDocumenterInstalled"},
         { value: "export-item", content: "Export", link: true, href:"/processes/{{id}}/export", permission: "export-processes", icon: "fas fa-file-export"},
@@ -99,6 +102,7 @@
         orderBy: "name",
         processId: null,
         processTemplateName: '',
+        pmBlockName: '',
         processData: {},
         sortOrder: [
           {
@@ -158,6 +162,15 @@
         this.processTemplateName = name;
         this.$refs["create-template-modal"].show();
       },
+      showPmBlockModal(name, id) {        
+        this.processId = id;
+        this.pmBlockName = name;
+
+        console.log( this.$refs);
+        this.$refs["create-pm-block-modal"].show();
+      },
+
+      // TODO Add switch case for PM blocks
       onNavigate(action, data) {
         let putData = {
           name: data.name,
@@ -190,6 +203,10 @@
             break;
           case "create-template":
             this.showCreateTemplateModal(data.name, data.id);
+            break;
+          case "create-pm-block":
+            this.showPmBlockModal(data.name, data.id);
+            console.log('create-pm-block switch case');
             break;
           case "restore-item":
             ProcessMaker.apiClient
