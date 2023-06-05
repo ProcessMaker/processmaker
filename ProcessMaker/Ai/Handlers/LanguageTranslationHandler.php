@@ -6,12 +6,14 @@ use OpenAI\Client;
 
 class LanguageTranslationHandler extends OpenAiHandler
 {
+    protected $targetLanguage = 'Spanish';
+
     public function __construct()
     {
         parent::__construct();
         $this->config = [
             'model' => 'text-davinci-003',
-            'max_tokens' => 1900,
+            'max_tokens' => 2200,
             'temperature' => 0,
             'top_p' => 1,
             'n' => 1,
@@ -21,19 +23,23 @@ class LanguageTranslationHandler extends OpenAiHandler
         ];
     }
 
-    public function getPromptFile($type = null)
+    public function setTargetLanguage($language)
     {
-        return file_get_contents($this->getPromptsPath() . 'language_translation' . $type . '.md');
+        $this->targetLanguage = $language;
     }
 
-    public function generatePrompt(String $type = null, String $question) : Object
+    public function getPromptFile($type = null)
     {
-        $this->question = $question;
-        $prompt = $this->getPromptFile($type);
-        $prompt = $this->replaceQuestion($prompt, $question);
-        $prompt = $this->replaceStopSequence($prompt);
-        $prompt = $this->replaceWithCurrentYear($prompt);
+        return file_get_contents($this->getPromptsPath() . 'language_translation_' . $type . '.md');
+    }
 
+    public function generatePrompt(String $type = null, String $json_list) : Object
+    {
+        $this->$json_list = $json_list;
+        $prompt = $this->getPromptFile($type);
+        $prompt = $this->replaceJsonList($prompt, $json_list);
+        $prompt = $this->replaceLanguage($prompt, $this->targetLanguage);
+        $prompt = $this->replaceStopSequence($prompt);
         $this->config['prompt'] = $prompt;
 
         return $this;
@@ -52,7 +58,6 @@ class LanguageTranslationHandler extends OpenAiHandler
     private function formatResponse($response)
     {
         $result = ltrim($response->choices[0]->text);
-        $result = explode('Question:', $result)[0];
         $result = rtrim(rtrim(str_replace("\n", '', $result)));
         $result = str_replace('\'', '', $result);
 
@@ -66,18 +71,17 @@ class LanguageTranslationHandler extends OpenAiHandler
         return $replaced;
     }
 
-    public function replaceQuestion($prompt, $question)
+    public function replaceJsonList($prompt, $json_list)
     {
-        $replaced = str_replace('{question}', $question . " \n", $prompt);
+        $replaced = str_replace('{json_list}', $json_list . " \n", $prompt);
 
         return $replaced;
     }
 
-    public function replaceWithCurrentYear($prompt)
+    public function replaceLanguage($prompt, $language)
     {
-        $currentYearReplaced = str_replace('{currentYear}', date('Y'), $prompt);
-        $pastYearReplaced = str_replace('{pastYear}', date('Y') - 1, $currentYearReplaced);
+        $replaced = str_replace('{language}', $language . " \n", $prompt);
 
-        return $pastYearReplaced;
+        return $replaced;
     }
 }

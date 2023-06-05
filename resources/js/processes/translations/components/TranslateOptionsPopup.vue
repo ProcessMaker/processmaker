@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="position-relative">
-      <button ref="optionsButton" class="btn btn-secondary mr-1 mt-3 d-flex align-items-center" @click="toggleOptionsPopup">
+      <button ref="optionsButton" class="btn btn-outline-secondary mr-1 mt-3 d-flex align-items-center" @click="toggleOptionsPopup">
         <font-awesome-icon :icon="['fpm', 'fa-translations']" class="mr-1" />
         <span class="text-capitalize">{{$t('Translation Options')}}</span>
       </button>

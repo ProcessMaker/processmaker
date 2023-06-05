@@ -2,14 +2,18 @@
 
 namespace ProcessMaker\ProcessTranslations;
 
+use Carbon\Carbon;
 use DOMXPath;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection as SupportCollection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Bus;
 use ProcessMaker\Assets\ScreensInProcess;
 use ProcessMaker\Assets\ScreensInScreen;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessTranslationToken;
 use ProcessMaker\Models\Screen;
 
 class ProcessTranslation
@@ -29,14 +33,30 @@ class ProcessTranslation
         $this->process = $process;
     }
 
-    public function getTranslations($withScreenData = [])
+    public function getProcessScreensWithTranslations($withScreenData = [])
     {
-        return $this->getScreens($withScreenData);
+        return $this->getScreens($withScreenData, null);
     }
 
-    private function getScreens($withScreenData) : SupportCollection
+    public function getScreensWithTranslations($withScreenData, array $screenIds)
     {
-        $screensInProcess = collect($this->getScreenIds())->unique();
+        return $this->getScreens($withScreenData, $screenIds);
+    }
+
+    private function getScreens($withScreenData, $screenIds = null) : SupportCollection
+    {
+        if (!$screenIds) {
+            $screensInProcess = collect($this->getScreenIds())->unique()->toArray();
+        } else {
+            $screensInProcess = $screenIds;
+        }
+
+        $nestedScreens = [];
+        foreach ($screensInProcess as $screen) {
+            $nestedScreens = array_merge($nestedScreens, Screen::findOrFail($screen)->nestedScreenIds());
+        }
+
+        $screensInProcess = collect(array_merge($screensInProcess, $nestedScreens))->unique();
 
         $fields = array_merge(['id', 'translations', 'config'], $withScreenData);
 
@@ -185,6 +205,108 @@ class ProcessTranslation
         return $elements;
     }
 
+    public function applyTranslations($screen)
+    {
+        $config = $screen['config'];
+        $translations = $screen['translations'];
+        $targetLanguage = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+        $targetLanguage = in_array($targetLanguage, Languages::ALL) ? $targetLanguage : 'en';
+
+        if (Auth::user()) {
+            $targetLanguage = Auth::user()->language;
+        }
+
+        if (!$translations) {
+            return $config;
+        }
+
+        if (array_key_exists($targetLanguage, $translations)) {
+            foreach ($translations[$targetLanguage]['strings'] as $translation) {
+                $this->applyTranslationsToScreen($translation['key'], $translation['string'], $config);
+            }
+        }
+
+        return $config;
+    }
+
+    public function applyTranslationsToScreen($key, $translatedString, &$config)
+    {
+        if ($config) {
+            foreach ($config as &$page) {
+                if (isset($page['items']) && is_array($page['items'])) {
+                    $replaced = self::applyTranslationToElement($page['items'], $key, $translatedString);
+                }
+            }
+        }
+
+        return $config;
+    }
+
+    private static function applyTranslationToElement(&$items, $key, $translatedString)
+    {
+        foreach ($items as &$item) {
+            if (isset($item['items']) && is_array($item['items'])) {
+                // If have items and is a loop ..
+                if ($item['component'] == 'FormLoop') {
+                    $replaced = self::applyTranslationToElement($item['items'], $key, $translatedString);
+                }
+                // If have items and is a table ..
+                if ($item['component'] == 'FormMultiColumn') {
+                    foreach ($item['items'] as &$cell) {
+                        if (is_array($cell)) {
+                            $replaced = self::applyTranslationToElement($cell, $key, $translatedString);
+                        }
+                    }
+                }
+            } else {
+                if (!isset($item['component'])) {
+                    continue;
+                }
+
+                if ($item['component'] === 'FormNestedScreen') {
+                    continue;
+                }
+
+                if ($item['component'] === 'FormImage') {
+                    continue;
+                }
+
+                // Specific for Rich text
+                if ($item['component'] === 'FormHtmlViewer' && $item['config']['content'] === $key) {
+                    $item['config']['content'] = $translatedString;
+                }
+
+                // Specific for Select list
+                if ($item['component'] === 'FormSelectList') {
+                    if (isset($item['config']) && isset($item['config']['options']) && isset($item['config']['options']['optionsList'])) {
+                        foreach ($item['config']['options']['optionsList'] as $option) {
+                            if ($option['content'] === $key) {
+                                $option['content'] = $translatedString;
+                            }
+                        }
+                    }
+                }
+
+                // Look for label strings
+                if (isset($item['config']) && isset($item['config']['label']) && $item['config']['label'] === $key) {
+                    $item['config']['label'] = $translatedString;
+                }
+
+                // Look for helper strings
+                if (isset($item['config']) && isset($item['config']['helper']) && $item['config']['helper'] === $key) {
+                    $item['config']['helper'] = $translatedString;
+                }
+
+                // Look for placeholder strings
+                if (isset($item['config']) && isset($item['config']['placeholder']) && $item['config']['placeholder'] === $key) {
+                    $item['config']['placeholder'] = $translatedString;
+                }
+            }
+        }
+
+        return $items;
+    }
+
     private function getScreenIds()
     {
         $tags = [
@@ -221,5 +343,98 @@ class ProcessTranslation
         }
 
         return $screenIds;
+    }
+
+    public function deleteTranslations($language)
+    {
+        $screensTranslations = $this->getProcessScreensWithTranslations();
+
+        $translations = null;
+        foreach ($screensTranslations as $screenTranslation) {
+            if ($screenTranslation['translations']) {
+                $translations = $screenTranslation['translations'];
+
+                if (array_key_exists($language, $translations)) {
+                    unset($translations[$language]);
+                }
+            }
+            $screen = Screen::findOrFail($screenTranslation['id']);
+
+            $screen->translations = $translations;
+            $screen->save();
+        }
+
+        // Remove pending tokens
+        $processTranslationToken = ProcessTranslationToken::where('process_id', $this->process->id)
+            ->where('language', $language)
+            ->first();
+
+        if ($processTranslationToken) {
+            $token = $processTranslationToken->token;
+            $processTranslationToken->delete();
+        }
+
+        // Cancel pending batch jobs
+        $batch = Bus::findBatch($token);
+        $batch->cancel();
+
+        return true;
+    }
+
+    public function updateTranslations($screenTranslations, $language)
+    {
+        foreach ($screenTranslations as $screenTranslation) {
+            $screen = Screen::findOrFail($screenTranslation['id']);
+            $translations = $screen->translations;
+
+            if (!$screenTranslation['translations']) {
+                $screenTranslation['translations'][$language] = [];
+            }
+
+            foreach ($screenTranslation['translations'] as $key => $value) {
+                if ($key === $language) {
+                    unset($translations[$key]);
+                    $screenTranslation['translations'][$key] = $value;
+                    $screenTranslation['translations'][$key]['updated_at'] = Carbon::now();
+                    if (!array_key_exists('created_at', $screenTranslation['translations'][$key])) {
+                        $screenTranslation['translations'][$key]['created_at'] = $screenTranslation['translations'][$key]['updated_at'];
+                    }
+                    $translations[$key] = $screenTranslation['translations'][$key];
+                }
+            }
+
+            $screen->translations = $translations;
+            $screen->save();
+        }
+    }
+
+    public function exportTranslations($language)
+    {
+        $screensTranslations = $this->getProcessScreensWithTranslations();
+
+        $translations = null;
+        $exportList = [];
+        foreach ($screensTranslations as $screenTranslation) {
+            $availableStrings = $screenTranslation['availableStrings'];
+
+            if ($screenTranslation['translations']) {
+                $translations = $screenTranslation['translations'];
+            }
+
+            foreach ($availableStrings as $availableString) {
+                $translation = ['key' => $availableString, 'string' => ''];
+                if (array_key_exists($language, $translations) && array_key_exists('strings', $translations[$language])) {
+                    foreach ($translations[$language]['strings'] as $item) {
+                        if ($availableString === $item['key']) {
+                            $translation['string'] = $item['string'];
+                        }
+                    }
+                }
+                $exportList[$screenTranslation['id']][$language][] = $translation;
+            }
+        }
+
+        // Generate json file to export
+        return $exportList;
     }
 }

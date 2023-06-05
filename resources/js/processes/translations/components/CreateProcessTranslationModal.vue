@@ -8,13 +8,15 @@
       :size="'lg'"
       @ok.prevent="onSubmit"
       @hidden="onClose"
-      @translateProcess="translateProcess"
+      @translate="translate"
       @showSelectTargetLanguage="showSelectTargetLanguage"
+      @saveTranslations="saveTranslations"
       :hasTitleButtons="hasTitleButtons"
       :hasHeaderButtons="hasHeaderButtons"
       :headerButtons="headerButtons"
       :customButtons="customModalButtons"
       :setCustomButtons="true"
+      :show-ai-slogan="true"
     >
       <!-- Select target language section -->
       <div v-if="step === 'selectTargetLanguage'">
@@ -65,8 +67,8 @@
           />
           <small class="text-muted">{{ $t("Select a screen from the process to review and perform translations.") }}</small>
         </div>
-        <div>
-          <translate-options-popup @retranslate="onReTranslate"/>
+        <div v-if="stringsWithTranslations && Object.keys(stringsWithTranslations).length !== 0">
+          <translate-options-popup  @retranslate="onReTranslate"/>
         </div>
         <div class="mt-3 position-relative">
           <div v-if="step === 'showTranslations'" class="d-flex justify-content-center align-items-center">
@@ -79,7 +81,7 @@
             </div>
           </div>
 
-          <table class="table table-responsive-lg mb-0">
+          <table v-if="stringsWithTranslations && Object.keys(stringsWithTranslations).length !== 0" class="table table-responsive-lg mb-0">
             <thead>
               <tr>
                   <th class="col-6">{{ $t('String') }}</th>
@@ -87,7 +89,6 @@
               </tr>
             </thead>
             <tbody>
-              <!-- <tr v-for="item, index in currentScreenTranslations" :key="index"> -->
               <tr v-for="(value, key, index)  in stringsWithTranslations" :key="index">
                 <td class="bg-light">{{ key }}</td>
                 <td class="py-1 px-2">
@@ -98,11 +99,13 @@
                     :aria-label="$t('Add a translation for ') + key"
                     @focus="$event.target.select()"
                     autocomplete="off"
+                    @keyup="updateGlobalString(value, key)"
                   />
                 </td>
               </tr>
             </tbody>
           </table>
+          <div v-else class="text-muted small text-center py-5">{{ $t("Select a screen to show the translations.") }}</div>
         </div>
       </div>
     </modal>
@@ -150,51 +153,34 @@ export default {
       ],
       customModalButtons: [
         {'content': 'Cancel', 'action': 'hide()', 'variant': 'outline-secondary', 'disabled': false, 'hidden': false},
-        {'content': 'Translate Process', 'action': 'translateProcess', 'variant': 'secondary', 'disabled': true, 'hidden': false},
+        {'content': 'Translate Process', 'action': 'translate', 'variant': 'secondary', 'disabled': true, 'hidden': false},
         {'content': 'Save Translation', 'action': 'saveTranslations', 'variant': 'secondary', 'disabled': false, 'hidden': true},
       ],
     };
   },
 
   watch: {
-    // screensTranslations(val) {
-    //   this.allScreensTranslations = [];
-
-    //   // For each screen add to the general array in the format [{screen_id: screen_id, translations: translationsArr}]
-    //   val.forEach((screenTranslations) => {
-    //     const translations = [];
-    //     console.log(screenTranslations);
-    //     console.log("screenTranslations.translations");
-    //     console.log(screenTranslations.translations);
-    //     if (screenTranslations.translations) {
-    //       console.log(screenTranslations.translations);
-    //       Object.keys(screenTranslations.translations).forEach((key) => {
-    //       // screenTranslations.translations.forEach((language) => {
-    //         const language = screenTranslations.translations[key];
-    //         console.log(key, language);
-    //         // translations[screenTranslations.id][language.language] = language.strings[0];
-    //         translations.push({ screenId: screenTranslations.id, language: language.language, translations: language.strings[0] });
-    //       });
-    //     }
-    //     console.log("translations");
-    //     console.log(translations);
-    //     this.$set(this.allScreensTranslations, screenTranslations.id, translations);
-    //   });
-    //   console.log("this.allScreensTranslations");
-    //   console.log(this.allScreensTranslations);
-    // },
-
     selectedScreen(val) {
       this.currentScreenTranslations = [];
+      this.availableStrings = [];
+
+      if (!val) {
+        return;
+      }
+
       this.availableStrings = val.availableStrings;
 
       if (!val.translations) {
-        this.currentScreenTranslations = [];
         return;
       }
 
       if (this.selectedLanguage.language in val.translations) {
         const translations = val.translations[this.selectedLanguage.language];
+
+        if (!translations.strings) {
+          this.currentScreenTranslations = {};
+          return;
+        }
 
         Object.keys(translations.strings).forEach((key) => {
           this.currentScreenTranslations.push(translations.strings[key]);
@@ -213,6 +199,10 @@ export default {
       this.availableStrings.forEach((string) => {
         this.$set(this.stringsWithTranslations, string, "");
 
+        if (!val.length) {
+          return;
+        }
+
         val.forEach((translation) => {
           if (translation.key === string) {
             this.$set(this.stringsWithTranslations, string, translation.string);
@@ -224,8 +214,8 @@ export default {
     editTranslation(val) {
       if (val) {
         this.selectedLanguage = val;
-        this.showTranslations();
-        console.log(val);
+        this.manualTranslation = true;
+        this.translate();
       }
     },
   },
@@ -233,6 +223,33 @@ export default {
     this.getAvailableLanguages();
   },
   methods: {
+    // This method updates the corresponding string changed in the variable "screensTranslations", so when changing the screen
+    // it will remember the changes made by the user
+    updateGlobalString(value, key) {
+      const screenIndex = this.screensTranslations.findIndex((screen) => screen.id === this.selectedScreen.id);
+
+      if (screenIndex === -1) {
+        return;
+      }
+
+      if (
+        !this.screensTranslations[screenIndex].translations
+        || !this.screensTranslations[screenIndex].translations[this.selectedLanguage.language]
+        || !this.screensTranslations[screenIndex].translations[this.selectedLanguage.language].strings
+      ) {
+        this.screensTranslations[screenIndex].translations = { [this.selectedLanguage.language]: { strings: [] } };
+      }
+
+      const stringIndex = this.screensTranslations[screenIndex].translations[this.selectedLanguage.language].strings.findIndex(item => item.key === key);
+
+      if (stringIndex !== -1) {
+        this.$nextTick(() => {
+          this.$set(this.screensTranslations[screenIndex].translations[this.selectedLanguage.language].strings[stringIndex], "string", value);
+        });
+      } else {
+        this.screensTranslations[screenIndex].translations[this.selectedLanguage.language].strings.push({ key, string: value });
+      }
+    },
     validateLanguageSelected() {
       if (!this.selectedLanguage) {
         this.customModalButtons[1].disabled = true;
@@ -246,7 +263,7 @@ export default {
       this.showSelectTargetLanguage();
       this.$emit("create-process-translation-closed");
     },
-    translateProcess() {
+    translate() {
       this.step = "translating";
       this.headerButtons[0].hidden = true;
       this.customModalButtons[1].hidden = true;
@@ -259,17 +276,28 @@ export default {
         language: this.selectedLanguage,
         processId: this.processId,
         manualTranslation: this.manualTranslation,
-        type: "screen",
       };
 
       ProcessMaker.apiClient.post("/openai/language-translation", params)
         .then((response) => {
-          this.screensTranslations = response.data.screensTranslations;
-          // this.translations = response.data.result.translations;
-          // this.usage = response.data.usage;
+          if (response.data.error) {
+            window.ProcessMaker.alert(response.data.error, "danger");
+            this.endpointErrors = response.data.error;
+            this.aiLoading = false;
+            this.$bvModal.hide("createProcessTranslation");
+            return;
+          }
 
+          this.screensTranslations = response.data.screensTranslations;
 
           this.aiLoading = false;
+
+          if (!this.manualTranslation) {
+            this.$bvModal.hide("createProcessTranslation");
+            this.$emit("translating-language");
+            this.showSelectTargetLanguage();
+          }
+
           this.showTranslations();
         })
         .catch(error => {
@@ -281,22 +309,29 @@ export default {
     },
 
     onReTranslate(option) {
+      this.$bvModal.hide("createProcessTranslation");
       this.aiLoading = true;
 
-      // REMOVE FUNCTION!
-      // REMOVE FUNCTION
-      // REMOVE FUNCTION
-      this.sleep(2000).then(() => {
-        this.aiLoading = false;
-      });
-    },
-    
-    // REMOVE FUNCTION
-    // REMOVE FUNCTION
-    // REMOVE FUNCTION
-    sleep(time) {
-      // eslint-disable-next-line no-promise-executor-return
-      return new Promise((resolve) => setTimeout(resolve, time));
+      const params = {
+        language: this.selectedLanguage,
+        processId: this.processId,
+        screenId: this.selectedScreen.id,
+        option,
+      };
+
+      ProcessMaker.apiClient.post("/openai/language-translation", params)
+        .then((response) => {
+          this.screensTranslations = response.data.screensTranslations;
+          this.aiLoading = false;
+          this.showSelectTargetLanguage();
+          this.$emit("translating-language");
+        })
+        .catch((error) => {
+          const $errorMsg = this.$t("An error ocurred while calling OpenAI endpoint.");
+          window.ProcessMaker.alert($errorMsg, "danger");
+          this.endpointErrors = $errorMsg;
+          this.aiLoading = false;
+        });
     },
 
     showSelectTargetLanguage() {
@@ -309,6 +344,7 @@ export default {
     },
     showTranslations() {
       this.step = "showTranslations";
+      this.selectedScreen = this.screensTranslations[0];
       this.hasHeaderButtons = true;
       this.hasTitleButtons = true;
       this.headerButtons[0].hidden = false;
@@ -330,6 +366,31 @@ export default {
         });
     },
     saveTranslations() {
+      this.loading = true;
+      this.customModalButtons[2].disabled = true;
+      const params = {
+        process_id: this.processId,
+        screens_translations: this.screensTranslations,
+        language: this.selectedLanguage.language,
+      };
+
+      // Load from our api client
+      ProcessMaker.apiClient.put("/process/translations/update", params)
+        .then((response) => {
+          this.loading = false;
+          this.customModalButtons[2].disabled = false;
+          this.$bvModal.hide("createProcessTranslation");
+          this.$emit("language-saved");
+          ProcessMaker.alert(this.$t('The process translations were saved.'), 'success', 5, true);
+        })
+        .catch((error) => {
+          if (error.response && error.response.data && error.response.data.error) {
+            let message = this.$t(error.response.data.error);
+            ProcessMaker.alert(message, "danger");
+          }
+          this.loading = false;
+          this.customModalButtons[2].disabled = false;
+        });
     },
   },
 };

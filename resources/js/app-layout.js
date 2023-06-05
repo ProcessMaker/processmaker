@@ -7,6 +7,7 @@ import notifications from "./components/requests/notifications";
 import sessionModal from "./components/Session";
 import Sidebaricon from "./components/Sidebaricon";
 import ConfirmationModal from "./components/Confirm";
+import MessageModal from "./components/Message";
 import NavbarProfile from "./components/NavbarProfile";
 import SelectStatus from "./components/SelectStatus";
 import SelectUser from "./components/SelectUser";
@@ -73,6 +74,7 @@ window.ProcessMaker.navbar = new Vue({
     notifications,
     sessionModal,
     ConfirmationModal,
+    MessageModal,
     NavbarProfile,
   },
   data() {
@@ -85,6 +87,7 @@ window.ProcessMaker.navbar = new Vue({
       confirmCallback: "",
       confirmShow: false,
       sessionShow: false,
+      messageShow: false,
       sessionTitle: "",
       sessionMessage: "",
       sessionTime: "",
@@ -201,6 +204,15 @@ window.ProcessMaker.confirmModal = function (title, message, variant, callback) 
   ProcessMaker.navbar.confirmVariant = variant;
   ProcessMaker.navbar.confirmCallback = callback;
   ProcessMaker.navbar.confirmShow = true;
+};
+
+// Set out own specific message modal.
+window.ProcessMaker.messageModal = function (title, message, variant, callback) {
+  ProcessMaker.navbar.confirmTitle = title || __("Message");
+  ProcessMaker.navbar.confirmMessage = message || __("");
+  ProcessMaker.navbar.confirmVariant = variant;
+  ProcessMaker.navbar.confirmCallback = callback;
+  ProcessMaker.navbar.messageShow = true;
 };
 
 // flags print forms

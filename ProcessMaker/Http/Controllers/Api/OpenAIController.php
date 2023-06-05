@@ -5,14 +5,14 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use OpenAI\Client;
-use ProcessMaker\Ai\Handlers\LanguageTranslationHandler;
 use ProcessMaker\Ai\Handlers\NlqToCategoryHandler;
 use ProcessMaker\Ai\Handlers\NlqToPmqlHandler;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\AiSearch;
 use ProcessMaker\Models\Process;
-use ProcessMaker\OpenAI\OpenAIHelper;
+use ProcessMaker\Models\ProcessTranslationToken;
 use ProcessMaker\Plugins\Collections\Models\Collection;
+use ProcessMaker\ProcessTranslations\BatchesJobHandler;
 use ProcessMaker\ProcessTranslations\ProcessTranslation;
 
 class OpenAIController extends Controller
@@ -94,27 +94,40 @@ class OpenAIController extends Controller
 
     public function languageTranslation(Request $request)
     {
-        // $languageTranslationHandler = new LanguageTranslationHandler();
-        // [$result, $usage, $targetLanguage] = $languageTranslationHandler->generatePrompt(
-        //     $request->input('type'),
-        //     $request->input('language')
-        // )->execute();
-
         // Find process to translate
         $process = Process::findOrFail($request->input('processId'));
+        $screenId = $request->input('screenId');
+        $option = $request->input('option');
 
         // Find process screens and translations for each screen
         $processTranslation = new ProcessTranslation($process);
-        $screensTranslations = $processTranslation->getTranslations(['title', 'description', 'type', 'config']);
+        $columns = ['title', 'description', 'type', 'config'];
 
-        // Search in each screen in the translation column if we have translations for each label
+        if ($screenId) {
+            $screensTranslations = $processTranslation->getScreensWithTranslations($columns, [$screenId]);
+        }
+
+        if (!$screenId) {
+            $screensTranslations = $processTranslation->getProcessScreensWithTranslations($columns);
+        }
 
         if (!$request->input('manualTranslation')) {
-            // Translate all strings for all screens
-            foreach ($screensTranslations as $screen) {
-                // Search all element inside the screen
-                // Create an array of all strings to translate
-                // Create an array of all textareas to translate
+            $processTranslationToken = ProcessTranslationToken::where('process_id', $process->id)->where('language', $request->input('language')['language'])->first();
+
+            if (!$processTranslationToken) {
+                $code = uniqid('procress-translation', true);
+                $processTranslationToken = new ProcessTranslationToken();
+                $processTranslationToken->process_id = $process->id;
+                $processTranslationToken->token = $code;
+                $processTranslationToken->language = $request->input('language')['language'];
+                $processTranslationToken->save();
+
+                $translateProcess = new BatchesJobHandler($process, $screensTranslations, $request->input('language'), $code, Auth::id(), $option);
+                $translateProcess->handle();
+            } else {
+                return response()->json([
+                    'error' => 'Already running a translation for this language in background',
+                ]);
             }
         }
 
@@ -122,11 +135,6 @@ class OpenAIController extends Controller
             'processTranslation' => $processTranslation,
             'screensTranslations' => $screensTranslations,
         ]);
-        // return response()->json([
-        //     'result' => $result,
-        //     'usage' => $usage,
-        //     'targetLanguage' => $targetLanguage,
-        // ]);
     }
 
     public function recentSearches(Request $request)
