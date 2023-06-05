@@ -147,6 +147,7 @@
               let message = this.$t('The process translation was imported correctly.');
               let variant = 'success';
               ProcessMaker.alert(message, variant);
+              window.location.href = `/processes/${this.process.id}/edit`;
             })
             .catch((error) => {
               this.submitted = false;
