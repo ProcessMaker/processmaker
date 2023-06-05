@@ -5,6 +5,15 @@
         class="overflow-hidden position-relative p-0 vh-100"
         data-test="body-container"
       >
+        <ProcessMapTooltip
+          v-show="tooltip.isActive"
+          ref="tooltip"
+          :node-id="tooltip.nodeId"
+          :style="{
+            left: `${tooltip.newX}px`,
+            top: `${tooltip.newY}px`
+          }"
+        />
         <ModelerReadonly
           ref="modeler"
           :owner="self"
@@ -21,11 +30,13 @@
 
 <script>
 import { ModelerReadonly } from "@processmaker/modeler";
+import ProcessMapTooltip from "./ProcessMapTooltip.vue";
 
 export default {
   name: "ProcessMap",
   components: {
     ModelerReadonly,
+    ProcessMapTooltip,
   },
   data() {
     return {
@@ -35,6 +46,20 @@ export default {
       xmlManager: null,
       decorations: {
         borderOutline: {},
+      },
+      tooltip: {
+        isActive: false,
+        nodeId: null,
+        allowedNodes: [
+          "bpmn:Task",
+          "bpmn:ManualTask",
+          "bpmn:SequenceFlow",
+          "bpmn:ScriptTask",
+          "bpmn:CallActivity",
+        ],
+        coordinates: { x: 0, y: 0 },
+        newX: 0,
+        newY: 0,
       },
       requestCompletedNodes: window.ProcessMaker.modeler.requestCompletedNodes,
       requestInProgressNodes: window.ProcessMaker.modeler.requestInProgressNodes,
@@ -51,8 +76,33 @@ export default {
         baseURL: "/",
       });
     }, 60000),
-    handleClick() {
-      //
+    handleClick(payload) {
+      this.setupTooltip(payload);
+    },
+    setupTooltip({ event, node }) {
+      this.tooltip.isActive = false;
+      const isNodeTooltipAllowed = this.tooltip.allowedNodes.includes(node.$type);
+      if (isNodeTooltipAllowed) {
+        this.tooltip.nodeId = node.id;
+        this.tooltip.isActive = true;
+        this.$nextTick(() => {
+          this.tooltip.coordinates = { x: event.clientX, y: event.clientY };
+          this.calculateTooltipPosition();
+        });
+      }
+    },
+    calculateTooltipPosition() {
+      this.rectTooltip = this.$refs.tooltip.$el.getBoundingClientRect();
+      this.tooltip.newY = this.tooltip.coordinates.y - this.rectTooltip.height - 20;
+      if (this.tooltip.newY <= 0) {
+        this.tooltip.newY = 10;
+      }
+      this.tooltip.newX = this.tooltip.coordinates.x - (this.rectTooltip.width / 2);
+      if (this.tooltip.newX < 0) {
+        this.tooltip.newX = 0;
+      } else if (this.tooltip.newX + this.rectTooltip.width > window.innerWidth) {
+        this.tooltip.newX = window.innerWidth - this.rectTooltip.width;
+      }
     },
   },
 };
