@@ -15,7 +15,7 @@
         :class="customButton.icon"
       />
       <span>
-        {{ customButton.content }} <b v-if="showProgress"> {{ data.batchInfo.progress }}%</b>
+        {{ customButton.content }} <b v-if="showProgress && data && data.batchInfo"> {{ data.batchInfo.progress }}%</b>
       </span>
     </template>
     <template v-else #button-content>
