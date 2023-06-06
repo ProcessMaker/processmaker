@@ -80,15 +80,17 @@ export default {
       this.setupTooltip(payload);
     },
     setupTooltip({ event, node }) {
-      this.tooltip.isActive = false;
       const isNodeTooltipAllowed = this.tooltip.allowedNodes.includes(node.$type);
-      if (isNodeTooltipAllowed) {
+      if ((isNodeTooltipAllowed && this.tooltip.isActive === false)
+        || (isNodeTooltipAllowed && this.tooltip.nodeId !== node.id)) {
         this.tooltip.nodeId = node.id;
         this.tooltip.isActive = true;
         this.$nextTick(() => {
           this.tooltip.coordinates = { x: event.clientX, y: event.clientY };
           this.calculateTooltipPosition();
         });
+      } else if (this.tooltip.nodeId === node.id && this.tooltip.isActive === true) {
+        this.tooltip.isActive = false;
       }
     },
     calculateTooltipPosition() {
