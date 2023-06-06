@@ -53,6 +53,7 @@ export default {
           }
         });
         this.groups.sort();
+        this.selectTab();
         this.$emit('groups-refreshed');
       });
     },
@@ -62,7 +63,17 @@ export default {
           listing.refresh();
         })
       }
-    }
+    },
+    /**
+     * Select a tab provided from the URL
+     */
+     selectTab() {
+      const url = new URL(window.location.href);
+      const hash = url.hash.substring(1).replaceAll("_", " ");
+      if (hash !== "") {
+        this.$refs.tabs.currentTab = this.groups.findIndex((group) => group.toLowerCase() === hash);
+      }
+    },
   },
   mounted() {
     this.refresh();
