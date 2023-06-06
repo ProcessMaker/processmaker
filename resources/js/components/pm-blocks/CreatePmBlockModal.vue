@@ -128,7 +128,7 @@ export default {
         formData.append("description", this.description);
         formData.append("user_id", this.currentUserId);
         formData.append("pm_block_category_id", this.pm_block_category_id);
-        ProcessMaker.apiClient.post("pm-blocks/store", formData)
+        ProcessMaker.apiClient.post("pm-blocks", formData)
         .then(response => {
           ProcessMaker.alert(this.$t("PM Block successfully created"), "success");
           // TODO: Handle redirect
