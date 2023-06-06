@@ -324,6 +324,8 @@ class ProcessTranslation
             'bpmn:callActivity',
         ];
 
+        $screenIds = [];
+
         foreach (Utils::getElementByMultipleTags($this->process->getDefinitions(true), $tags) as $element) {
             $screenId = $element->getAttribute('pm:screenRef');
             $interstitialScreenId = $element->getAttribute('pm:interstitialScreenRef');
