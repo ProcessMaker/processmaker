@@ -304,7 +304,7 @@ class ProcessController extends Controller
      * )
      */
     public function update(Request $request, Process $process)
-    {      
+    {
         $request->validate(Process::rules($process));
 
         // bpmn validation
@@ -358,7 +358,7 @@ class ProcessController extends Controller
                 return ['error' => $error->getMessage()];
             }
         }
-      
+
         // Catch errors to send more specific status
         try {
             $process->saveOrFail();

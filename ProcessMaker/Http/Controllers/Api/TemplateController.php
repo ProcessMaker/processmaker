@@ -12,7 +12,6 @@ use ProcessMaker\Models\Template;
 
 class TemplateController extends Controller
 {
-
     protected array $types = [
         'process' => [Process::class, ProcessTemplate::class, ProcessCategory::class, 'process_category_id', 'process_templates'],
     ];
@@ -102,7 +101,11 @@ class TemplateController extends Controller
     public function updateTemplateConfigs(string $type, Request $request)
     {
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
-        $changes = $request->only(['id', 'name', 'description', 'process_category_id']);
+        if ($request->has(['id', 'name', 'description', 'process_category_id'])) {
+            $changes = $request->only(['id', 'name', 'description', 'process_category_id']);
+        } else {
+            $changes = [];
+        }
         $queryOldtemplate = ProcessTemplates::select('id', 'name', 'description', 'process_category_id')
         ->where('id', $request->id)->get()->first()->toArray();
         $response = $this->template->updateTemplateConfigs($type, $request);
@@ -134,12 +137,10 @@ class TemplateController extends Controller
      */
     public function delete(string $type, Request $request)
     {
+        $template = ProcessTemplates::find($request->id);
         $response = $this->template->deleteTemplate($type, $request);
         //Call event to Store Template Deleted on LOG
-        $query = ProcessTemplates::find($request->id);
-        $templateName = $query->toArray()['name'];
-        TemplateDeleted::dispatch($templateName);
-
+        TemplateDeleted::dispatch($template);
         return $response;
     }
 

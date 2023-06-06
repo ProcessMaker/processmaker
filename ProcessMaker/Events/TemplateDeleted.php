@@ -5,21 +5,22 @@ namespace ProcessMaker\Events;
 use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
+use ProcessMaker\Models\ProcessTemplates;
 
 class TemplateDeleted implements SecurityLogEventInterface
 {
     use Dispatchable;
 
-    private string $templateName;
+    private ProcessTemplates $template;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(string $templateName)
+    public function __construct(ProcessTemplates $template)
     {
-        $this->templateName = $templateName;
+        $this->template = $template;
     }
 
     /**
@@ -30,7 +31,7 @@ class TemplateDeleted implements SecurityLogEventInterface
     public function getData(): array
     {
         return [
-            'template_name' => $this->templateName,
+            'template_name' => $this->template->toArray()['name'],
             'deleted_at' => Carbon::now()
         ];
     }
@@ -53,7 +54,7 @@ class TemplateDeleted implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            'template_name' => $this->templateName
+            'template_name' => $this->template->toArray()['name']
         ];
     }
 }
