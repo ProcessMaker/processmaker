@@ -1,7 +1,7 @@
 <template>
   <div role="group">
     <label for="timeout">{{ $t('Timeout') }}</label>
-    <b-form-input id="timeout" type="number" v-model="config.timeout"></b-form-input>
+    <b-form-input id="timeout" type="number" min="0" max="3600" v-model="config.timeout"></b-form-input>
     <small class="form-text text-muted">{{ helper }}</small>
   </div>
 </template>
