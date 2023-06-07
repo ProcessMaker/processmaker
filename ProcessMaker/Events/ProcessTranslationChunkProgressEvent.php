@@ -11,7 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Models\User;
 
-class ProcessTranslationChunkEvent implements ShouldBroadcastNow
+class ProcessTranslationChunkProgressEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -21,18 +21,18 @@ class ProcessTranslationChunkEvent implements ShouldBroadcastNow
 
     public $language;
 
-    public $data;
+    public $batch;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($processId, $language, $data)
+    public function __construct($processId, $language, $batch)
     {
         $this->processId = $processId;
         $this->language = $language;
-        $this->data = $data;
+        $this->batch = $batch;
     }
 
     /**
@@ -48,7 +48,7 @@ class ProcessTranslationChunkEvent implements ShouldBroadcastNow
     public function broadcastWith()
     {
         return [
-            'stream' => $this->data,
+            'batch' => $this->batch,
         ];
     }
 }
