@@ -229,17 +229,23 @@
                 ref="forms">
               </request-screens>
             </div>
-            <div v-if="activeTab === 'overview'" class="tab-pane fade p-0" id="overview" role="tabpanel" aria-labelledby="overview-tab"
-              style="height: 720px">
+            <div v-if="activeTab === 'overview'" class="tab-pane fade p-0" id="overview" role="tabpanel"
+              aria-labelledby="overview-tab" style="height: 720px">
               <div class="card" style="border-top: none !important;">
                 <div class="card-body">
                   <h4>
                     {{ __(':name In-Flight Map', ['name' => $request->process->name]) }}
                   </h4>
-                  <iframe class="card"
-                    src="{{ route('modeler.inflight', ['process' => $request->process->id, 'request_id' => $request->id]) }}"
-                    width="100%" height="640px" frameborder="0" style="border-radius: 4px;"></iframe>
-                  @include('processes.modeler.partials.map-legend')
+                  <div v-if="iframeLoading" class="d-flex justify-content-center">
+                    <div class="spinner-border text-primary" role="status"></div>
+                  </div>
+                  <div v-show="!iframeLoading">
+                    <iframe class="card"
+                      src="{{ route('modeler.inflight', ['process' => $request->process->id, 'request_id' => $request->id]) }}"
+                      width="100%" height="640px" frameborder="0" style="border-radius: 4px;"
+                      @load="onLoadIframe"></iframe>
+                    @include('processes.modeler.partials.map-legend')
+                  </div>
                 </div>
               </div>
             </div>
@@ -405,6 +411,7 @@
             voting: false,
             remove: false,
           },
+          iframeLoading: false,
         };
       },
       computed: {
@@ -523,7 +530,13 @@
       methods: {
         switchTab(tab) {
           this.activeTab = tab;
+          if (tab === 'overview') {
+            this.iframeLoading = true;
+          }
           ProcessMaker.EventBus.$emit('tab-switched', tab);
+        },
+        onLoadIframe() {
+          this.iframeLoading = false;
         },
         requestStatusClass(status) {
           status = status.toLowerCase();
