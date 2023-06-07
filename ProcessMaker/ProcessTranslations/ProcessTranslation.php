@@ -389,6 +389,25 @@ class ProcessTranslation
         return true;
     }
 
+    public function cancelTranslation($language)
+    {
+        // Remove pending token
+        $processTranslationToken = ProcessTranslationToken::where('process_id', $this->process->id)
+            ->where('language', $language)
+            ->first();
+
+        if ($processTranslationToken) {
+            $token = $processTranslationToken->token;
+            $processTranslationToken->delete();
+
+            // Cancel pending batch jobs
+            $batch = Bus::findBatch($token);
+            $batch->cancel();
+        }
+
+        return true;
+    }
+
     public function updateTranslations($screenTranslations, $language)
     {
         foreach ($screenTranslations as $screenTranslation) {
