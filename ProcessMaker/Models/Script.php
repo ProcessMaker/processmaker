@@ -80,8 +80,8 @@ class Script extends ProcessMakerModel implements ScriptInterface
 
     protected $casts = [
         'timeout' => 'integer',
-        'retryAttempts' => 'integer',
-        'retryWaitTime' => 'integer',
+        'retry_attempts' => 'integer',
+        'retry_wait_time' => 'integer',
     ];
 
     private $errorHandling = [];
@@ -158,6 +158,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
                 Log::error('Retry the runScript process.');
                 if ($this->attemptedRetries >= $this->retryAttempts()) {
                     $message = "Script failed after $this->attemptedRetries attempts";
+                    $message = $message . "\n" . $e->getMessage();
                     Log::error($message);
                     throw new \RuntimeException($message);
                 }
@@ -374,7 +375,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
      */
     private function retryAttempts()
     {
-        $result = $this->getErrorHandlingNumberByType('retryAttempts');
+        $result = $this->getErrorHandlingNumberByType('retry_attempts');
         return $result === -1 ? $this->retry_attempts : $result;
     }
 
@@ -383,7 +384,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
      */
     private function retryWaitTime()
     {
-        $result = $this->getErrorHandlingNumberByType('retryWaitTime');
+        $result = $this->getErrorHandlingNumberByType('retry_wait_time');
         return $result === -1 ? $this->retry_wait_time : $result;
     }
 }

@@ -1,7 +1,7 @@
 <template>
   <div role="group">
     <label for="retry_wait_time">{{ $t('Retry Wait Time') }}</label>
-    <b-form-input id="retry_wait_time" type="number" v-model="config.retry_wait_time"></b-form-input>
+    <b-form-input id="retry_wait_time" type="number" v-model="config.retry_wait_time" min="0" max="3600"></b-form-input>
     <small class="form-text text-muted">{{ helper }}</small>
   </div>
 </template>
@@ -47,9 +47,9 @@ export default {
   computed: {
     helper() {
       if (this.type === 'script') {
-        return this.$t('Set maximum run time in seconds. Leave empty to use script default. Set to 0 for no retry wait time.');
+        return this.$t('Set maximum run retry wait time in seconds. Leave empty to use script default. Set to 0 for no retry wait time.');
       } else if (this.type === 'data-connector') {
-        return this.$t('Set maximum run time in seconds. Leave empty to use data connector default. Set to 0 for no retry wait time.');
+        return this.$t('Set maximum run retry wait time in seconds. Leave empty to use data connector default. Set to 0 for no retry wait time.');
       }
     }
   }

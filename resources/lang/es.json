@@ -1661,13 +1661,5 @@
   "Nothing searched yet": "Nada buscado aún",
   "Recently searched": "Buscado recientemente",
   "The history is empty": "El historial está vacío",
-  "Powered by ProcessMaker AI": "Desarrollado por ProcessMaker AI",
-  "Set maximum run time in seconds. Leave empty to use script default. Set to 0 for no timeout.": "Set maximum run time in seconds. Leave empty to use script default. Set to 0 for no timeout.",
-  "Set maximum run time in seconds. Leave empty to use data connector default. Set to 0 for no timeout.": "Set maximum run time in seconds. Leave empty to use data connector default. Set to 0 for no timeout.",
-  "Retry Attempts": "Retry Attempts",
-  "Set maximum run time in seconds. Leave empty to use script default. Set to 0 for no retry attempts.": "Set maximum run time in seconds. Leave empty to use script default. Set to 0 for no retry attempts.",
-  "Set maximum run time in seconds. Leave empty to use data connector default. Set to 0 for no retry attempts.": "Set maximum run time in seconds. Leave empty to use data connector default. Set to 0 for no retry attempts.",
-  "Retry Wait Time": "Retry Wait Time",
-  "Set maximum run time in seconds. Leave empty to use script default. Set to 0 for no retry wait time.": "Set maximum run time in seconds. Leave empty to use script default. Set to 0 for no retry wait time.",
-  "Set maximum run time in seconds. Leave empty to use data connector default. Set to 0 for no retry wait time.": "Set maximum run time in seconds. Leave empty to use data connector default. Set to 0 for no retry wait time."
+  "Powered by ProcessMaker AI": "Desarrollado por ProcessMaker AI"
 }

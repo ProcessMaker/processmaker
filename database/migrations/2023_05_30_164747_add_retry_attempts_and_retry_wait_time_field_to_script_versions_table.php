@@ -14,8 +14,8 @@ class AddRetryAttemptsAndRetryWaitTimeFieldToScriptVersionsTable extends Migrati
     public function up()
     {
         Schema::table('script_versions', function (Blueprint $table) {
-            $table->unsignedSmallInteger('retry_attempts')->after('code')->default(60);
-            $table->unsignedSmallInteger('retry_wait_time')->after('code')->default(60);
+            $table->unsignedSmallInteger('retry_attempts')->after('code')->default(0);
+            $table->unsignedSmallInteger('retry_wait_time')->after('code')->default(5);
         });
     }
 

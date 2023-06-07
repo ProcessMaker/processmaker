@@ -1,7 +1,7 @@
 <template>
   <div role="group">
     <label for="retry_attempts">{{ $t('Retry Attempts') }}</label>
-    <b-form-input id="retry_attempts" type="number" v-model="config.retry_attempts"></b-form-input>
+    <b-form-input id="retry_attempts" type="number" v-model="config.retry_attempts" min="0" max="50"></b-form-input>
     <small class="form-text text-muted">{{ helper }}</small>
   </div>
 </template>
@@ -47,9 +47,9 @@ export default {
   computed: {
     helper() {
       if (this.type === 'script') {
-        return this.$t('Set maximum run time in seconds. Leave empty to use script default. Set to 0 for no retry attempts.');
+        return this.$t('Set maximum run retry attempts in seconds. Leave empty to use script default. Set to 0 for no retry attempts.');
       } else if (this.type === 'data-connector') {
-        return this.$t('Set maximum run time in seconds. Leave empty to use data connector default. Set to 0 for no retry attempts.');
+        return this.$t('Set maximum run retry attempts in seconds. Leave empty to use data connector default. Set to 0 for no retry attempts.');
       }
     }
   }
