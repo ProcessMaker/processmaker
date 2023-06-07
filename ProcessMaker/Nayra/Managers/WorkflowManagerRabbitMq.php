@@ -34,22 +34,12 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         $version = $definitions->getLatestVersion();
         $userId = $this->getCurrentUserId();
 
-        // Create inmediatly a new process request
-        $request = ProcessRequest::create([
-            'process_id' => $definitions->id,
-            'user_id' => $userId,
-            'callable_id' => $event->getProcess()->getId(),
-            'status' => 'ACTIVE',
-            'data' => $data,
-            'name' => $definitions->name,
-            'do_not_sanitize' => [],
-            'initiated_at' => Carbon::now(),
-            'process_version_id' => $version->getKey(),
-            'signal_events' => [],
-        ]);
-
-        // Create triggered
-        // TO DO:
+        //Create a new data store
+        $process = $event->getProcess();
+        $dataStorage = $process->getRepository()->createDataStore();
+        $dataStorage->setData($data);
+        $request = $process->getEngine()->createExecutionInstance($process, $dataStorage);
+        $event->start($request);
 
         // Dispatch start process action
         $this->dispatchAction([
@@ -78,6 +68,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             ],
         ]);
 
+        //Return the instance created
         return $request;
     }
 
