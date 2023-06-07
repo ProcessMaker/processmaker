@@ -228,7 +228,7 @@
                                 </div>
 
                                 <create-process-translation-modal 
-                                    ref="create-process-translation-modal" 
+                                    ref="createProcessTranslationModal" 
                                     :process-id="{{ $process->id }}"
                                     :permission="{{ \Auth::user()->hasPermissionsFor('process-translations') }}"
                                     process-name="{{ $process->name }}"
@@ -432,6 +432,7 @@
           },
           onTranslatedLanguagesChanged(translatedLanguages) {
             this.translatedLanguages = translatedLanguages;
+            this.$refs.createProcessTranslationModal.getAvailableLanguages();
           },
           onEditTranslation(editTranslation) {
             this.editTranslation = editTranslation;
