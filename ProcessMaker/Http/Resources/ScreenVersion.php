@@ -21,6 +21,8 @@ class ScreenVersion extends ApiResource
 
         $include = explode(',', $request->input('include', ''));
 
+        $task = null;
+
         if (in_array('nested', $include)) {
             $task = $request->route('task');
             $processRequest = null;
@@ -42,6 +44,9 @@ class ScreenVersion extends ApiResource
             $screenTranslation = new ScreenTranslation($screenVersion);
             $screenVersion['config'] = $screenTranslation->applyTranslations($screenVersion);
             // Apply translations to nested screens
+            if (!array_key_exists('nested', $screenVersion)) {
+                return $screenVersion;
+            }
             foreach ($screenVersion['nested'] as &$nestedScreen) {
                 $nestedScreen['config'] = $screenTranslation->applyTranslations($nestedScreen);
             }
