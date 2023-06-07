@@ -229,7 +229,7 @@
                 ref="forms">
               </request-screens>
             </div>
-            <div class="tab-pane fade p-0" id="overview" role="tabpanel" aria-labelledby="overview-tab"
+            <div v-if="activeTab === 'overview'" class="tab-pane fade p-0" id="overview" role="tabpanel" aria-labelledby="overview-tab"
               style="height: 720px">
               <div class="card" style="border-top: none !important;">
                 <div class="card-body">
@@ -372,6 +372,7 @@
       mixins: addons,
       data() {
         return {
+          activeTab: 'pending',
           showCancelRequest: false,
           //Edit data
           fieldsToUpdate: [],
@@ -521,6 +522,7 @@
       },
       methods: {
         switchTab(tab) {
+          this.activeTab = tab;
           ProcessMaker.EventBus.$emit('tab-switched', tab);
         },
         requestStatusClass(status) {
