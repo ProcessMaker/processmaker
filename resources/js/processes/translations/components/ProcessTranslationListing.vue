@@ -94,13 +94,13 @@ export default {
         {
           value: "edit-translation",
           content: "Edit Translation",
-          permission: "edit-process-translation",
+          permission: "edit-process-translations",
           icon: "fas fa-edit",
         },
         {
           value: "export-translation",
           content: "Export Translation",
-          permission: "export-process-translation",
+          permission: "export-process-translations",
           icon: "fas fa-file-export",
           link: true,
           href: "/processes/{{processId}}/export/translation/{{language}}",
@@ -108,16 +108,16 @@ export default {
         {
           value: "delete-translation",
           content: "Delete Translation",
-          permission: "delete-process-translation",
+          permission: "delete-process-translations",
           icon: "fas fa-trash",
         },
       ],
       actionsInProgress: [
         {
-          value: "cancel-translation", content: "Cancel Translation", permission: "delete-process-translation", icon: "fas fa-stop-circle",
+          value: "cancel-translation", content: "Cancel Translation", permission: "cancel-process-translations", icon: "fas fa-stop-circle",
         },
         {
-          value: "delete-translation", content: "Delete Translation", permission: "delete-process-translation", icon: "fas fa-trash",
+          value: "delete-translation", content: "Delete Translation", permission: "delete-process-translations", icon: "fas fa-trash",
         },
       ],
       inProgressButton: {
