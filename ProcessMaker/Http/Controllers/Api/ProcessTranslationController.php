@@ -57,7 +57,7 @@ class ProcessTranslationController extends Controller
         foreach ($processTranslationTokens as $processTranslationToken) {
             $batch = Bus::findBatch($processTranslationToken->token);
             $processTranslationToken->humanLanguage = Languages::ALL[$processTranslationToken['language']];
-            $processTranslationToken->batchInfo = $batch ? $batch : null;
+            $processTranslationToken->batch = $batch ? $batch : null;
             $translatingLanguages[] = $processTranslationToken;
         }
 
@@ -110,6 +110,15 @@ class ProcessTranslationController extends Controller
         return response()->json([
             'translations' => $screensTranslations,
         ]);
+    }
+
+    public function cancel(Request $request, $processId, $language)
+    {
+        $process = Process::findOrFail($processId);
+        $processTranslation = new ProcessTranslation($process);
+        $processTranslation->cancelTranslation($language);
+
+        return response()->json();
     }
 
     public function delete(Request $request, $processId, $language)
