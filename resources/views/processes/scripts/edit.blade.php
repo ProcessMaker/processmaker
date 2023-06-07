@@ -72,19 +72,13 @@
                             'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}', 'required', 'aria-required' => 'true']) !!}
                             <div class="invalid-feedback" role="alert" v-if="errors.description">@{{errors.description[0]}}</div>
                         </div>
-                        <div class="form-group">
-                            {!! Form::label('timeout', __('Timeout')) !!}
-                            <div class="form-row ml-0">
-                                {!! Form::text('timeout', null, ['id' => 'timeout', 'class'=> 'form-control col-1',
-                                'v-model' => 'formData.timeout', 'pattern' => '[0-9]*', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.timeout}']) !!}
-                                {!! Form::range(null, null, ['id' => 'timeout-range', 'class'=> 'custom-range col ml-1 mt-2',
-                                'aria-label' => __('Use the slider to select a range'),
-                                'v-model' => 'formData.timeout', 'min' => 0, 'max' => 300]) !!}
-                                <div class="invalid-feedback" role="alert" v-if="errors.timeout">@{{errors.timeout[0]}}</div>
-                            </div>
-                            <small class="form-text text-muted"
-                                  v-if="! errors.timeout">{{ __('How many seconds the script should be allowed to run (0 is unlimited).') }}</small>
-                        </div>
+                        
+                        <error-handling-settings
+                            :error="errors.timeout ? errors.timeout[0] : null"
+                            :timeout="formData.timeout"
+                            @update:timeout="formData.timeout = $event"
+                        ></error-handling-settings>
+                        
                         <component
                             v-for="(cmp,index) in editScriptHooks"
                             :key="`edit-script-hook-${index}`"

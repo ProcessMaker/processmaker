@@ -70,31 +70,11 @@
             name="run_as_user_id"
           ></select-user>
         </b-form-group>
-        <b-form-group
-          :label="$t('Timeout')"
-          label-for="script-timeout-text"
-          :description="formDescription('Enter how many seconds the Script runs before timing out (0 is unlimited).', 'timeout', addError)"
-          :invalid-feedback="errorMessage('timeout', addError)"
-          :state="errorState('timeout', addError)"
-        >
-          <div class="d-flex align-items-center w-100">
-            <b-form-input
-              v-model="timeout"
-              class="w-25"
-              type="number"
-              id="script-timeout-text"
-              name="timeout"
-            ></b-form-input>
-            <b-form-input
-              v-model="timeout"
-              type="range"
-              min="0"
-              max="300"
-              :state="errorState('timeout', addError)"
-              class="ml-3 w-100"
-            ></b-form-input>
-          </div>
-        </b-form-group>
+        <error-handling-settings
+          :timeout="timeout"
+          @update:timeout="timeout = $event"
+          :error="errorState('timeout', addError) ? null : errorMessage('timeout', addError)"
+        ></error-handling-settings>
         <component
           v-for="(cmp,index) in createScriptHooks"
           :key="`create-script-hook-${index}`"
@@ -115,9 +95,10 @@
 
 <script>
   import { FormErrorsMixin, Modal, Required } from "SharedComponents";
+  import ErrorHandlingSettings from "../../../components/shared/ErrorHandlingSettings";
 
   export default {
-    components: { Modal, Required },
+    components: { Modal, Required, ErrorHandlingSettings },
     mixins: [ FormErrorsMixin ],
     props: ["countCategories", "scriptExecutors"],
     data: function() {

@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Models;
 
+use Hamcrest\Type\IsNumeric;
+use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Contracts\ScriptInterface;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
@@ -79,6 +81,8 @@ class Script extends ProcessMakerModel implements ScriptInterface
         'timeout' => 'integer',
     ];
 
+    private $errorHandling = [];
+
     /**
      * Override the default boot method to allow access to lifecycle hooks
      *
@@ -126,11 +130,12 @@ class Script extends ProcessMakerModel implements ScriptInterface
      * @param array $data
      * @param array $config
      */
-    public function runScript(array $data, array $config, $tokenId = '')
+    public function runScript(array $data, array $config, $tokenId = '', $errorHandling = [])
     {
         if (!$this->scriptExecutor) {
             throw new ScriptLanguageNotSupported($this->language);
         }
+        $this->errorHandling = $errorHandling;
         $runner = new ScriptRunner($this->scriptExecutor);
         $runner->setTokenId($tokenId);
         $user = User::find($this->run_as_user_id);
@@ -138,7 +143,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
             throw new \RuntimeException('A user is required to run scripts');
         }
 
-        return $runner->run($this->code, $data, $config, $this->timeout, $user);
+        return $runner->run($this->code, $data, $config, $this->timeout(), $user);
     }
 
     /**
@@ -311,5 +316,15 @@ class Script extends ProcessMakerModel implements ScriptInterface
         if (empty($this->language)) {
             $this->language = $this->scriptExecutor->language;
         }
+    }
+
+    private function timeout()
+    {
+        $errorHandlingTimeout = Arr::get($this->errorHandling, 'timeout', null);
+        if (is_numeric($errorHandlingTimeout)) {
+            return (int) $errorHandlingTimeout;
+        }
+
+        return $this->timeout;
     }
 }
