@@ -131,8 +131,9 @@ export default {
         ProcessMaker.apiClient.post("pm-blocks", formData)
         .then(response => {
           ProcessMaker.alert(this.$t("PM Block successfully created"), "success");
-          // TODO: Handle redirect
-          // window.location = `/processes/${this.assetId}/pm-blocks`;
+          window.setTimeout(() => {
+            window.location.href = `/modeler/${response.data.process_id}`;
+          }, 3000)
           this.close();
         }).catch(error => {
           this.errors = error.response.data;
