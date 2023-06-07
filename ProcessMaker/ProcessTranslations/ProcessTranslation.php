@@ -414,8 +414,8 @@ class ProcessTranslation
             $screen = Screen::findOrFail($screenTranslation['id']);
             $translations = $screen->translations;
 
-            if (!$screenTranslation['translations']) {
-                $screenTranslation['translations'][$language] = [];
+            if (!$screenTranslation['translations'] || !array_key_exists($language, $screenTranslation['translations'])) {
+                $screenTranslation['translations'][$language]['strings'] = [];
             }
 
             foreach ($screenTranslation['translations'] as $key => $value) {

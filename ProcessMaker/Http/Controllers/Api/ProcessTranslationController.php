@@ -43,6 +43,15 @@ class ProcessTranslationController extends Controller
 
         return response()->json([
             'translatedLanguages' => $languageList,
+            'permissions' => [
+                'create'   => $request->user()->can('create-process-translations'),
+                'view' => $request->user()->can('view-process-translations'),
+                'edit'   => $request->user()->can('edit-process-translations'),
+                'delete' => $request->user()->can('delete-process-translations'),
+                'cancel' => $request->user()->can('cancel-process-translations'),
+                'import' => $request->user()->can('import-process-translations'),
+                'export' => $request->user()->can('export-process-translations'),
+            ],
         ]);
     }
 
