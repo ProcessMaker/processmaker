@@ -9,7 +9,8 @@ use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class UserUpdated implements SecurityLogEventInterface
 {
-    use Dispatchable, FormatSecurityLogChanges;
+    use Dispatchable;
+    use FormatSecurityLogChanges;
 
     private User $user;
 
@@ -30,8 +31,8 @@ class UserUpdated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        $old_data = array_diff_assoc($this->user->getOriginal(), $this->user->getAttributes());
-        $new_data = array_diff_assoc($this->user->getAttributes(), $this->user->getOriginal());
+        $oldData = array_diff_assoc($this->user->getOriginal(), $this->user->getAttributes());
+        $newData = array_diff_assoc($this->user->getAttributes(), $this->user->getOriginal());
 
         return array_merge([
             'name' => [
@@ -39,7 +40,7 @@ class UserUpdated implements SecurityLogEventInterface
                 'link' => route('users.edit', $this->user->getAttribute('id')) . '#nav-home',
             ],
             'username' => $this->user->getAttribute('username'),
-        ], $this->formatChanges($new_data, $old_data));
+        ], $this->formatChanges($newData, $oldData));
     }
 
     /**
@@ -49,7 +50,11 @@ class UserUpdated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return $this->user->getAttributes();
+        return [
+            'id' => $this->user->getAttribute('id'),
+            'username' => $this->user->getAttribute('username'),
+            'status' => $this->user->getAttribute('status'),
+        ];
     }
 
     /**

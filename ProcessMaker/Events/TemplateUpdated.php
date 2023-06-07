@@ -9,7 +9,8 @@ use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class TemplateUpdated implements SecurityLogEventInterface
 {
-    use Dispatchable, FormatSecurityLogChanges;
+    use Dispatchable;
+    use FormatSecurityLogChanges;
 
     private array $changes;
     private array $original;
@@ -21,7 +22,7 @@ class TemplateUpdated implements SecurityLogEventInterface
      * @return void
      */
     public function __construct(array $changes, array $original, bool $processType)
-    {   
+    {
         $this->changes = $changes;
         $this->original = $original;
         $this->processType = $processType;
@@ -42,7 +43,7 @@ class TemplateUpdated implements SecurityLogEventInterface
                 'updated_at' => Carbon::now()
             ];
         } else {
-            $oldData = array_diff_assoc($this->original,$this->changes);
+            $oldData = array_diff_assoc($this->original, $this->changes);
             $newData = array_diff_assoc($this->changes, $this->original);
 
             return array_merge([
@@ -54,6 +55,16 @@ class TemplateUpdated implements SecurityLogEventInterface
     }
 
     /**
+     * Get specific changes without format related to the event
+     *
+     * @return array
+     */
+    public function getChanges(): array
+    {
+        return [];
+    }
+
+    /**
      * Get the Event name with the syntax ‘[Past-test Action] [Object]’
      *
      * @return string
@@ -61,15 +72,5 @@ class TemplateUpdated implements SecurityLogEventInterface
     public function getEventName(): string
     {
         return 'TemplateUpdated';
-    }
-
-    /**
-     * Get specific changes without format related to the event
-     *
-     * @return array
-     */
-    public function getChanges(): array
-    {
-        return $this->changes;
     }
 }

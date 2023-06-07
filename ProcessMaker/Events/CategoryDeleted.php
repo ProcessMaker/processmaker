@@ -37,21 +37,11 @@ class CategoryDeleted implements SecurityLogEventInterface
     }
 
     /**
-     * Get the Event name with the syntax ‘[Past-test Action] [Object]’
-     *
-     * @return string
-     */
-    public function getEventName(): string
-    {
-        return 'CategoryDeleted';
-    }
-
-    /**
      * Get specific changes without format related to the event
      *
      * @return array
      */
-    
+
     public function getChanges(): array
     {
         return [
@@ -59,5 +49,15 @@ class CategoryDeleted implements SecurityLogEventInterface
             'name' => $this->processCategory->getAttribute('name'),
             'status' => $this->processCategory->getAttribute('status')
         ];
+    }
+
+    /**
+     * Get the Event name with the syntax ‘[Past-test Action] [Object]’
+     *
+     * @return string
+     */
+    public function getEventName(): string
+    {
+        return 'CategoryDeleted';
     }
 }

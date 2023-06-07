@@ -9,7 +9,7 @@ class ScreenCreated implements SecurityLogEventInterface
 {
     use Dispatchable;
     private array $newScreen;
-    
+
     /**
      * Create a new event instance.
      *
@@ -36,6 +36,16 @@ class ScreenCreated implements SecurityLogEventInterface
     }
 
     /**
+     * Get specific changes without format related to the event
+     *
+     * @return array
+     */
+    public function getChanges(): array
+    {
+        return $this->getData();
+    }
+
+    /**
      * Get the Event name with the syntax ‘[Past-test Action] [Object]’
      *
      * @return string
@@ -43,20 +53,5 @@ class ScreenCreated implements SecurityLogEventInterface
     public function getEventName(): string
     {
         return 'ScreenCreated';
-    }
-
-    /**
-     * Get specific changes without format related to the event
-     *
-     * @return array
-     */
-    public function getChanges(): array
-    {
-        return [
-            'name' => $this->newScreen['title'],
-            'description' => $this->newScreen['description'],
-            'type' => $this->newScreen['type'],
-            'screen_category_id' => $this->newScreen['screen_category_id']
-        ];
     }
 }

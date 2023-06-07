@@ -9,11 +9,12 @@ use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class CategoryCreated implements SecurityLogEventInterface
 {
-    use Dispatchable, FormatSecurityLogChanges;
+    use Dispatchable;
+    use FormatSecurityLogChanges;
 
-    private ProcessCategory $enVariable;
+    private ProcessCategory $category;
     private array $variable = [];
-    
+
     /**
      * Create a new event instance.
      *
@@ -22,7 +23,7 @@ class CategoryCreated implements SecurityLogEventInterface
     public function __construct(array $data)
     {
         $this->variable = $data;
-        $this->enVariable = ProcessCategory::where('name', $data['name'])->first();
+        $this->category = ProcessCategory::where('name', $data['name'])->first();
     }
 
     /**
@@ -35,10 +36,22 @@ class CategoryCreated implements SecurityLogEventInterface
         return [
             'name' => [
                 'label' => $this->variable['name'],
-                'link' => route('processes.create', $this->enVariable),
+                'link' => route('processes.create', $this->category),
             ],
             'name' => $this->variable['name'],
-            'created_at' => $this->enVariable->getAttribute('created_at'),
+            'created_at' => $this->category->getAttribute('created_at'),
+        ];
+    }
+
+    /**
+     * Get specific changes without format related to the event
+     *
+     * @return array
+     */
+    public function getChanges(): array
+    {
+        return [
+            $this->category
         ];
     }
 
@@ -50,17 +63,5 @@ class CategoryCreated implements SecurityLogEventInterface
     public function getEventName(): string
     {
         return 'CategoryCreated';
-    }
-
-    /**
-     * Get specific changes without format related to the event
-     *
-     * @return array
-     */
-    public function getChanges(): array
-    {
-        return [
-            $this->enVariable
-        ];
     }
 }

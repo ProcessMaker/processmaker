@@ -31,8 +31,21 @@ class TemplateDeleted implements SecurityLogEventInterface
     public function getData(): array
     {
         return [
-            'template_name' => $this->template->toArray()['name'],
+            'template_name' => $this->template->name,
             'deleted_at' => Carbon::now()
+        ];
+    }
+
+    /**
+     * Get specific changes without format related to the event
+     *
+     * @return array
+     */
+    public function getChanges(): array
+    {
+        return [
+            'id' => $this->template->id,
+            'template_name' => $this->template->name
         ];
     }
 
@@ -44,17 +57,5 @@ class TemplateDeleted implements SecurityLogEventInterface
     public function getEventName(): string
     {
         return 'TemplateDeleted';
-    }
-
-    /**
-     * Get specific changes without format related to the event
-     *
-     * @return array
-     */
-    public function getChanges(): array
-    {
-        return [
-            'template_name' => $this->template->toArray()['name']
-        ];
     }
 }

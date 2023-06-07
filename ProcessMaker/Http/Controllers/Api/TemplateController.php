@@ -105,16 +105,11 @@ class TemplateController extends Controller
     public function updateTemplateConfigs(string $type, Request $request)
     {
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
-        if ($request->has(['id', 'name', 'description', 'process_category_id'])) {
-            $changes = $request->only(['id', 'name', 'description', 'process_category_id']);
-        } else {
-            $changes = [];
-        }
-        $queryOldtemplate = ProcessTemplates::select('id', 'name', 'description', 'process_category_id')
-        ->where('id', $request->id)->get()->first()->toArray();
+        $changes = $request->all();
+        $original = ProcessTemplates::select(array_keys($changes))->find($request->id)->getOriginal();
         $response = $this->template->updateTemplateConfigs($type, $request);
         //Call event to log Template Config changes
-        TemplateUpdated::dispatch($changes, $queryOldtemplate, false);
+        TemplateUpdated::dispatch($changes, $original, false);
 
         return $response;
     }

@@ -37,6 +37,19 @@ class ScreenDeleted implements SecurityLogEventInterface
     }
 
     /**
+     * Get specific changes without format related to the event
+     *
+     * @return array
+     */
+    public function getChanges(): array
+    {
+        return array_merge(
+            ['id' => $this->screen->getAttribute('id')],
+            $this->getData()
+        );
+    }
+
+    /**
      * Get the Event name with the syntax ‘[Past-test Action] [Object]’
      *
      * @return string
@@ -44,15 +57,5 @@ class ScreenDeleted implements SecurityLogEventInterface
     public function getEventName(): string
     {
         return 'ScreenDeleted';
-    }
-
-    /**
-     * Get specific changes without format related to the event
-     *
-     * @return array
-     */
-    public function getChanges(): array
-    {
-        return $this->screen->getAttributes();
     }
 }

@@ -9,13 +9,14 @@ use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class CategoryUpdated implements SecurityLogEventInterface
 {
-    use Dispatchable, FormatSecurityLogChanges;
+    use Dispatchable;
+    use FormatSecurityLogChanges;
 
-    private ProcessCategory $enVariable;
+    private ProcessCategory $category;
 
     private array $changes;
     private array $original;
-    
+
     /**
      * Create a new event instance.
      *
@@ -23,7 +24,7 @@ class CategoryUpdated implements SecurityLogEventInterface
      */
     public function __construct(ProcessCategory $data, array $changes, array $original)
     {
-        $this->enVariable = $data;
+        $this->category = $data;
         $this->changes = $changes;
         $this->original = $original;
     }
@@ -37,21 +38,11 @@ class CategoryUpdated implements SecurityLogEventInterface
     {
         return array_merge([
             'name' => [
-                'label' => $this->enVariable->getAttribute('name'),
-                'link' => route('processes.index', $this->enVariable) . '#nav-categories',
+                'label' => $this->category->getAttribute('name'),
+                'link' => route('processes.index', $this->category) . '#nav-categories',
             ],
-            'last_modified' => $this->enVariable->getAttribute('updated_at'),
+            'last_modified' => $this->category->getAttribute('updated_at'),
         ], $this->formatChanges($this->changes, $this->original));
-    }
-
-    /**
-     * Get the Event name with the syntax ‘[Past-test Action] [Object]’
-     *
-     * @return string
-     */
-    public function getEventName(): string
-    {
-        return 'CategoryUpdated';
     }
 
     /**
@@ -62,5 +53,15 @@ class CategoryUpdated implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return $this->formatChanges($this->changes, $this->original);
+    }
+
+    /**
+     * Get the Event name with the syntax ‘[Past-test Action] [Object]’
+     *
+     * @return string
+     */
+    public function getEventName(): string
+    {
+        return 'CategoryUpdated';
     }
 }

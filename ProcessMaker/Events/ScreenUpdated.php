@@ -9,7 +9,8 @@ use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class ScreenUpdated implements SecurityLogEventInterface
 {
-    use Dispatchable, FormatSecurityLogChanges;
+    use Dispatchable;
+    use FormatSecurityLogChanges;
 
     private Screen $screen;
     private array $changes;
@@ -21,7 +22,7 @@ class ScreenUpdated implements SecurityLogEventInterface
      * @return void
      */
     public function __construct(Screen $screen, array $changes, array $original)
-    {  
+    {
         $this->screen = $screen;
         $this->changes = $changes;
         $this->original = $original;
@@ -46,6 +47,19 @@ class ScreenUpdated implements SecurityLogEventInterface
     }
 
     /**
+     * Get specific changes without format related to the event
+     *
+     * @return array
+     */
+    public function getChanges(): array
+    {
+        return [
+            'id' => $this->screen->getAttribute('id'),
+            'name' => $this->screen->getAttribute('title'),
+        ];
+    }
+
+    /**
      * Get the Event name with the syntax ‘[Past-test Action] [Object]’
      *
      * @return string
@@ -53,15 +67,5 @@ class ScreenUpdated implements SecurityLogEventInterface
     public function getEventName(): string
     {
         return 'ScreenUpdated';
-    }
-
-    /**
-     * Get specific changes without format related to the event
-     *
-     * @return array
-     */
-    public function getChanges(): array
-    {
-        return $this->changes;
     }
 }

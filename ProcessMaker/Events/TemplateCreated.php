@@ -8,7 +8,7 @@ use ProcessMaker\Contracts\SecurityLogEventInterface;
 class TemplateCreated implements SecurityLogEventInterface
 {
     use Dispatchable;
-    
+
     private array $payload;
 
     /**
@@ -36,6 +36,19 @@ class TemplateCreated implements SecurityLogEventInterface
     }
 
     /**
+     * Get specific changes without format related to the event
+     *
+     * @return array
+     */
+    public function getChanges(): array
+    {
+        return array_merge(
+            ['root' => $this->payload['root']],
+            $this->getData()
+        );
+    }
+
+    /**
      * Get the Event name with the syntax ‘[Past-test Action] [Object]’
      *
      * @return string
@@ -43,20 +56,5 @@ class TemplateCreated implements SecurityLogEventInterface
     public function getEventName(): string
     {
         return 'TemplateCreated';
-    }
-
-    /**
-     * Get specific changes without format related to the event
-     *
-     * @return array
-     */
-    public function getChanges(): array
-    {
-        return [
-            'type' => $this->payload['type'],
-            'version' => $this->payload['version'],
-            'name' => $this->payload['name'],
-            'root' => $this->payload['root']
-        ];
     }
 }
