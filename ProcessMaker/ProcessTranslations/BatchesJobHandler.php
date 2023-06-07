@@ -89,7 +89,8 @@ class BatchesJobHandler
                         $languageTranslationHandler,
                         'html',
                         $chunk,
-                        $this->targetLanguage
+                        $this->targetLanguage,
+                        $this->process->id,
                     )
                 );
             }
