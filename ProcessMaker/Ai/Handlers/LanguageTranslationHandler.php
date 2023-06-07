@@ -67,8 +67,6 @@ class LanguageTranslationHandler extends OpenAiHandler
             $fullResponse .= $response->choices[0]->text;
         }
 
-        \Log::info($fullResponse);
-
         return $this->formatResponse($fullResponse);
     }
 
