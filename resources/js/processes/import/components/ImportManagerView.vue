@@ -403,9 +403,31 @@ export default {
                     const { processId } = response.data;
                     const successMessage = this.$t('Process was successfully imported');
 
-                    ProcessMaker.alert(successMessage, 'success');
-                    window.location.href = processId ? `/modeler/${processId}` : '/processes/';
-                    this.submitted = false; // the form was successfully submitted
+                    if (response.data.message) {
+                        const message = response.data.message;
+                        let taskList = "";
+
+                        message.serviceTasksNames.forEach(taskName => {
+                            taskList = taskList + `<p><b>${taskName}<b></p>`;
+                        });
+
+                        let messageHtml = "<p>The following tasks in the process are configured to an email server that does not exist in this environment. The tasks have been <b>reconfigured to use the default server.</b></p>";
+                        messageHtml = messageHtml + taskList;
+
+                        ProcessMaker.messageModal(
+                            this.$t("Warning"),
+                            messageHtml,
+                            "",
+                            () => {
+                                ProcessMaker.alert(successMessage, 'success');
+                                window.location.href = processId ? `/modeler/${processId}` : '/processes/';
+                                this.submitted = false; // the form was successfully submitted
+                            });
+                    } else {
+                        ProcessMaker.alert(successMessage, 'success');
+                        window.location.href = processId ? `/modeler/${processId}` : '/processes/';
+                        this.submitted = false; // the form was successfully submitted
+                    }
                 } else {
                     // the request was successful but did not return expected data
                     throw new Error(this.$t('Unknown error while importing the Process.'));

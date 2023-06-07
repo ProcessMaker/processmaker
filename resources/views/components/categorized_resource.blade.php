@@ -39,13 +39,13 @@
             </li>
             @endif
             @isset($tabs[2])
-            <li class="nav-item">
-                <a class="nav-item nav-link" id="nav-archived-tab" data-toggle="tab" href="#nav-archived"
-                    role="tab" onclick="loadProcess()" aria-controls="nav-archived" aria-selected="true">
-                    {{ $tabs[3] ?? __('Archived Processes') }}
-                </a>
-            </li>
-        @endisset
+                <li class="nav-item">
+                    <a class="nav-item nav-link" id="nav-archived-tab" data-toggle="tab" href="#nav-archived"
+                        role="tab" onclick="loadProcess()" aria-controls="nav-archived" aria-selected="true">
+                        {{ $tabs[3] ?? __('Archived Processes') }}
+                    </a>
+                </li>
+            @endisset
         @else
             @if ($catConfig->permissions['view'])
             <li class="nav-item">
