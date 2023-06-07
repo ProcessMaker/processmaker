@@ -253,6 +253,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('process/translations/languages', [ProcessTranslationController::class, 'getAvailableLanguages'])->name('process-translation.languages');
     Route::put('process/translations/update', [ProcessTranslationController::class, 'update'])->name('process-translation.update');
     Route::get('process/translations/{processId}', [ProcessTranslationController::class, 'show'])->name('process-translation.show'); //->middleware('translation-authorization');
+    Route::post('process/translations/{processId}/cancel/translation/{language}', [ProcessTranslationController::class, 'cancel'])->name('process-translation.cancel'); //->middleware('translation-authorization');
     Route::delete('process/translations/{processId}/{language}', [ProcessTranslationController::class, 'delete'])->name('process-translation.delete'); //->middleware('translation-authorization');
     Route::post('processes/{processId}/export/translation/{language}', [ProcessTranslationController::class, 'export'])->name('process-translation.export'); //->middleware('translation-authorization');
     Route::post('processes/{processId}/import/translation/validation', [ProcessTranslationController::class, 'preimportValidation'])->name('process-translation.preImport'); //->middleware('translation-authorization');
