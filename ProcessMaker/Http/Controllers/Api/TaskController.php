@@ -151,7 +151,8 @@ class TaskController extends Controller
                     }
                 } else {
                     $key = array_search($column, $filterByFields);
-                    $query->where(is_string($key) ? $key : $column, 'like', $fieldFilter);
+                    $operator = is_numeric($fieldFilter) ? '=' : 'like';
+                    $query->where(is_string($key) ? $key : $column, $operator, $fieldFilter);
                 }
             }
         }

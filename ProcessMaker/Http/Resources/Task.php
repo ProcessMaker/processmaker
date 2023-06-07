@@ -9,9 +9,12 @@ use ProcessMaker\Http\Resources\ScreenVersion as ScreenVersionResource;
 use ProcessMaker\Http\Resources\Users;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\GroupMember;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
+use ProcessMaker\ProcessTranslations\Languages;
+use ProcessMaker\ProcessTranslations\ProcessTranslation;
 use StdClass;
 
 class Task extends ApiResource
@@ -59,7 +62,18 @@ class Task extends ApiResource
             } else {
                 $array['screen'] = null;
             }
+
+            // Apply translations to screen
+            $process = Process::findOrFail($this->processRequest->process_id);
+            $processTranslation = new ProcessTranslation($process);
+            $array['screen']['config'] = $processTranslation->applyTranslations($array['screen'], $this->processRequest->process_id);
+
+            // Apply translations to nested screens
+            foreach ($array['screen']['nested'] as &$nestedScreen) {
+                $nestedScreen['config'] = $processTranslation->applyTranslations($nestedScreen, $this->processRequest->process_id);
+            }
         }
+
         if (in_array('requestData', $include)) {
             $data = new StdClass();
             if ($this->processRequest->data) {

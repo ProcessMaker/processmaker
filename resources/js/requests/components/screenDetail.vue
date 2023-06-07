@@ -21,7 +21,7 @@
       </button>
     </div>
     <div v-for="page in printablePages" :key="page" class="card">
-      <div class="card-body h-100" style="pointer-events: none;">
+      <div class="card-body h-100" :style="styles">
         <component
           ref="print"
           :is="component"
@@ -85,6 +85,8 @@
         variant: 'transparent',
         opacity: 0.85,
         blur: '2px',
+        isPhotoVideo: false,
+        styles: '',
       }
     },
     computed: {
@@ -179,6 +181,9 @@
           for (let i = json.length - 1; i >= 0; i--) {
             if (json[i].component === 'FormButton' || json[i].component === 'FileUpload') {
               json.splice(i, 1);
+            } else if (json[i].component === 'PhotoVideo') {
+              json.splice(i, 1);
+              this.isPhotoVideo === true;
             } else {
               this.disableForm(json[i]);
             }
@@ -209,6 +214,9 @@
         handler() {
           this.loadPages();
         }
+      },
+      isPhotoVideo() {
+        this.styles = this.isPhotoVideo ? 'pointer-events : all' : 'pointer-events : none';
       }
     }
   }
