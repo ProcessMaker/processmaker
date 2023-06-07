@@ -111,7 +111,12 @@ class ScreenTranslation
     {
         $config = $screen['config'];
         $translations = $screen['translations'];
-        $targetLanguage = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+        $targetLanguage = '';
+
+        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            $targetLanguage = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+        }
+
         $targetLanguage = array_key_exists($targetLanguage, Languages::ALL) ? $targetLanguage : 'en';
 
         if (!Auth::user()->isAnonymous) {
