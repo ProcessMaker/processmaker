@@ -123,7 +123,7 @@ export default {
       },
       savePmBlock() {
         let formData = new FormData();
-        formData.append("process_id", this.assetId);
+        formData.append("creation_process_id", this.assetId);
         formData.append("name", this.name);
         formData.append("description", this.description);
         formData.append("user_id", this.currentUserId);
@@ -132,7 +132,7 @@ export default {
         .then(response => {
           ProcessMaker.alert(this.$t("PM Block successfully created"), "success");
           window.setTimeout(() => {
-            window.location.href = `/modeler/${response.data.process_id}`;
+            window.location.href = `/modeler/${response.data.creation_process_id}`;
           }, 3000)
           this.close();
         }).catch(error => {
