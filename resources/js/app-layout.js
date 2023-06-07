@@ -7,6 +7,7 @@ import notifications from "./components/requests/notifications";
 import sessionModal from "./components/Session";
 import Sidebaricon from "./components/Sidebaricon";
 import ConfirmationModal from "./components/Confirm";
+import MessageModal from "./components/Message";
 import NavbarProfile from "./components/NavbarProfile";
 import SelectStatus from "./components/SelectStatus";
 import SelectUser from "./components/SelectUser";
@@ -73,6 +74,7 @@ window.ProcessMaker.navbar = new Vue({
     notifications,
     sessionModal,
     ConfirmationModal,
+    MessageModal,
     NavbarProfile,
   },
   data() {
@@ -85,6 +87,7 @@ window.ProcessMaker.navbar = new Vue({
       confirmCallback: "",
       confirmShow: false,
       sessionShow: false,
+      messageShow: false,
       sessionTitle: "",
       sessionMessage: "",
       sessionTime: "",
@@ -162,7 +165,7 @@ window.ProcessMaker.breadcrumbs = window.ProcessMaker.navbar;
 
 // Set our own specific alert function at the ProcessMaker global object that could
 // potentially be overwritten by some custom theme support
-window.ProcessMaker.alert = function (msg, variant, showValue = 5, stayNextScreen = false, showLoader = false) {
+window.ProcessMaker.alert = function (msg, variant, showValue = 5, stayNextScreen = false, showLoader = false, msgLink = "") {
   if (showValue === 0) {
     // Just show it indefinitely, no countdown
     showValue = true;
@@ -173,6 +176,7 @@ window.ProcessMaker.alert = function (msg, variant, showValue = 5, stayNextScree
   }
   ProcessMaker.navbar.alerts.push({
     alertText: msg,
+    alertLink: msgLink,
     alertShow: showValue,
     alertVariant: String(variant),
     showLoader: showLoader,
@@ -201,6 +205,15 @@ window.ProcessMaker.confirmModal = function (title, message, variant, callback) 
   ProcessMaker.navbar.confirmVariant = variant;
   ProcessMaker.navbar.confirmCallback = callback;
   ProcessMaker.navbar.confirmShow = true;
+};
+
+// Set out own specific message modal.
+window.ProcessMaker.messageModal = function (title, message, variant, callback) {
+  ProcessMaker.navbar.confirmTitle = title || __("Message");
+  ProcessMaker.navbar.confirmMessage = message || __("");
+  ProcessMaker.navbar.confirmVariant = variant;
+  ProcessMaker.navbar.confirmCallback = callback;
+  ProcessMaker.navbar.messageShow = true;
 };
 
 // flags print forms
