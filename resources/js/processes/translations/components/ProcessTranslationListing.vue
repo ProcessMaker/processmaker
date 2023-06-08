@@ -85,6 +85,7 @@ export default {
       orderBy: "language",
       loading: false,
       loadingItems: [],
+      socketListeners: [],
       sortOrder: [
         {
           field: "name",
@@ -245,37 +246,55 @@ export default {
         )
         .then((response) => {
           this.translatingLanguages = response.data.translatingLanguages;
+          this.removeSocketListeners();
           this.subscribeToEvent();
         });
     },
+    addSocketListener(channel, event, callback) {
+      this.socketListeners.push({
+        channel,
+        event,
+      });
+      window.Echo.private(channel).listen(
+        event,
+        callback,
+      );
+    },
+    removeSocketListeners() {
+      this.socketListeners.forEach((element) => {
+        window.Echo.private(element.channel).stopListening(element.event);
+      });
+    },
     subscribeToEvent() {
       this.translatingLanguages.forEach((translatingLanguage, key) => {
-        if (window.Echo.connector.channels[`private-ProcessMaker.Models.Process.${this.processId}.Language.${translatingLanguage.language}`] === undefined) {
-          // Subscribe to streamed responses
-          window.Echo.private(
-            `ProcessMaker.Models.Process.${this.processId}.Language.${translatingLanguage.language}`,
-          ).listen(".ProcessMaker\\Events\\ProcessTranslationChunkEvent", (response) => {
-            if (response.stream && this.translatingLanguages[key]) {
-              this.$set(this.translatingLanguages[key], "stream", response.stream);
-              let streamString = "";
-              if (typeof this.translatingLanguages[key].streamString !== 'undefined') {
-                streamString = this.translatingLanguages[key].streamString;
-              }
-              streamString += response.stream;
-              streamString = streamString.slice(-150);
-              this.$set(this.translatingLanguages[key], "streamString", streamString);
-            }
-          });
+        const channel = `ProcessMaker.Models.Process.${this.processId}.Language.${translatingLanguage.language}`;
+        const streamProgressEvent = ".ProcessMaker\\Events\\ProcessTranslationChunkEvent";
+        const batchProgressEvent = ".ProcessMaker\\Events\\ProcessTranslationChunkProgressEvent";
 
-          // Subscribe to chunk progress
-          window.Echo.private(
-            `ProcessMaker.Models.Process.${this.processId}.Language.${translatingLanguage.language}`,
-          ).listen(".ProcessMaker\\Events\\ProcessTranslationChunkProgressEvent", (response) => {
-            if (response.batch && this.translatingLanguages[key]) {
-              this.$set(this.translatingLanguages[key], "batch", response.batch);
+        // Subscribe to streamed responses
+        this.addSocketListener(channel, streamProgressEvent, (response) => {
+          if (response.stream && this.translatingLanguages[key]) {
+            this.$set(this.translatingLanguages[key], "stream", response.stream);
+            let streamString = "";
+            if (typeof this.translatingLanguages[key].streamString !== "undefined") {
+              streamString = this.translatingLanguages[key].streamString;
             }
-          });
-        }
+            streamString += response.stream;
+            streamString = streamString.slice(-150);
+            this.$set(this.translatingLanguages[key], "streamString", streamString);
+          }
+        });
+
+        // Subscribe to chunk progress
+        this.addSocketListener(channel, batchProgressEvent, (response) => {
+          if (response.batch && this.translatingLanguages[key]) {
+            this.$set(this.translatingLanguages[key], "batch", response.batch);
+            if (response.batch.progress === 100) {
+              this.fetch();
+              this.fetchPending();
+            }
+          }
+        });
       });
     },
     handleEditTranslation(data) {
