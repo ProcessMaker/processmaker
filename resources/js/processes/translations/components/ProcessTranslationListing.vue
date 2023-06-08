@@ -100,18 +100,18 @@ export default {
           icon: "fas fa-edit",
         },
         {
-          value: "retry-translation",
-          content: "Retry empty translations",
-          permission: "edit-process-translations",
-          icon: "fas fa-redo",
-        },
-        {
           value: "export-translation",
           content: "Export Translation",
           permission: "export-process-translations",
           icon: "fas fa-file-export",
           link: true,
           href: "/processes/{{processId}}/export/translation/{{language}}",
+        },
+        {
+          value: "retry-translation",
+          content: "Retry empty translations",
+          permission: "edit-process-translations",
+          icon: "fas fa-redo",
         },
         {
           value: "delete-translation",
