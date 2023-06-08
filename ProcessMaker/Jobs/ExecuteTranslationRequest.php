@@ -61,6 +61,10 @@ class ExecuteTranslationRequest implements ShouldQueue
     {
         $processTranslationToken = ProcessTranslationToken::where('process_id', $this->processId)->where('language', $this->targetLanguage['language'])->get();
 
+        if (!$this->chunk || !count($this->chunk)) {
+            return;
+        }
+
         if (!$processTranslationToken) {
             return $this->batch()->cancel();
         }
