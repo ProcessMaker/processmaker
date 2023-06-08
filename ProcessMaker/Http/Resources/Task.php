@@ -63,14 +63,18 @@ class Task extends ApiResource
                 $array['screen'] = null;
             }
 
-            // Apply translations to screen
-            $process = Process::findOrFail($this->processRequest->process_id);
-            $processTranslation = new ProcessTranslation($process);
-            $array['screen']['config'] = $processTranslation->applyTranslations($array['screen']);
+            if ($array['screen']) {
+                // Apply translations to screen
+                $process = Process::findOrFail($this->processRequest->process_id);
+                $processTranslation = new ProcessTranslation($process);
+                $array['screen']['config'] = $processTranslation->applyTranslations($array['screen']);
 
-            // Apply translations to nested screens
-            foreach ($array['screen']['nested'] as &$nestedScreen) {
-                $nestedScreen['config'] = $processTranslation->applyTranslations($nestedScreen);
+                // Apply translations to nested screens
+                if (array_key_exists('nested', $array['screen'])) {
+                    foreach ($array['screen']['nested'] as &$nestedScreen) {
+                        $nestedScreen['config'] = $processTranslation->applyTranslations($nestedScreen);
+                    }
+                }
             }
         }
 

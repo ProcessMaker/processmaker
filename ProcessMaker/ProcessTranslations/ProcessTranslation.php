@@ -213,6 +213,9 @@ class ProcessTranslation
 
     public function applyTranslations($screen)
     {
+        if (!$screen) {
+            return;
+        }
         $config = $screen['config'];
         $translations = $screen['translations'];
         $targetLanguage = '';
