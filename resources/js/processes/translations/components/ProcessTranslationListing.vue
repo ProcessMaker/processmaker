@@ -55,6 +55,7 @@
               :permission="permission"
               :data="item"
               :divider="true"
+              :customButton="loadingItems.includes(item.language) ? inProgressButtonSmall : false"
               @navigate="onNavigate"
             />
           </td>
@@ -83,6 +84,7 @@ export default {
       editTranslation: null,
       orderBy: "language",
       loading: false,
+      loadingItems: [],
       sortOrder: [
         {
           field: "name",
@@ -96,6 +98,12 @@ export default {
           content: "Edit Translation",
           permission: "edit-process-translations",
           icon: "fas fa-edit",
+        },
+        {
+          value: "retry-translation",
+          content: "Retry empty translations",
+          permission: "edit-process-translations",
+          icon: "fas fa-redo",
         },
         {
           value: "export-translation",
@@ -123,6 +131,10 @@ export default {
       inProgressButton: {
         icon: "fas fa-spinner fa-spin p-0",
         content: "Translation in progress",
+      },
+      inProgressButtonSmall: {
+        icon: "fas fa-spinner fa-spin p-0",
+        content: "",
       },
     };
   },
@@ -161,14 +173,14 @@ export default {
         case "edit-translation":
           this.handleEditTranslation(data);
           break;
+        case "retry-translation":
+          this.handleRetryTranslation(data);
+          break;
         case "cancel-translation":
           this.handleCancelTranslation(data);
           break;
         case "delete-translation":
           this.handleDeleteTranslation(data);
-          break;
-        case "retry-translation":
-          this.handleRetryTranslation(data);
           break;
         default:
           break;
@@ -243,7 +255,7 @@ export default {
           window.Echo.private(
             `ProcessMaker.Models.Process.${this.processId}.Language.${translatingLanguage.language}`,
           ).listen(".ProcessMaker\\Events\\ProcessTranslationChunkEvent", (response) => {
-            if (response.stream) {
+            if (response.stream && this.translatingLanguages[key]) {
               this.$set(this.translatingLanguages[key], "stream", response.stream);
               let streamString = "";
               if (typeof this.translatingLanguages[key].streamString !== 'undefined') {
@@ -272,7 +284,32 @@ export default {
     },
 
     handleRetryTranslation(data) {
-      console.log("Retrying translation");
+      this.loadingItems.push(data.language);
+
+      const params = {
+        language: data,
+        processId: this.processId,
+        option: "empty",
+      };
+
+      ProcessMaker.apiClient.post("/openai/language-translation", params)
+        .then((response) => {
+          this.screensTranslations = response.data.screensTranslations;
+          this.fetch();
+          this.fetchPending();
+          const index = this.loadingItems.indexOf(data.language);
+          if (index > -1) {
+            this.loadingItems.splice(index);
+          }
+        })
+        .catch((error) => {
+          const $errorMsg = this.$t("An error ocurred while calling OpenAI endpoint.");
+          window.ProcessMaker.alert($errorMsg, "danger");
+          const index = this.loadingItems.indexOf(data.language);
+          if (index > -1) {
+            this.loadingItems.splice(index);
+          }
+        });
     },
     handleCancelTranslation(translation) {
       ProcessMaker.confirmModal(
