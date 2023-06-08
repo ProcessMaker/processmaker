@@ -27,7 +27,7 @@
             <div class="streamTextBackdrop"></div>
             <p class="streamText text-primary" :class="{'text-secondary': !item.streamString || item.streamString === ''}">
               <span v-if="!item.streamString || item.streamString === ''">
-                Waiting for other jobs to finish ...
+                {{ $t("Pending ...") }}
               </span>
               {{ item.streamString }}
             </p>
