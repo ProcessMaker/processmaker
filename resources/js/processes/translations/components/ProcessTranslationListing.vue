@@ -271,7 +271,7 @@ export default {
           window.Echo.private(
             `ProcessMaker.Models.Process.${this.processId}.Language.${translatingLanguage.language}`,
           ).listen(".ProcessMaker\\Events\\ProcessTranslationChunkProgressEvent", (response) => {
-            if (response.batch) {
+            if (response.batch && this.translatingLanguages[key]) {
               this.$set(this.translatingLanguages[key], "batch", response.batch);
             }
           });
