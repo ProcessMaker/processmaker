@@ -29,7 +29,8 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 
-class WorkflowManager {
+class WorkflowManager
+{
     /**
      * Attached validation callbacks
      *
@@ -61,7 +62,8 @@ class WorkflowManager {
      *
      * @return void
      */
-    public function completeTask(Definitions $definitions, ExecutionInstanceInterface $instance, TokenInterface $token, array $data) {
+    public function completeTask(Definitions $definitions, ExecutionInstanceInterface $instance, TokenInterface $token, array $data)
+    {
         //Validate data
         $element = $token->getDefinition(true);
         $this->validateData($data, $definitions, $element);
@@ -78,7 +80,8 @@ class WorkflowManager {
      *
      * @return void
      */
-    public function completeCatchEvent(Definitions $definitions, ExecutionInstanceInterface $instance, TokenInterface $token, array $data) {
+    public function completeCatchEvent(Definitions $definitions, ExecutionInstanceInterface $instance, TokenInterface $token, array $data)
+    {
         //Validate data
         $element = $token->getDefinition(true);
         $this->validateData($data, $definitions, $element);
@@ -102,7 +105,8 @@ class WorkflowManager {
         TokenInterface $token,
         BoundaryEventInterface $boundaryEvent,
         array $data
-    ) {
+    )
+    {
         //Validate data
         $this->validateData($data, $definitions, $boundaryEvent);
         BoundaryEvent::dispatchNow($definitions, $instance, $token, $boundaryEvent, $data);
@@ -116,7 +120,8 @@ class WorkflowManager {
      *
      * @return \ProcessMaker\Models\ProcessRequest
      */
-    public function triggerStartEvent(Definitions $definitions, StartEventInterface $event, array $data) {
+    public function triggerStartEvent(Definitions $definitions, StartEventInterface $event, array $data)
+    {
         //Validate data
         $this->validateData($data, $definitions, $event);
         //Schedule BPMN Action
@@ -132,7 +137,8 @@ class WorkflowManager {
      *
      * @return \ProcessMaker\Models\ProcessRequest
      */
-    public function callProcess(Definitions $definitions, ProcessInterface $process, array $data) {
+    public function callProcess(Definitions $definitions, ProcessInterface $process, array $data)
+    {
         //Validate data
         $this->validateData($data, $definitions, $process);
         //Validate user permissions
@@ -148,7 +154,8 @@ class WorkflowManager {
      * @param ScriptTaskInterface $scriptTask
      * @param Token $token
      */
-    public function runScripTask(ScriptTaskInterface $scriptTask, Token $token) {
+    public function runScripTask(ScriptTaskInterface $scriptTask, Token $token)
+    {
         Log::info('Dispatch a script task: ' . $scriptTask->getId() . ' #' . $token->getId());
         $instance = $token->processRequest;
         $process = $instance->process;
@@ -161,7 +168,8 @@ class WorkflowManager {
      * @param ServiceTaskInterface $serviceTask
      * @param Token $token
      */
-    public function runServiceTask(ServiceTaskInterface $serviceTask, Token $token) {
+    public function runServiceTask(ServiceTaskInterface $serviceTask, Token $token)
+    {
         Log::info('Dispatch a service task: ' . $serviceTask->getId());
         $instance = $token->processRequest;
         $process = $instance->process;
@@ -175,7 +183,8 @@ class WorkflowManager {
      * @param Token $token
      * @deprecated 4.0.15 Use WorkflowManager::throwSignalEventDefinition()
      */
-    public function catchSignalEvent(ThrowEventInterface $source = null, EventDefinitionInterface $sourceEventDefinition, TokenInterface $token) {
+    public function catchSignalEvent(ThrowEventInterface $source = null, EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
+    {
         $this->throwSignalEventDefinition($sourceEventDefinition, $token);
     }
 
@@ -185,7 +194,8 @@ class WorkflowManager {
      * @param EventDefinitionInterface $sourceEventDefinition
      * @param Token $token
      */
-    public function throwSignalEventDefinition(EventDefinitionInterface $sourceEventDefinition, TokenInterface $token) {
+    public function throwSignalEventDefinition(EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
+    {
         $signalRef = $sourceEventDefinition->getProperty('signal') ?
             $sourceEventDefinition->getProperty('signal')->getId() :
             $sourceEventDefinition->getProperty('signalRef');
@@ -240,7 +250,8 @@ class WorkflowManager {
      * @param array $data
      * @param array $exclude
      */
-    public function throwSignalEvent($signalRef, array $data = [], array $exclude = []) {
+    public function throwSignalEvent($signalRef, array $data = [], array $exclude = [])
+    {
         ThrowSignalEvent::dispatch($signalRef, $data, $exclude)->onQueue('bpmn');
     }
 
@@ -250,7 +261,8 @@ class WorkflowManager {
      * @param EventDefinitionInterface $sourceEventDefinition
      * @param Token $token
      */
-    public function throwMessageEvent($instanceId, $elementId, $messageRef, array $payload = []) {
+    public function throwMessageEvent($instanceId, $elementId, $messageRef, array $payload = [])
+    {
         ThrowMessageEvent::dispatch($instanceId, $elementId, $messageRef, $payload)->onQueue('bpmn');
     }
 
@@ -260,7 +272,8 @@ class WorkflowManager {
      * @param callable $callback
      * @return void
      */
-    public function onDataValidation($callback) {
+    public function onDataValidation($callback)
+    {
         $this->validations[] = $callback;
     }
 
@@ -273,7 +286,8 @@ class WorkflowManager {
      *
      * @return void
      */
-    public function validateData(array $data, Definitions $Definitions, EntityInterface $element) {
+    public function validateData(array $data, Definitions $Definitions, EntityInterface $element)
+    {
         $this->validator = Validator::make($data, []);
         foreach ($this->validations as $validation) {
             call_user_func($validation, $this->validator, $Definitions, $element);
@@ -290,7 +304,8 @@ class WorkflowManager {
      *
      * @return array
      */
-    public function runProcess(Definitions $definitions, $startId, array $data) {
+    public function runProcess(Definitions $definitions, $startId, array $data)
+    {
         $startEvent = $definitions->getDefinitions()->getStartEvent($startId);
         $instance = $this->triggerStartEvent($definitions, $startEvent, $data);
 
@@ -304,7 +319,8 @@ class WorkflowManager {
      *
      * @return bool
      */
-    public function registerServiceImplementation($implementation, $class) {
+    public function registerServiceImplementation($implementation, $class)
+    {
         if (!class_exists($class)) {
             return false;
         }
@@ -325,7 +341,8 @@ class WorkflowManager {
      * @return array
      */
 
-    public function getServiceImplementations() {
+    public function getServiceImplementations()
+    {
         $response = $this->serviceTaskImplementations;
         return $response;
     }
@@ -337,7 +354,8 @@ class WorkflowManager {
      *
      * @return bool
      */
-    public function existsServiceImplementation($implementation) {
+    public function existsServiceImplementation($implementation)
+    {
         return isset($this->serviceTaskImplementations[$implementation]) &&
             class_exists($this->serviceTaskImplementations[$implementation]);
     }
@@ -351,7 +369,8 @@ class WorkflowManager {
      *
      * @return mixed
      */
-    public function runServiceImplementation($implementation, array $data, array $config, $tokenId = '') {
+    public function runServiceImplementation($implementation, array $data, array $config, $tokenId = '')
+    {
         $class = $this->serviceTaskImplementations[$implementation];
         $service = new $class();
 
