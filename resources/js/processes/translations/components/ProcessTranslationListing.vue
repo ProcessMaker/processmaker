@@ -198,8 +198,6 @@ export default {
     },
 
     fetch() {
-      this.loading = true;
-
       const url = "process/translations?process_id=" + this.processId;
 
       // Load from our api client
@@ -221,7 +219,6 @@ export default {
         .then((response) => {
           this.translatedLanguages = response.data.translatedLanguages;
           this.$emit("translated-languages-changed", this.translatedLanguages);
-          this.loading = false;
         });
     },
 
