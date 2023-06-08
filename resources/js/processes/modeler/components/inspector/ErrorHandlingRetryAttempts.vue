@@ -37,7 +37,8 @@ export default {
       }
     },
     setNodeConfig() {
-      const json = JSON.stringify({ retry_attempts: this.config.retry_attempts });
+      const existingSetting = JSON.parse(_.get(this.node(), 'errorHandling', '{}'));
+      const json = JSON.stringify({ ...existingSetting, retry_attempts: this.config.retry_attempts });
       Vue.set(this.node(), 'errorHandling', json);
     },
   },

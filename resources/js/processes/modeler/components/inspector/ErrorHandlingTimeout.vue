@@ -37,7 +37,8 @@ export default {
       }
     },
     setNodeConfig() {
-      const json = JSON.stringify({ timeout: this.config.timeout });
+      const existingSetting = JSON.parse(_.get(this.node(), 'errorHandling', '{}'));
+      const json = JSON.stringify({ ...existingSetting, timeout: this.config.timeout });
       Vue.set(this.node(), 'errorHandling', json);
     },
   },

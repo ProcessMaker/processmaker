@@ -99,7 +99,7 @@ trait MakeHttpRequests
         }
 
         if ($this->attemptedRetries >= $this->retryAttempts) {
-            $this->retryMessage = __('Failed after :num attempts', ['num' => $this->attemptedRetries]);
+            $this->retryMessage = __('Failed after :num total attempts', ['num' => $this->attemptedRetries + 1]);
 
             return false;
         }

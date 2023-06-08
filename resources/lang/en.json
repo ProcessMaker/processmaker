@@ -1692,5 +1692,7 @@
   "Set maximum run retry attempts in seconds. Leave empty to use data connector default. Set to 0 for no retry attempts.": "Set maximum run retry attempts in seconds. Leave empty to use data connector default. Set to 0 for no retry attempts.",
   "Retry Wait Time": "Retry Wait Time",
   "Set maximum run retry wait time in seconds. Leave empty to use script default. Set to 0 for no retry wait time.": "Set maximum run retry wait time in seconds. Leave empty to use script default. Set to 0 for no retry wait time.",
-  "Set maximum run retry wait time in seconds. Leave empty to use data connector default. Set to 0 for no retry wait time.": "Set maximum run retry wait time in seconds. Leave empty to use data connector default. Set to 0 for no retry wait time."
+  "Set maximum run retry wait time in seconds. Leave empty to use data connector default. Set to 0 for no retry wait time.": "Set maximum run retry wait time in seconds. Leave empty to use data connector default. Set to 0 for no retry wait time.",
+  "Script failed after :attempts total attempts": "Script failed after :attempts total attempts",
+  "Failed after :num total attempts": "Failed after :num total attempts"
 }

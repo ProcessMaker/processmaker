@@ -37,7 +37,8 @@ export default {
       }
     },
     setNodeConfig() {
-      const json = JSON.stringify({ retry_wait_time: this.config.retry_wait_time });
+      const existingSetting = JSON.parse(_.get(this.node(), 'errorHandling', '{}'));
+      const json = JSON.stringify({ ...existingSetting, retry_wait_time: this.config.retry_wait_time });
       Vue.set(this.node(), 'errorHandling', json);
     },
   },
