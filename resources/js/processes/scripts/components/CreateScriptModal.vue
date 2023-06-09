@@ -81,7 +81,7 @@
         ></slider-with-input>
         <slider-with-input
           :label="$t('Retry Attempts')"
-          :description="$t('How many seconds the script should be allowed to run (0 is unlimited).')"
+          :description="$t('Number of times to retry. Leave empty to use script default. Set to 0 for no retry attempts.')"
           :value="retry_attempts"
           @input="retry_attempts = $event"
           :error="errorState('retry_attempts', addError) ? null : errorMessage('retry_attempts', addError)"
@@ -90,7 +90,7 @@
         ></slider-with-input>
         <slider-with-input
           :label="$t('Retry Wait Time')"
-          :description="$t('How many seconds the script should be allowed to run (0 is unlimited).')"
+          :description="$t('Seconds to wait before retrying. Leave empty to use script default. Set to 0 for no retry wait time.')"
           :value="retry_wait_time"
           @input="retry_wait_time = $event"
           :error="errorState('retry_wait_time', addError) ? null : errorMessage('retry_wait_time', addError)"
