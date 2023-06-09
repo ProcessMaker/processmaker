@@ -168,7 +168,6 @@
         this.$refs["create-pm-block-modal"].show();
       },
 
-      // TODO Add switch case for PM blocks
       onNavigate(action, data) {
         let putData = {
           name: data.name,
