@@ -2,10 +2,9 @@
 
 namespace ProcessMaker\Listeners;
 
-use Illuminate\Support\Facades\Auth;
-use ProcessMaker\Contracts\SecurityLogEventInterface;
-use ProcessMaker\Helpers\SensitiveDataHelper;
+use Carbon\Carbon;
 use ProcessMaker\Models\SecurityLog;
+use ProcessMaker\Models\User;
 use WhichBrowser\Parser;
 
 class SecurityLogger
@@ -19,50 +18,43 @@ class SecurityLogger
     /**
      * Handle the event.
      *
-     * @param \Illuminate\Auth\Events\Failed|\Illuminate\Auth\Events\Login|\Illuminate\Auth\Events\Logout|SecurityLogEventInterface  $event
+     * @param  Illuminate\Auth\Events\Logout  $event
      * @return void
      */
     public function handle($event)
     {
-        $class = get_class($event);
+        if (config('auth.log_auth_events')) {
+            $class = get_class($event);
 
-        if ($event instanceof SecurityLogEventInterface) {
-            $data = $event->getData();
-            $changes = $event->getChanges();
-            SecurityLog::create([
-                'event' => $event->getEventName(),
-                'ip' => request()->ip(),
-                'meta' => $this->getMeta(),
-                'user_id' => isset($event->user) ? $event->user->id : Auth::id(),
-                'data' => $data ? SensitiveDataHelper::parseArray($data) : null,
-                'changes' => $changes ? SensitiveDataHelper::parseArray($changes) : null
-            ]);
-        } elseif (array_key_exists($class, $this->eventTypes)) {
-            $eventType = $this->eventTypes[$class];
-            SecurityLog::create([
-                'event' => $eventType,
-                'ip' => request()->ip(),
-                'meta' => $this->getMeta(),
-                'user_id' => isset($event->user) ? $event->user->id : null
-            ]);
+            if (array_key_exists($class, $this->eventTypes)) {
+                $eventType = $this->eventTypes[$class];
+
+                if (isset($event->user)) {
+                    $userId = $event->user->id;
+                } else {
+                    $userId = null;
+                }
+
+                $userAgent = $this->userAgent();
+
+                SecurityLog::create([
+                    'event' => $eventType,
+                    'ip' => request()->ip(),
+                    'meta' => [
+                        'user_agent' => $userAgent->string,
+                        'browser' => [
+                            'name' => $userAgent->browser->name,
+                            'version' => $userAgent->browser->version,
+                        ],
+                        'os' => [
+                            'name' => $userAgent->os->name,
+                            'version' => $userAgent->os->version,
+                        ],
+                    ],
+                    'user_id' => $userId,
+                ]);
+            }
         }
-    }
-
-    private function getMeta()
-    {
-        $userAgent = $this->userAgent();
-
-        return [
-            'user_agent' => $userAgent->string,
-            'browser' => [
-                'name' => $userAgent->browser->name,
-                'version' => $userAgent->browser->version,
-            ],
-            'os' => [
-                'name' => $userAgent->os->name,
-                'version' => $userAgent->os->version,
-            ],
-        ];
     }
 
     private function userAgent()

@@ -40,11 +40,9 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('users', [UserController::class, 'index'])->name('users.index'); // Permissions handled in the controller
     Route::get('users/{user}', [UserController::class, 'show'])->name('users.show'); // Permissions handled in the controller
     Route::get('deleted_users', [UserController::class, 'deletedUsers'])->name('users.deletedUsers')->middleware('can:view-users');
-    Route::get('users/{user}/get_pinnned_controls', [UserController::class, 'getPinnnedControls'])->name('users.getPinnnedControls'); // Permissions handled in the controller
     Route::post('users', [UserController::class, 'store'])->name('users.store')->middleware('can:create-users');
     Route::put('users/restore', [UserController::class, 'restore'])->name('users.restore')->middleware('can:create-users');
     Route::put('users/{user}', [UserController::class, 'update'])->name('users.update'); // Permissions handled in the controller
-    Route::put('users/{user}/update_pinned_controls', [UserController::class, 'updatePinnedControls'])->name('users.updatePinnnedControls'); // Permissions handled in the controller
     Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy')->middleware('can:delete-users');
     Route::put('password/change', [ChangePasswordController::class, 'update'])->name('password.update');
     // User Groups
@@ -221,9 +219,6 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     // Security logs
     Route::get('security-logs', [SecurityLogController::class, 'index'])->name('security-logs.index')->middleware('can:view-security-logs');
-    Route::post('security-logs', [SecurityLogController::class, 'store'])->name('security-logs.index')->middleware('can:create-security-logs');
-    Route::get('security-logs/download/all', [SecurityLogController::class, 'downloadForAllUsers'])->name('security-logs.downloadForAllUsers')->middleware('can:view-security-logs');
-    Route::get('security-logs/download/{user}', [SecurityLogController::class, 'downloadForUser'])->name('security-logs.downloadForUser')->middleware('can:view-security-logs');
     Route::get('security-logs/{securityLog}', [SecurityLogController::class, 'show'])->name('security-logs.show')->middleware('can:view-security-logs');
 
     // Settings
@@ -253,13 +248,16 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('templates/{type}/import/validation', [TemplateController::class, 'preImportValidation'])->name('template.preImportValidation')->middleware('template-authorization');
 
     // Process Translations
-    Route::get('process/translations', [ProcessTranslationController::class, 'index'])->name('process-translation.index'); //->middleware('translation-authorization');
-    Route::get('process/translations/pending', [ProcessTranslationController::class, 'pending'])->name('process-translation.pending');
-    Route::post('process/translations/languages', [ProcessTranslationController::class, 'getAvailableLanguages'])->name('process-translation.languages');
-    Route::put('process/translations/update', [ProcessTranslationController::class, 'update'])->name('process-translation.update');
-    Route::get('process/translations/{processId}', [ProcessTranslationController::class, 'show'])->name('process-translation.show'); //->middleware('translation-authorization');
-    Route::delete('process/translations/{processId}/{language}', [ProcessTranslationController::class, 'delete'])->name('process-translation.delete'); //->middleware('translation-authorization');
-    Route::post('processes/{processId}/export/translation/{language}', [ProcessTranslationController::class, 'export'])->name('process-translation.export'); //->middleware('translation-authorization');
+    Route::get('process/translations', [ProcessTranslationController::class, 'index'])->name('process-translation.index')->middleware('can:view-process-translations');
+    Route::get('process/translations/pending', [ProcessTranslationController::class, 'pending'])->name('process-translation.pending')->middleware('can:view-process-translations');
+    Route::post('process/translations/languages', [ProcessTranslationController::class, 'getAvailableLanguages'])->name('process-translation.languages')->middleware('can:view-process-translations');
+    Route::put('process/translations/update', [ProcessTranslationController::class, 'update'])->name('process-translation.update')->middleware('can:edit-process-translations');
+    Route::get('process/translations/{processId}', [ProcessTranslationController::class, 'show'])->name('process-translation.show')->middleware('can:view-process-translations');
+    Route::post('process/translations/{processId}/cancel/translation/{language}', [ProcessTranslationController::class, 'cancel'])->name('process-translation.cancel')->middleware('can:cancel-process-translations');
+    Route::delete('process/translations/{processId}/{language}', [ProcessTranslationController::class, 'delete'])->name('process-translation.delete')->middleware('can:delete-process-translations');
+    Route::post('processes/{processId}/export/translation/{language}', [ProcessTranslationController::class, 'export'])->name('process-translation.export')->middleware('can:export-process-translations');
+    Route::post('processes/{processId}/import/translation/validation', [ProcessTranslationController::class, 'preimportValidation'])->name('process-translation.preImport')->middleware('can:import-process-translations');
+    Route::post('processes/{processId}/import/translation', [ProcessTranslationController::class, 'import'])->name('process-translation.import')->middleware('can:import-process-translations');
 
     // debugging javascript errors
     Route::post('debug', [DebugController::class, 'store'])->name('debug.store')->middleware('throttle');
@@ -274,7 +272,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // OpenAI
     Route::middleware('throttle:30,1')->post('openai/nlq-to-pmql', [OpenAIController::class, 'NLQToPMQL'])->name('openai.nlq-to-pmql');
     Route::middleware('throttle:30,1')->post('openai/nlq-to-category', [OpenAIController::class, 'NLQToCategory'])->name('openai.nlq-to-category');
-    Route::middleware('throttle:30,1')->post('openai/language-translation', [OpenAIController::class, 'languageTranslation'])->name('openai.language-translation');
+    Route::middleware('throttle:30,1')->post('openai/language-translation', [OpenAIController::class, 'languageTranslation'])->name('openai.language-translation')->middleware('can:view-process-translations');
     Route::get('openai/recent-searches', [OpenAIController::class, 'recentSearches'])->name('openai.recent-searches');
     Route::delete('openai/recent-searches', [OpenAIController::class, 'deleteRecentSearches'])->name('openai.recent-searches.delete');
 });

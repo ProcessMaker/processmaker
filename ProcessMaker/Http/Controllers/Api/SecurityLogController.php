@@ -4,15 +4,10 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use DB;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use ProcessMaker\Helpers\SensitiveDataHelper;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
-use ProcessMaker\Http\Resources\SecurityLogs;
-use ProcessMaker\Jobs\DownloadSecurityLog;
 use ProcessMaker\Models\SecurityLog;
-use ProcessMaker\Models\User;
 
 class SecurityLogController extends Controller
 {
@@ -123,41 +118,5 @@ class SecurityLogController extends Controller
     public function show(SecurityLog $securityLog)
     {
         return new ApiResource($securityLog);
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate(SecurityLog::rules());
-
-        $securityLog = new SecurityLog;
-        $fields = SensitiveDataHelper::parseArray($request->json()->all());
-        $securityLog->fill($fields);
-        $securityLog->saveOrFail();
-
-        return new SecurityLogs($securityLog->refresh());
-    }
-
-    private function download(Request $request, User $user = null)
-    {
-        $request->validate([
-            'format' => 'required|string|in:xml,csv'
-        ]);
-        sleep(1);
-        $sessionUser = Auth::user();
-        DownloadSecurityLog::dispatch($sessionUser, $request->input('format'), $user ? $user->id : null)
-            ->delay(now()->addSeconds(5));
-        return response()->json([
-            'message' => __('The log file is being prepared and will be sent to your email as soon as it is ready.')
-        ], 200);
-    }
-
-    public function downloadForAllUsers(Request $request)
-    {
-        return $this->download($request);
-    }
-
-    public function downloadForUser(Request $request, User $user)
-    {
-        return $this->download($request, $user);
     }
 }

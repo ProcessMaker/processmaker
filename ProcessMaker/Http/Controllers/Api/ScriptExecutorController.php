@@ -6,9 +6,6 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use ProcessMaker\Events\ScriptExecutorCreated;
-use ProcessMaker\Events\ScriptExecutorDeleted;
-use ProcessMaker\Events\ScriptExecutorUpdated;
 use ProcessMaker\Facades\Docker;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
@@ -110,8 +107,6 @@ class ScriptExecutorController extends Controller
             $request->only((new ScriptExecutor)->getFillable())
         );
 
-        ScriptExecutorCreated::dispatch($scriptExecutor->getAttributes());
-
         BuildScriptExecutor::dispatch($scriptExecutor->id, $request->user()->id);
 
         return ['status'=>'started', 'id' => $scriptExecutor->id];
@@ -168,14 +163,10 @@ class ScriptExecutorController extends Controller
     {
         $this->checkAuth($request);
         $request->validate(ScriptExecutor::rules());
-        
-        $original_values = $scriptExecutor->getAttributes();
-        
+
         $scriptExecutor->update(
             $request->only($scriptExecutor->getFillable())
         );
-        
-        ScriptExecutorUpdated::dispatch($scriptExecutor->id, $original_values, $scriptExecutor->getChanges());
 
         BuildScriptExecutor::dispatch($scriptExecutor->id, $request->user()->id);
 
@@ -242,8 +233,6 @@ class ScriptExecutorController extends Controller
                 throw ValidationException::withMessages(['delete' => _('Error removing image.') . " ${cmd} " . implode("\n", $out)]);
             }
         }
-
-        ScriptExecutorDeleted::dispatch($scriptExecutor->getAttributes());
 
         ScriptExecutor::destroy($scriptExecutor->id);
 

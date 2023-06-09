@@ -24,86 +24,11 @@ class EventServiceProvider extends ServiceProvider
         'Illuminate\Auth\Events\Logout' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
-        'Illuminate\Database\Events\MigrationsEnded' => [
-            'ProcessMaker\Listeners\UpdateDataLakeViews',
-        ],
-        'ProcessMaker\Events\AuthClientUpdated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\AuthClientCreated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\AuthClientDeleted' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\CustomizeUiUpdated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\EnvironmentVariablesCreated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\EnvironmentVariablesDeleted' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\EnvironmentVariablesUpdated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\GroupCreated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\GroupDeleted' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\GroupUsersUpdated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\ProcessUpdated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\ScriptUpdated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\ScriptCreated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\ScriptDuplicated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\ScriptDeleted' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\ScriptExecutorCreated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\ScriptExecutorDeleted' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\ScriptExecutorUpdated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
         'ProcessMaker\Events\SessionStarted' => [
             'ProcessMaker\Listeners\ActiveUserListener',
         ],
-        'ProcessMaker\Events\SettingsUpdated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\TokenCreated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\TokenDeleted' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\UnauthorizedAccessAttempt' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\UserCreated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\UserDeleted' => [
-            'ProcessMaker\Listeners\SecurityLogger',
-        ],
-        'ProcessMaker\Events\UserGroupMembershipUpdated' => [
-            'ProcessMaker\Listeners\SecurityLogger',
+        'Illuminate\Database\Events\MigrationsEnded' => [
+            'ProcessMaker\Listeners\UpdateDataLakeViews',
         ],
     ];
 

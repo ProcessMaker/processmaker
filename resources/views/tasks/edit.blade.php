@@ -50,7 +50,6 @@
                         <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show h-100">
                           @can('update', $task)
                             <task
-                              ref="task"
                               class="card border-0"
                               v-model="formData"
                               :initial-task-id="{{ $task->id }}"
@@ -333,7 +332,7 @@
             this.redirect(`/requests/${processRequestId}`);
           },
           error(processRequestId) {
-            this.$refs.task.showSimpleErrorMessage();
+            this.redirect(`/requests/${this.task.process_request_id}`);
           },
           redirectToTask(task, force = false) {
             this.redirect(`/tasks/${task}/edit`, force);

@@ -5,7 +5,6 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use ProcessMaker\Events\GroupUsersUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\GroupMembers as GroupMemberResource;
@@ -135,8 +134,6 @@ class GroupMemberController extends Controller
         $group_member->member()->associate($member);
         $group_member->saveOrFail();
 
-        event(new GroupUsersUpdated($group->id , $request->input('member_id'), GroupUsersUpdated::ADDED, $request->input('member_type')));
-
         return response(new GroupMemberResource($group_member), 201);
     }
 
@@ -206,8 +203,6 @@ class GroupMemberController extends Controller
     {
         $group_member->delete();
 
-
-        event(new GroupUsersUpdated($group_member->group_id , $group_member->member_id, GroupUsersUpdated::DELETED, $group_member->member_type));
         return response([], 204);
     }
 
