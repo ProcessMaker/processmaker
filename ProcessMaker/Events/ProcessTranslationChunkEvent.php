@@ -23,16 +23,19 @@ class ProcessTranslationChunkEvent implements ShouldBroadcastNow
 
     public $data;
 
+    public $progress;
+
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($processId, $language, $data)
+    public function __construct($processId, $language, $data, $progress)
     {
         $this->processId = $processId;
         $this->language = $language;
         $this->data = $data;
+        $this->progress = $progress;
     }
 
     /**
@@ -49,6 +52,7 @@ class ProcessTranslationChunkEvent implements ShouldBroadcastNow
     {
         return [
             'stream' => $this->data,
+            'progress' => $this->progress,
         ];
     }
 }

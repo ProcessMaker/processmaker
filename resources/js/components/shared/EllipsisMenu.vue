@@ -15,7 +15,7 @@
         :class="customButton.icon"
       />
       <span>
-        {{ customButton.content }} <b v-if="showProgress && data && data.batch"> {{ data.batch.progress }}%</b>
+        {{ customButton.content }} <b v-if="showProgress && data && data.batch"> {{ getTotalProgress(data.batch, data.progress) }}%</b>
       </span>
     </template>
     <template v-else #button-content>
@@ -141,6 +141,17 @@ export default {
     },
     onHide() {
       this.$emit('hide');
+    },
+
+    getTotalProgress(batchProgress, chunkProgress) {
+      const progressSlot = 100 / batchProgress.totalJobs;
+      let totalProgress = batchProgress.progress;
+
+      if (chunkProgress?.percentage > 0) {
+        totalProgress += ((chunkProgress.percentage * progressSlot) / 100);
+      }
+
+      return Math.trunc(totalProgress);
     },
   },
 };
