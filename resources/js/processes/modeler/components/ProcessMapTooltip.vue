@@ -4,6 +4,16 @@
     class="card shadow-sm"
   >
     <div
+      v-if="isLoading"
+      class="d-flex justify-content-center"
+    >
+      <div
+        class="spinner-border text-primary"
+        role="status"
+      />
+    </div>
+    <div
+      v-if="!isLoading"
       class="card-body"
       style="padding-top: 10px; padding-bottom: 5px"
     >
@@ -11,16 +21,16 @@
         <span class="text-info">{{ nodeId }}</span>
       </p>
       <p class="tooltip-data">
-        <span class="tooltip-data-title">Status:</span><span class="text-secondary">Complete</span>
+        <span class="tooltip-data-title">{{ $t('Status') }}:</span><span class="text-secondary">Complete</span>
       </p>
       <p class="tooltip-data">
-        <span class="tooltip-data-title">Completed By:</span><span class="text-secondary">UserName</span>
+        <span class="tooltip-data-title">{{ $t('Completed By') }}:</span><span class="text-secondary">UserName</span>
       </p>
       <p class="tooltip-data">
-        <span class="tooltip-data-title">Time Started:</span><span class="text-secondary">11/21/23 16:51</span>
+        <span class="tooltip-data-title">{{ $t('Time Started') }}:</span><span class="text-secondary">11/21/23 16:51</span>
       </p>
       <p class="tooltip-data">
-        <span class="tooltip-data-title">Time Completed:</span><span class="text-secondary">11/21/23 16:53</span>
+        <span class="tooltip-data-title">{{ $t('Time Completed') }}:</span><span class="text-secondary">11/21/23 16:53</span>
       </p>
     </div>
   </div>
@@ -35,10 +45,33 @@ export default {
         return "";
       },
     },
-
   },
-
+  data() {
+    return {
+      isLoading: false,
+    };
+  },
+  watch: {
+    nodeId() {
+      this.getInformation();
+    },
+    isLoading(value) {
+      this.$emit("is-loading", value);
+    },
+  },
+  mounted() {
+    //
+  },
+  methods: {
+    getInformation() {
+      this.isLoading = true;
+      setTimeout(() => {
+        this.isLoading = false;
+      }, 2000);
+    },
+  },
 };
+
 </script>
 <style>
 #tooltip {

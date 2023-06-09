@@ -13,6 +13,7 @@
             left: `${tooltip.newX}px`,
             top: `${tooltip.newY}px`
           }"
+          @is-loading="getIsLoading"
         />
         <ModelerReadonly
           ref="modeler"
@@ -49,6 +50,7 @@ export default {
       },
       tooltip: {
         isActive: false,
+        isLoading: false,
         nodeId: null,
         allowedNodes: [
           "bpmn:Task",
@@ -64,6 +66,18 @@ export default {
       requestCompletedNodes: window.ProcessMaker.modeler.requestCompletedNodes,
       requestInProgressNodes: window.ProcessMaker.modeler.requestInProgressNodes,
     };
+  },
+  watch: {
+    "tooltip.isLoading": {
+      handler(value) {
+        if (!value) {
+          this.$nextTick().then(() => {
+            this.calculateTooltipPosition();
+          });
+        }
+      },
+      deep: true,
+    },
   },
   mounted() {
     ProcessMaker.$modeler = this.$refs.modeler;
@@ -105,6 +119,9 @@ export default {
       } else if (this.tooltip.newX + this.rectTooltip.width > window.innerWidth) {
         this.tooltip.newX = window.innerWidth - this.rectTooltip.width;
       }
+    },
+    getIsLoading(value) {
+      this.tooltip.isLoading = value;
     },
   },
 };
