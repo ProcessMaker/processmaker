@@ -356,6 +356,11 @@ class ProcessTranslation
             if (isset($pmConfig) && $pmConfig !== '' && array_key_exists('screenRef', $pmConfig) && is_numeric($pmConfig['screenRef'])) {
                 $screenIds[] = $pmConfig['screenRef'];
             }
+
+            if (isset($pmConfig) && $pmConfig !== '' && array_key_exists('web_entry', $pmConfig) && $pmConfig['web_entry']) {
+                $screenIds[] = $pmConfig['web_entry']['screen_id'];
+                $screenIds[] = $pmConfig['web_entry']['completed_screen_id'];
+            }
         }
 
         return $screenIds;
