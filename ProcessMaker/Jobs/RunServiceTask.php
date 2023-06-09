@@ -93,7 +93,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
                     'output' => WorkflowManager::runServiceImplementation($implementation, $data, $configuration, $token->getId(), $errorHandling),
                 ];
             } else {
-                $response = $script->runScript($data, $configuration, $token->getId());
+                $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling);
             }
             $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
                 // Exit if the task was completed or closed

@@ -4,6 +4,10 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use ProcessMaker\Events\ScriptCreated;
+use ProcessMaker\Events\ScriptDeleted;
+use ProcessMaker\Events\ScriptDuplicated;
+use ProcessMaker\Events\ScriptUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Script as ScriptResource;
@@ -328,6 +332,7 @@ class ScriptController extends Controller
         $script->fill($request->input());
 
         $script->saveOrFail();
+        ScriptCreated::dispatch($script, $script->getChanges());
 
         return new ScriptResource($script);
     }
@@ -369,7 +374,10 @@ class ScriptController extends Controller
     {
         $request->validate(Script::rules($script));
 
-        $script->fill($request->input())->saveOrFail();
+        $script->fill($request->input());
+        $original = array_intersect_key($script->getOriginal(), $script->getDirty());
+        $script->saveOrFail();
+        ScriptUpdated::dispatch($script, $script->getChanges(), $original);
 
         return response($request, 204);
     }
@@ -470,6 +478,7 @@ class ScriptController extends Controller
         }
 
         $newScript->saveOrFail();
+        ScriptDuplicated::dispatch($newScript, $newScript->getChanges());
 
         return new ScriptResource($newScript);
     }
@@ -504,6 +513,7 @@ class ScriptController extends Controller
     public function destroy(Script $script)
     {
         $script->delete();
+        ScriptDeleted::dispatch($script);
 
         return response([], 204);
     }
