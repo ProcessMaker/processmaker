@@ -89,7 +89,7 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
     Route::get('processes/create', [ProcessController::class, 'create'])->name('processes.create')->middleware('can:create-processes');
     Route::post('processes', [ProcessController::class, 'store'])->name('processes.store')->middleware('can:edit-processes');
     Route::get('processes/{process}', [ProcessController::class, 'show'])->name('processes.show')->middleware('can:view-processes');
-    Route::put('processes/{process}', [ProcessController::class, 'update'])->name('processes.edit')->middleware('can:edit-processes');
+    Route::put('processes/{process}', [ProcessController::class, 'update'])->name('processes.update')->middleware('can:edit-processes');
     Route::delete('processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy')->middleware('can:archive-processes');
 
     Route::get('process_events/{process}', [ProcessController::class, 'triggerStartEventApi'])->middleware('can:start,process');
@@ -153,7 +153,7 @@ Route::get('oauth/clients', [ClientController::class, 'index'])->name('passport.
 Route::get('oauth/clients/{client_id}', [ClientController::class, 'show'])->name('passport.clients.show')->middleware('can:view-auth_clients');
 Route::post('oauth/clients', [ClientController::class, 'store'])->name('passport.clients.store')->middleware('can:create-auth_clients');
 Route::put('oauth/clients/{client_id}', [ClientController::class, 'update'])->name('passport.clients.update')->middleware('can:edit-auth_clients');
-Route::delete('oauth/clients/{client_id}', [ClientController::class, 'destroy'])->name('passport.clients.update')->middleware('can:delete-auth_clients');
+Route::delete('oauth/clients/{client_id}', [ClientController::class, 'destroy'])->name('passport.clients.delete')->middleware('can:delete-auth_clients');
 
 Route::get('password/success', function () {
     return view('auth.passwords.success', ['title' => __('Password Reset')]);
