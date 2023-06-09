@@ -61,6 +61,9 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
         $scriptRef = $element->getProperty('scriptRef');
         $configuration = json_decode($element->getProperty('config'), true);
         $errorHandling = json_decode($element->getProperty('errorHandling'), true);
+        if ($errorHandling === null) {
+            $errorHandling = [];
+        }
 
         // Check to see if we've failed parsing.  If so, let's convert to empty array.
         if ($configuration === null) {
@@ -116,6 +119,32 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
 
             Log::error('Script failed: ' . $scriptRef . ' - ' . $exception->getMessage());
             Log::error($exception->getTraceAsString());
+        }
+
+        try {
+            $errorHandlingData = getDataFromErrorHandling($error_handling);
+        } catch (Throwable $exception) {
+            $token->setStatus(ScriptTaskInterface::TOKEN_STATE_FAILING);
+
+            $error = $element->getRepository()->createError();
+            $error->setName($exception->getMessage());
+
+            $token->setProperty('error', $error);
+            $token->logError($exception, $element);
+
+            Log::error('Script failed: ' . $scriptRef . ' - ' . $exception->getMessage());
+            Log::error($exception->getTraceAsString());
+        }
+
+        function getDataFromErrorHandling($errorHandling)
+        {
+            $data = [];
+            if (!empty($errorHandling)) {
+                $data['error_code'] = $errorHandling->getCode();
+                $data['error_message'] = $errorHandling->getMessage();
+            }
+
+            return $data;
         }
     }
 

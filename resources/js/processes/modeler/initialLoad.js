@@ -46,6 +46,7 @@ import Interstitial from "./components/inspector/Interstitial";
 import SelectUserGroup from "../../components/SelectUserGroup";
 import validateScreenRef from "./validateScreenRef";
 import ErrorHandling from "./components/inspector/ErrorHandling";
+import NotifyProcessManager from "./components/inspector/NotifyProcessManager";
 
 Vue.component("UserSelect", UserSelect);
 Vue.component("UserById", UserById);
@@ -64,6 +65,7 @@ Vue.component("Interstitial", Interstitial);
 Vue.component("SelectUserGroup", SelectUserGroup);
 Vue.component("NodeIdentifierInput", NodeIdentifierInput);
 Vue.component("ErrorHandling", ErrorHandling);
+Vue.component("NotifyProcessManager", NotifyProcessManager);
 
 const nodeTypes = [
   endEvent,
@@ -228,6 +230,12 @@ ProcessMaker.EventBus.$on(
       items: [
         {
           component: 'ErrorHandling',
+          config: {
+            type: 'script' 
+          },
+        },
+        {
+          component: 'NotifyProcessManager',
           config: {
             type: 'script' 
           },

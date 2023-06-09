@@ -1,5 +1,5 @@
 <template>
-  <div role="group">
+  <div class="form-group">
     <label for="timeout">{{ $t('Timeout') }}</label>
     <b-form-input id="timeout" type="number" v-model="config.timeout"></b-form-input>
     <small class="form-text text-muted">{{ helper }}</small>
@@ -14,6 +14,8 @@ export default {
     return {
       config: {
         timeout: "",
+        switchInApp: false,
+        switchEmail: false,
       },
     }
   },
@@ -22,6 +24,7 @@ export default {
       deep: true,
       handler() {
         this.setNodeConfig();
+        this.$emit("input", this.config.timeout);
       }
     },
   },
@@ -37,7 +40,9 @@ export default {
       }
     },
     setNodeConfig() {
-      const json = JSON.stringify({ timeout: this.config.timeout });
+      const json = JSON.stringify({ 
+        timeout: this.config.timeout,
+      });
       Vue.set(this.node(), 'errorHandling', json);
     },
   },
