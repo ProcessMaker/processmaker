@@ -1,10 +1,10 @@
 <template>
     <div class="form-group">
       <label >{{ $t('Notify Process Manager') }}</label>
-      <b-form-checkbox switch id="switch_inapp" type="checkbox" v-model="config.switchInApp">
+      <b-form-checkbox switch id="switch_inapp" type="checkbox" v-model="config.inapp_notification">
         {{ $t('In-app Notification') }}
       </b-form-checkbox>
-      <b-form-checkbox switch id="switch_email" type="checkbox" v-model="config.switchEmail">
+      <b-form-checkbox switch id="switch_email" type="checkbox" v-model="config.email_notification">
         {{ $t('Email Notification') }}
       </b-form-checkbox>
     </div>
@@ -16,8 +16,8 @@
     data() {
       return {
         config: {
-          switchInApp: false,
-          switchEmail: false,
+          inapp_notification: false,
+          email_notification: false,
         },
       }
     },
@@ -38,14 +38,16 @@
         const configString = _.get(this.node(), 'errorHandling', null);
         if (configString) {
           const config = JSON.parse(configString);
-          this.config.switchInApp = _.get(config, 'inapp_notification', "");
-          this.config.switchEmail = _.get(config, 'email_notification', "");
+          this.config.inapp_notification = _.get(config, 'inapp_notification', "");
+          this.config.email_notification = _.get(config, 'email_notification', "");
         }
       },
       setNodeConfig() {
+        const existingSetting = JSON.parse(_.get(this.node(), 'errorHandling', '{}'));
         const json = JSON.stringify({ 
-          inapp_notification: this.config.switchInApp,
-          email_notification: this.config.switchEmail
+          ...existingSetting, 
+          inapp_notification: this.config.inapp_notification, 
+          email_notification: this.config.email_notification 
         });
         Vue.set(this.node(), 'errorHandling', json);
       },
@@ -55,11 +57,7 @@
     },
     computed: {
       helper() {
-        if (this.type === 'script') {
-          return this.$t('Set maximum run time in seconds. Leave empty to use script default. Set to 0 for no timeout.');
-        } else if (this.type === 'data-connector') {
-          return this.$t('Set maximum run time in seconds. Leave empty to use data connector default. Set to 0 for no timeout.');
-        }
+        return this.$t('Notify Process Manager');
       }
     }
   }
