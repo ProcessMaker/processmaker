@@ -23,11 +23,8 @@
       <tbody>
         <tr v-for="(item, index) in translatingLanguages" :key="'pending' + index">
           <td class="notify">{{ item.humanLanguage }}</td>
-          <td colspan="2" class="position-relative pt-0 pb-0">
-            <div class="streamTextBackdrop"></div>
-            <p class="streamText text-primary" :class="{'text-secondary': !item.streamString || item.streamString === ''}">
-            </p>
-          </td>
+          <td class="action">{{ formatDate(item.created_at) }}</td>
+          <td class="action">{{ formatDate(item.updated_at) }}</td>
           <td class="action">
             <ellipsis-menu
               :actions="actionsInProgress"
