@@ -1,7 +1,7 @@
 <template>
   <div role="group">
-    <label for="timeout">{{ $t('Timeout') }}</label>
-    <b-form-input id="timeout" type="number" min="0" max="3600" v-model="config.timeout"></b-form-input>
+    <label for="retry_attempts">{{ $t('Retry Attempts') }}</label>
+    <b-form-input id="retry_attempts" type="number" v-model="config.retry_attempts" min="0" max="50"></b-form-input>
     <small class="form-text text-muted">{{ helper }}</small>
   </div>
 </template>
@@ -13,7 +13,7 @@ export default {
   data() {
     return {
       config: {
-        timeout: "",
+        retry_attempts: "",
       },
     }
   },
@@ -33,11 +33,12 @@ export default {
       const configString = _.get(this.node(), 'errorHandling', null);
       if (configString) {
         const config = JSON.parse(configString);
-        this.config.timeout = _.get(config, 'timeout', "");
+        this.config.retry_attempts = _.get(config, 'retry_attempts', "");
       }
     },
     setNodeConfig() {
-      const json = JSON.stringify({ timeout: this.config.timeout });
+      const existingSetting = JSON.parse(_.get(this.node(), 'errorHandling', '{}'));
+      const json = JSON.stringify({ ...existingSetting, retry_attempts: this.config.retry_attempts });
       Vue.set(this.node(), 'errorHandling', json);
     },
   },
@@ -47,9 +48,9 @@ export default {
   computed: {
     helper() {
       if (this.type === 'script') {
-        return this.$t('Set maximum run time in seconds. Leave empty to use script default. Set to 0 for no timeout.');
+        return this.$t('Set maximum run retry attempts in seconds. Leave empty to use script default. Set to 0 for no retry attempts.');
       } else if (this.type === 'data-connector') {
-        return this.$t('Set maximum run time in seconds. Leave empty to use data connector default. Set to 0 for no timeout.');
+        return this.$t('Set maximum run retry attempts in seconds. Leave empty to use data connector default. Set to 0 for no retry attempts.');
       }
     }
   }
