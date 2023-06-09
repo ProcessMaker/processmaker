@@ -12,6 +12,8 @@ class LanguageTranslationHandler extends OpenAiHandler
 
     protected $processId = null;
 
+    protected $json_list = '';
+
     public function __construct()
     {
         parent::__construct();
@@ -44,7 +46,7 @@ class LanguageTranslationHandler extends OpenAiHandler
 
     public function generatePrompt(String $type = null, String $json_list) : Object
     {
-        $this->$json_list = $json_list;
+        $this->json_list = $json_list;
         $prompt = $this->getPromptFile($type);
         $prompt = $this->replaceJsonList($prompt, $json_list);
         $prompt = $this->replaceLanguage($prompt, $this->targetLanguage['humanLanguage']);
@@ -56,6 +58,10 @@ class LanguageTranslationHandler extends OpenAiHandler
 
     public function execute()
     {
+        $listCharCount = strlen($this->json_list);
+        $totalChars = $listCharCount * 3;
+        $currentChunkCount = 0;
+
         $client = app(Client::class);
         $stream = $client
             ->completions()
@@ -63,7 +69,8 @@ class LanguageTranslationHandler extends OpenAiHandler
 
         $fullResponse = '';
         foreach ($stream as $response) {
-            self::sendResponse($response->choices[0]->text);
+            $currentChunkCount += strlen($response->choices[0]->text);
+            self::sendResponse($response->choices[0]->text, $currentChunkCount, $totalChars);
             $fullResponse .= $response->choices[0]->text;
         }
 
@@ -100,10 +107,17 @@ class LanguageTranslationHandler extends OpenAiHandler
         return $replaced;
     }
 
-    private function sendResponse($response)
+    private function sendResponse($response, $currentChunkCount, $totalChars)
     {
+        $percentage = $currentChunkCount * 100 / $totalChars;
+
+        if ($percentage > 100) {
+            $percentage = 100;
+        }
+
+        $progress = ['currentChunkCount' => $currentChunkCount, 'totalChars' => $totalChars, 'percentage' => $percentage];
         if ($this->processId) {
-            event(new ProcessTranslationChunkEvent($this->processId, $this->targetLanguage['language'], $response));
+            event(new ProcessTranslationChunkEvent($this->processId, $this->targetLanguage['language'], $response, $progress));
         }
     }
 }

@@ -26,10 +26,6 @@
           <td colspan="2" class="position-relative pt-0 pb-0">
             <div class="streamTextBackdrop"></div>
             <p class="streamText text-primary" :class="{'text-secondary': !item.streamString || item.streamString === ''}">
-              <span v-if="!item.streamString || item.streamString === ''">
-                {{ $t("Pending ...") }}
-              </span>
-              {{ item.streamString }}
             </p>
           </td>
           <td class="action">
@@ -272,13 +268,7 @@ export default {
         this.addSocketListener(channel, streamProgressEvent, (response) => {
           if (response.stream && this.translatingLanguages[key]) {
             this.$set(this.translatingLanguages[key], "stream", response.stream);
-            let streamString = "";
-            if (typeof this.translatingLanguages[key].streamString !== "undefined") {
-              streamString = this.translatingLanguages[key].streamString;
-            }
-            streamString += response.stream;
-            streamString = streamString.slice(-150);
-            this.$set(this.translatingLanguages[key], "streamString", streamString);
+            this.$set(this.translatingLanguages[key], "progress", response.progress);
           }
         });
 
@@ -286,6 +276,9 @@ export default {
         this.addSocketListener(channel, batchProgressEvent, (response) => {
           if (response.batch && this.translatingLanguages[key]) {
             this.$set(this.translatingLanguages[key], "batch", response.batch);
+            if (this.translatingLanguages[key].progress) {
+              this.$set(this.translatingLanguages[key].progress, "percentage", 0);
+            }
             if (response.batch.progress === 100) {
               this.fetch();
               this.fetchPending();
