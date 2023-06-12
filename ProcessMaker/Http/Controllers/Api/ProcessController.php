@@ -6,6 +6,7 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Events\TemplateUpdated;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Api\TemplateController;
@@ -17,7 +18,6 @@ use ProcessMaker\Http\Resources\ProcessRequests;
 use ProcessMaker\Jobs\ExportProcess;
 use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
@@ -351,8 +351,8 @@ class ProcessController extends Controller
         $isTemplate = Process::select('is_template')->where('id', $process->id)->value('is_template');
         if ($isTemplate) {
             try {
-                $response = (new TemplateController(new Template))->updateTemplateManifest('process', $process->id, $request);
-
+                //Call Event to Log Template Changes
+                TemplateUpdated::dispatch([], [], true);
                 return new Resource($process->refresh());
             } catch (\Exception $error) {
                 return ['error' => $error->getMessage()];

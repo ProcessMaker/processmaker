@@ -3,6 +3,9 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use ProcessMaker\Events\CategoryCreated;
+use ProcessMaker\Events\CategoryDeleted;
+use ProcessMaker\Events\CategoryUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ProcessCategory as Resource;
@@ -146,7 +149,11 @@ class ProcessCategoryController extends Controller
         $request->validate(ProcessCategory::rules());
         $category = new ProcessCategory();
         $category->fill($request->json()->all());
+        
         $category->saveOrFail();
+
+        // Call Event to store Category Created in Log
+        CategoryCreated::dispatch($request->all());
 
         return new Resource($category);
     }
@@ -186,9 +193,14 @@ class ProcessCategoryController extends Controller
     public function update(Request $request, ProcessCategory $processCategory)
     {
         $request->validate(ProcessCategory::rules($processCategory));
+        $original = $processCategory->getOriginal();
         $processCategory->fill($request->json()->all());
         $processCategory->saveOrFail();
 
+        $changes = $processCategory->getChanges();
+
+        //call Event to store Category Changes in Log
+        CategoryUpdated::dispatch($processCategory, $changes, $original);
         return new Resource($processCategory);
     }
 
@@ -222,14 +234,21 @@ class ProcessCategoryController extends Controller
      */
     public function destroy(ProcessCategory $processCategory)
     {
+
         if ($processCategory->processes->count() !== 0) {
             return response(
-                ['message'=>'The item should not have associated processes',
-                    'errors'=> ['processes' => $processCategory->processes->count()], ],
-                422);
+                [
+                    'message' => 'The item should not have associated processes',
+                    'errors' => ['processes' => $processCategory->processes->count()],
+                ],
+                422
+            );
         }
 
         $processCategory->delete();
+
+        //Call Event to store Deleted Category on LOG
+        CategoryDeleted::dispatch($processCategory);
 
         return response('', 204);
     }
