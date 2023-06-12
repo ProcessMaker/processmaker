@@ -172,6 +172,8 @@ class Script extends ProcessMakerModel implements ScriptInterface
                 Log::info('The script completed successfully');
 
                 return $result;
+            } else {
+                throw $e;
             }
         }
     }
