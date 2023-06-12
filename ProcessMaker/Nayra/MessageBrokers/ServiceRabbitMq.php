@@ -4,7 +4,7 @@ namespace ProcessMaker\Nayra\MessageBrokers;
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
-use ProcessMaker\Nayra\Repositories\EntityRepositoryFactory;
+use ProcessMaker\Nayra\Repositories\PersistanceHandler;
 
 class ServiceRabbitMq
 {
@@ -123,8 +123,9 @@ class ServiceRabbitMq
      */
     private function storeData(array $transactions): void
     {
+        $handler = new PersistanceHandler();
         foreach ($transactions as $transaction) {
-            EntityRepositoryFactory::createRepository($transaction['entity'])->save($transaction);
+            $handler->save($transaction);
         }
     }
 }

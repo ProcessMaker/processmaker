@@ -48,9 +48,6 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             'signal_events' => [],
         ]);
 
-        // Create triggered
-        // TO DO:
-
         // Dispatch start process action
         $this->dispatchAction([
             'bpmn' => $version->getKey(),
@@ -76,6 +73,9 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
                     ]
                 ],
             ],
+            'session' => [
+                'user_id' => $userId,
+            ],
         ]);
 
         //Return the instance created
@@ -100,18 +100,9 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
 
         // Get complementary information
         $version = $definitions->getLatestVersion();
+        $userId = $this->getCurrentUserId();
 
-        // Get open tokens
-        $tokensRows = [];
-        $tokens = $instance->tokens()->where('status', '!=', 'CLOSED')->get();
-        foreach ($tokens as $token) {
-            $tokensRows[] = array_merge($token->token_properties ?: [], [
-                'id' => $token->uuid,
-                'status' => $token->status,
-                'index' => $token->element_index,
-                'element_id' => $token->element_id,
-            ]);
-        }
+        $state = $this->serializeState($instance);
 
         // Dispatch complete task action
         $this->dispatchAction([
@@ -123,17 +114,36 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
                 'element_id' => $token->element_id,
                 'data'=> $data,
             ],
-            'state' => [
-                'requests' => [
-                    [
-                        'id' => $instance->uuid,
-                        'callable_id' => $instance->callable_id,
-                        'data' => $instance->data,
-                        'tokens' => $tokensRows,
-                    ]
-                ],
-            ]
+            'state' => $state,
+            'session' => [
+                'user_id' => $userId,
+            ],
         ]);
+    }
+
+    private function serializeState(ProcessRequest $instance)
+    {
+        // Get open tokens
+        $tokensRows = [];
+        $tokens = $instance->tokens()->where('status', '!=', 'CLOSED')->where('status', '!=', 'TRIGGERED')->get();
+        foreach ($tokens as $token) {
+            $tokensRows[] = array_merge($token->token_properties ?: [], [
+                'id' => $token->uuid,
+                'status' => $token->status,
+                'index' => $token->element_index,
+                'element_id' => $token->element_id,
+            ]);
+        }
+        return [
+            'requests' => [
+                [
+                    'id' => $instance->uuid,
+                    'callable_id' => $instance->callable_id,
+                    'data' => $instance->data,
+                    'tokens' => $tokensRows,
+                ],
+            ],
+        ];
     }
 
     /**

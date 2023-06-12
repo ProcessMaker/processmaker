@@ -61,8 +61,12 @@ class TokenRepository implements TokenRepositoryInterface
         return $token;
     }
 
-    public function loadTokenByUid($uid): TokenInterface
+    public function loadTokenByUid($uid): ?TokenInterface
     {
+        if (is_numeric($uid)) {
+            return Token::find($uid);
+        }
+        return Token::where('uuid', $uid)->first();
     }
 
     /**

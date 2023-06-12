@@ -20,6 +20,18 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
 {
     use RepositoryTrait;
 
+    private bool $abortIfInstanceNotFound = true;
+    private bool $loadTokens = true;
+
+    public function setAbortIfInstanceNotFound(bool $abortIfInstanceNotFound)
+    {
+        $this->abortIfInstanceNotFound = $abortIfInstanceNotFound;
+    }
+    public function setLoadTokens(bool $loadTokens)
+    {
+        $this->loadTokens = $loadTokens;
+    }
+
     /**
      * Create an execution instance.
      *
@@ -42,19 +54,28 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      */
     public function loadExecutionInstanceByUid($instanceId, StorageInterface $storage)
     {
-        $instance = Instance::find($instanceId);
-        if (!$instance) {
+        if (is_numeric($instanceId)) {
+            $instance = Instance::find($instanceId);
+        } else {
+            $instance = Instance::where('uuid', $instanceId)->first();
+        }
+        if (!$instance && $this->abortIfInstanceNotFound) {
             abort(404, 'Instance not found');
+        } elseif (!$instance) {
+            return null;
         }
         $callableId = $instance->callable_id;
         $process = $storage->getProcess($callableId);
         $dataStore = $storage->getFactory()->createDataStore();
         $dataStore->setData($instance->data);
-        $instance->setId($instanceId);
+        $instance->setId($instance->getKey());
         $instance->setProcess($process);
         $instance->setDataStore($dataStore);
         $process->getTransitions($storage->getFactory());
 
+        if (!$this->loadTokens) {
+            return $instance;
+        }
         //Load tokens:
         $tokens = $instance->tokens()->where('status', '!=', 'CLOSED')->get();
         foreach ($tokens as $token) {
