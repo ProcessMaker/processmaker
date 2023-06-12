@@ -20,6 +20,7 @@ use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
 use ProcessMaker\Jobs\CancelRequest;
 use ProcessMaker\Jobs\TerminateRequest;
@@ -607,5 +608,15 @@ class ProcessRequestController extends Controller
         )->firstOrFail();
 
         return $token->element_name;
+    }
+
+    public function getRequestToken(Request $httpRequest, ProcessRequest $request)
+    {
+        $maxIdToken = $request->tokens()
+                 ->where(['element_id' => 'node_220'])->max('id');
+
+        $token =  ProcessRequestToken::where(['id' => $maxIdToken])->get();                
+
+        return new ApiResource($token);
     }
 }

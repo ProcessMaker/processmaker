@@ -60,7 +60,7 @@ export default {
     },
   },
   mounted() {
-    //
+    this.getTaskTokens();
   },
   methods: {
     getInformation() {
@@ -68,6 +68,12 @@ export default {
       setTimeout(() => {
         this.isLoading = false;
       }, 2000);
+    },
+    getTaskTokens() {
+      ProcessMaker.apiClient.get(`requests/2/tokens`)
+        .then((response) => {
+          console.log(response);
+        });
     },
   },
 };
