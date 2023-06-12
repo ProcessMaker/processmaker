@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Nayra\Repositories;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -23,6 +24,7 @@ abstract class EntityRepository
      *
      * @param string $uid
      * @return int $id
+     * @throws Exception
      */
     public function resolveId(string $uid): int
     {
@@ -43,6 +45,8 @@ abstract class EntityRepository
             $record = $instance->select('id')->where('uuid', $uid)->first();
             if ($record) {
                 self::$uid2id[$type][$uid] = $record->getKey();
+            } else {
+                throw new Exception("The uid {$uid} does not exist in the database");
             }
         }
 

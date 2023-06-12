@@ -38,7 +38,10 @@ class ServiceKafka
      */
     public function sendMessage(string $subject, string $collaborationId, mixed $body)
     {
-        //
+        $producer = Kafka::publishOn($subject)
+            ->withHeaders(['collaborationId' => $collaborationId])
+            ->withBodyKey('body', $body);
+        $producer->send();
     }
 
     /**
