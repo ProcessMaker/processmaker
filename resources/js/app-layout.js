@@ -85,6 +85,10 @@ window.ProcessMaker.navbar = new Vue({
       confirmMessage: "",
       confirmVariant: "",
       confirmCallback: "",
+      messageTitle: "",
+      messageMessage: "",
+      messageVariant: "",
+      messageCallback: "",
       confirmShow: false,
       sessionShow: false,
       messageShow: false,
@@ -208,10 +212,10 @@ window.ProcessMaker.confirmModal = function (title, message, variant, callback) 
 
 // Set out own specific message modal.
 window.ProcessMaker.messageModal = function (title, message, variant, callback) {
-  ProcessMaker.navbar.confirmTitle = title || __("Message");
-  ProcessMaker.navbar.confirmMessage = message || __("");
-  ProcessMaker.navbar.confirmVariant = variant;
-  ProcessMaker.navbar.confirmCallback = callback;
+  ProcessMaker.navbar.messageTitle = title || __("Message");
+  ProcessMaker.navbar.messageMessage = message || __("");
+  ProcessMaker.navbar.messageVariant = variant;
+  ProcessMaker.navbar.messageCallback = callback;
   ProcessMaker.navbar.messageShow = true;
 };
 
