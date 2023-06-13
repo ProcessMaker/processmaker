@@ -48,6 +48,9 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             'signal_events' => [],
         ]);
 
+        // Serialize instance
+        $state = $this->serializeState($request);
+
         // Dispatch start process action
         $this->dispatchAction([
             'bpmn' => $version->getKey(),
@@ -56,23 +59,14 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
                 'instance_id' => $request->uuid,
                 'request_id' => $request->getKey(),
                 'element_id' => $event->getId(),
-                'data'=> $data,
+                'data' => $data,
                 'extra_properties' => [
                     'user_id' => $userId,
                     'process_id' => $definitions->id,
                     'request_id' => $request->getKey(),
                 ],
             ],
-            'state' => [
-                'requests' => [
-                    $request->uuid => [
-                        'id' => $request->uuid,
-                        'callable_id' => $request->callable_id,
-                        'data' => $request->data,
-                        'tokens' => [],
-                    ]
-                ],
-            ],
+            'state' => $state,
             'session' => [
                 'user_id' => $userId,
             ],
@@ -101,7 +95,6 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         // Get complementary information
         $version = $definitions->getLatestVersion();
         $userId = $this->getCurrentUserId();
-
         $state = $this->serializeState($instance);
 
         // Dispatch complete task action
@@ -112,7 +105,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
                 'request_id' => $token->process_request_id,
                 'token_id' => $token->uuid,
                 'element_id' => $token->element_id,
-                'data'=> $data,
+                'data' => $data,
             ],
             'state' => $state,
             'session' => [
@@ -121,6 +114,12 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         ]);
     }
 
+    /**
+     * Build a state object
+     *
+     * @param ProcessRequest $instance
+     * @return array
+     */
     private function serializeState(ProcessRequest $instance)
     {
         // Get open tokens
@@ -134,6 +133,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
                 'element_id' => $token->element_id,
             ]);
         }
+
         return [
             'requests' => [
                 [

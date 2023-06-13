@@ -7,17 +7,18 @@ use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Repositories\ExecutionInstanceRepository;
 use ProcessMaker\Repositories\TokenRepository;
 
-class PersistanceHandler
+class PersistenceHandler
 {
-    use PersistanceRequestTrait;
-    use PersistanceTokenTrait;
+    use PersistenceRequestTrait;
+    use PersistenceTokenTrait;
 
     protected Deserializer $deserializer;
-
     protected ExecutionInstanceRepository $instanceRepository;
-
     protected TokenRepository $tokenRepository;
 
+    /**
+     * PersistenceHandler constructor
+     */
     public function __construct()
     {
         $this->deserializer = new Deserializer();
@@ -25,13 +26,21 @@ class PersistanceHandler
         $this->tokenRepository = new TokenRepository($this->instanceRepository);
     }
 
+    /**
+     * Save data
+     *
+     * @param array $transaction
+     *
+     * @throws Exception
+     */
     public function save(array $transaction)
     {
-        dump($transaction);
-        // initialize the session
+        // Initialize session
         if (isset($transaction['session']) && !empty($transaction['session']['user_id']) && Auth::id() !== $transaction['session']['user_id']) {
             Auth::loginUsingId($transaction['session']['user_id']);
         }
+
+        // Save data according to the type
         switch ($transaction['type']) {
             case 'activity_activated':
                 $this->persistActivityActivated($transaction);

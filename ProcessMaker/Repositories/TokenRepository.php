@@ -5,9 +5,7 @@ namespace ProcessMaker\Repositories;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use ProcessMaker\Exception\InvalidUserAssignmentException;
 use ProcessMaker\Models\ProcessCollaboration;
-use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Models\ProcessRequestToken as Token;
 use ProcessMaker\Models\User;
@@ -18,7 +16,6 @@ use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CollectionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\EventBasedGatewayInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\FlowInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\GatewayInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
@@ -61,7 +58,7 @@ class TokenRepository implements TokenRepositoryInterface
         return $token;
     }
 
-    public function loadTokenByUid($uid): ?TokenInterface
+    public function loadTokenByUid($uid): ? TokenInterface
     {
         if (is_numeric($uid)) {
             return Token::find($uid);
@@ -523,19 +520,19 @@ class TokenRepository implements TokenRepositoryInterface
 
     private function getActivityType($activity)
     {
-        if ($activity instanceof  ScriptTaskInterface) {
+        if ($activity instanceof ScriptTaskInterface) {
             return 'scriptTask';
         }
 
-        if ($activity instanceof  ServiceTaskInterface) {
+        if ($activity instanceof ServiceTaskInterface) {
             return 'serviceTask';
         }
 
-        if ($activity instanceof  CallActivityInterface) {
+        if ($activity instanceof CallActivityInterface) {
             return 'callActivity';
         }
 
-        if ($activity instanceof  ActivityInterface) {
+        if ($activity instanceof ActivityInterface) {
             return 'task';
         }
 

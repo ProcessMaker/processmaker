@@ -4,7 +4,7 @@ namespace ProcessMaker\Nayra\MessageBrokers;
 
 use Junges\Kafka\Facades\Kafka;
 use Junges\Kafka\Contracts\KafkaConsumerMessage;
-use ProcessMaker\Nayra\Repositories\PersistanceHandler;
+use ProcessMaker\Nayra\Repositories\PersistenceHandler;
 
 class ServiceKafka
 {
@@ -80,7 +80,7 @@ class ServiceKafka
      */
     private function storeData(array $transactions)
     {
-        $handler = new PersistanceHandler();
+        $handler = new PersistenceHandler();
         foreach ($transactions as $transaction) {
             $handler->save($transaction);
         }
