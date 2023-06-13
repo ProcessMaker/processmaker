@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "520e2545e0a25f5662223c52600db5e3",
+    "content-hash": "44ab97a6bf760e6517d0e937d2d2befa",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -13545,7 +13545,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "coderevolutionplugins/gpt-3-encoder-php": 20,
         "processmaker/laravel-i18next": 20
     },
     "prefer-stable": true,
