@@ -11,9 +11,9 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
+use ProcessMaker\Events\ProcessTranslationChunkProgressEvent;
+use ProcessMaker\Models\ProcessTranslationToken;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\User;
-use ProcessMaker\Notifications\ProcessTranslationProgressNotification;
 
 class ExecuteTranslationRequest implements ShouldQueue
 {
@@ -29,6 +29,8 @@ class ExecuteTranslationRequest implements ShouldQueue
 
     private $targetLanguage;
 
+    private $processId;
+
     /**
      * Create a new job instance.
      *
@@ -39,13 +41,15 @@ class ExecuteTranslationRequest implements ShouldQueue
             $languageTranslationHandler,
             $type,
             $chunk,
-            $targetLanguage
+            $targetLanguage,
+            $processId
         ) {
         $this->screenId = $screenId;
         $this->handler = $languageTranslationHandler;
         $this->type = $type;
         $this->chunk = $chunk;
         $this->targetLanguage = $targetLanguage;
+        $this->processId = $processId;
     }
 
     /**
@@ -55,7 +59,25 @@ class ExecuteTranslationRequest implements ShouldQueue
      */
     public function handle()
     {
+        $processTranslationToken = ProcessTranslationToken::where('process_id', $this->processId)->where('language', $this->targetLanguage['language'])->get();
+
+        if (!$this->chunk || !count($this->chunk)) {
+            return;
+        }
+
+        if (!$processTranslationToken) {
+            return $this->batch()->cancel();
+        }
+
+        if ($this->batch()->cancelled()) {
+            return;
+        }
+
         \Log::info('Calling OpenAI ...');
+
+        $batch = $this->batch();
+        event(new ProcessTranslationChunkProgressEvent($this->processId, $this->targetLanguage['language'], $batch));
+
         $this->handler->generatePrompt(
             $this->type,
             json_encode($this->chunk, JSON_UNESCAPED_SLASHES)
