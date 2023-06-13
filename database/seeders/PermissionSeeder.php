@@ -28,6 +28,15 @@ class PermissionSeeder extends Seeder
             'import-process-templates',
             'view-process-templates',
         ],
+        'Process Translations' => [
+            'create-process-translations',
+            'view-process-translations',
+            'import-process-translations',
+            'export-process-translations',
+            'edit-process-translations',
+            'cancel-process-translations',
+            'delete-process-translations',
+        ],
         'Comments' => [
             'create-comments',
             'delete-comments',
