@@ -12,7 +12,6 @@
     "require": {
         "php": "^8.1",
         "babenkoivan/elastic-scout-driver": "^3.0",
-        "coderevolutionplugins/gpt-3-encoder-php": "dev-main",
         "composer/semver": "^3.3",
         "darkaonline/l5-swagger": "^8.3",
         "doctrine/dbal": "^3.3",
@@ -34,7 +33,7 @@
         "microsoft/microsoft-graph": "^1.77",
         "moontoast/math": "^1.2",
         "mustache/mustache": "^2.14",
-        "openai-php/client": "^0.3.0",
+        "openai-php/client": "^0.5.2",
         "phing/phing": "^2.17",
         "pion/laravel-chunk-upload": "^1.5",
         "predis/predis": "^2.0",
@@ -68,8 +67,7 @@
     },
     "autoload": {
         "files": [
-            "helpers.php",
-            "vendor/coderevolutionplugins/gpt-3-encoder-php/gpt3-encoder.php"
+            "helpers.php"
         ],
         "psr-4": {
             "ProcessMaker\\": [

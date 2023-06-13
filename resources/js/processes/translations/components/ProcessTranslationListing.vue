@@ -23,8 +23,8 @@
       <tbody>
         <tr v-for="(item, index) in translatingLanguages" :key="'pending' + index">
           <td class="notify">{{ item.humanLanguage }}</td>
-          <td class="action">{{ formatDate(item.createdAt) }}</td>
-          <td class="action">{{ formatDate(item.updatedAt) }}</td>
+          <td class="action">{{ formatDate(item.created_at) }}</td>
+          <td class="action">{{ formatDate(item.updated_at) }}</td>
           <td class="action">
             <ellipsis-menu
               :actions="actionsInProgress"
@@ -35,6 +35,7 @@
               :showProgress="true"
               @navigate="onNavigate"
             />
+            <p v-if="item.stream && item.stream.data">{{ item.stream.data }}</p>
           </td>
         </tr>
         <tr v-for="(item, index) in translatedLanguages" :key="index">
@@ -47,6 +48,7 @@
               :permission="permission"
               :data="item"
               :divider="true"
+              :customButton="loadingItems.includes(item.language) ? inProgressButtonSmall : false"
               @navigate="onNavigate"
             />
           </td>
@@ -75,6 +77,8 @@ export default {
       editTranslation: null,
       orderBy: "language",
       loading: false,
+      loadingItems: [],
+      socketListeners: [],
       sortOrder: [
         {
           field: "name",
@@ -86,35 +90,45 @@ export default {
         {
           value: "edit-translation",
           content: "Edit Translation",
-          permission: "edit-process-translation",
+          permission: "edit-process-translations",
           icon: "fas fa-edit",
         },
         {
           value: "export-translation",
           content: "Export Translation",
-          permission: "export-process-translation",
+          permission: "export-process-translations",
           icon: "fas fa-file-export",
           link: true,
           href: "/processes/{{processId}}/export/translation/{{language}}",
         },
         {
+          value: "retry-translation",
+          content: "Retry empty translations",
+          permission: "edit-process-translations",
+          icon: "fas fa-redo",
+        },
+        {
           value: "delete-translation",
           content: "Delete Translation",
-          permission: "delete-process-translation",
+          permission: "delete-process-translations",
           icon: "fas fa-trash",
         },
       ],
       actionsInProgress: [
         {
-          value: "retry-translation", content: "Retry Translation", link: false, href: "", permission: "edit-process-translation", icon: "fas fa-redo",
-        },  
+          value: "cancel-translation", content: "Cancel Translation", permission: "cancel-process-translations", icon: "fas fa-stop-circle",
+        },
         {
-          value: "delete-translation", content: "Delete Translation", permission: "delete-process-translation", icon: "fas fa-trash",
+          value: "delete-translation", content: "Delete Translation", permission: "delete-process-translations", icon: "fas fa-trash",
         },
       ],
       inProgressButton: {
         icon: "fas fa-spinner fa-spin p-0",
         content: "Translation in progress",
+      },
+      inProgressButtonSmall: {
+        icon: "fas fa-spinner fa-spin p-0",
+        content: "",
       },
     };
   },
@@ -132,9 +146,6 @@ export default {
 
     this.fetch();
     this.fetchPending();
-    setInterval(() => {
-      this.fetchPending();
-    }, 3000);
     ProcessMaker.EventBus.$on("api-data-process-translations", () => {
       this.fetch();
       this.fetchPending();
@@ -156,11 +167,14 @@ export default {
         case "edit-translation":
           this.handleEditTranslation(data);
           break;
-        case "delete-translation":
-          this.handleDeleteTranslation(data);
-          break;
         case "retry-translation":
           this.handleRetryTranslation(data);
+          break;
+        case "cancel-translation":
+          this.handleCancelTranslation(data);
+          break;
+        case "delete-translation":
+          this.handleDeleteTranslation(data);
           break;
         default:
           break;
@@ -177,8 +191,6 @@ export default {
     },
 
     fetch() {
-      this.loading = true;
-
       const url = "process/translations?process_id=" + this.processId;
 
       // Load from our api client
@@ -200,7 +212,6 @@ export default {
         .then((response) => {
           this.translatedLanguages = response.data.translatedLanguages;
           this.$emit("translated-languages-changed", this.translatedLanguages);
-          this.loading = false;
         });
     },
 
@@ -225,18 +236,103 @@ export default {
         )
         .then((response) => {
           this.translatingLanguages = response.data.translatingLanguages;
+          this.removeSocketListeners();
+          this.subscribeToEvent();
         });
     },
+    addSocketListener(channel, event, callback) {
+      this.socketListeners.push({
+        channel,
+        event,
+      });
+      window.Echo.private(channel).listen(
+        event,
+        callback,
+      );
+    },
+    removeSocketListeners() {
+      this.socketListeners.forEach((element) => {
+        window.Echo.private(element.channel).stopListening(element.event);
+      });
+    },
+    subscribeToEvent() {
+      this.translatingLanguages.forEach((translatingLanguage, key) => {
+        const channel = `ProcessMaker.Models.Process.${this.processId}.Language.${translatingLanguage.language}`;
+        const streamProgressEvent = ".ProcessMaker\\Events\\ProcessTranslationChunkEvent";
+        const batchProgressEvent = ".ProcessMaker\\Events\\ProcessTranslationChunkProgressEvent";
 
+        // Subscribe to streamed responses
+        this.addSocketListener(channel, streamProgressEvent, (response) => {
+          if (response.stream && this.translatingLanguages[key]) {
+            this.$set(this.translatingLanguages[key], "stream", response.stream);
+            this.$set(this.translatingLanguages[key], "progress", response.progress);
+          }
+        });
+
+        // Subscribe to chunk progress
+        this.addSocketListener(channel, batchProgressEvent, (response) => {
+          if (response.batch && this.translatingLanguages[key]) {
+            this.$set(this.translatingLanguages[key], "batch", response.batch);
+            if (this.translatingLanguages[key].progress) {
+              this.$set(this.translatingLanguages[key].progress, "percentage", 0);
+            }
+            if (response.batch.progress === 100) {
+              this.fetch();
+              this.fetchPending();
+            }
+          }
+        });
+      });
+    },
     handleEditTranslation(data) {
       this.editTranslation = data;
       this.$emit("edit-translation", this.editTranslation);
     },
 
     handleRetryTranslation(data) {
-      console.log("Retrying translation");
-    },
+      this.loadingItems.push(data.language);
 
+      const params = {
+        language: data,
+        processId: this.processId,
+        option: "empty",
+      };
+
+      ProcessMaker.apiClient.post("/openai/language-translation", params)
+        .then((response) => {
+          this.screensTranslations = response.data.screensTranslations;
+          this.fetch();
+          this.fetchPending();
+          const index = this.loadingItems.indexOf(data.language);
+          if (index > -1) {
+            this.loadingItems.splice(index);
+          }
+        })
+        .catch((error) => {
+          const $errorMsg = this.$t("An error ocurred while calling OpenAI endpoint.");
+          window.ProcessMaker.alert($errorMsg, "danger");
+          const index = this.loadingItems.indexOf(data.language);
+          if (index > -1) {
+            this.loadingItems.splice(index);
+          }
+        });
+    },
+    handleCancelTranslation(translation) {
+      ProcessMaker.confirmModal(
+        this.$t("Caution!"),
+        this.$t(`Are you sure you want to cancel the translations for ${translation.humanLanguage} language? This process will not delete the already translated strings`),
+        "",
+        () => {
+          ProcessMaker.apiClient
+            .post(`process/translations/${this.processId}/cancel/translation/${translation.language}`)
+            .then(() => {
+              this.fetch();
+              this.fetchPending();
+              ProcessMaker.alert(this.$t(`The ${translation.humanLanguage} translations jobs were canceled.`), "success", 5, true);
+            });
+        },
+      );
+    },
     handleDeleteTranslation(translation) {
       ProcessMaker.confirmModal(
         this.$t("Caution!"),
@@ -276,5 +372,26 @@ export default {
   }
   td {
     vertical-align: middle;
+  }
+
+  .streamText {
+    max-height: 4rem;
+    overflow-y: hidden;
+    margin: 0px;
+    width: 32rem;
+    height: 100%;
+    border: 0;
+    font-size: 80%;
+  }
+
+  .streamTextBackdrop {
+    display: none;
+    background: linear-gradient(0deg, rgb(255, 255, 255) 5%, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0) 70%, rgb(255, 255, 255) 95%);
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
   }
 </style>
