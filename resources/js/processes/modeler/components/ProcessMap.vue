@@ -20,6 +20,7 @@
           :decorations="decorations"
           :request-completed-nodes="requestCompletedNodes"
           :request-in-progress-nodes="requestInProgressNodes"
+          :request-idle-nodes="requestIdleNodes"
           @set-xml-manager="xmlManager = $event"
           @click="handleClick"
         />
@@ -63,6 +64,7 @@ export default {
       },
       requestCompletedNodes: window.ProcessMaker.modeler.requestCompletedNodes,
       requestInProgressNodes: window.ProcessMaker.modeler.requestInProgressNodes,
+      requestIdleNodes: window.ProcessMaker.modeler.requestIdleNodes,
     };
   },
   mounted() {
