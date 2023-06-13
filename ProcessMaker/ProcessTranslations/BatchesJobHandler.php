@@ -5,6 +5,7 @@ namespace ProcessMaker\ProcessTranslations;
 use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
 use ProcessMaker\Ai\Handlers\LanguageTranslationHandler;
+use ProcessMaker\Ai\TokensCalculation\TokensCalculation;
 use ProcessMaker\Jobs\ExecuteTranslationRequest;
 use ProcessMaker\Models\ProcessTranslationToken;
 use ProcessMaker\Models\User;
@@ -182,25 +183,9 @@ class BatchesJobHandler
 
     public function calcTokens($model, $string)
     {
-        /**
-         *    # The following code is in case we need in the future to use gpt-4 or gpt-3.5.-turbo
-         *    # The script to calculate for those models it's available for python: ProcessMaker/Ai/Scripts/token_counter.py
-         *
-         *    $cmd = "python3";
-         *    $args = [
-         *        "ProcessMaker/Ai/Scripts/token_counter.py",
-         *        $model,
-         *        $string
-         *    ];
-         *
-         *    $escaped_args = implode(" ", array_map("escapeshellarg", $args));
-         *    $command = "$cmd $escaped_args 2>&1";
-         *    $tokensUsage = trim(shell_exec($command));
-         *
-         *    return $tokensUsage;
-         */
+        $tokens = TokensCalculation::gpt_encode($string);
 
-        return $tokensUsage = count(gpt_encode($string));
+        return $tokensUsage = count($tokens);
     }
 
     private function broadcastResponse()
