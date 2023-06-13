@@ -34,6 +34,7 @@
       configurables: [],
       requestCompletedNodes: @json($requestCompletedNodes),
       requestInProgressNodes: @json($requestInProgressNodes),
+      requestId: @json($requestId),
     }
 
     window.ProcessMaker.EventBus.$on('modeler-start', ({

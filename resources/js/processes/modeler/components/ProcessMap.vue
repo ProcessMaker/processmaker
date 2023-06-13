@@ -9,6 +9,8 @@
           v-show="tooltip.isActive"
           ref="tooltip"
           :node-id="tooltip.nodeId"
+          :node-name="tooltip.nodeName"
+          :request-id="requestId"
           :style="{
             left: `${tooltip.newX}px`,
             top: `${tooltip.newY}px`
@@ -52,6 +54,7 @@ export default {
         isActive: false,
         isLoading: false,
         nodeId: null,
+        nodeName: null,
         allowedNodes: [
           "bpmn:Task",
           "bpmn:ManualTask",
@@ -65,6 +68,7 @@ export default {
       },
       requestCompletedNodes: window.ProcessMaker.modeler.requestCompletedNodes,
       requestInProgressNodes: window.ProcessMaker.modeler.requestInProgressNodes,
+      requestId: window.ProcessMaker.modeler.requestId,
     };
   },
   watch: {
@@ -98,6 +102,7 @@ export default {
       if ((isNodeTooltipAllowed && this.tooltip.isActive === false)
         || (isNodeTooltipAllowed && this.tooltip.nodeId !== node.id)) {
         this.tooltip.nodeId = node.id;
+        this.tooltip.nodeName = node.name;
         this.tooltip.isActive = true;
         this.$nextTick(() => {
           this.tooltip.coordinates = { x: event.clientX, y: event.clientY };

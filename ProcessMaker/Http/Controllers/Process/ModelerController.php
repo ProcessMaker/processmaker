@@ -74,6 +74,7 @@ class ModelerController extends Controller
             'bpmn' => $bpmn,
             'requestCompletedNodes' => $filteredCompletedNodes,
             'requestInProgressNodes' => $requestInProgressNodes,
+            'requestId' => $request->request_id,
         ]);
     }
 }

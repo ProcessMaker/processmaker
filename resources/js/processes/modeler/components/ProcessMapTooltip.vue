@@ -17,25 +17,41 @@
       class="card-body"
       style="padding-top: 10px; padding-bottom: 5px"
     >
-      <p class="tooltip-title">
-        <span class="text-info">{{ nodeId }}</span>
-      </p>
-      <p class="tooltip-data">
-        <span class="tooltip-data-title">{{ $t('Status') }}:</span><span class="text-secondary">Complete</span>
-      </p>
-      <p class="tooltip-data">
-        <span class="tooltip-data-title">{{ $t('Completed By') }}:</span><span class="text-secondary">UserName</span>
-      </p>
-      <p class="tooltip-data">
-        <span class="tooltip-data-title">{{ $t('Time Started') }}:</span><span class="text-secondary">11/21/23 16:51</span>
-      </p>
-      <p class="tooltip-data">
-        <span class="tooltip-data-title">{{ $t('Time Completed') }}:</span><span class="text-secondary">11/21/23 16:53</span>
-      </p>
+      <div v-if="!tokenResult.hasOwnProperty('message')">
+        <p class="tooltip-title">
+          <span class="text-info">{{ tokenResult.element_name }}</span>
+        </p>
+        <p class="tooltip-data">
+          <span class="tooltip-data-title">{{ $t('Status') }}:</span>
+          <span class="text-secondary">{{ tokenResult.status }}</span>
+        </p>
+        <p class="tooltip-data">
+          <span class="tooltip-data-title">{{ $t('Completed By') }}:</span>
+          <span class="text-secondary">{{ tokenResult.username }}</span>
+        </p>
+        <p class="tooltip-data">
+          <span class="tooltip-data-title">{{ $t('Time Started') }}:</span>
+          <span class="text-secondary">{{ tokenResult.created_at }}</span>
+        </p>
+        <p class="tooltip-data">
+          <span class="tooltip-data-title">{{ $t('Time Completed') }}:</span>
+          <span class="text-secondary">{{ tokenResult.completed_at }}</span>
+        </p>
+      </div>
+      <div v-if="tokenResult.hasOwnProperty('message')">
+        <p class="tooltip-title">
+          <span class="text-info">{{ nodeName }}</span>
+        </p>
+        <p class="tooltip-data">
+          <span class="tooltip-data-title">{{ tokenResult.message }}</span>
+        </p>
+      </div>
     </div>
   </div>
 </template>
 <script>
+import moment from "moment";
+
 export default {
   name: "ProcessMapTooltip",
   props: {
@@ -45,35 +61,64 @@ export default {
         return "";
       },
     },
+    nodeName: {
+      type: String,
+      default() {
+        return "";
+      },
+    },
+    requestId: {
+      type: String,
+      default() {
+        return null;
+      },
+    },
   },
   data() {
     return {
       isLoading: false,
+      tokenResult: {},
     };
   },
   watch: {
     nodeId() {
-      this.getInformation();
+      this.getRequestTokens();
     },
     isLoading(value) {
       this.$emit("is-loading", value);
     },
   },
   mounted() {
-    this.getTaskTokens();
+    this.getRequestTokens();
   },
   methods: {
-    getInformation() {
+    getRequestTokens() {
       this.isLoading = true;
-      setTimeout(() => {
-        this.isLoading = false;
-      }, 2000);
-    },
-    getTaskTokens() {
-      ProcessMaker.apiClient.get(`requests/2/tokens`)
+      ProcessMaker.apiClient.get(`requests/${this.requestId}/tokens`, {
+        params: {
+          element_id: this.nodeId,
+        },
+      })
         .then((response) => {
-          console.log(response);
+          if (response.data.length > 0) {
+            this.isLoading = false;
+            [this.tokenResult] = response.data;
+            this.tokenResult.created_at = this.formatDate(this.tokenResult.created_at);
+            if (this.tokenResult.completed_at === null) {
+              this.tokenResult.completed_at = "-";
+            } else {
+              this.tokenResult.completed_at = this.formatDate(this.tokenResult.completed_at);
+            }
+          } else {
+            this.tokenResult = {
+              message: "No Information found.",
+            };
+            this.isLoading = false;
+          }
         });
+    },
+    formatDate(date) {
+      return moment(date).format("MM/DD/YY HH:mm");
     },
   },
 };

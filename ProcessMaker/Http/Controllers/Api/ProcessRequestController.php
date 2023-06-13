@@ -613,9 +613,16 @@ class ProcessRequestController extends Controller
     public function getRequestToken(Request $httpRequest, ProcessRequest $request)
     {
         $maxIdToken = $request->tokens()
-                 ->where(['element_id' => 'node_220'])->max('id');
+                 ->where(['element_id' => $httpRequest->element_id])->max('id');                
 
-        $token =  ProcessRequestToken::where(['id' => $maxIdToken])->get();                
+        $token =  ProcessRequestToken::where(['process_request_tokens.id' => $maxIdToken])
+                ->join('users', 'users.id', 'process_request_tokens.user_id')
+                ->selectRaw('element_id, element_name, process_request_tokens.created_at, completed_at, username, 
+                            CASE 
+                            WHEN process_request_tokens.status = "CLOSED" THEN "Completed" 
+                            WHEN process_request_tokens.status = "ACTIVE" THEN "In Progress" 
+                            END as status')
+                ->get();                
 
         return new ApiResource($token);
     }
