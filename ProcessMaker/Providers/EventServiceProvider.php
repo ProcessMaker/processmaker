@@ -69,6 +69,18 @@ class EventServiceProvider extends ServiceProvider
         'ProcessMaker\Events\PermissionUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
+        'ProcessMaker\Events\ProcessCreated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\ProcessArchived' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\ProcessPublished' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\ProcessRestored' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
         'ProcessMaker\Events\ProcessUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
@@ -138,7 +150,7 @@ class EventServiceProvider extends ServiceProvider
         'ProcessMaker\Events\UserUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
-      
+
     ];
 
     /**
