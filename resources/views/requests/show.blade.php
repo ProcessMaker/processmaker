@@ -39,6 +39,12 @@
                   @click="switchTab('pending')" href="#pending" role="tab" aria-controls="pending"
                   aria-selected="true">{{ __('Tasks') }}</a>
               </li>
+              <li class="nav-item">
+                <a class="nav-link" id="overview-tab" data-toggle="tab" href="#overview" role="tab"
+                  aria-controls="overview" aria-selected="false" @click="switchTab('overview')">
+                  {{ __('Overview') }}
+                </a>
+              </li>
               <li class="nav-item" v-if="showSummary">
                 <a id="summary-tab" data-toggle="tab" href="#summary" role="tab" aria-controls="summary"
                   @click="switchTab('summary')" aria-selected="false"
@@ -81,12 +87,6 @@
                 <a class="nav-link" id="forms-tab" data-toggle="tab" href="#forms" role="tab" aria-controls="forms"
                   aria-selected="false" @click="switchTab('forms')">
                   {{ __('Forms') }}
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" id="overview-tab" data-toggle="tab" href="#overview" role="tab"
-                  aria-controls="forms" aria-selected="false" @click="switchTab('overview')">
-                  {{ __('Overview') }}
                 </a>
               </li>
               @isset($addons)
@@ -229,21 +229,23 @@
                 ref="forms">
               </request-screens>
             </div>
-            <div class="tab-pane fade p-0" id="overview" role="tabpanel" aria-labelledby="overview-tab"
-              style="height: 720px">
+            <div v-if="activeTab === 'overview'" class="tab-pane fade p-0" id="overview" role="tabpanel"
+              aria-labelledby="overview-tab" style="height: 720px">
               <div class="card" style="border-top: none !important;">
                 <div class="card-body">
                   <h4>
                     {{ __(':name In-Flight Map', ['name' => $request->process->name]) }}
                   </h4>
-                    <iframe class="card" src="{{ route('modeler.inflight', ['process' => $request->process->id, 'request_id' => $request->id]) }}"
-                    width="100%" height="640px" frameborder="0" style="border-radius: 4px;"></iframe>
-                    <div id="map-legend" class="card">
-                      <div style="padding-top: 0px; padding-bottom: 0px; padding-left: 5px;" class="card-body">
-                        <p style="font-weight: bold;"><span class="in-progress-line"></span>In Progress</p>
-                        <p style="font-weight: bold; margin-bottom:1rem !important;"><span class="completed-line"></span>Completed</p>
-                      </div>
-                    </div>                    
+                  <div v-if="iframeLoading" class="d-flex justify-content-center">
+                    <div class="spinner-border text-primary" role="status"></div>
+                  </div>
+                  <div v-show="!iframeLoading">
+                    <iframe class="card"
+                      src="{{ route('modeler.inflight', ['process' => $request->process->id, 'request_id' => $request->id]) }}"
+                      width="100%" height="640px" frameborder="0" style="border-radius: 4px;"
+                      @load="onLoadIframe"></iframe>
+                    @include('processes.modeler.partials.map-legend')
+                  </div>
                 </div>
               </div>
             </div>
@@ -376,6 +378,7 @@
       mixins: addons,
       data() {
         return {
+          activeTab: 'pending',
           showCancelRequest: false,
           //Edit data
           fieldsToUpdate: [],
@@ -408,6 +411,7 @@
             voting: false,
             remove: false,
           },
+          iframeLoading: false,
         };
       },
       computed: {
@@ -525,7 +529,14 @@
       },
       methods: {
         switchTab(tab) {
+          this.activeTab = tab;
+          if (tab === 'overview') {
+            this.iframeLoading = true;
+          }
           ProcessMaker.EventBus.$emit('tab-switched', tab);
+        },
+        onLoadIframe() {
+          this.iframeLoading = false;
         },
         requestStatusClass(status) {
           status = status.toLowerCase();
@@ -719,34 +730,4 @@
       },
     });
   </script>
-@endsection
-@section('css')
-  <style>
-    #map-legend {
-      display: block;
-      position: absolute !important;
-      top: 70px;
-      right: 35px;
-    }
-    .in-progress-line {
-      width: 25px;
-      height: 30px;
-      margin-right: 20px;
-      display: inline-block;
-      border-right-style: dashed;
-      border-right-color: #00875A;
-      border-right-width: 3px;
-      transform: rotate(45deg);
-    }
-    .completed-line {
-      width: 25px;
-      height: 30px;
-      margin-right: 20px;
-      display: inline-block;
-      border-right-style: solid;
-      border-right-color: #5faaee;
-      border-right-width: 3px;
-      transform: rotate(45deg);      
-    }
-  </style>
 @endsection
