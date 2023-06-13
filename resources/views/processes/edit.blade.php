@@ -25,9 +25,11 @@
                         <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-config"
                            role="tab"
                            aria-controls="nav-config" aria-selected="true">{{__('Configuration')}}</a>
-                        <a class="nav-item nav-link" id="nav-groups-tab" data-toggle="tab" href="#nav-translations"
-                           role="tab"
-                           aria-controls="nav-translations" aria-selected="true">{{__('Translations')}}</a>
+                        @can('view-process-translations')
+                            <a class="nav-item nav-link" id="nav-groups-tab" data-toggle="tab" href="#nav-translations"
+                                role="tab"
+                                aria-controls="nav-translations" aria-selected="true">{{__('Translations')}}</a>
+                        @endcan
                         <a class="nav-item nav-link" id="nav-groups-tab" data-toggle="tab" href="#nav-notifications"
                            role="tab"
                            aria-controls="nav-notifications" aria-selected="true">{{__('Notifications')}}</a>
@@ -168,72 +170,74 @@
                         </div>
 
                         {{-- Translations --}}
-                        <div class="tab-pane fade show" id="nav-translations" role="tabpanel"
-                             aria-labelledby="nav-translations-tab">
-                            
-                             <div class="page-content mb-0" id="processTranslationIndex">
-                                <div id="search-bar" class="search mb-3" vcloak>
-                                    <div class="d-flex flex-column flex-md-row">
-                                        <div class="flex-grow-1">
-                                            <div id="search" class="mb-3 mb-md-0">
-                                                <div class="input-group w-100">
-                                                    <input id="search-box" v-model="filterTranslations" class="form-control" placeholder="{{__('Search')}}"  aria-label="{{__('Search')}}">
-                                                    <div class="input-group-append">
-                                                        <button type="button" class="btn btn-primary" aria-label="{{__('Search')}}">
-                                                            <i class="fas fa-search"></i>
-                                                        </button>
+                        @can('view-process-translations')
+                            <div class="tab-pane fade show" id="nav-translations" role="tabpanel"
+                                aria-labelledby="nav-translations-tab">
+                                
+                                <div class="page-content mb-0" id="processTranslationIndex">
+                                    <div id="search-bar" class="search mb-3" vcloak>
+                                        <div class="d-flex flex-column flex-md-row">
+                                            <div class="flex-grow-1">
+                                                <div id="search" class="mb-3 mb-md-0">
+                                                    <div class="input-group w-100">
+                                                        <input id="search-box" v-model="filterTranslations" class="form-control" placeholder="{{__('Search')}}"  aria-label="{{__('Search')}}">
+                                                        <div class="input-group-append">
+                                                            <button type="button" class="btn btn-primary" aria-label="{{__('Search')}}">
+                                                                <i class="fas fa-search"></i>
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                            @canany(['import-process-translations', 'create-process-translations'])
+                                                <div class="d-flex ml-md-0 flex-column flex-md-row">
+                                                    @can('import-process-translations')
+                                                        <div class="mb-3 mb-md-0 ml-md-2">
+                                                            <a href="#" aria-label="{{ __('Import Translation') }}" id="import_translation" class="btn btn-outline-secondary w-100" @click="importTranslation">
+                                                                <i class="fas fa-file-import"></i> {{__('Import')}}
+                                                            </a>
+                                                        </div>
+                                                    @endcan
+                                                    @can('create-process-translations')
+                                                        <div class="mb-3 mb-md-0 ml-md-2">
+                                                            <a href="#" aria-label="{{ __('New Translation') }}" id="new_translation" class="btn btn-primary w-100" @click="newTranslation">
+                                                                {{__('+ Translation')}}
+                                                            </a>
+                                                        </div>
+                                                    @endcan
+                                                </div>
+                                            @endcan
                                         </div>
-                                         @canany(['import-process-translation', 'create-process-translation'])
-                                            <div class="d-flex ml-md-0 flex-column flex-md-row">
-                                                @can('import-process-templates')
-                                                    <div class="mb-3 mb-md-0 ml-md-2">
-                                                        <a href="#" aria-label="{{ __('Import Translation') }}" id="import_translation" class="btn btn-outline-secondary w-100" @click="importTranslation">
-                                                            <i class="fas fa-file-import"></i> {{__('Import')}}
-                                                        </a>
-                                                    </div>
-                                                @endcan
-                                                @can('create-process-translation')
-                                                    <div class="mb-3 mb-md-0 ml-md-2">
-                                                        <a href="#" aria-label="{{ __('New Translation') }}" id="new_translation" class="btn btn-primary w-100" @click="newTranslation">
-                                                            {{__('+ Translation')}}
-                                                        </a>
-                                                    </div>
-                                                @endcan
-                                            </div>
-                                        @endcan
+                                    </div>
+                                
+                                    <div class="container-fluid">
+                                        <process-translation-listing
+                                            ref="translationsListing"
+                                            :filter="filterTranslations"
+                                            :permission="{{ \Auth::user()->hasPermissionsFor('process-translations') }}"
+                                            @translated-languages-changed="onTranslatedLanguagesChanged"
+                                            @edit-translation="onEditTranslation"
+                                            :process-id="{{ $process->id }}"
+                                        ></process-translation-listing>
                                     </div>
                                 </div>
-                            
-                                <div class="container-fluid">
-                                    <process-translation-listing
-                                        ref="translationsListing"
-                                        :filter="filterTranslations"
-                                        :permission="['edit-process-translation', 'export-process-translation', 'delete-process-translation']"
-                                        {{-- :permission="{{ \Auth::user()->hasPermissionsFor('process-translations') }}" --}}
-                                        @translated-languages-changed="onTranslatedLanguagesChanged"
-                                        @edit-translation="onEditTranslation"
-                                        :process-id="{{ $process->id }}"
-                                    ></process-translation-listing>
+
+                                <div class="d-flex justify-content-end mt-2">
+                                    {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
+                                    {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                                 </div>
-                            </div>
 
-                            <div class="d-flex justify-content-end mt-2">
-                                {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
+                                <create-process-translation-modal 
+                                    ref="createProcessTranslationModal" 
+                                    :process-id="{{ $process->id }}"
+                                    :permission="{{ \Auth::user()->hasPermissionsFor('process-translations') }}"
+                                    process-name="{{ $process->name }}"
+                                    :edit-translation="editTranslation"
+                                    @create-process-translation-closed="onCreateProcessTranslationClosed"
+                                    @translating-language="onTranslatingLanguage"
+                                    @language-saved="onLanguageSaved"/>
                             </div>
-
-                            <create-process-translation-modal 
-                                ref="create-process-translation-modal" 
-                                :process-id="{{ $process->id }}"
-                                process-name="{{ $process->name }}"
-                                :edit-translation="editTranslation"
-                                @create-process-translation-closed="onCreateProcessTranslationClosed"
-                                @translating-language="onTranslatingLanguage"
-                                @language-saved="onLanguageSaved"/>
-                        </div>
+                        @endcan
 
                         {{-- Notifications --}}
                         <div class="tab-pane fade show p-3" id="nav-notifications" role="tabpanel"
@@ -428,6 +432,7 @@
           },
           onTranslatedLanguagesChanged(translatedLanguages) {
             this.translatedLanguages = translatedLanguages;
+            this.$refs.createProcessTranslationModal.getAvailableLanguages();
           },
           onEditTranslation(editTranslation) {
             this.editTranslation = editTranslation;
@@ -501,7 +506,7 @@
             this.$bvModal.show("createProcessTranslation");
           },
           importTranslation() {
-
+            window.location = `/processes/${this.formData.id}/import/translation`
           },
         }
       });
