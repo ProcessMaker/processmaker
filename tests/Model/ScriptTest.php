@@ -3,6 +3,7 @@
 namespace Tests\Model;
 
 use Mockery;
+use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Exception\ScriptTimeoutException;
 use ProcessMaker\Models\Script;
 use ProcessMaker\ScriptRunners\MockRunner;
@@ -18,7 +19,7 @@ class ScriptTest extends TestCase
             'code' => 'foo',
             'timeout' => 5,
             'retry_attempts' => 3,
-            'retry_wait_time' => 1
+            'retry_wait_time' => 1,
         ]);
         $script->runScript([], [], '', ['timeout' => 123]);
     }
@@ -31,7 +32,7 @@ class ScriptTest extends TestCase
             'code' => 'foo',
             'timeout' => 5,
             'retry_attempts' => 3,
-            'retry_wait_time' => 1
+            'retry_wait_time' => 1,
         ]);
         $script->runScript([], [], '', ['timeout' => '']);
     }
@@ -53,28 +54,28 @@ class ScriptTest extends TestCase
     {
         //Mockery needs to know about this retry.
         $times = 3;
-        $this->mockWithExpectedTimeoutWithException(5, $times);
+        $this->mockWithExpectedTimeoutWithException(2, $times + 1); // Add 1 for original call
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(ScriptException::class);
 
         $script = Script::factory()->create([
             'code' => 'foo',
             'timeout' => 2,
             'retry_attempts' => $times,
-            'retry_wait_time' => 1
+            'retry_wait_time' => 1,
         ]);
         $script->runScript([], [], '', ['timeout' => '']);
     }
 
     /**
-     * It is necessary to pass this value to Mockery because we are attempting retries. Mockery needs 
+     * It is necessary to pass this value to Mockery because we are attempting retries. Mockery needs
      * to know about this retry.
      */
     private function mockWithExpectedTimeoutWithException($timeout, $times)
     {
         $mock = Mockery::mock(MockRunner::class);
         $mock->shouldReceive('setTokenId')->times($times);
-        $mock->shouldReceive('run')->times(0)->with('foo', [], [], $timeout, Mockery::any())->andReturnUsing(function () {
+        $mock->shouldReceive('run')->times($times)->with('foo', [], [], $timeout, Mockery::any())->andReturnUsing(function () {
             throw new \RuntimeException('Error occurred');
         });
 
