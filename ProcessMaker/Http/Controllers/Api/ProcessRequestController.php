@@ -622,7 +622,7 @@ class ProcessRequestController extends Controller
                             WHEN process_request_tokens.status = "CLOSED" THEN "Completed" 
                             WHEN process_request_tokens.status = "ACTIVE" THEN "In Progress" 
                             END as status')
-                ->get();                
+                ->first();                
 
         return new ApiResource($token);
     }

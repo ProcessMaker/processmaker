@@ -100,9 +100,9 @@ export default {
         },
       })
         .then((response) => {
-          if (response.data.length > 0) {
+          if (response.data.length !== 0) {
             this.isLoading = false;
-            [this.tokenResult] = response.data;
+            this.tokenResult = response.data;
             this.tokenResult.created_at = this.formatDate(this.tokenResult.created_at);
             if (this.tokenResult.completed_at === null) {
               this.tokenResult.completed_at = "-";
