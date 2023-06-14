@@ -7,6 +7,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Contracts\ScriptInterface;
+use ProcessMaker\Exception\RetryableException;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Exception\ScriptTimeoutException;
@@ -155,24 +156,29 @@ class Script extends ProcessMakerModel implements ScriptInterface
         try {
             return $runner->run($this->code, $data, $config, $this->timeout(), $user);
         } catch (ScriptException | \RuntimeException $e) {
-            if ($this->retryAttempts() !== null && $this->retryWaitTime() !== null) {
+            \Log::info('----', [$this->retryAttempts(), $this->retryWaitTime()]);
+            if ($this->retryAttempts()) {
                 Log::info('Retry the runScript process. Attempt ' . $this->attemptedRetries . ' of ' . $this->retryAttempts());
                 if ($this->attemptedRetries > $this->retryAttempts()) {
                     $message = __('Script failed after :attempts total attempts', ['attempts' => $this->attemptedRetries]);
                     $message = $message . "\n" . $e->getMessage();
-                    Log::error($message);
+                    // Log::error($message);
                     if ($e instanceof ScriptTimeoutException) {
                         throw new ScriptTimeoutException($message);
                     }
                     throw new ScriptException($message);
                 }
 
-                Log::info("Waiting {$this->retryWaitTime()} seconds before retrying.");
-                sleep($this->retryWaitTime());
+                if (is_numeric($this->retryWaitTime())) {
+                    Log::info("Waiting {$this->retryWaitTime()} seconds before retrying.");
+                    sleep($this->retryWaitTime());
+                }
                 $this->attemptedRetries++;
 
-                Log::info('Re-running the script');
-                $result = $this->runScript($data, $config, $tokenId, $errorHandling);
+                Log::info('Re-running the script', debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5));
+                // $result = $this->runScript($data, $config, $tokenId, $errorHandling);
+                // RunScriptTask::dispatch($process, $instance, $token, []);
+                throw new RetryableException();
                 Log::info('The script completed successfully');
 
                 return $result;

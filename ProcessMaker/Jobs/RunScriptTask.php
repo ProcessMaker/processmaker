@@ -4,6 +4,7 @@ namespace ProcessMaker\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Exception\RetryableException;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Managers\DataManager;
@@ -25,9 +26,9 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
 
     public $data;
 
-    public $tries = 3;
+    // public $tries = 3;
 
-    public $backoff = 60;
+    // public $backoff = 60;
 
     /**
      * Create a new job instance.
@@ -116,6 +117,10 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
 
             Log::error('Script failed: ' . $scriptRef . ' - ' . $exception->getMessage());
             Log::error($exception->getTraceAsString());
+
+            if ($exception instanceof RetryableException) {
+                throw $exception;
+            }
         }
     }
 
