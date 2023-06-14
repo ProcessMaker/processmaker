@@ -5,6 +5,7 @@ namespace ProcessMaker\Models;
 use Hamcrest\Type\IsNumeric;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Contracts\ScriptInterface;
 use ProcessMaker\Exception\ScriptException;
@@ -12,6 +13,7 @@ use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\GenerateAccessToken;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
+use ProcessMaker\Notifications\ErrorExecutionNotification;
 use ProcessMaker\ScriptRunners\ScriptRunner;
 use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HasCategories;
@@ -160,6 +162,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
                     $message = __('Script failed after :attempts total attempts', ['attempts' => $this->attemptedRetries]);
                     $message = $message . "\n" . $e->getMessage();
                     Log::error($message);
+                    $this->sendExecutionErrorNotification($message, $tokenId, $errorHandling);
                     throw new ScriptException($message);
                 }
 
@@ -173,8 +176,21 @@ class Script extends ProcessMakerModel implements ScriptInterface
 
                 return $result;
             } else {
+                $this->sendExecutionErrorNotification($e->getMessage(), $tokenId, $errorHandling);
                 throw $e;
             }
+        }
+    }
+
+    /**
+     * Send execution error notification.
+     */
+    public function sendExecutionErrorNotification(string $message, string $tokenId, array $errorHandling)
+    {
+        $processRequestToken = ProcessRequestToken::find($tokenId);
+        $user = $processRequestToken->processRequest->processVersion->manager;
+        if ($user !== null) {
+            Notification::send($user, new ErrorExecutionNotification($processRequestToken, $message, $errorHandling));
         }
     }
 

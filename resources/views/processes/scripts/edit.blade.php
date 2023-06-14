@@ -85,7 +85,7 @@
 
                         <slider-with-input
                             :label="$t('Retry Attempts')"
-                            :description="$t('Number of times to retry. Leave empty to use script default. Set to 0 for no retry attempts."
+                            :description="$t('Number of times to retry. Leave empty to use script default. Set to 0 for no retry attempts.')"
                             :error="errors.retry_attempts ? errors.retry_attempts[0] : null"
                             :value="formData.retry_attempts"
                             :min="0"
