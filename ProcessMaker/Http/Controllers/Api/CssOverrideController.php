@@ -107,10 +107,18 @@ class CssOverrideController extends Controller
             $changes = (array)json_decode($setting->getChanges()['config']);
         }
         
-        $changes = array_merge(isset($footer['changes']) ? $footer['changes'] : [], isset($altText['changes']) ? $altText['changes'] : [], $changes);
+        $changes = array_merge(
+            isset($footer['changes']) ? $footer['changes'] : [],
+            isset($altText['changes']) ? $altText['changes'] : [],
+            $changes
+        );
         
         if (!empty($changes)) {
-            $original['config'] = array_merge(isset($footer['original']) ? $footer['original'] : [], isset($altText['original']) ? $altText['original'] : [], isset($original['config']) ? $original['config'] : []);
+            $original['config'] = array_merge(
+                isset($footer['original']) ? $footer['original'] : [],
+                isset($altText['original']) ? $altText['original'] : [],
+                isset($original['config']) ? $original['config'] : []
+            );
             event(new CustomizeUiUpdated($original, $changes));
         }
 
