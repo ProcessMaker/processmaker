@@ -105,7 +105,8 @@ class WorkflowManager
         TokenInterface $token,
         BoundaryEventInterface $boundaryEvent,
         array $data
-    ) {
+    )
+    {
         //Validate data
         $this->validateData($data, $definitions, $boundaryEvent);
         BoundaryEvent::dispatchNow($definitions, $instance, $token, $boundaryEvent, $data);
@@ -332,6 +333,18 @@ class WorkflowManager
         $this->serviceTaskImplementations[$implementation] = $class;
 
         return true;
+    }
+
+    /**
+     * Gets an array of the service task implementations available
+     *
+     * @return array
+     */
+
+    public function getServiceImplementations()
+    {
+        $response = $this->serviceTaskImplementations;
+        return $response;
     }
 
     /**
