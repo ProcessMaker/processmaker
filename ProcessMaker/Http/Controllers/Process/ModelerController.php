@@ -70,9 +70,14 @@ class ModelerController extends Controller
             // Remove any node that is 'ACTIVE' from the 'CLOSED' list.
             $filteredCompletedNodes = $requestCompletedNodes->diff($requestInProgressNodes)->values();
 
+            // Get idle nodes.
             $xml = $this->loadAndPrepareXML($bpmn);
-            $nodeIds = $this->filterXML($xml);
+            $nodeIds = $this->getNodeIds($xml);
             $requestIdleNodes = $nodeIds->diff($filteredCompletedNodes)->diff($requestInProgressNodes)->values();
+
+            // Add completed sequence flow to the list of completed nodes.
+            $sequenceFlowNodes = $this->getCompletedSequenceFlow($xml, $filteredCompletedNodes->implode(' '), $requestInProgressNodes->implode(' '));
+            $filteredCompletedNodes = $filteredCompletedNodes->merge($sequenceFlowNodes);
         }
 
         return view('processes.modeler.inflight', [
@@ -104,9 +109,22 @@ class ModelerController extends Controller
     /**
      * Filter the XML to get IDs of all nodes excluding "lanes" and "pools" nodes.
      */
-    private function filterXML(SimpleXMLElement $xml): Collection
+    private function getNodeIds(SimpleXMLElement $xml): Collection
     {
         $elements = $xml->xpath('//*[name() != "bpmn:lane" and name() != "bpmn:participant"]/@id');
+
+        return collect(array_map('strval', $elements));
+    }
+
+    /**
+     * Performs an XPath query to get sequenceFlow elements
+     * whose 'sourceRef' attribute is in the string of completed nodes
+     * and 'targetRef' attribute is in the string of in-progress and completed nodes.
+     */
+    private function getCompletedSequenceFlow(SimpleXMLElement $xml, string $completedNodesStr, string $inProgressNodesStr): Collection
+    {
+        $inProgressAndCompletedNodes = $completedNodesStr . ' ' . $inProgressNodesStr;
+        $elements = $xml->xpath('//bpmn:sequenceFlow[contains("' . $completedNodesStr . '", @sourceRef) and contains("' . $inProgressAndCompletedNodes . '", @targetRef)]/@id');
 
         return collect(array_map('strval', $elements));
     }
