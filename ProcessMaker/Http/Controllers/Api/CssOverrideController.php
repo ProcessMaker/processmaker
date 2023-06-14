@@ -107,8 +107,10 @@ class CssOverrideController extends Controller
             $changes = (array)json_decode($setting->getChanges()['config']);
         }
         
-        $changes = array_merge($footer, $altText, $changes);
+        $changes = array_merge(isset($footer['changes']) ? $footer['changes'] : [], isset($altText['changes']) ? $altText['changes'] : [], $changes);
+        
         if (!empty($changes)) {
+            $original['config'] = array_merge(isset($footer['original']) ? $footer['original'] : [], isset($altText['original']) ? $altText['original'] : [], isset($original['config']) ? $original['config'] : []);
             event(new CustomizeUiUpdated($original, $changes));
         }
 
@@ -122,6 +124,8 @@ class CssOverrideController extends Controller
             $footerContent = '';
         }
 
+        $original = Setting::where('key', 'login-footer')->first()->getAttribute('config')['html'];
+
         $setting = Setting::updateOrCreate([
             'key' => 'login-footer',
         ], [
@@ -131,7 +135,10 @@ class CssOverrideController extends Controller
         $response = [];
 
         if ((!$setting->wasRecentlyCreated && $setting->wasChanged()) || $setting->wasRecentlyCreated) {
-            $response = ['loginFooter' => $setting->getAttributes()['config']['html']];
+            $response = [
+                'changes' => ['loginFooter' => $setting->getAttributes()['config']['html']],
+                'original' => ['loginFooter' => isset($original) ? $original : '']
+            ];
         }
 
         return $response;
@@ -144,6 +151,8 @@ class CssOverrideController extends Controller
             $altText = '';
         }
 
+        $original = Setting::where('key', 'logo-alt-text')->first()->getAttribute('config');
+
         $setting = Setting::updateOrCreate([
             'key' => 'logo-alt-text',
         ], [
@@ -154,7 +163,10 @@ class CssOverrideController extends Controller
         $response = [];
 
         if ((!$setting->wasRecentlyCreated && $setting->wasChanged()) || $setting->wasRecentlyCreated) {
-            $response = ['altText' => $setting->getAttributes()['config']];
+            $response = [
+                'changes' => ['altText' => $setting->getAttributes()['config']],
+                'original' => ['altText' => isset($original) ? $original : '']
+            ];
         }
 
         return $response;
