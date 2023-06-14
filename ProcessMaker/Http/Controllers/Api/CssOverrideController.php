@@ -107,8 +107,9 @@ class CssOverrideController extends Controller
             $changes = (array)json_decode($setting->getChanges()['config']);
         }
         
+        $changes = array_merge($footer, $altText, $changes);
         if (!empty($changes)) {
-            event(new CustomizeUiUpdated($original, array_merge($footer, $altText, $changes), $setting->getChanges()['updated_at']));
+            event(new CustomizeUiUpdated($original, $changes));
         }
 
         return new ApiResource($setting);
@@ -130,7 +131,7 @@ class CssOverrideController extends Controller
         $response = [];
 
         if ((!$setting->wasRecentlyCreated && $setting->wasChanged()) || $setting->wasRecentlyCreated) {
-            $response = ['html' => $setting->getAttributes()['config']['html']];
+            $response = ['loginFooter' => $setting->getAttributes()['config']['html']];
         }
 
         return $response;
