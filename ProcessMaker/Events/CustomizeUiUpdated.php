@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Events;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
@@ -19,7 +20,7 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
      *
      * @return void
      */
-    public function __construct(array $original, array $changes, string $updatedAt)
+    public function __construct(array $original, array $changes)
     {
         if (isset($original['config'])) {
             $original = $original['config'];
@@ -28,7 +29,6 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
         $original = array_intersect_key($original, $changes);
         $this->original = $original;
         $this->changes = $changes;
-        $this->changes['update_at'] = $updatedAt;
         $this->buildData();
     }
 
@@ -52,7 +52,7 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
             $this->changes['variables'] = $variables_changes;
             $this->original['variables'] = $variables_original;
         }
-        $this->data = $this->formatChanges($this->changes, $this->original);
+        $this->data = array_merge(['update_at' => Carbon::now()], $this->formatChanges($this->changes, $this->original));
     }
     
     /**
