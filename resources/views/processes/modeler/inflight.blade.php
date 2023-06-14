@@ -34,6 +34,7 @@
       configurables: [],
       requestCompletedNodes: @json($requestCompletedNodes),
       requestInProgressNodes: @json($requestInProgressNodes),
+      requestIdleNodes: @json($requestIdleNodes),
       requestId: @json($requestId),
     }
 
