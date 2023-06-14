@@ -33,43 +33,56 @@ env:
   IMAGE_TAG1: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
   GITHUB_COMMENT: ${{ secrets.GH_COMMENT }}
   pull_req_id: ${{github.event.pull_request.number}}
-jobs: 
-  #job1:
-  #  name: build-stm-image
-  #  runs-on: ubuntu-22.04    
-  #  steps:     
-  #    - name: Export Params                
-  #      run: |
-  #        echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
-  #        echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
-  #        echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
-  #        #Additional
-  #        echo "CI_PR_BODY=1" >> $GITHUB_ENV
-  #        echo "CACHEBUSTER=abc" >> $GITHUB_ENV
-  #    - name: Clone Repo STM
-  #      run: |
-  #        git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
-  #        cd pm4-stm-docker          
-  #    - name: Configure AWS Credentials
-  #      uses: aws-actions/configure-aws-credentials@v1
-  #      with:
-  #        aws-access-key-id: ${{ env.aws-access-key-id }}
-  #        aws-secret-access-key: ${{ env.aws-secret-access-key }}
-  #        aws-region: ${{ env.aws-region }}
-  #    - name: Login to ECR
-  #      run: |          
-  #        aws ecr get-login-password | docker login --username AWS --password-stdin ${{env.aws-url}}
-  #    - name: Build and Push the image to ECR
-  #      run: |
-  #        cd pm4-stm-docker
-  #        docker stop $(docker ps -a -q) || true
-  #        docker container prune -f
-  #        docker-compose down -v                    
-  #        docker-compose build processmaker
-  #        docker push ${IMAGE}
+jobs:
+  job0:
+    runs-on: ubuntu-latest
+    outputs:
+      deploy: ${{ steps.deploy_stm.outputs.run_deploy_stm }}
+    steps:
+      - id: deploy_stm
+        run: |
+          if [[ "$BODY" =~ .*"ci:deploy".* ]]; then
+            echo "run_deploy_stm=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run_deploy_stm=false" >> "$GITHUB_OUTPUT"
+          fi
+  job1:
+    name: build-stm-image
+    runs-on: ubuntu-22.04    
+    steps:     
+      - name: Export Params                
+        run: |
+          echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
+          echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
+          echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
+          #Additional
+          echo "CI_PR_BODY=1" >> $GITHUB_ENV
+          echo "CACHEBUSTER=abc" >> $GITHUB_ENV
+      - name: Clone Repo STM
+        run: |
+          git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
+          cd pm4-stm-docker          
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.aws-access-key-id }}
+          aws-secret-access-key: ${{ env.aws-secret-access-key }}
+          aws-region: ${{ env.aws-region }}
+      - name: Login to ECR
+        run: |          
+          aws ecr get-login-password | docker login --username AWS --password-stdin ${{env.aws-url}}
+      - name: Build and Push the image to ECR
+        run: |
+          cd pm4-stm-docker
+          docker stop $(docker ps -a -q) || true
+          docker container prune -f
+          docker-compose down -v                    
+          docker-compose build processmaker
+          docker push ${IMAGE}
   job2: 
     name: deploy-stm    
-    #needs: job1
+    needs: [job1, job0]
+    if: needs.job0.outputs.deploy == 'true'
     runs-on: ubuntu-22.04
     container:
       image:  cimg/php:7.4
