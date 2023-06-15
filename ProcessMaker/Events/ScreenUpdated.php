@@ -4,16 +4,15 @@ namespace ProcessMaker\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
-use ProcessMaker\Models\EnvironmentVariable;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
-class EnvironmentVariablesUpdated implements SecurityLogEventInterface
+class ScreenUpdated implements SecurityLogEventInterface
 {
     use Dispatchable;
     use FormatSecurityLogChanges;
 
-    private EnvironmentVariable $enVariable;
-
+    private Screen $screen;
     private array $changes;
     private array $original;
 
@@ -22,9 +21,9 @@ class EnvironmentVariablesUpdated implements SecurityLogEventInterface
      *
      * @return void
      */
-    public function __construct(EnvironmentVariable $data, array $changes, array $original)
+    public function __construct(Screen $screen, array $changes, array $original)
     {
-        $this->enVariable = $data;
+        $this->screen = $screen;
         $this->changes = $changes;
         $this->original = $original;
     }
@@ -36,13 +35,15 @@ class EnvironmentVariablesUpdated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        return array_merge([
-            'name' => [
-                'label' => $this->enVariable->getAttribute('name'),
-                'link' => route('environment-variables.edit', $this->enVariable),
-            ],
-            'last_modified' => $this->enVariable->getAttribute('updated_at'),
-        ], $this->formatChanges($this->changes, $this->original));
+        if (array_key_exists("config", $this->changes)) {
+            return array_merge([
+                'last_modified' => $this->screen->getAttribute('updated_at'),
+            ]);
+        } else {
+            return array_merge([
+                'last_modified' => $this->screen->getAttribute('updated_at'),
+            ], $this->formatChanges($this->changes, $this->original));
+        }
     }
 
     /**
@@ -52,7 +53,10 @@ class EnvironmentVariablesUpdated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return $this->enVariable->getAttributes();
+        return [
+            'id' => $this->screen->getAttribute('id'),
+            'name' => $this->screen->getAttribute('title'),
+        ];
     }
 
     /**
@@ -62,6 +66,6 @@ class EnvironmentVariablesUpdated implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'EnvironmentVariablesUpdated';
+        return 'ScreenUpdated';
     }
 }

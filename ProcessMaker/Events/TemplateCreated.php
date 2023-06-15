@@ -4,23 +4,21 @@ namespace ProcessMaker\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
-use ProcessMaker\Models\Group;
-use ProcessMaker\Traits\FormatSecurityLogChanges;
 
-class GroupCreated implements SecurityLogEventInterface
+class TemplateCreated implements SecurityLogEventInterface
 {
     use Dispatchable;
-    use FormatSecurityLogChanges;
 
-    private Group $group;
+    private array $payload;
+
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Group $data)
+    public function __construct(array $payload)
     {
-        $this->group = $data;
+        $this->payload = $payload;
     }
 
     /**
@@ -31,12 +29,9 @@ class GroupCreated implements SecurityLogEventInterface
     public function getData(): array
     {
         return [
-            'name' => [
-                'label' => $this->group->getAttribute('name'),
-                'link' => route('groups.edit', $this->group),
-            ],
-            'description' => $this->group->getAttribute('description'),
-            'created_at' => $this->group->getAttribute('created_at'),
+            'type' => $this->payload['type'],
+            'version' => $this->payload['version'],
+            'name' => $this->payload['name']
         ];
     }
 
@@ -47,7 +42,10 @@ class GroupCreated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return $this->group->getAttributes();
+        return array_merge(
+            ['root' => $this->payload['root']],
+            $this->getData()
+        );
     }
 
     /**
@@ -57,6 +55,6 @@ class GroupCreated implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'CreatedGroup';
+        return 'TemplateCreated';
     }
 }

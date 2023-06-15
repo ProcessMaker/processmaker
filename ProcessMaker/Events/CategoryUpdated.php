@@ -4,23 +4,29 @@ namespace ProcessMaker\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
-use ProcessMaker\Models\Group;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
-class GroupCreated implements SecurityLogEventInterface
+class CategoryUpdated implements SecurityLogEventInterface
 {
     use Dispatchable;
     use FormatSecurityLogChanges;
 
-    private Group $group;
+    private ProcessCategory $category;
+
+    private array $changes;
+    private array $original;
+
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Group $data)
+    public function __construct(ProcessCategory $data, array $changes, array $original)
     {
-        $this->group = $data;
+        $this->category = $data;
+        $this->changes = $changes;
+        $this->original = $original;
     }
 
     /**
@@ -30,14 +36,13 @@ class GroupCreated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        return [
+        return array_merge([
             'name' => [
-                'label' => $this->group->getAttribute('name'),
-                'link' => route('groups.edit', $this->group),
+                'label' => $this->category->getAttribute('name'),
+                'link' => route('processes.index', $this->category) . '#nav-categories',
             ],
-            'description' => $this->group->getAttribute('description'),
-            'created_at' => $this->group->getAttribute('created_at'),
-        ];
+            'last_modified' => $this->category->getAttribute('updated_at'),
+        ], $this->formatChanges($this->changes, $this->original));
     }
 
     /**
@@ -47,7 +52,7 @@ class GroupCreated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return $this->group->getAttributes();
+        return $this->formatChanges($this->changes, $this->original);
     }
 
     /**
@@ -57,6 +62,6 @@ class GroupCreated implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'CreatedGroup';
+        return 'CategoryUpdated';
     }
 }

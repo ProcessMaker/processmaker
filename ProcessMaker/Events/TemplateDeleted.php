@@ -2,25 +2,25 @@
 
 namespace ProcessMaker\Events;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
-use ProcessMaker\Models\Group;
-use ProcessMaker\Traits\FormatSecurityLogChanges;
+use ProcessMaker\Models\ProcessTemplates;
 
-class GroupCreated implements SecurityLogEventInterface
+class TemplateDeleted implements SecurityLogEventInterface
 {
     use Dispatchable;
-    use FormatSecurityLogChanges;
 
-    private Group $group;
+    private ProcessTemplates $template;
+
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Group $data)
+    public function __construct(ProcessTemplates $template)
     {
-        $this->group = $data;
+        $this->template = $template;
     }
 
     /**
@@ -31,12 +31,8 @@ class GroupCreated implements SecurityLogEventInterface
     public function getData(): array
     {
         return [
-            'name' => [
-                'label' => $this->group->getAttribute('name'),
-                'link' => route('groups.edit', $this->group),
-            ],
-            'description' => $this->group->getAttribute('description'),
-            'created_at' => $this->group->getAttribute('created_at'),
+            'template_name' => $this->template->name,
+            'deleted_at' => Carbon::now()
         ];
     }
 
@@ -47,7 +43,10 @@ class GroupCreated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return $this->group->getAttributes();
+        return [
+            'id' => $this->template->id,
+            'template_name' => $this->template->name
+        ];
     }
 
     /**
@@ -57,6 +56,6 @@ class GroupCreated implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'CreatedGroup';
+        return 'TemplateDeleted';
     }
 }

@@ -2,25 +2,25 @@
 
 namespace ProcessMaker\Events;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
-use ProcessMaker\Models\Group;
-use ProcessMaker\Traits\FormatSecurityLogChanges;
+use ProcessMaker\Models\ProcessCategory;
 
-class GroupCreated implements SecurityLogEventInterface
+class CategoryDeleted implements SecurityLogEventInterface
 {
     use Dispatchable;
-    use FormatSecurityLogChanges;
 
-    private Group $group;
+    private ProcessCategory $processCategory;
+
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Group $data)
+    public function __construct(ProcessCategory $data)
     {
-        $this->group = $data;
+        $this->processCategory =  $data;
     }
 
     /**
@@ -31,12 +31,8 @@ class GroupCreated implements SecurityLogEventInterface
     public function getData(): array
     {
         return [
-            'name' => [
-                'label' => $this->group->getAttribute('name'),
-                'link' => route('groups.edit', $this->group),
-            ],
-            'description' => $this->group->getAttribute('description'),
-            'created_at' => $this->group->getAttribute('created_at'),
+            'category_name' => $this->processCategory->getAttribute('name'),
+            'deleted_at' => Carbon::now()
         ];
     }
 
@@ -45,9 +41,14 @@ class GroupCreated implements SecurityLogEventInterface
      *
      * @return array
      */
+
     public function getChanges(): array
     {
-        return $this->group->getAttributes();
+        return [
+            'id' => $this->processCategory->getAttribute('id'),
+            'name' => $this->processCategory->getAttribute('name'),
+            'status' => $this->processCategory->getAttribute('status')
+        ];
     }
 
     /**
@@ -57,6 +58,6 @@ class GroupCreated implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'CreatedGroup';
+        return 'CategoryDeleted';
     }
 }

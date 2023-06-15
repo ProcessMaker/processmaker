@@ -7,7 +7,7 @@ use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Models\User;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
-class UserCreated implements SecurityLogEventInterface
+class UserUpdated implements SecurityLogEventInterface
 {
     use Dispatchable;
     use FormatSecurityLogChanges;
@@ -19,9 +19,9 @@ class UserCreated implements SecurityLogEventInterface
      *
      * @return void
      */
-    public function __construct(User $newData)
+    public function __construct(User $user)
     {
-        $this->user = $newData;
+        $this->user = $user;
     }
 
     /**
@@ -31,18 +31,16 @@ class UserCreated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        return [
-            'username' => [
+        $oldData = array_diff_assoc($this->user->getOriginal(), $this->user->getAttributes());
+        $newData = array_diff_assoc($this->user->getAttributes(), $this->user->getOriginal());
+
+        return array_merge([
+            'name' => [
                 'label' => $this->user->getAttribute('username'),
-                'link' => route('users.edit', $this->user),
+                'link' => route('users.edit', $this->user->getAttribute('id')) . '#nav-home',
             ],
-            'firstname' => $this->user->getAttribute('firstname'),
-            'lastname' => $this->user->getAttribute('lastname'),
-            'title' => $this->user->getAttribute('title'),
-            'status' => $this->user->getAttribute('status'),
-            'email' => $this->user->getAttribute('email'),
-            'created_at' => $this->user->getAttribute('created_at'),
-        ];
+            'username' => $this->user->getAttribute('username'),
+        ], $this->formatChanges($newData, $oldData));
     }
 
     /**
@@ -52,7 +50,11 @@ class UserCreated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return $this->user->getAttributes();
+        return [
+            'id' => $this->user->getAttribute('id'),
+            'username' => $this->user->getAttribute('username'),
+            'status' => $this->user->getAttribute('status'),
+        ];
     }
 
     /**
@@ -62,6 +64,6 @@ class UserCreated implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'UserCreated';
+        return 'UserUpdated';
     }
 }
