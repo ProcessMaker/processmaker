@@ -177,6 +177,32 @@ class ProcessRequestsTest extends TestCase
     }
 
     /**
+     * Test that we can filter by participant
+     */
+    public function testFilterByParticipant()
+    {
+        $participant = User::factory()->create();
+        $otherUser = User::factory()->create();
+
+        $request = ProcessRequest::factory()->create(['status' => 'ACTIVE']);
+        $otherRequest = ProcessRequest::factory()->create(['status' => 'ACTIVE']);
+
+        $token = ProcessRequestToken::factory()->create([
+            'process_request_id' => $request->id,
+            'user_id' => $participant->id,
+        ]);
+
+        $otherToken = ProcessRequestToken::factory()->create([
+            'process_request_id' => $otherRequest->id,
+            'user_id' => $otherUser->id,
+        ]);
+
+        $response = $this->apiCall('GET', self::API_TEST_URL, ['pmql' => "participant = \"{$participant->username}\""]);
+        $this->assertEquals(1, $response->json()['meta']['total']);
+        $this->assertEquals($request->id, $response->json()['data'][0]['id']);
+    }
+
+    /**
      * Test that paged values are returned as expected
      */
     public function testWithPagination()

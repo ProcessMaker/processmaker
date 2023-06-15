@@ -8,6 +8,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\ModelerManager;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\PackageHelper;
 use ProcessMaker\Traits\HasControllerAddons;
 
@@ -39,6 +40,40 @@ class ModelerController extends Controller
             'autoSaveDelay' => config('versions.delay.process', 5000),
             'isVersionsInstalled' => PackageHelper::isPackageInstalled('ProcessMaker\Package\Versions\PluginServiceProvider'),
             'isDraft' => $draft !== null,
+        ]);
+    }
+
+    /**
+     * Invokes the Modeler for In-flight Process Map rendering.
+     */
+    public function inflight(ModelerManager $manager, Process $process, Request $request)
+    {
+        event(new ModelerStarting($manager));
+
+        $bpmn = $process->bpmn;
+        $requestCompletedNodes = [];
+        $requestInProgressNodes = [];
+
+        // Use the process version that was active when the request was started.
+        $processRequest = ProcessRequest::find($request->request_id);
+        if ($processRequest) {
+            $bpmn = $process->versions()
+                ->where('id', $processRequest->process_version_id)
+                ->firstOrFail()
+                ->bpmn;
+
+            $requestCompletedNodes = $processRequest->tokens()->where('status', 'CLOSED')->pluck('element_id');
+            $requestInProgressNodes = $processRequest->tokens()->where('status', 'ACTIVE')->pluck('element_id');
+            // Remove any node that is 'ACTIVE' from the 'CLOSED' list.
+            $filteredCompletedNodes = $requestCompletedNodes->diff($requestInProgressNodes)->values();
+        }
+
+        return view('processes.modeler.inflight', [
+            'manager' => $manager,
+            'process' => $process,
+            'bpmn' => $bpmn,
+            'requestCompletedNodes' => $filteredCompletedNodes,
+            'requestInProgressNodes' => $requestInProgressNodes,
         ]);
     }
 }

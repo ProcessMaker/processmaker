@@ -45,11 +45,19 @@
                         <li v-if="item.description">Description: <span class="fw-semibold">{{ item.description }}</span></li>
                         <li>Categories: <span class="fw-semibold">{{ item.categories }}</span></li>
                         <li v-for="(attribute, i) in item.extraAttributes" :key="i">
-                            {{ i[0].toUpperCase() + i.substring(1) }}: <span class="fw-semibold">{{ attribute }}</span>
+                            <span v-if="i !== 'translatedLanguages'">
+                                {{ i[0].toUpperCase() + i.substring(1) }}: <span class="fw-semibold">{{ attribute }}</span>
+                            </span>
                         </li>
                         <!-- <li>Language: <span class="process-metadata"></span></li> -->
                         <li>Created Date: <span class="fw-semibold">{{ item.createdAt }}</span></li>
                         <li>Last Modified Date: <span class="fw-semibold">{{ item.updatedAt }}</span></li>
+                        <li>
+                            Translations:
+                            <small class="mr-1 badge badge-pill badge-primary" v-for="language in item.translatedLanguages">
+                                {{ language }}
+                            </small>
+                        </li>
                     </ul>
                     <!-- TODO: Complete Change Log-->
                     <!-- <change-log :existingData="existingAssets" :newData="item"></change-log> -->

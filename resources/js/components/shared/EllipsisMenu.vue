@@ -11,10 +11,12 @@
   >
     <template v-if="customButton" #button-content>
       <i
-        class="pr-1 ellipsis-menu-icon"
+        class="pr-1 ellipsis-menu-icon no-padding"
         :class="customButton.icon"
       />
-      <span>{{ customButton.content }}</span>
+      <span>
+        {{ customButton.content }} <b v-if="showProgress && data && data.batch"> {{ getTotalProgress(data.batch, data.progress) }}%</b>
+      </span>
     </template>
     <template v-else #button-content>
       <i class="fas fa-ellipsis-h ellipsis-menu-icon" />
@@ -80,7 +82,7 @@ export default {
   components: { },
   filters: { },
   mixins: [],
-  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "customButton"],
+  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "customButton", "showProgress"],
   data() {
     return {
       active: false,
@@ -140,6 +142,17 @@ export default {
     onHide() {
       this.$emit('hide');
     },
+
+    getTotalProgress(batchProgress, chunkProgress) {
+      const progressSlot = 100 / batchProgress.totalJobs;
+      let totalProgress = batchProgress.progress;
+
+      if (chunkProgress?.percentage > 0) {
+        totalProgress += ((chunkProgress.percentage * progressSlot) / 100);
+      }
+
+      return Math.trunc(totalProgress);
+    },
   },
 };
 </script>
@@ -162,4 +175,7 @@ export default {
     margin-left: -15px;
 }
 
+.ellipsis-menu-icon.no-padding {
+  padding: 0 !important;
+}
 </style>
