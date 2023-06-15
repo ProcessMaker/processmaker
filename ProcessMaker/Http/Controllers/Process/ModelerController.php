@@ -51,6 +51,8 @@ class ModelerController extends Controller
         event(new ModelerStarting($manager));
 
         $bpmn = $process->bpmn;
+        $requestCompletedNodes = [];
+        $requestInProgressNodes = [];
 
         // Use the process version that was active when the request was started.
         $processRequest = ProcessRequest::find($request->request_id);
@@ -59,12 +61,19 @@ class ModelerController extends Controller
                 ->where('id', $processRequest->process_version_id)
                 ->firstOrFail()
                 ->bpmn;
+
+            $requestCompletedNodes = $processRequest->tokens()->where('status', 'CLOSED')->pluck('element_id');
+            $requestInProgressNodes = $processRequest->tokens()->where('status', 'ACTIVE')->pluck('element_id');
+            // Remove any node that is 'ACTIVE' from the 'CLOSED' list.
+            $filteredCompletedNodes = $requestCompletedNodes->diff($requestInProgressNodes)->values();
         }
 
         return view('processes.modeler.inflight', [
             'manager' => $manager,
             'process' => $process,
             'bpmn' => $bpmn,
+            'requestCompletedNodes' => $filteredCompletedNodes,
+            'requestInProgressNodes' => $requestInProgressNodes,
         ]);
     }
 }
