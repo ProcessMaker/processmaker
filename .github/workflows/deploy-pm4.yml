@@ -120,36 +120,36 @@ jobs:
         run: |
           cd pm4-stm-docker
           bash ./github_comment.sh "$PROJECT" "$pull_req_id"
-  #job3: 
-  #  name: run-phpunit
-  #  needs: job1
-  #  runs-on: ubuntu-22.04
-  #  steps:
-  #    - name: Export Params                
-  #      run: |
-  #        echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
-  #        echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
-  #        echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV          
-  #    - name: Clone Repo STM
-  #      run: |
-  #        git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
-  #        cd pm4-stm-docker          
-  #    - name: Configure AWS Credentials
-  #      uses: aws-actions/configure-aws-credentials@v1
-  #      with:
-  #        aws-access-key-id: ${{ env.aws-access-key-id }}
-  #        aws-secret-access-key: ${{ env.aws-secret-access-key }}
-  #        aws-region: ${{ env.aws-region }}
-  #    - name: Login to Amazon ECR
-  #      id: login-ecr
-  #      uses: aws-actions/amazon-ecr-login@v1
-  #    - name: PHPUnits
-  #      run: |          
-  #        cd pm4-stm-docker          
-  #        docker pull $IMAGE          
-  #        docker-compose down -v          
-  #        docker-compose build          
-  #        docker-compose run phpunit
+  job3: 
+   name: run-phpunit
+   needs: job1
+   runs-on: ubuntu-22.04
+   steps:
+     - name: Export Params                
+       run: |
+         echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
+         echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
+         echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV          
+     - name: Clone Repo STM
+       run: |
+         git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
+         cd pm4-stm-docker          
+     - name: Configure AWS Credentials
+       uses: aws-actions/configure-aws-credentials@v1
+       with:
+         aws-access-key-id: ${{ env.aws-access-key-id }}
+         aws-secret-access-key: ${{ env.aws-secret-access-key }}
+         aws-region: ${{ env.aws-region }}
+     - name: Login to Amazon ECR
+       id: login-ecr
+       uses: aws-actions/amazon-ecr-login@v1
+     - name: PHPUnits
+       run: |          
+         cd pm4-stm-docker          
+         docker pull $IMAGE          
+         docker-compose down -v          
+         docker-compose build          
+         docker-compose run phpunit
   #job4: 
   #  name: run-benchmarks
   #  needs: job2
