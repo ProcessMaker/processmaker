@@ -55,7 +55,7 @@
           ></select-user>
         </b-form-group>
         <b-form-group
-          v-if="!selectedTemplate"
+          v-if="!selectedTemplate && !generativeProcessData"
           :label="$t('Upload BPMN File (optional)')"
           :invalid-feedback="errorMessage('bpmn', addError)"
           :state="errorState('bpmn', addError)"
