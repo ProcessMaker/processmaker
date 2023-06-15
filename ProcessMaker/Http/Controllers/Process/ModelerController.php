@@ -76,4 +76,22 @@ class ModelerController extends Controller
             'requestInProgressNodes' => $requestInProgressNodes,
         ]);
     }
+
+    /**
+     * Invokes the Modeler for In-flight Process Map rendering for ai generative.
+     */
+    public function inflightProcessAi(ModelerManager $manager, Process $process, Request $request)
+    {
+        // Receive the history ID
+        // Call microservice and pass the history ID
+        // The microervice returns a history entry that contains [created_at, id, prompt_id, prompt, bpmn, user_id]
+        // Use the bpmn and return to view
+        event(new ModelerStarting($manager));
+        $bpmn = $process->bpmn;
+
+        return view('processes.modeler.inflight-generative-ai', [
+            'manager' => $manager,
+            'bpmn' => $bpmn,
+        ]);
+    }
 }
