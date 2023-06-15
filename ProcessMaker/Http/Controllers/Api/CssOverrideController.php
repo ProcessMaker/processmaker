@@ -145,7 +145,7 @@ class CssOverrideController extends Controller
         if ((!$setting->wasRecentlyCreated && $setting->wasChanged()) || $setting->wasRecentlyCreated) {
             $response = [
                 'changes' => ['loginFooter' => $setting->getAttributes()['config']['html']],
-                'original' => ['loginFooter' => isset($original) ? $original : '']
+                'original' => ['loginFooter' => $original ?? '']
             ];
         }
 
@@ -173,7 +173,7 @@ class CssOverrideController extends Controller
         if ((!$setting->wasRecentlyCreated && $setting->wasChanged()) || $setting->wasRecentlyCreated) {
             $response = [
                 'changes' => ['altText' => $setting->getAttributes()['config']],
-                'original' => ['altText' => isset($original) ? $original : '']
+                'original' => ['altText' => $original ?? '']
             ];
         }
 
