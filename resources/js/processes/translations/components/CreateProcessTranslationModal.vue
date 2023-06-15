@@ -67,12 +67,16 @@
           />
           <small class="text-muted">{{ $t("Select a screen from the process to review and perform translations.") }}</small>
         </div>
-        <div v-if="stringsWithTranslations && Object.keys(stringsWithTranslations).length !== 0">
+        <div
+          v-if="stringsWithTranslations
+          && Object.keys(stringsWithTranslations).length !== 0
+          && (permission.includes('create-process-translations') || permission.includes('edit-process-translations'))">
           <translate-options-popup  @retranslate="onReTranslate"/>
         </div>
+
         <div class="mt-3 position-relative">
           <div v-if="step === 'showTranslations'" class="d-flex justify-content-center align-items-center">
-            <div v-if="aiLoading" 
+            <div v-if="aiLoading"
               class="d-flex justify-content-center align-items-center flex-column h-100 position-absolute preloader-container">
               <span class="power-loader mt-3 mb-2" />
               <span class="ml-2 text-muted small">
@@ -129,7 +133,7 @@ export default {
     TranslateOptionsPopup,
   },
   mixins: [FormErrorsMixin],
-  props: ["processId", "processName", "translatedLanguages", "editTranslation"],
+  props: ["processId", "processName", "translatedLanguages", "editTranslation", "permission"],
   data() {
     return {
       showModal: false,
@@ -221,6 +225,11 @@ export default {
   },
   mounted() {
     this.getAvailableLanguages();
+
+    if (!this.permission.includes("create-process-translations") && !this.permission.includes("edit-process-translations")) {
+      this.customModalButtons[2].disabled = true;
+      this.customModalButtons[2].hidden = true;
+    }
   },
   methods: {
     // This method updates the corresponding string changed in the variable "screensTranslations", so when changing the screen
@@ -335,6 +344,10 @@ export default {
     },
 
     showSelectTargetLanguage() {
+      if (!this.permission.includes("create-process-translations") && !this.permission.includes("edit-process-translations")) {
+        this.$bvModal.hide("createProcessTranslation");
+        return;
+      }
       this.step = "selectTargetLanguage";
       this.hasHeaderButtons = false;
       this.hasTitleButtons = false;
@@ -349,7 +362,11 @@ export default {
       this.hasTitleButtons = true;
       this.headerButtons[0].hidden = false;
       this.customModalButtons[1].hidden = true;
-      this.customModalButtons[2].hidden = false;
+      if (!this.permission.includes("create-process-translations") && !this.permission.includes("edit-process-translations")) {
+        this.customModalButtons[2].hidden = true;
+      } else {
+        this.customModalButtons[2].hidden = false;
+      }
       this.modalTitle = this.$t(`${this.processName} ${this.selectedLanguage.humanLanguage} Translation`);
     },
     getAvailableLanguages() {

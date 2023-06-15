@@ -45,3 +45,7 @@ Broadcast::channel('ProcessMaker.Models.ProcessRequestToken.{id}', function ($us
 Broadcast::channel('test.status', function ($user) {
     return true;
 });
+
+Broadcast::channel('ProcessMaker.Models.Process.{processId}.Language.{language}', function ($user, $processId, $language) {
+    return true;
+});
