@@ -115,9 +115,9 @@ class CssOverrideController extends Controller
         
         if (!empty($changes)) {
             $original['config'] = array_merge(
-                isset($footer['original']) ? $footer['original'] : [],
-                isset($altText['original']) ? $altText['original'] : [],
-                isset($original['config']) ? $original['config'] : []
+                $footer['original'] ?? [],
+                $altText['original'] ?? [],
+                $original['config'] ?? []
             );
             event(new CustomizeUiUpdated($original, $changes));
         }
