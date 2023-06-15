@@ -2,25 +2,24 @@
 
 namespace ProcessMaker\Events;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
-use ProcessMaker\Models\Group;
-use ProcessMaker\Traits\FormatSecurityLogChanges;
+use ProcessMaker\Models\Screen;
 
-class GroupCreated implements SecurityLogEventInterface
+class ScreenDeleted implements SecurityLogEventInterface
 {
     use Dispatchable;
-    use FormatSecurityLogChanges;
+    private Screen $screen;
 
-    private Group $group;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Group $data)
+    public function __construct(Screen $screen)
     {
-        $this->group = $data;
+        $this->screen =  $screen;
     }
 
     /**
@@ -31,12 +30,9 @@ class GroupCreated implements SecurityLogEventInterface
     public function getData(): array
     {
         return [
-            'name' => [
-                'label' => $this->group->getAttribute('name'),
-                'link' => route('groups.edit', $this->group),
-            ],
-            'description' => $this->group->getAttribute('description'),
-            'created_at' => $this->group->getAttribute('created_at'),
+            'title' => $this->screen->getAttributes()['title'],
+            'description' => $this->screen->getAttributes()['description'],
+            'deleted_at' => Carbon::now()
         ];
     }
 
@@ -47,7 +43,10 @@ class GroupCreated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return $this->group->getAttributes();
+        return array_merge(
+            ['id' => $this->screen->getAttribute('id')],
+            $this->getData()
+        );
     }
 
     /**
@@ -57,6 +56,6 @@ class GroupCreated implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'CreatedGroup';
+        return 'ScreenDeleted';
     }
 }

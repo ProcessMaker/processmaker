@@ -4,23 +4,24 @@ namespace ProcessMaker\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
-use ProcessMaker\Models\Group;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
-class GroupCreated implements SecurityLogEventInterface
+class ProcessArchived implements SecurityLogEventInterface
 {
     use Dispatchable;
     use FormatSecurityLogChanges;
 
-    private Group $group;
+    private Process $process;
+
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Group $data)
+    public function __construct(Process $data)
     {
-        $this->group = $data;
+        $this->process = $data;
     }
 
     /**
@@ -32,22 +33,25 @@ class GroupCreated implements SecurityLogEventInterface
     {
         return [
             'name' => [
-                'label' => $this->group->getAttribute('name'),
-                'link' => route('groups.edit', $this->group),
+                'label' => $this->process->getAttribute('name'),
+                'link' => route('modeler.show', $this->process),
             ],
-            'description' => $this->group->getAttribute('description'),
-            'created_at' => $this->group->getAttribute('created_at'),
+            'action' => $this->process->getAttribute('status'),
+            'updated_at' => $this->process->getAttribute('updated_at'),
         ];
     }
 
     /**
-     * Get specific changes without format related to the event
+     * Get specific data related to the event
      *
      * @return array
      */
     public function getChanges(): array
     {
-        return $this->group->getAttributes();
+        return [
+            'id' => $this->process->getAttribute('id'),
+            'status' => $this->process->getAttribute('status'),
+        ];
     }
 
     /**
@@ -57,6 +61,6 @@ class GroupCreated implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'CreatedGroup';
+        return 'ProcessArchived';
     }
 }

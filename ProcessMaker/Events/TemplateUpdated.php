@@ -2,31 +2,30 @@
 
 namespace ProcessMaker\Events;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
-use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
-class EnvironmentVariablesUpdated implements SecurityLogEventInterface
+class TemplateUpdated implements SecurityLogEventInterface
 {
     use Dispatchable;
     use FormatSecurityLogChanges;
 
-    private EnvironmentVariable $enVariable;
-
     private array $changes;
     private array $original;
+    private bool $processType;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(EnvironmentVariable $data, array $changes, array $original)
+    public function __construct(array $changes, array $original, bool $processType)
     {
-        $this->enVariable = $data;
         $this->changes = $changes;
         $this->original = $original;
+        $this->processType = $processType;
     }
 
     /**
@@ -36,13 +35,23 @@ class EnvironmentVariablesUpdated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        return array_merge([
-            'name' => [
-                'label' => $this->enVariable->getAttribute('name'),
-                'link' => route('environment-variables.edit', $this->enVariable),
-            ],
-            'last_modified' => $this->enVariable->getAttribute('updated_at'),
-        ], $this->formatChanges($this->changes, $this->original));
+        if ($this->processType) {
+            return [
+                'name' => [
+                    'label' => $this->processType
+                ],
+                'updated_at' => Carbon::now()
+            ];
+        } else {
+            $oldData = array_diff_assoc($this->original, $this->changes);
+            $newData = array_diff_assoc($this->changes, $this->original);
+
+            return array_merge([
+                'name' => [
+                    'label' => $this->processType
+                ],
+            ], $this->formatChanges($newData, $oldData));
+        }
     }
 
     /**
@@ -52,7 +61,7 @@ class EnvironmentVariablesUpdated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return $this->enVariable->getAttributes();
+        return [];
     }
 
     /**
@@ -62,6 +71,6 @@ class EnvironmentVariablesUpdated implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'EnvironmentVariablesUpdated';
+        return 'TemplateUpdated';
     }
 }

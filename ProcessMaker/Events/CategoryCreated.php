@@ -4,24 +4,26 @@ namespace ProcessMaker\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
-use ProcessMaker\Models\User;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
-class UserCreated implements SecurityLogEventInterface
+class CategoryCreated implements SecurityLogEventInterface
 {
     use Dispatchable;
     use FormatSecurityLogChanges;
 
-    private User $user;
+    private ProcessCategory $category;
+    private array $variable = [];
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(User $newData)
+    public function __construct(array $data)
     {
-        $this->user = $newData;
+        $this->variable = $data;
+        $this->category = ProcessCategory::where('name', $data['name'])->first();
     }
 
     /**
@@ -32,16 +34,12 @@ class UserCreated implements SecurityLogEventInterface
     public function getData(): array
     {
         return [
-            'username' => [
-                'label' => $this->user->getAttribute('username'),
-                'link' => route('users.edit', $this->user),
+            'name' => [
+                'label' => $this->variable['name'],
+                'link' => route('processes.create', $this->category),
             ],
-            'firstname' => $this->user->getAttribute('firstname'),
-            'lastname' => $this->user->getAttribute('lastname'),
-            'title' => $this->user->getAttribute('title'),
-            'status' => $this->user->getAttribute('status'),
-            'email' => $this->user->getAttribute('email'),
-            'created_at' => $this->user->getAttribute('created_at'),
+            'name' => $this->variable['name'],
+            'created_at' => $this->category->getAttribute('created_at'),
         ];
     }
 
@@ -52,7 +50,9 @@ class UserCreated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return $this->user->getAttributes();
+        return [
+            $this->category
+        ];
     }
 
     /**
@@ -62,6 +62,6 @@ class UserCreated implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'UserCreated';
+        return 'CategoryCreated';
     }
 }

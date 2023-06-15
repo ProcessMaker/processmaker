@@ -37,20 +37,24 @@ class UserGroupMembershipUpdated implements SecurityLogEventInterface
         
         $groupsDeleted = [];
         $groupsAdded = [];
-        
-        foreach ($data['attached'] as $groupId) {
-            $group = Group::findOrFail($groupId);
-            $groupsAdded[] = [
-                'link' => route('groups.edit', $group),
-                'label' => $group->name
-            ];
+
+        if (!empty($data['attached'])) {
+            foreach ($data['attached'] as $groupId) {
+                $group = Group::findOrFail($groupId);
+                $groupsAdded[] = [
+                    'link' => route('groups.edit', $group),
+                    'label' => $group->name
+                ];
+            }
         }
-        foreach ($data['detached'] as $groupId) {
-            $group = Group::findOrFail($groupId);
-            $groupsDeleted[] = [
-                'link' => route('groups.edit', $group),
-                'label' => $group->name
-            ];
+        if (!empty($data['detached'])) {
+            foreach ($data['detached'] as $groupId) {
+                $group = Group::findOrFail($groupId);
+                $groupsDeleted[] = [
+                    'link' => route('groups.edit', $group),
+                    'label' => $group->name
+                ];
+            }
         }
 
         $this->data = [

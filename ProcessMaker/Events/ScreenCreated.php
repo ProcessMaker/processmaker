@@ -4,23 +4,20 @@ namespace ProcessMaker\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
-use ProcessMaker\Models\Group;
-use ProcessMaker\Traits\FormatSecurityLogChanges;
 
-class GroupCreated implements SecurityLogEventInterface
+class ScreenCreated implements SecurityLogEventInterface
 {
     use Dispatchable;
-    use FormatSecurityLogChanges;
+    private array $newScreen;
 
-    private Group $group;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Group $data)
+    public function __construct(array $newScreen)
     {
-        $this->group = $data;
+        $this->newScreen =  $newScreen;
     }
 
     /**
@@ -31,12 +28,10 @@ class GroupCreated implements SecurityLogEventInterface
     public function getData(): array
     {
         return [
-            'name' => [
-                'label' => $this->group->getAttribute('name'),
-                'link' => route('groups.edit', $this->group),
-            ],
-            'description' => $this->group->getAttribute('description'),
-            'created_at' => $this->group->getAttribute('created_at'),
+            'name' => $this->newScreen['title'],
+            'description' => $this->newScreen['description'],
+            'type' => $this->newScreen['type'],
+            'screen_category_id' => $this->newScreen['screen_category_id']
         ];
     }
 
@@ -47,7 +42,7 @@ class GroupCreated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return $this->group->getAttributes();
+        return $this->getData();
     }
 
     /**
@@ -57,6 +52,6 @@ class GroupCreated implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'CreatedGroup';
+        return 'ScreenCreated';
     }
 }
