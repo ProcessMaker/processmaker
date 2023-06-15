@@ -18,7 +18,7 @@ return [
     'env' => env('APP_ENV', 'local'),
 
     // Should we place our application in debug mode
-    'debug' => env('APP_DEBUG', false),
+    'debug' => env('APP_DEBUG', true),
 
     // What's our default cache lifecycle
     'cache_lifetime' => env('APP_CACHE_LIFETIME', 60),
