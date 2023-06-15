@@ -610,6 +610,24 @@ class ProcessRequestController extends Controller
         return $token->element_name;
     }
 
+    /**
+     *      Get Information of the last token for the element query
+     *      
+     *      @Parameter
+     *          Request $httpRequest
+     *          ProcessRequest $request
+     *     @return
+     *          object data {
+     *              element_id,
+     *              element_name,
+     *              created_at,
+     *              completed_at,
+     *              username,
+     *              count
+     *          }
+     *         
+     */
+
     public function getRequestToken(Request $httpRequest, ProcessRequest $request)
     {
         $maxIdToken = $request->tokens()
@@ -622,7 +640,12 @@ class ProcessRequestController extends Controller
                             WHEN process_request_tokens.status = "CLOSED" THEN "Completed" 
                             WHEN process_request_tokens.status = "ACTIVE" THEN "In Progress" 
                             END as status')
-                ->first();                
+                ->first();           
+
+        if (!empty($token)) {
+            $tokenCount = ProcessRequestToken::where(['element_id' => $httpRequest->element_id, 'process_request_id'=> $request->id])->count();
+            $token->count = $tokenCount;
+        }
 
         return new ApiResource($token);
     }
