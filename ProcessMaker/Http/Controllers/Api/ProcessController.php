@@ -10,6 +10,8 @@ use ProcessMaker\Events\ProcessArchived;
 use ProcessMaker\Events\ProcessCreated;
 use ProcessMaker\Events\ProcessPublished;
 use ProcessMaker\Events\ProcessRestored;
+use ProcessMaker\Events\RequestAction;
+use ProcessMaker\Events\RequestCreated;
 use ProcessMaker\Events\TemplateUpdated;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Facades\WorkflowManager;
@@ -1276,6 +1278,8 @@ class ProcessController extends Controller
                 'message' => __('Unable to start process'),
             ], 422);
         }
+
+        event(new RequestAction($processRequest, RequestAction::ACTIONS[0]));
 
         return new ProcessRequests($processRequest);
     }

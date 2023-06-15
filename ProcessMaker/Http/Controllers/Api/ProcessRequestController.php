@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Notification;
+use ProcessMaker\Events\RequestAction;
 use ProcessMaker\Exception\PmqlMethodException;
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Facades\WorkflowManager;
@@ -561,6 +562,8 @@ class ProcessRequestController extends Controller
         // Close process request
         $request->status = 'CANCELED';
         $request->save();
+
+        event(new RequestAction($request, RequestAction::ACTIONS[1]));
     }
 
     /**
@@ -576,6 +579,8 @@ class ProcessRequestController extends Controller
 
         // Terminate request
         TerminateRequest::dispatchNow($request);
+
+        event(new RequestAction($request, RequestAction::ACTIONS[2]));
 
         $user = \Auth::user();
         Comment::create([
