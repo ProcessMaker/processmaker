@@ -46,7 +46,6 @@ export default {
     return {
       self: this,
       validationBar: [],
-      process: window.ProcessMaker.modeler.process,
       xmlManager: null,
       decorations: {
         borderOutline: {},

@@ -27,7 +27,7 @@
         </p>
         <p class="tooltip-data">
           <span class="tooltip-data-title">{{ $t('Completed By') }}:</span>
-          <span class="text-secondary">{{ tokenResult.username }}</span>
+          <span class="text-secondary">{{ tokenResult.user.username }}</span>
         </p>
         <p class="tooltip-data">
           <span class="tooltip-data-title">{{ $t('Time Started') }}:</span>
@@ -77,7 +77,9 @@ export default {
   data() {
     return {
       isLoading: false,
-      tokenResult: {},
+      tokenResult: {
+        user: {},
+      },
     };
   },
   watch: {
@@ -88,9 +90,7 @@ export default {
       this.$emit("is-loading", value);
     },
   },
-  mounted() {
-    this.getRequestTokens();
-  },
+  mounted() {},
   methods: {
     getRequestTokens() {
       this.isLoading = true;
@@ -100,29 +100,22 @@ export default {
         },
       })
         .then((response) => {
-          if (response.data.length !== 0) {
-            this.isLoading = false;
-            this.tokenResult = response.data;
-            this.tokenResult.created_at = this.formatDate(this.tokenResult.created_at);
-            if (this.tokenResult.completed_at === null) {
-              this.tokenResult.completed_at = "-";
-            } else {
-              this.tokenResult.completed_at = this.formatDate(this.tokenResult.completed_at);
-            }
-          } else {
-            this.tokenResult = {
-              message: "No Information found.",
-            };
-            this.isLoading = false;
-          }
+          this.tokenResult = response.data;
+          this.tokenResult.created_at = this.formatDate(this.tokenResult.created_at);
+          this.tokenResult.completed_at = this.formatDate(this.tokenResult.completed_at);
+        })
+        .catch(() => {
+          this.tokenResult.message = this.$t("No information found.");
+        })
+        .finally(() => {
+          this.isLoading = false;
         });
     },
     formatDate(date) {
-      return moment(date).format("MM/DD/YY HH:mm");
+      return date === null ? "-" : moment(date).format("MM/DD/YY HH:mm");
     },
   },
 };
-
 </script>
 <style>
 #tooltip {
@@ -130,18 +123,22 @@ export default {
   z-index: 3;
 }
 .tooltip-title {
-  font-weight: bold;
-  font-size: 90%;
   margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.02em;
 }
 .tooltip-data-title {
   font-weight: bold;
   padding-right: 5px;
 }
 .tooltip-data {
+  font-size: 14px;
+  line-height: 21px;
+  letter-spacing: -0.02em;
   padding-top: 0px;
   padding-bottom: 0px;
   margin-bottom: 5px;
-  font-size: 80%;
 }
 </style>

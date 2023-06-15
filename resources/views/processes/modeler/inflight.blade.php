@@ -28,8 +28,6 @@
   <script>
     const breadcrumbData = [];
     window.ProcessMaker.modeler = {
-      process: @json($process),
-      processName: @json($process->name),
       xml: @json($bpmn),
       configurables: [],
       requestCompletedNodes: @json($requestCompletedNodes),

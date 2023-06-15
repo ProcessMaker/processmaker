@@ -67,7 +67,7 @@ class ModelerController extends Controller
 
             $requestCompletedNodes = $processRequest->tokens()->whereIn('status', ['CLOSED', 'TRIGGERED'])->pluck('element_id');
             $requestInProgressNodes = $processRequest->tokens()->where('status', 'ACTIVE')->pluck('element_id');
-            // Remove any node that is 'ACTIVE' from the 'CLOSED' list.
+            // Remove any node that is 'ACTIVE' from the completed list.
             $filteredCompletedNodes = $requestCompletedNodes->diff($requestInProgressNodes)->values();
 
             // Get idle nodes.
@@ -82,7 +82,6 @@ class ModelerController extends Controller
 
         return view('processes.modeler.inflight', [
             'manager' => $manager,
-            'process' => $process,
             'bpmn' => $bpmn,
             'requestCompletedNodes' => $filteredCompletedNodes,
             'requestInProgressNodes' => $requestInProgressNodes,

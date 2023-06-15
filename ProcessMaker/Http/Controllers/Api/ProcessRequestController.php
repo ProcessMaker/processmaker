@@ -8,10 +8,8 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Notification;
@@ -27,7 +25,6 @@ use ProcessMaker\Jobs\TerminateRequest;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
@@ -174,7 +171,7 @@ class ProcessRequestController extends Controller
         }
 
         if (isset($response)) {
-            //Map each item through its resource
+            // Map each item through its resource
             $response = $response->map(function ($processRequest) use ($request) {
                 return new ProcessRequestResource($processRequest);
             });
@@ -612,7 +609,7 @@ class ProcessRequestController extends Controller
 
     /**
      *      Get Information of the last token for the element query
-     *      
+     *
      *      @Parameter
      *          Request $httpRequest
      *          ProcessRequest $request
@@ -625,27 +622,36 @@ class ProcessRequestController extends Controller
      *              username,
      *              count
      *          }
-     *         
      */
-
     public function getRequestToken(Request $httpRequest, ProcessRequest $request)
     {
-        $maxIdToken = $request->tokens()
-                 ->where(['element_id' => $httpRequest->element_id])->max('id');                
+        $httpRequest->validate([
+            'element_id' => 'required|string',
+        ]);
 
-        $token =  ProcessRequestToken::where(['process_request_tokens.id' => $maxIdToken])
-                ->join('users', 'users.id', 'process_request_tokens.user_id')
-                ->selectRaw('element_id, element_name, process_request_tokens.created_at, completed_at, username, 
-                            CASE 
-                            WHEN process_request_tokens.status = "CLOSED" THEN "Completed" 
-                            WHEN process_request_tokens.status = "ACTIVE" THEN "In Progress" 
-                            END as status')
-                ->first();           
+        $maxIdToken = $request->tokens()->where('element_id', $httpRequest->element_id)->max('id');
+        $token = $request->tokens()
+            ->where('id', $maxIdToken)
+            ->select('user_id', 'element_id', 'element_name', 'created_at', 'completed_at', 'status')
+            ->with([
+                'user' => fn ($query) => $query->select('id', 'username'),
+            ])
+            ->firstOrFail();
 
-        if (!empty($token)) {
-            $tokenCount = ProcessRequestToken::where(['element_id' => $httpRequest->element_id, 'process_request_id'=> $request->id])->count();
-            $token->count = $tokenCount;
-        }
+        $status = match ($token->status) {
+            'CLOSED' => __('Completed'),
+            'ACTIVE' => __('In Progress'),
+            default => $token->status,
+        };
+        $token->status = $status;
+
+        // Get the number of times the flow has run when clicking on a flow line.
+        $tokensCount = $request->tokens()
+            ->where([
+                'element_id' => $httpRequest->element_id,
+                'process_request_id'=> $request->id,
+            ])->count();
+        $token->count = $tokensCount;
 
         return new ApiResource($token);
     }
