@@ -638,12 +638,13 @@ class ProcessRequestController extends Controller
             ])
             ->firstOrFail();
 
-        $status = match ($token->status) {
+        $translatedStatus = match ($token->status) {
             'CLOSED' => __('Completed'),
             'ACTIVE' => __('In Progress'),
             default => $token->status,
         };
-        $token->status = $status;
+        $token->status_translation = $translatedStatus;
+        $token->completed_by = $token->completed_at ? $token->user['username'] : '-';
 
         // Get the number of times the flow has run when clicking on a flow line.
         $tokensCount = $request->tokens()

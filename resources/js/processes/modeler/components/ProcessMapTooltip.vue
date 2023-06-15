@@ -23,11 +23,11 @@
         </p>
         <p class="tooltip-data">
           <span class="tooltip-data-title">{{ $t('Status') }}:</span>
-          <span class="text-secondary">{{ tokenResult.status }}</span>
+          <span class="text-secondary">{{ tokenResult.status_translation }}</span>
         </p>
         <p class="tooltip-data">
           <span class="tooltip-data-title">{{ $t('Completed By') }}:</span>
-          <span class="text-secondary">{{ tokenResult.user.username }}</span>
+          <span class="text-secondary">{{ tokenResult.completed_by }}</span>
         </p>
         <p class="tooltip-data">
           <span class="tooltip-data-title">{{ $t('Time Started') }}:</span>
