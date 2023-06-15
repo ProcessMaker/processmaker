@@ -108,8 +108,8 @@ class CssOverrideController extends Controller
         }
         
         $changes = array_merge(
-            isset($footer['changes']) ? $footer['changes'] : [],
-            isset($altText['changes']) ? $altText['changes'] : [],
+            $footer['changes'] ?? [],
+            $altText['changes'] ?? [],
             $changes
         );
         
