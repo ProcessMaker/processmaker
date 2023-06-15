@@ -156,7 +156,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
         try {
             return $runner->run($this->code, $data, $config, $this->timeout(), $user);
         } catch (ScriptException | \RuntimeException $e) {
-            if ($this->retryAttempts() !== null && $this->retryWaitTime() !== null) {
+            if ($this->retryAttempts() && $this->retryWaitTime() !== null) {
                 Log::info('Retry the runScript process. Attempt ' . $this->attemptedRetries . ' of ' . $this->retryAttempts());
                 if ($this->attemptedRetries > $this->retryAttempts()) {
                     $message = __('Script failed after :attempts total attempts', ['attempts' => $this->attemptedRetries]);
