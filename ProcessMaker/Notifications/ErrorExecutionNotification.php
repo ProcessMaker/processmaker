@@ -39,6 +39,7 @@ class ErrorExecutionNotification extends Notification
     {
         $via = [];
         if ($this->errorHandling['inapp_notification'] === true) {
+            $via[] = 'broadcast';
             $via[] = NotificationChannel::class;
         }
         if ($this->errorHandling['email_notification'] === true) {
@@ -57,6 +58,9 @@ class ErrorExecutionNotification extends Notification
     {
         $data = $this->toArray($notifiable);
         return (new MailMessage)
+            ->error()
+            ->subject("Request {$data['request_id']} Execution Error ")
+            ->greeting("Request {$data['request_id']} Execution Error ")
             ->line($data['message'])
             ->action('Notification Action', url($data['url']))
             ->line($this->message);
