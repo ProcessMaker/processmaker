@@ -16,6 +16,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
 {
     const ACTION_START_PROCESS = 'START_PROCESS';
     const ACTION_COMPLETE_TASK = 'COMPLETE_TASK';
+    const ACTION_TRIGGER_INTERMEDIATE_EVENT = 'TRIGGER_INTERMEDIATE_EVENT';
 
     /**
      * Trigger a start event and return the process request instance.
@@ -101,6 +102,44 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         $this->dispatchAction([
             'bpmn' => $version->getKey(),
             'action' => self::ACTION_COMPLETE_TASK,
+            'params' => [
+                'request_id' => $token->process_request_id,
+                'token_id' => $token->uuid,
+                'element_id' => $token->element_id,
+                'data' => $data,
+            ],
+            'state' => $state,
+            'session' => [
+                'user_id' => $userId,
+            ],
+        ]);
+    }
+
+    /**
+     * Complete a catch event
+     *
+     * @param Definitions $definitions
+     * @param ExecutionInstanceInterface $instance
+     * @param TokenInterface $token
+     * @param array $data
+     *
+     * @return void
+     */
+    public function completeCatchEvent(Definitions $definitions, ExecutionInstanceInterface $instance, TokenInterface $token, array $data)
+    {
+        // Validate data
+        $element = $token->getDefinition(true);
+        $this->validateData($data, $definitions, $element);
+
+        // Get complementary information
+        $version = $definitions->getLatestVersion();
+        $userId = $this->getCurrentUserId();
+        $state = $this->serializeState($instance);
+
+        // Dispatch complete task action
+        $this->dispatchAction([
+            'bpmn' => $version->getKey(),
+            'action' => self::ACTION_TRIGGER_INTERMEDIATE_EVENT,
             'params' => [
                 'request_id' => $token->process_request_id,
                 'token_id' => $token->uuid,
