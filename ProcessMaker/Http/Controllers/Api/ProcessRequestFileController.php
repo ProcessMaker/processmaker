@@ -14,6 +14,8 @@ use Pion\Laravel\ChunkUpload\Exceptions\UploadMissingFileException;
 use Pion\Laravel\ChunkUpload\Handler\AbstractHandler;
 use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
 use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
+use ProcessMaker\Events\FilesCreated;
+use ProcessMaker\Events\FilesDeleted;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -305,6 +307,9 @@ class ProcessRequestFileController extends Controller
             ])
             ->toMediaCollection();
 
+        // Register the Event
+        FilesCreated::dispatch($media->id);
+
         return new JsonResponse(['message' => 'The file was uploaded.', 'fileUploadId' => $media->id], 200);
     }
 
@@ -355,6 +360,9 @@ class ProcessRequestFileController extends Controller
         }
 
         $file->delete();
+
+        // Register the Event
+        FilesDeleted::dispatch($fileId, $file->file_name);
 
         return response([], 204);
     }
