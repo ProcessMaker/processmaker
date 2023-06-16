@@ -14,7 +14,9 @@ class ErrorExecutionNotification extends Notification
     use Queueable;
 
     private $tokenInterface;
+
     private $message;
+
     private $errorHandling;
 
     /**
@@ -45,6 +47,7 @@ class ErrorExecutionNotification extends Notification
         if ($this->errorHandling['email_notification'] === true) {
             $via[] = 'mail';
         }
+
         return $via;
     }
 
@@ -57,12 +60,15 @@ class ErrorExecutionNotification extends Notification
     public function toMail($notifiable)
     {
         $data = $this->toArray($notifiable);
+        $title = __('Request # :id Execution Error', ['id' => $data['request_id']]);
+
         return (new MailMessage)
             ->error()
-            ->subject("Request {$data['request_id']} Execution Error ")
-            ->greeting("Request {$data['request_id']} Execution Error ")
+            ->subject($title)
+            ->greeting($title)
+            ->salutation($title)
             ->line($data['message'])
-            ->action('Notification Action', url($data['url']))
+            ->action(__('View Request'), url($data['url']))
             ->line($this->message);
     }
 
