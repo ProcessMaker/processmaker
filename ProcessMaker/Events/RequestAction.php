@@ -13,7 +13,7 @@ class RequestAction implements SecurityLogEventInterface
     use Dispatchable;
 
     const ACTION_CREATED = 'CREATED';
-    const ACTION_CANCELLED = 'CANCELED';
+    const ACTION_CANCELED = 'CANCELED';
     const ACTION_COMPLETED = 'COMPLETED';
     const ACTIONS = [
         'COMPLETED' => 'completed_at',

@@ -563,7 +563,7 @@ class ProcessRequestController extends Controller
         $request->status = 'CANCELED';
         $request->save();
 
-        event(new RequestAction($request, RequestAction::ACTION_CANCELLED));
+        event(new RequestAction($request, RequestAction::ACTION_CANCELED));
     }
 
     /**
