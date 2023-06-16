@@ -132,7 +132,8 @@ class CssOverrideController extends Controller
             $footerContent = '';
         }
 
-        $original = Setting::where('key', 'login-footer')->first()->getAttribute('config')['html'];
+        $original = Setting::where('key', 'login-footer')->first();
+        $original = $original->getAttribute('config')['html'] ??  '';
 
         $setting = Setting::updateOrCreate([
             'key' => 'login-footer',
