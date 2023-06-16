@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Process;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\ModelerManager;
@@ -11,6 +12,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\PackageHelper;
 use ProcessMaker\Traits\HasControllerAddons;
+use SimpleXMLElement;
 
 class ModelerController extends Controller
 {
@@ -53,6 +55,7 @@ class ModelerController extends Controller
         $bpmn = $process->bpmn;
         $requestCompletedNodes = [];
         $requestInProgressNodes = [];
+        $requestIdleNodes = [];
 
         // Use the process version that was active when the request was started.
         $processRequest = ProcessRequest::find($request->request_id);
@@ -62,18 +65,67 @@ class ModelerController extends Controller
                 ->firstOrFail()
                 ->bpmn;
 
-            $requestCompletedNodes = $processRequest->tokens()->where('status', 'CLOSED')->pluck('element_id');
+            $requestCompletedNodes = $processRequest->tokens()->whereIn('status', ['CLOSED', 'TRIGGERED'])->pluck('element_id');
             $requestInProgressNodes = $processRequest->tokens()->where('status', 'ACTIVE')->pluck('element_id');
-            // Remove any node that is 'ACTIVE' from the 'CLOSED' list.
+            // Remove any node that is 'ACTIVE' from the completed list.
             $filteredCompletedNodes = $requestCompletedNodes->diff($requestInProgressNodes)->values();
+
+            // Get idle nodes.
+            $xml = $this->loadAndPrepareXML($bpmn);
+            $nodeIds = $this->getNodeIds($xml);
+            $requestIdleNodes = $nodeIds->diff($filteredCompletedNodes)->diff($requestInProgressNodes)->values();
+
+            // Add completed sequence flow to the list of completed nodes.
+            $sequenceFlowNodes = $this->getCompletedSequenceFlow($xml, $filteredCompletedNodes->implode(' '), $requestInProgressNodes->implode(' '));
+            $filteredCompletedNodes = $filteredCompletedNodes->merge($sequenceFlowNodes);
         }
 
         return view('processes.modeler.inflight', [
             'manager' => $manager,
-            'process' => $process,
             'bpmn' => $bpmn,
             'requestCompletedNodes' => $filteredCompletedNodes,
             'requestInProgressNodes' => $requestInProgressNodes,
+            'requestIdleNodes' => $requestIdleNodes,
+            'requestId' => $request->request_id,
         ]);
+    }
+
+    /**
+     * Load XML from a string and register its namespaces.
+     * This function will help to prepare the XML for further processing.
+     */
+    private function loadAndPrepareXML(string $bpmn): SimpleXMLElement
+    {
+        $xml = simplexml_load_string($bpmn);
+        $namespaces = $xml->getNamespaces(true);
+
+        foreach ($namespaces as $prefix => $ns) {
+            $xml->registerXPathNamespace($prefix, $ns);
+        }
+
+        return $xml;
+    }
+
+    /**
+     * Filter the XML to get IDs of all nodes excluding "lanes" and "pools" nodes.
+     */
+    private function getNodeIds(SimpleXMLElement $xml): Collection
+    {
+        $elements = $xml->xpath('//*[name() != "bpmn:lane" and name() != "bpmn:participant"]/@id');
+
+        return collect(array_map('strval', $elements));
+    }
+
+    /**
+     * Performs an XPath query to get sequenceFlow elements
+     * whose 'sourceRef' attribute is in the string of completed nodes
+     * and 'targetRef' attribute is in the string of in-progress and completed nodes.
+     */
+    private function getCompletedSequenceFlow(SimpleXMLElement $xml, string $completedNodesStr, string $inProgressNodesStr): Collection
+    {
+        $inProgressAndCompletedNodes = $completedNodesStr . ' ' . $inProgressNodesStr;
+        $elements = $xml->xpath('//bpmn:sequenceFlow[contains("' . $completedNodesStr . '", @sourceRef) and contains("' . $inProgressAndCompletedNodes . '", @targetRef)]/@id');
+
+        return collect(array_map('strval', $elements));
     }
 }

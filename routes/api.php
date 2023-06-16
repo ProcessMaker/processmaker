@@ -171,6 +171,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('requests/{request}', [ProcessRequestController::class, 'update'])->name('requests.update')->middleware('can:update,request');
     Route::put('requests/{request}/retry', [ProcessRequestController::class, 'retry'])->name('requests.retry')->middleware('can:update,request');
     Route::delete('requests/{request}', [ProcessRequestController::class, 'destroy'])->name('requests.destroy')->middleware('can:destroy,request');
+    Route::get('requests/{request}/tokens', [ProcessRequestController::class, 'getRequestToken'])->name('requests.getRequestToken')->middleware('can:view,request');
+    Route::post('requests/{request}/events/{event}', [ProcessRequestController::class, 'activateIntermediateEvent'])->name('requests.update,request');
 
     // Request Files
     Route::get('requests/{request}/files', [ProcessRequestFileController::class, 'index'])->name('requests.files.index')->middleware('can:view,request');

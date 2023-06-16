@@ -9,10 +9,13 @@
           v-show="tooltip.isActive"
           ref="tooltip"
           :node-id="tooltip.nodeId"
+          :node-name="tooltip.nodeName"
+          :request-id="requestId"
           :style="{
             left: `${tooltip.newX}px`,
             top: `${tooltip.newY}px`
           }"
+          @is-loading="getIsLoading"
         />
         <ModelerReadonly
           ref="modeler"
@@ -20,6 +23,7 @@
           :decorations="decorations"
           :request-completed-nodes="requestCompletedNodes"
           :request-in-progress-nodes="requestInProgressNodes"
+          :request-idle-nodes="requestIdleNodes"
           @set-xml-manager="xmlManager = $event"
           @click="handleClick"
         />
@@ -42,14 +46,15 @@ export default {
     return {
       self: this,
       validationBar: [],
-      process: window.ProcessMaker.modeler.process,
       xmlManager: null,
       decorations: {
         borderOutline: {},
       },
       tooltip: {
         isActive: false,
+        isLoading: false,
         nodeId: null,
+        nodeName: null,
         allowedNodes: [
           "bpmn:Task",
           "bpmn:ManualTask",
@@ -63,7 +68,21 @@ export default {
       },
       requestCompletedNodes: window.ProcessMaker.modeler.requestCompletedNodes,
       requestInProgressNodes: window.ProcessMaker.modeler.requestInProgressNodes,
+      requestIdleNodes: window.ProcessMaker.modeler.requestIdleNodes,
+      requestId: window.ProcessMaker.modeler.requestId,
     };
+  },
+  watch: {
+    "tooltip.isLoading": {
+      handler(value) {
+        if (!value) {
+          this.$nextTick().then(() => {
+            this.calculateTooltipPosition();
+          });
+        }
+      },
+      deep: true,
+    },
   },
   mounted() {
     ProcessMaker.$modeler = this.$refs.modeler;
@@ -84,6 +103,7 @@ export default {
       if ((isNodeTooltipAllowed && this.tooltip.isActive === false)
         || (isNodeTooltipAllowed && this.tooltip.nodeId !== node.id)) {
         this.tooltip.nodeId = node.id;
+        this.tooltip.nodeName = node.name;
         this.tooltip.isActive = true;
         this.$nextTick(() => {
           this.tooltip.coordinates = { x: event.clientX, y: event.clientY };
@@ -105,6 +125,9 @@ export default {
       } else if (this.tooltip.newX + this.rectTooltip.width > window.innerWidth) {
         this.tooltip.newX = window.innerWidth - this.rectTooltip.width;
       }
+    },
+    getIsLoading(value) {
+      this.tooltip.isLoading = value;
     },
   },
 };
