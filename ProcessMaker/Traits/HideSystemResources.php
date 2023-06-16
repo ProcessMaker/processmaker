@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Traits;
 
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
@@ -56,7 +57,11 @@ trait HideSystemResources
         } elseif (static::class === Process::class) {
             $systemCategory = ProcessCategory::where('is_system', true)->pluck('id');
 
-            return $query->whereNotIn('process_category_id', $systemCategory)->where('is_template', false)->whereNull('asset_type');
+            return $query->whereNotIn('process_category_id', $systemCategory)
+                ->where('is_template', false)
+                ->when(Schema::hasColumn('processes', 'asset_type'), function ($query) {
+                    return $query->whereNull('asset_type');
+                });
         } elseif (static::class === Screen::class) {
             $systemCategory = ScreenCategory::where('is_system', true)->pluck('id');
 
