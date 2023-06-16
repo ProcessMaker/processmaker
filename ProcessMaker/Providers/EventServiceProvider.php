@@ -29,6 +29,7 @@ use ProcessMaker\Events\ProcessCreated;
 use ProcessMaker\Events\ProcessPublished;
 use ProcessMaker\Events\ProcessRestored;
 use ProcessMaker\Events\ProcessUpdated;
+use ProcessMaker\Events\QueueManagementAccessed;
 use ProcessMaker\Events\RequestAction;
 use ProcessMaker\Events\RequestError;
 use ProcessMaker\Events\ScreenCreated;
@@ -118,6 +119,7 @@ class EventServiceProvider extends ServiceProvider
             $this->app['events']->listen(ProcessPublished::class, SecurityLogger::class);
             $this->app['events']->listen(ProcessRestored::class, SecurityLogger::class);
             $this->app['events']->listen(ProcessUpdated::class, SecurityLogger::class);
+            $this->app['events']->listen(QueueManagementAccessed::class, SecurityLogger::class);
             $this->app['events']->listen(RequestError::class, SecurityLogger::class);
             $this->app['events']->listen(RequestAction::class, SecurityLogger::class);
             $this->app['events']->listen(ScreenCreated::class, SecurityLogger::class);
