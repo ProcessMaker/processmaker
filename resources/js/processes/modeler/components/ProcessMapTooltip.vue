@@ -17,7 +17,7 @@
       class="card-body"
       style="padding-top: 10px; padding-bottom: 5px"
     >
-      <div v-if="!tokenResult.hasOwnProperty('message') && !tokenResult.sequenceFlow">
+      <div v-if="!tokenResult.hasOwnProperty('message') && !tokenResult.is_sequence_flow">
         <p class="tooltip-title">
           <span class="text-info">{{ tokenResult.element_name }}</span>
         </p>
@@ -38,7 +38,7 @@
           <span class="text-secondary">{{ tokenResult.completed_at }}</span>
         </p>
       </div>
-      <div v-if="!tokenResult.hasOwnProperty('message') && tokenResult.sequenceFlow">
+      <div v-if="!tokenResult.hasOwnProperty('message') && tokenResult.is_sequence_flow">
         <p class="tooltip-data">
           <span class="tooltip-data-title">
             {{ repeatMessage }}
@@ -109,8 +109,7 @@ export default {
       })
         .then((response) => {
           this.tokenResult = response.data;
-          this.repeatMessage = (this.tokenResult.count > 1) ? this.$t(`The path was reapeted ${this.tokenResult.count} times`)
-            : this.$t(`The path was repeated ${this.tokenResult.count} time`);
+          this.repeatMessage = this.$t(`The path was repeated ${this.tokenResult.count} ${this.tokenResult.count > 1 ? "times" : "time"}`);
           this.tokenResult.created_at = this.formatDate(this.tokenResult.created_at);
           this.tokenResult.completed_at = this.formatDate(this.tokenResult.completed_at);
         })
