@@ -23,6 +23,7 @@ use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
 use ProcessMaker\Jobs\CancelRequest;
 use ProcessMaker\Jobs\TerminateRequest;
 use ProcessMaker\Models\Comment;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
@@ -32,6 +33,7 @@ use ProcessMaker\Query\SyntaxError;
 use ProcessMaker\RetryProcessRequest;
 use Symfony\Component\HttpFoundation\IpUtils;
 use Throwable;
+use SimpleXMLElement;
 
 class ProcessRequestController extends Controller
 {
@@ -620,6 +622,7 @@ class ProcessRequestController extends Controller
      *              created_at,
      *              completed_at,
      *              username,
+     *              sequenceFlow,
      *              count
      *          }
      */
@@ -630,6 +633,23 @@ class ProcessRequestController extends Controller
         ]);
 
         $maxIdToken = $request->tokens()->where('element_id', $httpRequest->element_id)->max('id');
+        if ($maxIdToken === null)
+        {
+            $process = Process::find($request->process_id);
+            $bpmn = $process->versions()
+                ->where('id', $request->process_version_id)
+                ->firstOrFail()
+                ->bpmn;
+            
+            // Get the ref node for the sequence flow
+            $xml = $this->loadAndPrepareXML($bpmn);
+            $nodeId = $this->getTargetRefNode($xml,$httpRequest->element_id);
+            // Get the Max targetRef Node Id
+            $httpRequest->element_id = $nodeId;
+            $maxIdToken = $request->tokens()->where('element_id', $httpRequest->element_id)->max('id');
+            
+            
+        }
         $token = $request->tokens()
             ->where('id', $maxIdToken)
             ->select('user_id', 'element_id', 'element_name', 'created_at', 'completed_at', 'status')
@@ -638,13 +658,16 @@ class ProcessRequestController extends Controller
             ])
             ->firstOrFail();
 
+        // Flags if the object clicked is a Sequence Flow
+        $token->sequenceFlow = !empty($nodeId) ? true : false;
+
         $translatedStatus = match ($token->status) {
             'CLOSED' => __('Completed'),
             'ACTIVE' => __('In Progress'),
             default => $token->status,
         };
         $token->status_translation = $translatedStatus;
-        $token->completed_by = $token->completed_at ? $token->user['username'] : '-';
+        $token->completed_by = $token->completed_at ? ($token->user['username'] ?? '-') : '-';
 
         // Get the number of times the flow has run when clicking on a flow line.
         $tokensCount = $request->tokens()
@@ -655,5 +678,33 @@ class ProcessRequestController extends Controller
         $token->count = $tokensCount;
 
         return new ApiResource($token);
+    }
+
+    /**
+     * Load XML from a string and register its namespaces.
+     * This function will help to prepare the XML for further processing.
+     */
+    private function loadAndPrepareXML(string $bpmn): SimpleXMLElement
+    {
+        $xml = simplexml_load_string($bpmn);
+        $namespaces = $xml->getNamespaces(true);
+
+        foreach ($namespaces as $prefix => $ns) {
+            $xml->registerXPathNamespace($prefix, $ns);
+        }
+
+        return $xml;
+    }
+
+    /**
+     * Performs an XPath query to get the targetRef Node Id
+     */
+    private function getTargetRefNode(SimpleXMLElement $xml, string $sequenceFlowId)
+    {
+        $sequenceFlowNode = $xml->xpath("//bpmn:sequenceFlow[@id='{$sequenceFlowId}']");
+
+        $targetRef = (string) $sequenceFlowNode[0]['targetRef'];
+
+        return $targetRef;
     }
 }
