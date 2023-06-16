@@ -28,21 +28,21 @@ class ScriptExecutorCreated implements SecurityLogEventInterface
             'config' => $created_values['config']
         ];
     }
-    
+
     /**
-     * Return event data 
+     * Return event data
      */
     public function getData(): array
     {
         return $this->data;
     }
-    
+
     /**
-     * Return event changes 
+     * Return event changes
      */
     public function getChanges(): array
     {
-        return $this->changes;
+        return [];
     }
 
     /**

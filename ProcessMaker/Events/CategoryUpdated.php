@@ -52,7 +52,9 @@ class CategoryUpdated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return $this->formatChanges($this->changes, $this->original);
+        return [
+            'id' => $this->category->getAttribute('id')
+        ];
     }
 
     /**

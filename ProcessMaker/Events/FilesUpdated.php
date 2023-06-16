@@ -40,7 +40,7 @@ class FilesUpdated implements SecurityLogEventInterface
     {
         return array_merge([
             'name' => $this->media->getAttribute('name'),
-            'updated_at' => $this->media->getAttribute('updated_at'),
+            'last_modified' => $this->media->getAttribute('updated_at'),
         ], $this->formatChanges($this->changes, $this->original));
     }
 
