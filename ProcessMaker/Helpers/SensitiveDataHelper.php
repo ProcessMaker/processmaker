@@ -5,7 +5,8 @@ namespace ProcessMaker\Helpers;
 class SensitiveDataHelper
 {
     const SENSITIVE_KEYS = [
-        'password'
+        'password',
+        'idp.client_secret'
     ];
 
     const MASK = '*';

@@ -4,6 +4,7 @@ namespace ProcessMaker\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
+use ProcessMaker\Helpers\SensitiveDataHelper;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
@@ -38,6 +39,12 @@ class SettingsUpdated implements SecurityLogEventInterface
             $this->original[$attribute] = $this->original['config'];
             unset($this->changes['config']);
             unset($this->original['config']);
+        }
+        // Verify if the config is a sensitive value
+        $key = $this->setting->getAttribute('key');
+        if (SensitiveDataHelper::isSensitiveKey($key)) {
+            $this->changes['config'] = SensitiveDataHelper::parseString($this->changes['config']);
+            $this->original['config'] = SensitiveDataHelper::parseString($this->original['config']);
         }
     }
 
