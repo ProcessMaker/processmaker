@@ -35,6 +35,22 @@ use ProcessMaker\Http\Controllers\Api\UserTokenController;
 use ProcessMaker\Http\Controllers\Process\ModelerController;
 use ProcessMaker\Http\Controllers\TestStatusController;
 
+// Engine
+Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/1.0')->name('api.')->group(function () {
+
+    // List of Processes that the user can start
+    Route::get('start_processes', [ProcessController::class, 'startProcesses'])->name('processes.start'); // Filtered in controller
+
+    // Start a process
+    Route::post('process_events/{process}', [ProcessController::class, 'triggerStartEvent'])->name('process_events.trigger')->middleware('can:start,process');
+
+    // Update task
+    Route::put('tasks/{task}', [TaskController::class, 'update'])->name('tasks.update')->middleware('can:update,task');
+
+    // Trigger intermediate event
+    Route::post('requests/{request}/events/{event}', [ProcessRequestController::class, 'activateIntermediateEvent'])->name('requests.update,request');
+});
+
 Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/1.0')->name('api.')->group(function () {
     // Users
     Route::get('users', [UserController::class, 'index'])->name('users.index'); // Permissions handled in the controller
@@ -132,10 +148,6 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('processes/{process}/close', [ProcessController::class, 'close'])->name('processes.close')->middleware('can:edit-processes');
     Route::delete('processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy')->middleware('can:archive-processes');
     Route::put('processes/{processId}/restore', [ProcessController::class, 'restore'])->name('processes.restore')->middleware('can:archive-processes');
-    Route::post('process_events/{process}', [ProcessController::class, 'triggerStartEvent'])->name('process_events.trigger')->middleware('can:start,process');
-
-    // List of Processes that the user can start
-    Route::get('start_processes', [ProcessController::class, 'startProcesses'])->name('processes.start'); // Filtered in controller
 
     // Process Categories
     Route::get('process_categories', [ProcessCategoryController::class, 'index'])->name('process_categories.index')->middleware('can:view-process-categories');
@@ -151,7 +163,6 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // Tasks
     Route::get('tasks', [TaskController::class, 'index'])->name('tasks.index'); // Already filtered in controller
     Route::get('tasks/{task}', [TaskController::class, 'show'])->name('tasks.show')->middleware('can:view,task');
-    Route::put('tasks/{task}', [TaskController::class, 'update'])->name('tasks.update')->middleware('can:update,task');
     Route::get('tasks/{task}/screens/{screen}', [TaskController::class, 'getScreen'])->name('tasks.get_screen')->middleware('can:viewScreen,task,screen');
 
     // Requests
@@ -187,7 +198,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // Mark Notifications as Read & Unread
     Route::put('read_notifications', [NotificationController::class, 'updateAsRead'])->name('notifications.update_as_read'); // No permissions necessary
     Route::put('unread_notifications', [NotificationController::class, 'updateAsUnread'])->name('notifications.update_as_unread'); // No permissions necessary
-    Route::put('read_all_notifications', [NotificationController::class, 'updateAsReadAll'])->name('notifications.update_as_read'); // No permissions necessary
+    Route::put('read_all_notifications', [NotificationController::class, 'updateAsReadAll'])->name('notifications.update_all_as_read'); // No permissions necessary
 
     // Task Assignments
     Route::get('task_assignments', [TaskAssignmentController::class, 'index'])->name('task_assignments.index')->middleware('can:view-task_assignments');

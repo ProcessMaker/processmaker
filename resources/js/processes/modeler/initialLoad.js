@@ -45,6 +45,9 @@ import StartPermission from "./components/inspector/StartPermission";
 import Interstitial from "./components/inspector/Interstitial";
 import SelectUserGroup from "../../components/SelectUserGroup";
 import validateScreenRef from "./validateScreenRef";
+import ErrorHandlingTimeout from "./components/inspector/ErrorHandlingTimeout";
+import ErrorHandlingRetryAttempts from "./components/inspector/ErrorHandlingRetryAttempts";
+import ErrorHandlingRetryWaitTime from "./components/inspector/ErrorHandlingRetryWaitTime";
 
 Vue.component("UserSelect", UserSelect);
 Vue.component("UserById", UserById);
@@ -62,6 +65,9 @@ Vue.component("StartPermission", StartPermission);
 Vue.component("Interstitial", Interstitial);
 Vue.component("SelectUserGroup", SelectUserGroup);
 Vue.component("NodeIdentifierInput", NodeIdentifierInput);
+Vue.component("ErrorHandlingTimeout", ErrorHandlingTimeout);
+Vue.component("ErrorHandlingRetryAttempts", ErrorHandlingRetryAttempts);
+Vue.component("ErrorHandlingRetryWaitTime", ErrorHandlingRetryWaitTime);
 
 const nodeTypes = [
   endEvent,
@@ -213,6 +219,38 @@ ProcessMaker.EventBus.$on(
         required: true,
       },
     });
+ 
+    registerInspectorExtension(scriptTask, {
+      component: "FormAccordion",
+      container: true,
+      config: {
+        initiallyOpen: false,
+        label: i18next.t("Error Handling"),
+        icon: "exclamation-triangle",
+        name: "error-handling-accordion",
+      },
+      items: [
+        {
+          component: 'ErrorHandlingTimeout',
+          config: {
+            type: 'script' 
+          },
+        },
+        {
+          component: 'ErrorHandlingRetryAttempts',
+          config: {
+            type: 'script' 
+          },
+        },
+        {
+          component: 'ErrorHandlingRetryWaitTime',
+          config: {
+            type: 'script' 
+          },
+        },
+      ],
+    });
+    
 
     registerInspectorExtension(scriptTask, {
       component: "ConfigEditor",
