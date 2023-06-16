@@ -134,10 +134,13 @@ class ProcessRequestController extends Controller
         if (!empty($filter)) {
             $query->filter($filter);
         }
-
+        
+        $query->nonSystem();
+        
         $pmql = $request->input('pmql', '');
         if (!empty($pmql)) {
             try {
+                $query->getModel()->useDataStoreTable($query, $request->input('data_store_table', ''), $request->input('data_store_columns', []));
                 $query->pmql($pmql);
             } catch (SyntaxError $e) {
                 return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
@@ -145,9 +148,6 @@ class ProcessRequestController extends Controller
                 return response(['message' => $e->getMessage(), 'field' => $e->getField()], 400);
             }
         }
-
-        $query->nonSystem();
-
         try {
             if ($getTotal === true) {
                 return $query->count();
