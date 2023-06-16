@@ -107,6 +107,7 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
     // Ensure our modeler loads at a distinct url
     Route::get('modeler/{process}', [ModelerController::class, 'show'])->name('modeler.show')->middleware('can:edit-processes');
     Route::get('modeler/{process}/inflight', [ModelerController::class, 'inflight'])->name('modeler.inflight')->middleware('can:edit-processes');
+    Route::get('modeler/{process}/inflight/generative-ai', [ModelerController::class, 'inflightProcessAi'])->name('modeler.inflight.bpmn')->middleware('can:edit-processes');
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
