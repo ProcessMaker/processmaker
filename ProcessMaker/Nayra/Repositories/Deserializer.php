@@ -187,6 +187,14 @@ class Deserializer
         $properties = array_merge($instance->getProperties(), $properties);
         $instance->setProperties($properties);
 
+        // Set request data
+        if (!empty($serialized['data']) && is_array($serialized['data'])) {
+            $dataStore = $instance->getDataStore();
+            foreach ($serialized['data'] as $key => $value) {
+                $dataStore->putData($key, $value);
+            }
+        }
+
         return $instance;
     }
 
