@@ -50,7 +50,7 @@
         "@fortawesome/vue-fontawesome": "^0.1.9",
         "@panter/vue-i18next": "^0.15.2",
         "@processmaker/modeler": "1.32.0",
-        "@processmaker/processmaker-bpmn-moddle": "0.13.0",
+        "@processmaker/processmaker-bpmn-moddle": "0.14.0",
         "@processmaker/screen-builder": "2.72.0",
         "@processmaker/vue-form-elements": "0.47.0",
         "@processmaker/vue-multiselect": "2.2.0",
