@@ -160,7 +160,8 @@ class CssOverrideController extends Controller
             $altText = '';
         }
 
-        $original = Setting::where('key', 'logo-alt-text')->first()->getAttribute('config');
+        $original = Setting::where('key', 'logo-alt-text')->first();
+        $original = isset($original) ? $original->getAttribute('config') : '';
 
         $setting = Setting::updateOrCreate([
             'key' => 'logo-alt-text',
