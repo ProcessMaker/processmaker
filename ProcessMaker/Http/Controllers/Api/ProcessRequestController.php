@@ -563,7 +563,7 @@ class ProcessRequestController extends Controller
         $request->status = 'CANCELED';
         $request->save();
 
-        event(new RequestAction($request, 'CANCELLED'));
+        event(new RequestAction($request, RequestAction::ACTION_CANCELLED));
     }
 
     /**
@@ -580,7 +580,7 @@ class ProcessRequestController extends Controller
         // Terminate request
         TerminateRequest::dispatchNow($request);
 
-        event(new RequestAction($request, 'COMPLETED'));
+        event(new RequestAction($request, RequestAction::ACTION_COMPLETED));
 
         $user = \Auth::user();
         Comment::create([

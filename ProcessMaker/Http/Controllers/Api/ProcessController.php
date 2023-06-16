@@ -1279,7 +1279,7 @@ class ProcessController extends Controller
             ], 422);
         }
 
-        event(new RequestAction($processRequest, 'CREATED'));
+        event(new RequestAction($processRequest, RequestAction::ACTION_CREATED));
 
         return new ProcessRequests($processRequest);
     }

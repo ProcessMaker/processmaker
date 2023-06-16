@@ -12,6 +12,10 @@ class RequestAction implements SecurityLogEventInterface
 {
     use Dispatchable;
 
+    const ACTION_CREATED = 'CREATED';
+    const ACTION_CANCELLED = 'CANCELLED';
+    const ACTION_COMPLETED = 'COMPLETED';
+    
     private ProcessRequest $data;
     private string $action;
 
@@ -28,21 +32,19 @@ class RequestAction implements SecurityLogEventInterface
     
     /**
      * Return event data 
-     * 
-     * @return array
      */
     public function getData(): array
     {
         $actionAt = '';
         
         switch ($this->action) {
-            case 'CREATED' :
+            case $this::ACTION_CREATED :
                 $actionAt = 'created_at';
                 break;
-            case 'CANCELLED' :
+            case $this::ACTION_CANCELLED :
                 $actionAt = 'cancelled_at';
                 break;
-            case 'COMPLETED' :
+            case $this::ACTION_COMPLETED :
                 $actionAt = 'completed_at';
                 break;
         }

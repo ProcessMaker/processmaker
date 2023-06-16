@@ -46,7 +46,7 @@ class ProcessRequestObserver
     public function saved(ProcessRequest $request)
     {
         if ($request->status === 'COMPLETED') {
-            event(new RequestAction($request, 'COMPLETED'));
+            event(new RequestAction($request, RequestAction::ACTION_COMPLETED));
             // Remove scheduled tasks for this request
             $request->scheduledTasks()->delete();
         }
