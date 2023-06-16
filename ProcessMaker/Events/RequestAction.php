@@ -15,6 +15,11 @@ class RequestAction implements SecurityLogEventInterface
     const ACTION_CREATED = 'CREATED';
     const ACTION_CANCELLED = 'CANCELLED';
     const ACTION_COMPLETED = 'COMPLETED';
+    const ACTIONS = [
+        'COMPLETED' => 'completed_at',
+        'CANCELED' => 'canceled_at',
+        'CREATED' => 'created_at',
+    ];
     
     private ProcessRequest $data;
     private string $action;
@@ -35,20 +40,6 @@ class RequestAction implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        $actionAt = '';
-        
-        switch ($this->action) {
-            case $this::ACTION_CREATED :
-                $actionAt = 'created_at';
-                break;
-            case $this::ACTION_CANCELLED :
-                $actionAt = 'cancelled_at';
-                break;
-            case $this::ACTION_COMPLETED :
-                $actionAt = 'completed_at';
-                break;
-        }
-
         $parentProcess = Process::find($this->data->getAttribute('process_id'));
         return [
             'process' => [
@@ -60,7 +51,7 @@ class RequestAction implements SecurityLogEventInterface
                 'link' => route('requests.show', $this->data)
             ],
             'action' => $this->action,
-            $actionAt => Carbon::now()
+            $this::ACTIONS[$this->action] => Carbon::now()
         ];
     }
     
