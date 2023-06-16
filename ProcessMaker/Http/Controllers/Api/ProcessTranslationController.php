@@ -41,8 +41,10 @@ class ProcessTranslationController extends Controller
             }
         }
 
+        $languageList = collect($languageList)->sortBy('humanLanguage');
+
         return response()->json([
-            'translatedLanguages' => $languageList,
+            'translatedLanguages' => array_values($languageList->toArray()),
             'permissions' => [
                 'create'   => $request->user()->can('create-process-translations'),
                 'view' => $request->user()->can('view-process-translations'),
@@ -70,8 +72,10 @@ class ProcessTranslationController extends Controller
             $translatingLanguages[] = $processTranslationToken;
         }
 
+        $processTranslationTokens = collect($processTranslationTokens)->sortBy('humanLanguage');
+
         return response()->json([
-            'translatingLanguages' => $processTranslationTokens,
+            'translatingLanguages' => array_values($processTranslationTokens->toArray()),
         ]);
     }
 
