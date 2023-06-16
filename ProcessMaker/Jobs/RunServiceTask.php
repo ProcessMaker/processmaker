@@ -65,6 +65,8 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
         }
         $implementation = $element->getImplementation();
         $configuration = json_decode($element->getProperty('config'), true);
+        $errorHandling = json_decode($element->getProperty('errorHandling'), true);
+
         // Check to see if we've failed parsing.  If so, let's convert to empty array.
         if ($configuration === null) {
             $configuration = [];
@@ -88,10 +90,10 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
 
             if ($existsImpl) {
                 $response = [
-                    'output' => WorkflowManager::runServiceImplementation($implementation, $data, $configuration, $token->getId()),
+                    'output' => WorkflowManager::runServiceImplementation($implementation, $data, $configuration, $token->getId(), $errorHandling),
                 ];
             } else {
-                $response = $script->runScript($data, $configuration, $token->getId());
+                $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling);
             }
             $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
                 // Exit if the task was completed or closed
