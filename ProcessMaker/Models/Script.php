@@ -10,6 +10,7 @@ use Illuminate\Validation\Rule;
 use ProcessMaker\Contracts\ScriptInterface;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
+use ProcessMaker\Exception\ScriptTimeoutException;
 use ProcessMaker\GenerateAccessToken;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
@@ -162,7 +163,12 @@ class Script extends ProcessMakerModel implements ScriptInterface
                     $message = __('Script failed after :attempts total attempts', ['attempts' => $this->attemptedRetries]);
                     $message = $message . "\n" . $e->getMessage();
                     Log::error($message);
+
                     $this->sendExecutionErrorNotification($message, $tokenId, $errorHandling);
+                  
+                    if ($e instanceof ScriptTimeoutException) {
+                        throw new ScriptTimeoutException($message);
+                    }
                     throw new ScriptException($message);
                 }
 
