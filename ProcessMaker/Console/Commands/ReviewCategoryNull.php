@@ -46,11 +46,9 @@ class ReviewCategoryNull extends Command
         $default = DB::table('screen_categories')->where('name', 'Uncategorized')->pluck('id')->first();
 
         DB::table($table)->select('id', 'title')
-            ->whereNull($field)
-            ->whereNull('key')
-            ->orderBy('id', 'DESC')->chunk(100, function (Collection $items) use ($table, $field, $class, $default) {
+            ->whereNull([$field, 'key'])
+            ->orderBy('id', 'DESC')->chunkById(100, function (Collection $items) use ($table, $field, $class, $default) {
             foreach ($items as $item) {
-                //$this->info('title: ' . $item->id);
                 $category = DB::table('category_assignments')
                     ->select('category_id')
                     ->where([
