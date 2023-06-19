@@ -4,6 +4,7 @@ namespace ProcessMaker\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
+use ProcessMaker\Helpers\ArrayHelper;
 use ProcessMaker\Models\User;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
@@ -13,15 +14,22 @@ class UserUpdated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private User $user;
-
+    private array $changes;
+    private array $original;
+    public const REMOVE_KEYS = [
+        'meta',
+        'schedule'
+    ];
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(User $user)
+    public function __construct(User $user, array $changes, array $original)
     {
         $this->user = $user;
+        $this->changes = array_diff_key($changes, array_flip($this::REMOVE_KEYS));
+        $this->original = array_diff_key($original, array_flip($this::REMOVE_KEYS));
     }
 
     /**
@@ -31,16 +39,13 @@ class UserUpdated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        $oldData = array_diff_assoc($this->user->getOriginal(), $this->user->getAttributes());
-        $newData = array_diff_assoc($this->user->getAttributes(), $this->user->getOriginal());
-
         return array_merge([
             'name' => [
                 'label' => $this->user->getAttribute('username'),
                 'link' => route('users.edit', $this->user->getAttribute('id')) . '#nav-home',
             ],
             'username' => $this->user->getAttribute('username'),
-        ], $this->formatChanges($newData, $oldData));
+        ], ArrayHelper::getArrayDifferencesWithFormat($this->changes, $this->original));
     }
 
     /**

@@ -296,16 +296,18 @@ class UserController extends Controller
         if (isset($fields['password'])) {
             $fields['password'] = Hash::make($fields['password']);
         }
+        $original = $user->getOriginal();
         $user->fill($fields);
         if (Auth::user()->is_administrator && $request->has('is_administrator')) {
             // user must be an admin to make another user an admin
             $user->is_administrator = $request->get('is_administrator');
         }
 
-        //Call new Event to store User Changes in LOG
-        UserUpdated::dispatch($user);
-
         $user->saveOrFail();
+        $changes = $user->getChanges();
+
+        //Call new Event to store User Changes into LOG
+        UserUpdated::dispatch($user, $changes,  $original);
         if ($request->has('avatar')) {
             $this->uploadAvatar($user, $request);
         }
