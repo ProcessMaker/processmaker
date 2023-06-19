@@ -631,7 +631,7 @@ class ProcessRequestController extends Controller
             'element_id' => 'required|string',
         ]);
 
-        $targetNodeId = null;
+        $elementId = null;
         $maxIdToken = $request->tokens()->where('element_id', $httpRequest->element_id)->max('id');
         if ($maxIdToken === null) {
             $bpmn = $request->process->versions()
@@ -639,11 +639,33 @@ class ProcessRequestController extends Controller
                 ->firstOrFail()
                 ->bpmn;
 
-            // Get the ref. node for the sequence flow.
+            // Get the source and target node for the sequence flow.
             $xml = $this->loadAndPrepareXML($bpmn);
-            $targetNodeId = $this->getTargetRefNode($xml, $httpRequest->element_id);
-            // Get the Max targetRef Node Id
-            $httpRequest->merge(['element_id' => $targetNodeId]);
+            $targetAndSourceRef = $this->getRefNodes($xml, $httpRequest->element_id);
+
+            if (!empty($targetAndSourceRef)) {
+                $targetRef = $targetAndSourceRef['targetRef'];
+                $sourceRef = $targetAndSourceRef['sourceRef'];
+
+                $targetTokensCount = $request->tokens()
+                ->where([
+                    'element_id' => $targetRef,
+                    'process_request_id'=> $request->id,
+                ])->count();
+
+                $sourceTokensCount = $request->tokens()
+                ->where([
+                    'element_id' => $sourceRef,
+                    'process_request_id'=> $request->id,
+                ])->count();
+
+                //get the min repeated node Id
+
+                $elementId = ($sourceTokensCount < $targetTokensCount) ? $sourceRef : $targetRef;
+            }
+
+            // Get the Max Node Id
+            $httpRequest->merge(['element_id' => $elementId]);
             $maxIdToken = $request->tokens()->where('element_id', $httpRequest->element_id)->max('id');
         }
 
@@ -656,7 +678,7 @@ class ProcessRequestController extends Controller
             ->firstOrFail();
 
         // Flags if the object clicked is a Sequence Flow.
-        $token->is_sequence_flow = $targetNodeId ? true : false;
+        $token->is_sequence_flow = $elementId ? true : false;
 
         $translatedStatus = match ($token->status) {
             'CLOSED' => __('Completed'),
@@ -694,12 +716,22 @@ class ProcessRequestController extends Controller
     }
 
     /**
-     * Performs an XPath query to get the targetRef Node Id
+     * Performs an XPath query to get the targetRef and SourceRef Node Id
      */
-    private function getTargetRefNode(SimpleXMLElement $xml, string $sequenceFlowId): string
+    private function getRefNodes(SimpleXMLElement $xml, string $sequenceFlowId): array
     {
         $sequenceFlowNode = $xml->xpath("//bpmn:sequenceFlow[@id='{$sequenceFlowId}']");
 
-        return (string) $sequenceFlowNode[0]['targetRef'];
+        if (empty($sequenceFlowNode)) {
+            return [];
+        }
+
+        $targetRef = (string) $sequenceFlowNode[0]['targetRef'];
+        $sourceRef = (string) $sequenceFlowNode[0]['sourceRef'];
+
+        return [
+            'targetRef' => $targetRef,
+            'sourceRef' => $sourceRef,
+        ];
     }
 }
