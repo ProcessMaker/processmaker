@@ -4,15 +4,15 @@ namespace ProcessMaker\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
-use ProcessMaker\Models\EnvironmentVariable;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
-class EnvironmentVariablesUpdated implements SecurityLogEventInterface
+class GroupUpdated implements SecurityLogEventInterface
 {
     use Dispatchable;
     use FormatSecurityLogChanges;
 
-    private EnvironmentVariable $enVariable;
+    private Group $group;
 
     private array $changes;
     private array $original;
@@ -22,9 +22,9 @@ class EnvironmentVariablesUpdated implements SecurityLogEventInterface
      *
      * @return void
      */
-    public function __construct(EnvironmentVariable $data, array $changes, array $original)
+    public function __construct(Group $data, array $changes, array $original)
     {
-        $this->enVariable = $data;
+        $this->group = $data;
         $this->changes = $changes;
         $this->original = $original;
     }
@@ -38,10 +38,10 @@ class EnvironmentVariablesUpdated implements SecurityLogEventInterface
     {
         return array_merge([
             'name' => [
-                'label' => $this->enVariable->getAttribute('name'),
-                'link' => route('environment-variables.edit', $this->enVariable),
+                'label' => $this->group->getAttribute('name'),
+                'link' => route('groups.edit', $this->group),
             ],
-            'last_modified' => $this->enVariable->getAttribute('updated_at'),
+            'last_modified' => $this->group->getAttribute('updated_at'),
         ], $this->formatChanges($this->changes, $this->original));
     }
 
@@ -53,7 +53,7 @@ class EnvironmentVariablesUpdated implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            'id' => $this->enVariable->getAttribute('id')
+            'id' => $this->group->getAttribute('id')
         ];
     }
 
@@ -64,6 +64,6 @@ class EnvironmentVariablesUpdated implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'EnvironmentVariablesUpdated';
+        return 'GroupUpdated';
     }
 }

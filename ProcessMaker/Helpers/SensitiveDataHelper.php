@@ -4,12 +4,15 @@ namespace ProcessMaker\Helpers;
 
 class SensitiveDataHelper
 {
-    const SENSITIVE_KEYS = [
+    public const SENSITIVE_KEYS = [
         'password',
-        'idp.client_secret'
+        'idp.client_secret',
+        'abe_imap_password',
+        'EMAIL_CONNECTOR_MAIL_PASSWORD',
+        'services.ldap.authentication.password'
     ];
 
-    const MASK = '*';
+    public const MASK = '*';
 
     public static function parseArray(array|object $data)
     {
@@ -17,7 +20,7 @@ class SensitiveDataHelper
             foreach ($data as $key => $value) {
                 if (is_array($value) || is_object($value)) {
                     $data[$key] = static::parseArray($value);
-                } elseif(is_string($value) && static::isSensitiveKey($key)) {
+                } elseif (is_string($value) && static::isSensitiveKey($key)) {
                     $data[$key] = static::parseString($value);
                 } else {
                     $data[$key] = $value;
@@ -27,7 +30,7 @@ class SensitiveDataHelper
             foreach ($data as $key => $value) {
                 if (is_array($value) || is_object($value)) {
                     $data->$key = static::parseArray($value);
-                } elseif(is_string($value) && static::isSensitiveKey($key)) {
+                } elseif (is_string($value) && static::isSensitiveKey($key)) {
                     $data->$key = static::parseString($value);
                 } else {
                     $data->$key = $value;
