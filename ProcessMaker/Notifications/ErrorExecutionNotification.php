@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Arr;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 
 class ErrorExecutionNotification extends Notification
@@ -40,11 +41,11 @@ class ErrorExecutionNotification extends Notification
     public function via($notifiable)
     {
         $via = [];
-        if ($this->errorHandling['inapp_notification'] === true) {
+        if (Arr::get($this->errorHandling, 'inapp_notification') === true) {
             $via[] = 'broadcast';
             $via[] = NotificationChannel::class;
         }
-        if ($this->errorHandling['email_notification'] === true) {
+        if (Arr::get($this->errorHandling, 'email_notification') === true) {
             $via[] = 'mail';
         }
 
