@@ -27,6 +27,9 @@ class EventServiceProvider extends ServiceProvider
         'Illuminate\Database\Events\MigrationsEnded' => [
             'ProcessMaker\Listeners\UpdateDataLakeViews',
         ],
+        'ProcessMaker\Events\ActivityReassignment' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
         'ProcessMaker\Events\AuthClientUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
