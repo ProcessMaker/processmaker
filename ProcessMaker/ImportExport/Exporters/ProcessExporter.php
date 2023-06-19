@@ -35,7 +35,9 @@ class ProcessExporter extends ExporterBase
 
         $this->manager = resolve(ExportManager::class);
 
-        $this->addDependent('user', $process->user, UserExporter::class);
+        if ($process->user) {
+            $this->addDependent('user', $process->user, UserExporter::class);
+        }
 
         if ($process->manager) {
             $this->addDependent('manager', $process->manager, UserExporter::class, null, ['properties']);
@@ -99,9 +101,12 @@ class ProcessExporter extends ExporterBase
         $process->save();
 
         $process->notification_settings()->delete();
-        foreach ($this->getReference('notification_settings') as $setting) {
-            unset($setting['process_id']);
-            $process->notification_settings()->create($setting);
+        $notificationSettings = $this->getReference('notification_settings');
+        if (!is_null($this->getReference('notification_settings'))) {
+            foreach ($notificationSettings as $setting) {
+                unset($setting['process_id']);
+                $process->notification_settings()->create($setting);
+            }
         }
 
         return true;
@@ -210,9 +215,12 @@ class ProcessExporter extends ExporterBase
     private function importSignals()
     {
         // Remove discarded signals from process
-        foreach ($this->getReference('signals') as [$signalUuid, $signalId]) {
-            if ($this->options->get('mode', $signalUuid) === 'discard') {
-                Signal::removeFromProcess($signalId, $this->model);
+        $signals = $this->getReference('signals');
+        if (!is_null($signals)) {
+            foreach ($signals as [$signalUuid, $signalId]) {
+                if ($this->options->get('mode', $signalUuid) === 'discard') {
+                    Signal::removeFromProcess($signalId, $this->model);
+                }
             }
         }
 
@@ -284,6 +292,7 @@ class ProcessExporter extends ExporterBase
 
             $screenId = $element->getAttribute('pm:screenRef');
             $interstitialScreenId = $element->getAttribute('pm:interstitialScreenRef');
+            $allowInterstitial = $element->getAttribute('pm:allowInterstitial');
 
             if (is_numeric($screenId)) {
                 $screen = Screen::findOrFail($screenId);
@@ -291,7 +300,7 @@ class ProcessExporter extends ExporterBase
             }
 
             // Let's check if interstitialScreen exist
-            if (is_numeric($interstitialScreenId)) {
+            if (is_numeric($interstitialScreenId) && $allowInterstitial === 'true') {
                 $interstitialScreen = Screen::findOrFail($interstitialScreenId);
                 $this->addDependent(DependentType::INTERSTITIAL_SCREEN, $interstitialScreen, ScreenExporter::class, $meta);
             }

@@ -19,8 +19,9 @@
           @warnings="warnings = $event"
           @saveBpmn="emitSaveEvent"
           @discard="emitDiscardEvent"
-          @close="close"
+          @close="onClose"
           @publishTemplate="publishTemplate"
+          @publishPmBlock="publishPmBlock"
           @set-xml-manager="xmlManager = $event"
         />
       </b-card-body>
@@ -46,7 +47,8 @@
         :key="`external-${index}`"
         :options="component.options"
       />
-      <create-template-modal ref="create-template-modal" />
+      <create-template-modal ref="create-template-modal" assetType="process" :assetName="processName" :assetId="processId" :currentUserId="currentUserId"/>
+      <create-pm-block-modal ref="create-pm-block-modal" />
     </b-card>
   </b-container>
 </template>
@@ -54,6 +56,8 @@
 <script>
 import { Modeler, ValidationStatus } from "@processmaker/modeler";
 import CreateTemplateModal from "../../../components/templates/CreateTemplateModal.vue";
+import CreatePmBlockModal from "../../../components/pm-blocks/CreatePmBlockModal.vue";
+import autosaveMixins from "../../../modules/autosave/mixins";
 
 export default {
   name: "ModelerApp",
@@ -61,7 +65,9 @@ export default {
     Modeler,
     ValidationStatus,
     CreateTemplateModal,
+    CreatePmBlockModal,
   },
+  mixins: [...autosaveMixins],
   data() {
     return {
       self: this,
@@ -79,7 +85,52 @@ export default {
       validationErrors: {},
       warnings: [],
       xmlManager: null,
+      processName: window.ProcessMaker.modeler.process.name,
+      processId: window.ProcessMaker.modeler.process.id,
+      currentUserId: window.ProcessMaker.modeler.process.user_id,
+      closeHref: "/processes",
     };
+  },
+  computed: {
+    autosaveApiCall() {
+      return async () => {
+        const svg = document.querySelector(".mini-paper svg");
+        const css = "text { font-family: sans-serif; }";
+        const style = document.createElement("style");
+        style.textContent = css;
+        svg.appendChild(style);
+        const svgString = new XMLSerializer().serializeToString(svg);
+        const xml = await this.$refs.modeler.getXmlFromDiagram();
+
+        this.setLoadingState(true);
+        ProcessMaker.apiClient.put(`/processes/${this.process.id}/draft`, {
+          name: this.process.name,
+          description: this.process.description,
+          task_notifications: this.getTaskNotifications(),
+          bpmn: xml,
+          svg: svgString,
+        })
+          .then((response) => {
+            this.process.updated_at = response.data.updated_at;
+            window.ProcessMaker.EventBus.$emit("save-changes");
+            this.$set(this, "warnings", response.data.warnings || []);
+            if (response.data.warnings && response.data.warnings.length > 0) {
+              this.$refs.validationStatus.autoValidate = true;
+            }
+            // Set draft status.
+            this.setVersionIndicator(true);
+          })
+          .catch((error) => {
+            if (error.response) {
+              const { message } = error.response.data;
+              ProcessMaker.alert(message, "danger");
+            }
+          })
+          .finally(() => {
+            this.setLoadingState(false);
+          });
+      };
+    },
   },
   watch: {
     validationErrors: {
@@ -97,16 +148,15 @@ export default {
   },
   mounted() {
     ProcessMaker.$modeler = this.$refs.modeler;
-
     window.ProcessMaker.EventBus.$emit("modeler-app-init", this);
 
     window.ProcessMaker.EventBus.$on("modeler-save", (onSuccess, onError) => {
       this.saveProcess(onSuccess, onError);
     });
     window.ProcessMaker.EventBus.$on("modeler-change", () => {
-      this.refreshSession();
-      this.autoSaveProcess();
       window.ProcessMaker.EventBus.$emit("new-changes");
+      this.refreshSession();
+      this.handleAutosave();
     });
     window.ProcessMaker.EventBus.$on("modeler-discard", () => {
       this.discardDraft();
@@ -170,9 +220,6 @@ export default {
       }
       window.ProcessMaker.EventBus.$emit("modeler-save");
     },
-    close() {
-      window.location.href = "/processes";
-    },
     emitDiscardEvent() {
       if (this.externalEmit.includes("open-versions-discard-modal")) {
         window.ProcessMaker.EventBus.$emit("open-versions-discard-modal");
@@ -199,15 +246,15 @@ export default {
       const savedSuccessfully = (response) => {
         this.process.updated_at = response.data.updated_at;
         // Now show alert
-        let type = 'process';
+        let type = "process";
         if (this.process.is_template) {
-          type = 'process template';
+          type = "process template";
         }
-        ProcessMaker.alert(this.$t(`The ${type} was saved.`, {'type': type}), 'success');
+        ProcessMaker.alert(this.$t(`The ${type} was saved.`, { type }), "success");
         // Set published status.
         this.setVersionIndicator(false);
-        window.ProcessMaker.EventBus.$emit('save-changes');
-        this.$set(this, 'warnings', response.data.warnings || []);
+        window.ProcessMaker.EventBus.$emit("save-changes");
+        this.$set(this, "warnings", response.data.warnings || []);
         if (response.data.warnings && response.data.warnings.length > 0) {
           this.$refs.validationStatus.autoValidate = true;
         }
@@ -229,51 +276,6 @@ export default {
         .then(savedSuccessfully)
         .catch(saveFailed);
     },
-    async autoSaveProcess() {
-      if (this.isVersionsInstalled === false) {
-        return;
-      }
-
-      const svg = document.querySelector(".mini-paper svg");
-      const css = "text { font-family: sans-serif; }";
-      const style = document.createElement("style");
-      style.textContent = css;
-      svg.appendChild(style);
-      const svgString = new XMLSerializer().serializeToString(svg);
-      const xml = await this.$refs.modeler.getXmlFromDiagram();
-
-      if (this.debounceTimeout) {
-        clearTimeout(this.debounceTimeout);
-      }
-
-      this.debounceTimeout = setTimeout(() => {
-        this.setLoadingState(true);
-        ProcessMaker.apiClient.put(`/processes/${this.process.id}/draft`, {
-          name: this.process.name,
-          description: this.process.description,
-          task_notifications: this.getTaskNotifications(),
-          bpmn: xml,
-          svg: svgString,
-        })
-          .then((response) => {
-            this.process.updated_at = response.data.updated_at;
-            window.ProcessMaker.EventBus.$emit("save-changes");
-            this.$set(this, "warnings", response.data.warnings || []);
-            if (response.data.warnings && response.data.warnings.length > 0) {
-              this.$refs.validationStatus.autoValidate = true;
-            }
-            // Set draft status.
-            this.setVersionIndicator(true);
-          })
-          .catch((error) => {
-            const { message } = error.response.data;
-            ProcessMaker.alert(message, "danger");
-          })
-          .finally(() => {
-            this.setLoadingState(false);
-          });
-      }, this.autoSaveDelay);
-    },
     setVersionIndicator(isDraft = null) {
       if (this.isVersionsInstalled) {
         this.$refs.modeler.setVersionIndicator(isDraft ?? this.isDraft);
@@ -286,6 +288,9 @@ export default {
     },
     publishTemplate() {
       this.$refs["create-template-modal"].show();
+    },
+    publishPmBlock() {
+      this.$refs["create-pm-block-modal"].show();
     },
   },
 };

@@ -56,7 +56,12 @@ export default {
       const assets = response.data.export;
       return this.formatAssets(assets, rootUuid, response.data.passwordRequired);
     }).catch((error) => {
-      let message = error.response?.data?.message;
+      let message = error.response?.data?.error;
+
+      if (error.response?.data?.exception === "ProcessMaker\\Exception\\ExportEmptyProcessException") {
+        message = error.response?.data?.message;
+      }
+
       if (!message) {
         message = error.message;
       }
@@ -98,6 +103,7 @@ export default {
         typeHuman: asset.type_human,
         typeHumanPlural: asset.type_human_plural,
         name: asset.name,
+        translatedLanguages: this.getTranslatedLanguages(asset.extraAttributes.translatedLanguages),
         categories: this.getCategories(asset, assets),
         extraAttributes: asset.extraAttributes || [],
         description: asset.description || null,
@@ -159,6 +165,13 @@ export default {
   //   const match = exporter.match(/([^\\]+)Exporter$/);
   //   return match[1] || "N/A";
   // },
+  getTranslatedLanguages(translatedLanguages) {
+    let languages = null;
+    if (translatedLanguages) {
+      languages = translatedLanguages;
+    }
+    return languages;
+  },
   getCategories(asset, allAssets) {
     const categories = asset.dependents.filter((d) => d.type === "categories").map((category) => category.name);
     if (categories.length === 0) {

@@ -17,6 +17,10 @@
                             :variant="confirmVariant" :callback="confirmCallback"
                             @close="confirmShow=false">
         </confirmation-modal>
+        <message-modal class="d-none d-lg-block" id="messageModal" :show="messageShow" :title="messageTitle" :message="messageMessage"
+                            :variant="messageVariant" :callback="messageCallback"
+                            @close="messageShow=false">
+        </message-modal>
         <session-modal id="sessionModal" :shown="sessionShow" :title="sessionTitle" :message="sessionMessage" :time="sessionTime" :warn-seconds="sessionWarnSeconds"
                 @close="sessionShow=false">
         </session-modal>
@@ -24,6 +28,7 @@
             <b-alert v-for="(item, index) in alerts" :key="index" class="d-none d-lg-block alertBox" :show="item.alertShow" :variant="item.alertVariant" dismissible fade @dismissed="alertDismissed(item)" @dismiss-count-down="alertDownChanged($event, item)" style="white-space:pre-line">
               <span v-if="item.showLoader" class="spinner-border spinner-border-sm mb-1 mr-2"></span>
               <span>@{{item.alertText}}</span>
+              <span v-if="item.alertLink"><a :href="item.alertLink">@{{item.alertLink}}</a></span>
             </b-alert>
         </div>
         @php

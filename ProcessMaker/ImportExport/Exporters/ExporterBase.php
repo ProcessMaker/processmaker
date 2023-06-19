@@ -15,6 +15,7 @@ use ProcessMaker\ImportExport\Manifest;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\ImportExport\Psudomodels\Psudomodel;
 use ProcessMaker\Models\User;
+use ProcessMaker\ProcessTranslations\Languages;
 use ProcessMaker\Traits\HasVersioning;
 
 abstract class ExporterBase implements ExporterInterface
@@ -188,7 +189,7 @@ abstract class ExporterBase implements ExporterInterface
             $this->export();
             $extensions->runExtensions($this, 'postExport');
         } catch (ModelNotFoundException $e) {
-            throw new ExportModelNotFoundException($e, $this);
+            \Log::error($e->getMessage());
         }
     }
 
@@ -315,7 +316,16 @@ abstract class ExporterBase implements ExporterInterface
 
     public function getExtraAttributes($model): array
     {
-        return [];
+        $translatedLanguages = [];
+        if ($model->translations) {
+            foreach ($model->translations as $key => $value) {
+                $translatedLanguages[$key] = Languages::ALL[$key];
+            }
+        }
+
+        return [
+            'translatedLanguages' => $translatedLanguages,
+        ];
     }
 
     public function getProcessManager(): array

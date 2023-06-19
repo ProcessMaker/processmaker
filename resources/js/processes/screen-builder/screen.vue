@@ -282,6 +282,7 @@ import TopMenu from "../../components/Menu.vue";
 import mockMagicVariables from "./mockMagicVariables";
 import formTypes from "./formTypes";
 import DataLoadingBasic from "../../components/shared/DataLoadingBasic.vue";
+import autosaveMixins from "../../modules/autosave/mixins";
 
 // To include another language in the Validator with variable processmaker
 if (
@@ -309,6 +310,7 @@ export default {
     TopMenu,
     DataLoadingBasic,
   },
+  mixins: [...autosaveMixins],
   props: {
     screen: {
       type: Object,
@@ -489,6 +491,7 @@ export default {
           },
         ],
       },
+      closeHref: "/designer/screens",
     };
   },
   computed: {
@@ -544,6 +547,35 @@ export default {
         });
       }
       return warnings;
+    },
+    autosaveApiCall() {
+      return () => {
+        this.setLoadingState(true);
+        ProcessMaker.apiClient
+          .put(`screens/${this.screen.id}/draft`, {
+            title: this.screen.title,
+            description: this.screen.description,
+            type: this.screen.type,
+            config: this.config,
+            computed: this.computed,
+            custom_css: this.customCSS,
+            watchers: this.watchers,
+          })
+          .then(() => {
+            // Set draft status.
+            this.setVersionIndicator(true);
+            ProcessMaker.EventBus.$emit("save-changes");
+          })
+          .catch((error) => {
+            if (error.response) {
+              const { message } = error.response.data;
+              ProcessMaker.alert(message, "danger");
+            }
+          })
+          .finally(() => {
+            this.setLoadingState(false);
+          });
+      };
     },
   },
   watch: {
@@ -692,10 +724,10 @@ export default {
           that.saveScreen(value, onSuccess, onError);
         });
         ProcessMaker.EventBus.$on("screen-change", () => {
-          this.autoSaveScreen();
+          this.handleAutosave();
         });
         ProcessMaker.EventBus.$on("screen-close", () => {
-          window.location.href = "/designer/screens";
+          this.onClose();
         });
         ProcessMaker.EventBus.$on("screen-discard", () => {
           that.discardDraft();
@@ -720,6 +752,10 @@ export default {
           variant: "secondary",
         });
         this.$refs.menuScreen.sectionRight = false;
+
+        if (this.$refs.renderer) {
+          this.$refs.renderer.hasSubmitted(false);
+        }
       }
       this.mode = mode;
       this.setStoreMode(this.mode);
@@ -891,9 +927,6 @@ export default {
         baseURL: "/",
       });
     }, 60000),
-    onClose() {
-      window.location.href = "/designer/screens";
-    },
     onInput() {
       ProcessMaker.EventBus.$emit("screen-change");
     },
@@ -914,43 +947,6 @@ export default {
         .then(() => {
           window.location.reload();
         });
-    },
-    autoSaveScreen() {
-      if (this.isVersionsInstalled === false) {
-        return;
-      }
-
-      if (this.debounceTimeout) {
-        clearTimeout(this.debounceTimeout);
-      }
-
-      this.debounceTimeout = setTimeout(() => {
-        // Start saving state.
-        this.setLoadingState(true);
-        ProcessMaker.apiClient
-          .put(`screens/${this.screen.id}/draft`, {
-            title: this.screen.title,
-            description: this.screen.description,
-            type: this.screen.type,
-            config: this.config,
-            computed: this.computed,
-            custom_css: this.customCSS,
-            watchers: this.watchers,
-          })
-          .then(() => {
-            // Set draft status.
-            this.setVersionIndicator(true);
-            ProcessMaker.EventBus.$emit("save-changes");
-          })
-          .catch((error) => {
-            const { message } = error.response.data;
-            ProcessMaker.alert(message, "danger");
-          })
-          .finally(() => {
-            // Stop saving state.
-            this.setLoadingState(false);
-          });
-      }, this.autoSaveDelay);
     },
     saveScreen(exportScreen, onSuccess, onError) {
       if (this.allErrors !== 0) {

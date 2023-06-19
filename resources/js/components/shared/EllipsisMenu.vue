@@ -11,10 +11,12 @@
   >
     <template v-if="customButton" #button-content>
       <i
-        class="pr-1 ellipsis-menu-icon"
+        class="pr-1 ellipsis-menu-icon no-padding"
         :class="customButton.icon"
       />
-      <span>{{ customButton.content }}</span>
+      <span>
+        {{ customButton.content }} <b v-if="showProgress && data && data.batch"> {{ getTotalProgress(data.batch, data.progress) }}%</b>
+      </span>
     </template>
     <template v-else #button-content>
       <i class="fas fa-ellipsis-h ellipsis-menu-icon" />
@@ -32,7 +34,7 @@
             class="pr-1 fa-fw"
             :class="action.icon"
           />
-          <span>{{ action.content }}</span>
+          <span>{{ $t(action.content) }}</span>
         </div>
       </b-dropdown-item>
       <b-dropdown-divider />
@@ -48,7 +50,7 @@
             class="pr-1 fa-fw"
             :class="action.icon"
           />
-          <span>{{ action.content }}</span>
+          <span>{{ $t(action.content) }}</span>
         </div>
       </b-dropdown-item>
     </div>
@@ -65,7 +67,7 @@
             class="pr-1 fa-fw"
             :class="action.icon"
           />
-          <span>{{ action.content }}</span>
+          <span>{{ $t(action.content) }}</span>
         </div>
       </b-dropdown-item>
     </div>
@@ -80,7 +82,7 @@ export default {
   components: { },
   filters: { },
   mixins: [],
-  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "customButton"],
+  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "customButton", "showProgress"],
   data() {
     return {
       active: false,
@@ -89,7 +91,9 @@ export default {
   computed: {
     filterActions() {
       let btns = this.actions.filter(action => {
-        if (!action.hasOwnProperty('permission') || action.hasOwnProperty('permission') && this.permission[action.permission] || action.hasOwnProperty('permission') && this.permission.includes(action.permission)) {
+        if (!action.hasOwnProperty('permission')
+            || action.hasOwnProperty('permission') && this.permission[action.permission]
+            || Array.isArray(this.permission) && action.hasOwnProperty('permission') && this.permission.includes(action.permission)) {
           return action;
         }
       });
@@ -138,6 +142,17 @@ export default {
     onHide() {
       this.$emit('hide');
     },
+
+    getTotalProgress(batchProgress, chunkProgress) {
+      const progressSlot = 100 / batchProgress.totalJobs;
+      let totalProgress = batchProgress.progress;
+
+      if (chunkProgress?.percentage > 0) {
+        totalProgress += ((chunkProgress.percentage * progressSlot) / 100);
+      }
+
+      return Math.trunc(totalProgress);
+    },
   },
 };
 </script>
@@ -160,4 +175,7 @@ export default {
     margin-left: -15px;
 }
 
+.ellipsis-menu-icon.no-padding {
+  padding: 0 !important;
+}
 </style>

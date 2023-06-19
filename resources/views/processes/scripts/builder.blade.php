@@ -44,6 +44,7 @@
 @endsection
 
 @section('js')
+  <script src="{{mix('js/leave-warning.js')}}"></script>
   @foreach ($manager->getScripts() as $script)
     <script src="{{ $script }}"></script>
   @endforeach
