@@ -7,11 +7,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Contracts\WorkflowManagerInterface;
 use ProcessMaker\Facades\MessageBrokerService;
+use ProcessMaker\GenerateAccessToken;
+use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\User;
+use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 
 class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements WorkflowManagerInterface
@@ -237,14 +240,60 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
     }
 
     /**
-     * Send payload.
+     * Get the ID of the currently authenticated user.
+     *
+     * @return int|null
+     */
+    private function getCurrentUser(): ? User
+    {
+        // Get the id from the current user
+        $webGuard = Auth::user();
+        $apiGuard = Auth::guard('api')->user();
+
+        return $webGuard ?: $apiGuard;
+    }
+
+    /**
+     * Send payload
      *
      * @param array $action
      */
     private function dispatchAction(array $action): void
     {
+        // add environment variables to session
+        $environmentVariables = $this->getEnvironmentVariables();
+        $action['session']['env'] = $environmentVariables;
         $subject = 'requests';
         $thread = $action['collaboration_id'] ?? 0;
         MessageBrokerService::sendMessage($subject, $thread, $action);
+    }
+
+    /**
+     * Get the environment variables.
+     *
+     * @return array
+     */
+    private function getEnvironmentVariables()
+    {
+        $variablesParameter = [];
+        EnvironmentVariable::chunk(50, function ($variables) use (&$variablesParameter) {
+            foreach ($variables as $variable) {
+                $variablesParameter[$variable['name']] = $variable['value'];
+            }
+        });
+
+        // Add the url to the host
+        $variablesParameter['HOST_URL'] = config('app.docker_host_url');
+
+        $user = $this->getCurrentUser();
+        if ($user) {
+            $token = new GenerateAccessToken($user);
+            $environmentVariables['API_TOKEN'] = $token->getToken();
+            $environmentVariables['API_HOST'] = config('app.url') . '/api/1.0';
+            $environmentVariables['APP_URL'] = config('app.url');
+            $environmentVariables['API_SSL_VERIFY'] = (config('app.api_ssl_verify') ? '1' : '0');
+        }
+
+        return $variablesParameter;
     }
 }
