@@ -12,9 +12,10 @@ class RequestAction implements SecurityLogEventInterface
 {
     use Dispatchable;
 
-    const ACTION_CREATED = 'CREATED';
     const ACTION_CANCELED = 'CANCELED';
     const ACTION_COMPLETED = 'COMPLETED';
+    const ACTION_CREATED = 'CREATED';
+
     const ACTIONS = [
         'COMPLETED' => 'completed_at',
         'CANCELED' => 'canceled_at',
@@ -60,7 +61,9 @@ class RequestAction implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return [];
+        return [
+            'request_id' => $this->data->getAttribute('id')
+        ];
     }
 
     /**
