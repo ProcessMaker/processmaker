@@ -321,6 +321,39 @@ class TasksTest extends TestCase
     }
 
     /**
+     * Test filtering with string vs number
+     */
+    public function testFilteringWithStringOrNumber()
+    {
+        $request = ProcessRequest::factory()->create();
+        $process = $request->process;
+        $task = ProcessRequestToken::factory()->create([
+            'status' => 'ACTIVE',
+            'process_request_id' => $request->id,
+            'process_id' => $process->id,
+            'element_name' => 'foobar',
+        ]);
+        $anotherTask = ProcessRequestToken::factory()->create([
+            'status' => 'ACTIVE',
+            'element_name' => 'barbaz',
+        ]);
+
+        $route = route('api.' . $this->resource . '.index', ['process_id' => $process->id]);
+
+        $response = $this->apiCall('GET', $route);
+        $response->assertStatus(200);
+        $this->assertCount(1, $response->json()['data']);
+        $this->assertEquals($process->id, $response->json()['data'][0]['process_id']);
+
+        $route = route('api.' . $this->resource . '.index', ['element_name' => 'foo%']);
+
+        $response = $this->apiCall('GET', $route);
+        $response->assertStatus(200);
+        $this->assertCount(1, $response->json()['data']);
+        $this->assertEquals($process->id, $response->json()['data'][0]['process_id']);
+    }
+
+    /**
      * Test list of tokens sorting by completed_at
      */
     public function testSorting()
