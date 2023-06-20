@@ -64,7 +64,7 @@ export default {
 
 <style lang="scss" scoped>
 .template-select-card {
-  width: 277px;
+  width: 290px;
   height: 180px;
   border-radius: 4px;
   padding: 10px 8px 10px 8px;
@@ -102,6 +102,13 @@ export default {
 .hover {
   border-color: #1572C2;
   cursor: pointer;
+}
+
+@media (min-width: 576px) {
+  .card-deck .card {
+    margin-left: 9px;
+    margin-right: 9px;
+  }
 }
 
 </style>

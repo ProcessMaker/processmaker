@@ -21,7 +21,8 @@
     >
       <template-search :type="type" :component="currentComponent" @show-details="updateModal($event)" 
         @blank-process-button-clicked="createBlankProcess()"
-        @ai-process-button-clicked="createAiProcess()"/>
+        @ai-process-button-clicked="createAiProcess()"
+        :package-ai="packageAi" />
     </modal>
     <create-process-modal ref="create-process-modal" :blank-template="blankTemplate" :count-categories="countCategories" :selected-template="selectedTemplate" :template-data="templateData" @resetModal="resetModal()"/>
   </div>
@@ -34,7 +35,7 @@
 
   export default {
     components: { Modal, TemplateSearch, CreateProcessModal },
-    props: ['type', 'countCategories'],
+    props: ['type', 'countCategories', 'packageAi'],
     data: function() {
       return {
         title: '',

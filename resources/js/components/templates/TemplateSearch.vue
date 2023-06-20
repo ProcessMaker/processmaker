@@ -11,21 +11,27 @@
       </b-input-group>
     </div>
 
-    <b-card-group id="template-options" deck class="d-flex">
+    <b-card-group id="template-options" deck class="d-flex small-deck-margin">
       <button-card
         v-show="component === 'template-select-card'"
         :button="blankProcessButton"
         @show-details="showDetails($event)"
         @card-button-clicked="$emit('blank-process-button-clicked')"
       />
-      <button-card
-        v-show="component === 'template-select-card'"
-        :button="aiProcessButton"
-        @show-details="showDetails($event)"
-        @card-button-clicked="$emit('ai-process-button-clicked')"
-        :large="true"
-      />
-      <div v-show="component === 'template-select-card'" class="border-bottom ml-3 mr-3 mb-3 mt-2 w-100"></div>
+
+      <div v-if="packageAi">
+        <button-card
+          v-if="component === 'template-select-card'"
+          :button="aiProcessButton"
+          @show-details="showDetails($event)"
+          @card-button-clicked="$emit('ai-process-button-clicked')"
+        />
+      </div>
+      <div v-if="component === 'template-select-card'" class="d-flex w-100 align-items-center ml-2 mr-3 my-3">
+        <small class="mr-2 text-secondary">Templates</small>
+        <div class="flex-grow-1 border-bottom"></div>
+      </div>
+
     </b-card-group>
 
     <div class="pb-2 template-container">
@@ -38,7 +44,7 @@
         </div>
       </template>
       <template v-else>
-        <b-card-group id="template-options" deck class="d-flex">
+        <b-card-group id="template-options" deck class="d-flex small-deck-margin">
           <template-select-card
             v-show="component === 'template-select-card'"
             v-for="(template, index) in templates"
@@ -78,7 +84,7 @@ import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 export default {
   components: { ButtonCard, TemplateSelectCard, TemplateDetails },
   mixins: [datatableMixin, dataLoadingMixin],
-  props: ["type", "component"],
+  props: ["type", "component", "packageAi"],
   data() {
     return {
       filter: "",
@@ -92,12 +98,13 @@ export default {
       limit: 7,
       blankProcessButton: {
         title: `Blank ${this.type}`,
-        description: "",
         icon: "fa fa-plus",
       },
       aiProcessButton: {
         title: `AI ${this.type}`,
-        description: "Just describe your process",
+        helperEnabled: true,
+        helperTitle: "Your world is our command!",
+        helperDescription: "Try our new modeler powered by artificial intelligence and create complex processes, just like you were talking to a person.",
         icon: "fa fa-robot",
       },
     };
@@ -189,12 +196,6 @@ export default {
   color: #6C757D;
 }
 
-.template-container {
-  height: 375px;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-
 .no-data {
   font-size: 1.75rem;
 }
@@ -202,5 +203,12 @@ export default {
 .no-data-icon {
   font-size: 5em;
   color: #b7bfc5;
+}
+.small-deck-margin {
+  margin-left: -9px;
+  margin-right: -9px;
+}
+.divisor {
+  margin: 1.5rem 1.1rem 1.5rem 0.7rem;
 }
 </style>

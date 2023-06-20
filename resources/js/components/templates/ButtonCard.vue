@@ -1,20 +1,21 @@
 <template>
-  <div class="pb-2">
-    <b-card no-body class="button-card" :class="{'large': large}" @mouseenter="addHoverClass" @mouseleave="removeHoverClass" @click="$emit('card-button-clicked')">
-      <div v-if="large" class="card-body d-flex justify-content-center flex-row justify-content-around">
-        <div class="text-center d-flex justify-content-center flex-column">
-          <i class="icon mb-1" :class="button.icon"></i>
-          <h5 class="m-0">{{ button.title }}</h5>
-        </div>
-        <div class="d-flex align-items-center text-muted">
-          <small>{{ button.description }}</small>
-        </div>
-      </div>
-      <div v-else class="card-body text-center d-flex justify-content-center flex-column">
-        <i class="icon mb-1" :class="button.icon"></i>
+  <div :class="{'d-flex': button.helperEnabled}">
+    <b-card no-body class="button-card" @mouseenter="addHoverClass" @mouseleave="removeHoverClass" @click="$emit('card-button-clicked')">
+      <div class="card-body text-center d-flex justify-content-center flex-column">
+        <i class="icon mb-1 text-primary" :class="button.icon"></i>
         <h5 class="m-0">{{ button.title }}</h5>
       </div>
     </b-card>
+
+    <div v-if="button.helperEnabled" class="helper-container">
+      <div class="arrow-left"></div>
+      <b-card no-body class="button-card card-helper p-3">
+        <div class="card-body card-helper text-center d-flex justify-content-center flex-column">
+          <h4 class="m-0 text-left card-title">{{ button.helperTitle }}</h4>
+          <p class="m-0 text-left card-text">{{ button.helperDescription }}</p>
+        </div>
+      </b-card>
+    </div>
   </div>
 </template>
 
@@ -40,7 +41,7 @@ export default {
 
 <style lang="scss" scoped>
 .button-card {
-  width: 277px;
+  width: 290px;
   height: 180px;
   border-radius: 4px;
   padding: 10px 8px 10px 8px;
@@ -89,4 +90,31 @@ export default {
   font-size: 1.5rem;
 }
 
+.helper-container {
+  position: relative;
+}
+.arrow-left {
+  width: 0;
+  height: 0;
+  border-top: 16px solid transparent;
+  border-bottom: 16px solid transparent;
+  border-right: 13px solid #BCDCF8;
+  position: absolute;
+  top: calc(50% - 16px);
+  left: 3px;
+}
+.button-card.card-helper {
+    border: 0;
+    background: #BCDCF8;
+}
+.button-card.card-helper .card-text {
+  color:#363A3E;
+}
+
+@media (min-width: 576px) {
+  .card-deck .card {
+    margin-left: 9px;
+    margin-right: 9px;
+  }
+}
 </style>
