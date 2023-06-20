@@ -11,7 +11,7 @@ class ArrayHelperTest extends TestCase
     public function testStdClassToArray()
     {
         $myObject = new stdClass();
-        $myObject->name = "John";
+        $myObject->name = 'John';
         $myObject->id = 5;
         $this->assertEquals(
             [

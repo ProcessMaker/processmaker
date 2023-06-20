@@ -307,7 +307,7 @@ class UserController extends Controller
         $changes = $user->getChanges();
 
         //Call new Event to store User Changes into LOG
-        UserUpdated::dispatch($user, $changes,  $original);
+        UserUpdated::dispatch($user, $changes, $original);
         if ($request->has('avatar')) {
             $this->uploadAvatar($user, $request);
         }
