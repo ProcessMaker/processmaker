@@ -36,21 +36,8 @@ env:
   GITHUB_COMMENT: ${{ secrets.GH_COMMENT }}
   pull_req_id: ${{github.event.pull_request.number}}
 jobs:
-  job0:
-    runs-on: ubuntu-latest
-    outputs:
-      deploy: ${{ steps.deploy_stm.outputs.run_deploy_stm }}
-    steps:
-      - id: deploy_stm
-        run: |
-          if [[ "$BODY" =~ .*"ci:test-deploy".* ]]; then
-            echo "run_deploy_stm=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "run_deploy_stm=false" >> "$GITHUB_OUTPUT"
-          fi
   job1:
     name: build-stm-image
-    needs: job0
     runs-on: ubuntu-22.04    
     steps:     
       - name: Export Params                
@@ -84,8 +71,7 @@ jobs:
           docker push ${IMAGE}
   job2: 
     name: deploy-stm    
-    needs: [job1, job0]
-    if: needs.job0.outputs.deploy == 'true'
+    needs: job1
     runs-on: ubuntu-22.04
     container:
       image:  cimg/php:7.4
