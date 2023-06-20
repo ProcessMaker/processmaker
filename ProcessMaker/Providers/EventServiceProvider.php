@@ -99,7 +99,7 @@ class EventServiceProvider extends ServiceProvider
         'ProcessMaker\Events\ProcessUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
-        'ProcessMaker\Events\QueueManagementAccessed' => [
+        'ProcessMaker\Events\RequestAction' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
         'ProcessMaker\Events\ScreenCreated' => [
