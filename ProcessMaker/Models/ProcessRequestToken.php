@@ -18,6 +18,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\MultiInstanceLoopCharacteristicsInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Notifications\ActivityActivatedNotification;
 use ProcessMaker\Traits\ExtendedPMQL;
+use ProcessMaker\Traits\HasUuids;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Throwable;
@@ -79,10 +80,11 @@ use Throwable;
 class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 {
     use ExtendedPMQL;
-    use TokenTrait;
-    use SerializeToIso8601;
-    use Searchable;
+    use HasUuids;
     use HideSystemResources;
+    use Searchable;
+    use SerializeToIso8601;
+    use TokenTrait;
 
     protected $connection = 'processmaker';
 
@@ -93,6 +95,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
      */
     protected $guarded = [
         'id',
+        'uuid',
         'updated_at',
         'created_at',
         'data',

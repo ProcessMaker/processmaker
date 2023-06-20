@@ -21,6 +21,7 @@
           @discard="emitDiscardEvent"
           @close="onClose"
           @publishTemplate="publishTemplate"
+          @publishPmBlock="publishPmBlock"
           @set-xml-manager="xmlManager = $event"
         />
       </b-card-body>
@@ -47,6 +48,7 @@
         :options="component.options"
       />
       <create-template-modal ref="create-template-modal" assetType="process" :assetName="processName" :assetId="processId" :currentUserId="currentUserId"/>
+      <create-pm-block-modal ref="create-pm-block-modal" />
     </b-card>
   </b-container>
 </template>
@@ -54,6 +56,7 @@
 <script>
 import { Modeler, ValidationStatus } from "@processmaker/modeler";
 import CreateTemplateModal from "../../../components/templates/CreateTemplateModal.vue";
+import CreatePmBlockModal from "../../../components/pm-blocks/CreatePmBlockModal.vue";
 import autosaveMixins from "../../../modules/autosave/mixins";
 
 export default {
@@ -62,6 +65,7 @@ export default {
     Modeler,
     ValidationStatus,
     CreateTemplateModal,
+    CreatePmBlockModal,
   },
   mixins: [...autosaveMixins],
   data() {
@@ -284,6 +288,9 @@ export default {
     },
     publishTemplate() {
       this.$refs["create-template-modal"].show();
+    },
+    publishPmBlock() {
+      this.$refs["create-pm-block-modal"].show();
     },
   },
 };

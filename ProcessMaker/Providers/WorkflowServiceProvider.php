@@ -32,6 +32,8 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TimerEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\EngineInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
+use ProcessMaker\Nayra\MessageBrokers\Service as ServiceFactory;
+use ProcessMaker\Nayra\MessageBrokers\ServiceInterface;
 use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Repositories\DefinitionsRepository;
 use ProcessMaker\WebServices\Contracts\SoapClientInterface;
@@ -70,7 +72,7 @@ class WorkflowServiceProvider extends ServiceProvider
          * BPMN Workflow Manager
          */
         $this->app->singleton('workflow.manager', function ($app) {
-            return new WorkflowManager();
+            return WorkflowManager::create();
         });
 
         $this->app->bind(BpmnEngine::class, function ($app, $params) {
@@ -222,6 +224,11 @@ class WorkflowServiceProvider extends ServiceProvider
                 new SoapServiceCaller(),
                 $dataSource
             );
+        });
+
+        // Broker Message Service
+        $this->app->bind(ServiceInterface::class, function ($app) {
+            return ServiceFactory::create();
         });
 
         parent::register();
