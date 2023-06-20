@@ -62,6 +62,7 @@ jobs:
         run: |          
           aws ecr get-login-password | docker login --username AWS --password-stdin ${{env.aws-url}}
       - uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
       - name: Build and Push the image to ECR
         run: |
           cd pm4-stm-docker
@@ -134,6 +135,7 @@ jobs:
        id: login-ecr
        uses: aws-actions/amazon-ecr-login@v1
      - uses: satackey/action-docker-layer-caching@v0.0.11
+       continue-on-error: true
      - name: PHPUnits
        run: |          
          cd pm4-stm-docker          
