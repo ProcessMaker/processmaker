@@ -108,14 +108,17 @@ trait MakeHttpRequests
         if ($this->attemptedRetries >= $this->retryAttempts) {
             $this->retryMessage = __('Failed after :num total attempts', ['num' => $this->attemptedRetries + 1]);
 
-            $processRequestToken = ProcessRequestToken::find($data['_request']['id']);
-            $user = $processRequestToken->processRequest->processVersion->manager;
-            if ($user !== null) {
-                $errorHandling = [
-                    'inapp_notification' => $this->inappNotification,
-                    'email_notification' => $this->emailNotification
-                ];
-                Notification::send($user, new ErrorExecutionNotification($processRequestToken, $this->retryMessage, $errorHandling));
+            $requestId = Arr::get($data, "_request.id", false);
+            if ($requestId) {
+                $processRequestToken = ProcessRequestToken::find($requestId);
+                $user = $processRequestToken->processRequest->processVersion->manager;
+                if ($user !== null) {
+                    $errorHandling = [
+                        'inapp_notification' => $this->inappNotification,
+                        'email_notification' => $this->emailNotification
+                    ];
+                    Notification::send($user, new ErrorExecutionNotification($processRequestToken, $this->retryMessage, $errorHandling));
+                }
             }
 
             return false;
@@ -278,7 +281,7 @@ trait MakeHttpRequests
     /**
      * Prepares data for the http request replacing mustache with pm instance and OutboundConfig
      *
-     * @param array $data, request data
+     * @param array $requestData request data
      * @param array $config, datasource configuration
      *
      * @return array
