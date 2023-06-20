@@ -10,6 +10,24 @@
         <b-form-input v-model="filter" id="search-box" class="pl-0" :placeholder="$t('Search Templates')"></b-form-input>
       </b-input-group>
     </div>
+
+    <b-card-group id="template-options" deck class="d-flex">
+      <button-card
+        v-show="component === 'template-select-card'"
+        :button="blankProcessButton"
+        @show-details="showDetails($event)"
+        @card-button-clicked="$emit('blank-process-button-clicked')"
+      />
+      <button-card
+        v-show="component === 'template-select-card'"
+        :button="aiProcessButton"
+        @show-details="showDetails($event)"
+        @card-button-clicked="$emit('ai-process-button-clicked')"
+        :large="true"
+      />
+      <div v-show="component === 'template-select-card'" class="border-bottom ml-3 mr-3 mb-3 mt-2 w-100"></div>
+    </b-card-group>
+
     <div class="pb-2 template-container">
       <template v-if="noResults === true">
         <div class="no-data-icon d-flex d-block justify-content-center mt-5 pt-5 pb-2">
@@ -51,15 +69,16 @@
 </template>
 
 <script>
+import ButtonCard from "./ButtonCard.vue";
 import TemplateSelectCard from "./TemplateSelectCard.vue";
 import TemplateDetails from "./TemplateDetails.vue";
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 
 export default {
-  components: { TemplateSelectCard, TemplateDetails },
+  components: { ButtonCard, TemplateSelectCard, TemplateDetails },
   mixins: [datatableMixin, dataLoadingMixin],
-  props: ['type', 'component'],
+  props: ["type", "component"],
   data() {
     return {
       filter: "",
@@ -71,6 +90,16 @@ export default {
       totalRow: null,
       perPage: 18,
       limit: 7,
+      blankProcessButton: {
+        title: `Blank ${this.type}`,
+        description: "",
+        icon: "fa fa-plus",
+      },
+      aiProcessButton: {
+        title: `AI ${this.type}`,
+        description: "Just describe your process",
+        icon: "fa fa-robot",
+      },
     };
   },
   watch: {
