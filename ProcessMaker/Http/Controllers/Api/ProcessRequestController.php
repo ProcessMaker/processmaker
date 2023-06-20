@@ -30,12 +30,14 @@ use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
 use ProcessMaker\Query\SyntaxError;
 use ProcessMaker\RetryProcessRequest;
-use SimpleXMLElement;
+use ProcessMaker\Traits\ProcessMapTrait;
 use Symfony\Component\HttpFoundation\IpUtils;
 use Throwable;
 
 class ProcessRequestController extends Controller
 {
+    use ProcessMapTrait;
+
     const DOMAIN_CACHE_TIME = 86400;
 
     /**
@@ -632,8 +634,8 @@ class ProcessRequestController extends Controller
         ]);
 
         $elementId = null;
-        $maxIdToken = $request->tokens()->where('element_id', $httpRequest->element_id)->max('id');
-        if ($maxIdToken === null) {
+        $maxTokenId = $this->getMaxTokenId($request, $httpRequest->element_id);
+        if ($maxTokenId === null) {
             $bpmn = $request->process->versions()
                 ->where('id', $request->process_version_id)
                 ->firstOrFail()
@@ -643,34 +645,25 @@ class ProcessRequestController extends Controller
             $xml = $this->loadAndPrepareXML($bpmn);
             $targetAndSourceRef = $this->getRefNodes($xml, $httpRequest->element_id);
 
-            if (!empty($targetAndSourceRef)) {
+            if ($targetAndSourceRef->isNotEmpty()) {
                 $targetRef = $targetAndSourceRef['targetRef'];
                 $sourceRef = $targetAndSourceRef['sourceRef'];
 
-                $targetTokensCount = $request->tokens()
-                ->where([
-                    'element_id' => $targetRef,
-                    'process_request_id'=> $request->id,
-                ])->count();
+                // Get the token counts for the target and source nodes.
+                $targetTokensCount = $this->getTokenCount($request, $targetRef);
+                $sourceTokensCount = $this->getTokenCount($request, $sourceRef);
 
-                $sourceTokensCount = $request->tokens()
-                ->where([
-                    'element_id' => $sourceRef,
-                    'process_request_id'=> $request->id,
-                ])->count();
-
-                //get the min repeated node Id
-
+                // Get the minimum repeated node ID.
                 $elementId = ($sourceTokensCount < $targetTokensCount) ? $sourceRef : $targetRef;
             }
 
-            // Get the Max Node Id
+            // Get the maximum node ID.
             $httpRequest->merge(['element_id' => $elementId]);
-            $maxIdToken = $request->tokens()->where('element_id', $httpRequest->element_id)->max('id');
+            $maxTokenId = $this->getMaxTokenId($request, $httpRequest->element_id);
         }
 
         $token = $request->tokens()
-            ->where('id', $maxIdToken)
+            ->where('id', $maxTokenId)
             ->select('user_id', 'element_id', 'element_name', 'created_at', 'completed_at', 'status')
             ->with([
                 'user' => fn ($query) => $query->select('id', 'username'),
@@ -688,7 +681,7 @@ class ProcessRequestController extends Controller
         $token->status_translation = $translatedStatus;
         $token->completed_by = $token->completed_at ? ($token->user['username'] ?? '-') : '-';
 
-        // Get the number of times the flow has run when clicking on a flow line.
+        // Get the number of times the flow has run.
         $tokensCount = $request->tokens()
             ->where([
                 'element_id' => $httpRequest->element_id,
@@ -697,41 +690,5 @@ class ProcessRequestController extends Controller
         $token->count = $tokensCount;
 
         return new ApiResource($token);
-    }
-
-    /**
-     * Load XML from a string and register its namespaces.
-     * This function will help to prepare the XML for further processing.
-     */
-    private function loadAndPrepareXML(string $bpmn): SimpleXMLElement
-    {
-        $xml = simplexml_load_string($bpmn);
-        $namespaces = $xml->getNamespaces(true);
-
-        foreach ($namespaces as $prefix => $ns) {
-            $xml->registerXPathNamespace($prefix, $ns);
-        }
-
-        return $xml;
-    }
-
-    /**
-     * Performs an XPath query to get the targetRef and SourceRef Node Id
-     */
-    private function getRefNodes(SimpleXMLElement $xml, string $sequenceFlowId): array
-    {
-        $sequenceFlowNode = $xml->xpath("//bpmn:sequenceFlow[@id='{$sequenceFlowId}']");
-
-        if (empty($sequenceFlowNode)) {
-            return [];
-        }
-
-        $targetRef = (string) $sequenceFlowNode[0]['targetRef'];
-        $sourceRef = (string) $sequenceFlowNode[0]['sourceRef'];
-
-        return [
-            'targetRef' => $targetRef,
-            'sourceRef' => $sourceRef,
-        ];
     }
 }

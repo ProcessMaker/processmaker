@@ -12,11 +12,13 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\PackageHelper;
 use ProcessMaker\Traits\HasControllerAddons;
+use ProcessMaker\Traits\ProcessMapTrait;
 use SimpleXMLElement;
 
 class ModelerController extends Controller
 {
     use HasControllerAddons;
+    use ProcessMapTrait;
 
     /**
      * Invokes the Process Modeler for rendering.
@@ -88,44 +90,5 @@ class ModelerController extends Controller
             'requestIdleNodes' => $requestIdleNodes,
             'requestId' => $request->request_id,
         ]);
-    }
-
-    /**
-     * Load XML from a string and register its namespaces.
-     * This function will help to prepare the XML for further processing.
-     */
-    private function loadAndPrepareXML(string $bpmn): SimpleXMLElement
-    {
-        $xml = simplexml_load_string($bpmn);
-        $namespaces = $xml->getNamespaces(true);
-
-        foreach ($namespaces as $prefix => $ns) {
-            $xml->registerXPathNamespace($prefix, $ns);
-        }
-
-        return $xml;
-    }
-
-    /**
-     * Filter the XML to get IDs of all nodes excluding "lanes" and "pools" nodes.
-     */
-    private function getNodeIds(SimpleXMLElement $xml): Collection
-    {
-        $elements = $xml->xpath('//*[name() != "bpmn:lane" and name() != "bpmn:participant"]/@id');
-
-        return collect(array_map('strval', $elements));
-    }
-
-    /**
-     * Performs an XPath query to get sequenceFlow elements
-     * whose 'sourceRef' attribute is in the string of completed nodes
-     * and 'targetRef' attribute is in the string of in-progress and completed nodes.
-     */
-    private function getCompletedSequenceFlow(SimpleXMLElement $xml, string $completedNodesStr, string $inProgressNodesStr): Collection
-    {
-        $inProgressAndCompletedNodes = $completedNodesStr . ' ' . $inProgressNodesStr;
-        $elements = $xml->xpath('//bpmn:sequenceFlow[contains("' . $completedNodesStr . '", @sourceRef) and contains("' . $inProgressAndCompletedNodes . '", @targetRef)]/@id');
-
-        return collect(array_map('strval', $elements));
     }
 }
