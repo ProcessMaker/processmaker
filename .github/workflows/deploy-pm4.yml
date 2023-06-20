@@ -11,6 +11,8 @@ on:
   #pull_request:
   #  branches:
   #    - main
+  workflow_dispatch:
+  workflow_call:
 env:
   SHA: ${{github.event.pull_request.head.sha}}
   PROJECT: ${{github.event.pull_request.head.repo.name}}
@@ -48,6 +50,7 @@ jobs:
           fi
   job1:
     name: build-stm-image
+    needs: job0
     runs-on: ubuntu-22.04    
     steps:     
       - name: Export Params                
