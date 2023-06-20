@@ -31,7 +31,6 @@ class RequestError implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        $parentProcess = Process::find($this->data->getAttribute('process_id'));
         return [
             'request' => [
                 'label' => $this->data->getAttribute('id'),
