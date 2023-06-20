@@ -60,6 +60,8 @@ class BatchesJobHandler
             ->then(function (Batch $batch) {
                 \Log::info('All jobs in batch completed');
                 $this->notifyProgress($batch);
+                // Broadcast response
+                $this->broadcastResponse();
             })->catch(function (Batch $batch, Throwable $e) {
                 // First batch job failure detected...
                 \Log::info('Batch error');
@@ -97,8 +99,6 @@ class BatchesJobHandler
     {
         event(new ProcessTranslationChunkProgressEvent($this->process->id, $this->targetLanguage['language'], $batch));
         $delete = ProcessTranslationToken::where('token', $batch->id)->delete();
-        // Broadcast response
-        $this->broadcastResponse();
     }
 
     public function prepareData($screens, $handler)
