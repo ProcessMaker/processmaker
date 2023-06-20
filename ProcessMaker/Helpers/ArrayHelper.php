@@ -2,8 +2,8 @@
 
 namespace ProcessMaker\Helpers;
 
-use stdClass;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
+use stdClass;
 
 class ArrayHelper
 {
