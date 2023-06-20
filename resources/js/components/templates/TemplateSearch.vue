@@ -27,7 +27,7 @@
           @card-button-clicked="$emit('ai-process-button-clicked')"
         />
       </div>
-      <div v-if="component === 'template-select-card'" class="d-flex w-100 align-items-center ml-2 mr-3 my-3">
+      <div v-if="component === 'template-select-card'" class="d-flex w-100 align-items-center my-3 card-separator">
         <small class="mr-2 text-secondary">Templates</small>
         <div class="flex-grow-1 border-bottom"></div>
       </div>
@@ -103,7 +103,7 @@ export default {
       aiProcessButton: {
         title: `AI ${this.type}`,
         helperEnabled: true,
-        helperTitle: "Your world is our command!",
+        helperTitle: "Your word is our command!",
         helperDescription: "Try our new modeler powered by artificial intelligence and create complex processes, just like you were talking to a person.",
         icon: "fa fa-robot",
       },
@@ -208,7 +208,8 @@ export default {
   margin-left: -9px;
   margin-right: -9px;
 }
-.divisor {
-  margin: 1.5rem 1.1rem 1.5rem 0.7rem;
+.card-separator {
+  margin-left: 0.7rem;
+  margin-right: 0.7rem;
 }
 </style>
