@@ -87,10 +87,16 @@ class ProcessTranslationController extends Controller
 
         $processTranslation = new ProcessTranslation($process);
         $screensTranslations = $processTranslation->getProcessScreensWithTranslations();
-        $languageList = $processTranslation->getLanguageList($screensTranslations);
+        $translatedLanguageList = $processTranslation->getLanguageList($screensTranslations);
+        $translatingLanguageList = ProcessTranslationToken::where('process_id', $processId)->get();
+
+        $availableLanguages = [];
 
         foreach (Languages::ALL as $key => $value) {
-            if (!$this->languageInTranslatedList($key, $languageList)) {
+            if (
+                !$this->languageInTranslatedList($key, $translatedLanguageList)
+                && !$this->languageInTranslatingList($key, $translatingLanguageList)
+            ) {
                 $availableLanguages[] = [
                     'humanLanguage' => $value,
                     'language' => $key,
@@ -103,9 +109,20 @@ class ProcessTranslationController extends Controller
         ]);
     }
 
-    private function languageInTranslatedList($key, $languageList)
+    private function languageInTranslatedList($key, $translatedLanguageList)
     {
-        foreach ($languageList as $value) {
+        foreach ($translatedLanguageList as $value) {
+            if ($value['language'] === $key) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function languageInTranslatingList($key, $pendingLanguageList)
+    {
+        foreach ($pendingLanguageList as $value) {
             if ($value['language'] === $key) {
                 return true;
             }
