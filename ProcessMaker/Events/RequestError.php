@@ -38,7 +38,7 @@ class RequestError implements SecurityLogEventInterface
                 'link' => route('requests.show', $this->data)
             ],
             'error' => $this->error['message'] ?? '',
-            'error_at' => Carbon::now()
+            'occurred_at' => Carbon::now()
         ];
     }
     
