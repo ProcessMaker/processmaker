@@ -101,7 +101,7 @@ export default {
   border-right: 13px solid #BCDCF8;
   position: absolute;
   top: calc(50% - 16px);
-  left: 3px;
+  left: 0px;
 }
 .button-card.card-helper {
     border: 0;
