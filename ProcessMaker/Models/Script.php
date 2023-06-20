@@ -169,16 +169,16 @@ class Script extends ProcessMakerModel implements ScriptInterface
                     throw new ScriptException($message);
                 }
 
-                if (is_numeric($this->retryWaitTime())) {
-                    Log::info("Waiting {$this->retryWaitTime()} seconds before retrying.");
-                    sleep($this->retryWaitTime());
-                }
-                $this->attemptedRetries++;
+                // if (is_numeric($this->retryWaitTime())) {
+                //     Log::info("Waiting {$this->retryWaitTime()} seconds before retrying.");
+                //     sleep($this->retryWaitTime());
+                // }
+                // $this->attemptedRetries++;
 
                 Log::info('Re-running the script', debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5));
                 // $result = $this->runScript($data, $config, $tokenId, $errorHandling);
                 // RunScriptTask::dispatch($process, $instance, $token, []);
-                throw new RetryableException();
+                throw new RetryableException($this->retryAttempts(), $this->retryWaitTime(), $e);
                 Log::info('The script completed successfully');
 
                 return $result;
