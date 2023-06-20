@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Events;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
@@ -20,7 +21,7 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
      *
      * @return void
      */
-    public function __construct(array $original, array $changes, string $updatedAt)
+    public function __construct(array $original, array $changes)
     {
         if (isset($original['config'])) {
             $original = $original['config'];
@@ -29,7 +30,6 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
         $original = array_intersect_key($original, $changes);
         $this->original = $original;
         $this->changes = $changes;
-        $this->changes['last_modified'] = $updatedAt;
         $this->buildData();
     }
 
@@ -39,20 +39,23 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
     public function buildData()
     {
         if (isset($this->changes['variables'])) {
-            $variables_changes = [];
-            $variables_original = [];
+            $varChanges = [];
+            $varOriginal = [];
             foreach ((array)json_decode($this->changes['variables'], true) as $variable) {
-                $variables_changes[$variable['title']] = $variable['value'];
+                $varChanges[$variable['title']] = $variable['value'];
             }
             foreach ((array)json_decode($this->original['variables'], true) as $variable) {
-                $variables_original[$variable['title']] = $variable['value'];
+                $varOriginal[$variable['title']] = $variable['value'];
             }
-            $variables_changes = array_diff($variables_changes, $variables_original);
-            $variables_original = array_intersect_key($variables_original, $variables_changes);
-            $this->changes['variables'] = $variables_changes;
-            $this->original['variables'] = $variables_original;
+            $varChanges = array_diff($varChanges, $varOriginal);
+            $varOriginal = array_intersect_key($varOriginal, $varChanges);
+            $this->changes['variables'] = $varOriginal;
+            $this->original['variables'] = $varOriginal;
         }
-        $this->data = $this->formatChanges($this->changes, $this->original);
+        $this->data = array_merge(
+            ['last_modified' => Carbon::now()],
+            $this->formatChanges($this->changes, $this->original)
+        );
     }
 
     /**
