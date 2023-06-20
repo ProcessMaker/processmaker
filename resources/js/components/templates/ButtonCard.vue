@@ -9,7 +9,7 @@
 
     <div v-if="button.helperEnabled" class="helper-container">
       <div class="arrow-left"></div>
-      <b-card no-body class="button-card card-helper p-3">
+      <b-card no-body class="button-card card-helper p-4">
         <div class="card-body card-helper text-center d-flex justify-content-center flex-column">
           <h4 class="m-0 text-left card-title">{{ button.helperTitle }}</h4>
           <p class="m-0 text-left card-text">{{ button.helperDescription }}</p>
@@ -42,7 +42,7 @@ export default {
 <style lang="scss" scoped>
 .button-card {
   width: 290px;
-  height: 180px;
+  height: 172px;
   border-radius: 4px;
   padding: 10px 8px 10px 8px;
   overflow: hidden;

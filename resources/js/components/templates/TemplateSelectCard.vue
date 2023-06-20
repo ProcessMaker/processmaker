@@ -2,7 +2,7 @@
   <div class="pb-2">
     <b-card no-body class="template-select-card" @click="showDetails()" @mouseenter="addHoverClass" @mouseleave="removeHoverClass">
       <b-card-body :title="template.name | str_limit(30)" class="card-body">
-        <b-card-text>
+        <b-card-text class="mb-2">
           {{ template.description | str_limit(150) }}
         </b-card-text>
         <b-badge v-for="category in categories" :key="category.id" pill class="category-badge mb-3 mr-1"> 
@@ -65,7 +65,7 @@ export default {
 <style lang="scss" scoped>
 .template-select-card {
   width: 290px;
-  height: 180px;
+  height: 172px;
   border-radius: 4px;
   padding: 10px 8px 10px 8px;
   overflow: hidden;
