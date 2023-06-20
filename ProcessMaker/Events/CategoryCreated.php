@@ -51,7 +51,9 @@ class CategoryCreated implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            $this->category
+            'id' => $this->category->getAttribute('id'),
+            'name' => $this->category->getAttribute('name'),
+            'status' => $this->category->getAttribute('status')
         ];
     }
 

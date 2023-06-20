@@ -37,9 +37,9 @@ class ScriptUpdated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return array_merge([
+        return [
             'script_id' => $this->script->id
-        ], $this->changes);
+        ];
     }
 
     /**
@@ -52,10 +52,11 @@ class ScriptUpdated implements SecurityLogEventInterface
         $changes = $this->changes;
         $original = $this->original;
         $basic = isset($changes['code']) ? [
-            'Name' => $this->script->getAttribute('title'),
-            'Script Last Modified' => $this->script->getAttribute('updated_at'),
+            'script_name' => $this->script->getAttribute('title'),
+            'last_modified' => $this->script->getAttribute('updated_at'),
         ] : [
-            'Name' => $this->script->getAttribute('title'),
+            'script_name' => $this->script->getAttribute('title'),
+            'last_modified' => $this->script->getAttribute('updated_at'),
         ];
         unset($changes['code']);
         unset($original['code']);

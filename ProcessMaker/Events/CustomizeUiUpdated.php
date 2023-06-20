@@ -8,7 +8,8 @@ use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class CustomizeUiUpdated implements SecurityLogEventInterface
 {
-    use Dispatchable, FormatSecurityLogChanges;
+    use Dispatchable;
+    use FormatSecurityLogChanges;
 
     private array $data;
     private array $changes;
@@ -28,14 +29,14 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
         $original = array_intersect_key($original, $changes);
         $this->original = $original;
         $this->changes = $changes;
-        $this->changes['update_at'] = $updatedAt;
+        $this->changes['last_modified'] = $updatedAt;
         $this->buildData();
     }
 
     /**
      * Building the data
      */
-    public function buildData() 
+    public function buildData()
     {
         if (isset($this->changes['variables'])) {
             $variables_changes = [];
@@ -48,27 +49,26 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
             }
             $variables_changes = array_diff($variables_changes, $variables_original);
             $variables_original = array_intersect_key($variables_original, $variables_changes);
-            
             $this->changes['variables'] = $variables_changes;
             $this->original['variables'] = $variables_original;
         }
         $this->data = $this->formatChanges($this->changes, $this->original);
     }
-    
+
     /**
-     * Return event data 
+     * Return event data
      */
     public function getData(): array
     {
         return $this->data;
     }
-    
+
     /**
-     * Return event changes 
+     * Return event changes
      */
     public function getChanges(): array
     {
-        return $this->changes;
+        return [];
     }
 
     /**
