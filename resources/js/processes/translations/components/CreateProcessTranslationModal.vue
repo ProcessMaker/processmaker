@@ -178,6 +178,10 @@ export default {
         return;
       }
 
+      if (!this.selectedLanguage) {
+        return;
+      }
+
       if (this.selectedLanguage.language in val.translations) {
         const translations = val.translations[this.selectedLanguage.language];
 
@@ -262,8 +266,9 @@ export default {
     validateLanguageSelected() {
       if (!this.selectedLanguage) {
         this.customModalButtons[1].disabled = true;
+      } else {
+        this.customModalButtons[1].disabled = false;
       }
-      this.customModalButtons[1].disabled = false;
     },
     show() {
       this.$bvModal.show("createProcessTranslation");
@@ -305,15 +310,18 @@ export default {
             this.$bvModal.hide("createProcessTranslation");
             this.$emit("translating-language");
             this.showSelectTargetLanguage();
+            this.selectedLanguage = null;
+          } else {
+            this.showTranslations();
           }
-
-          this.showTranslations();
+          this.getAvailableLanguages();
         })
         .catch(error => {
           const $errorMsg = this.$t("An error ocurred while calling OpenAI endpoint.");
           window.ProcessMaker.alert($errorMsg, "danger");
           this.endpointErrors = $errorMsg;
           this.aiLoading = false;
+          this.$bvModal.hide("createProcessTranslation");
         });
     },
 
@@ -327,7 +335,6 @@ export default {
         screenId: this.selectedScreen.id,
         option,
       };
-
       ProcessMaker.apiClient.post("/openai/language-translation", params)
         .then((response) => {
           this.screensTranslations = response.data.screensTranslations;
@@ -340,6 +347,7 @@ export default {
           window.ProcessMaker.alert($errorMsg, "danger");
           this.endpointErrors = $errorMsg;
           this.aiLoading = false;
+          this.$bvModal.hide("createProcessTranslation");
         });
     },
 

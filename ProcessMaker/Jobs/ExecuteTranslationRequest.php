@@ -80,7 +80,7 @@ class ExecuteTranslationRequest implements ShouldQueue
 
         $this->handler->generatePrompt(
             $this->type,
-            json_encode($this->chunk, JSON_UNESCAPED_SLASHES)
+            json_encode($this->chunk, JSON_HEX_APOS | JSON_HEX_AMP)
         );
 
         [$response, $usage, $targetLanguage] = $this->handler->execute();
