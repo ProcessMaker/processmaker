@@ -19,6 +19,23 @@ trait ExtendedPMQL
         PMQL::scopePMQL as parentScopePMQL;
     }
 
+    protected $dataStoreTable = '';
+    protected $dataStoreColumns = [];
+
+    /**
+     * Setup the PMQL to use the data store table
+     */
+    public function useDataStoreTable(Builder $query, string $table, array $map)
+    {
+        $this->dataStoreTable = $table;
+        $this->dataStoreColumns = [];
+        foreach ($map as $variable) {
+            $this->dataStoreColumns[$variable['name']] = $variable['column'];
+        }
+        // inner join to the data store table
+        $query->join($table, $this->getTable() . '.id', '=', $table . '.process_request_id');
+    }
+
     /**
      * PMQL scope that extends the standard PMQL scope by supporting any custom
      * aliases specified in the model.
@@ -83,6 +100,28 @@ trait ExtendedPMQL
         $field = $expression->field->field();
         $model = $builder->getModel();
 
+        // use data store table if field is prefixed with "data." and the field is in the map
+        if (strpos($field, 'data.') === 0 && isset($this->dataStoreColumns[substr($field, 5)])) {
+            $variableName = substr($field, 5);
+            $columnName = $this->dataStoreColumns[$variableName];
+            $realFieldName = $this->dataStoreTable . '.' . $columnName;
+            $value = $this->parseValue($expression);
+            if ($value instanceof IntervalExpression) {
+                $value = $value->toEloquent();
+            }
+            return function($query) use($expression, $value, $realFieldName) {
+                switch ($expression->operator) {
+                    case Expression::OPERATOR_IN:
+                        $query->whereIn($realFieldName, $value);
+                        break;
+                    case Expression::OPERATOR_NOT_IN:
+                        $query->whereNotIn($realFieldName, $value);
+                        break;
+                    default:
+                        $query->where($realFieldName, $expression->operator, $value);
+                }
+            };
+        }
         if (is_string($field)) {
             // Parse our value
             $value = $this->parseValue($expression);
