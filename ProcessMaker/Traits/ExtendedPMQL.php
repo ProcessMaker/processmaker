@@ -33,7 +33,9 @@ trait ExtendedPMQL
             $this->dataStoreColumns[$variable['name']] = $variable['column'];
         }
         // inner join to the data store table
-        $query->join($table, $this->getTable() . '.id', '=', $table . '.process_request_id');
+        if ($table) {
+            $query->join($table, $this->getTable() . '.id', '=', $table . '.process_request_id');
+        }
     }
 
     /**
