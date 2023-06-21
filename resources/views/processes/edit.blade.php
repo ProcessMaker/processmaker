@@ -28,6 +28,7 @@
                         @can('view-process-translations')
                             <a class="nav-item nav-link" id="nav-groups-tab" data-toggle="tab" href="#nav-translations"
                                 role="tab"
+                                data-test="translation-tab"
                                 aria-controls="nav-translations" aria-selected="true">{{__('Translations')}}</a>
                         @endcan
                         <a class="nav-item nav-link" id="nav-groups-tab" data-toggle="tab" href="#nav-notifications"
@@ -193,14 +194,19 @@
                                                 <div class="d-flex ml-md-0 flex-column flex-md-row">
                                                     @can('import-process-translations')
                                                         <div class="mb-3 mb-md-0 ml-md-2">
-                                                            <a href="#" aria-label="{{ __('Import Translation') }}" id="import_translation" class="btn btn-outline-secondary w-100" @click="importTranslation">
+                                                            <a href="#" aria-label="{{ __('Import Translation') }}" id="import_translation" class="btn btn-outline-secondary w-100" @click="importTranslation" data-test="translation-import">
                                                                 <i class="fas fa-file-import"></i> {{__('Import')}}
                                                             </a>
                                                         </div>
                                                     @endcan
                                                     @can('create-process-translations')
                                                         <div class="mb-3 mb-md-0 ml-md-2">
-                                                            <a href="#" aria-label="{{ __('New Translation') }}" id="new_translation" class="btn btn-primary w-100" @click="newTranslation">
+                                                            <a href="#" 
+                                                                aria-label="{{ __('New Translation') }}" 
+                                                                id="new_translation" 
+                                                                class="btn btn-primary w-100" 
+                                                                @click="newTranslation"
+                                                                data-test="translation-create-button">
                                                                 {{__('+ Translation')}}
                                                             </a>
                                                         </div>
