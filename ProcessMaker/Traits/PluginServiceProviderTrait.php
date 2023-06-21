@@ -26,12 +26,6 @@ trait PluginServiceProviderTrait
      */
     protected function completePluginBoot()
     {
-        if (defined('static::version') && !$this->isUpdated()) {
-            $this->updateVersion();
-            $key = str_replace('\\', '_', static::class);
-            Cache::forever($key, static::version);
-        }
-
         if (defined('static::name')) {
             $this->registerPackage(static::name);
         }
