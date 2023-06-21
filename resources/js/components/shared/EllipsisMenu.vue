@@ -27,6 +27,7 @@
         :key="action.value"
         :href="action.link ? itemLink(action, data) : null"
         class="ellipsis-dropdown-item mx-auto"
+        :data-test="action.dataTest"
         @click="!action.link ? onClick(action, data) : null"
       >
         <div class="ellipsis-dropdown-content">

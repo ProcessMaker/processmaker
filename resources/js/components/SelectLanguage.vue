@@ -12,6 +12,7 @@
     label="humanLanguage"
     class="assignable-input"
     @input="change"
+    data-test="translation-select-language"
   >
     <template slot="noResult">
       <slot name="noResult">
