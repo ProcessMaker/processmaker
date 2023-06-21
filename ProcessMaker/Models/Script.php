@@ -165,7 +165,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
                     Log::error($message);
 
                     $this->sendExecutionErrorNotification($message, $tokenId, $errorHandling);
-                  
+
                     if ($e instanceof ScriptTimeoutException) {
                         throw new ScriptTimeoutException($message);
                     }
@@ -194,9 +194,11 @@ class Script extends ProcessMakerModel implements ScriptInterface
     public function sendExecutionErrorNotification(string $message, string $tokenId, array $errorHandling)
     {
         $processRequestToken = ProcessRequestToken::find($tokenId);
-        $user = $processRequestToken->processRequest->processVersion->manager;
-        if ($user !== null) {
-            Notification::send($user, new ErrorExecutionNotification($processRequestToken, $message, $errorHandling));
+        if ($processRequestToken) {
+            $user = $processRequestToken->processRequest->processVersion->manager;
+            if ($user !== null) {
+                Notification::send($user, new ErrorExecutionNotification($processRequestToken, $message, $errorHandling));
+            }
         }
     }
 
