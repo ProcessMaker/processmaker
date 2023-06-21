@@ -61,13 +61,14 @@ class ErrorExecutionNotification extends Notification
     public function toMail($notifiable)
     {
         $data = $this->toArray($notifiable);
-        $title = __('Request # :id Execution Error', ['id' => $data['request_id']]);
+
+        $title = $data['message'];
 
         return (new MailMessage)
             ->error()
-            ->subject($title)
-            ->greeting($title)
-            ->salutation($title)
+            ->subject($data['name'])
+            ->greeting($data['name'])
+            ->salutation('')
             ->line($data['message'])
             ->action(__('View Request'), url($data['url']))
             ->line($this->message);
@@ -103,19 +104,18 @@ class ErrorExecutionNotification extends Notification
      */
     public function toArray($notifiable)
     {
+        $processRequest = $this->tokenInterface->processRequest;
+
         return [
             'type' => 'ERROR_EXCECUTION',
-            'message' => sprintf('Error excecution: %s', $this->tokenInterface->process->name),
-            'name' => $this->tokenInterface->process->name,
-            'processName' => $this->tokenInterface->process->name,
-            'request_id' => $this->tokenInterface->processRequest->id,
-            'user_id' => $this->tokenInterface->processRequest->user_id,
-            'dateTime' => $this->tokenInterface->processRequest->created_at->toIso8601String(),
-            'uid' => $this->tokenInterface->getKey(),
-            'url' => sprintf(
-                '/tasks/%s/edit',
-                $this->tokenInterface->id
-            ),
+            'message' => $this->tokenInterface->process->name . ' #' . $processRequest->id . ' - ' . $this->tokenInterface->element_name,
+            'name' => __('Execution Error') . ': ' . $processRequest->name,
+            'processName' => $processRequest->name,
+            'request_id' => $processRequest->id,
+            'user_id' => $notifiable->id,
+            'dateTime' => $processRequest->updated_at->toIso8601String(),
+            'uid' => $processRequest->id,
+            'url' => '/requests/' . $processRequest->id,
         ];
     }
 }

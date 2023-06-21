@@ -1698,5 +1698,5 @@
   "Seconds to wait before retrying. Leave empty to use script default. Set to 0 for no retry wait time.": "Seconds to wait before retrying. Leave empty to use script default. Set to 0 for no retry wait time.",
   "Number of times to retry. Leave empty to use script default. Set to 0 for no retry attempts.": "Number of times to retry. Leave empty to use script default. Set to 0 for no retry attempts.",
   "View Request": "View Request",
-  "Request # :id Execution Error": "Request # :id Execution Error"
+  "Execution Error": "Execution Error"
 }

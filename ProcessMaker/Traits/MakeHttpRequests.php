@@ -17,6 +17,7 @@ use ProcessMaker\Exception\HttpInvalidArgumentException;
 use ProcessMaker\Exception\HttpResponseException;
 use ProcessMaker\Helpers\StringHelper;
 use ProcessMaker\Models\FormalExpression;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Notifications\ErrorExecutionNotification;
 use Psr\Http\Message\ResponseInterface;
@@ -52,6 +53,8 @@ trait MakeHttpRequests
 
     private $emailNotification = false;
 
+    private $tokenId = null;
+
     private function getMustache()
     {
         if ($this->mustache === null) {
@@ -86,12 +89,16 @@ trait MakeHttpRequests
                 return $result;
             }
 
+            $message = $exception->getMessage();
+            $message = $this->retryMessage ? $this->retryMessage . "\n" . $message : $message;
+
+            $this->sendErrorNotification($data, $message);
+
             if ($exception instanceof ClientException) {
                 $response = $exception->getResponse();
-                throw new HttpResponseException($response, $this->retryMessage);
+                throw new HttpResponseException($response, $message);
             } else {
-                $message = $exception->getMessage();
-                throw new \Exception($this->retryMessage ? $this->retryMessage . "\n" . $message : $message);
+                throw new \Exception($message);
             }
         }
     }
@@ -108,19 +115,6 @@ trait MakeHttpRequests
         if ($this->attemptedRetries >= $this->retryAttempts) {
             $this->retryMessage = __('Failed after :num total attempts', ['num' => $this->attemptedRetries + 1]);
 
-            $requestId = Arr::get($data, "_request.id", false);
-            if ($requestId) {
-                $processRequestToken = ProcessRequestToken::find($requestId);
-                $user = $processRequestToken->processRequest->processVersion->manager;
-                if ($user !== null) {
-                    $errorHandling = [
-                        'inapp_notification' => $this->inappNotification,
-                        'email_notification' => $this->emailNotification
-                    ];
-                    Notification::send($user, new ErrorExecutionNotification($processRequestToken, $this->retryMessage, $errorHandling));
-                }
-            }
-
             return false;
         }
 
@@ -130,7 +124,23 @@ trait MakeHttpRequests
             sleep($this->retryWaitTime);
         }
         Log::info('Retry the runScript process. Attempt ' . ($this->attemptedRetries) . ' of ' . $this->retryAttempts);
+
         return $this->request($data, $config);
+    }
+
+    private function sendErrorNotification(array $data, string $message)
+    {
+        if ($this->tokenId) {
+            $processRequestToken = ProcessRequestToken::findOrFail($this->tokenId);
+            $user = $processRequestToken->processRequest->processVersion->manager;
+            if ($user !== null) {
+                $errorHandling = [
+                    'inapp_notification' => $this->inappNotification,
+                    'email_notification' => $this->emailNotification,
+                ];
+                Notification::send($user, new ErrorExecutionNotification($processRequestToken, $message, $errorHandling));
+            }
+        }
     }
 
     /**
@@ -191,10 +201,13 @@ trait MakeHttpRequests
 
         $this->inappNotification = Arr::get($endpoint, 'inapp_notification', false);
         $this->emailNotification = Arr::get($endpoint, 'email_notification', false);
-        if (Arr::get($config, "errorHandling.inapp_notification", false) === true) {
+
+        $this->tokenId = Arr::get($config, 'tokenId', null);
+
+        if (Arr::get($config, 'errorHandling.inapp_notification', false) === true) {
             $this->inappNotification = true;
         }
-        if (Arr::get($config, "errorHandling.email_notification", false) === true) {
+        if (Arr::get($config, 'errorHandling.email_notification', false) === true) {
             $this->emailNotification = true;
         }
     }
