@@ -102,6 +102,9 @@ class PersistenceHandler
             case 'instance_collaboration':
                 $this->persistInstanceCollaboration($transaction);
                 break;
+            case 'instance_updated':
+                $this->persistInstanceUpdated($transaction);
+                break;
             default:
                 throw new Exception('Unknown transaction type ' . $transaction['type']);
         }

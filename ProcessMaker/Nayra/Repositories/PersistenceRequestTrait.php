@@ -2,8 +2,12 @@
 
 namespace ProcessMaker\Nayra\Repositories;
 
+use ProcessMaker\Repositories\ExecutionInstanceRepository;
+
 trait PersistenceRequestTrait
 {
+    protected ExecutionInstanceRepository $instanceRepository;
+
     /**
      * Store data related to the event Process Instance Created
      *
@@ -41,5 +45,16 @@ trait PersistenceRequestTrait
 
         // Persists collaboration between two instances
         $this->instanceRepository->persistInstanceCollaboration($targetInstance, $targetParticipant, $sourceInstance, $sourceParticipant);
+    }
+
+    /**
+     * Store data related to the event Process Instance Updated
+     *
+     * @param array $transaction
+     */
+    public function persistInstanceUpdated(array $transaction)
+    {
+        $instance = $this->deserializer->unserializeInstance($transaction['instance']);
+        $this->instanceRepository->persistInstanceUpdated($instance);
     }
 }
