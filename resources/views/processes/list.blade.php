@@ -39,7 +39,7 @@
             status="{{ $config->status }}"
             v-on:edit="edit"
             v-on:reload="reload"
-            :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'process-templates') }}"
+            :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks') }}"
             :current-user-id="{{ \Auth::user()->id }}"
             is-documenter-installed="{{\ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled()}}"
         ></processes-listing>
