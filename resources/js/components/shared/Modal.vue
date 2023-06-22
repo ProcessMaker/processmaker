@@ -81,6 +81,7 @@
             :variant="button.variant" 
             :disabled="button.disabled"
             :hidden="button.hidden"
+            :data-test="button.dataTest"
             class="ml-2"
           >
             {{ button.content }}

@@ -36,7 +36,7 @@
         </div>
         <div class="mt-3">
           <div class="form-group">
-            <b-form-checkbox v-model="manualTranslation">
+            <b-form-checkbox v-model="manualTranslation" data-test="translation-manual-option">
               <div>{{ $t("Manual translation") }}</div>
               <small class="text-muted">{{ $t("Disables auto translate and manually translate screen content.") }}</small>
             </b-form-checkbox>
@@ -64,6 +64,7 @@
             :multiple="false"
             :aria-label="$t('Select a screen')"
             class="w-50"
+            data-test="translation-screen-option"
           />
           <small class="text-muted">{{ $t("Select a screen from the process to review and perform translations.") }}</small>
         </div>
@@ -85,7 +86,9 @@
             </div>
           </div>
 
-          <table v-if="stringsWithTranslations && Object.keys(stringsWithTranslations).length !== 0" class="table table-responsive-lg mb-0">
+          <table v-if="stringsWithTranslations && Object.keys(stringsWithTranslations).length !== 0" 
+            class="table table-responsive-lg mb-0"
+            data-test="translation-string-list">
             <thead>
               <tr>
                   <th class="col-6">{{ $t('String') }}</th>
@@ -157,8 +160,8 @@ export default {
       ],
       customModalButtons: [
         {'content': 'Cancel', 'action': 'hide()', 'variant': 'outline-secondary', 'disabled': false, 'hidden': false},
-        {'content': 'Translate Process', 'action': 'translate', 'variant': 'secondary', 'disabled': true, 'hidden': false},
-        {'content': 'Save Translation', 'action': 'saveTranslations', 'variant': 'secondary', 'disabled': false, 'hidden': true},
+        {'content': 'Translate Process', 'action': 'translate', 'variant': 'secondary', 'disabled': true, 'hidden': false, 'dataTest': 'translation-translate-process'},
+        {'content': 'Save Translation', 'action': 'saveTranslations', 'variant': 'secondary', 'disabled': false, 'hidden': true, 'dataTest': 'translation-save-translation-button'},
       ],
     };
   },
@@ -175,6 +178,10 @@ export default {
       this.availableStrings = val.availableStrings;
 
       if (!val.translations) {
+        return;
+      }
+
+      if (!this.selectedLanguage) {
         return;
       }
 
@@ -262,8 +269,9 @@ export default {
     validateLanguageSelected() {
       if (!this.selectedLanguage) {
         this.customModalButtons[1].disabled = true;
+      } else {
+        this.customModalButtons[1].disabled = false;
       }
-      this.customModalButtons[1].disabled = false;
     },
     show() {
       this.$bvModal.show("createProcessTranslation");
@@ -305,15 +313,18 @@ export default {
             this.$bvModal.hide("createProcessTranslation");
             this.$emit("translating-language");
             this.showSelectTargetLanguage();
+            this.selectedLanguage = null;
+          } else {
+            this.showTranslations();
           }
-
-          this.showTranslations();
+          this.getAvailableLanguages();
         })
         .catch(error => {
           const $errorMsg = this.$t("An error ocurred while calling OpenAI endpoint.");
           window.ProcessMaker.alert($errorMsg, "danger");
           this.endpointErrors = $errorMsg;
           this.aiLoading = false;
+          this.$bvModal.hide("createProcessTranslation");
         });
     },
 
@@ -327,7 +338,6 @@ export default {
         screenId: this.selectedScreen.id,
         option,
       };
-
       ProcessMaker.apiClient.post("/openai/language-translation", params)
         .then((response) => {
           this.screensTranslations = response.data.screensTranslations;
@@ -340,6 +350,7 @@ export default {
           window.ProcessMaker.alert($errorMsg, "danger");
           this.endpointErrors = $errorMsg;
           this.aiLoading = false;
+          this.$bvModal.hide("createProcessTranslation");
         });
     },
 
