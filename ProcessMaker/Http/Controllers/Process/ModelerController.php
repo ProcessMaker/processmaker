@@ -83,7 +83,8 @@ class ModelerController extends Controller
      */
     public function inflightProcessAi(ModelerManager $manager, $promptVersionId, Request $request)
     {
-        $url = 'pm/getPromptVersion';
+        $aiMicroserviceHost = config('app.ai_microservice_host');
+        $url = $aiMicroserviceHost . '/pm/getPromptVersion';
         $headers = [
             'Authorization' => 'token',
         ];
@@ -92,53 +93,11 @@ class ModelerController extends Controller
             'promptVersionId' => $promptVersionId,
         ];
 
-        // $promptVersion = Http::withHeaders($headers)->post($url, $params);
+        $promptVersion = Http::withHeaders($headers)->post($url, $params);
+        $bpmn = $promptVersion->json()['version']['bpmn'];
 
         event(new ModelerStarting($manager));
-        // $bpmn = $promptVersion->json()->bpmn;
 
-        $bpmn = '<?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd" xmlns:tns="http://sourceforge.net/bpmn/definitions/_1530553328908" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bpmn.io/schema/bpmn" exporter="ProcessMaker Modeler" exporterVersion="1.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
-  <bpmn:process id="ProcessId" name="ProcessName" isExecutable="true">
-    <bpmn:startEvent id="node_1" name="Start Event" pm:allowInterstitial="false">
-      <bpmn:outgoing>node_18</bpmn:outgoing>
-    </bpmn:startEvent>
-    <bpmn:task id="node_2" name="Fill email" pm:allowInterstitial="false" pm:assignment="requester" pm:assignmentLock="false" pm:allowReassignment="false">
-      <bpmn:incoming>node_18</bpmn:incoming>
-      <bpmn:outgoing>node_26</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:endEvent id="node_10" name="End Event">
-      <bpmn:incoming>node_26</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:sequenceFlow id="node_18" sourceRef="node_1" targetRef="node_2" />
-    <bpmn:sequenceFlow id="node_26" sourceRef="node_2" targetRef="node_10" />
-  </bpmn:process>
-  <bpmndi:BPMNDiagram id="BPMNDiagramId">
-    <bpmndi:BPMNPlane id="BPMNPlaneId" bpmnElement="ProcessId">
-      <bpmndi:BPMNShape id="node_1_di" bpmnElement="node_1">
-        <dc:Bounds x="255" y="280" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="node_2_di" bpmnElement="node_2">
-        <dc:Bounds x="350" y="260" width="116" height="76" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="node_10_di" bpmnElement="node_10">
-        <dc:Bounds x="506" y="280" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="node_18_di" bpmnElement="node_18">
-        <di:waypoint x="273" y="298" />
-        <di:waypoint x="408" y="298" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="node_26_di" bpmnElement="node_26">
-        <di:waypoint x="408" y="298" />
-        <di:waypoint x="524" y="298" />
-      </bpmndi:BPMNEdge>
-    </bpmndi:BPMNPlane>
-  </bpmndi:BPMNDiagram>
-</bpmn:definitions>';
-
-        $bpmn1 = Process::find(43)->bpmn;
-
-        // dd($bpmn, $bpmn1);
         return view('processes.modeler.inflight-generative-ai', [
             'manager' => $manager,
             'bpmn' => $bpmn,
