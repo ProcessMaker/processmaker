@@ -20,7 +20,7 @@ class CategoryDeleted implements SecurityLogEventInterface
      */
     public function __construct(ProcessCategory $data)
     {
-        $this->processCategory =  $data;
+        $this->processCategory = $data;
     }
 
     /**
@@ -32,7 +32,7 @@ class CategoryDeleted implements SecurityLogEventInterface
     {
         return [
             'category_name' => $this->processCategory->getAttribute('name'),
-            'deleted_at' => Carbon::now()
+            'deleted_at' => Carbon::now(),
         ];
     }
 
@@ -41,13 +41,12 @@ class CategoryDeleted implements SecurityLogEventInterface
      *
      * @return array
      */
-
     public function getChanges(): array
     {
         return [
             'id' => $this->processCategory->getAttribute('id'),
             'name' => $this->processCategory->getAttribute('name'),
-            'status' => $this->processCategory->getAttribute('status')
+            'status' => $this->processCategory->getAttribute('status'),
         ];
     }
 

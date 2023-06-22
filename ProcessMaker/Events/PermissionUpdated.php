@@ -12,10 +12,13 @@ class PermissionUpdated implements SecurityLogEventInterface
     use Dispatchable, FormatSecurityLogChanges;
 
     private array $changedPermissions;
+
     private array $originalPermissions;
+
     private bool $permissionType;
+
     private string $userId;
-    
+
     /**
      * Create a new event instance.
      *
@@ -44,7 +47,7 @@ class PermissionUpdated implements SecurityLogEventInterface
                     'label' => $userData->getAttribute('username'),
                     'link' => route('users.edit', $this->userId) . '#nav-profile',
                 ],
-                '+ permission_names' => 'Super Admin - All Permissions'
+                '+ permission_names' => 'Super Admin - All Permissions',
             ];
         } else {
             return array_merge([

@@ -140,14 +140,15 @@ class SecurityLogController extends Controller
     private function download(Request $request, User $user = null)
     {
         $request->validate([
-            'format' => 'required|string|in:xml,csv'
+            'format' => 'required|string|in:xml,csv',
         ]);
         sleep(1);
         $sessionUser = Auth::user();
         DownloadSecurityLog::dispatch($sessionUser, $request->input('format'), $user ? $user->id : null)
             ->delay(now()->addSeconds(5));
+
         return response()->json([
-            'message' => __('The log file is being prepared and will be sent to your email as soon as it is ready.')
+            'message' => __('The log file is being prepared and will be sent to your email as soon as it is ready.'),
         ], 200);
     }
 

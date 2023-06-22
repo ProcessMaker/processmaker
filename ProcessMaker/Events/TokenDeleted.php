@@ -11,6 +11,7 @@ class TokenDeleted implements SecurityLogEventInterface
     use Dispatchable;
 
     private array $data;
+
     private array $changes;
 
     /**
@@ -21,22 +22,21 @@ class TokenDeleted implements SecurityLogEventInterface
     public function __construct(Token $token)
     {
         $this->data = [
-            "token_id" => $token->getKey()
-        ];        
+            'token_id' => $token->getKey(),
+        ];
         $this->changes = $token->toArray();
-
     }
-    
+
     /**
-     * Return event data 
+     * Return event data
      */
     public function getData(): array
     {
         return $this->data;
     }
-    
+
     /**
-     * Return event changes 
+     * Return event changes
      */
     public function getChanges(): array
     {

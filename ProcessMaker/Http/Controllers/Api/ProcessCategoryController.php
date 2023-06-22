@@ -149,7 +149,7 @@ class ProcessCategoryController extends Controller
         $request->validate(ProcessCategory::rules());
         $category = new ProcessCategory();
         $category->fill($request->json()->all());
-        
+
         $category->saveOrFail();
 
         // Call Event to store Category Created in Log
@@ -201,6 +201,7 @@ class ProcessCategoryController extends Controller
 
         //call Event to store Category Changes in Log
         CategoryUpdated::dispatch($processCategory, $changes, $original);
+
         return new Resource($processCategory);
     }
 
@@ -234,7 +235,6 @@ class ProcessCategoryController extends Controller
      */
     public function destroy(ProcessCategory $processCategory)
     {
-
         if ($processCategory->processes->count() !== 0) {
             return response(
                 [
