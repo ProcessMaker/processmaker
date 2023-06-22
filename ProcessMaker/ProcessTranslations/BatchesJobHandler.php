@@ -60,6 +60,8 @@ class BatchesJobHandler
             ->then(function (Batch $batch) {
                 \Log::info('All jobs in batch completed');
                 $this->notifyProgress($batch);
+                // Broadcast response
+                $this->broadcastResponse();
             })->catch(function (Batch $batch, Throwable $e) {
                 // First batch job failure detected...
                 \Log::info('Batch error');
@@ -97,8 +99,6 @@ class BatchesJobHandler
     {
         event(new ProcessTranslationChunkProgressEvent($this->process->id, $this->targetLanguage['language'], $batch));
         $delete = ProcessTranslationToken::where('token', $batch->id)->delete();
-        // Broadcast response
-        $this->broadcastResponse();
     }
 
     public function prepareData($screens, $handler)
@@ -106,7 +106,7 @@ class BatchesJobHandler
         // Chunk max size should be near 1800.
         // In handler max_token for response is 1200.
         // Total sum is 3000. Under 4096 allowed for text-davinci-003
-        $maxChunkSize = 1500;
+        $maxChunkSize = 1300;
         $handler->generatePrompt('html', '');
         $config = $handler->getConfig();
 

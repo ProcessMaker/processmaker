@@ -47,9 +47,7 @@ class GroupCreated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return [
-            $this->group->getAttributes()
-        ];
+        return $this->group->getAttributes();
     }
 
     /**
