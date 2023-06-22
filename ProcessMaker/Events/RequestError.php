@@ -13,14 +13,14 @@ class RequestError implements SecurityLogEventInterface
     use Dispatchable;
     
     private ProcessRequest $data;
-    private array $error;
+    private string $error;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(ProcessRequest $data, array $error)
+    public function __construct(ProcessRequest $data, string $error)
     {
         $this->data = $data;
         $this->error = $error;
@@ -36,7 +36,7 @@ class RequestError implements SecurityLogEventInterface
                 'label' => $this->data->getAttribute('id'),
                 'link' => route('requests.show', $this->data)
             ],
-            'error' => $this->error['message'] ?? '',
+            'error' => $this->error,
             'occurred_at' => Carbon::now()
         ];
     }

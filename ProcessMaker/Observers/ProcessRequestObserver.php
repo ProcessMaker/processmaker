@@ -48,7 +48,7 @@ class ProcessRequestObserver
     {
         if ($request->status === 'ERROR') {
             foreach ($request->getAttribute('errors') as $error) {
-                event(new RequestError($request, $error));
+                event(new RequestError($request, $error['message']));
             }
         }
         if ($request->status === 'COMPLETED') {
