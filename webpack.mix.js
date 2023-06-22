@@ -107,6 +107,8 @@ mix.js("resources/js/app-layout.js", "public/js")
   .js("resources/js/requests/show.js", "public/js/requests")
   .js("resources/js/requests/preview.js", "public/js/requests")
 
+  .js("resources/js/processes/translations/import.js", "public/js/processes/translations")
+
   .js("resources/js/tasks/index.js", "public/js/tasks/index.js")
   .js("resources/js/tasks/show.js", "public/js/tasks/show.js")
 

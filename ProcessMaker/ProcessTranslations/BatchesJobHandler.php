@@ -5,6 +5,8 @@ namespace ProcessMaker\ProcessTranslations;
 use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
 use ProcessMaker\Ai\Handlers\LanguageTranslationHandler;
+use ProcessMaker\Ai\TokensCalculation\TokensCalculation;
+use ProcessMaker\Events\ProcessTranslationChunkProgressEvent;
 use ProcessMaker\Jobs\ExecuteTranslationRequest;
 use ProcessMaker\Models\ProcessTranslationToken;
 use ProcessMaker\Models\User;
@@ -48,7 +50,8 @@ class BatchesJobHandler
     public function handle()
     {
         $languageTranslationHandler = new LanguageTranslationHandler();
-        $languageTranslationHandler->setTargetLanguage($this->targetLanguage['humanLanguage']);
+        $languageTranslationHandler->setTargetLanguage($this->targetLanguage);
+        $languageTranslationHandler->setProcessId($this->process->id);
         [$screensWithChunks, $chunksCount] = $this->prepareData($this->screens, $languageTranslationHandler);
 
         // Execute requests for each regular chunk
@@ -56,22 +59,19 @@ class BatchesJobHandler
         $batch = Bus::batch([])
             ->then(function (Batch $batch) {
                 \Log::info('All jobs in batch completed');
-                $delete = ProcessTranslationToken::where('token', $batch->id)->delete();
-
+                $this->notifyProgress($batch);
                 // Broadcast response
                 $this->broadcastResponse();
             })->catch(function (Batch $batch, Throwable $e) {
                 // First batch job failure detected...
                 \Log::info('Batch error');
                 \Log::error($e->getMessage());
-                $delete = ProcessTranslationToken::where('token', $batch->id)->delete();
-                $this->broadcastResponse();
+
+                $this->notifyProgress($batch);
             })->finally(function (Batch $batch) {
                 // The batch has finished executing...
                 \Log::info('Batch finally');
-                // Remove job token from database
-                $delete = ProcessTranslationToken::where('token', $batch->id)->delete();
-                $this->broadcastResponse();
+                $this->notifyProgress($batch);
             })
             ->allowFailures()
             ->dispatch();
@@ -87,11 +87,18 @@ class BatchesJobHandler
                         $languageTranslationHandler,
                         'html',
                         $chunk,
-                        $this->targetLanguage
+                        $this->targetLanguage,
+                        $this->process->id,
                     )
                 );
             }
         }
+    }
+
+    private function notifyProgress($batch)
+    {
+        event(new ProcessTranslationChunkProgressEvent($this->process->id, $this->targetLanguage['language'], $batch));
+        $delete = ProcessTranslationToken::where('token', $batch->id)->delete();
     }
 
     public function prepareData($screens, $handler)
@@ -99,7 +106,7 @@ class BatchesJobHandler
         // Chunk max size should be near 1800.
         // In handler max_token for response is 1200.
         // Total sum is 3000. Under 4096 allowed for text-davinci-003
-        $maxChunkSize = 1500;
+        $maxChunkSize = 1300;
         $handler->generatePrompt('html', '');
         $config = $handler->getConfig();
 
@@ -182,32 +189,16 @@ class BatchesJobHandler
 
     public function calcTokens($model, $string)
     {
-        /**
-         *    # The following code is in case we need in the future to use gpt-4 or gpt-3.5.-turbo
-         *    # The script to calculate for those models it's available for python: ProcessMaker/Ai/Scripts/token_counter.py
-         *
-         *    $cmd = "python3";
-         *    $args = [
-         *        "ProcessMaker/Ai/Scripts/token_counter.py",
-         *        $model,
-         *        $string
-         *    ];
-         *
-         *    $escaped_args = implode(" ", array_map("escapeshellarg", $args));
-         *    $command = "$cmd $escaped_args 2>&1";
-         *    $tokensUsage = trim(shell_exec($command));
-         *
-         *    return $tokensUsage;
-         */
+        $tokens = TokensCalculation::gpt_encode($string);
 
-        return $tokensUsage = count(gpt_encode($string));
+        return $tokensUsage = count($tokens);
     }
 
     private function broadcastResponse()
     {
         \Log::info('Notify process translation to ' . $this->targetLanguage['humanLanguage'] . ' completed for process: ' . $this->process->name);
         if ($this->user) {
-            User::find($this->user)->notify(new ProcessTranslationReady(
+            User::find($this->user)->notifyNow(new ProcessTranslationReady(
                 $this->code,
                 $this->process,
                 $this->targetLanguage,

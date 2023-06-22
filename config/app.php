@@ -98,6 +98,9 @@ return [
     // Allows to detect if OpenAI is enabled or not
     'open_ai_nlq_to_pmql' => env('OPEN_AI_NLQ_TO_PMQL_ENABLED', false) && env('OPEN_AI_SECRET', false),
 
+    // Message broker driver to use in Workflow Manager
+    'message_broker_driver' => env('MESSAGE_BROKER_DRIVER', 'default'),
+
     // Global app settings
     'settings' => [
 

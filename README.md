@@ -339,6 +339,22 @@ And for a show method
     ...
 ```
 
+#### NAYRA
+
+Please add/change the next configuration in .env file to define the message broker driver that is used for Nayra
+
+# Message broker driver, possible values: rabbitmq, kafka, this is optional, if not exists or is empty, the Nayra will be work as normally with local execution
+MESSAGE_BROKER_DRIVER=rabbitmq
+
+# Rabbit MQ connection, only when you use RabbitMQ
+RABBITMQ_HOST=127.0.0.1
+RABBITMQ_PORT=30672
+RABBITMQ_LOGIN=guest
+RABBITMQ_PASSWORD=guest
+
+# Kafka connection, only when you use Kafka
+KAFKA_BROKERS=127.0.0.1:30092
+
 **Notes**
 
 `operationId` will be the method name of the generated code. It can be anything camel cased but should be named some intuitive.

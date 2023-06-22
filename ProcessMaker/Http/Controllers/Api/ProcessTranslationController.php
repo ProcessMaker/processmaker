@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
+use function PHPUnit\Framework\isEmpty;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessTranslationToken;
@@ -40,8 +41,19 @@ class ProcessTranslationController extends Controller
             }
         }
 
+        $languageList = collect($languageList)->sortBy('humanLanguage');
+
         return response()->json([
-            'translatedLanguages' => $languageList,
+            'translatedLanguages' => array_values($languageList->toArray()),
+            'permissions' => [
+                'create'   => $request->user()->can('create-process-translations'),
+                'view' => $request->user()->can('view-process-translations'),
+                'edit'   => $request->user()->can('edit-process-translations'),
+                'delete' => $request->user()->can('delete-process-translations'),
+                'cancel' => $request->user()->can('cancel-process-translations'),
+                'import' => $request->user()->can('import-process-translations'),
+                'export' => $request->user()->can('export-process-translations'),
+            ],
         ]);
     }
 
@@ -56,12 +68,14 @@ class ProcessTranslationController extends Controller
         foreach ($processTranslationTokens as $processTranslationToken) {
             $batch = Bus::findBatch($processTranslationToken->token);
             $processTranslationToken->humanLanguage = Languages::ALL[$processTranslationToken['language']];
-            $processTranslationToken->batchInfo = $batch ? $batch : null;
+            $processTranslationToken->batch = $batch ? $batch : null;
             $translatingLanguages[] = $processTranslationToken;
         }
 
+        $processTranslationTokens = collect($processTranslationTokens)->sortBy('humanLanguage');
+
         return response()->json([
-            'translatingLanguages' => $processTranslationTokens,
+            'translatingLanguages' => array_values($processTranslationTokens->toArray()),
         ]);
     }
 
@@ -73,10 +87,16 @@ class ProcessTranslationController extends Controller
 
         $processTranslation = new ProcessTranslation($process);
         $screensTranslations = $processTranslation->getProcessScreensWithTranslations();
-        $languageList = $processTranslation->getLanguageList($screensTranslations);
+        $translatedLanguageList = $processTranslation->getLanguageList($screensTranslations);
+        $translatingLanguageList = ProcessTranslationToken::where('process_id', $processId)->get();
+
+        $availableLanguages = [];
 
         foreach (Languages::ALL as $key => $value) {
-            if (!$this->languageInTranslatedList($key, $languageList)) {
+            if (
+                !$this->languageInTranslatedList($key, $translatedLanguageList)
+                && !$this->languageInTranslatingList($key, $translatingLanguageList)
+            ) {
                 $availableLanguages[] = [
                     'humanLanguage' => $value,
                     'language' => $key,
@@ -89,9 +109,20 @@ class ProcessTranslationController extends Controller
         ]);
     }
 
-    private function languageInTranslatedList($key, $languageList)
+    private function languageInTranslatedList($key, $translatedLanguageList)
     {
-        foreach ($languageList as $value) {
+        foreach ($translatedLanguageList as $value) {
+            if ($value['language'] === $key) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function languageInTranslatingList($key, $pendingLanguageList)
+    {
+        foreach ($pendingLanguageList as $value) {
             if ($value['language'] === $key) {
                 return true;
             }
@@ -109,6 +140,15 @@ class ProcessTranslationController extends Controller
         return response()->json([
             'translations' => $screensTranslations,
         ]);
+    }
+
+    public function cancel(Request $request, $processId, $language)
+    {
+        $process = Process::findOrFail($processId);
+        $processTranslation = new ProcessTranslation($process);
+        $processTranslation->cancelTranslation($language);
+
+        return response()->json();
     }
 
     public function delete(Request $request, $processId, $language)
@@ -132,20 +172,62 @@ class ProcessTranslationController extends Controller
         $processTranslation->updateTranslations($screensTranslations, $language);
     }
 
-    public function export(Request $request, $processId, $language)
+    public function export(Request $request, $processId, $languageCode)
     {
         $process = Process::findOrFail($processId);
         $processTranslation = new ProcessTranslation($process);
-        $exportList = $processTranslation->exportTranslations($language);
+        $exportList = $processTranslation->exportTranslations($languageCode);
 
-        $fileName = trim($process->name) . '.json';
+        $fileName = trim($process->name);
 
-        $fileContents = file_put_contents($fileName, json_encode($exportList));
-
-        return response()->streamDownload(function () use ($fileContents) {
-            echo $fileContents;
-        }, $fileName, [
-            'Content-type' => 'application/json',
+        $exportInfo = json_encode([
+            'processName' => $process->name,
+            'language' => $languageCode,
+            'humanLanguage' => Languages::ALL[$languageCode],
         ]);
+
+        return response()->streamDownload(
+            function () use ($exportList) {
+                echo json_encode($exportList);
+            },
+            $fileName . '.json',
+            [
+                'Content-type' => 'application/json',
+                'export-info' => $exportInfo,
+            ]
+        );
+    }
+
+    public function preimportValidation(Request $request, $processId)
+    {
+        $content = $request->file('file')->get();
+        $payload = json_decode($content, true);
+
+        $process = Process::findOrFail($processId);
+        $processTranslation = new ProcessTranslation($process);
+        $importData = $processTranslation->getImportData($payload);
+
+        if (!$importData || !count($importData)) {
+            return response(
+                ['message' => __('Please verify that the file contains translations for this process.')],
+                422
+            );
+        }
+
+        return [
+            'importData' => $importData,
+        ];
+    }
+
+    public function import(Request $request, $processId)
+    {
+        $content = $request->file('file')->get();
+        $payload = json_decode($content, true);
+
+        $process = Process::findOrFail($processId);
+        $processTranslation = new ProcessTranslation($process);
+        $processTranslation->importTranslations($payload);
+
+        return response()->json(['processId' => $processId], 200);
     }
 }
