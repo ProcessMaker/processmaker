@@ -18,6 +18,8 @@ class DownloadSecurityLogTest extends TestCase
 
     protected function withUserSetup(): void
     {
+        SecurityLog::query()->delete();
+
         $this->simpleCollection = [
             ['id' => 1, 'event' => 'login'],
             ['id' => 2, 'event' => 'logout'],
