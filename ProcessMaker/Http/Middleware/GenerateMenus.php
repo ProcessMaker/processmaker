@@ -136,35 +136,35 @@ class GenerateMenus
                     'route' => 'processes.index',
                     'icon' => 'fa-play-circle',
                     'id' => 'processes',
-                ]);
+                ])->data('order', 0);
             }
             if (\Auth::check() && \Auth::user()->can('view-scripts')) {
                 $submenu->add(__('Scripts'), [
                     'route' => 'scripts.index',
                     'icon' => 'fa-code',
                     'id' => 'process-scripts',
-                ]);
+                ])->data('order', 2);
             }
             if (\Auth::check() && \Auth::user()->can('view-screens')) {
                 $submenu->add(__('Screens'), [
                     'route' => 'screens.index',
                     'icon' => 'fa-file-alt',
                     'id' => 'process-screens',
-                ]);
+                ])->data('order', 3);
             }
             if (\Auth::check() && \Auth::user()->can('view-environment_variables')) {
                 $submenu->add(__('Environment Variables'), [
                     'route' => 'environment-variables.index',
                     'icon' => 'fa-lock',
                     'id' => 'process-environment',
-                ]);
+                ])->data('order', 4);
             }
             if (\Auth::check() && \Auth::user()->can('edit-processes')) {
                 $submenu->add(__('Signals'), [
                     'route' => 'signals.index',
                     'customicon' => 'nav-icon fas bpmn-icon-end-event-signal',
                     'id' => 'signal',
-                ]);
+                ])->data('order', 5);
             }
         });
 

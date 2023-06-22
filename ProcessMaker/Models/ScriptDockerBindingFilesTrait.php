@@ -77,7 +77,9 @@ trait ScriptDockerBindingFilesTrait
                 Log::error('Script timed out');
                 throw new ScriptTimeoutException(
                     __('Script took too long to complete. Consider increasing the timeout.')
-                  . ' '
+                  . "\n"
+                  . __('Timeout: :timeout seconds', ['timeout' => $timeout])
+                  . "\n"
                   . implode("\n", $output)
                 );
             }
