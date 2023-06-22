@@ -231,7 +231,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     // Security logs
     Route::get('security-logs', [SecurityLogController::class, 'index'])->name('security-logs.index')->middleware('can:view-security-logs');
-    Route::post('security-logs', [SecurityLogController::class, 'store'])->name('security-logs.index')->middleware('can:create-security-logs');
+    Route::post('security-logs', [SecurityLogController::class, 'store'])->name('security-logs.store')->middleware('can:create-security-logs');
     Route::get('security-logs/download/all', [SecurityLogController::class, 'downloadForAllUsers'])->name('security-logs.downloadForAllUsers')->middleware('can:view-security-logs');
     Route::get('security-logs/download/{user}', [SecurityLogController::class, 'downloadForUser'])->name('security-logs.downloadForUser')->middleware('can:view-security-logs');
     Route::get('security-logs/{securityLog}', [SecurityLogController::class, 'show'])->name('security-logs.show')->middleware('can:view-security-logs');
