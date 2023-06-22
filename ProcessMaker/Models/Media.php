@@ -191,4 +191,15 @@ class Media extends MediaLibraryModel
         // Get all files for process and all subprocesses ..
         return self::whereIn('model_id', $requestTokenIds)->get();
     }
+
+    /**
+     * Check if the S3 is ready to use
+     */
+    public static function s3IsReady()
+    {
+        return config('filesystems.disks.s3.key')
+            && config('filesystems.disks.s3.secret')
+            && config('filesystems.disks.s3.region')
+            && config('filesystems.disks.s3.bucket');
+    }
 }
