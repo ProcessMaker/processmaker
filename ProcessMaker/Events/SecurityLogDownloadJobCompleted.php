@@ -11,7 +11,9 @@ use ProcessMaker\Models\User;
 
 class SecurityLogDownloadJobCompleted implements ShouldBroadcastNow
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
     public $user;
     private bool $success;
