@@ -70,31 +70,33 @@
             name="run_as_user_id"
           ></select-user>
         </b-form-group>
-        <b-form-group
+        <slider-with-input
           :label="$t('Timeout')"
-          label-for="script-timeout-text"
-          :description="formDescription('Enter how many seconds the Script runs before timing out (0 is unlimited).', 'timeout', addError)"
-          :invalid-feedback="errorMessage('timeout', addError)"
-          :state="errorState('timeout', addError)"
-        >
-          <div class="d-flex align-items-center w-100">
-            <b-form-input
-              v-model="timeout"
-              class="w-25"
-              type="number"
-              id="script-timeout-text"
-              name="timeout"
-            ></b-form-input>
-            <b-form-input
-              v-model="timeout"
-              type="range"
-              min="0"
-              max="300"
-              :state="errorState('timeout', addError)"
-              class="ml-3 w-100"
-            ></b-form-input>
-          </div>
-        </b-form-group>
+          :description="$t('How many seconds the script should be allowed to run (0 is unlimited).')"
+          :value="timeout"
+          @input="timeout = $event"
+          :error="errorState('timeout', addError) ? null : errorMessage('timeout', addError)"
+          :min="0"
+          :max="300"
+        ></slider-with-input>
+        <slider-with-input
+          :label="$t('Retry Attempts')"
+          :description="$t('Number of times to retry. Leave empty to use script default. Set to 0 for no retry attempts.')"
+          :value="retry_attempts"
+          @input="retry_attempts = $event"
+          :error="errorState('retry_attempts', addError) ? null : errorMessage('retry_attempts', addError)"
+          :min="0"
+          :max="10"
+        ></slider-with-input>
+        <slider-with-input
+          :label="$t('Retry Wait Time')"
+          :description="$t('Seconds to wait before retrying. Leave empty to use script default. Set to 0 for no retry wait time.')"
+          :value="retry_wait_time"
+          @input="retry_wait_time = $event"
+          :error="errorState('retry_wait_time', addError) ? null : errorMessage('retry_wait_time', addError)"
+          :min="0"
+          :max="3600"
+        ></slider-with-input>
         <component
           v-for="(cmp,index) in createScriptHooks"
           :key="`create-script-hook-${index}`"
@@ -115,9 +117,10 @@
 
 <script>
   import { FormErrorsMixin, Modal, Required } from "SharedComponents";
+  import SliderWithInput from "../../../components/shared/SliderWithInput";
 
   export default {
-    components: { Modal, Required },
+    components: { Modal, Required, SliderWithInput },
     mixins: [ FormErrorsMixin ],
     props: ["countCategories", "scriptExecutors"],
     data: function() {
@@ -132,6 +135,8 @@
         selectedUser: '',
         users: [],
         timeout: 60,
+        retry_attempts: 0,
+        retry_wait_time: 5,
         disabled: false,
         createScriptHooks: [],
         script: null,
@@ -146,6 +151,8 @@
         this.script_category_id = '';
         this.code = '';
         this.timeout = 60;
+        this.retry_attempts = 0;
+        this.retry_wait_time = 5;
         this.addError = {};
       },
       onSubmit() {
@@ -167,7 +174,9 @@
           script_category_id: this.script_category_id,
           run_as_user_id: this.selectedUser ? this.selectedUser.id : null,
           code: "[]",
-          timeout: this.timeout
+          timeout: this.timeout,
+          retry_attempts: this.retry_attempts,
+          retry_wait_time: this.retry_wait_time
         })
           .then(response => {
             ProcessMaker.alert(this.$t('The script was created.'), 'success');

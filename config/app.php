@@ -101,6 +101,9 @@ return [
     // Microservice AI Host
     'ai_microservice_host' => env('AI_MICROSERVICE_HOST'),
 
+    // Message broker driver to use in Workflow Manager
+    'message_broker_driver' => env('MESSAGE_BROKER_DRIVER', 'default'),
+
     // Global app settings
     'settings' => [
 
