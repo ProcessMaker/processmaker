@@ -10,7 +10,6 @@ use Illuminate\Validation\Rule;
 use Laravel\Scout\Searchable;
 use Log;
 use ProcessMaker\Events\ProcessUpdated;
-use ProcessMaker\Events\RequestError;
 use ProcessMaker\Exception\PmqlMethodException;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
@@ -553,7 +552,6 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         \Log::error($exception);
         if (!$this->isNonPersistent()) {
             $this->save();
-            event(new RequestError($this, $error));
         }
     }
 
