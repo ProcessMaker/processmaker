@@ -13,6 +13,7 @@ class EnvironmentVariablesCreated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private EnvironmentVariable $enVariable;
+
     private $variable = [];
 
     /**

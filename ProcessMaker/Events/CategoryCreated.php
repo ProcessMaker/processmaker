@@ -13,6 +13,7 @@ class CategoryCreated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private ProcessCategory $category;
+
     private array $variable = [];
 
     /**
@@ -51,7 +52,7 @@ class CategoryCreated implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            $this->category
+            $this->category,
         ];
     }
 

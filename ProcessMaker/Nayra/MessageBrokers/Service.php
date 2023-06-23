@@ -27,5 +27,5 @@ class Service
         }
 
         return $service;
-	}
+    }
 }

@@ -11,8 +11,11 @@ class AuthClientUpdated implements SecurityLogEventInterface
     use Dispatchable, FormatSecurityLogChanges;
 
     private array $original;
+
     private array $data;
+
     private array $changes;
+
     private string $clientId;
 
     /**
@@ -31,22 +34,23 @@ class AuthClientUpdated implements SecurityLogEventInterface
     /**
      * Building the data
      */
-    public function buildData() {
+    public function buildData()
+    {
         $this->data = array_merge([
-            'auth_client_id' => $this->clientId
+            'auth_client_id' => $this->clientId,
         ], $this->formatChanges($this->changes, $this->original));
     }
-    
+
     /**
-     * Return event data 
+     * Return event data
      */
     public function getData(): array
     {
         return $this->data;
     }
-    
+
     /**
-     * Return event changes 
+     * Return event changes
      */
     public function getChanges(): array
     {

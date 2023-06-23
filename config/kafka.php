@@ -14,7 +14,7 @@ return [
      */
     'consumer_group_id' => env('KAFKA_CONSUMER_GROUP_ID', 'PM4-core-group'),
 
-    'consumer_timeout_ms' => env("KAFKA_CONSUMER_DEFAULT_TIMEOUT", 2000),
+    'consumer_timeout_ms' => env('KAFKA_CONSUMER_DEFAULT_TIMEOUT', 2000),
 
     /*
      | After the consumer receives its assignment from the coordinator,

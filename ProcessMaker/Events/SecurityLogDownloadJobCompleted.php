@@ -14,8 +14,11 @@ class SecurityLogDownloadJobCompleted implements ShouldBroadcastNow
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $user;
+
     private bool $success;
+
     private ?string $link;
+
     private ?string $message;
 
     /**
@@ -64,7 +67,7 @@ class SecurityLogDownloadJobCompleted implements ShouldBroadcastNow
         return [
             'success' => $this->success,
             'message' => $this->message,
-            'link' => $this->link
+            'link' => $this->link,
         ];
     }
 }
