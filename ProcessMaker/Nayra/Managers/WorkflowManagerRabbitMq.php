@@ -15,6 +15,7 @@ use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements WorkflowManagerInterface
 {
     const ACTION_START_PROCESS = 'START_PROCESS';
+
     const ACTION_COMPLETE_TASK = 'COMPLETE_TASK';
 
     /**
@@ -73,7 +74,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
                         'callable_id' => $request->callable_id,
                         'data' => $request->data,
                         'tokens' => [],
-                    ]
+                    ],
                 ],
             ],
         ]);
@@ -129,9 +130,9 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
                         'callable_id' => $instance->callable_id,
                         'data' => $instance->data,
                         'tokens' => $tokensRows,
-                    ]
+                    ],
                 ],
-            ]
+            ],
         ]);
     }
 

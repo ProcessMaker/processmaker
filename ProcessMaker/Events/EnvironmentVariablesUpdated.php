@@ -15,6 +15,7 @@ class EnvironmentVariablesUpdated implements SecurityLogEventInterface
     private EnvironmentVariable $enVariable;
 
     private array $changes;
+
     private array $original;
 
     /**

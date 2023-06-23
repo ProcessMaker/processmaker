@@ -16,6 +16,7 @@ class SettingsUpdated implements SecurityLogEventInterface
     private Setting $setting;
 
     private array $changes;
+
     private array $original;
 
     /**
@@ -63,7 +64,7 @@ class SettingsUpdated implements SecurityLogEventInterface
         ], $this->formatChanges($this->changes, $this->original));
     }
 
-     /**
+    /**
      * Get specific changes without format related to the event
      *
      * @return array

@@ -46,12 +46,14 @@ class SensitiveDataHelper
         $key = strtolower($key);
         $key = str_replace('+ ', '', $key);
         $key = str_replace('- ', '', $key);
+
         return in_array($key, static::SENSITIVE_KEYS);
     }
 
     public static function parseString($str)
     {
         $len = strlen($str);
+
         return $len > 0 ? str_repeat(static::MASK, $len) : $str;
     }
 }

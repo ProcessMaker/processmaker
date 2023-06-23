@@ -55,7 +55,7 @@
           ></select-user>
         </b-form-group>
         <b-form-group
-          v-if="!selectedTemplate"
+          v-if="!selectedTemplate && !generativeProcessData"
           :label="$t('Upload BPMN File (optional)')"
           :invalid-feedback="errorMessage('bpmn', addError)"
           :state="errorState('bpmn', addError)"
@@ -87,7 +87,7 @@
   export default {
     components: { Modal, Required, TemplateSearch },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories", "blankTemplate", "selectedTemplate", "templateData"],
+    props: ["countCategories", "blankTemplate", "selectedTemplate", "templateData", "generativeProcessData"],
     data: function() {
       return {
         showModal: false,
@@ -172,6 +172,9 @@
         if (this.selectedTemplate) {
           this.handleCreateFromTemplate(this.templateData.id, formData);
         } else {
+          if (this.generativeProcessData) {
+            formData.append("bpmn", this.generativeProcessData.bpmn);
+          }
           this.handleCreateBlank(formData);
         }
       },
@@ -206,7 +209,7 @@
           this.disabled = false;
           this.addError = error.response.data.errors;
         });
-      }
+      },
     },
   };
 </script>

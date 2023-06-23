@@ -10,6 +10,7 @@ class ScriptExecutorDeleted implements SecurityLogEventInterface
     use Dispatchable;
 
     private array $data;
+
     private array $changes;
 
     /**
@@ -34,7 +35,9 @@ class ScriptExecutorDeleted implements SecurityLogEventInterface
         ];
     }
 
+
     /**
+     * Return event changes
      * Return event changes
      */
     public function getChanges(): array

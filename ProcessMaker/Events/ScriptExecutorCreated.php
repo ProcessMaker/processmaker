@@ -10,6 +10,7 @@ class ScriptExecutorCreated implements SecurityLogEventInterface
     use Dispatchable;
 
     private array $data;
+
     private array $changes;
 
     /**
@@ -25,7 +26,7 @@ class ScriptExecutorCreated implements SecurityLogEventInterface
             'title' => $created_values['title'],
             'description' => $created_values['description'],
             'language' => $created_values['language'],
-            'config' => $created_values['config']
+            'config' => $created_values['config'],
         ];
     }
 

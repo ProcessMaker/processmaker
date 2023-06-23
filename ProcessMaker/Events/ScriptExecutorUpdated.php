@@ -13,8 +13,11 @@ class ScriptExecutorUpdated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private array $data;
+
     private array $changes;
+
     private array $original;
+
     private int $scriptId;
 
     /**
@@ -29,7 +32,9 @@ class ScriptExecutorUpdated implements SecurityLogEventInterface
         $this->scriptId = $scriptId;
     }
 
+
     /**
+     * Return event data
      * Return event data
      */
     public function getData(): array
@@ -40,7 +45,9 @@ class ScriptExecutorUpdated implements SecurityLogEventInterface
         ], $this->formatChanges($this->changes, $this->original));
     }
 
+
     /**
+     * Return event changes
      * Return event changes
      */
     public function getChanges(): array

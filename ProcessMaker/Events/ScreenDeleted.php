@@ -10,6 +10,7 @@ use ProcessMaker\Models\Screen;
 class ScreenDeleted implements SecurityLogEventInterface
 {
     use Dispatchable;
+
     private Screen $screen;
 
     /**
@@ -19,7 +20,7 @@ class ScreenDeleted implements SecurityLogEventInterface
      */
     public function __construct(Screen $screen)
     {
-        $this->screen =  $screen;
+        $this->screen = $screen;
     }
 
     /**
@@ -32,7 +33,7 @@ class ScreenDeleted implements SecurityLogEventInterface
         return [
             'title' => $this->screen->getAttributes()['title'],
             'description' => $this->screen->getAttributes()['description'],
-            'deleted_at' => Carbon::now()
+            'deleted_at' => Carbon::now(),
         ];
     }
 

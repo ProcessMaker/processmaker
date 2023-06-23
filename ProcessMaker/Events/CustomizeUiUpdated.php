@@ -13,7 +13,9 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private array $data;
+
     private array $changes;
+
     private array $original;
 
     /**
@@ -36,6 +38,7 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
     /**
      * Building the data
      */
+    public function buildData()
     public function buildData()
     {
         if (isset($this->changes['variables'])) {

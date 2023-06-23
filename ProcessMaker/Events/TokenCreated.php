@@ -12,6 +12,7 @@ class TokenCreated implements SecurityLogEventInterface
     use Dispatchable;
 
     private array $data;
+
     private array $changes;
 
     /**
@@ -27,7 +28,9 @@ class TokenCreated implements SecurityLogEventInterface
         ];
     }
 
+
     /**
+     * Return event data
      * Return event data
      */
     public function getData(): array
@@ -35,7 +38,9 @@ class TokenCreated implements SecurityLogEventInterface
         return $this->data;
     }
 
+
     /**
+     * Return event changes
      * Return event changes
      */
     public function getChanges(): array

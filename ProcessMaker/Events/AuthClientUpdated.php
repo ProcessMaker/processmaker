@@ -13,8 +13,11 @@ class AuthClientUpdated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private array $original;
+
     private array $data;
+
     private array $changes;
+
     private string $clientId;
 
     /**
@@ -29,7 +32,9 @@ class AuthClientUpdated implements SecurityLogEventInterface
         $this->clientId = $clientId;
     }
 
+
     /**
+     * Return event data
      * Return event data
      */
     public function getData(): array
@@ -40,7 +45,9 @@ class AuthClientUpdated implements SecurityLogEventInterface
         ], $this->formatChanges($this->changes, $this->original));
     }
 
+
     /**
+     * Return event changes
      * Return event changes
      */
     public function getChanges(): array

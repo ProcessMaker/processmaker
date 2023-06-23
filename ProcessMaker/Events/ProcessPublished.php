@@ -11,6 +11,7 @@ class ProcessPublished implements SecurityLogEventInterface
 {
     use Dispatchable;
     use FormatSecurityLogChanges;
+
     // Currently is not required to register the following columns (related to the diagram)
     public const REMOVE_KEYS = [
         'bpmn',
@@ -19,12 +20,13 @@ class ProcessPublished implements SecurityLogEventInterface
         'self_service_tasks',
         'signal_events',
         'conditional_events',
-        'properties'
+        'properties',
     ];
 
     private Process $process;
 
     private array $changes;
+
     private array $original;
 
     /**

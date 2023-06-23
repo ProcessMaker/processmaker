@@ -2,9 +2,9 @@
 
 namespace ProcessMaker\Events;
 
+use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Models\Process;
-use Illuminate\Foundation\Events\Dispatchable;
 
 class ProcessCreated implements SecurityLogEventInterface
 {
@@ -15,6 +15,7 @@ class ProcessCreated implements SecurityLogEventInterface
     private string $typeCreation;
 
     public const BLANK_CREATION = 'BLANK';
+
     public const TEMPLATE_CREATION = 'TEMPLATE';
 
     /**

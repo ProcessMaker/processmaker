@@ -13,7 +13,9 @@ class ScriptCreated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private array $changes;
+
     private array $original;
+
     private Script $script;
 
     /**
@@ -55,6 +57,7 @@ class ScriptCreated implements SecurityLogEventInterface
         ];
         unset($this->changes['code']);
         unset($this->original['code']);
+
         return array_merge($basic, $this->formatChanges($this->changes, []));
     }
 

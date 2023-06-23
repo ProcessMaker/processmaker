@@ -13,6 +13,7 @@ class CategoryCreated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private ProcessCategory $category;
+
     private array $variable = [];
 
     /**
