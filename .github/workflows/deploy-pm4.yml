@@ -104,11 +104,13 @@ jobs:
           cd pm4-stm-docker/deploy-stm
           composer install --no-dev
           INSTANCE_URL=$(php run.php)
+          echo "Instance URL: '${INSTANCE_URL}'"
           echo "INSTANCE_URL=${INSTANCE_URL}" >> "$GITHUB_ENV"
       - name: Publish the URL to the Github PR 
         if: success() || steps.stm.conclusion == 'success'
         run: |
           cd pm4-stm-docker
+          echo "Instance URL: '${INSTANCE_URL}'"
           bash ./github_comment.sh "$PROJECT" "$pull_req_id"
   job3: 
    name: run-phpunit
