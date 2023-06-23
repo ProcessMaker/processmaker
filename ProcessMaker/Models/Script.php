@@ -6,12 +6,14 @@ use Hamcrest\Type\IsNumeric;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Contracts\ScriptInterface;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Exception\ScriptTimeoutException;
 use ProcessMaker\GenerateAccessToken;
+use ProcessMaker\Jobs\ClosureJob;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\ErrorExecutionNotification;
@@ -172,15 +174,19 @@ class Script extends ProcessMakerModel implements ScriptInterface
                     throw new ScriptException($message);
                 }
 
-                Log::info("Waiting {$this->retryWaitTime()} seconds before retrying.");
-                sleep($this->retryWaitTime());
+                $closure = function () use ($data, $config, $tokenId, $errorHandling) {
+                    Log::info('Re-running the script');
+                    $this->runScript($data, $config, $tokenId, $errorHandling);//todo: it is important to return the correct data.
+                    Log::info('The script completed successfully');
+                };
+
+                $retryWaitTime = $this->retryWaitTime();
+                Log::info("Waiting {$retryWaitTime} seconds before retrying.");
                 $this->attemptedRetries++;
 
-                Log::info('Re-running the script');
-                $result = $this->runScript($data, $config, $tokenId, $errorHandling);
-                Log::info('The script completed successfully');
+                Queue::later($retryWaitTime, new ClosureJob($closure));
 
-                return $result;
+                return ['output'];//todo: it is important to return the correct data.
             } else {
                 $this->sendExecutionErrorNotification($e->getMessage(), $tokenId, $errorHandling);
                 throw $e;
