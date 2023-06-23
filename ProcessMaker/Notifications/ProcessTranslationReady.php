@@ -51,7 +51,7 @@ class ProcessTranslationReady extends Notification
             'code' => $this->code,
             'name' => __('Process translated'),
             'processId' => $this->process->id ?? '',
-            'processName' => $this->process->name ?? '',
+            'processName' => $this->process->name . ' to ' . $this->targetLanguage['humanLanguage'] ?? '',
             'targetLanguage' => $this->targetLanguage ?? '',
         ];
     }

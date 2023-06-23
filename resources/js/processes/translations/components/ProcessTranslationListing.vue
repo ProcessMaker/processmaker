@@ -11,7 +11,10 @@
       </div>
     </div>
 
-    <table v-if="!loading && ((translatedLanguages && translatedLanguages.length) || (translatingLanguages && translatingLanguages.length))" id="table-translations" class="table table-hover table-responsive-lg ">
+    <table v-if="!loading && ((translatedLanguages && translatedLanguages.length) || (translatingLanguages && translatingLanguages.length))"
+      id="table-translations"
+      class="table table-hover table-responsive-lg "
+      data-test="translation-list">
       <thead>
         <tr>
             <th class="notify">{{ $t('Target Language') }}</th>
@@ -92,12 +95,14 @@ export default {
           content: "Edit Translation",
           permission: "edit-process-translations",
           icon: "fas fa-edit",
+          dataTest: "translation-list-editfield",
         },
         {
           value: "export-translation",
           content: "Export Translation",
           permission: "export-process-translations",
           icon: "fas fa-file-export",
+          dataTest: "translation-export",
           link: true,
           href: "/processes/{{processId}}/export/translation/{{language}}",
         },
@@ -105,21 +110,31 @@ export default {
           value: "retry-translation",
           content: "Retry empty translations",
           permission: "edit-process-translations",
+          dataTest: "translation-option-retry",
           icon: "fas fa-redo",
         },
         {
           value: "delete-translation",
           content: "Delete Translation",
+          dataTest: "translation-option-delete",
           permission: "delete-process-translations",
           icon: "fas fa-trash",
         },
       ],
       actionsInProgress: [
         {
-          value: "cancel-translation", content: "Cancel Translation", permission: "cancel-process-translations", icon: "fas fa-stop-circle",
+          value: "cancel-translation",
+          content: "Cancel Translation",
+          permission: "cancel-process-translations",
+          icon: "fas fa-stop-circle",
+          dataTest: "translation-option-cancel",
         },
         {
-          value: "delete-translation", content: "Delete Translation", permission: "delete-process-translations", icon: "fas fa-trash",
+          value: "delete-translation",
+          content: "Delete Translation",
+          permission: "delete-process-translations",
+          icon: "fas fa-trash",
+          dataTest: "translation-option-delete",
         },
       ],
       inProgressButton: {

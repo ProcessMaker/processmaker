@@ -1683,5 +1683,20 @@
   "Nothing searched yet": "Nothing searched yet",
   "Recently searched": "Recently searched",
   "The history is empty": "The history is empty",
-  "Powered by ProcessMaker AI": "Powered by ProcessMaker AI"
+  "Powered by ProcessMaker AI": "Powered by ProcessMaker AI",
+  "Timeout: :timeout seconds": "Timeout: :timeout seconds",
+  "Set maximum run time in seconds. Leave empty to use script default. Set to 0 for no timeout.": "Set maximum run time in seconds. Leave empty to use script default. Set to 0 for no timeout.",
+  "Set maximum run time in seconds. Leave empty to use data connector default. Set to 0 for no timeout.": "Set maximum run time in seconds. Leave empty to use data connector default. Set to 0 for no timeout.",
+  "Retry Attempts": "Retry Attempts",
+  "Set maximum run retry attempts in seconds. Leave empty to use script default. Set to 0 for no retry attempts.": "Set maximum run retry attempts in seconds. Leave empty to use script default. Set to 0 for no retry attempts.",
+  "Set maximum run retry attempts in seconds. Leave empty to use data connector default. Set to 0 for no retry attempts.": "Set maximum run retry attempts in seconds. Leave empty to use data connector default. Set to 0 for no retry attempts.",
+  "Retry Wait Time": "Retry Wait Time",
+  "Set maximum run retry wait time in seconds. Leave empty to use script default. Set to 0 for no retry wait time.": "Set maximum run retry wait time in seconds. Leave empty to use script default. Set to 0 for no retry wait time.",
+  "Set maximum run retry wait time in seconds. Leave empty to use data connector default. Set to 0 for no retry wait time.": "Set maximum run retry wait time in seconds. Leave empty to use data connector default. Set to 0 for no retry wait time.",
+  "Script failed after :attempts total attempts": "Script failed after :attempts total attempts",
+  "Failed after :num total attempts": "Failed after :num total attempts",
+  "Seconds to wait before retrying. Leave empty to use script default. Set to 0 for no retry wait time.": "Seconds to wait before retrying. Leave empty to use script default. Set to 0 for no retry wait time.",
+  "Number of times to retry. Leave empty to use script default. Set to 0 for no retry attempts.": "Number of times to retry. Leave empty to use script default. Set to 0 for no retry attempts.",
+  "View Request": "View Request",
+  "Execution Error": "Execution Error"
 }

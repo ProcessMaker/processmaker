@@ -21,6 +21,9 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
      */
     public function __construct(array $original, array $changes, string $updatedAt)
     {
+        if (isset($original['config'])) {
+            $original = $original['config'];
+        }
         $changes = array_diff_assoc($changes, $original);
         $original = array_intersect_key($original, $changes);
         $this->original = $original;
