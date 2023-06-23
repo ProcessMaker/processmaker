@@ -47,7 +47,8 @@ class ProcessRequestObserver
     public function saved(ProcessRequest $request)
     {
         if ($request->status === 'ERROR') {
-            foreach ($request->getAttribute('errors') as $error) {
+            $errors = $request->getAttribute('errors') ?? [];
+            foreach ($errors as $error) {
                 event(new RequestError($request, $error['message']));
             }
         }
