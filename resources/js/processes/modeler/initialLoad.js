@@ -48,6 +48,7 @@ import validateScreenRef from "./validateScreenRef";
 import ErrorHandlingTimeout from "./components/inspector/ErrorHandlingTimeout";
 import ErrorHandlingRetryAttempts from "./components/inspector/ErrorHandlingRetryAttempts";
 import ErrorHandlingRetryWaitTime from "./components/inspector/ErrorHandlingRetryWaitTime";
+import NotifyProcessManager from "./components/inspector/NotifyProcessManager";
 
 Vue.component("UserSelect", UserSelect);
 Vue.component("UserById", UserById);
@@ -68,6 +69,7 @@ Vue.component("NodeIdentifierInput", NodeIdentifierInput);
 Vue.component("ErrorHandlingTimeout", ErrorHandlingTimeout);
 Vue.component("ErrorHandlingRetryAttempts", ErrorHandlingRetryAttempts);
 Vue.component("ErrorHandlingRetryWaitTime", ErrorHandlingRetryWaitTime);
+Vue.component("NotifyProcessManager", NotifyProcessManager);
 
 const nodeTypes = [
   endEvent,
@@ -244,6 +246,12 @@ ProcessMaker.EventBus.$on(
         },
         {
           component: 'ErrorHandlingRetryWaitTime',
+          config: {
+            type: 'script' 
+          },
+        },
+        {
+          component: 'NotifyProcessManager',
           config: {
             type: 'script' 
           },
