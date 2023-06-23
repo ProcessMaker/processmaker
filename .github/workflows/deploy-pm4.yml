@@ -137,7 +137,7 @@ jobs:
          cd pm4-stm-docker          
          docker pull $IMAGE          
          docker-compose down -v          
-         docker-compose build          
+         docker-compose build phpunit          
          docker-compose run phpunit
   #job4: 
   #  name: run-benchmarks
