@@ -3,6 +3,7 @@
 namespace ProcessMaker\Observers;
 
 use ProcessMaker\Events\RequestAction;
+use ProcessMaker\Events\RequestError;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ScheduledTask;
@@ -45,6 +46,12 @@ class ProcessRequestObserver
      */
     public function saved(ProcessRequest $request)
     {
+        if ($request->status === 'ERROR') {
+            $errors = $request->getAttribute('errors') ?? [];
+            foreach ($errors as $error) {
+                event(new RequestError($request, $error['message']));
+            }
+        }
         if ($request->status === 'COMPLETED') {
             event(new RequestAction($request, RequestAction::ACTION_COMPLETED));
             // Remove scheduled tasks for this request
