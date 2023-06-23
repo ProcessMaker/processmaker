@@ -19,6 +19,7 @@
       <div class="col-8">
         <div class="card card-body">
         <img class="about-logo" src="/img/processmaker-login.svg" alt="ProcessMaker">
+        <h3>DYNAMIC_ENV: '{{ env('DYNAMIC_ENV', 'not set') }}'</h3>
         <hr>
         <div><strong>{{ __('ProcessMaker Platform') }}</strong> {{ $versionTitle }}</div>
         <hr>
