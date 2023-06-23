@@ -8,8 +8,8 @@ use ProcessMaker\Events\TemplateDeleted;
 use ProcessMaker\Events\TemplateUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\TemplateCollection;
-use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Template;
 
 class TemplateController extends Controller
@@ -148,6 +148,7 @@ class TemplateController extends Controller
         $response = $this->template->deleteTemplate($type, $request);
         //Call event to Store Template Deleted on LOG
         TemplateDeleted::dispatch($template);
+
         return $response;
     }
 

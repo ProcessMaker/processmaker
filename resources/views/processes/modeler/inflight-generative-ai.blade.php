@@ -29,11 +29,6 @@
     const breadcrumbData = [];
     window.ProcessMaker.modeler = {
       xml: @json($bpmn),
-      configurables: [],
-      requestCompletedNodes: @json($requestCompletedNodes),
-      requestInProgressNodes: @json($requestInProgressNodes),
-      requestIdleNodes: @json($requestIdleNodes),
-      requestId: @json($requestId),
     }
 
     window.ProcessMaker.EventBus.$on('modeler-start', ({

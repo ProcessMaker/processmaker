@@ -12,6 +12,7 @@ class SettingsUpdated implements SecurityLogEventInterface
 {
     use Dispatchable;
     use FormatSecurityLogChanges;
+
     public const SENSITIVE_KEYS = [
         'password',
     ];
@@ -19,6 +20,7 @@ class SettingsUpdated implements SecurityLogEventInterface
     private Setting $setting;
 
     private array $changes;
+
     private array $original;
 
     /**
@@ -56,7 +58,7 @@ class SettingsUpdated implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return array_merge([
-            'setting_id' => $this->setting->id
+            'setting_id' => $this->setting->id,
         ], $this->changes);
     }
 
@@ -73,7 +75,7 @@ class SettingsUpdated implements SecurityLogEventInterface
         ], $this->formatChanges($this->changes, $this->original));
     }
 
-     /**
+    /**
      * Get specific changes without format related to the event
      *
      * @return array

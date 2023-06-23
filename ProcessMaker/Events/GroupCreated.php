@@ -13,6 +13,7 @@ class GroupCreated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private Group $group;
+
     /**
      * Create a new event instance.
      *

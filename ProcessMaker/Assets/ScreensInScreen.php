@@ -44,9 +44,13 @@ class ScreensInScreen
                 if (is_array($item) && isset($item['component']) && $item['component'] === 'FormNestedScreen' && !empty($item['config']['screen'])) {
                     $screens[] = [Screen::class, $item['config']['screen']];
                     if ($recursive) {
-                        $screen = app(Screen::class)->findOrFail($item['config']['screen']);
+                        $screen = app(Screen::class)->find($item['config']['screen']);
                         $this->recursion++;
-                        $screens = $this->referencesToExport($screen, $screens, $manager, $recursive);
+
+                        if ($screen) {
+                            $screens = $this->referencesToExport($screen, $screens, $manager, $recursive);
+                        }
+
                         $this->recursion--;
                     }
                 }

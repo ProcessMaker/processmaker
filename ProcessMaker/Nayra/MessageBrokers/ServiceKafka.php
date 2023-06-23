@@ -2,8 +2,8 @@
 
 namespace ProcessMaker\Nayra\MessageBrokers;
 
-use Junges\Kafka\Facades\Kafka;
 use Junges\Kafka\Contracts\KafkaConsumerMessage;
+use Junges\Kafka\Facades\Kafka;
 use ProcessMaker\Nayra\Repositories\EntityRepositoryFactory;
 
 class ServiceKafka
@@ -61,7 +61,7 @@ class ServiceKafka
     public function worker()
     {
         // Create Kafka consumer
-        $consumer = Kafka::createConsumer([self::QUEUE_NAME])->withHandler(function(KafkaConsumerMessage $message) {
+        $consumer = Kafka::createConsumer([self::QUEUE_NAME])->withHandler(function (KafkaConsumerMessage $message) {
             // Get transactions
             $transactions = $message->getBody();
 

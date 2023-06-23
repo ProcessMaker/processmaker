@@ -11,11 +11,15 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Mustache_Engine;
 use ProcessMaker\Exception\HttpInvalidArgumentException;
 use ProcessMaker\Exception\HttpResponseException;
 use ProcessMaker\Helpers\StringHelper;
 use ProcessMaker\Models\FormalExpression;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Notifications\ErrorExecutionNotification;
 use Psr\Http\Message\ResponseInterface;
 
 trait MakeHttpRequests
@@ -44,6 +48,12 @@ trait MakeHttpRequests
     private $attemptedRetries = 0;
 
     private $retryMessage = null;
+
+    private $inappNotification = false;
+
+    private $emailNotification = false;
+
+    private $tokenId = null;
 
     private function getMustache()
     {
@@ -79,12 +89,16 @@ trait MakeHttpRequests
                 return $result;
             }
 
+            $message = $exception->getMessage();
+            $message = $this->retryMessage ? $this->retryMessage . "\n" . $message : $message;
+
+            $this->sendErrorNotification($data, $message);
+
             if ($exception instanceof ClientException) {
                 $response = $exception->getResponse();
-                throw new HttpResponseException($response, $this->retryMessage);
+                throw new HttpResponseException($response, $message);
             } else {
-                $message = $exception->getMessage();
-                throw new \Exception($this->retryMessage ? $this->retryMessage . "\n" . $message : $message);
+                throw new \Exception($message);
             }
         }
     }
@@ -109,8 +123,24 @@ trait MakeHttpRequests
         if ($this->retryWaitTime > 0) {
             sleep($this->retryWaitTime);
         }
+        Log::info('Retry the runScript process. Attempt ' . ($this->attemptedRetries) . ' of ' . $this->retryAttempts);
 
         return $this->request($data, $config);
+    }
+
+    private function sendErrorNotification(array $data, string $message)
+    {
+        if ($this->tokenId) {
+            $processRequestToken = ProcessRequestToken::findOrFail($this->tokenId);
+            $user = $processRequestToken->processRequest->processVersion->manager;
+            if ($user !== null) {
+                $errorHandling = [
+                    'inapp_notification' => $this->inappNotification,
+                    'email_notification' => $this->emailNotification,
+                ];
+                Notification::send($user, new ErrorExecutionNotification($processRequestToken, $message, $errorHandling));
+            }
+        }
     }
 
     /**
@@ -167,6 +197,18 @@ trait MakeHttpRequests
             if (is_numeric($bpmnSetting)) {
                 $this->$classProperty = (int) $bpmnSetting;
             }
+        }
+
+        $this->inappNotification = Arr::get($endpoint, 'inapp_notification', false);
+        $this->emailNotification = Arr::get($endpoint, 'email_notification', false);
+
+        $this->tokenId = Arr::get($config, 'tokenId', null);
+
+        if (Arr::get($config, 'errorHandling.inapp_notification', false) === true) {
+            $this->inappNotification = true;
+        }
+        if (Arr::get($config, 'errorHandling.email_notification', false) === true) {
+            $this->emailNotification = true;
         }
     }
 
@@ -252,7 +294,7 @@ trait MakeHttpRequests
     /**
      * Prepares data for the http request replacing mustache with pm instance and OutboundConfig
      *
-     * @param array $data, request data
+     * @param array $requestData request data
      * @param array $config, datasource configuration
      *
      * @return array
@@ -753,7 +795,7 @@ trait MakeHttpRequests
                 'path' => storage_path("logs/data-sources/$connectorName.log"),
                 'days' => env('DATA_SOURCE_CLEAR_LOG', 21),
             ])->info($label . str_replace(["\n", "\t", "\r"], '', $cleanedLog));
-        } catch(\Throwable $e) {
+        } catch (\Throwable $e) {
             Log::error($e->getMessage());
         }
     }
