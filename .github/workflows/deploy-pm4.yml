@@ -103,7 +103,10 @@ jobs:
           mkdir -p /tmp/workspace
           cd pm4-stm-docker/deploy-stm
           composer install --no-dev
-          INSTANCE_URL=$(php run.php)
+          php run.php
+          if [ -f "url.txt" ]; then
+            INSTANCE_URL=$(cat url.txt)
+          fi
           echo "Instance URL: '${INSTANCE_URL}'"
           echo "INSTANCE_URL=${INSTANCE_URL}" >> "$GITHUB_ENV"
       - name: Publish the URL to the Github PR 
