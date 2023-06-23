@@ -999,6 +999,49 @@ class ProcessController extends Controller
     }
 
     /**
+     * Download the BPMN definition of a process
+     *
+     * @param $process
+     *
+     * @return Response
+     *
+     * @OA\Get(
+     *     path="/processes/{processId}/bpmn",
+     *     summary="Download the BPMN definition of a process",
+     *     operationId="processBpmn",
+     *     tags={"Processes"},
+     *     @OA\Parameter(
+     *         description="ID of process",
+     *         in="path",
+     *         name="processId",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="integer",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully built the process for export",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="url",
+     *                 type="string",
+     *             ),
+     *         ),
+     *     ),
+     * )
+     */
+    public function downloadBpmn(Request $request, Process $process)
+    {
+        $bpmn = $process->bpmn;
+        $filename = 'bpmnProcess.bpmn';
+        return response()->streamDownload(function () use ($bpmn) {
+            echo $bpmn;
+        }, $filename);
+    }
+
+    /**
      * Check if the import is ready
      *
      * @param Request $request
