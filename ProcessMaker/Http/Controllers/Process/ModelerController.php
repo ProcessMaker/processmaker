@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Process;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\ModelerManager;
@@ -11,10 +12,13 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\PackageHelper;
 use ProcessMaker\Traits\HasControllerAddons;
+use ProcessMaker\Traits\ProcessMapTrait;
+use SimpleXMLElement;
 
 class ModelerController extends Controller
 {
     use HasControllerAddons;
+    use ProcessMapTrait;
 
     /**
      * Invokes the Process Modeler for rendering.
@@ -53,6 +57,7 @@ class ModelerController extends Controller
         $bpmn = $process->bpmn;
         $requestCompletedNodes = [];
         $requestInProgressNodes = [];
+        $requestIdleNodes = [];
 
         // Use the process version that was active when the request was started.
         $processRequest = ProcessRequest::find($request->request_id);
@@ -62,18 +67,28 @@ class ModelerController extends Controller
                 ->firstOrFail()
                 ->bpmn;
 
-            $requestCompletedNodes = $processRequest->tokens()->where('status', 'CLOSED')->pluck('element_id');
+            $requestCompletedNodes = $processRequest->tokens()->whereIn('status', ['CLOSED', 'TRIGGERED'])->pluck('element_id');
             $requestInProgressNodes = $processRequest->tokens()->where('status', 'ACTIVE')->pluck('element_id');
-            // Remove any node that is 'ACTIVE' from the 'CLOSED' list.
+            // Remove any node that is 'ACTIVE' from the completed list.
             $filteredCompletedNodes = $requestCompletedNodes->diff($requestInProgressNodes)->values();
+
+            // Get idle nodes.
+            $xml = $this->loadAndPrepareXML($bpmn);
+            $nodeIds = $this->getNodeIds($xml);
+            $requestIdleNodes = $nodeIds->diff($filteredCompletedNodes)->diff($requestInProgressNodes)->values();
+
+            // Add completed sequence flow to the list of completed nodes.
+            $sequenceFlowNodes = $this->getCompletedSequenceFlow($xml, $filteredCompletedNodes->implode(' '), $requestInProgressNodes->implode(' '));
+            $filteredCompletedNodes = $filteredCompletedNodes->merge($sequenceFlowNodes);
         }
 
         return view('processes.modeler.inflight', [
             'manager' => $manager,
-            'process' => $process,
             'bpmn' => $bpmn,
             'requestCompletedNodes' => $filteredCompletedNodes,
             'requestInProgressNodes' => $requestInProgressNodes,
+            'requestIdleNodes' => $requestIdleNodes,
+            'requestId' => $request->request_id,
         ]);
     }
 }
