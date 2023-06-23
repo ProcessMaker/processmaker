@@ -109,7 +109,12 @@ class ModelerController extends Controller
         ];
 
         $promptVersion = Http::withHeaders($headers)->post($url, $params);
-        $bpmn = $promptVersion->json()['version']['bpmn'];
+
+        $bpmn = '';
+
+        if (array_key_exists('version', $promptVersion->json())) {
+            $bpmn = $promptVersion->json()['version']['bpmn'];
+        }
 
         event(new ModelerStarting($manager));
 
