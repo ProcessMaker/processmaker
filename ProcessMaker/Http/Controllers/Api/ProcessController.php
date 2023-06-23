@@ -1043,6 +1043,7 @@ class ProcessController extends Controller
     {
         $bpmn = $process->bpmn;
         $filename = 'bpmnProcess.bpmn';
+
         return response()->streamDownload(function () use ($bpmn) {
             echo $bpmn;
         }, $filename);
