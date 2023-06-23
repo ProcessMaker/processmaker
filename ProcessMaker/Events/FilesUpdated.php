@@ -4,18 +4,17 @@ namespace ProcessMaker\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
-use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\Media;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
-class CategoryUpdated implements SecurityLogEventInterface
+class FilesUpdated implements SecurityLogEventInterface
 {
     use Dispatchable;
     use FormatSecurityLogChanges;
 
-    private ProcessCategory $category;
+    private Media $media;
 
     private array $changes;
-
     private array $original;
 
     /**
@@ -23,11 +22,13 @@ class CategoryUpdated implements SecurityLogEventInterface
      *
      * @return void
      */
-    public function __construct(ProcessCategory $data, array $changes, array $original)
+    public function __construct(Media $data, array $changes, array $original)
     {
-        $this->category = $data;
+        $this->media = $data;
         $this->changes = $changes;
         $this->original = $original;
+        unset($this->changes['name']);
+        unset($this->original['name']);
     }
 
     /**
@@ -38,33 +39,30 @@ class CategoryUpdated implements SecurityLogEventInterface
     public function getData(): array
     {
         return array_merge([
-            'name' => [
-                'label' => $this->category->getAttribute('name'),
-                'link' => route('processes.index', $this->category) . '#nav-categories',
-            ],
-            'last_modified' => $this->category->getAttribute('updated_at'),
+            'name' => $this->media->getAttribute('name'),
+            'last_modified' => $this->media->getAttribute('updated_at'),
         ], $this->formatChanges($this->changes, $this->original));
     }
 
     /**
-     * Get specific changes without format related to the event
+     * Get specific data related to the event
      *
      * @return array
      */
     public function getChanges(): array
     {
         return [
-            'id' => $this->category->getAttribute('id')
+            'id' => $this->media->getAttribute('id')
         ];
     }
 
     /**
-     * Get the Event name with the syntax ‘[Past-test Action] [Object]’
+     * Get the Event name
      *
      * @return string
      */
     public function getEventName(): string
     {
-        return 'CategoryUpdated';
+        return 'FilesUpdated';
     }
 }

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Events\GroupCreated;
 use ProcessMaker\Events\GroupDeleted;
+use ProcessMaker\Events\GroupUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Groups as GroupResource;
@@ -220,8 +221,12 @@ class GroupController extends Controller
     public function update(Group $group, Request $request)
     {
         $request->validate(Group::rules($group));
+        $original = $group->getOriginal();
         $group->fill($request->input());
         $group->saveOrFail();
+        $changes = $group->getChanges();
+        // Register the Event
+        GroupUpdated::dispatch($group, $changes, $original);
 
         return response([], 204);
     }

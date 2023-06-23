@@ -170,7 +170,7 @@ export default {
 
       for ([key, value] of Object.entries(data)) {
         if (key.startsWith("+")) {
-          auxKey = key.split(" ")[1];
+          auxKey = this.capitalizeKey(key.split(" ")[1]);
           if (auxArray[auxKey]) {
             auxArray[auxKey].new = this.booleanToString(value);
           } else {
@@ -179,7 +179,7 @@ export default {
             };
           }
         } else if (key.startsWith("-")) {
-          auxKey = key.split(" ")[1];
+          auxKey = this.capitalizeKey(key.split(" ")[1]);
           if (auxArray[auxKey]) {
             auxArray[auxKey].old = this.booleanToString(value);
           } else {
@@ -188,7 +188,7 @@ export default {
             };
           }
         } else {
-          auxArray[key] = this.booleanToString(value);
+          auxArray[this.capitalizeKey(key)] = this.booleanToString(value);
         }
       }
       return auxArray;
@@ -244,6 +244,9 @@ export default {
         return value.new;
       }
       return false;
+    },
+    capitalizeKey(value) {
+      return value.charAt(0).toUpperCase() + value.slice(1);
     },
   },
 };
