@@ -240,6 +240,39 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
     }
 
     /**
+     * Triggers a message event in the process instance based on provided parameters.
+     *
+     * @param $instanceId of the process instance that is to be triggered
+     * @param $elementId of the catch message event element
+     * @param $messageRef of the message event that is to be triggered
+     * @param $payload (optional) array of key-value pairs that are to be stored in the data store
+     */
+    public function throwMessageEvent($instanceId, $elementId, $messageRef, array $payload = [])
+    {
+        // Get complementary information
+        $instance = ProcessRequest::find($instanceId);
+        $version = $instance->process_version_id;
+        $userId = $this->getCurrentUserId();
+        $state = $this->serializeState($instance);
+
+        // Dispatch complete task action
+        $this->dispatchAction([
+            'bpmn' => $version,
+            'action' => self::ACTION_TRIGGER_MESSAGE_EVENT,
+            'params' => [
+                'instance_id' => $instanceId,
+                'element_id' => $elementId,
+                'message_ref' => $messageRef,
+                'data' => $payload,
+            ],
+            'state' => $state,
+            'session' => [
+                'user_id' => $userId,
+            ],
+        ]);
+    }
+
+    /**
      * Build a state object.
      *
      * @param ProcessRequest $instance
