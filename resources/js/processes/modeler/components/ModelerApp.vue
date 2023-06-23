@@ -39,7 +39,7 @@
         :options="component.options"
       />
       <create-template-modal ref="create-template-modal" assetType="process" :assetName="processName" :assetId="processId" :currentUserId="currentUserId"/>
-      <create-pm-block-modal ref="create-pm-block-modal" />
+      <create-pm-block-modal ref="create-pm-block-modal" assetType="process" :assetName="processName" :assetId="processId" :currentUserId="currentUserId"/>
     </b-card>
   </b-container>
 </template>
