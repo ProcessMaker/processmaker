@@ -13,7 +13,9 @@ class ScreenUpdated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private Screen $screen;
+
     private array $changes;
+
     private array $original;
 
     /**
@@ -35,7 +37,7 @@ class ScreenUpdated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        if (array_key_exists("config", $this->changes)) {
+        if (array_key_exists('config', $this->changes)) {
             return array_merge([
                 'last_modified' => $this->screen->getAttribute('updated_at'),
             ]);

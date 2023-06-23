@@ -13,7 +13,9 @@ class ScriptUpdated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private array $changes;
+
     private array $original;
+
     private Script $script;
 
     /**
@@ -38,7 +40,7 @@ class ScriptUpdated implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return array_merge([
-            'script_id' => $this->script->id
+            'script_id' => $this->script->id,
         ], $this->changes);
     }
 
@@ -59,6 +61,7 @@ class ScriptUpdated implements SecurityLogEventInterface
         ];
         unset($changes['code']);
         unset($original['code']);
+
         return array_merge($basic, $this->formatChanges($changes, $original));
     }
 

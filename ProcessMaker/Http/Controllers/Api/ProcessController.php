@@ -222,6 +222,12 @@ class ProcessController extends Controller
     {
         $request->validate(Process::rules());
         $data = $request->all();
+
+        // If bpmn exists (from Generative AI)
+        if ($request->input('bpmn')) {
+            $data['bpmn'] = $request->input('bpmn');
+        }
+
         // Validate if exists file bpmn
         if ($request->has('file')) {
             $data['bpmn'] = $request->file('file')->get();
@@ -362,6 +368,7 @@ class ProcessController extends Controller
 
                 //Call Event to Log Template Changes
                 TemplateUpdated::dispatch([], [], true);
+
                 return new Resource($process->refresh());
             } catch (\Exception $error) {
                 return ['error' => $error->getMessage()];
@@ -1036,6 +1043,7 @@ class ProcessController extends Controller
     {
         $bpmn = $process->bpmn;
         $filename = 'bpmnProcess.bpmn';
+
         return response()->streamDownload(function () use ($bpmn) {
             echo $bpmn;
         }, $filename);

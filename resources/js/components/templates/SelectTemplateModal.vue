@@ -19,7 +19,10 @@
       @ok.prevent="onSubmit"
       @close="close"
     >
-      <template-search :type="type" :component="currentComponent" @show-details="updateModal($event)"/>
+      <template-search :type="type" :component="currentComponent" @show-details="updateModal($event)" 
+        @blank-process-button-clicked="createBlankProcess()"
+        @ai-process-button-clicked="createAiProcess()"
+        :package-ai="packageAi" />
     </modal>
     <create-process-modal ref="create-process-modal" :blank-template="blankTemplate" :count-categories="countCategories" :selected-template="selectedTemplate" :template-data="templateData" @resetModal="resetModal()"/>
   </div>
@@ -32,7 +35,7 @@
 
   export default {
     components: { Modal, TemplateSearch, CreateProcessModal },
-    props: ['type', 'countCategories'],
+    props: ['type', 'countCategories', 'packageAi'],
     data: function() {
       return {
         title: '',
@@ -44,7 +47,6 @@
           {'content': '< Back', 'action': 'showSelectTemplate', 'variant': 'link', 'disabled': false, 'hidden': true, 'ariaLabel': 'Back to select templates'},
         ],
         titleButtons: [
-          {'content': `Blank ${this.type}`, 'action': 'createBlankProcess', 'variant': 'primary', 'disabled': false, 'hidden': false, 'position': 'right', 'icon': 'fas fa-plus', 'ariaLabel': `Create ${this.type}`},
           {'content': 'Use Template', 'action': 'useSelectedTemplate', 'variant': 'primary', 'disabled': false, 'hidden': true, 'position': 'right', 'ariaLabel': `Create a ${this.type} with this template` },
         ],
         blankTemplate: false,
@@ -69,15 +71,13 @@
         this.title = $event.name;
         this.hasHeaderButtons = true;
         this.headerButtons[0].hidden = false;
-        this.titleButtons[0].hidden = true;
-        this.titleButtons[1].hidden = false;
+        this.titleButtons[0].hidden = false;
         this.currentComponent = 'template-details';
       },
       showSelectTemplateComponent() {
         this.currentComponent = 'template-select-card';
         this.headerButtons[0].hidden = true;
-        this.titleButtons[0].hidden = false;
-        this.titleButtons[1].hidden = true;
+        this.titleButtons[0].hidden = true;
         this.hasHeaderButtons = false;
         this.title = this.$t(`New ${this.type}`);
       },
@@ -86,6 +86,9 @@
         this.blankTemplate = true;
         this.$bvModal.hide("selectTemplate");
         this.$refs["create-process-modal"].show();
+      },
+      createAiProcess() {
+        window.location.href = "/package-ai/processes/create";
       },
       useSelectedTemplate() {
         this.selectedTemplate = true;

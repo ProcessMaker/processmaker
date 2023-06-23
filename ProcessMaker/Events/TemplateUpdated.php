@@ -13,7 +13,9 @@ class TemplateUpdated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private array $changes;
+
     private array $original;
+
     private bool $processType;
 
     /**
@@ -38,9 +40,9 @@ class TemplateUpdated implements SecurityLogEventInterface
         if ($this->processType) {
             return [
                 'name' => [
-                    'label' => $this->processType
+                    'label' => $this->processType,
                 ],
-                'updated_at' => Carbon::now()
+                'updated_at' => Carbon::now(),
             ];
         } else {
             $oldData = array_diff_assoc($this->original, $this->changes);
@@ -48,7 +50,7 @@ class TemplateUpdated implements SecurityLogEventInterface
 
             return array_merge([
                 'name' => [
-                    'label' => $this->processType
+                    'label' => $this->processType,
                 ],
             ], $this->formatChanges($newData, $oldData));
         }

@@ -40,6 +40,7 @@ class ProcessRequestRepository extends EntityRepository
         } catch (Exception $e) {
             // Log the error
             Log::error("Cannot create request: {$e->getMessage()}");
+
             return null;
         }
     }
@@ -79,6 +80,7 @@ class ProcessRequestRepository extends EntityRepository
         } catch (Exception $e) {
             // Log the error
             Log::error("Cannot update request: {$e->getMessage()}");
+
             return null;
         }
     }

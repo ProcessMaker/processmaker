@@ -11,8 +11,11 @@ class ScriptExecutorUpdated implements SecurityLogEventInterface
     use Dispatchable, FormatSecurityLogChanges;
 
     private array $data;
+
     private array $changes;
+
     private array $original;
+
     private int $scriptId;
 
     /**
@@ -31,22 +34,23 @@ class ScriptExecutorUpdated implements SecurityLogEventInterface
     /**
      * Building the data
      */
-    public function buildData() {
+    public function buildData()
+    {
         $this->data = array_merge([
-            'script_executor_id' => $this->scriptId
+            'script_executor_id' => $this->scriptId,
         ], $this->formatChanges($this->changes, $this->original));
     }
-    
+
     /**
-     * Return event data 
+     * Return event data
      */
     public function getData(): array
     {
         return $this->data;
     }
-    
+
     /**
-     * Return event changes 
+     * Return event changes
      */
     public function getChanges(): array
     {

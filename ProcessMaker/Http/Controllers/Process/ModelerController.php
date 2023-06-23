@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Process;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Http;
 use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\ModelerManager;
@@ -89,6 +90,37 @@ class ModelerController extends Controller
             'requestInProgressNodes' => $requestInProgressNodes,
             'requestIdleNodes' => $requestIdleNodes,
             'requestId' => $request->request_id,
+        ]);
+    }
+
+    /**
+     * Invokes the Modeler for In-flight Process Map rendering for ai generative.
+     */
+    public function inflightProcessAi(ModelerManager $manager, $promptVersionId, Request $request)
+    {
+        $aiMicroserviceHost = config('app.ai_microservice_host');
+        $url = $aiMicroserviceHost . '/pm/getPromptVersion';
+        $headers = [
+            'Authorization' => 'token',
+        ];
+
+        $params = [
+            'promptVersionId' => $promptVersionId,
+        ];
+
+        $promptVersion = Http::withHeaders($headers)->post($url, $params);
+
+        $bpmn = '';
+
+        if (array_key_exists('version', $promptVersion->json())) {
+            $bpmn = $promptVersion->json()['version']['bpmn'];
+        }
+
+        event(new ModelerStarting($manager));
+
+        return view('processes.modeler.inflight-generative-ai', [
+            'manager' => $manager,
+            'bpmn' => $bpmn,
         ]);
     }
 }

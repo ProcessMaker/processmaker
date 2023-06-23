@@ -37,7 +37,6 @@ use ProcessMaker\Http\Controllers\TestStatusController;
 
 // Engine
 Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/1.0')->name('api.')->group(function () {
-
     // List of Processes that the user can start
     Route::get('start_processes', [ProcessController::class, 'startProcesses'])->name('processes.start'); // Filtered in controller
 

@@ -8,6 +8,7 @@ use ProcessMaker\Contracts\SecurityLogEventInterface;
 class ScreenCreated implements SecurityLogEventInterface
 {
     use Dispatchable;
+
     private array $newScreen;
 
     /**
@@ -17,7 +18,7 @@ class ScreenCreated implements SecurityLogEventInterface
      */
     public function __construct(array $newScreen)
     {
-        $this->newScreen =  $newScreen;
+        $this->newScreen = $newScreen;
     }
 
     /**
@@ -31,7 +32,7 @@ class ScreenCreated implements SecurityLogEventInterface
             'name' => $this->newScreen['title'],
             'description' => $this->newScreen['description'],
             'type' => $this->newScreen['type'],
-            'screen_category_id' => $this->newScreen['screen_category_id']
+            'screen_category_id' => $this->newScreen['screen_category_id'],
         ];
     }
 

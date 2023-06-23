@@ -62,6 +62,7 @@ class ProcessRequestTokenRepository extends EntityRepository
         } catch (Exception $e) {
             // Log the error
             Log::error("Cannot create token: {$e->getMessage()}");
+
             return null;
         }
     }
@@ -93,6 +94,7 @@ class ProcessRequestTokenRepository extends EntityRepository
         } catch (Exception $e) {
             // Log the error
             Log::error("Cannot update token: {$e->getMessage()}");
+
             return null;
         }
     }
