@@ -15,9 +15,13 @@ class GroupDeleted implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private Group $group;
+
     private array $userIds;
+
     private array $userMembers;
+
     private array $groupIds;
+
     private array $groupMembers;
 
     /**
@@ -61,7 +65,7 @@ class GroupDeleted implements SecurityLogEventInterface
             'name' => $this->group->getAttribute('name'),
             'user_members' => $this->userMembers,
             'group_members' => $this->groupMembers,
-            'deleted_at' => Carbon::now()
+            'deleted_at' => Carbon::now(),
         ];
     }
 
@@ -74,10 +78,10 @@ class GroupDeleted implements SecurityLogEventInterface
     {
         return [
             'group_name' => [
-                $this->group
+                $this->group,
             ],
             'user_members' => $this->userMembers,
-            'group_members' => $this->groupMembers
+            'group_members' => $this->groupMembers,
         ];
     }
 

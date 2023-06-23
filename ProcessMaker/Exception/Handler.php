@@ -52,7 +52,8 @@ class Handler extends ExceptionHandler
         if ($exception instanceof \Illuminate\Auth\Access\AuthorizationException) {
             try {
                 UnauthorizedAccessAttempt::dispatch();
-            } catch (\Exception $e){}
+            } catch (\Exception $e) {
+            }
         }
         parent::report($exception);
     }

@@ -12,7 +12,9 @@ class UserGroupMembershipUpdated implements SecurityLogEventInterface
     use Dispatchable;
 
     private User $userUpdated;
+
     private array $data;
+
     private array $changes;
 
     /**
@@ -25,16 +27,16 @@ class UserGroupMembershipUpdated implements SecurityLogEventInterface
         $this->userUpdated = $userUpdated;
         $this->buildData($data);
         $this->changes = [
-            'user' => $userUpdated->id, 
-            'groups' => $data
+            'user' => $userUpdated->id,
+            'groups' => $data,
         ];
     }
 
     /**
      * Building the data
      */
-    public function buildData($data) {
-        
+    public function buildData($data)
+    {
         $groupsDeleted = [];
         $groupsAdded = [];
 
@@ -43,7 +45,7 @@ class UserGroupMembershipUpdated implements SecurityLogEventInterface
                 $group = Group::findOrFail($groupId);
                 $groupsAdded[] = [
                     'link' => route('groups.edit', $group),
-                    'label' => $group->name
+                    'label' => $group->name,
                 ];
             }
         }
@@ -52,7 +54,7 @@ class UserGroupMembershipUpdated implements SecurityLogEventInterface
                 $group = Group::findOrFail($groupId);
                 $groupsDeleted[] = [
                     'link' => route('groups.edit', $group),
-                    'label' => $group->name
+                    'label' => $group->name,
                 ];
             }
         }
@@ -60,29 +62,29 @@ class UserGroupMembershipUpdated implements SecurityLogEventInterface
         $this->data = [
             'user' => [
                 'link' => route('users.edit', $this->userUpdated),
-                'label' => $this->userUpdated->username
-            ]
+                'label' => $this->userUpdated->username,
+            ],
         ];
 
         if (!empty($groupsAdded)) {
             $this->data['+ groups'] = $groupsAdded;
-        };
+        }
 
         if (!empty($groupsDeleted)) {
             $this->data['- groups'] = $groupsDeleted;
-        };
+        }
     }
-    
+
     /**
-     * Return event data 
+     * Return event data
      */
     public function getData(): array
     {
         return $this->data;
     }
-    
+
     /**
-     * Return event changes 
+     * Return event changes
      */
     public function getChanges(): array
     {

@@ -92,9 +92,9 @@ class CssOverrideController extends Controller
         $setting->fill($request->input());
 
         $original = array_intersect_key($setting->getOriginal(), $setting->getDirty());
-        
+
         $setting->saveOrFail();
-        
+
         $footer = $this->setLoginFooter($request);
         $altText = $this->setAltText($request);
 
@@ -104,9 +104,9 @@ class CssOverrideController extends Controller
 
         $changes = [];
         if (isset($setting->getChanges()['config'])) {
-            $changes = (array)json_decode($setting->getChanges()['config']);
+            $changes = (array) json_decode($setting->getChanges()['config']);
         }
-        
+
         if (!empty($changes)) {
             event(new CustomizeUiUpdated($original, array_merge($footer, $altText, $changes), $setting->getChanges()['updated_at']));
         }

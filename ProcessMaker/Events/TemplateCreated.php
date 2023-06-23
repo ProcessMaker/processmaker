@@ -31,7 +31,7 @@ class TemplateCreated implements SecurityLogEventInterface
         return [
             'type' => $this->payload['type'],
             'version' => $this->payload['version'],
-            'name' => $this->payload['name']
+            'name' => $this->payload['name'],
         ];
     }
 

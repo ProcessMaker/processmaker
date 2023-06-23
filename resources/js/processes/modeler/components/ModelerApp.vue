@@ -15,6 +15,7 @@
           ref="modeler"
           :owner="self"
           :decorations="decorations"
+          :validationBar="validationBar"
           @validate="validationErrors = $event"
           @warnings="warnings = $event"
           @saveBpmn="emitSaveEvent"
@@ -25,22 +26,12 @@
           @set-xml-manager="xmlManager = $event"
         />
       </b-card-body>
-
-      <validation-status
-        ref="validationStatus"
-        :validation-errors="validationErrors"
-        :warnings="warnings"
+      <component
+        :is="component.panel"
+        v-for="(component, index) in validationBar"
+        :key="`validation-status-${index}`"
         :owner="self"
-        :xml-manager="xmlManager"
-      >
-        <component
-          :is="component"
-          v-for="(component, index) in validationBar"
-          :key="`validation-status-${index}`"
-          :owner="self"
-        />
-      </validation-status>
-
+      />
       <component
         :is="component.type"
         v-for="(component, index) in external"
@@ -48,7 +39,7 @@
         :options="component.options"
       />
       <create-template-modal ref="create-template-modal" assetType="process" :assetName="processName" :assetId="processId" :currentUserId="currentUserId"/>
-      <create-pm-block-modal ref="create-pm-block-modal" />
+      <create-pm-block-modal ref="create-pm-block-modal" assetType="process" :assetName="processName" :assetId="processId" :currentUserId="currentUserId"/>
     </b-card>
   </b-container>
 </template>

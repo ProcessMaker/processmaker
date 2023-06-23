@@ -35,7 +35,7 @@ class EnvironmentVariablesDeleted implements SecurityLogEventInterface
         return [
             'name' => $this->enVariable->getAttribute('name'),
             'description' => $this->enVariable->getAttribute('description'),
-            'deleted_at' => Carbon::now()
+            'deleted_at' => Carbon::now(),
         ];
     }
 

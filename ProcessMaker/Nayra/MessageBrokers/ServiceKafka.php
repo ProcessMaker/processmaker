@@ -2,9 +2,9 @@
 
 namespace ProcessMaker\Nayra\MessageBrokers;
 
-use Junges\Kafka\Facades\Kafka;
 use Junges\Kafka\Contracts\KafkaConsumerMessage;
-use ProcessMaker\Nayra\Repositories\EntityRepositoryFactory;
+use ProcessMaker\Nayra\Repositories\PersistenceHandler;
+use Junges\Kafka\Facades\Kafka;
 
 class ServiceKafka
 {
@@ -61,15 +61,15 @@ class ServiceKafka
     public function worker()
     {
         // Create Kafka consumer
-        $consumer = Kafka::createConsumer([self::QUEUE_NAME])->withHandler(function(KafkaConsumerMessage $message) {
+        $consumer = Kafka::createConsumer([self::QUEUE_NAME])->withHandler(function (KafkaConsumerMessage $message) {
             // Get transactions
             $transactions = $message->getBody();
 
-            // Store transsactions
+            // Store transactions
             $this->storeData($transactions);
         })->build();
 
-        // Consume incomming messages
+        // Consume incoming messages
         $consumer->consume();
     }
 
@@ -80,8 +80,9 @@ class ServiceKafka
      */
     private function storeData(array $transactions)
     {
+        $handler = new PersistenceHandler();
         foreach ($transactions as $transaction) {
-            EntityRepositoryFactory::createRepository($transaction['entity'])->save($transaction);
+            $handler->save($transaction);
         }
     }
 }

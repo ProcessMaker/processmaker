@@ -15,6 +15,7 @@ class CategoryUpdated implements SecurityLogEventInterface
     private ProcessCategory $category;
 
     private array $changes;
+
     private array $original;
 
     /**
