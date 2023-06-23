@@ -25,6 +25,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
     const ACTION_TRIGGER_INTERMEDIATE_EVENT = 'TRIGGER_INTERMEDIATE_EVENT';
     const ACTION_RUN_SCRIPT = 'RUN_SCRIPT';
     const ACTION_TRIGGER_BOUNDARY_EVENT = 'TRIGGER_BOUNDARY_EVENT';
+    const ACTION_TRIGGER_MESSAGE_EVENT = 'TRIGGER_MESSAGE_EVENT';
 
     /**
      * Trigger a start event and return the process request instance.
@@ -102,13 +103,13 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         $this->validateData($data, $definitions, $element);
 
         // Get complementary information
-        $version = $definitions->getLatestVersion();
+        $version = $instance->process_version_id;
         $userId = $this->getCurrentUserId();
         $state = $this->serializeState($instance);
 
         // Dispatch complete task action
         $this->dispatchAction([
-            'bpmn' => $version->getKey(),
+            'bpmn' => $version,
             'action' => self::ACTION_COMPLETE_TASK,
             'params' => [
                 'request_id' => $token->process_request_id,
@@ -140,7 +141,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         $this->validateData($data, $definitions, $element);
 
         // Get complementary information
-        $version = $definitions->getLatestVersion();
+        $version = $instance->process_version_id;
         $userId = $this->getCurrentUserId();
         $state = $this->serializeState($instance);
 
@@ -174,13 +175,13 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
 
         // Get complementary information
         $instance = $token->processRequest;
-        $version = $instance->process->getLatestVersion();
+        $version = $instance->process_version_id;
         $userId = $this->getCurrentUserId();
         $state = $this->serializeState($instance);
 
         // Dispatch complete task action
         $this->dispatchAction([
-            'bpmn' => $version->getKey(),
+            'bpmn' => $version,
             'action' => self::ACTION_RUN_SCRIPT,
             'params' => [
                 'request_id' => $token->process_request_id,
@@ -217,13 +218,13 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         $this->validateData($data, $definitions, $boundaryEvent);
 
         // Get complementary information
-        $version = $instance->process->getLatestVersion();
+        $version = $instance->process_version_id;
         $userId = $this->getCurrentUserId();
         $state = $this->serializeState($instance);
 
         // Dispatch complete task action
         $this->dispatchAction([
-            'bpmn' => $version->getKey(),
+            'bpmn' => $version,
             'action' => self::ACTION_TRIGGER_BOUNDARY_EVENT,
             'params' => [
                 'request_id' => $token->process_request_id,
