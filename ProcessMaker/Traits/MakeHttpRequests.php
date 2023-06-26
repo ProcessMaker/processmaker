@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Notification;
 use Mustache_Engine;
 use ProcessMaker\Exception\HttpInvalidArgumentException;
 use ProcessMaker\Exception\HttpResponseException;
+use ProcessMaker\Exception\RetryableException;
 use ProcessMaker\Helpers\StringHelper;
 use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\Models\ProcessRequest;
@@ -83,10 +84,13 @@ trait MakeHttpRequests
 
             return $this->responseWithHeaderData($this->call(...$request), $data, $config);
         } catch (TransferException $exception) {
-            $result = $this->handleRetries($data, $config);
-            if ($result) {
-                // Retry was successful
-                return $result;
+            if ($this->retryAttempts && $this->attemptedRetries !== null) {
+                if ($this->attemptedRetries > $this->retryAttempts) {
+                    $this->retryMessage = __('Failed after :num total attempts', ['num' => $this->attemptedRetries + 1]);
+                } else {
+                    Log::info('Retry the request. Attempt ' . $this->attemptedRetries . ' of ' . $this->retryAttempts);
+                    throw new RetryableException($this->retryWaitTime);
+                }
             }
 
             $message = $exception->getMessage();
@@ -101,31 +105,6 @@ trait MakeHttpRequests
                 throw new \Exception($message);
             }
         }
-    }
-
-    /**
-     * Handle retry attempts if configured
-     */
-    private function handleRetries(array $data, array $config)
-    {
-        if ($this->retryAttempts === 0) {
-            return false;
-        }
-
-        if ($this->attemptedRetries >= $this->retryAttempts) {
-            $this->retryMessage = __('Failed after :num total attempts', ['num' => $this->attemptedRetries + 1]);
-
-            return false;
-        }
-
-        $this->attemptedRetries++;
-
-        if ($this->retryWaitTime > 0) {
-            sleep($this->retryWaitTime);
-        }
-        Log::info('Retry the runScript process. Attempt ' . ($this->attemptedRetries) . ' of ' . $this->retryAttempts);
-
-        return $this->request($data, $config);
     }
 
     private function sendErrorNotification(array $data, string $message)
@@ -189,6 +168,7 @@ trait MakeHttpRequests
             'timeout' => 'timeout',
             'retryAttempts' => 'retry_attempts',
             'retryWaitTime' => 'retry_wait_time',
+            'attemptedRetries' => 'attempts',
         ];
 
         foreach ($properties as $classProperty => $settingProperty) {
