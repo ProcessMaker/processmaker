@@ -61,6 +61,8 @@ class RouteServiceProvider extends ServiceProvider
         $this->mapApiRoutes();
 
         $this->mapWebRoutes();
+
+        $this->mapEngineRoutes();
     }
 
     /**
@@ -88,5 +90,18 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::middleware('api')
             ->group(base_path('routes/api.php'));
+    }
+
+    /**
+     * Define the "engine" routes for the application.
+     *
+     * These routes are typically stateless and high performant.
+     *
+     * @return void
+     */
+    protected function mapEngineRoutes()
+    {
+        Route::middleware('engine')
+            ->group(base_path('routes/engine.php'));
     }
 }
