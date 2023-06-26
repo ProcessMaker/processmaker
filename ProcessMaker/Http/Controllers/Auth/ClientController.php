@@ -77,7 +77,7 @@ class ClientController extends PassportClientController
         }
 
         $original_values = $client->getAttributes();
-        
+
         $this->validate($request);
 
         $personalAccess = in_array('personal_access_client', $request->types);
@@ -90,7 +90,7 @@ class ClientController extends PassportClientController
             'personal_access_client' => $personalAccess,
             'password_client' => $password,
         ]);
-        
+
         $original = array_intersect_key($client->getOriginal(), $client->getDirty());
 
         $client->save();

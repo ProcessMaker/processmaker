@@ -15,6 +15,7 @@ class EnvironmentVariablesUpdated implements SecurityLogEventInterface
     private EnvironmentVariable $enVariable;
 
     private array $changes;
+
     private array $original;
 
     /**
@@ -53,7 +54,7 @@ class EnvironmentVariablesUpdated implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            $this->changes
+            'id' => $this->enVariable->getAttribute('id')
         ];
     }
 

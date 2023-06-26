@@ -197,7 +197,7 @@ class SanitizeHelper
                     $elements = array_merge($elements, self::getRichTextElements($item['items'], ($parent ? $parent . '.' . $item['config']['name'] : $item['config']['name'])));
                 } elseif (isset($item['component']) && $item['component'] === 'FormTextArea' && isset($item['config']['richtext']) && $item['config']['richtext'] === true) {
                     $elements[] = ($parent ? $parent . '.' . $item['config']['name'] : $item['config']['name']);
-                // Inside a table ..
+                    // Inside a table ..
                 } elseif ($item['component'] == 'FormMultiColumn') {
                     foreach ($item['items'] as $cell) {
                         if (

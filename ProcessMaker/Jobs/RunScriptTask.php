@@ -62,6 +62,9 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
         $scriptRef = $element->getProperty('scriptRef');
         $configuration = json_decode($element->getProperty('config'), true);
         $errorHandling = json_decode($element->getProperty('errorHandling'), true);
+        if ($errorHandling === null) {
+            $errorHandling = [];
+        }
         $errorHandling['attempts'] = $this->attempts();
 
         // Check to see if we've failed parsing.  If so, let's convert to empty array.

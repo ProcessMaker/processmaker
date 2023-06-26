@@ -32,7 +32,7 @@ class ScriptDeleted implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            'script_id' => $this->script->id
+            'script_id' => $this->script->id,
         ];
     }
 
@@ -44,7 +44,7 @@ class ScriptDeleted implements SecurityLogEventInterface
     public function getData(): array
     {
         return [
-            'Name' => $this->script->getAttribute('title'),
+            'name' => $this->script->getAttribute('title'),
         ];
     }
 
