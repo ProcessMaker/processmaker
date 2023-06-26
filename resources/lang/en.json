@@ -1695,6 +1695,6 @@
   "Set maximum run retry wait time in seconds. Leave empty to use data connector default. Set to 0 for no retry wait time.": "Set maximum run retry wait time in seconds. Leave empty to use data connector default. Set to 0 for no retry wait time.",
   "Script failed after :attempts total attempts": "Script failed after :attempts total attempts",
   "Failed after :num total attempts": "Failed after :num total attempts",
-  "Seconds to wait before retrying. Leave empty to use script default. Set to 0 for no retry wait time.": "Seconds to wait before retrying. Leave empty to use script default. Set to 0 for no retry wait time.",
-  "Number of times to retry. Leave empty to use script default. Set to 0 for no retry attempts.": "Number of times to retry. Leave empty to use script default. Set to 0 for no retry attempts."
+  "Seconds to wait before retrying. Leave empty to use script default. Set to 0 for no retry wait time. This setting is only used when running a script task in a process.": "Seconds to wait before retrying. Leave empty to use script default. Set to 0 for no retry wait time. This setting is only used when running a script task in a process.",
+  "Number of times to retry. Leave empty to use script default. Set to 0 for no retry attempts. This setting is only used when running a script task in a process.": "Number of times to retry. Leave empty to use script default. Set to 0 for no retry attempts. This setting is only used when running a script task in a process."
 }

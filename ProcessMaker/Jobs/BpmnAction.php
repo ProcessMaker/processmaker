@@ -63,10 +63,7 @@ abstract class BpmnAction implements ShouldQueue
             //Run engine to the next state
             $this->engine->runToNextState();
         } catch (RetryableException $e) {
-            \Log::info('Re-Dispatching. Attempts: ' . $this->attempts());
-            if ($this->attempts() >= $e->retry_attempts) {
-                throw $e->originalException;
-            }
+            \Log::info('Re-Dispatching. Attempts: ' . $this->attempts() . ' Wait time: ' . $e->retry_wait_time);
             $this->release($e->retry_wait_time);
         } catch (Throwable $exception) {
             Log::error($exception->getMessage());

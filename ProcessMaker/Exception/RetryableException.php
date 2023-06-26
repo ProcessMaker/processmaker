@@ -9,14 +9,9 @@ use Exception;
  */
 class RetryableException extends Exception
 {
-    public $retry_attempts = 0;
-
-    public $retry_wait_time = 0;
-
-    public $original_exception = null;
-
-    public function __construct($message, $errorHandling, $originalException)
-    {
-        parent::__construct($message);
+    public function __construct(
+        public $retry_wait_time,
+    ) {
+        parent::__construct();
     }
 }

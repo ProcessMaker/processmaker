@@ -89,8 +89,6 @@ class Script extends ProcessMakerModel implements ScriptInterface
 
     private $errorHandling = [];
 
-    private $attemptedRetries = 1;
-
     /**
      * Override the default boot method to allow access to lifecycle hooks
      *
@@ -146,6 +144,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
             throw new ScriptLanguageNotSupported($this->language);
         }
         $this->errorHandling = $errorHandling;
+        $attemptedRetries = Arr::get($errorHandling, 'attempts', null);
         $runner = new ScriptRunner($this->scriptExecutor);
         $runner->setTokenId($tokenId);
         $user = User::find($this->run_as_user_id);
@@ -156,32 +155,18 @@ class Script extends ProcessMakerModel implements ScriptInterface
         try {
             return $runner->run($this->code, $data, $config, $this->timeout(), $user);
         } catch (ScriptException | \RuntimeException $e) {
-            \Log::info('----', [$this->retryAttempts(), $this->retryWaitTime()]);
-            if ($this->retryAttempts()) {
-                Log::info('Retry the runScript process. Attempt ' . $this->attemptedRetries . ' of ' . $this->retryAttempts());
-                if ($this->attemptedRetries > $this->retryAttempts()) {
-                    $message = __('Script failed after :attempts total attempts', ['attempts' => $this->attemptedRetries]);
+            if ($this->retryAttempts() && $attemptedRetries !== null) {
+                if ($attemptedRetries > $this->retryAttempts()) {
+                    $message = __('Script failed after :attempts total attempts', ['attempts' => $attemptedRetries]);
                     $message = $message . "\n" . $e->getMessage();
-                    // Log::error($message);
                     if ($e instanceof ScriptTimeoutException) {
                         throw new ScriptTimeoutException($message);
                     }
                     throw new ScriptException($message);
                 }
 
-                // if (is_numeric($this->retryWaitTime())) {
-                //     Log::info("Waiting {$this->retryWaitTime()} seconds before retrying.");
-                //     sleep($this->retryWaitTime());
-                // }
-                // $this->attemptedRetries++;
-
-                Log::info('Re-running the script', debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5));
-                // $result = $this->runScript($data, $config, $tokenId, $errorHandling);
-                // RunScriptTask::dispatch($process, $instance, $token, []);
-                throw new RetryableException($this->retryAttempts(), $this->retryWaitTime(), $e);
-                Log::info('The script completed successfully');
-
-                return $result;
+                Log::info('Retry the runScript process. Attempt ' . $attemptedRetries . ' of ' . $this->retryAttempts());
+                throw new RetryableException($this->retryWaitTime());
             } else {
                 throw $e;
             }
