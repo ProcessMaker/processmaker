@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Events;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Models\Script;
@@ -13,6 +14,7 @@ class ScriptDeleted implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private Script $script;
+    public string $userDelete;
 
     /**
      * Create a new event instance.
@@ -45,6 +47,7 @@ class ScriptDeleted implements SecurityLogEventInterface
     {
         return [
             'name' => $this->script->getAttribute('title'),
+            'deleted_at' => Carbon::now()
         ];
     }
 
