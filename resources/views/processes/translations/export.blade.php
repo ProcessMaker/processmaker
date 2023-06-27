@@ -12,7 +12,7 @@
     @include('shared.breadcrumbs', ['routes' => [
         __('Designer') => route('processes.index'),
         __('Processes') => route('processes.index'),
-        __('Translations') => route('processes.edit', ['process' => $process->id]),
+        __('Translations') => '/processes/'.$process->id.'/edit#nav-translations',
         __('Export' . ' ' . $process->name . ' - ' . $language['humanLanguage']) => null,
     ]])
 @endsection
@@ -55,7 +55,7 @@
         },
         methods: {
           onCancel() {
-            window.location = `/processes/${this.processId}/edit`;
+            window.location = `/processes/${this.processId}/edit/#nav-translations`;
           },
           onExport() {
             ProcessMaker.apiClient({
