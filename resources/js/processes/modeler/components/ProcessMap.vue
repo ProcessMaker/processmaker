@@ -17,13 +17,14 @@
           }"
           @is-loading="getIsLoading"
         />
-        <ModelerReadonly
+        <Modeler
           ref="modeler"
           :owner="self"
           :decorations="decorations"
           :request-completed-nodes="requestCompletedNodes"
           :request-in-progress-nodes="requestInProgressNodes"
           :request-idle-nodes="requestIdleNodes"
+          :read-only="true"
           @set-xml-manager="xmlManager = $event"
           @click="handleClick"
         />
@@ -33,13 +34,13 @@
 </template>
 
 <script>
-import { ModelerReadonly } from "@processmaker/modeler";
+import { Modeler } from "@processmaker/modeler";
 import ProcessMapTooltip from "./ProcessMapTooltip.vue";
 
 export default {
   name: "ProcessMap",
   components: {
-    ModelerReadonly,
+    Modeler,
     ProcessMapTooltip,
   },
   data() {
