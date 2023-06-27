@@ -27,6 +27,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
+use ProcessMaker\Nayra\Managers\WorkflowManagerDefault;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
 use ProcessMaker\Rules\BPMNValidation;
@@ -584,7 +585,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                 if ($escalateToManager) {
                     $user = WorkflowUserManager::escalateToManager($token, $user);
                 } else {
-                    $res = (new \ProcessMaker\Nayra\Managers\WorkflowManagerDefault)->runProcess($assignmentProcess, 'assign', [
+                    $res = (new WorkflowManagerDefault)->runProcess($assignmentProcess, 'assign', [
                         'user_id' => $user,
                         'process_id' => $this->id,
                         'request_id' => $token->getInstance()->getId(),
