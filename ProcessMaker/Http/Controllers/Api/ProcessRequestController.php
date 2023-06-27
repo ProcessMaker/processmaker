@@ -671,7 +671,7 @@ class ProcessRequestController extends Controller
             ->where('id', $maxTokenId)
             ->select('user_id', 'element_id', 'element_name', 'created_at', 'completed_at', 'status')
             ->with([
-                'user' => fn ($query) => $query->select('id', 'username'),
+                'user' => fn ($query) => $query->select('id', 'username', 'firstname', 'lastname'),
             ])
             ->firstOrFail();
 
@@ -684,7 +684,7 @@ class ProcessRequestController extends Controller
             default => $token->status,
         };
         $token->status_translation = $translatedStatus;
-        $token->completed_by = $token->completed_at ? ($token->user['username'] ?? '-') : '-';
+        $token->completed_by = $token->completed_at ? ($token->user['firstname']. ' ' .$token->user['lastname'] ?? '-') : '-';
 
         // Get the number of times the flow has run.
         $tokensCount = $request->tokens()
