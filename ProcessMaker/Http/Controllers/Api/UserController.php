@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Events\UserCreated;
 use ProcessMaker\Events\UserDeleted;
-use ProcessMaker\Events\UserUpdated;
 use ProcessMaker\Events\UserGroupMembershipUpdated;
+use ProcessMaker\Events\UserUpdated;
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
@@ -207,7 +207,7 @@ class UserController extends Controller
 
         return new UserResource($user);
     }
-    
+
     /**
      * Return the user's pinned nodes.
      *
@@ -249,7 +249,6 @@ class UserController extends Controller
                 ? $meta['pinnedControls']
                 : [];
     }
-
 
     /**
      * Update a user
@@ -296,16 +295,18 @@ class UserController extends Controller
         if (isset($fields['password'])) {
             $fields['password'] = Hash::make($fields['password']);
         }
+        $original = $user->getOriginal();
         $user->fill($fields);
         if (Auth::user()->is_administrator && $request->has('is_administrator')) {
             // user must be an admin to make another user an admin
             $user->is_administrator = $request->get('is_administrator');
         }
 
-        //Call new Event to store User Changes in LOG
-        UserUpdated::dispatch($user);
-
         $user->saveOrFail();
+        $changes = $user->getChanges();
+
+        //Call new Event to store User Changes into LOG
+        UserUpdated::dispatch($user, $changes, $original);
         if ($request->has('avatar')) {
             $this->uploadAvatar($user, $request);
         }
@@ -353,7 +354,7 @@ class UserController extends Controller
         if (!$user->can('edit', $user)) {
             throw new AuthorizationException(__('Not authorized to update this user.'));
         }
-        
+
         if ($request->has('pinnedNodes')) {
             $meta = $user->meta ? (array) $user->meta : [];
             $meta['pinnedControls'] = $request->get('pinnedNodes');
@@ -361,6 +362,7 @@ class UserController extends Controller
         }
 
         $user->saveOrFail();
+
         return response([], 204);
     }
 
@@ -422,6 +424,7 @@ class UserController extends Controller
             return response([], 400);
         }
         event(new UserGroupMembershipUpdated($data, $user));
+
         return response([], 204);
     }
 

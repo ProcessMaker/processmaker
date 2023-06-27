@@ -11,6 +11,7 @@ class ProcessPublished implements SecurityLogEventInterface
 {
     use Dispatchable;
     use FormatSecurityLogChanges;
+
     // Currently is not required to register the following columns (related to the diagram)
     public const REMOVE_KEYS = [
         'bpmn',
@@ -19,12 +20,13 @@ class ProcessPublished implements SecurityLogEventInterface
         'self_service_tasks',
         'signal_events',
         'conditional_events',
-        'properties'
+        'properties',
     ];
 
     private Process $process;
 
     private array $changes;
+
     private array $original;
 
     /**
@@ -53,7 +55,7 @@ class ProcessPublished implements SecurityLogEventInterface
             ],
             'category' => $this->process->category ? $this->process->category->name : null,
             'action' => $this->process->getAttribute('status'),
-            'updated_at' => $this->process->getAttribute('updated_at'),
+            'last_modified' => $this->process->getAttribute('updated_at'),
         ], $this->formatChanges($this->changes, $this->original));
     }
 
@@ -64,10 +66,9 @@ class ProcessPublished implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return array_merge(
-            ['id' => $this->process->getAttribute('id')],
-            $this->getData()
-        );
+        return [
+            'id' => $this->process->getAttribute('id')
+        ];
     }
 
     /**

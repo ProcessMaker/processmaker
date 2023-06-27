@@ -9,9 +9,11 @@ use ProcessMaker\Nayra\Repositories\PersistenceHandler;
 class ServiceRabbitMq
 {
     const QUEUE_NAME_CONSUME = 'nayra-store';
+
     const QUEUE_NAME_PUBLISH = 'requests';
 
     private $connection;
+
     private $channel;
 
     /**
@@ -30,7 +32,6 @@ class ServiceRabbitMq
         // Create connection
         $this->connection = new AMQPStreamConnection($rabbitMqHost, $rabbitMqPort, $rabbitMqLogin, $rabbitMqPassword);
         $this->channel = $this->connection->channel();
-
 
         // Set channel config
         $this->channel->queue_declare(self::QUEUE_NAME_PUBLISH, false, true, false, false);

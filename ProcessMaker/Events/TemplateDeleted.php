@@ -32,7 +32,7 @@ class TemplateDeleted implements SecurityLogEventInterface
     {
         return [
             'template_name' => $this->template->name,
-            'deleted_at' => Carbon::now()
+            'deleted_at' => Carbon::now(),
         ];
     }
 
@@ -45,7 +45,7 @@ class TemplateDeleted implements SecurityLogEventInterface
     {
         return [
             'id' => $this->template->id,
-            'template_name' => $this->template->name
+            'template_name' => $this->template->name,
         ];
     }
 

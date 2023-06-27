@@ -21,6 +21,7 @@ use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements WorkflowManagerInterface
 {
     const ACTION_START_PROCESS = 'START_PROCESS';
+
     const ACTION_COMPLETE_TASK = 'COMPLETE_TASK';
     const ACTION_TRIGGER_INTERMEDIATE_EVENT = 'TRIGGER_INTERMEDIATE_EVENT';
     const ACTION_RUN_SCRIPT = 'RUN_SCRIPT';

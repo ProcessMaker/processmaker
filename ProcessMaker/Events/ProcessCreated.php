@@ -2,9 +2,9 @@
 
 namespace ProcessMaker\Events;
 
+use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Models\Process;
-use Illuminate\Foundation\Events\Dispatchable;
 
 class ProcessCreated implements SecurityLogEventInterface
 {
@@ -15,6 +15,7 @@ class ProcessCreated implements SecurityLogEventInterface
     private string $typeCreation;
 
     public const BLANK_CREATION = 'BLANK';
+
     public const TEMPLATE_CREATION = 'TEMPLATE';
 
     /**
@@ -58,10 +59,9 @@ class ProcessCreated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return array_merge(
-            ['id' => $this->process->getAttribute('id')],
-            $this->getData()
-        );
+        return [
+            'id' => $this->process->getAttribute('id')
+        ];
     }
 
     /**

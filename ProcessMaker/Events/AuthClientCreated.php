@@ -10,6 +10,7 @@ class AuthClientCreated implements SecurityLogEventInterface
     use Dispatchable;
 
     private array $data;
+
     private array $changes;
 
     /**
@@ -27,21 +28,21 @@ class AuthClientCreated implements SecurityLogEventInterface
             'provider' => $created_values['provider'],
             'redirect' => $created_values['redirect'],
             'password_client' => $created_values['password_client'],
-            'personal_access_client' => $created_values['personal_access_client']
+            'personal_access_client' => $created_values['personal_access_client'],
         ];
         $this->changes = $created_values;
     }
-    
+
     /**
-     * Return event data 
+     * Return event data
      */
     public function getData(): array
     {
         return $this->data;
     }
-    
+
     /**
-     * Return event changes 
+     * Return event changes
      */
     public function getChanges(): array
     {

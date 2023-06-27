@@ -5,6 +5,7 @@ namespace ProcessMaker\Models;
 use Hamcrest\Type\IsNumeric;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Contracts\ScriptInterface;
 use ProcessMaker\Exception\ScriptException;
@@ -13,6 +14,7 @@ use ProcessMaker\Exception\ScriptTimeoutException;
 use ProcessMaker\GenerateAccessToken;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
+use ProcessMaker\Notifications\ErrorExecutionNotification;
 use ProcessMaker\ScriptRunners\ScriptRunner;
 use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HasCategories;
@@ -155,12 +157,15 @@ class Script extends ProcessMakerModel implements ScriptInterface
         try {
             return $runner->run($this->code, $data, $config, $this->timeout(), $user);
         } catch (ScriptException | \RuntimeException $e) {
-            if ($this->retryAttempts() !== null && $this->retryWaitTime() !== null) {
+            if ($this->retryAttempts() && $this->retryWaitTime() !== null) {
                 Log::info('Retry the runScript process. Attempt ' . $this->attemptedRetries . ' of ' . $this->retryAttempts());
                 if ($this->attemptedRetries > $this->retryAttempts()) {
                     $message = __('Script failed after :attempts total attempts', ['attempts' => $this->attemptedRetries]);
                     $message = $message . "\n" . $e->getMessage();
                     Log::error($message);
+
+                    $this->sendExecutionErrorNotification($message, $tokenId, $errorHandling);
+
                     if ($e instanceof ScriptTimeoutException) {
                         throw new ScriptTimeoutException($message);
                     }
@@ -177,7 +182,22 @@ class Script extends ProcessMakerModel implements ScriptInterface
 
                 return $result;
             } else {
+                $this->sendExecutionErrorNotification($e->getMessage(), $tokenId, $errorHandling);
                 throw $e;
+            }
+        }
+    }
+
+    /**
+     * Send execution error notification.
+     */
+    public function sendExecutionErrorNotification(string $message, string $tokenId, array $errorHandling)
+    {
+        $processRequestToken = ProcessRequestToken::find($tokenId);
+        if ($processRequestToken) {
+            $user = $processRequestToken->processRequest->processVersion->manager;
+            if ($user !== null) {
+                Notification::send($user, new ErrorExecutionNotification($processRequestToken, $message, $errorHandling));
             }
         }
     }

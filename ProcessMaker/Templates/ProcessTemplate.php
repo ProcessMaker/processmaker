@@ -75,6 +75,13 @@ class ProcessTemplate implements TemplateInterface
     public function show($request) : array
     {
         $template = ProcessTemplates::find($request->id);
+        $process = Process::where('uuid', $template->editing_process_uuid)->where('is_template', 1)->first();
+
+        // If a process exists with the template name return that process
+        if ($process) {
+            return ['id' => $process->id];
+        }
+        // Otherwise we need to import the template and create a new process
         $payload = json_decode($template->manifest, true);
 
         $export = array_filter($payload['export'], function ($asset) {
@@ -121,16 +128,13 @@ class ProcessTemplate implements TemplateInterface
 
         $options = new Options($postOptions);
         $importer = new Importer($payload, $options);
-        $process = Process::where('name', $template->name)->where('is_template', 1)->first();
-        if ($process) {
-            $manifest = $importer->doImport($process->id);
-
-            return ['id' => $process->id];
-        }
 
         $manifest = $importer->doImport();
         $rootLog = $manifest[$payload['root']]->log;
         $processId = $rootLog['newId'];
+
+        $processUuid = Process::select('uuid')->where('id', $processId)->first()->uuid;
+        ProcessTemplates::where('id', $template->id)->update(['editing_process_uuid' => $processUuid]);
 
         // Return an array with the process ID
         return ['id' => $processId];

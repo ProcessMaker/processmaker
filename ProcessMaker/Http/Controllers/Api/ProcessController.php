@@ -10,6 +10,8 @@ use ProcessMaker\Events\ProcessArchived;
 use ProcessMaker\Events\ProcessCreated;
 use ProcessMaker\Events\ProcessPublished;
 use ProcessMaker\Events\ProcessRestored;
+use ProcessMaker\Events\RequestAction;
+use ProcessMaker\Events\RequestCreated;
 use ProcessMaker\Events\TemplateUpdated;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Facades\WorkflowManager;
@@ -222,6 +224,12 @@ class ProcessController extends Controller
     {
         $request->validate(Process::rules());
         $data = $request->all();
+
+        // If bpmn exists (from Generative AI)
+        if ($request->input('bpmn')) {
+            $data['bpmn'] = $request->input('bpmn');
+        }
+
         // Validate if exists file bpmn
         if ($request->has('file')) {
             $data['bpmn'] = $request->file('file')->get();
@@ -362,6 +370,7 @@ class ProcessController extends Controller
 
                 //Call Event to Log Template Changes
                 TemplateUpdated::dispatch([], [], true);
+
                 return new Resource($process->refresh());
             } catch (\Exception $error) {
                 return ['error' => $error->getMessage()];
@@ -999,6 +1008,50 @@ class ProcessController extends Controller
     }
 
     /**
+     * Download the BPMN definition of a process
+     *
+     * @param $process
+     *
+     * @return Response
+     *
+     * @OA\Get(
+     *     path="/processes/{processId}/bpmn",
+     *     summary="Download the BPMN definition of a process",
+     *     operationId="processBpmn",
+     *     tags={"Processes"},
+     *     @OA\Parameter(
+     *         description="ID of process",
+     *         in="path",
+     *         name="processId",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="integer",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully built the process for export",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="url",
+     *                 type="string",
+     *             ),
+     *         ),
+     *     ),
+     * )
+     */
+    public function downloadBpmn(Request $request, Process $process)
+    {
+        $bpmn = $process->bpmn;
+        $filename = 'bpmnProcess.bpmn';
+
+        return response()->streamDownload(function () use ($bpmn) {
+            echo $bpmn;
+        }, $filename);
+    }
+
+    /**
      * Check if the import is ready
      *
      * @param Request $request
@@ -1276,6 +1329,8 @@ class ProcessController extends Controller
                 'message' => __('Unable to start process'),
             ], 422);
         }
+
+        event(new RequestAction($processRequest, RequestAction::ACTION_CREATED));
 
         return new ProcessRequests($processRequest);
     }
