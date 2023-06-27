@@ -228,7 +228,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             'params' => [
                 'request_id' => $token->process_request_id,
                 'token_id' => $token->uuid,
-                'element_id' => $token->element_id,
+                'element_id' => $boundaryEvent->getId(),
                 'data' => [],
             ],
             'state' => $state,
@@ -255,6 +255,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
                 'status' => $token->status,
                 'index' => $token->element_index,
                 'element_id' => $token->element_id,
+                'created_at' => $token->created_at->getTimestamp(),
             ]);
         }
 

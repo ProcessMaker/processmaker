@@ -584,7 +584,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                 if ($escalateToManager) {
                     $user = WorkflowUserManager::escalateToManager($token, $user);
                 } else {
-                    $res = WorkflowManager::runProcess($assignmentProcess, 'assign', [
+                    $res = (new \ProcessMaker\Nayra\Managers\WorkflowManagerDefault)->runProcess($assignmentProcess, 'assign', [
                         'user_id' => $user,
                         'process_id' => $this->id,
                         'request_id' => $token->getInstance()->getId(),

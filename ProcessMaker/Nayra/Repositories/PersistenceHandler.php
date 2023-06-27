@@ -4,6 +4,7 @@ namespace ProcessMaker\Nayra\Repositories;
 
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Repositories\ExecutionInstanceRepository;
 use ProcessMaker\Repositories\TokenRepository;
 
@@ -11,10 +12,12 @@ class PersistenceHandler
 {
     use PersistenceRequestTrait;
     use PersistenceTokenTrait;
+    use PersistenceTimerEventsTrait;
 
     protected Deserializer $deserializer;
     protected ExecutionInstanceRepository $instanceRepository;
     protected TokenRepository $tokenRepository;
+    protected TaskSchedulerManager $taskSchedulerManager;
 
     /**
      * PersistenceHandler constructor
@@ -24,6 +27,7 @@ class PersistenceHandler
         $this->deserializer = new Deserializer();
         $this->instanceRepository = new ExecutionInstanceRepository();
         $this->tokenRepository = new TokenRepository($this->instanceRepository);
+        $this->taskSchedulerManager = new TaskSchedulerManager();
     }
 
     /**
@@ -104,6 +108,15 @@ class PersistenceHandler
                 break;
             case 'instance_updated':
                 $this->persistInstanceUpdated($transaction);
+                break;
+            case 'schedule_date':
+                $this->persistScheduleDate($transaction);
+                break;
+            case 'schedule_cycle':
+                $this->persistScheduleCycle($transaction);
+                break;
+            case 'schedule_duration':
+                $this->persistScheduleDuration($transaction);
                 break;
             default:
                 throw new Exception('Unknown transaction type ' . $transaction['type']);
