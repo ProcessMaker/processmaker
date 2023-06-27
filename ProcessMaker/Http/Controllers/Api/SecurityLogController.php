@@ -157,7 +157,7 @@ class SecurityLogController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => __('The log file is being prepared and will be sent to your email as soon as it is ready.')
+            'message' => __('The file is processing... Please wait for an alert with the download link.')
         ]);
     }
 

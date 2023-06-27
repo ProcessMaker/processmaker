@@ -87,23 +87,45 @@ class DownloadSecurityLogTest extends TestCase
 
     public function testHandleWithSuccess()
     {
-        //The test should not be run as it requires an AWS key
-        $this->assertTrue(true, 'ignoring');
-        return;
-        $this->expectsEvents(SecurityLogDownloadJobCompleted::class);
-        $job = new DownloadSecurityLog($this->user, DownloadSecurityLog::FORMAT_CSV);
-        (new ReflectionMethod($job, 'handle'))->invoke($job);
+        if (
+            !config('filesystems.disks.s3.key')
+            && !config('filesystems.disks.s3.secret')
+            && !config('filesystems.disks.s3.region')
+            && !config('filesystems.disks.s3.bucket')
+        ) {
+            $this->markTestSkipped(
+                'AWS S3 service is not available.'
+            );
+        } else {
+            $this->expectsEvents(SecurityLogDownloadJobCompleted::class);
+            $job = new DownloadSecurityLog($this->user, DownloadSecurityLog::FORMAT_CSV);
+            $url = (new ReflectionMethod($job, 'handle'))->invoke($job);
+            $this->assertNotEmpty($url);
+            $data = file_get_contents($url);
+            $this->assertNotEmpty($data);
+        }
     }
 
     public function testExport()
     {
-        //The test should not be run as it requires an AWS key
-        $this->assertTrue(true, 'ignoring');
-        return;
-        $this->expectsEvents(SecurityLogDownloadJobCompleted::class);
-        $job = new DownloadSecurityLog($this->user, DownloadSecurityLog::FORMAT_CSV);
-        $filename = (new ReflectionMethod($job, 'createTemporaryFilename'))->invoke($job);
-        $expires = (new ReflectionMethod($job, 'getExpires'))->invoke($job);
-        (new ReflectionMethod($job, 'export'))->invoke($job, $filename, $expires);
+        if (
+            !config('filesystems.disks.s3.key')
+            && !config('filesystems.disks.s3.secret')
+            && !config('filesystems.disks.s3.region')
+            && !config('filesystems.disks.s3.bucket')
+        ) {
+            $this->markTestSkipped(
+                'AWS S3 service is not available.'
+            );
+        } else {
+            $this->expectsEvents(SecurityLogDownloadJobCompleted::class);
+            $job = new DownloadSecurityLog($this->user, DownloadSecurityLog::FORMAT_CSV);
+            $filename = (new ReflectionMethod($job, 'createTemporaryFilename'))->invoke($job);
+            $expires = (new ReflectionMethod($job, 'getExpires'))->invoke($job);
+            $url = (new ReflectionMethod($job, 'export'))->invoke($job, $filename, $expires);
+            $this->assertNotEmpty($url);
+            $data = file_get_contents($url);
+            $this->assertNotEmpty($data);
+        }
     }
 }

@@ -33,6 +33,7 @@ class DownloadSecurityLog implements ShouldQueue
     private ?int $userId;
 
     public const CSV_SEPARATOR = ',';
+    public const EXPIRATION_HOURS = 24;
     public const FORMAT_CSV = 'csv';
     public const FORMAT_XML = 'xml';
 
@@ -84,7 +85,7 @@ class DownloadSecurityLog implements ShouldQueue
      */
     protected function getExpires()
     {
-        return now()->addHours(24);
+        return now()->addHours(static::EXPIRATION_HOURS);
     }
 
     /**
