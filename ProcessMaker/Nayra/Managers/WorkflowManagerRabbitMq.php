@@ -12,6 +12,7 @@ use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
+use ProcessMaker\Nayra\Contracts\Bpmn\BoundaryEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
@@ -24,6 +25,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
     const ACTION_COMPLETE_TASK = 'COMPLETE_TASK';
     const ACTION_TRIGGER_INTERMEDIATE_EVENT = 'TRIGGER_INTERMEDIATE_EVENT';
     const ACTION_RUN_SCRIPT = 'RUN_SCRIPT';
+    const ACTION_TRIGGER_BOUNDARY_EVENT = 'TRIGGER_BOUNDARY_EVENT';
 
     /**
      * Trigger a start event and return the process request instance.
@@ -195,6 +197,49 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
     }
 
     /**
+     * Trigger a boundary event
+     *
+     * @param Definitions $definitions
+     * @param ExecutionInstanceInterface $instance
+     * @param TokenInterface $token
+     * @param BoundaryEventInterface $boundaryEvent
+     * @param array $data
+     *
+     * @return void
+     */
+    public function triggerBoundaryEvent(
+        Definitions $definitions,
+        ExecutionInstanceInterface $instance,
+        TokenInterface $token,
+        BoundaryEventInterface $boundaryEvent,
+        array $data
+    ) {
+        //Validate data
+        $this->validateData($data, $definitions, $boundaryEvent);
+
+        // Get complementary information
+        $version = $instance->process->getLatestVersion();
+        $userId = $this->getCurrentUserId();
+        $state = $this->serializeState($instance);
+
+        // Dispatch complete task action
+        $this->dispatchAction([
+            'bpmn' => $version->getKey(),
+            'action' => self::ACTION_TRIGGER_BOUNDARY_EVENT,
+            'params' => [
+                'request_id' => $token->process_request_id,
+                'token_id' => $token->uuid,
+                'element_id' => $boundaryEvent->getId(),
+                'data' => [],
+            ],
+            'state' => $state,
+            'session' => [
+                'user_id' => $userId,
+            ],
+        ]);
+    }
+
+    /**
      * Build a state object.
      *
      * @param ProcessRequest $instance
@@ -211,6 +256,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
                 'status' => $token->status,
                 'index' => $token->element_index,
                 'element_id' => $token->element_id,
+                'created_at' => $token->created_at->getTimestamp(),
             ]);
         }
 
