@@ -14,7 +14,6 @@ class ScriptDeleted implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private Script $script;
-    public string $userDelete;
 
     /**
      * Create a new event instance.

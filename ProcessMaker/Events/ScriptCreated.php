@@ -15,7 +15,7 @@ class ScriptCreated implements SecurityLogEventInterface
 
     private array $changes;
     private array $original;
-    public string $categoryName;
+    public string $categoryName = '';
     private Script $script;
 
     /**
@@ -29,7 +29,9 @@ class ScriptCreated implements SecurityLogEventInterface
         $this->script = $script;
         $this->changes = $changes;
         $categoryId = $this->script['script_category_id'] ?? '';
-        $this->categoryName = ScriptCategory::where('id', $categoryId)->value('name');
+        if (!empty($categoryId)) {
+            $this->categoryName = ScriptCategory::where('id', $categoryId)->value('name');
+        }
     }
 
     /**
