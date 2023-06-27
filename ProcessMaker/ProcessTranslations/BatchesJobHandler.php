@@ -55,7 +55,6 @@ class BatchesJobHandler
         [$screensWithChunks, $chunksCount] = $this->prepareData($this->screens, $languageTranslationHandler);
 
         // Execute requests for each regular chunk
-
         $batch = Bus::batch([])
             ->then(function (Batch $batch) {
                 \Log::info('All jobs in batch completed');
@@ -79,6 +78,12 @@ class BatchesJobHandler
         // Update with real batch token ...
         ProcessTranslationToken::where('token', $this->code)->update(['token' => $batch->id]);
 
+        if (!count($screensWithChunks)) {
+            $this->notifyProgress($batch);
+
+            return false;
+        }
+
         foreach ($screensWithChunks as $screenId => $screenWithChunks) {
             foreach ($screenWithChunks as $chunk) {
                 $batch->add(
@@ -93,6 +98,8 @@ class BatchesJobHandler
                 );
             }
         }
+
+        return true;
     }
 
     private function notifyProgress($batch)
