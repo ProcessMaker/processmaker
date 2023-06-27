@@ -1283,6 +1283,7 @@
   "Validate that an attribute has a valid URL format.": "Validate that an attribute has a valid URL format.",
   "Add Rule": "Add Rule",
   "No validation rule(s)": "No validation rule(s)",
+  "No strings found to translate": "No strings found to translate",
   "New Select List": "New Select List",
   "New Array of Objects": "New Array of Objects",
   "Existing Array": "Existing Array",
