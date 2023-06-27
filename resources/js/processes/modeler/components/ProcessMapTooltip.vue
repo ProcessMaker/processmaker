@@ -75,7 +75,7 @@ export default {
       },
     },
     requestId: {
-      type: String,
+      type: Number,
       default() {
         return null;
       },
