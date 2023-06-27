@@ -44,53 +44,45 @@ class DownloadSecurityLogTest extends TestCase
         $this->assertStringContainsString('.xml', $filename);
     }
 
-    public function testGetCollection()
+    public function testExpires()
     {
         $job = new DownloadSecurityLog($this->user, DownloadSecurityLog::FORMAT_CSV);
-        $results = (new ReflectionMethod($job, 'getCollection'))->invoke($job);
-        $this->assertCount(4, $results);
+        $method = new ReflectionMethod($job, 'getExpires');
+        $expires = $method->invoke($job);
+        $this->assertLessThan($expires, now());
 
-        $job = new DownloadSecurityLog($this->user, DownloadSecurityLog::FORMAT_CSV, $this->user->id);
-        $results = (new ReflectionMethod($job, 'getCollection'))->invoke($job);
-        $this->assertCount(2, $results);
+        $job = new DownloadSecurityLog($this->user, DownloadSecurityLog::FORMAT_XML);
+        $method = new ReflectionMethod($job, 'getExpires');
+        $expires = $method->invoke($job);
+        $this->assertLessThan($expires, now());
     }
 
-    public function testToCSV()
+    /**
+     * @covers DownloadSecurityLog::toCSV
+     */
+    public function testWriteContentCSV()
     {
-        $collection = $this->simpleCollection;
+        $stream = fopen('php://temp', 'w+');
         $job = new DownloadSecurityLog($this->user, DownloadSecurityLog::FORMAT_CSV);
-        $csv = (new ReflectionMethod($job, 'toCSV'))->invoke($job, $collection);
-        $this->assertEquals(
-            'id|event' . PHP_EOL .
-            '1|login' . PHP_EOL .
-            '2|logout',
-            $csv
-        );
+        $csv = (new ReflectionMethod($job, 'writeContent'))->invoke($job, $stream);
+        $this->assertNotEmpty($csv);
+        $this->assertTrue(rewind($stream));
+        $this->assertTrue(fclose($stream));
     }
 
-    public function testToXML()
+    /**
+     * @covers DownloadSecurityLog::initialTagsXML
+     * @covers DownloadSecurityLog::toXML
+     * @covers DownloadSecurityLog::endTagsXML
+     */
+    public function testWriteContentXML()
     {
-        $collection = $this->simpleCollection;
-        $job = new DownloadSecurityLog($this->user, DownloadSecurityLog::FORMAT_CSV);
-        $xml = (new ReflectionMethod($job, 'toXML'))->invoke($job, $collection);
-        $this->assertStringContainsString('<securityLog>', $xml);
-        $this->assertStringContainsString('<id>2</id>', $xml);
-    }
-
-    public function testCreateTemporaryUrl()
-    {
-        //The test should not be run as it requires an AWS key
-        $this->assertTrue(true, 'ignoring');
-        return;
-        $collection = $this->simpleCollection;
-        $job = new DownloadSecurityLog($this->user, DownloadSecurityLog::FORMAT_CSV);
-        $filename = (new ReflectionMethod($job, 'createTemporaryFilename'))->invoke($job);
-        $expires = (new ReflectionMethod($job, 'getExpires'))->invoke($job);
-        $csv = (new ReflectionMethod($job, 'toCSV'))->invoke($job, $collection);
-        $url = (new ReflectionMethod($job, 'createTemporaryUrl'))->invoke($job, $filename, $csv, $expires);
-        $this->assertStringContainsString('s3.amazonaws.com/security-logs', $url);
-        $disk = Storage::disk('s3');
-        $this->assertTrue($disk->exists($filename));
+        $stream = fopen('php://temp', 'w+');
+        $job = new DownloadSecurityLog($this->user, DownloadSecurityLog::FORMAT_XML);
+        $xml = (new ReflectionMethod($job, 'writeContent'))->invoke($job, $stream);
+        $this->assertNotEmpty($xml);
+        $this->assertTrue(rewind($stream));
+        $this->assertTrue(fclose($stream));
     }
 
     public function testHandleWithSuccess()
@@ -101,5 +93,17 @@ class DownloadSecurityLogTest extends TestCase
         $this->expectsEvents(SecurityLogDownloadJobCompleted::class);
         $job = new DownloadSecurityLog($this->user, DownloadSecurityLog::FORMAT_CSV);
         (new ReflectionMethod($job, 'handle'))->invoke($job);
+    }
+
+    public function testExport()
+    {
+        //The test should not be run as it requires an AWS key
+        $this->assertTrue(true, 'ignoring');
+        return;
+        $this->expectsEvents(SecurityLogDownloadJobCompleted::class);
+        $job = new DownloadSecurityLog($this->user, DownloadSecurityLog::FORMAT_CSV);
+        $filename = (new ReflectionMethod($job, 'createTemporaryFilename'))->invoke($job);
+        $expires = (new ReflectionMethod($job, 'getExpires'))->invoke($job);
+        (new ReflectionMethod($job, 'export'))->invoke($job, $filename, $expires);
     }
 }

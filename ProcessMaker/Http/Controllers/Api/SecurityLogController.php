@@ -150,6 +150,7 @@ class SecurityLogController extends Controller
             'format' => 'required|string|in:xml,csv',
         ]);
         $sessionUser = Auth::user();
+
         // Call the Event
         DownloadSecurityLog::dispatch($sessionUser, $request->input('format'), $user ? $user->id : null)
             ->delay(now()->addSeconds(5));
