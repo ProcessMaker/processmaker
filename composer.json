@@ -119,6 +119,7 @@
                 "package-files": "1.8.0",
                 "package-googleplaces": "1.5.0",
                 "package-photo-video": "0.2.0",
+                "package-plaid": "0.1.0",
                 "package-pm-blocks": "0.2.0",
                 "package-process-documenter": "1.4.0",
                 "package-process-optimization": "1.5.0",
