@@ -26,6 +26,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
     const ACTION_TRIGGER_INTERMEDIATE_EVENT = 'TRIGGER_INTERMEDIATE_EVENT';
     const ACTION_RUN_SCRIPT = 'RUN_SCRIPT';
     const ACTION_TRIGGER_BOUNDARY_EVENT = 'TRIGGER_BOUNDARY_EVENT';
+    const ACTION_TRIGGER_MESSAGE_EVENT = 'TRIGGER_MESSAGE_EVENT';
 
     /**
      * Trigger a start event and return the process request instance.
@@ -103,13 +104,13 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         $this->validateData($data, $definitions, $element);
 
         // Get complementary information
-        $version = $definitions->getLatestVersion();
+        $version = $instance->process_version_id;
         $userId = $this->getCurrentUserId();
         $state = $this->serializeState($instance);
 
         // Dispatch complete task action
         $this->dispatchAction([
-            'bpmn' => $version->getKey(),
+            'bpmn' => $version,
             'action' => self::ACTION_COMPLETE_TASK,
             'params' => [
                 'request_id' => $token->process_request_id,
@@ -141,13 +142,13 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         $this->validateData($data, $definitions, $element);
 
         // Get complementary information
-        $version = $definitions->getLatestVersion();
+        $version = $instance->process_version_id;
         $userId = $this->getCurrentUserId();
         $state = $this->serializeState($instance);
 
         // Dispatch complete task action
         $this->dispatchAction([
-            'bpmn' => $version->getKey(),
+            'bpmn' => $version,
             'action' => self::ACTION_TRIGGER_INTERMEDIATE_EVENT,
             'params' => [
                 'request_id' => $token->process_request_id,
@@ -175,13 +176,13 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
 
         // Get complementary information
         $instance = $token->processRequest;
-        $version = $instance->process->getLatestVersion();
+        $version = $instance->process_version_id;
         $userId = $this->getCurrentUserId();
         $state = $this->serializeState($instance);
 
         // Dispatch complete task action
         $this->dispatchAction([
-            'bpmn' => $version->getKey(),
+            'bpmn' => $version,
             'action' => self::ACTION_RUN_SCRIPT,
             'params' => [
                 'request_id' => $token->process_request_id,
@@ -218,19 +219,52 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         $this->validateData($data, $definitions, $boundaryEvent);
 
         // Get complementary information
-        $version = $instance->process->getLatestVersion();
+        $version = $instance->process_version_id;
         $userId = $this->getCurrentUserId();
         $state = $this->serializeState($instance);
 
         // Dispatch complete task action
         $this->dispatchAction([
-            'bpmn' => $version->getKey(),
+            'bpmn' => $version,
             'action' => self::ACTION_TRIGGER_BOUNDARY_EVENT,
             'params' => [
                 'request_id' => $token->process_request_id,
                 'token_id' => $token->uuid,
                 'element_id' => $boundaryEvent->getId(),
                 'data' => [],
+            ],
+            'state' => $state,
+            'session' => [
+                'user_id' => $userId,
+            ],
+        ]);
+    }
+
+    /**
+     * Triggers a message event in the process instance based on provided parameters.
+     *
+     * @param $instanceId of the process instance that is to be triggered
+     * @param $elementId of the catch message event element
+     * @param $messageRef of the message event that is to be triggered
+     * @param $payload (optional) array of key-value pairs that are to be stored in the data store
+     */
+    public function throwMessageEvent($instanceId, $elementId, $messageRef, array $payload = [])
+    {
+        // Get complementary information
+        $instance = ProcessRequest::find($instanceId);
+        $version = $instance->process_version_id;
+        $userId = $this->getCurrentUserId();
+        $state = $this->serializeState($instance);
+
+        // Dispatch complete task action
+        $this->dispatchAction([
+            'bpmn' => $version,
+            'action' => self::ACTION_TRIGGER_MESSAGE_EVENT,
+            'params' => [
+                'instance_id' => $instanceId,
+                'element_id' => $elementId,
+                'message_ref' => $messageRef,
+                'data' => $payload,
             ],
             'state' => $state,
             'session' => [
