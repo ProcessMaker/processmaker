@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Helpers;
 
+use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 use stdClass;
 
@@ -38,5 +39,36 @@ class ArrayHelper
         $arrayHelper = new ArrayHelper();
         $arrayDiff = $arrayHelper->formatChanges($displayChanges, $displayOriginal);
         return $arrayDiff;
+    }
+
+    /**
+     * This method swaps groups of id numbers "1,2,3" for specific column names values "'A','B','C'" 
+     * using the Tables information through Models
+     * The method returns a String value
+     * The packageName parameter is optional, only use with Packages 
+     * @param string $modelName
+     * @param string $ids
+     * @param string $columnName
+     * @param string $packageName
+     * @return string
+     */
+    public static function getNamesByIds(string $modelName, string $ids, string $columnName, string $packageName = null): string
+    {
+        $arrayIds = explode(',', $ids);
+        $resultString = '';
+        if (is_null($packageName)) {
+            $modelClass = 'ProcessMaker\\Models\\' . $modelName;
+        } else {
+            $modelClass = 'ProcessMaker\\Package\\' . $packageName . '\\Models\\' . $modelName;
+        }
+
+        if (class_exists($modelClass)) {
+            $tableName = (new $modelClass)->getTable();
+            if((Schema::hasColumn($tableName, $columnName))){
+                $results = $modelClass::whereIn('id', array_map('intval', $arrayIds))->pluck($columnName);
+                $resultString = implode(', ', $results->toArray());
+            }
+        }
+        return $resultString;
     }
 }

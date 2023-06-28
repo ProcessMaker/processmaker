@@ -4,6 +4,7 @@ namespace ProcessMaker\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
+use ProcessMaker\Helpers\ArrayHelper;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
@@ -39,6 +40,13 @@ class ProcessPublished implements SecurityLogEventInterface
         $this->process = $data;
         $this->changes = array_diff_key($changes, array_flip($this::REMOVE_KEYS));
         $this->original = array_diff_key($original, array_flip($this::REMOVE_KEYS));
+
+        if (isset($original['process_category_id']) && isset($changes['process_category_id'])) {
+            $this->changes['process_category'] = ArrayHelper::getNamesByIds('ProcessCategory', $this->changes['process_category_id'], 'name');
+            $this->original['process_category'] = ArrayHelper::getNamesByIds('ProcessCategory', $this->original['process_category_id'], 'name');
+            unset($this->changes['process_category_id']);
+            unset($this->original['process_category_id']);
+        }
     }
 
     /**

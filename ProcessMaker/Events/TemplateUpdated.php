@@ -4,6 +4,7 @@ namespace ProcessMaker\Events;
 
 use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
+use ProcessMaker\Helpers\ArrayHelper;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
@@ -13,9 +14,7 @@ class TemplateUpdated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private array $changes;
-
     private array $original;
-
     private bool $processType;
 
     /**
@@ -28,6 +27,14 @@ class TemplateUpdated implements SecurityLogEventInterface
         $this->changes = $changes;
         $this->original = $original;
         $this->processType = $processType;
+
+        if (isset($original['process_category_id']) && isset($changes['process_category_id'])) {
+            $this->changes['process_category'] = ArrayHelper::getNamesByIds('ProcessCategory', $this->changes['process_category_id'], 'name');
+            $this->original['process_category'] = ArrayHelper::getNamesByIds('ProcessCategory', $this->original['process_category_id'], 'name');
+            unset($this->changes['process_category_id']);
+            unset($this->original['process_category_id']);
+        }
+   
     }
 
     /**
@@ -45,15 +52,12 @@ class TemplateUpdated implements SecurityLogEventInterface
                 'last_modified' => $this->changes['updated_at'] ?? Carbon::now()
             ];
         } else {
-            $oldData = array_diff_assoc($this->original, $this->changes);
-            $newData = array_diff_assoc($this->changes, $this->original);
-
             return array_merge([
                 'name' => [
                     'label' => $this->processType,
                 ],
                 'last_modified' => $this->changes['updated_at'] ?? Carbon::now()
-            ], $this->formatChanges($newData, $oldData));
+            ], ArrayHelper::getArrayDifferencesWithFormat($this->changes, $this->original));
         }
     }
 

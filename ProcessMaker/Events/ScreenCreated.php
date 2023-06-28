@@ -4,6 +4,7 @@ namespace ProcessMaker\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
+use ProcessMaker\Helpers\ArrayHelper;
 
 class ScreenCreated implements SecurityLogEventInterface
 {
@@ -19,6 +20,11 @@ class ScreenCreated implements SecurityLogEventInterface
     public function __construct(array $newScreen)
     {
         $this->newScreen = $newScreen;
+
+        if (isset($newScreen['screen_category_id'])) {
+            $this->newScreen['screen_category'] = ArrayHelper::getNamesByIds('ScreenCategory', $newScreen['screen_category_id'], 'name');
+            unset($this->newScreen['screen_category_id']);
+        }
     }
 
     /**
@@ -32,7 +38,7 @@ class ScreenCreated implements SecurityLogEventInterface
             'name' => $this->newScreen['title'] ?? '',
             'description' => $this->newScreen['description'] ?? '',
             'type' => $this->newScreen['type'] ?? '',
-            'screen_category_id' => $this->newScreen['screen_category_id'] ?? ''
+            'screen_category' => $this->newScreen['screen_category']
         ];
     }
 
