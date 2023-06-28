@@ -47,15 +47,30 @@
               ></b-form-textarea>
             </b-form-group>
 
-              <category-select
-                v-model="pm_block_category_id"
-                :label="$t('Category')"
-                api-get="pm-blocks-categories"
-                api-list="pm-blocks-categories"
-                name="category"
-                :errors="addError.pm_block_category_id"
+            <b-form-group
+              required
+              :label="$t('Icon')"
+              :description="formDescription('Choose an icon for this PM Block.', 'icon', errors)"
+            >
+              <icon-selector
+                v-model="iconAndFile"
+                name="icon"
+                @error="fileError"
+                @input="clearFileError"
               />
+              <small v-if="fileUploadError === true" class="text-danger">
+                The custom icon file is too large. File size must be less than 2KB.
+              </small>
+            </b-form-group>
 
+            <category-select
+              v-model="pm_block_category_id"
+              :label="$t('Category')"
+              api-get="pm-blocks-categories"
+              api-list="pm-blocks-categories"
+              name="category"
+              :errors="addError.pm_block_category_id"
+            />
           </b-col>
         </b-row>
       </template>
@@ -64,11 +79,11 @@
 </template>
 
 <script>
-import { FormErrorsMixin, Modal, Required } from "SharedComponents";
+import { FormErrorsMixin, Modal, Required, IconSelector } from "SharedComponents";
 import CategorySelect from "../../processes/categories/components/CategorySelect.vue";
 
 export default {
-  components: { Modal, Required, CategorySelect },
+  components: { Modal, Required, CategorySelect, IconSelector },
   mixins: [FormErrorsMixin],
   props: ["assetName", "assetType", "assetId", "currentUserId"],
   data() {
@@ -77,7 +92,12 @@ export default {
       name: "",
       description: "",
       pm_block_category_id: "",
+      iconAndFile: {
+        icon: "cube",
+        file: null,
+      },
       addError: {},
+      fileUploadError: false,
       showModal: false,
       disabled: true,
       showWarning: false,
@@ -103,7 +123,14 @@ export default {
       },
       name(newValue, oldValue) {
         this.validateName(newValue, oldValue);
-      }
+      },
+      iconAndFile: {
+        handler: function(value) {
+          // this.form.meta.icon = value.icon;
+          // this.form.meta.file = value.file;
+        },
+        deep: true,
+      },
     },  
     methods: {
       show() {
@@ -171,6 +198,12 @@ export default {
         } else {
           this.errors.name = null;
         }
+      },
+      fileError() {
+        this.fileUploadError = true;
+      },
+      clearFileError() {
+        this.fileUploadError = false;
       }
     },
   };
