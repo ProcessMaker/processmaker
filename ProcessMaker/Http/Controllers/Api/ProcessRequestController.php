@@ -136,9 +136,9 @@ class ProcessRequestController extends Controller
         if (!empty($filter)) {
             $query->filter($filter);
         }
-        
+
         $query->nonSystem();
-        
+
         $pmql = $request->input('pmql', '');
         if (!empty($pmql)) {
             try {
@@ -684,7 +684,7 @@ class ProcessRequestController extends Controller
             default => $token->status,
         };
         $token->status_translation = $translatedStatus;
-        $token->completed_by = $token->completed_at ? ($token->user['firstname']. ' ' .$token->user['lastname'] ?? '-') : '-';
+        $token->completed_by = $token->completed_at ? ($token->user['fullname'] ?? '-') : '-';
 
         // Get the number of times the flow has run.
         $tokensCount = $request->tokens()
