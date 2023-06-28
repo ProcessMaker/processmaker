@@ -76,10 +76,10 @@ class ArrayHelperTest extends TestCase
     {
         //Case 1: Existing Model, Existing Name, More than one ID
         $stringModel = 'ProcessCategory';
-        $stringIds = '1,3';
+        $stringIds = '1,2';
         $columnName = 'name';
         $this->assertEquals(
-            "Default Templates, Uncategorized",
+            "Default Templates, System",
             ArrayHelper::getNamesByIds($stringModel, $stringIds, $columnName)
         );
 
@@ -94,7 +94,7 @@ class ArrayHelperTest extends TestCase
 
         //Case 3: Not Existing Model, Existing Name, More than one ID
         $stringModel = 'ProcessCategoryFake';
-        $stringIds = '1,3';
+        $stringIds = '1,2';
         $columnName = 'name';
         $this->assertEquals(
             "",
