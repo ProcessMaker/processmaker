@@ -549,10 +549,12 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         $errors[] = $error;
         $this->errors = $errors;
         $this->status = 'ERROR';
-        \Log::error($exception);
-        if (!$this->isNonPersistent()) {
-            $this->save();
-        }
+        // $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5);
+        // \Log::info("TRACE", $trace);
+        // \Log::error($exception);
+        // if (!$this->isNonPersistent()) {
+        //     $this->save();
+        // }
     }
 
     public function childRequests()

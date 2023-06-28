@@ -83,7 +83,7 @@ trait ScriptDockerBindingFilesTrait
                   . implode("\n", $output)
                 );
             }
-            Log::error('Script threw return code ' . $returnCode . 'Message: ' . implode("\n", $output));
+            Log::error('Script threw return code ' . $returnCode . ' Message: ');// . implode("\n", $output));
 
             $message = implode("\n", $output);
             $message .= "\n\nProcessMaker Stack:\n";

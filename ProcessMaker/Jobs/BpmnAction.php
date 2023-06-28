@@ -12,6 +12,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\BpmnEngine;
+use ProcessMaker\Exception\RetryableException;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestLock;
@@ -61,8 +62,11 @@ abstract class BpmnAction implements ShouldQueue
 
             //Run engine to the next state
             $this->engine->runToNextState();
+        } catch (RetryableException $e) {
+            Log::info('Re-Dispatching. Attempts: ' . $this->attempts() . ', Wait time: ' . $e->retry_wait_time);
+            $this->release($e->retry_wait_time);
         } catch (Throwable $exception) {
-            Log::error($exception->getMessage());
+            Log::error('%% ' . $exception->getMessage());
             // Change the Request to error status
             $request = !$this->instance && $this instanceof StartEvent ? $response : $this->instance;
             if ($request) {
@@ -80,7 +84,7 @@ abstract class BpmnAction implements ShouldQueue
      *
      * @return array
      */
-    private function loadContext()
+    protected function loadContext()
     {
         //Load the process definition
         if (isset($this->instanceId)) {

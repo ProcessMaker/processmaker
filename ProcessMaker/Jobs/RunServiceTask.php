@@ -65,7 +65,8 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
         }
         $implementation = $element->getImplementation();
         $configuration = json_decode($element->getProperty('config'), true);
-        $errorHandling = json_decode($element->getProperty('errorHandling'), true);
+        $errorHandling = json_decode($element->getProperty('errorHandling'), true) ?? [];
+        $errorHandling['attempts'] = $this->attempts();
 
         // Check to see if we've failed parsing.  If so, let's convert to empty array.
         if ($configuration === null) {
