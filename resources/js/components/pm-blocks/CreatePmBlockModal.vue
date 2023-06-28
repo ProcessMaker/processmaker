@@ -126,8 +126,8 @@ export default {
       },
       iconAndFile: {
         handler: function(value) {
-          // this.form.meta.icon = value.icon;
-          // this.form.meta.file = value.file;
+          this.form.icon = value.icon;
+          this.form.file = value.file;
         },
         deep: true,
       },
@@ -155,6 +155,7 @@ export default {
         formData.append("description", this.description);
         formData.append("user_id", this.currentUserId);
         formData.append("pm_block_category_id", this.pm_block_category_id);
+        formData.append("icon", this.iconAndFile);
         ProcessMaker.apiClient.post("pm-blocks", formData)
         .then(response => {
           ProcessMaker.alert(this.$t("PM Block successfully created"), "success");
