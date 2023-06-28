@@ -147,7 +147,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
 
         // Dispatch complete task action
         $this->dispatchAction([
-            'bpmn' => $version->getKey(),
+            'bpmn' => $version,
             'action' => self::ACTION_TRIGGER_INTERMEDIATE_EVENT,
             'params' => [
                 'request_id' => $token->process_request_id,
