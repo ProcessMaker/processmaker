@@ -168,7 +168,16 @@ export default {
       return item.items.filter((button) => button.hide !== true);
     },
     isVisible(item, type) {
-      return item.type === type && item.hide !== true;
+      if (item.type === type && item.hide !== true) {
+        if (item.displayCondition) {
+        // eslint-disable-next-line no-eval
+          return eval(`this.environment.${item.displayCondition}`);
+        }
+
+        return true;
+      }
+
+      return false;
     },
     changeItem(id, value) {
       this.changeItems[id] = value;
