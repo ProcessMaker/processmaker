@@ -85,10 +85,10 @@ class ArrayHelperTest extends TestCase
 
         //Case 2: Existing Model, Existing Name, one ID
         $stringModel = 'ProcessCategory';
-        $stringIds = '3';
+        $stringIds = '1';
         $columnName = 'name';
         $this->assertEquals(
-            "Uncategorized",
+            "Default Templates",
             ArrayHelper::getNamesByIds($stringModel, $stringIds, $columnName)
         );
 
