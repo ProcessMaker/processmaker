@@ -21,6 +21,7 @@ trait ExtendedPMQL
 
     protected $dataStoreTable = '';
     protected $dataStoreColumns = [];
+    protected $disabledValueAlias = [];
 
     /**
      * Setup the PMQL to use the data store table
@@ -35,6 +36,7 @@ trait ExtendedPMQL
         // inner join to the data store table
         if ($table) {
             $query->join($table, $this->getTable() . '.id', '=', $table . '.process_request_id');
+            $this->disabledValueAlias[] = 'valueAliasRequest';
         }
     }
 
@@ -103,7 +105,7 @@ trait ExtendedPMQL
         $model = $builder->getModel();
 
         // use data store table if field is prefixed with "data." and the field is in the map
-        if (strpos($field, 'data.') === 0 && isset($this->dataStoreColumns[substr($field, 5)])) {
+        if ($this->dataStoreTable && strpos($field, 'data.') === 0 && isset($this->dataStoreColumns[substr($field, 5)])) {
             $variableName = substr($field, 5);
             $columnName = $this->dataStoreColumns[$variableName];
             $realFieldName = $this->dataStoreTable . '.' . $columnName;
@@ -146,7 +148,9 @@ trait ExtendedPMQL
             // A value alias specifies that a value must be parsed by a callback
             // function if its field name matches a specific word.
             $method = "valueAlias{$fieldMethodName}";
-            if (method_exists($model, $method)) {
+            if (in_array($method, $this->disabledValueAlias)) {
+                return function() {};
+            } elseif (method_exists($model, $method)) {
                 if (is_array($value)) {
                     // For "IN" and "NOT IN" Operators, convert to a series of "where"s
                     return function ($query) use ($model, $method, $value, $expression, $builder, $user) {
