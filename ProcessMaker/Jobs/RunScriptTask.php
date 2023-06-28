@@ -6,6 +6,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Exception\RetryableException;
 use ProcessMaker\Exception\ScriptException;
+use Illuminate\Support\Facades\Notification;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Process as Definitions;
@@ -14,6 +15,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
+use ProcessMaker\Notifications\ErrorExecutionNotification;
 use Throwable;
 
 class RunScriptTask extends BpmnAction implements ShouldQueue
@@ -26,9 +28,9 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
 
     public $data;
 
-    // public $tries = 3;
+    public $tries;
 
-    // public $backoff = 60;
+    //public $backoff = 60;
 
     /**
      * Create a new job instance.
@@ -40,12 +42,15 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
      */
     public function __construct(Definitions $definitions, ProcessRequest $instance, ProcessRequestToken $token, array $data)
     {
+        Log::error('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
         $this->onQueue('bpmn');
         $this->definitionsId = $definitions->getKey();
         $this->instanceId = $instance->getKey();
         $this->tokenId = $token->getKey();
         $this->elementId = $token->getProperty('element_ref');
         $this->data = $data;
+
+        $this->tries = 4;//
     }
 
     /**
@@ -61,11 +66,10 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
         }
         $scriptRef = $element->getProperty('scriptRef');
         $configuration = json_decode($element->getProperty('config'), true);
-        $errorHandling = json_decode($element->getProperty('errorHandling'), true);
-        if ($errorHandling === null) {
-            $errorHandling = [];
-        }
+        $errorHandling = json_decode($element->getProperty('errorHandling'), true) ?? [];
         $errorHandling['attempts'] = $this->attempts();
+        $errorHandling['retry_attempts'] = ctype_digit($errorHandling['retry_attempts']) ? intval($errorHandling['retry_attempts']) : 0;
+        $errorHandling['retry_wait_time'] = ctype_digit($errorHandling['retry_wait_time']) ? intval($errorHandling['retry_wait_time']) : 0;
 
         // Check to see if we've failed parsing.  If so, let's convert to empty array.
         if ($configuration === null) {
@@ -91,7 +95,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             $this->unlock();
             $dataManager = new DataManager();
             $data = $dataManager->getData($token);
-            $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling);
+            $response = $script->runScript($data, $configuration, $token->getId());
 
             $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
                 // Exit if the task was completed or closed
@@ -119,11 +123,40 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             $token->setProperty('error', $error);
             $token->logError($exception, $element);
 
-            Log::error('Script failed: ' . $scriptRef . ' - ' . $exception->getMessage());
-            Log::error($exception->getTraceAsString());
+            Log::error('Script failed: ' . $scriptRef . ' - ');// . $exception->getMessage());
+            //Log::error($exception->getTraceAsString());
 
-            if ($exception instanceof RetryableException) {
+            if ($errorHandling['retry_attempts'] > 0) {
+                if ($this->attempts() <= $errorHandling['retry_attempts']) {
+                    Log::info('Retry the runScript process. Attempt ' . $this->attempts() . ' of ' . $errorHandling['retry_attempts']);
+                    throw new RetryableException($errorHandling['retry_wait_time']);
+                }
+                
+                $message = __('Script failed after :attempts total attempts', ['attempts' => $this->attempts()]);
+                $message = $message . "\n" . $exception->getMessage();
+
+                $this->sendExecutionErrorNotification($message, $token->getId(), $errorHandling);
+                if ($exception instanceof ScriptTimeoutException) {
+                    throw new ScriptTimeoutException($message);
+                }
+                throw new ScriptException($message);
+            } else {
+                $this->sendExecutionErrorNotification($exception->getMessage(), $token->getId(), $errorHandling);
                 throw $exception;
+            }
+        }
+    }
+
+    /**
+     * Send execution error notification.
+     */
+    public function sendExecutionErrorNotification(string $message, string $tokenId, array $errorHandling)
+    {
+        $processRequestToken = ProcessRequestToken::find($tokenId);
+        if ($processRequestToken) {
+            $user = $processRequestToken->processRequest->processVersion->manager;
+            if ($user !== null) {
+                Notification::send($user, new ErrorExecutionNotification($processRequestToken, $message, $errorHandling));
             }
         }
     }

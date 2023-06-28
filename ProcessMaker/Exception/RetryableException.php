@@ -9,9 +9,9 @@ use Exception;
  */
 class RetryableException extends Exception
 {
-    public function __construct(
-        public $retry_wait_time,
-    ) {
+
+    public function __construct(public $retry_wait_time)
+    {
         parent::__construct();
     }
 }
