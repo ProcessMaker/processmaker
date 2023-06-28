@@ -52,9 +52,7 @@ class UserCreated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return [
-            $this->user->getAttributes()
-        ];
+        return $this->user->getAttributes();
     }
 
     /**

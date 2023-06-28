@@ -6,6 +6,13 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Events\ProcessArchived;
+use ProcessMaker\Events\ProcessCreated;
+use ProcessMaker\Events\ProcessPublished;
+use ProcessMaker\Events\ProcessRestored;
+use ProcessMaker\Events\RequestAction;
+use ProcessMaker\Events\RequestCreated;
+use ProcessMaker\Events\TemplateUpdated;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Api\TemplateController;
@@ -17,7 +24,6 @@ use ProcessMaker\Http\Resources\ProcessRequests;
 use ProcessMaker\Jobs\ExportProcess;
 use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
@@ -218,6 +224,12 @@ class ProcessController extends Controller
     {
         $request->validate(Process::rules());
         $data = $request->all();
+
+        // If bpmn exists (from Generative AI)
+        if ($request->input('bpmn')) {
+            $data['bpmn'] = $request->input('bpmn');
+        }
+
         // Validate if exists file bpmn
         if ($request->has('file')) {
             $data['bpmn'] = $request->file('file')->get();
@@ -265,6 +277,8 @@ class ProcessController extends Controller
                 422
             );
         }
+        // Register the Event
+        ProcessCreated::dispatch($process->refresh(), ProcessCreated::BLANK_CREATION);
 
         return new Resource($process->refresh());
     }
@@ -306,6 +320,7 @@ class ProcessController extends Controller
     public function update(Request $request, Process $process)
     {
         $request->validate(Process::rules($process));
+        $original = $process->getOriginal();
 
         // bpmn validation
         if ($schemaErrors = $this->validateBpmn($request)) {
@@ -351,7 +366,10 @@ class ProcessController extends Controller
         $isTemplate = Process::select('is_template')->where('id', $process->id)->value('is_template');
         if ($isTemplate) {
             try {
-                $response = (new TemplateController(new Template))->updateTemplateManifest('process', $process->id, $request);
+                $response = (new TemplateController(new Template()))->updateTemplateManifest('process', $process->id, $request);
+
+                //Call Event to Log Template Changes
+                TemplateUpdated::dispatch([], [], true);
 
                 return new Resource($process->refresh());
             } catch (\Exception $error) {
@@ -369,6 +387,10 @@ class ProcessController extends Controller
                 422
             );
         }
+        $changes = $process->getChanges();
+
+        // Register the Event
+        ProcessPublished::dispatch($process->refresh(), $changes, $original);
 
         return new Resource($process->refresh());
     }
@@ -440,6 +462,9 @@ class ProcessController extends Controller
                 422
             );
         }
+
+        // Register the Event
+        ProcessPublished::dispatch($process->refresh(), [], []);
 
         return new Resource($process->refresh());
     }
@@ -769,6 +794,8 @@ class ProcessController extends Controller
         $process = Process::find($processId);
         $process->status = 'ACTIVE';
         $process->save();
+        // Register the Event
+        ProcessRestored::dispatch($process->refresh());
 
         return new Resource($process->refresh());
     }
@@ -816,6 +843,9 @@ class ProcessController extends Controller
     {
         $process->status = 'ARCHIVED';
         $process->save();
+
+        // Register the Event
+        ProcessArchived::dispatch($process->refresh());
 
         return response('', 204);
     }
@@ -975,6 +1005,50 @@ class ProcessController extends Controller
             'process' => $import->process,
             'processId' => $import->process->id,
         ]);
+    }
+
+    /**
+     * Download the BPMN definition of a process
+     *
+     * @param $process
+     *
+     * @return Response
+     *
+     * @OA\Get(
+     *     path="/processes/{processId}/bpmn",
+     *     summary="Download the BPMN definition of a process",
+     *     operationId="processBpmn",
+     *     tags={"Processes"},
+     *     @OA\Parameter(
+     *         description="ID of process",
+     *         in="path",
+     *         name="processId",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="integer",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully built the process for export",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="url",
+     *                 type="string",
+     *             ),
+     *         ),
+     *     ),
+     * )
+     */
+    public function downloadBpmn(Request $request, Process $process)
+    {
+        $bpmn = $process->bpmn;
+        $filename = 'bpmnProcess.bpmn';
+
+        return response()->streamDownload(function () use ($bpmn) {
+            echo $bpmn;
+        }, $filename);
     }
 
     /**
@@ -1170,6 +1244,9 @@ class ProcessController extends Controller
 
         $process->saveOrFail();
 
+        // Register the Event
+        ProcessCreated::dispatch($process->refresh(), ProcessCreated::BLANK_CREATION);
+
         return response([
             'process' => $process->refresh(),
         ], 204);
@@ -1252,6 +1329,8 @@ class ProcessController extends Controller
                 'message' => __('Unable to start process'),
             ], 422);
         }
+
+        event(new RequestAction($processRequest, RequestAction::ACTION_CREATED));
 
         return new ProcessRequests($processRequest);
     }

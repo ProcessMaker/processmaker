@@ -22,6 +22,7 @@ use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
 use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\ForUserScope;
+use ProcessMaker\Traits\HasUuids;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\SqlsrvSupportTrait;
@@ -82,13 +83,14 @@ use Throwable;
 class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInterface, HasMedia
 {
     use ExecutionInstanceTrait;
-    use SerializeToIso8601;
-    use InteractsWithMedia;
     use ExtendedPMQL;
-    use SqlsrvSupportTrait;
-    use HideSystemResources;
-    use Searchable;
     use ForUserScope;
+    use HasUuids;
+    use HideSystemResources;
+    use InteractsWithMedia;
+    use Searchable;
+    use SerializeToIso8601;
+    use SqlsrvSupportTrait;
 
     /**
      * The attributes that aren't mass assignable.
@@ -97,6 +99,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      */
     protected $guarded = [
         'id',
+        'uuid',
         'created_at',
         'updated_at',
     ];
@@ -699,14 +702,12 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         $user = User::where('username', $value)->get()->first();
 
         if ($user) {
-            $tokens = ProcessRequestToken::select('process_request_id')
-                ->where('user_id', $expression->operator, $user->id)
-                ->whereIn('element_type', ['task', 'userTask', 'startEvent'])
-                ->distinct()
-                ->get();
-
-            return function ($query) use ($tokens) {
-                $query->whereIn('id', $tokens->pluck('process_request_id'));
+            return function ($query) use ($user, $expression) {
+                $query->whereIn('id', function ($subquery) use ($user, $expression) {
+                    $subquery->select('process_request_id')->from('process_request_tokens')
+                        ->where('user_id', $expression->operator, $user->id)
+                        ->whereIn('element_type', ['task', 'userTask', 'startEvent']);
+                });
             };
         } else {
             throw new PmqlMethodException('participant', 'The specified participant username does not exist.');
