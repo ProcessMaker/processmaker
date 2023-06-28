@@ -3,7 +3,6 @@
 namespace ProcessMaker\Http\Controllers\Process;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Http\Controllers\Controller;
@@ -14,7 +13,6 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\PackageHelper;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\ProcessMapTrait;
-use SimpleXMLElement;
 
 class ModelerController extends Controller
 {
@@ -56,10 +54,10 @@ class ModelerController extends Controller
         event(new ModelerStarting($manager));
 
         $bpmn = $process->bpmn;
-        $requestCompletedNodes = [];
+        $filteredCompletedNodes = [];
         $requestInProgressNodes = [];
         $requestIdleNodes = [];
-        
+
         // Use the process version that was active when the request was started.
         $processRequest = ProcessRequest::find($request->id);
         if ($processRequest) {
