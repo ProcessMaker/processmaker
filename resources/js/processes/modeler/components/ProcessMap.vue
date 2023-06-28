@@ -26,7 +26,7 @@
           :request-idle-nodes="requestIdleNodes"
           :read-only="true"
           @set-xml-manager="xmlManager = $event"
-          @click="handleClick()"
+          @click="handleClick"
         />
       </div>
     </div>
