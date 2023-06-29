@@ -71,13 +71,16 @@ class ModelerController extends Controller
             // Remove any node that is 'ACTIVE' from the completed list.
             $filteredCompletedNodes = $requestCompletedNodes->diff($requestInProgressNodes)->values();
 
+            // Obtain In-Progress nodes that were completed before
+            $matchingNodes = $requestInProgressNodes->intersect($requestCompletedNodes);
+
             // Get idle nodes.
             $xml = $this->loadAndPrepareXML($bpmn);
             $nodeIds = $this->getNodeIds($xml);
             $requestIdleNodes = $nodeIds->diff($filteredCompletedNodes)->diff($requestInProgressNodes)->values();
 
             // Add completed sequence flow to the list of completed nodes.
-            $sequenceFlowNodes = $this->getCompletedSequenceFlow($xml, $filteredCompletedNodes->implode(' '), $requestInProgressNodes->implode(' '));
+            $sequenceFlowNodes = $this->getCompletedSequenceFlow($xml, $filteredCompletedNodes->implode(' '), $requestInProgressNodes->implode(' '), $matchingNodes->implode(' '));
             $filteredCompletedNodes = $filteredCompletedNodes->merge($sequenceFlowNodes);
         }
 
