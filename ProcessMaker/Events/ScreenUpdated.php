@@ -4,8 +4,8 @@ namespace ProcessMaker\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
-use ProcessMaker\Helpers\ArrayHelper;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class ScreenUpdated implements SecurityLogEventInterface
@@ -29,8 +29,8 @@ class ScreenUpdated implements SecurityLogEventInterface
         $this->original = $original;
 
         if (isset($original['screen_category_id']) && isset($changes['screen_category_id'])) {
-            $this->changes['screen_category'] = ArrayHelper::getNamesByIds('ScreenCategory', $this->changes['screen_category_id'], 'name');
-            $this->original['screen_category'] = ArrayHelper::getNamesByIds('ScreenCategory', $this->original['screen_category_id'], 'name');
+            $this->changes['screen_category'] = ScreenCategory::getNamesByIds($this->changes['screen_category_id']);
+            $this->original['screen_category'] = ScreenCategory::getNamesByIds($this->original['screen_category_id']);
             unset($this->changes['screen_category_id']);
             unset($this->original['screen_category_id']);
         }
