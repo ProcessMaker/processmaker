@@ -8,7 +8,7 @@ use Tests\TestCase;
 class ProcessCategoryTest extends TestCase
 {
     /**
-     * Test ScriptCategory Model.
+     * Test ProcessCategory Model.
      *
      * @return void
      */
