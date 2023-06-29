@@ -40,7 +40,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   job1:
-    name: build-stm-image
+    name: build-stm-image 
     runs-on: ubuntu-22.04    
     steps:     
       - name: Export Params                
