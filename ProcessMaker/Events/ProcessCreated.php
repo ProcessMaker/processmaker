@@ -59,10 +59,9 @@ class ProcessCreated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return array_merge(
-            ['id' => $this->process->getAttribute('id')],
-            $this->getData()
-        );
+        return [
+            'id' => $this->process->getAttribute('id')
+        ];
     }
 
     /**

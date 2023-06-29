@@ -14,8 +14,6 @@ class EnvironmentVariablesCreated implements SecurityLogEventInterface
 
     private EnvironmentVariable $enVariable;
 
-    private $variable = [];
-
     /**
      * Create a new event instance.
      *
@@ -23,7 +21,6 @@ class EnvironmentVariablesCreated implements SecurityLogEventInterface
      */
     public function __construct(array $data)
     {
-        $this->variable = $data;
         $this->enVariable = EnvironmentVariable::where('name', $data['name'])->first();
     }
 
@@ -36,10 +33,10 @@ class EnvironmentVariablesCreated implements SecurityLogEventInterface
     {
         return [
             'name' => [
-                'label' => $this->variable['name'],
+                'label' => $this->enVariable->getAttribute('name'),
                 'link' => route('environment-variables.edit', $this->enVariable),
             ],
-            'description' => $this->variable['description'],
+            'description' => $this->enVariable->getAttribute('description'),
             'created_at' => $this->enVariable->getAttribute('created_at'),
         ];
     }
@@ -51,7 +48,9 @@ class EnvironmentVariablesCreated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return $this->enVariable->getAttributes();
+        return [
+            'id' => $this->enVariable->getAttribute('name')
+        ];
     }
 
     /**

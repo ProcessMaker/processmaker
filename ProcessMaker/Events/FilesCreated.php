@@ -4,24 +4,25 @@ namespace ProcessMaker\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
-use ProcessMaker\Models\Process;
+use ProcessMaker\Models\Media;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
-class ProcessRestored implements SecurityLogEventInterface
+class FilesCreated implements SecurityLogEventInterface
 {
     use Dispatchable;
     use FormatSecurityLogChanges;
 
-    private Process $process;
+    private array $media;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Process $data)
+    public function __construct(int $fileId)
     {
-        $this->process = $data;
+        $this->media = Media::find(['id' => $fileId])->toArray();
+        $this->media = head($this->media);
     }
 
     /**
@@ -32,12 +33,11 @@ class ProcessRestored implements SecurityLogEventInterface
     public function getData(): array
     {
         return [
-            'name' => [
-                'label' => $this->process->getAttribute('name'),
-                'link' => route('modeler.show', $this->process),
+            'file_name' => [
+                'label' => $this->media['name'],
+                'link' => route('file-manager.index', ['public/' . $this->media['file_name']]),
             ],
-            'action' => $this->process->getAttribute('status'),
-            'last_modified' => $this->process->getAttribute('updated_at'),
+            'created_at' => $this->media['created_at'],
         ];
     }
 
@@ -49,18 +49,17 @@ class ProcessRestored implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            'id' => $this->process->getAttribute('id'),
-            'status' => $this->process->getAttribute('status'),
+            'id' => $this->media['id']
         ];
     }
 
     /**
-     * Get the Event name with the syntax ‘[Past-test Action] [Object]’
+     * Get the Event name
      *
      * @return string
      */
     public function getEventName(): string
     {
-        return 'ProcessRestored';
+        return 'FilesCreated';
     }
 }

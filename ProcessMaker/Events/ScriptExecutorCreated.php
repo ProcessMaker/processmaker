@@ -43,7 +43,7 @@ class ScriptExecutorCreated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return $this->changes;
+        return [];
     }
 
     /**

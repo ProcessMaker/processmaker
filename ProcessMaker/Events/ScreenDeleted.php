@@ -44,10 +44,9 @@ class ScreenDeleted implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return array_merge(
-            ['id' => $this->screen->getAttribute('id')],
-            $this->getData()
-        );
+        return [
+            'id' => $this->screen->getAttribute('id')
+        ];
     }
 
     /**

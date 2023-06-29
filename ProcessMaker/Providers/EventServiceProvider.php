@@ -27,6 +27,9 @@ class EventServiceProvider extends ServiceProvider
         'Illuminate\Database\Events\MigrationsEnded' => [
             'ProcessMaker\Listeners\UpdateDataLakeViews',
         ],
+        'ProcessMaker\Events\ActivityReassignment' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
         'ProcessMaker\Events\AuthClientUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
@@ -57,10 +60,22 @@ class EventServiceProvider extends ServiceProvider
         'ProcessMaker\Events\EnvironmentVariablesUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
+        'ProcessMaker\Events\FilesCreated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\FilesDeleted' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\FilesUpdated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
         'ProcessMaker\Events\GroupCreated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
         'ProcessMaker\Events\GroupDeleted' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\GroupUpdated' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
         'ProcessMaker\Events\GroupUsersUpdated' => [
@@ -82,6 +97,12 @@ class EventServiceProvider extends ServiceProvider
             'ProcessMaker\Listeners\SecurityLogger',
         ],
         'ProcessMaker\Events\ProcessUpdated' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\RequestError' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'ProcessMaker\Events\RequestAction' => [
             'ProcessMaker\Listeners\SecurityLogger',
         ],
         'ProcessMaker\Events\ScreenCreated' => [

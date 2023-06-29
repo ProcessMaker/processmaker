@@ -13,10 +13,6 @@ class SettingsUpdated implements SecurityLogEventInterface
     use Dispatchable;
     use FormatSecurityLogChanges;
 
-    public const SENSITIVE_KEYS = [
-        'password',
-    ];
-
     private Setting $setting;
 
     private array $changes;
@@ -34,14 +30,6 @@ class SettingsUpdated implements SecurityLogEventInterface
         $this->setting = $setting;
         $this->changes = $changes;
         $this->original = $original;
-        // Some configuration are related to the password
-        $attribute = strtolower($this->setting->getAttribute('name'));
-        if (array_keys($this::SENSITIVE_KEYS, $attribute)) {
-            $this->changes[$attribute] = $this->changes['config'];
-            $this->original[$attribute] = $this->original['config'];
-            unset($this->changes['config']);
-            unset($this->original['config']);
-        }
         // Verify if the config is a sensitive value
         $key = $this->setting->getAttribute('key');
         if (SensitiveDataHelper::isSensitiveKey($key)) {
@@ -57,9 +45,9 @@ class SettingsUpdated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return array_merge([
-            'setting_id' => $this->setting->id,
-        ], $this->changes);
+        return [
+            'setting_id' => $this->setting->id
+        ];
     }
 
     /**
@@ -72,6 +60,7 @@ class SettingsUpdated implements SecurityLogEventInterface
         return array_merge([
             'group' => $this->setting->getAttribute('group'),
             'name' => $this->setting->getAttribute('name'),
+            'last_modified' => $this->setting->getAttribute('updated_at'),
         ], $this->formatChanges($this->changes, $this->original));
     }
 
