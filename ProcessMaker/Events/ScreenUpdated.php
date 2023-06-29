@@ -5,7 +5,6 @@ namespace ProcessMaker\Events;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class ScreenUpdated implements SecurityLogEventInterface

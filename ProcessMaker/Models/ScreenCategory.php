@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Traits\Exportable;
