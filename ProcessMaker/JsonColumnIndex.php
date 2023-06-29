@@ -16,7 +16,7 @@ class JsonColumnIndex
 
         $sql = <<<SQL
             ALTER TABLE `{$table}` ADD INDEX `{$indexName}` ((
-                CAST({$column}->>"{$path}" as CHAR(255)) COLLATE utf8mb4_bin
+                LEFT({$column}->>"{$path}", 255) COLLATE utf8mb4_bin
             )) USING BTREE;
         SQL;
 
@@ -38,6 +38,10 @@ class JsonColumnIndex
     public function remove(string $table, string $column, string $path)
     {
         $indexName = $column . '_' . $path;
+
+        if (!$this->indexExists($table, $indexName)) {
+            return;
+        }
 
         return DB::statement("ALTER TABLE `{$table}` DROP INDEX `{$indexName}`");
     }
