@@ -42,7 +42,7 @@ class TemplateUpdated implements SecurityLogEventInterface
                 'name' => [
                     'label' => $this->processType,
                 ],
-                'updated_at' => Carbon::now(),
+                'last_modified' => $this->changes['updated_at'] ?? Carbon::now()
             ];
         } else {
             $oldData = array_diff_assoc($this->original, $this->changes);
@@ -52,6 +52,7 @@ class TemplateUpdated implements SecurityLogEventInterface
                 'name' => [
                     'label' => $this->processType,
                 ],
+                'last_modified' => $this->changes['updated_at'] ?? Carbon::now()
             ], $this->formatChanges($newData, $oldData));
         }
     }

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Notification;
+use ProcessMaker\Events\RequestAction;
 use ProcessMaker\Exception\PmqlMethodException;
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Facades\WorkflowManager;
@@ -135,10 +136,13 @@ class ProcessRequestController extends Controller
         if (!empty($filter)) {
             $query->filter($filter);
         }
-
+        
+        $query->nonSystem();
+        
         $pmql = $request->input('pmql', '');
         if (!empty($pmql)) {
             try {
+                $query->getModel()->useDataStoreTable($query, $request->input('data_store_table', ''), $request->input('data_store_columns', []));
                 $query->pmql($pmql);
             } catch (SyntaxError $e) {
                 return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
@@ -146,9 +150,6 @@ class ProcessRequestController extends Controller
                 return response(['message' => $e->getMessage(), 'field' => $e->getField()], 400);
             }
         }
-
-        $query->nonSystem();
-
         try {
             if ($getTotal === true) {
                 return $query->count();
@@ -562,6 +563,8 @@ class ProcessRequestController extends Controller
         // Close process request
         $request->status = 'CANCELED';
         $request->save();
+
+        event(new RequestAction($request, RequestAction::ACTION_CANCELED));
     }
 
     /**
@@ -577,6 +580,8 @@ class ProcessRequestController extends Controller
 
         // Terminate request
         TerminateRequest::dispatchNow($request);
+
+        event(new RequestAction($request, RequestAction::ACTION_COMPLETED));
 
         $user = \Auth::user();
         Comment::create([

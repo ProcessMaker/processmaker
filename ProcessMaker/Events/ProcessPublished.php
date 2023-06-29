@@ -55,7 +55,7 @@ class ProcessPublished implements SecurityLogEventInterface
             ],
             'category' => $this->process->category ? $this->process->category->name : null,
             'action' => $this->process->getAttribute('status'),
-            'updated_at' => $this->process->getAttribute('updated_at'),
+            'last_modified' => $this->process->getAttribute('updated_at'),
         ], $this->formatChanges($this->changes, $this->original));
     }
 
@@ -66,10 +66,9 @@ class ProcessPublished implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return array_merge(
-            ['id' => $this->process->getAttribute('id')],
-            $this->getData()
-        );
+        return [
+            'id' => $this->process->getAttribute('id')
+        ];
     }
 
     /**

@@ -29,9 +29,9 @@ class TemplateCreated implements SecurityLogEventInterface
     public function getData(): array
     {
         return [
-            'type' => $this->payload['type'],
-            'version' => $this->payload['version'],
-            'name' => $this->payload['name'],
+            'type' => $this->payload['type'] ?? '',
+            'version' => $this->payload['version'] ?? '',
+            'name' => $this->payload['name'] ?? ''
         ];
     }
 
@@ -42,10 +42,9 @@ class TemplateCreated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return array_merge(
-            ['root' => $this->payload['root']],
-            $this->getData()
-        );
+        return [
+            'root' => $this->payload['root'] ?? ''
+        ];
     }
 
     /**

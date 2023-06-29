@@ -4,12 +4,15 @@ namespace ProcessMaker\Helpers;
 
 class SensitiveDataHelper
 {
-    const SENSITIVE_KEYS = [
+    public const SENSITIVE_KEYS = [
         'password',
         'idp.client_secret',
+        'abe_imap_password',
+        'EMAIL_CONNECTOR_MAIL_PASSWORD',
+        'services.ldap.authentication.password'
     ];
 
-    const MASK = '*';
+    public const MASK = '*';
 
     public static function parseArray(array|object $data)
     {

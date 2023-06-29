@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Bus;
+use PDOException;
 use ProcessMaker\Jobs\RefreshArtisanCaches;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestLock;
@@ -21,12 +22,15 @@ abstract class TestCase extends BaseTestCase
     use ArraySubsetAsserts;
 
     public $withPermissions = false;
+    protected $skipTeardownPDOException = false;
 
     /**
      * Run additional setUps from traits.
      */
     protected function setUp(): void
     {
+        $this->skipTeardownPDOException = false;
+
         parent::setUp();
 
         $this->disableSetContentMiddleware();
@@ -76,7 +80,13 @@ abstract class TestCase extends BaseTestCase
      */
     protected function tearDown(): void
     {
-        parent::tearDown();
+        try {
+            parent::tearDown();
+        } catch (PDOException $e) {
+            if (!$this->skipTeardownPDOException) {
+                throw $e;
+            }
+        }
         foreach (get_class_methods($this) as $method) {
             $imethod = strtolower($method);
             if (strpos($imethod, 'teardown') === 0 && $imethod !== 'teardown') {
