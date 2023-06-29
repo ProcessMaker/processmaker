@@ -76,5 +76,5 @@ class ScreenCategory extends ProcessMakerModel
         $results = ScreenCategory::whereIn('id', array_map('intval', $arrayIds))->pluck('name');
         $resultString = implode(', ', $results->toArray());
         return $resultString;
-    } 
+    }
 }
