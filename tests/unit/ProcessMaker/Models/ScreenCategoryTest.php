@@ -15,30 +15,34 @@ class ScreenCategoryTest extends TestCase
     public function testGetNamesByIds()
     {
         //Case 1: one Id
-        $stringIds = '1';
+        $category = ScreenCategory::factory()->create([
+            'name' => 'Screen Category 1',
+        ]);
         $this->assertEquals(
-            "Uncategorized",
-            ScreenCategory::getNamesByIds($stringIds)
+            $category->name,
+            ScreenCategory::getNamesByIds($category->id)
         );
 
-        //Case 2: multiple Id
-        $stringIds = '1,3';
+        //Case 2: more than one Id
+        $category2 = ScreenCategory::factory()->create([
+            'name' => 'Screen Category 33',
+        ]);
         $this->assertEquals(
-            "Uncategorized",
-            ScreenCategory::getNamesByIds($stringIds)
+            $category->name . ', ' . $category2->name,
+            ScreenCategory::getNamesByIds($category->id . ',' . $category2->id)
         );
 
         //Case 3: without Id
         $stringIds = '';
         $this->assertEquals(
-            "Uncategorized",
+            "",
             ScreenCategory::getNamesByIds($stringIds)
         );
 
         //Case 4: non-existentId
         $stringIds = '9452';
         $this->assertEquals(
-            "Uncategorized",
+            "",
             ScreenCategory::getNamesByIds($stringIds)
         );
     }

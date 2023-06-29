@@ -14,31 +14,35 @@ class ScriptCategoryTest extends TestCase
      */
     public function testGetNamesByIds()
     {
-        //Case 1: string id
-        $stringIds = '1';
+        //Case 1: one Id
+        $category = ScriptCategory::factory()->create([
+            'name' => 'Screen Category 13',
+        ]);
         $this->assertEquals(
-            "Uncategorized",
-            ScriptCategory::getNamesByIds($stringIds)
+            $category->name,
+            ScriptCategory::getNamesByIds($category->id)
         );
 
-        //Case 2: multiple Id
-        $stringIds = '1,3';
+        //Case 2: more than one Id
+        $category2 = ScriptCategory::factory()->create([
+            'name' => 'Screen Category 33',
+        ]);
         $this->assertEquals(
-            "Uncategorized",
-            ScriptCategory::getNamesByIds($stringIds)
+            $category->name . ', ' . $category2->name,
+            ScriptCategory::getNamesByIds($category->id . ',' . $category2->id)
         );
 
         //Case 3: without Id
         $stringIds = '';
         $this->assertEquals(
-            "Uncategorized",
+            "",
             ScriptCategory::getNamesByIds($stringIds)
         );
 
         //Case 4: non-existentId
         $stringIds = '9452';
         $this->assertEquals(
-            "Uncategorized",
+            "",
             ScriptCategory::getNamesByIds($stringIds)
         );
     }
