@@ -295,6 +295,7 @@ export default {
                   "&include=process,participants,data" +
                   "&pmql=" +
                   encodeURIComponent(pmql) +
+                  "&row_format=object" +
                   "&filter=" +
                   filter +
                   "&order_by=" +
