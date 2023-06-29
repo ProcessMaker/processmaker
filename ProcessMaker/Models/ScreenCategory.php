@@ -69,7 +69,13 @@ class ScreenCategory extends ProcessMakerModel
         return $this->morphedByMany(Screen::class, 'assignable', 'category_assignments', 'category_id');
     }
 
-    public function getNamesByIds(string $ids, string $delimiter = ','): string
+    /**
+     * Get Screen Category Names
+     * @param string String of ids separated by a custom delimiter.
+     * @param string Delimiter to split ids. By default ','
+     * @return string A string separated by commas with Screen Category Names
+     */
+    public static function getNamesByIds(string $ids, string $delimiter = ','): string
     {
         $resultString = '';
         $arrayIds = explode($delimiter, $ids);
