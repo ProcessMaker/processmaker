@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Traits\Exportable;
@@ -67,4 +68,13 @@ class ScreenCategory extends ProcessMakerModel
     {
         return $this->morphedByMany(Screen::class, 'assignable', 'category_assignments', 'category_id');
     }
+
+    public function getNamesByIds(string $ids, string $delimiter = ','): string
+    {
+        $resultString = '';
+        $arrayIds = explode($delimiter, $ids);
+        $results = ScreenCategory::whereIn('id', array_map('intval', $arrayIds))->pluck('name');
+        $resultString = implode(', ', $results->toArray());
+        return $resultString;
+    } 
 }
