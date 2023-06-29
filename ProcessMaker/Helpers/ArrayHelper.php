@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Helpers;
 
+use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 use stdClass;
 
