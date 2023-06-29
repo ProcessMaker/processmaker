@@ -23,22 +23,23 @@ class ProcessCategoryTest extends TestCase
             ProcessCategory::getNamesByIds($category->id)
         );
 
-        $category = ProcessCategory::factory()->create([
+        //Case 2: more than one Id
+        $category2 = ProcessCategory::factory()->create([
             'name' => 'Screen Category 33',
         ]);
         $this->assertEquals(
-            $category->name,
-            ProcessCategory::getNamesByIds($category->id)
+            $category->name. ', '.$category2->name,
+            ProcessCategory::getNamesByIds($category->id. ',' . $category2->id)
         );
 
-        //Case 2: without Id
+        //Case 3: without Id
         $stringIds = '';
         $this->assertEquals(
             "",
             ProcessCategory::getNamesByIds($stringIds)
         );
 
-        //Case 3: non-existentId
+        //Case 4: non-existentId
         $stringIds = '9452';
         $this->assertEquals(
             "",

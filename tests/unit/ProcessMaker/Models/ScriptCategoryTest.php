@@ -23,22 +23,23 @@ class ScriptCategoryTest extends TestCase
             ScriptCategory::getNamesByIds($category->id)
         );
 
-        $category = ScriptCategory::factory()->create([
-            'name' => 'Screen Category 19',
+        //Case 2: more than one Id
+        $category2 = ScriptCategory::factory()->create([
+            'name' => 'Screen Category 33',
         ]);
         $this->assertEquals(
-            $category->name,
-            ScriptCategory::getNamesByIds($category->id)
+            $category->name. ', '.$category2->name,
+            ScriptCategory::getNamesByIds($category->id. ',' . $category2->id)
         );
 
-        //Case 2: without Id
+        //Case 3: without Id
         $stringIds = '';
         $this->assertEquals(
             "",
             ScriptCategory::getNamesByIds($stringIds)
         );
 
-        //Case 3: non-existentId
+        //Case 4: non-existentId
         $stringIds = '9452';
         $this->assertEquals(
             "",
