@@ -16,7 +16,7 @@ on:
 env:
   SHA: ${{github.event.pull_request.head.sha}}
   PROJECT: ${{github.event.pull_request.head.repo.name}}
-  BODY: ${{github.event.pull_request.body}}
+  CI_PR_BODY: ${{github.event.pull_request.body}}
   PACKAGE_URL: ${{github.event.pull_request.head.repo.ssh_url}}
   PACKAGE_BRANCH: ${{github.event.pull_request.head.ref}}
   #MY_GITHUB_TOKEN: ${{ secrets.GH_STATUS_TOKEN }}
@@ -46,8 +46,7 @@ jobs:
           echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
           echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
           #Additional
-          echo "CI_PR_BODY=1" >> $GITHUB_ENV
-          echo "CACHEBUSTER=abc" >> $GITHUB_ENV
+          echo "CACHEBUSTER="$(date +%s) >> $GITHUB_ENV
       - name: Clone Repo STM
         run: |
           git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
