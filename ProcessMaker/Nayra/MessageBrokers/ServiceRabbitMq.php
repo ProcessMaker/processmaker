@@ -61,16 +61,15 @@ class ServiceRabbitMq
     public function sendMessage(string $subject, string $collaborationId, mixed $body): void
     {
         // Connect to RabbitMQ
-        $this->connect();
+        if (!($this->connection instanceof AMQPStreamConnection) || !$this->connection->isConnected()) {
+            $this->connect();
+        }
 
         // Prepare the message to send
         $message = new AMQPMessage(json_encode(['data' => $body, 'collaboration_id' => $collaborationId]));
 
         // Publish the message
         $this->channel->basic_publish($message, '', self::QUEUE_NAME_PUBLISH);
-
-        // Close connection to RabbitMQ
-        $this->disconnect();
     }
 
     /**
@@ -114,7 +113,9 @@ class ServiceRabbitMq
         }
 
         // Disconnect from service
-        $this->disconnect();
+        if ($this->connection->isConnected()) {
+            $this->disconnect();
+        }
     }
 
     /**

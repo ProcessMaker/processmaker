@@ -4,6 +4,7 @@ namespace ProcessMaker\Nayra\Repositories;
 
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Listeners\BpmnSubscriber;
 use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Repositories\ExecutionInstanceRepository;
 use ProcessMaker\Repositories\TokenRepository;
@@ -117,6 +118,15 @@ class PersistenceHandler
                 break;
             case 'schedule_duration':
                 $this->persistScheduleDuration($transaction);
+                break;
+            case 'service_task_activated':
+                // Get object instances
+                $token = $this->deserializer->unserializeToken($transaction['token']);
+                $serviceTask = $this->deserializer->unserializeEntity($transaction['activity']);
+
+                // Trigger service task listener
+                $subscriber = new BpmnSubscriber();
+                $subscriber->onServiceTaskActivated($serviceTask, $token);
                 break;
             default:
                 throw new Exception('Unknown transaction type ' . $transaction['type']);
