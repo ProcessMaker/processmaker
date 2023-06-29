@@ -45,6 +45,7 @@ jobs:
     steps:     
       - name: Export Params                
         run: |
+          echo "Env Check: CI_PROJECT: $CI_PROJECT CI_PACKAGE_BRANCH: $CI_PACKAGE_BRANCH CI_PR_BODY: $CI_PR_BODY"
           echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
           echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
           echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
@@ -81,6 +82,7 @@ jobs:
     steps:
       - name: Export Params                
         run: |
+          echo "Env Check: CI_PROJECT: $CI_PROJECT CI_PACKAGE_BRANCH: $CI_PACKAGE_BRANCH CI_PR_BODY: $CI_PR_BODY"
           echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
           echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
           echo "IMAGE_TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
