@@ -33,7 +33,11 @@ export default {
       const configString = _.get(this.node(), 'errorHandling', null);
       if (configString) {
         const config = JSON.parse(configString);
-        this.config.timeout = _.get(config, 'timeout', "");
+        if (_.get(config, 'timeout') === undefined) {
+          this.config.timeout = 0;
+        } else {
+          this.config.timeout = _.get(config, 'timeout');
+        }
       }
     },
     setNodeConfig() {

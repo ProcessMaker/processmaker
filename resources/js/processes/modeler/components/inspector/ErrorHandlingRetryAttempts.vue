@@ -33,7 +33,11 @@ export default {
       const configString = _.get(this.node(), 'errorHandling', null);
       if (configString) {
         const config = JSON.parse(configString);
-        this.config.retry_attempts = _.get(config, 'retry_attempts', "");
+        if (_.get(config, 'retry_attempts') === undefined) {
+          this.config.retry_attempts = 0;
+        } else {
+          this.config.retry_attempts = _.get(config, 'retry_attempts');
+        }
       }
     },
     setNodeConfig() {

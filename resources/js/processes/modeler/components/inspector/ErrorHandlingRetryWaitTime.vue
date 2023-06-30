@@ -33,7 +33,11 @@ export default {
       const configString = _.get(this.node(), 'errorHandling', null);
       if (configString) {
         const config = JSON.parse(configString);
-        this.config.retry_wait_time = _.get(config, 'retry_wait_time', "");
+        if (_.get(config, 'retry_wait_time') === undefined) {
+          this.config.retry_wait_time = 0;
+        } else {
+          this.config.retry_wait_time = _.get(config, 'retry_wait_time');
+        }
       }
     },
     setNodeConfig() {
