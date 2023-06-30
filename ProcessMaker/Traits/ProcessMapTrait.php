@@ -70,12 +70,14 @@ trait ProcessMapTrait
     /**
      * Performs an XPath query to get sequenceFlow elements
      * whose 'sourceRef' attribute is in the string of completed nodes
-     * and 'targetRef' attribute is in the string of in-progress and completed nodes.
+     * and 'targetRef' attribute is in the string of in-progress and completed nodes
+     * also validates Nodes in progress that were completed before to obtain their paths.
      */
-    private function getCompletedSequenceFlow(SimpleXMLElement $xml, string $completedNodesStr, string $inProgressNodesStr): Collection
+    private function getCompletedSequenceFlow(SimpleXMLElement $xml, string $completedNodesStr, string $inProgressNodesStr, string $completedInProgressNode): Collection
     {
         $inProgressAndCompletedNodes = $completedNodesStr . ' ' . $inProgressNodesStr;
         $query = '//bpmn:sequenceFlow[contains("' . $completedNodesStr . '", @sourceRef) and contains("' . $inProgressAndCompletedNodes . '", @targetRef)]/@id';
+        $query = $query. ' | //bpmn:sequenceFlow[contains("' . $completedInProgressNode . '", @sourceRef) and contains("' . $inProgressAndCompletedNodes . '", @targetRef)]/@id';
 
         return $this->filterXML($xml, $query);
     }
@@ -95,5 +97,14 @@ trait ProcessMapTrait
             'targetRef' => (string) $sequenceFlowNode[0]['targetRef'],
             'sourceRef' => (string) $sequenceFlowNode[0]['sourceRef'],
         ]);
+    }
+    /**
+     * Validates if the sourceRef token is in progress when the repeat count is the same as the targetRef
+     */
+    private function getCountFlag(int $sourceCount, int $targetCount,string $sourceRef, ProcessRequest $request) :bool 
+    {
+        $maxToken = $request->tokens()->find($this->getMaxTokenId($request, $sourceRef));
+
+        return $maxToken->status === 'ACTIVE' && $sourceCount === $targetCount;
     }
 }

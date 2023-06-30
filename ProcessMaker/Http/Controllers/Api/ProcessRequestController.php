@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Database\QueryException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -136,9 +137,9 @@ class ProcessRequestController extends Controller
         if (!empty($filter)) {
             $query->filter($filter);
         }
-
+        
         $query->nonSystem();
-
+        
         $pmql = $request->input('pmql', '');
         if (!empty($pmql)) {
             try {
@@ -639,6 +640,7 @@ class ProcessRequestController extends Controller
         ]);
 
         $elementId = null;
+        $countFlag = false;
         $maxTokenId = $this->getMaxTokenId($request, $httpRequest->element_id);
         if ($maxTokenId === null) {
             $bpmn = $request->process->versions()
@@ -660,6 +662,8 @@ class ProcessRequestController extends Controller
 
                 // Get the minimum repeated node ID.
                 $elementId = ($sourceTokensCount < $targetTokensCount) ? $sourceRef : $targetRef;
+                // Get a Flag to adjust the repeat quantity
+                $countFlag = $this->getCountFlag($sourceTokensCount, $targetTokensCount, $sourceRef, $request);
             }
 
             // Get the maximum node ID.
@@ -692,7 +696,10 @@ class ProcessRequestController extends Controller
                 'element_id' => $httpRequest->element_id,
                 'process_request_id'=> $request->id,
             ])->count();
-        $token->count = $tokensCount;
+        $token->count = $countFlag ? $tokensCount - 1 : $tokensCount;
+        if ($token->count === 0) {
+            throw new ModelNotFoundException();
+        }
 
         return new ApiResource($token);
     }
