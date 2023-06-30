@@ -66,7 +66,6 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
         $implementation = $element->getImplementation();
         $configuration = json_decode($element->getProperty('config'), true);
         $errorHandling = json_decode($element->getProperty('errorHandling'), true) ?? [];
-        $errorHandling['attempts'] = $this->attempts();
 
         // Check to see if we've failed parsing.  If so, let's convert to empty array.
         if ($configuration === null) {
@@ -85,13 +84,16 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
                 throw new ScriptException('Service task not implemented: ' . $implementation);
             }
 
+            //todo: It is necessary to obtain the configuration values of the "dataSource" for the default values.
+            $this->errorHandling($errorHandling);
+
             $this->unlock();
             $dataManager = new DataManager();
             $data = $dataManager->getData($token);
 
             if ($existsImpl) {
                 $response = [
-                    'output' => WorkflowManager::runServiceImplementation($implementation, $data, $configuration, $token->getId(), $errorHandling),
+                    'output' => WorkflowManager::runServiceImplementation($implementation, $data, $configuration, $token->getId()),
                 ];
             } else {
                 $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling);
@@ -121,6 +123,22 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
             $token->setProperty('error', $error);
             Log::info('Service task failed: ' . $implementation . ' - ' . $exception->getMessage());
             Log::error($exception->getTraceAsString());
+            
+            if ($this->retryAttempts() > 0) {
+                if ($this->attempts() <= $this->retryAttempts()) {
+                    Log::info('Retry the runScript process. Attempt ' . $this->attempts() . ' of ' . $this->retryAttempts() . ', Wait time: ' . $this->retryWaitTime());
+                    $this->release($this->retryWaitTime());
+                    return;
+                }
+                $message = __('Failed after :num total attempts', ['num' => $this->attempts()]);
+                $message = $message . "\n" . $exception->getMessage();
+                
+                $this->sendExecutionErrorNotification($message, $token->getId(), $errorHandling);
+                throw $exception;
+            } else {
+                $this->sendExecutionErrorNotification($exception->getMessage(), $token->getId(), $errorHandling);
+                throw $exception;
+            }
         }
     }
 
@@ -133,6 +151,12 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
             Log::error('Script failed: ' . $exception->getMessage());
 
             return;
+        }
+        if (get_class($exception) === "Illuminate\\Queue\\MaxAttemptsExceededException") {
+            $message = 'This is a type MaxAttemptsExceededException exception, it appears '
+                . 'that the global value configured in config/horizon.php has been exceeded '
+                . 'in the retries. Please consult with your main administrator.';
+            Log::error($message);
         }
         Log::error('Script (#' . $this->tokenId . ') failed: ' . $exception->getMessage());
         Log::error($exception->getTraceAsString());

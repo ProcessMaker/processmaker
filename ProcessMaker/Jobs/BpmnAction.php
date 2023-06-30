@@ -11,11 +11,13 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use ProcessMaker\BpmnEngine;
-use ProcessMaker\Exception\RetryableException;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestLock;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Notifications\ErrorExecutionNotification;
 use Throwable;
 
 abstract class BpmnAction implements ShouldQueue
@@ -45,6 +47,18 @@ abstract class BpmnAction implements ShouldQueue
     private $lock;
 
     /**
+     * This sets the set of values: 'timeout', 'retry_attempts', 'retry_wait_time' 
+     * that allow managing the retry of the job if it has failed. 
+     * To read the values, use the: timeout(), retryAttempts(), retryWaitTime() methods.
+     * To set this value, use the method `errorHandling()` that accepts an array. If the 
+     * parameter is not defined, the method returns the current value of this property.
+     * This property can be both set and get using the method errorHandling().
+     * 
+     * @var array
+     */
+    private $errorHandling = null;
+
+    /**
      * Execute the job.
      *
      * @return void
@@ -62,11 +76,8 @@ abstract class BpmnAction implements ShouldQueue
 
             //Run engine to the next state
             $this->engine->runToNextState();
-        } catch (RetryableException $e) {
-            Log::info('Re-Dispatching. Attempts: ' . $this->attempts() . ', Wait time: ' . $e->retry_wait_time);
-            $this->release($e->retry_wait_time);
         } catch (Throwable $exception) {
-            Log::error('%% ' . $exception->getMessage());
+            Log::error($exception->getMessage());
             // Change the Request to error status
             $request = !$this->instance && $this instanceof StartEvent ? $response : $this->instance;
             if ($request) {
@@ -84,7 +95,7 @@ abstract class BpmnAction implements ShouldQueue
      *
      * @return array
      */
-    protected function loadContext()
+    private function loadContext()
     {
         //Load the process definition
         if (isset($this->instanceId)) {
@@ -297,5 +308,80 @@ abstract class BpmnAction implements ShouldQueue
         $this->engine = null;
         $this->lock = null;
         gc_collect_cycles();
+    }
+
+    /**
+     * This sets the property errorHandling, and if the parameter doesn't exist, 
+     * it returns the current value of property errorHandling.
+     * 
+     * @param mixed $value
+     * @return mixed
+     */
+    public function errorHandling($value = null)
+    {
+        if (is_array($value) && !empty($value)) {
+            $array = [
+                'timeout',
+                'retry_attempts',
+                'retry_wait_time'
+            ];
+            foreach ($array as $val) {
+                $digit = 0;
+                if (is_string($value[$val]) && ctype_digit($value[$val])) {
+                    $digit = intval($value[$val]);
+                }
+                if (is_int($value[$val])) {
+                    $digit = $value[$val];
+                }
+                $value[$val] = $digit;
+            }
+            $this->errorHandling = $value;
+        }
+        return $this->errorHandling;
+    }
+
+    /**
+     * This retrieves the value of errorHandling['timeout'].
+     * 
+     * @return int
+     */
+    public function timeout()
+    {
+        return $this->errorHandling['timeout'];
+    }
+
+    /**
+     * This retrieves the value of errorHandling['retry_attempts'].
+     * 
+     * @return int
+     */
+    public function retryAttempts()
+    {
+        return $this->errorHandling['retry_attempts'];
+    }
+
+    /**
+     * This retrieves the value of errorHandling['retry_wait_time'].
+     * 
+     * @return int
+     */
+    public function retryWaitTime()
+    {
+        return $this->errorHandling['retry_wait_time'];
+    }
+
+    /**
+     * Send execution error notification.
+     */
+    public function sendExecutionErrorNotification(string $message, string $tokenId, array $errorHandling)
+    {
+        $processRequestToken = ProcessRequestToken::find($tokenId);
+        if ($processRequestToken) {
+            $user = $processRequestToken->processRequest->processVersion->manager;
+            if ($user !== null) {
+                Log::info('Send Execution Error Notification: ' . $message);
+                Notification::send($user, new ErrorExecutionNotification($processRequestToken, $message, $errorHandling));
+            }
+        }
     }
 }
