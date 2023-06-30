@@ -4,7 +4,7 @@ on:
   #  branches:
   #    - kr-github-actions
   pull_request:
-    types: [opened, reopened, synchronize, edited]
+    types: [opened, reopened, synchronize, edited, closed]
   #schedule:
   #  - cron: '0 0 * * *'  # every day at midnight     
   #workflow_dispatch:
