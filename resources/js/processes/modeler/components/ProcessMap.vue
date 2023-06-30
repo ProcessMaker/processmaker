@@ -15,7 +15,7 @@
             left: `${tooltip.newX}px`,
             top: `${tooltip.newY}px`
           }"
-          @is-loading="getIsLoading()"
+          @is-loading="getIsLoading"
         />
         <Modeler
           ref="modeler"
