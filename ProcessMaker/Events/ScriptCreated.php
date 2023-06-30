@@ -5,6 +5,7 @@ namespace ProcessMaker\Events;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class ScriptCreated implements SecurityLogEventInterface
@@ -18,6 +19,8 @@ class ScriptCreated implements SecurityLogEventInterface
 
     private Script $script;
 
+    public string $categoryName = '';
+
     /**
      * Create a new event instance.
      *
@@ -28,6 +31,10 @@ class ScriptCreated implements SecurityLogEventInterface
     {
         $this->script = $script;
         $this->changes = $changes;
+        $categoryId = $this->script['script_category_id'] ?? '';
+        if (!empty($categoryId)) {
+            $this->categoryName = ScriptCategory::where('id', $categoryId)->value('name');
+        }
     }
 
     /**
@@ -54,6 +61,9 @@ class ScriptCreated implements SecurityLogEventInterface
             'created_at' => $this->script->getAttribute('created_at'),
         ] : [
             'name' => $this->script->getAttribute('title'),
+            'description' => $this->script->getAttribute('description'),
+            'category' => $this->categoryName,
+            'language' => $this->script->getAttribute('language')
         ];
         unset($this->changes['code']);
         unset($this->original['code']);
