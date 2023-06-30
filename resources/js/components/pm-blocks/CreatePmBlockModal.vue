@@ -14,7 +14,7 @@
           <b-col>
             <required></required>
             <div v-html="descriptionText" class="my-3"></div>
-            <b-form-group
+             <b-form-group
               required
               :label="$t('PM Block Name')"
               :description="formDescription('The PM Block name must be unique.', 'name', errors)"
@@ -31,7 +31,7 @@
               ></b-form-input>
             </b-form-group>
 
-            <b-form-group
+           <b-form-group
               required
               :label="$t('Description')"
               :invalid-feedback="errorMessage('description', errors)"
@@ -59,7 +59,7 @@
                 @input="clearFileError"
               />
               <small v-if="fileUploadError === true" class="text-danger">
-                The custom icon file is too large. File size must be less than 2KB.
+                {{ $t('The custom icon file is too large. File size must be less than 2KB.') }}
               </small>
             </b-form-group>
 
@@ -147,6 +147,8 @@ export default {
         this.description = "";
         this.pm_block_category_id = "";
         this.showWarning = false;
+        this.iconAndFile.icon = 'cube';
+        this.iconAndFile.file = '';
       },
       savePmBlock() {
         let formData = new FormData();
@@ -155,7 +157,7 @@ export default {
         formData.append("description", this.description);
         formData.append("user_id", this.currentUserId);
         formData.append("pm_block_category_id", this.pm_block_category_id);
-        formData.append("icon", this.iconAndFile);
+        formData.append("meta", JSON.stringify(this.iconAndFile));
         ProcessMaker.apiClient.post("pm-blocks", formData)
         .then(response => {
           ProcessMaker.alert(this.$t("PM Block successfully created"), "success");
@@ -164,11 +166,11 @@ export default {
           }, 3000)
           this.close();
         }).catch(error => {
-          this.errors = error.response.data;
+          this.errors = error.response?.data;
           if (this.errors.hasOwnProperty('errors')) {
-            this.errors = this.errors.errors;
+            this.errors = this.errors?.errors;
           } else {
-            const message = error.response.data.error;
+            const message = error.response?.data?.error;
             ProcessMaker.alert(this.$t(message), "danger");
           }
         });
