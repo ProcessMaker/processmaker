@@ -28,8 +28,8 @@ class ScriptCategoryTest extends TestCase
             'name' => 'Screen Category 33',
         ]);
         $this->assertEquals(
-            $category->name. ', '.$category2->name,
-            ScriptCategory::getNamesByIds($category->id. ',' . $category2->id)
+            $category->name . ', '. $category2->name,
+            ScriptCategory::getNamesByIds($category->id . ',' . $category2->id)
         );
 
         //Case 3: without Id
