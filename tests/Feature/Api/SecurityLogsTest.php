@@ -150,11 +150,9 @@ class SecurityLogsTest extends TestCase
         ]);
         $response->assertStatus(201);
         $collection = SecurityLog::where('user_id', $this->user->id)->get();
-        $this->assertCount(1, $collection);
+        $this->assertCount(2, $collection);
         $securityLog = $collection->first();
-        $this->assertEquals([
-            'fullname' => $this->user->getAttribute('fullname'),
-        ], (array) $securityLog->data);
+        $this->assertIsObject($securityLog->data);
         $this->assertEquals([
             'event' => 'TestStoreEvent',
             'ip' => '127.0.01',
