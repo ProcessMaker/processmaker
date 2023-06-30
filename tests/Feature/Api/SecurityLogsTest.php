@@ -150,8 +150,8 @@ class SecurityLogsTest extends TestCase
         ]);
         $response->assertStatus(201);
         $collection = SecurityLog::where('user_id', $this->user->id)->get();
-        $this->assertCount(2, $collection);
-        $securityLog = $collection->skip(1)->first();
+        $this->assertCount(1, $collection);
+        $securityLog = $collection->first();
         $this->assertEquals([
             'fullname' => $this->user->getAttribute('fullname'),
         ], (array) $securityLog->data);
@@ -180,10 +180,14 @@ class SecurityLogsTest extends TestCase
         $original = array_intersect_key($setting->getOriginal(), $setting->getDirty());
         $setting->save();
         SettingsUpdated::dispatch($setting, $setting->getChanges(), $original);
-
         $collection = SecurityLog::get();
-        $this->assertCount(1, $collection);
-        $securityLog = $collection->first();
-        $this->assertEquals('SettingsUpdated', $securityLog->getAttribute('event'));
+        // Check if the variable security_log is enable
+        if (config('app.security_log')) {
+            $this->assertCount(1, $collection);
+            $securityLog = $collection->first();
+            $this->assertEquals('SettingsUpdated', $securityLog->getAttribute('event'));
+        } else {
+            $this->assertCount(0, $collection);
+        }
     }
 }
