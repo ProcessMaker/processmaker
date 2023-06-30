@@ -67,7 +67,6 @@ jobs:
       - name: Build and Push the image to ECR
         run: |
           cd pm4-stm-docker
-          docker stop $(docker ps -a -q) || true
           docker container prune -f
           docker-compose down -v                    
           docker-compose build processmaker
