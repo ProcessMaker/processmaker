@@ -56,7 +56,6 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
         }
         $scriptRef = $element->getProperty('scriptRef');
         $configuration = json_decode($element->getProperty('config'), true);
-        $errorHandling = json_decode($element->getProperty('errorHandling'), true) ?? [];
 
         // Check to see if we've failed parsing.  If so, let's convert to empty array.
         if ($configuration === null) {
@@ -79,25 +78,12 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
                 $script = Script::findOrFail($scriptRef)->versionFor($instance);
             }
 
-            /**
-             * If the configuration values for the 'ScriptTask' element do not exist, 
-             * then the values from the 'Script' are attempted to be taken. 
-             * If these values do not exist either, the fallback values are the 
-             * globally scoped values (config/horizon.php).
-             */
-            if (!is_array($errorHandling) || empty($errorHandling)) {
-                $errorHandling = [
-                    'timeout' => $script->timeout,
-                    'retry_attempts' => $script->retry_attempts,
-                    'retry_wait_time' => $script->retry_wait_time
-                ];
-            }
-            $this->errorHandling($errorHandling);
+            $errorHandling = new ErrorHandling($element, $script, $token);
 
             $this->unlock();
             $dataManager = new DataManager();
             $data = $dataManager->getData($token);
-            $response = $script->runScript($data, $configuration, $token->getId(), $this->timeout());
+            $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling->timeout());
 
             $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
                 // Exit if the task was completed or closed
@@ -119,34 +105,18 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
         } catch (Throwable $exception) {
             $token->setStatus(ScriptTaskInterface::TOKEN_STATE_FAILING);
 
+            $message = $errorHandling->handleRetries($this, $exception);
+
             $error = $element->getRepository()->createError();
-            $error->setName($exception->getMessage());
+            $error->setName($message);
 
             $token->setProperty('error', $error);
-            $token->logError($exception, $element);
+            $exceptionClass = get_class($exception);
+            $modifiedException = new $exceptionClass($message);
+            $token->logError($modifiedException, $element);
 
-            Log::error('Script failed: ' . $scriptRef . ' - ' . $exception->getMessage());
+            Log::error('Script failed: ' . $scriptRef . ' - ' . $message);
             Log::error($exception->getTraceAsString());
-
-            if ($this->retryAttempts() > 0) {
-                if ($this->attempts() <= $this->retryAttempts()) {
-                    Log::info('Retry the runScript process. Attempt ' . $this->attempts() . ' of ' . $this->retryAttempts() . ', Wait time: ' . $this->retryWaitTime());
-                    $this->release($this->retryWaitTime());
-                    return;
-                }
-
-                $message = __('Script failed after :attempts total attempts', ['attempts' => $this->attempts() - 1]);
-                $message = $message . "\n" . $exception->getMessage();
-
-                $this->sendExecutionErrorNotification($message, $token->getId(), $errorHandling);
-                if ($exception instanceof ScriptTimeoutException) {
-                    throw new ScriptTimeoutException($message);
-                }
-                throw new ScriptException($message);
-            } else {
-                $this->sendExecutionErrorNotification($exception->getMessage(), $token->getId(), $errorHandling);
-                throw $exception;
-            }
         }
     }
 
@@ -160,7 +130,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
 
             return;
         }
-        if (get_class($exception) === "Illuminate\\Queue\\MaxAttemptsExceededException") {
+        if (get_class($exception) === 'Illuminate\\Queue\\MaxAttemptsExceededException') {
             $message = 'This is a type MaxAttemptsExceededException exception, it appears '
                 . 'that the global value configured in config/horizon.php has been exceeded '
                 . 'in the retries. Please consult with your main administrator.';
