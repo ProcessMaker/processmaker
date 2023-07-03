@@ -73,7 +73,6 @@ class ErrorHandling
             $job->data,
             $job->attemptNum + 1
         );
-        \Log::info('Requeue the runScript process. Attempt ' . $job->attemptNum . ' of ' . $this->retryAttempts() . ', Wait time: ' . $this->retryWaitTime());
         $newJob->delay($this->retryWaitTime());
         dispatch($newJob);
     }
