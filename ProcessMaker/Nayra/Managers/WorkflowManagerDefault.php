@@ -284,11 +284,11 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
      */
     public function throwSignalEventRequest(ProcessRequest $request, $signalRef, array $data)
     {
-        CatchSignalEventInRequest::dispatchNow(
+        CatchSignalEventInRequest::dispatchSync(
             $request,
             $data,
             $signalRef
-        )->onQueue('bpmn');
+        );
     }
     
     /**
