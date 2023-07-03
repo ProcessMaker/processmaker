@@ -5,6 +5,9 @@ namespace ProcessMaker\Jobs;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptVersion;
 use ProcessMaker\Notifications\ErrorExecutionNotification;
@@ -41,14 +44,14 @@ class ErrorHandling
         $message = $exception->getMessage();
 
         if ($this->retryAttempts() > 0) {
-            if ($job->attempts() <= $this->retryAttempts()) {
-                Log::info('Retry the runScript process. Attempt ' . $job->attempts() . ' of ' . $this->retryAttempts() . ', Wait time: ' . $this->retryWaitTime());
-                $job->release($this->retryWaitTime());
+            if ($job->attemptNum <= $this->retryAttempts()) {
+                Log::info('Retry the runScript process. Attempt ' . $job->attemptNum . ' of ' . $this->retryAttempts() . ', Wait time: ' . $this->retryWaitTime());
+                $this->requeue($job);
 
                 return $message;
             }
 
-            $message = __('Script failed after :attempts total attempts', ['attempts' => $job->attempts() - 1]) . "\n" . $message;
+            $message = __('Script failed after :attempts total attempts', ['attempts' => $job->attemptNum]) . "\n" . $message;
 
             $this->sendExecutionErrorNotification($message);
 
@@ -58,6 +61,21 @@ class ErrorHandling
         }
 
         return $message;
+    }
+
+    private function requeue($job)
+    {
+        $class = get_class($job);
+        $newJob = new $class(
+            Process::findOrFail($job->definitionsId),
+            ProcessRequest::findOrFail($job->instanceId),
+            ProcessRequestToken::findOrFail($job->tokenId),
+            $job->data,
+            $job->attemptNum + 1
+        );
+        \Log::info('Requeue the runScript process. Attempt ' . $job->attemptNum . ' of ' . $this->retryAttempts() . ', Wait time: ' . $this->retryWaitTime());
+        $newJob->delay($this->retryWaitTime());
+        dispatch($newJob);
     }
 
     /**

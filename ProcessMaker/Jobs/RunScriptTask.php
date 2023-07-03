@@ -25,6 +25,8 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
 
     public $data;
 
+    public $attemptNum;
+
     /**
      * Create a new job instance.
      *
@@ -33,7 +35,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
      * @param \ProcessMaker\Models\ProcessRequestToken $token
      * @param array $data
      */
-    public function __construct(Definitions $definitions, ProcessRequest $instance, ProcessRequestToken $token, array $data)
+    public function __construct(Definitions $definitions, ProcessRequest $instance, ProcessRequestToken $token, array $data, $attemptNum = 1)
     {
         $this->onQueue('bpmn');
         $this->definitionsId = $definitions->getKey();
@@ -41,6 +43,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
         $this->tokenId = $token->getKey();
         $this->elementId = $token->getProperty('element_ref');
         $this->data = $data;
+        $this->attemptNum = $attemptNum;
     }
 
     /**
