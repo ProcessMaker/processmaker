@@ -19,8 +19,6 @@ class ErrorHandling
         public $processRequestToken,
     ) {
         $errorHandling = json_decode($element->getProperty('errorHandling'), true) ?? [];
-        \Log::info('ERROR HANDLING', ['eh' => $errorHandling]);
-        \Log::info('model: ' . get_class($this->model));
 
         if ($this->model instanceof ScriptVersion) {
             $script = $this->model;
