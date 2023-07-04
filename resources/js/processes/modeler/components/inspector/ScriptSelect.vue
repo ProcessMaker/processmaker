@@ -43,10 +43,10 @@
   export default {
     props: ["value", "label", "helper", "params", 'required'],
     data() {
-      return {
-        content: "",
-        loading: false,
-        scripts: [],
+        return {
+            content: "",
+            loading: false,
+            scripts: [],
         error: ''
       };
     },
@@ -65,6 +65,7 @@
           if (this.content && this.content.id != this.value) {
             this.error = '';
             this.$emit('input', this.content.id);
+            this.$root.$emit("contentChanged", this.content);
           }
         }
       },
@@ -80,6 +81,7 @@
               .then(response => {
                 this.loading = false;
                 this.content = response.data;
+                this.$root.$emit("contentChanged", this.content);
               })
               .catch(error => {
                 this.loading = false;
