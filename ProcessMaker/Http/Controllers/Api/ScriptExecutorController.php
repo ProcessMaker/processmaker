@@ -168,9 +168,9 @@ class ScriptExecutorController extends Controller
     {
         $this->checkAuth($request);
         $request->validate(ScriptExecutor::rules());
-        
+
         $original_values = $scriptExecutor->getAttributes();
-        
+
         $scriptExecutor->update(
             $request->only($scriptExecutor->getFillable())
         );

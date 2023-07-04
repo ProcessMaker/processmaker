@@ -85,9 +85,14 @@ return [
     'bpmn_actions_lock_check_interval' => (int) env('BPMN_ACTIONS_LOCK_CHECK_INTERVAL', 1000),
 
     // The url of our host from inside the docker
-    'docker_host_url' => env('DOCKER_HOST_URL',
-        preg_replace('/(\w+):\/\/([^:\/]+)(\:\d+)?/', '$1://172.17.0.1$3',
-            env('APP_URL', 'http://localhost'))),
+    'docker_host_url' => env(
+        'DOCKER_HOST_URL',
+        preg_replace(
+            '/(\w+):\/\/([^:\/]+)(\:\d+)?/',
+            '$1://172.17.0.1$3',
+            env('APP_URL', 'http://localhost')
+        )
+    ),
 
     // Allows our script executors to ignore invalid SSL. This should only be set to false for development.
     'api_ssl_verify' => env('API_SSL_VERIFY', 'true'),
@@ -97,6 +102,15 @@ return [
 
     // Allows to detect if OpenAI is enabled or not
     'open_ai_nlq_to_pmql' => env('OPEN_AI_NLQ_TO_PMQL_ENABLED', false) && env('OPEN_AI_SECRET', false),
+
+    // Microservice AI Host
+    'ai_microservice_host' => env('AI_MICROSERVICE_HOST'),
+
+    // Security log
+    'security_log' => env('SECURITY_LOG', 'true'),
+
+    // Message broker driver to use in Workflow Manager
+    'message_broker_driver' => env('MESSAGE_BROKER_DRIVER', 'default'),
 
     // Global app settings
     'settings' => [

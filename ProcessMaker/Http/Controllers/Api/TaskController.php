@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use ProcessMaker\Events\ActivityAssigned;
+use ProcessMaker\Events\ActivityReassignment;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -151,7 +152,8 @@ class TaskController extends Controller
                     }
                 } else {
                     $key = array_search($column, $filterByFields);
-                    $query->where(is_string($key) ? $key : $column, 'like', $fieldFilter);
+                    $operator = is_numeric($fieldFilter) ? '=' : 'like';
+                    $query->where(is_string($key) ? $key : $column, $operator, $fieldFilter);
                 }
             }
         }
@@ -331,6 +333,7 @@ class TaskController extends Controller
         } elseif (!empty($request->input('user_id'))) {
             $userToAssign = $request->input('user_id');
             $sendActivityActivatedNotifications = false;
+            $reassingAction = false;
             if ($task->is_self_service && $userToAssign == Auth::id() && !$task->user_id) {
                 // Claim task
                 $task->is_self_service = 0;
@@ -342,17 +345,23 @@ class TaskController extends Controller
                 $task->authorizeAssigneeEscalateToManager();
                 $userToAssign = $task->escalateToManager();
                 $task->persistUserData($userToAssign);
+                $reassingAction = true;
             } else {
                 // Validate if user can reassign
                 $task->authorizeReassignment(Auth::user());
                 // Reassign user
                 $task->reassignTo($userToAssign);
                 $task->persistUserData($userToAssign);
+                $reassingAction = true;
             }
             $task->save();
 
             if ($sendActivityActivatedNotifications) {
                 $task->sendActivityActivatedNotifications();
+            }
+            // Register the Event
+            if ($reassingAction) {
+                ActivityReassignment::dispatch($task);
             }
 
             // Send a notification to the user

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
+use ProcessMaker\Events\CustomizeUiUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Jobs\CompileSass;
@@ -89,14 +90,36 @@ class CssOverrideController extends Controller
 
         $request->validate(Setting::rules($setting));
         $setting->fill($request->input());
+
+        $original = array_intersect_key($setting->getOriginal(), $setting->getDirty());
+
         $setting->saveOrFail();
 
-        $this->setLoginFooter($request);
-        $this->setAltText($request);
+        $footer = $this->setLoginFooter($request);
+        $altText = $this->setAltText($request);
 
         $this->writeColors(json_decode($request->input('variables', '[]'), true));
         $this->writeFonts(json_decode($request->input('sansSerifFont', '')));
         $this->compileSass($request->user('api')->id, json_decode($request->input('variables', '[]'), true));
+
+        $changes = [];
+        if (isset($setting->getChanges()['config'])) {
+            $changes = (array) json_decode($setting->getChanges()['config']);
+        }
+        $changes = array_merge(
+            $footer['changes'] ?? [],
+            $altText['changes'] ?? [],
+            $changes
+        );
+        
+        if (!empty($changes)) {
+            $original['config'] = array_merge(
+                $footer['original'] ?? [],
+                $altText['original'] ?? [],
+                $original['config'] ?? []
+            );
+            event(new CustomizeUiUpdated($original, $changes));
+        }
 
         return new ApiResource($setting);
     }
@@ -108,11 +131,24 @@ class CssOverrideController extends Controller
             $footerContent = '';
         }
 
-        Setting::updateOrCreate([
+        $original = Setting::where('key', 'login-footer')->first();
+
+        $setting = Setting::updateOrCreate([
             'key' => 'login-footer',
         ], [
             'config' => ['html' => $footerContent],
         ]);
+
+        $response = [];
+
+        if ((!$setting->wasRecentlyCreated && $setting->wasChanged()) || $setting->wasRecentlyCreated) {
+            $response = [
+                'changes' => ['loginFooter' => $setting->getAttribute('config')['html'] ?? ''],
+                'original' => ['loginFooter' => $original->getAttribute('config')['html'] ?? '']
+            ];
+        }
+
+        return $response;
     }
 
     private function setAltText(Request $request)
@@ -122,12 +158,25 @@ class CssOverrideController extends Controller
             $altText = '';
         }
 
-        Setting::updateOrCreate([
+        $original = Setting::where('key', 'logo-alt-text')->first();
+
+        $setting = Setting::updateOrCreate([
             'key' => 'logo-alt-text',
         ], [
             'format' => 'text',
             'config' => $altText,
         ]);
+
+        $response = [];
+
+        if ((!$setting->wasRecentlyCreated && $setting->wasChanged()) || $setting->wasRecentlyCreated) {
+            $response = [
+                'changes' => ['altText' => $setting->getAttribute('config') ?? ''],
+                'original' => ['altText' => $original->getAttribute('config') ?? '']
+            ];
+        }
+
+        return $response;
     }
 
     public function update(Request $request)

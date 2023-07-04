@@ -13,7 +13,9 @@ class ScriptCreated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private array $changes;
+
     private array $original;
+
     private Script $script;
 
     /**
@@ -35,9 +37,9 @@ class ScriptCreated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return array_merge([
+        return [
             'script_id' => $this->script->id
-        ], $this->changes);
+        ];
     }
 
     /**
@@ -48,13 +50,14 @@ class ScriptCreated implements SecurityLogEventInterface
     public function getData(): array
     {
         $basic = isset($this->changes['code']) ? [
-            'Name' => $this->script->getAttribute('title'),
-            'Script Last Modified' => $this->script->getAttribute('updated_at'),
+            'name' => $this->script->getAttribute('title'),
+            'created_at' => $this->script->getAttribute('created_at'),
         ] : [
-            'Name' => $this->script->getAttribute('title'),
+            'name' => $this->script->getAttribute('title'),
         ];
         unset($this->changes['code']);
         unset($this->original['code']);
+
         return array_merge($basic, $this->formatChanges($this->changes, []));
     }
 

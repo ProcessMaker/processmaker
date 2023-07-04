@@ -60,6 +60,10 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
         }
         $scriptRef = $element->getProperty('scriptRef');
         $configuration = json_decode($element->getProperty('config'), true);
+        $errorHandling = json_decode($element->getProperty('errorHandling'), true);
+        if ($errorHandling === null) {
+            $errorHandling = [];
+        }
 
         // Check to see if we've failed parsing.  If so, let's convert to empty array.
         if ($configuration === null) {
@@ -85,7 +89,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             $this->unlock();
             $dataManager = new DataManager();
             $data = $dataManager->getData($token);
-            $response = $script->runScript($data, $configuration, $token->getId());
+            $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling);
 
             $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
                 // Exit if the task was completed or closed

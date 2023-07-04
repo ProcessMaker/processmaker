@@ -81,6 +81,13 @@ new Vue({
         this.$refs.addUserModal.onSubmit(this.config);
       }
     },
+    downloadAllLogs() {
+      ProcessMaker.apiClient
+        .get("security-logs/download/all?format=csv")
+        .then(response => {
+          window.ProcessMaker.alert(response.data.message, "success");
+        });
+    },
   },
 });
 

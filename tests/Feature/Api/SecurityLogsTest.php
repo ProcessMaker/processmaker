@@ -145,27 +145,27 @@ class SecurityLogsTest extends TestCase
             'user_id' => $this->user->id,
             'occurred_at' => time(),
             'data' => [
-                'fullname' => $this->user->getAttribute('fullname')
+                'fullname' => $this->user->getAttribute('fullname'),
             ],
         ]);
         $response->assertStatus(201);
         $collection = SecurityLog::where('user_id', $this->user->id)->get();
-        $this->assertCount(2, $collection);
-        $securityLog = $collection->skip(1)->first();
+        $this->assertCount(1, $collection);
+        $securityLog = $collection->first();
         $this->assertEquals([
-            'fullname' => $this->user->getAttribute('fullname')
-        ], (array)$securityLog->data);
+            'fullname' => $this->user->getAttribute('fullname'),
+        ], (array) $securityLog->data);
         $this->assertEquals([
             'event' => 'TestStoreEvent',
             'ip' => '127.0.01',
             'user_id' => $this->user->id,
-            'meta' => (object)[
+            'meta' => (object) [
                 'user_agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36',
-                'browser' => (object)[
+                'browser' => (object) [
                     'name' => 'Chrome',
                     'version' => '111',
                 ],
-                'os' => (object)[
+                'os' => (object) [
                     'name' => 'Linux',
                     'version' => null,
                 ],
@@ -180,10 +180,14 @@ class SecurityLogsTest extends TestCase
         $original = array_intersect_key($setting->getOriginal(), $setting->getDirty());
         $setting->save();
         SettingsUpdated::dispatch($setting, $setting->getChanges(), $original);
-
         $collection = SecurityLog::get();
-        $this->assertCount(1, $collection);
-        $securityLog = $collection->first();
-        $this->assertEquals('SettingsUpdated', $securityLog->getAttribute('event'));
+        // Check if the variable security_log is enable
+        if (config('app.security_log')) {
+            $this->assertCount(1, $collection);
+            $securityLog = $collection->first();
+            $this->assertEquals('SettingsUpdated', $securityLog->getAttribute('event'));
+        } else {
+            $this->assertCount(0, $collection);
+        }
     }
 }
