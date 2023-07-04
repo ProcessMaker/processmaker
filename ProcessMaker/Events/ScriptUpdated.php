@@ -32,12 +32,11 @@ class ScriptUpdated implements SecurityLogEventInterface
         $this->changes = $changes;
         $this->original = $original;
 
-        if (isset($original['script_category_id']) && isset($changes['script_category_id'])) {
-            $this->changes['script_category'] = ScriptCategory::getNamesByIds($this->changes['script_category_id']);
-            $this->original['script_category'] = ScriptCategory::getNamesByIds($this->original['script_category_id']);
-            unset($this->changes['script_category_id']);
-            unset($this->original['script_category_id']);
-        }
+        // Get category name
+        $this->original['script_category'] = isset($original['script_category_id']) ? ScriptCategory::getNamesByIds($this->original['script_category_id']) : '';
+        unset($this->original['script_category_id']);
+        $this->changes['script_category'] = isset($changes['script_category_id']) ? ScriptCategory::getNamesByIds($this->changes['script_category_id']) : '';
+        unset($this->changes['script_category_id']);
     }
 
     /**

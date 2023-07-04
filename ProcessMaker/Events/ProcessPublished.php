@@ -41,12 +41,11 @@ class ProcessPublished implements SecurityLogEventInterface
         $this->changes = array_diff_key($changes, array_flip($this::REMOVE_KEYS));
         $this->original = array_diff_key($original, array_flip($this::REMOVE_KEYS));
 
-        if (isset($original['process_category_id']) && isset($changes['process_category_id'])) {
-            $this->changes['process_category'] = ProcessCategory::getNamesByIds($this->changes['process_category_id']);
-            $this->original['process_category'] = ProcessCategory::getNamesByIds($this->original['process_category_id']);
-            unset($this->changes['process_category_id']);
-            unset($this->original['process_category_id']);
-        }
+        // Get category name
+        $this->original['process_category'] = isset($original['process_category_id']) ? ProcessCategory::getNamesByIds($this->original['process_category_id']) : '';
+        unset($this->original['process_category_id']);
+        $this->changes['process_category'] = isset($changes['process_category_id']) ? ProcessCategory::getNamesByIds($this->changes['process_category_id']) : '';
+        unset($this->changes['process_category_id']);
     }
 
     /**
