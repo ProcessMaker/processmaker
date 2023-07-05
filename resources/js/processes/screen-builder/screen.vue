@@ -806,6 +806,10 @@ export default {
       });
 
       this.deviceScreen = deviceScreen;
+
+      this.$nextTick(() => {
+        this.$refs.renderer.checkIfIsMobile();
+      });
     },
     onUpdate(data) {
       this.updateDataPreview();
