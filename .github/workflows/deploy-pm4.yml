@@ -81,8 +81,8 @@ jobs:
         run: |
           cd pm4-stm-docker
           if [[ $CI_PR_BODY == *"ci:build-base"* ]]; then
-            docker-compose build base --no-cache
-            docker-compose build cache --no-cache
+            docker-compose build --no-cache base
+            docker-compose build --no-cache cache
           fi
           docker-compose build processmaker
 
