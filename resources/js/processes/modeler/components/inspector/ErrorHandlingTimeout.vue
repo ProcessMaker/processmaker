@@ -33,11 +33,18 @@ export default {
     getNodeConfig(newValue) {
       this.valueContent = newValue;
       const configString = _.get(this.node(), 'errorHandling', null);
-      if (configString) {
-        const config = JSON.parse(configString);
-        this.config.timeout = _.get(config, 'timeout');
+      if (this.config.id) {
+        if (this.config.id !== this.valueContent.id) {
+          this.config.timeout = this.valueContent.timeout;
+          this.config.id = this.valueContent.id;
+        } else {
+          if (configString) {
+            const config = JSON.parse(configString);
+            this.config.timeout = _.get(config, 'timeout');
+          }
+        }
       } else {
-        this.config.timeout = this.valueContent.timeout;
+        this.config.id = this.valueContent.id;
       }
     },
     setNodeConfig() {
