@@ -424,7 +424,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
     /**
      * Throw a signal event by signalRef into a specific request.
      *
-     * @param Process $process
+     * @param ProcessRequest $request
      * @param string $signalRef
      * @param array $data
      */
