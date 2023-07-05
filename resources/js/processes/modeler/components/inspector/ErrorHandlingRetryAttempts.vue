@@ -33,11 +33,18 @@ export default {
     getNodeConfig(newValue) {
       this.valueContent = newValue;
       const configString = _.get(this.node(), 'errorHandling', null);
-      if (configString) {
-        const config = JSON.parse(configString);
-        this.config.retry_attempts = _.get(config, 'retry_attempts');
+      if (this.config.id) {
+        if (this.config.id !== this.valueContent.id) {
+          this.config.retry_attempts = this.valueContent.retry_attempts;
+          this.config.id = this.valueContent.id;
+        } else {
+          if (configString) {
+            const config = JSON.parse(configString);
+            this.config.retry_attempts = _.get(config, 'retry_attempts');
+          }
+        }
       } else {
-        this.config.retry_attempts = this.valueContent.retry_attempts;
+        this.config.id = this.valueContent.id;
       }
     },
     setNodeConfig() {

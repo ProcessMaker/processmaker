@@ -27,28 +27,24 @@ export default {
     },
   },
   methods: {
-    actualizarValorContent(nuevoValor) {
-      this.valorContent = nuevoValor; // Actualizar el valor de la variable en este componente
-      const configString = _.get(this.node(), 'errorHandling', null);
-      console.log("🚀 ~ file: ErrorHandlingRetryWaitTime.vue:32 ~ actualizarValorContent ~ configString:", configString)
-      if (configString) {
-        const config = JSON.parse(configString);
-        this.config.retry_wait_time = _.get(config, 'retry_wait_time');
-      } else {
-        this.config.retry_wait_time = this.valorContent.retry_wait_time;
-      }
-    },
     node() {
       return this.$root.$children[0].$refs.modeler.highlightedNode.definition;
     },
     getNodeConfig(newValue) {
-      this.valueContent = newValue; // Actualizar el valor de la variable en este componente
+      this.valueContent = newValue;
       const configString = _.get(this.node(), 'errorHandling', null);
-      if (configString) {
-        const config = JSON.parse(configString);
-        this.config.retry_wait_time = _.get(config, 'retry_wait_time');
+      if (this.config.id) {
+        if (this.config.id !== this.valueContent.id) {
+          this.config.retry_wait_time = this.valueContent.retry_wait_time;
+          this.config.id = this.valueContent.id;
+        } else {
+          if (configString) {
+            const config = JSON.parse(configString);
+            this.config.retry_wait_time = _.get(config, 'retry_wait_time');
+          }
+        }
       } else {
-        this.config.retry_wait_time = this.valueContent.retry_wait_time;
+        this.config.id = this.valueContent.id;
       }
     },
     setNodeConfig() {
@@ -63,11 +59,10 @@ export default {
     },
   },
   mounted() {
-    this.$root.$on("contentChanged", this.actualizarValorContent); // Escuchar evento personalizado
-    this.getNodeConfig();
+    this.$root.$on("contentChanged", this.getNodeConfig);
   },
   beforeDestroy() {
-    this.$root.$off("contentChanged", this.actualizarValorContent); // Dejar de escuchar el evento al destruir el componente
+    this.$root.$off("contentChanged", this.getNodeConfig);
   },
   computed: {
     helper() {

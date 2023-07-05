@@ -65,7 +65,6 @@
           if (this.content && this.content.id != this.value) {
             this.error = '';
             this.$emit('input', this.content.id);
-            this.$root.$emit("contentChanged", this.content);
           }
         }
       },
