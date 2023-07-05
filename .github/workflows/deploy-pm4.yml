@@ -80,13 +80,13 @@ jobs:
       - name: Build and Push the image to ECR
         run: |
           cd pm4-stm-docker
-          if [[ $CI_PR_BODY == *"ci:build-base"* ]; then
+          if [[ $CI_PR_BODY == *"ci:build-base"* ]]; then
             docker-compose build base --no-cache
             docker-compose build cache --no-cache
           fi
           docker-compose build processmaker
 
-          if [[ $CI_PR_BODY == *"ci:build-base"* ]; then
+          if [[ $CI_PR_BODY == *"ci:build-base"* ]]; then
             docker push ${ECR_REPOSITORY}:ci-base
             docker push ${ECR_REPOSITORY}:ci-cache
             docker save -o base-image.tar ${ECR_REPOSITORY}:ci-base
