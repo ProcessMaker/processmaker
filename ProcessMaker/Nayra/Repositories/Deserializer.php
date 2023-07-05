@@ -208,7 +208,7 @@ class Deserializer
      * Return a process request token from serialized data
      *
      * @param array $serialized
-     * @return TokenInterface
+     * @return TokenInterface|ProcessRequestToken
      */
     public function unserializeToken(array $serialized): TokenInterface
     {

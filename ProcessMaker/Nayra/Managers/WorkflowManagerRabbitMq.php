@@ -11,8 +11,11 @@ use ProcessMaker\Facades\MessageBrokerService;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\GenerateAccessToken;
 use ProcessMaker\Managers\DataManager;
+use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Process as Definitions;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
@@ -32,6 +35,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
     const ACTION_RUN_SCRIPT = 'RUN_SCRIPT';
     const ACTION_TRIGGER_BOUNDARY_EVENT = 'TRIGGER_BOUNDARY_EVENT';
     const ACTION_TRIGGER_MESSAGE_EVENT = 'TRIGGER_MESSAGE_EVENT';
+    const ACTION_TRIGGER_SIGNAL_EVENT = 'TRIGGER_SIGNAL_EVENT';
 
     /**
      * Trigger a start event and return the process request instance.
@@ -51,6 +55,9 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         $userId = $this->getCurrentUserId();
 
         // Create immediately a new process request
+        $collaboration = ProcessCollaboration::create([
+            'process_id' => $definitions->id,
+        ]);
         $request = ProcessRequest::create([
             'process_id' => $definitions->id,
             'user_id' => $userId,
@@ -62,6 +69,8 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             'initiated_at' => Carbon::now(),
             'process_version_id' => $version->getKey(),
             'signal_events' => [],
+            'collaboration_uuid' => $collaboration->uuid,
+            'process_collaboration_id' => $collaboration->id,
         ]);
 
         // Serialize instance
@@ -375,6 +384,85 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
     }
 
     /**
+     * Throw a signal event by signalRef into a specific process.
+     *
+     * @param int $processId
+     * @param string $signalRef
+     * @param array $data
+     */
+    public function throwSignalEventProcess($processId, $signalRef, array $data)
+    {
+        // Get complementary information
+        $userId = $this->getCurrentUserId();
+        // get process variable
+        $process = Process::find($processId);
+        $definitions = $process->getDefinitions();
+        $catches = SignalManager::getSignalCatchEvents($signalRef, $definitions);
+        $processVariable = '';
+        foreach ($catches as $catch) {
+            $processVariable = $definitions->getStartEvent($catch['id'])->getBpmnElement()->getAttribute('pm:config');
+        }
+        if ($processVariable) {
+            $data = [
+                $processVariable => $data,
+            ];
+        }
+        // Dispatch complete task action
+        $this->dispatchAction([
+            'bpmn' => $process->getLatestVersion()->getKey(),
+            'action' => self::ACTION_TRIGGER_SIGNAL_EVENT,
+            'params' => [
+                'signal_ref' => $signalRef,
+                'data' => $data,
+            ],
+            'session' => [
+                'user_id' => $userId,
+            ],
+        ]);
+    }
+
+    /**
+     * Throw a signal event by signalRef into a specific request.
+     *
+     * @param ProcessRequest $request
+     * @param string $signalRef
+     * @param array $data
+     */
+    public function throwSignalEventRequest(ProcessRequest $request, $signalRef, array $data)
+    {
+        // Get complementary information
+        $userId = $this->getCurrentUserId();
+        $state = $this->serializeState($request);
+        // Get process variable
+        $definitions = $request->processVersion->getDefinitions();
+        $catches = SignalManager::getSignalCatchEvents($signalRef, $definitions);
+        $processVariable = '';
+        foreach ($catches as $catch) {
+            $processVariable = $definitions->getStartEvent($catch['id'])->getBpmnElement()->getAttribute('pm:config');
+        }
+        if ($processVariable) {
+            $data = [
+                $processVariable => $data,
+            ];
+        }
+        // Dispatch complete task action
+        $this->dispatchAction([
+            'bpmn' => $request->process_version_id,
+            'action' => self::ACTION_TRIGGER_SIGNAL_EVENT,
+            'params' => [
+                'instance_id' => $request->uuid,
+                'request_id' => $request->id,
+                'signal_ref' => $signalRef,
+                'data' => $data,
+            ],
+            'state' => $state,
+            'session' => [
+                'user_id' => $userId,
+            ],
+        ]);
+    }
+
+    /**
      * Build a state object.
      *
      * @param ProcessRequest $instance
@@ -382,28 +470,36 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
      */
     private function serializeState(ProcessRequest $instance)
     {
-        // Get open tokens
-        $tokensRows = [];
-        $tokens = $instance->tokens()->where('status', '!=', 'CLOSED')->where('status', '!=', 'TRIGGERED')->get();
-        foreach ($tokens as $token) {
-            $tokensRows[] = array_merge($token->token_properties ?: [], [
-                'id' => $token->uuid,
-                'status' => $token->status,
-                'index' => $token->element_index,
-                'element_id' => $token->element_id,
-                'created_at' => $token->created_at->getTimestamp(),
-            ]);
+        if ($instance->collaboration) {
+            $requests = $instance->collaboration->requests()->where('status', 'ACTIVE')->get();
+        } else {
+            $requests = collect([$instance]);
         }
+        $requests = $requests->map(function ($request) {
+            // Get open tokens
+            $tokensRows = [];
+            $tokens = $request->tokens()->where('status', '!=', 'CLOSED')->where('status', '!=', 'TRIGGERED')->get();
+            foreach ($tokens as $token) {
+                $tokensRows[] = array_merge($token->token_properties ?: [], [
+                    'id' => $token->uuid,
+                    'status' => $token->status,
+                    'index' => $token->element_index,
+                    'element_id' => $token->element_id,
+                    'created_at' => $token->created_at->getTimestamp(),
+                ]);
+            }
+
+            return [
+                'id' => $request->uuid,
+                'callable_id' => $request->callable_id,
+                'collaboration_uuid' => $request->collaboration_uuid,
+                'data' => $request->data,
+                'tokens' => $tokensRows,
+            ];
+        });
 
         return [
-            'requests' => [
-                [
-                    'id' => $instance->uuid,
-                    'callable_id' => $instance->callable_id,
-                    'data' => $instance->data,
-                    'tokens' => $tokensRows,
-                ],
-            ],
+            'requests' => $requests->toArray(),
         ];
     }
 
