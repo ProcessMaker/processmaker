@@ -11,13 +11,10 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Notification;
 use ProcessMaker\BpmnEngine;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestLock;
-use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Notifications\ErrorExecutionNotification;
 use Throwable;
 
 abstract class BpmnAction implements ShouldQueue

@@ -2,41 +2,25 @@
 
 namespace ProcessMaker\Jobs;
 
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptVersion;
 use ProcessMaker\Notifications\ErrorExecutionNotification;
 
 class ErrorHandling
 {
     public $errorHandling = [];
+    
+    public static $callback;
 
     public function __construct(
-        public $element,
-        public $model,
         public $processRequestToken,
-    ) {
-        $errorHandling = json_decode($element->getProperty('errorHandling'), true) ?? [];
-
-        if ($this->model instanceof ScriptVersion) {
-            $script = $this->model;
-
-            if (!is_array($errorHandling) || empty($errorHandling)) {
-                $errorHandling = [
-                    'timeout' => $script->timeout,
-                    'retry_attempts' => $script->retry_attempts,
-                    'retry_wait_time' => $script->retry_wait_time,
-                ];
-            }
-            $this->errorHandling($errorHandling);
-        }
-
-        // TODO data sources
+    )
+    {
+        
     }
 
     public function handleRetries($job, $exception)
@@ -45,13 +29,13 @@ class ErrorHandling
 
         if ($this->retryAttempts() > 0) {
             if ($job->attemptNum <= $this->retryAttempts()) {
-                Log::info('Retry the runScript process. Attempt ' . $job->attemptNum . ' of ' . $this->retryAttempts() . ', Wait time: ' . $this->retryWaitTime());
+                Log::info('Retry the job process. Attempt ' . $job->attemptNum . ' of ' . $this->retryAttempts() . ', Wait time: ' . $this->retryWaitTime());
                 $this->requeue($job);
 
                 return $message;
             }
 
-            $message = __('Script failed after :attempts total attempts', ['attempts' => $job->attemptNum]) . "\n" . $message;
+            $message = __('Job failed after :attempts total attempts', ['attempts' => $job->attemptNum - 1]) . "\n" . $message;
 
             $this->sendExecutionErrorNotification($message);
 
@@ -86,7 +70,7 @@ class ErrorHandling
             $user = $this->processRequestToken->processRequest->processVersion->manager;
             if ($user !== null) {
                 Log::info('Send Execution Error Notification: ' . $message);
-                Notification::send($user, new ErrorExecutionNotification($this->processRequestToken, $message, $this->bpmnSetting));
+                Notification::send($user, new ErrorExecutionNotification($this->processRequestToken, $message, $this->errorHandling));
             }
         }
     }
@@ -100,7 +84,7 @@ class ErrorHandling
      */
     public function errorHandling($value = null)
     {
-        \Log::info('errorHandling', ['value' => $value]);
+        Log::info('Setting errorHandling', ['value' => $value]);
         if (is_array($value) && !empty($value)) {
             $array = [
                 'timeout',

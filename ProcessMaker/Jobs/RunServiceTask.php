@@ -29,6 +29,8 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
 
     public $backoff = 60;
 
+    public $attemptNum;
+
     /**
      * Create a new job instance.
      *
@@ -37,7 +39,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
      * @param \ProcessMaker\Models\ProcessRequestToken $token
      * @param array $data
      */
-    public function __construct(Definitions $definitions, ProcessRequest $instance, ProcessRequestToken $token, array $data)
+    public function __construct(Definitions $definitions, ProcessRequest $instance, ProcessRequestToken $token, array $data, $attemptNum = 1)
     {
         if ($token->getOwner()) {
             $pmConfig = json_decode($token->getOwnerElement()->getProperty('config', '{}'), true);
@@ -50,6 +52,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
         $this->tokenId = $token->getKey();
         $this->elementId = $token->getProperty('element_ref');
         $this->data = $data;
+        $this->attemptNum = $attemptNum;
     }
 
     /**
@@ -65,7 +68,6 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
         }
         $implementation = $element->getImplementation();
         $configuration = json_decode($element->getProperty('config'), true);
-        $errorHandling = json_decode($element->getProperty('errorHandling'), true) ?? [];
 
         // Check to see if we've failed parsing.  If so, let's convert to empty array.
         if ($configuration === null) {
@@ -84,19 +86,40 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
                 throw new ScriptException('Service task not implemented: ' . $implementation);
             }
 
-            //todo: It is necessary to obtain the configuration values of the "dataSource" for the default values.
-            $this->errorHandling($errorHandling);
+            $errorHandling = new ErrorHandling($token);
+
+            /**
+             * This obtains the initial values and the values configured in the diagram; 
+             * if the diagram values exist, it overwrites the initial values.
+             */
+            ErrorHandling::$callback = function ($params) use ($element, $errorHandling) {
+                $initial = [
+                    'timeout' => $params['timeout'],
+                    'retry_attempts' => $params['retry_attempts'],
+                    'retry_wait_time' => $params['retry_wait_time'],
+                ];
+
+                $result = json_decode($element->getProperty('errorHandling'), true) ?? [];
+                if (is_array($result) && !empty($result)) {
+                    $initial = array_merge($initial, $result);
+                }
+                $errorHandling->errorHandling($initial);
+            };
 
             $this->unlock();
             $dataManager = new DataManager();
             $data = $dataManager->getData($token);
 
+            /**
+             * todo: Please review the "else" section as it appears unreachable since if `$existsImpl` 
+             * is not true, an exception is thrown a few lines above.
+             */
             if ($existsImpl) {
                 $response = [
                     'output' => WorkflowManager::runServiceImplementation($implementation, $data, $configuration, $token->getId()),
                 ];
             } else {
-                $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling);
+                $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling->timeout());
             }
             $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
                 // Exit if the task was completed or closed
@@ -118,27 +141,19 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
         } catch (Throwable $exception) {
             // Change to error status
             $token->setStatus(ServiceTaskInterface::TOKEN_STATE_FAILING);
+
+            $message = $errorHandling->handleRetries($this, $exception);
+
             $error = $element->getRepository()->createError();
             $error->setName($exception->getMessage());
+
             $token->setProperty('error', $error);
-            Log::info('Service task failed: ' . $implementation . ' - ' . $exception->getMessage());
+            $exceptionClass = get_class($exception);
+            $modifiedException = new $exceptionClass($message);
+            $token->logError($modifiedException, $element);
+
+            Log::error('Service task failed: ' . $implementation . ' - ' . $exception->getMessage());
             Log::error($exception->getTraceAsString());
-            
-            if ($this->retryAttempts() > 0) {
-                if ($this->attempts() <= $this->retryAttempts()) {
-                    Log::info('Retry the runScript process. Attempt ' . $this->attempts() . ' of ' . $this->retryAttempts() . ', Wait time: ' . $this->retryWaitTime());
-                    $this->release($this->retryWaitTime());
-                    return;
-                }
-                $message = __('Failed after :num total attempts', ['num' => $this->attempts()]);
-                $message = $message . "\n" . $exception->getMessage();
-                
-                $this->sendExecutionErrorNotification($message, $token->getId(), $errorHandling);
-                throw $exception;
-            } else {
-                $this->sendExecutionErrorNotification($exception->getMessage(), $token->getId(), $errorHandling);
-                throw $exception;
-            }
         }
     }
 

@@ -14,6 +14,7 @@ use Mustache_Engine;
 use ProcessMaker\Exception\HttpInvalidArgumentException;
 use ProcessMaker\Exception\HttpResponseException;
 use ProcessMaker\Helpers\StringHelper;
+use ProcessMaker\Jobs\ErrorHandling;
 use ProcessMaker\Models\FormalExpression;
 use Psr\Http\Message\ResponseInterface;
 
@@ -202,6 +203,11 @@ trait MakeHttpRequests
         $request = [$method, $url, $headers, $body, $bodyType];
         $request = $this->addAuthorizationHeaders(...$request);
         //todo: The values of $endpoint must be passed somehow to RunServiceTask inside action method.
+        
+        if (is_callable(ErrorHandling::$callback)) {
+            $fn = ErrorHandling::$callback;
+            $fn($endpoint);
+        }
 
         return $request;
     }
