@@ -62,11 +62,11 @@ jobs:
         id: cache-base
         uses: actions/cache@v3
         with:
-          path: base-image.tar
+          path: /tmp/cache
           key: base-image
       - name: Load Cached Base Image
         if: steps.cache-base.outputs.cache-hit == 'true'
-        run: docker load -i base-image.tar
+        run: docker load -i /tmp/cache/base-image.tar
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -89,7 +89,8 @@ jobs:
           if [[ $CI_PR_BODY == *"ci:build-base"* ]]; then
             docker push ${ECR_REPOSITORY}:ci-base
             docker push ${ECR_REPOSITORY}:ci-cache
-            docker save -o base-image.tar ${ECR_REPOSITORY}:ci-base
+            mkdir -p /tmp/cache
+            docker save -o /tmp/cache/base-image.tar ${ECR_REPOSITORY}:ci-base
           fi
           docker push ${IMAGE}
   job2: 
