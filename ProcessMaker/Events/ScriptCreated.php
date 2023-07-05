@@ -28,10 +28,6 @@ class ScriptCreated implements SecurityLogEventInterface
     {
         $this->script = $script;
         $this->changes = $changes;
-        $categoryId = $this->script['script_category_id'] ?? '';
-        if (!empty($categoryId)) {
-            $this->categoryName = ScriptCategory::where('id', $categoryId)->value('name');
-        }
     }
 
     /**
@@ -53,13 +49,18 @@ class ScriptCreated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
+        $categoryId = $this->script['script_category_id'] ?? '';
+        if (!empty($categoryId)) {
+            $categoryName = ScriptCategory::where('id', $categoryId)->value('name');
+        }
+
         $basic = isset($this->changes['code']) ? [
             'name' => $this->script->getAttribute('title'),
             'created_at' => $this->script->getAttribute('created_at'),
         ] : [
             'name' => $this->script->getAttribute('title'),
             'description' => $this->script->getAttribute('description'),
-            'category' => $this->categoryName,
+            'category' => $categoryName,
             'language' => $this->script->getAttribute('language')
         ];
         unset($this->changes['code']);
