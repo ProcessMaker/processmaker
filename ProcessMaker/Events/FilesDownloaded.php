@@ -5,7 +5,7 @@ namespace ProcessMaker\Events;
 use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
-use ProcessMaker\Models\Media;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class FilesDownloaded implements SecurityLogEventInterface
@@ -13,16 +13,27 @@ class FilesDownloaded implements SecurityLogEventInterface
     use Dispatchable;
     use FormatSecurityLogChanges;
 
-    private Media $media;
+    public const NAME_PUBLIC_FILES = 'Public Files';
+
+    private string $fileName = '';
+    private string $processName = '';
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Media $data)
+    public function __construct(string $file = '', ProcessRequest $data = null)
     {
-        $this->media = $data;
+        $this->fileName = $file;
+
+        // Check if the file is related to the request
+        if (!is_null($data)) {
+            // Get the process name
+            if (static::NAME_PUBLIC_FILES !== $data->getAttribute('name')) {
+                $this->processName = $data->getAttribute('name');
+            }
+        }
     }
 
     /**
@@ -34,9 +45,10 @@ class FilesDownloaded implements SecurityLogEventInterface
     {
         return [
             'name' => [
-                'label' => $this->media['name'],
-                'link' => route('file-manager.index', ['public/'. $this->media['file_name']])
+                'label' => $this->fileName,
+                'link' => route('file-manager.index', ['public/'. $this->fileName])
             ],
+            'process' => $this->processName,
             'accessed_at' => Carbon::now()
         ];
     }
@@ -48,9 +60,7 @@ class FilesDownloaded implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return [
-            'id' => $this->media['id'] ?? ''
-        ];
+        return [];
     }
 
     /**
