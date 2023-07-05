@@ -15,7 +15,7 @@ class AddCollaborationUuidToProcessRequestsTable extends Migration
     {
         Schema::table('process_requests', function (Blueprint $table) {
             // add collaboration_uuid column
-            $table->uuid('collaboration_uuid')->nullable()->after('id');
+            $table->uuid('collaboration_uuid')->nullable()->after('process_collaboration_id');
             $table->index('collaboration_uuid', 'idx_collaboration_uuid');
         });
     }
