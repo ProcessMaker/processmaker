@@ -49,6 +49,7 @@ jobs:
           echo "Env Check: CI_PROJECT: $CI_PROJECT CI_PACKAGE_BRANCH: $CI_PACKAGE_BRANCH CI_PR_BODY: $CI_PR_BODY"
           echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
           echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
+          echo "ECR_REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
           echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
           #Additional
           echo "CACHEBUSTER="$(date +%s) >> $GITHUB_ENV
@@ -56,6 +57,17 @@ jobs:
         run: |
           git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
           cd pm4-stm-docker          
+      
+      - name: Setup Cache
+        id: cache-base
+        uses: actions/cache@v3
+        with:
+          path: base-image.tar
+          key: base-image
+      - name: Load Cached Base Image
+        if: steps.cache-base.outputs.cache-hit == 'true'
+        run: docker load -i base-image.tar
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -68,9 +80,17 @@ jobs:
       - name: Build and Push the image to ECR
         run: |
           cd pm4-stm-docker
-          docker container prune -f
-          docker-compose down -v                    
+          if [[ $CI_PR_BODY == *"ci:build-base"* ]; then
+            docker-compose build base --no-cache
+            docker-compose build cache --no-cache
+          fi
           docker-compose build processmaker
+
+          if [[ $CI_PR_BODY == *"ci:build-base"* ]; then
+            docker push ${ECR_REPOSITORY}:ci-base
+            docker push ${ECR_REPOSITORY}:ci-cache
+            docker save -o base-image.tar ${ECR_REPOSITORY}:ci-base
+          fi
           docker push ${IMAGE}
   job2: 
     name: deploy-stm    
