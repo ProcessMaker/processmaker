@@ -39,4 +39,19 @@ class ArrayHelper
         $arrayDiff = $arrayHelper->formatChanges($displayChanges, $displayOriginal);
         return $arrayDiff;
     }
+
+    /**
+     * This method replace an old key with a new key in Array given.
+     * @param array $array
+     * @param string $oldKey
+     * @param string $newKey
+     * @return array
+     */
+    public static function replaceKeyInArray(array $array, string $oldKey, string $newKey) {
+        if (array_key_exists($oldKey, $array)) {
+            $array[$newKey] = $array[$oldKey];
+            unset($array[$oldKey]);
+        }
+        return $array;
+    }
 }

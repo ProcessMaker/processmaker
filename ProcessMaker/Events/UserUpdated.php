@@ -30,6 +30,8 @@ class UserUpdated implements SecurityLogEventInterface
         $this->user = $user;
         $this->changes = array_diff_key($changes, array_flip($this::REMOVE_KEYS));
         $this->original = array_diff_key($original, array_flip($this::REMOVE_KEYS));
+        $this->changes = ArrayHelper::replaceKeyInArray($changes, 'title', 'job_title');
+        $this->original = ArrayHelper::replaceKeyInArray($original, 'title', 'job_title');
     }
 
     /**
