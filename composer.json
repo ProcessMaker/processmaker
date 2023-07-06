@@ -1,7 +1,7 @@
 {
     "name": "processmaker/processmaker",
     "version": "4.7.0+alpha-3",
-    "description": "BPM PHP Software",
+    "description": "BPM PHP Software ai",
     "keywords": [
         "php bpm processmaker"
     ],
@@ -97,7 +97,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "712aa8ff",
+            "build": "d904e7a5",
             "custom": {
                 "package-ellucian-ethos": "1.12.1"
             },
@@ -155,14 +155,6 @@
         ]
     },
     "repositories": {
-        "private-packagist": {
-            "type": "composer",
-            "url": "https://processmaker.repo.packagist.com/stm-enterprise/"
-        },
-        "pm": {
-            "type": "composer",
-            "url": "https://processmaker.repo.packagist.com/stm-enterprise/"
-        },
         "0": {
             "type": "vcs",
             "url": "https://github.com/ProcessMaker/SocialiteProviders"
