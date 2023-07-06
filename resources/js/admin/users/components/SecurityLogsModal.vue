@@ -166,7 +166,6 @@ export default {
       let key = "";
       let value = "";
       let auxKey = "";
-      let auxArraySort = {};
       let auxArray = {};
 
       for ([key, value] of Object.entries(data)) {
@@ -193,9 +192,7 @@ export default {
         }
       }
 
-      auxArraySort  = this.sortModalArray(auxArray);
-
-      return auxArraySort;
+      return this.sortModalArray(auxArray);
     },
     /**
      * Sort modal Array
@@ -203,10 +200,10 @@ export default {
     sortModalArray(auxArray) {
       let sortKey = ["Name"];
       let auxArraySorted = {};
-      let specialKey = Object.keys(auxArray).find(key => ["Created_at", "Deleted_at", "Updated_at", "Last_modified", "Accessed_at"].includes(key));
+      let dateKey = Object.keys(auxArray).find(key => ["Created_at", "Deleted_at", "Updated_at", "Last_modified", "Accessed_at"].includes(key));
 
-      if (specialKey) {
-        sortKey.push(specialKey);
+      if (dateKey) {
+        sortKey.push(dateKey);
       }
 
       sortKey.push("Description");
