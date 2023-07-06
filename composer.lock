@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a4aa7faefef7bf2e3bd5abb4a06999db",
+    "content-hash": "359bceceb31833457c97767ce9cd6805",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -6605,6 +6605,99 @@
                 "source": "https://github.com/ProcessMaker/nayra/tree/v1.9.4"
             },
             "time": "2022-09-03T00:32:24+00:00"
+        },
+        {
+            "name": "processmaker/package-ai",
+            "version": "dev-feature/nl-to-process-IT2",
+            "dist": {
+                "type": "zip",
+                "url": "https://processmaker.repo.packagist.com/stm-enterprise/dists/processmaker/package-ai/a3b1f4ffc228cd78c13b8a40d7004412/4a2fc57efa456c607db41cedc2a4727e155fea9d.zip",
+                "reference": "4a2fc57efa456c607db41cedc2a4727e155fea9d",
+                "mirrors": [
+                    {
+                        "url": "https://processmaker.repo.packagist.com/stm-enterprise/dists/%package%/%version%/r%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "processmaker/processmaker": "^4.7"
+            },
+            "type": "project",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\PackageAi\\AiServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\PackageAi\\": "src",
+                    "Tests\\": "tests/"
+                }
+            },
+            "notification-url": "https://processmaker.repo.packagist.com/stm-enterprise/downloads/",
+            "license": [
+                "AGPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Agustin Nicolas Busso",
+                    "email": "agustin.busso@processmaker.com"
+                }
+            ],
+            "description": "This package provides AI features to the users",
+            "support": {
+                "source": "https://github.com/ProcessMaker/package-ai/tree/feature/nl-to-process-IT2",
+                "issues": "https://github.com/ProcessMaker/package-ai/issues"
+            },
+            "time": "2023-07-06T20:58:27+00:00"
+        },
+        {
+            "name": "processmaker/package-product-analytics",
+            "version": "1.2.1",
+            "dist": {
+                "type": "zip",
+                "url": "https://processmaker.repo.packagist.com/stm-enterprise/dists/processmaker/package-product-analytics/1.2.1.0/fe61cc621d8f10438d96901c128b312c5824225d.zip",
+                "reference": "fe61cc621d8f10438d96901c128b312c5824225d",
+                "mirrors": [
+                    {
+                        "url": "https://processmaker.repo.packagist.com/stm-enterprise/dists/%package%/%version%/r%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "type": "project",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\ProductAnalytics\\PackageServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\ProductAnalytics\\": "src",
+                    "Tests\\": "tests/"
+                }
+            },
+            "notification-url": "https://processmaker.repo.packagist.com/stm-enterprise/downloads/",
+            "license": [
+                "AGPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "DevOps",
+                    "email": "devops@processmaker.com"
+                }
+            ],
+            "description": "Provides the ProcessMaker Product department with usage analytics.",
+            "support": {
+                "source": "https://github.com/ProcessMaker/package-product-analytics/tree/v1.2.1",
+                "issues": "https://github.com/ProcessMaker/package-product-analytics/issues"
+            },
+            "time": "2023-02-13T22:30:26+00:00"
         },
         {
             "name": "processmaker/pmql",

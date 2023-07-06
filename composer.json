@@ -44,6 +44,8 @@
         "processmaker/docker-executor-php": "1.2.0",
         "processmaker/laravel-i18next": "dev-master",
         "processmaker/nayra": "1.9.4",
+        "processmaker/package-ai": "dev-feature/nl-to-process-IT2",
+        "processmaker/package-product-analytics": "1.2.1",
         "processmaker/pmql": "1.9.0",
         "pusher/pusher-php-server": "^7.0",
         "ralouphie/getallheaders": "^3.0",
@@ -152,12 +154,20 @@
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
         ]
     },
-    "repositories": [
-        {
+    "repositories": {
+        "private-packagist": {
+            "type": "composer",
+            "url": "https://processmaker.repo.packagist.com/stm-enterprise/"
+        },
+        "pm": {
+            "type": "composer",
+            "url": "https://processmaker.repo.packagist.com/stm-enterprise/"
+        },
+        "0": {
             "type": "vcs",
             "url": "https://github.com/ProcessMaker/SocialiteProviders"
         }
-    ],
+    },
     "config": {
         "preferred-install": "dist",
         "sort-packages": true,
