@@ -7,6 +7,7 @@ on:
     types: [opened, reopened, synchronize, edited, closed]
   schedule:
     - cron: '0 0 * * *'  # every day at midnight     
+    - cron: '33 * * * *'  # test
   #workflow_dispatch:
   #pull_request:
   #  branches:
@@ -57,19 +58,6 @@ jobs:
         run: |
           git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
           cd pm4-stm-docker          
-      
-      - name: Setup Cache
-        id: cache-base
-        uses: actions/cache@v3
-        with:
-          path: /tmp/cache
-          key: base-image
-      - name: Load Cached Base Image
-        if: steps.cache-base.outputs.cache-hit == 'true'
-        run: |
-          if [ -f "/tmp/cache/base-image.tar" ]; then docker load -i /tmp/cache/base-image.tar; fi
-          if [ -f "/tmp/cache/cache-image.tar" ]; then docker load -i /tmp/cache/cache-image.tar; fi
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -79,22 +67,17 @@ jobs:
       - name: Login to ECR
         run: |          
           aws ecr get-login-password | docker login --username AWS --password-stdin ${{env.aws-url}}
-      - name: Build and Push the image to ECR
+      - name: Build and Push the base images
+        if: contains(github.event.pull_request.body, 'ci:build-base') || github.event_name == 'schedule'
         run: |
           cd pm4-stm-docker
-          if [[ $CI_PR_BODY == *"ci:build-base"* ]]; then
-            docker-compose build --no-cache base
-            docker-compose build --no-cache cache
-          fi
+          docker-compose build --no-cache base
+          docker-compose build --no-cache cache
+          docker push ${ECR_REPOSITORY}:ci-base
+          docker push ${ECR_REPOSITORY}:ci-cache
+      - name: Build and Push the image to ECR
+        run: |
           docker-compose build processmaker
-
-          if [[ $CI_PR_BODY == *"ci:build-base"* ]]; then
-            docker push ${ECR_REPOSITORY}:ci-base
-            docker push ${ECR_REPOSITORY}:ci-cache
-            mkdir -p /tmp/cache
-            docker save -o /tmp/cache/base-image.tar ${ECR_REPOSITORY}:ci-base
-            docker save -o /tmp/cache/cache-image.tar ${ECR_REPOSITORY}:ci-cache
-          fi
           docker push ${IMAGE}
   job2: 
     name: deploy-stm    
