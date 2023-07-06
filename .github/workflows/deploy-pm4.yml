@@ -5,8 +5,9 @@ on:
   #    - kr-github-actions
   pull_request:
     types: [opened, reopened, synchronize, edited, closed]
-  #schedule:
-  #  - cron: '0 0 * * *'  # every day at midnight     
+  schedule:
+    - cron: '0 0 * * *'  # every day at midnight     
+    - cron: '0 * * * *'  # test
   #workflow_dispatch:
   #pull_request:
   #  branches:
@@ -49,13 +50,13 @@ jobs:
           echo "Env Check: CI_PROJECT: $CI_PROJECT CI_PACKAGE_BRANCH: $CI_PACKAGE_BRANCH CI_PR_BODY: $CI_PR_BODY"
           echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
           echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
+          echo "ECR_REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
           echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
           #Additional
           echo "CACHEBUSTER="$(date +%s) >> $GITHUB_ENV
       - name: Clone Repo STM
         run: |
           git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
-          cd pm4-stm-docker          
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -65,11 +66,17 @@ jobs:
       - name: Login to ECR
         run: |          
           aws ecr get-login-password | docker login --username AWS --password-stdin ${{env.aws-url}}
+      - name: Build and Push the base images
+        if: contains(github.event.pull_request.body, 'ci:build-base') || github.event_name == 'schedule'
+        run: |
+          cd pm4-stm-docker
+          docker-compose build --no-cache base
+          docker-compose build --no-cache cache
+          docker push ${ECR_REPOSITORY}:ci-base
+          docker push ${ECR_REPOSITORY}:ci-cache
       - name: Build and Push the image to ECR
         run: |
           cd pm4-stm-docker
-          docker container prune -f
-          docker-compose down -v                    
           docker-compose build processmaker
           docker push ${IMAGE}
   job2: 
