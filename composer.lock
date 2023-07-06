@@ -6607,53 +6607,6 @@
             "time": "2022-09-03T00:32:24+00:00"
         },
         {
-            "name": "processmaker/package-ai",
-            "version": "dev-feature/nl-to-process-IT2",
-            "source": {
-                "type": "git",
-                "url": "git@github.com:ProcessMaker/package-ai.git",
-                "reference": "e583a674fe7dce8e6f1475d58a34d3e2bcd27a64"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/package-ai/zipball/e583a674fe7dce8e6f1475d58a34d3e2bcd27a64",
-                "reference": "e583a674fe7dce8e6f1475d58a34d3e2bcd27a64",
-                "shasum": ""
-            },
-            "require": {
-                "processmaker/processmaker": "^4.7"
-            },
-            "type": "project",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "ProcessMaker\\Package\\PackageAi\\AiServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "ProcessMaker\\Package\\PackageAi\\": "src",
-                    "Tests\\": "tests/"
-                }
-            },
-            "license": [
-                "AGPL-3.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Agustin Nicolas Busso",
-                    "email": "agustin.busso@processmaker.com"
-                }
-            ],
-            "description": "This package provides AI features to the users",
-            "support": {
-                "source": "https://github.com/ProcessMaker/package-ai/tree/feature/nl-to-process-IT2",
-                "issues": "https://github.com/ProcessMaker/package-ai/issues"
-            },
-            "time": "2023-07-05T21:02:32+00:00"
-        },
-        {
             "name": "processmaker/pmql",
             "version": "1.9.0",
             "source": {
