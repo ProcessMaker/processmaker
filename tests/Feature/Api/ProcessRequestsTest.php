@@ -832,4 +832,66 @@ class ProcessRequestsTest extends TestCase
         // Verify total count
         $this->assertEquals(20, $response->json()['meta']['total']);
     }
+
+
+    public function testGetRequestToken()
+    {
+        $expectedResponse = [
+            'advanceStatus',
+            'completed_at',
+            'completed_by',
+            'count',
+            'created_at',
+            'element_id',
+            'element_name',
+            'is_sequence_flow',
+            'status',
+            'status_translation',
+            'user' => [
+                'id',
+                'username',
+                'firstname',
+                'lastname',
+                'fullname',
+            ],
+            'user_id',
+        ];
+
+        // Create other User
+        $otherUser = User::factory()->create();
+
+        //create a request and a token
+        $request = ProcessRequest::factory()->create(['status' => 'ACTIVE']);
+        $token = ProcessRequestToken::factory()->create([
+            'process_request_id' => $request->id,
+            'user_id' => $this->user,
+        ]);        
+
+        // Validate the status is correct
+        $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $request->id . '/tokens?element_id=' . $token->element_id);
+        $response->assertStatus(200);
+
+        // Verify structure
+        $response->assertJsonStructure($expectedResponse);
+
+        // Validate non existing process element
+        $nonExistentElementId = 999;
+
+        $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $request->id . '/tokens?element_id=' . $nonExistentElementId);
+        $response->assertStatus(404);        
+
+        // Verify with other user without permissions
+        $this->user = $otherUser;
+
+        $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $request->id . '/tokens?element_id=' . $token->element_id);
+        $response->assertStatus(403);
+        
+        $this->user->giveDirectPermission('view-all_requests');
+        $this->user->refresh();
+
+        // Verify with other user with permissions
+        $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $request->id . '/tokens?element_id=' . $token->element_id);
+        $response->assertStatus(200);
+
+    }
 }
