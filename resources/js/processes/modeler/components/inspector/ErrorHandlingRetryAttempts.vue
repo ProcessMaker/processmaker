@@ -45,6 +45,9 @@ export default {
         }
       } else {
         this.config.id = this.valueContent.id;
+        if (!configString) {
+          this.config.retry_attempts = this.valueContent.retry_attempts;
+        }
       }
     },
     setNodeConfig() {
