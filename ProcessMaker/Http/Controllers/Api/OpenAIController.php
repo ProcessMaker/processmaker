@@ -123,7 +123,12 @@ class OpenAIController extends Controller
                 $processTranslationToken->save();
 
                 $translateProcess = new BatchesJobHandler($process, $screensTranslations, $request->input('language'), $code, Auth::id(), $option);
-                $translateProcess->handle();
+                $haveStringsToTranslate = $translateProcess->handle();
+                if (!$haveStringsToTranslate) {
+                    return response()->json([
+                        'error' => __('No strings found to translate'),
+                    ]);
+                }
             } else {
                 return response()->json([
                     'error' => 'Already running a translation for this language in background',

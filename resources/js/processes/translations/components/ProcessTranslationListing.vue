@@ -108,7 +108,7 @@ export default {
         },
         {
           value: "retry-translation",
-          content: "Retry empty translations",
+          content: "Retry Empty Translations",
           permission: "edit-process-translations",
           dataTest: "translation-option-retry",
           icon: "fas fa-redo",

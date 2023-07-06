@@ -12,7 +12,7 @@
     @include('shared.breadcrumbs', ['routes' => [
         __('Designer') => route('processes.index'),
         __('Processes') => route('processes.index'),
-        __('Translations') => route('processes.edit', ['process' => $process->id]),
+        __('Translations') => '/processes/'.$process->id.'/edit#nav-translations',
         __('Export' . ' ' . $process->name . ' - ' . $language['humanLanguage']) => null,
     ]])
 @endsection
@@ -24,10 +24,10 @@
           <div class="card text-center">
             <div class="card-header bg-light" align="left">
               <h5>{{ __("Export Process Translation") }}</h5>
-              <h6 class="text-muted">Download the {{ $language['humanLanguage'] }} translations for each screen asociated to the process.</h6>
+              <h6 class="text-muted">{{ __("Download the ") }}{{ $language['humanLanguage'] }} {{ __("translations for each screen associated to the process.") }}</h6>
             </div>
             <div class="card-body" align="left">
-              <h5 class="card-title export-type">{{ __("You are about to export") }} <b>{{ $language['humanLanguage'] }}</b> {{ __("Translations for the process") }} 
+              <h5 class="card-title export-type">{{ __("You are about to export") }} <b>{{ $language['humanLanguage'] }}</b> {{ __("translations for the process") }} 
                 <span class="font-weight-bold">{{ $process->name . "."}}</span>
               </h5>
             </div>
@@ -55,7 +55,7 @@
         },
         methods: {
           onCancel() {
-            window.location = `/processes/${this.processId}/edit`;
+            window.location = `/processes/${this.processId}/edit/#nav-translations`;
           },
           onExport() {
             ProcessMaker.apiClient({
