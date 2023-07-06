@@ -221,7 +221,7 @@ export default {
           ProcessMaker.alert(this.$t("PM Block successfully created"), "success");
           window.setTimeout(() => {
             window.location.href = `/designer/pm-blocks/${response.data.id}/edit/`;
-          }, 3000)
+          }, 1000)
           this.close();
         }).catch(error => {
           this.errors = error.response?.data;
