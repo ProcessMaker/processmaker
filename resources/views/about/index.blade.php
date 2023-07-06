@@ -19,7 +19,9 @@
       <div class="col-8">
         <div class="card card-body">
         <img class="about-logo" src="/img/processmaker-login.svg" alt="ProcessMaker">
-        <h3>DYNAMIC_ENV: '{{ env('DYNAMIC_ENV', 'not set') }}'</h3>
+        <hr>
+          <h4>Environment Variable <i>MY_CUSTOM_VAR</i>: {{ env('MY_CUSTOM_VAR', 'not set') }}</h4>
+          <h4>Override Variable <i>TELESCOPE_ENABLED</i>: {{ env('TELESCOPE_ENABLED', 'not set') }}</h4>
         <hr>
         <div><strong>{{ __('ProcessMaker Platform') }}</strong> {{ $versionTitle }}</div>
         <hr>
