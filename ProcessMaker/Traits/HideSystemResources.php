@@ -65,7 +65,11 @@ trait HideSystemResources
         } elseif (static::class === Screen::class) {
             $systemCategory = ScreenCategory::where('is_system', true)->pluck('id');
 
-            return $query->whereNotIn('screen_category_id', $systemCategory)->where('is_template', false);
+            return $query->whereNotIn('screen_category_id', $systemCategory)
+                    ->where('is_template', false)
+                    ->when(Schema::hasColumn('screens', 'asset_type'), function ($query) {
+                        return $query->whereNull('asset_type');
+                    });
         } elseif (static::class == ProcessRequest::class) {
             // ProcessRequests must be filtered this way since
             // they could be in a separate database
