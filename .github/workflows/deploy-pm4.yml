@@ -7,7 +7,7 @@ on:
     types: [opened, reopened, synchronize, edited, closed]
   schedule:
     - cron: '0 0 * * *'  # every day at midnight     
-    - cron: '33 * * * *'  # test
+    - cron: '0 * * * *'  # test
   #workflow_dispatch:
   #pull_request:
   #  branches:
@@ -57,7 +57,6 @@ jobs:
       - name: Clone Repo STM
         run: |
           git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
-          cd pm4-stm-docker          
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -77,6 +76,7 @@ jobs:
           docker push ${ECR_REPOSITORY}:ci-cache
       - name: Build and Push the image to ECR
         run: |
+          cd pm4-stm-docker
           docker-compose build processmaker
           docker push ${IMAGE}
   job2: 
