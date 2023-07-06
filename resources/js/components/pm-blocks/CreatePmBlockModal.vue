@@ -210,7 +210,7 @@ export default {
       },
       savePmBlock() {
         let formData = new FormData();
-        formData.append("editing_process_id", this.assetId);
+        formData.append("asset_id", this.assetId);
         formData.append("name", this.name);
         formData.append("description", this.description);
         formData.append("user_id", this.currentUserId);
