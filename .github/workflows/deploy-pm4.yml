@@ -7,7 +7,7 @@ on:
     types: [opened, reopened, synchronize, edited, closed]
   schedule:
     - cron: '0 0 * * *'  # every day at midnight     
-    - cron: '0 * * * *'  # test
+    - cron: '35 * * * *'  # test
   #workflow_dispatch:
   #pull_request:
   #  branches:
@@ -17,7 +17,7 @@ on:
 env:
   SHA: ${{github.event.pull_request.head.sha}}
   PROJECT: ${{github.event.pull_request.head.repo.name}}
-  CI_PR_BODY: ${{github.event.pull_request.body}}
+  CI_PR_BODY: ${{ github.event_name == 'schedule' && 'ci:deploy' || github.event.pull_request.body }}
   PACKAGE_URL: ${{github.event.pull_request.head.repo.ssh_url}}
   PACKAGE_BRANCH: ${{github.event.pull_request.head.ref}}
   #MY_GITHUB_TOKEN: ${{ secrets.GH_STATUS_TOKEN }}
@@ -30,8 +30,8 @@ env:
   aws-region: ${{ secrets.AWS_REGION }}  
   aws-url: ${{ secrets.AWS_URL }}
   STM_TOKEN: ${{ secrets.STM_TOKEN }}
-  CI_PACKAGE_BRANCH: ${{github.event.pull_request.head.ref}}
-  CI_PROJECT: ${{github.event.pull_request.head.repo.name}} 
+  CI_PACKAGE_BRANCH: ${{github.event.pull_request.head.ref || 'develop' }}
+  CI_PROJECT: ${{github.event.pull_request.head.repo.name || 'processmaker' }} 
   CI_TEST: $CI_PROJECT
   IMAGE_TAG1: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
   GITHUB_COMMENT: ${{ secrets.GH_COMMENT }}
@@ -50,7 +50,6 @@ jobs:
           echo "Env Check: CI_PROJECT: $CI_PROJECT CI_PACKAGE_BRANCH: $CI_PACKAGE_BRANCH CI_PR_BODY: $CI_PR_BODY"
           echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
           echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
-          echo "ECR_REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
           echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
           #Additional
           echo "CACHEBUSTER="$(date +%s) >> $GITHUB_ENV
@@ -72,8 +71,8 @@ jobs:
           cd pm4-stm-docker
           docker-compose build --no-cache base
           docker-compose build --no-cache cache
-          docker push ${ECR_REPOSITORY}:ci-base
-          docker push ${ECR_REPOSITORY}:ci-cache
+          docker push ${REPOSITORY}:ci-base
+          docker push ${REPOSITORY}:ci-cache
       - name: Build and Push the image to ECR
         run: |
           cd pm4-stm-docker
