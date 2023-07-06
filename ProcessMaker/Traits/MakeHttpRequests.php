@@ -35,6 +35,8 @@ trait MakeHttpRequests
 
     private $mustache = null;
 
+    private $timeout = 0;
+
     private function getMustache()
     {
         if ($this->mustache === null) {
@@ -202,12 +204,6 @@ trait MakeHttpRequests
 
         $request = [$method, $url, $headers, $body, $bodyType];
         $request = $this->addAuthorizationHeaders(...$request);
-        //todo: The values of $endpoint must be passed somehow to RunServiceTask inside action method.
-        
-        if (is_callable(ErrorHandling::$callback)) {
-            $fn = ErrorHandling::$callback;
-            $fn($endpoint);
-        }
 
         return $request;
     }
@@ -436,8 +432,9 @@ trait MakeHttpRequests
     {
         $client = $this->client ?? app()->make(Client::class, [
             'config' => [
-                'verify' => $this->verifySsl
-            ]
+                'verify' => $this->verifySsl,
+                'timeout' => $this->timeout,
+            ],
         ]);
         $options = [];
         if ($bodyType === 'form-data') {

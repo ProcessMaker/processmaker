@@ -86,37 +86,20 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
                 throw new ScriptException('Service task not implemented: ' . $implementation);
             }
 
-            $errorHandling = new ErrorHandling($token);
-
-            /**
-             * This obtains the initial values and the values configured in the diagram; 
-             * if the diagram values exist, it overwrites the initial values.
-             */
-            ErrorHandling::$callback = function ($params) use ($element, $errorHandling) {
-                $initial = [
-                    'timeout' => $params['timeout'],
-                    'retry_attempts' => $params['retry_attempts'],
-                    'retry_wait_time' => $params['retry_wait_time'],
-                ];
-
-                $result = json_decode($element->getProperty('errorHandling'), true) ?? [];
-                if (is_array($result) && !empty($result)) {
-                    $initial = array_merge($initial, $result);
-                }
-                $errorHandling->errorHandling($initial);
-            };
+            $errorHandling = new ErrorHandling($element, $token);
+            $errorHandling->setDefaultsFromDataSourceConfig($configuration);
 
             $this->unlock();
             $dataManager = new DataManager();
             $data = $dataManager->getData($token);
 
             /**
-             * todo: Please review the "else" section as it appears unreachable since if `$existsImpl` 
+             * todo: Please review the "else" section as it appears unreachable since if `$existsImpl`
              * is not true, an exception is thrown a few lines above.
              */
             if ($existsImpl) {
                 $response = [
-                    'output' => WorkflowManager::runServiceImplementation($implementation, $data, $configuration, $token->getId()),
+                    'output' => WorkflowManager::runServiceImplementation($implementation, $data, $configuration, $token->getId(), $errorHandling->timeout()),
                 ];
             } else {
                 $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling->timeout());
@@ -166,12 +149,6 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
             Log::error('Script failed: ' . $exception->getMessage());
 
             return;
-        }
-        if (get_class($exception) === "Illuminate\\Queue\\MaxAttemptsExceededException") {
-            $message = 'This is a type MaxAttemptsExceededException exception, it appears '
-                . 'that the global value configured in config/horizon.php has been exceeded '
-                . 'in the retries. Please consult with your main administrator.';
-            Log::error($message);
         }
         Log::error('Script (#' . $this->tokenId . ') failed: ' . $exception->getMessage());
         Log::error($exception->getTraceAsString());

@@ -357,11 +357,11 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
      *
      * @return mixed
      */
-    public function runServiceImplementation($implementation, array $data, array $config, $tokenId = '')
+    public function runServiceImplementation($implementation, array $data, array $config, $tokenId = '', $timeout = 0)
     {
         $class = $this->serviceTaskImplementations[$implementation];
         $service = new $class();
 
-        return $service->run($data, $config, $tokenId);
+        return $service->run($data, $config, $tokenId, $timeout);
     }
 }

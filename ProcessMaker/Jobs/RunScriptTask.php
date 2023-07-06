@@ -81,22 +81,8 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
                 $script = Script::findOrFail($scriptRef)->versionFor($instance);
             }
 
-            $errorHandling = new ErrorHandling($token);
-
-            /**
-             * This obtains the initial values and the values configured in the diagram; 
-             * if the diagram values exist, it overwrites the initial values.
-             */
-            $initial = [
-                'timeout' => $script->timeout,
-                'retry_attempts' => $script->retry_attempts,
-                'retry_wait_time' => $script->retry_wait_time,
-            ];
-            $result = json_decode($element->getProperty('errorHandling'), true) ?? [];
-            if (is_array($result) && !empty($result)) {
-                $initial = array_merge($initial, $result);
-            }
-            $errorHandling->errorHandling($initial);
+            $errorHandling = new ErrorHandling($element, $token);
+            $errorHandling->setDefaultsFromScript($script);
 
             $this->unlock();
             $dataManager = new DataManager();
