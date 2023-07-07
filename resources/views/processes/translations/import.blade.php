@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-    {{__('Import Screen')}}
+    {{__('Import Translation')}}
 @endsection
 
 @section('sidebar')
@@ -12,7 +12,7 @@
     @include('shared.breadcrumbs', ['routes' => [
       __('Designer') => route('processes.index'),
       __('Processes') => route('processes.index'),
-      __('Translations') => route('processes.edit', ['process' => $process->id]),
+      __('Translations') => '/processes/'.$process->id.'/edit#nav-translations',
       __('Import') => null,
     ]])
 @endsection
@@ -125,7 +125,7 @@
 
           },
           onCancel() {
-            window.location = `/processes/${$processId}/edit`;
+            window.location = `/processes/${this.process.id}/edit#nav-translations`;
           },
           onImport() {
             let formData = new FormData();
@@ -147,7 +147,7 @@
               let message = this.$t('The process translation was imported correctly.');
               let variant = 'success';
               ProcessMaker.alert(message, variant);
-              window.location.href = `/processes/${this.process.id}/edit`;
+              window.location.href = `/processes/${this.process.id}/edit#nav-translations`;
             })
             .catch((error) => {
               this.submitted = false;

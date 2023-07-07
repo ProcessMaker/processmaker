@@ -52,8 +52,11 @@ class ProcessTranslation
         }
 
         $nestedScreens = [];
-        foreach ($screensInProcess as $screen) {
-            $nestedScreens = array_merge($nestedScreens, Screen::findOrFail($screen)->nestedScreenIds());
+        foreach ($screensInProcess as $screenId) {
+            $screen = Screen::find($screenId);
+            if ($screen) {
+                $nestedScreens = array_merge($nestedScreens, $screen->nestedScreenIds());
+            }
         }
 
         $screensInProcess = collect(array_merge($screensInProcess, $nestedScreens))->unique();
@@ -186,7 +189,9 @@ class ProcessTranslation
                 if ($item['component'] === 'FormSelectList') {
                     if (isset($item['config']) && isset($item['config']['options']) && isset($item['config']['options']['optionsList'])) {
                         foreach ($item['config']['options']['optionsList'] as $option) {
-                            $elements[] = $option['content'];
+                            if (array_key_exists('content', $option)) {
+                                $elements[] = $option['content'];
+                            }
                         }
                     }
                 }

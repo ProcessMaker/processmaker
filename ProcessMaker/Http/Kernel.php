@@ -45,6 +45,12 @@ class Kernel extends HttpKernel
             // API Middleware is defined with routeMiddleware below.
             // See routes/api.php
         ],
+        'engine' => [
+            'auth:api',
+            'setlocale',
+            'bindings',
+            'sanitize',
+        ],
     ];
 
     /**

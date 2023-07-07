@@ -35,7 +35,7 @@ class UserDeleted implements SecurityLogEventInterface
         return [
             'firstname' => $this->user->getAttribute('firstname'),
             'lastname' => $this->user->getAttribute('lastname'),
-            'deleted_at' => Carbon::now()
+            'deleted_at' => Carbon::now(),
         ];
     }
 

@@ -18,7 +18,9 @@ class DownloadSecurityLog implements ShouldQueue
         SerializesModels;
 
     private User $user;
+
     private string $format;
+
     private ?int $userId;
 
     /**
@@ -48,7 +50,7 @@ class DownloadSecurityLog implements ShouldQueue
         if (mt_rand(1, 10) <= 8) {
             event(new SecurityLogDownloadJobCompleted($this->user, true, __('Click on the link and download the file. This link will be available until midnight tonight.'), 'http://processmaker.com/?download=true'));
         } else {
-            event (new SecurityLogDownloadJobCompleted($this->user, false, __('Sorry, it was not possible to generate the log file. Please contact the administrator.')));
+            event(new SecurityLogDownloadJobCompleted($this->user, false, __('Sorry, it was not possible to generate the log file. Please contact the administrator.')));
         }
     }
 }

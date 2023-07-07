@@ -145,7 +145,7 @@ class SecurityLogsTest extends TestCase
             'user_id' => $this->user->id,
             'occurred_at' => time(),
             'data' => [
-                'fullname' => $this->user->getAttribute('fullname')
+                'fullname' => $this->user->getAttribute('fullname'),
             ],
         ]);
         $response->assertStatus(201);
@@ -153,19 +153,19 @@ class SecurityLogsTest extends TestCase
         $this->assertCount(2, $collection);
         $securityLog = $collection->skip(1)->first();
         $this->assertEquals([
-            'fullname' => $this->user->getAttribute('fullname')
-        ], (array)$securityLog->data);
+            'fullname' => $this->user->getAttribute('fullname'),
+        ], (array) $securityLog->data);
         $this->assertEquals([
             'event' => 'TestStoreEvent',
             'ip' => '127.0.01',
             'user_id' => $this->user->id,
-            'meta' => (object)[
+            'meta' => (object) [
                 'user_agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36',
-                'browser' => (object)[
+                'browser' => (object) [
                     'name' => 'Chrome',
                     'version' => '111',
                 ],
-                'os' => (object)[
+                'os' => (object) [
                     'name' => 'Linux',
                     'version' => null,
                 ],

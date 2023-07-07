@@ -10,6 +10,7 @@ class ScriptExecutorDeleted implements SecurityLogEventInterface
     use Dispatchable;
 
     private array $data;
+
     private array $changes;
 
     /**
@@ -20,27 +21,30 @@ class ScriptExecutorDeleted implements SecurityLogEventInterface
     public function __construct(array $deleted_values)
     {
         $this->changes = $deleted_values;
-        $this->data = [
-            'script_executor_id' => $deleted_values['id'],
-            'title' => $deleted_values['title'],
-            'description' => $deleted_values['description']
-        ];
     }
-    
+
     /**
-     * Return event data 
+     * Return event data
      */
     public function getData(): array
     {
-        return $this->data;
+        return [
+            'script_executor_id' => $this->changes['id'] ?? '',
+            'title' => $this->changes['title'] ?? '',
+            'description' => $this->changes['description'] ?? ''
+        ];
     }
-    
+
+
     /**
-     * Return event changes 
+     * Return event changes
+     * Return event changes
      */
     public function getChanges(): array
     {
-        return $this->changes;
+        return [
+            'id' => $this->changes['id'] ?? ''
+        ];
     }
 
     /**

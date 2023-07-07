@@ -8,35 +8,37 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Notification;
+use ProcessMaker\Events\RequestAction;
 use ProcessMaker\Exception\PmqlMethodException;
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
 use ProcessMaker\Jobs\CancelRequest;
 use ProcessMaker\Jobs\TerminateRequest;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
 use ProcessMaker\Query\SyntaxError;
 use ProcessMaker\RetryProcessRequest;
+use ProcessMaker\Traits\ProcessMapTrait;
 use Symfony\Component\HttpFoundation\IpUtils;
 use Throwable;
 
 class ProcessRequestController extends Controller
 {
+    use ProcessMapTrait;
+
     const DOMAIN_CACHE_TIME = 86400;
 
     /**
@@ -134,10 +136,13 @@ class ProcessRequestController extends Controller
         if (!empty($filter)) {
             $query->filter($filter);
         }
-
+        
+        $query->nonSystem();
+        
         $pmql = $request->input('pmql', '');
         if (!empty($pmql)) {
             try {
+                $query->getModel()->useDataStoreTable($query, $request->input('data_store_table', ''), $request->input('data_store_columns', []));
                 $query->pmql($pmql);
             } catch (SyntaxError $e) {
                 return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
@@ -145,9 +150,6 @@ class ProcessRequestController extends Controller
                 return response(['message' => $e->getMessage(), 'field' => $e->getField()], 400);
             }
         }
-
-        $query->nonSystem();
-
         try {
             if ($getTotal === true) {
                 return $query->count();
@@ -173,7 +175,7 @@ class ProcessRequestController extends Controller
         }
 
         if (isset($response)) {
-            //Map each item through its resource
+            // Map each item through its resource
             $response = $response->map(function ($processRequest) use ($request) {
                 return new ProcessRequestResource($processRequest);
             });
@@ -561,6 +563,8 @@ class ProcessRequestController extends Controller
         // Close process request
         $request->status = 'CANCELED';
         $request->save();
+
+        event(new RequestAction($request, RequestAction::ACTION_CANCELED));
     }
 
     /**
@@ -576,6 +580,8 @@ class ProcessRequestController extends Controller
 
         // Terminate request
         TerminateRequest::dispatchNow($request);
+
+        event(new RequestAction($request, RequestAction::ACTION_COMPLETED));
 
         $user = \Auth::user();
         Comment::create([
@@ -607,5 +613,87 @@ class ProcessRequestController extends Controller
         )->firstOrFail();
 
         return $token->element_name;
+    }
+
+    /**
+     *      Get Information of the last token for the element query
+     *
+     *      @Parameter
+     *          Request $httpRequest
+     *          ProcessRequest $request
+     *     @return
+     *          object data {
+     *              element_id,
+     *              element_name,
+     *              created_at,
+     *              completed_at,
+     *              username,
+     *              sequenceFlow,
+     *              count
+     *          }
+     */
+    public function getRequestToken(Request $httpRequest, ProcessRequest $request)
+    {
+        $httpRequest->validate([
+            'element_id' => 'required|string',
+        ]);
+
+        $elementId = null;
+        $maxTokenId = $this->getMaxTokenId($request, $httpRequest->element_id);
+        if ($maxTokenId === null) {
+            $bpmn = $request->process->versions()
+                ->where('id', $request->process_version_id)
+                ->firstOrFail()
+                ->bpmn;
+
+            // Get the source and target node for the sequence flow.
+            $xml = $this->loadAndPrepareXML($bpmn);
+            $targetAndSourceRef = $this->getRefNodes($xml, $httpRequest->element_id);
+
+            if ($targetAndSourceRef->isNotEmpty()) {
+                $targetRef = $targetAndSourceRef['targetRef'];
+                $sourceRef = $targetAndSourceRef['sourceRef'];
+
+                // Get the token counts for the target and source nodes.
+                $targetTokensCount = $this->getTokenCount($request, $targetRef);
+                $sourceTokensCount = $this->getTokenCount($request, $sourceRef);
+
+                // Get the minimum repeated node ID.
+                $elementId = ($sourceTokensCount < $targetTokensCount) ? $sourceRef : $targetRef;
+            }
+
+            // Get the maximum node ID.
+            $httpRequest->merge(['element_id' => $elementId]);
+            $maxTokenId = $this->getMaxTokenId($request, $httpRequest->element_id);
+        }
+
+        $token = $request->tokens()
+            ->where('id', $maxTokenId)
+            ->select('user_id', 'element_id', 'element_name', 'created_at', 'completed_at', 'status')
+            ->with([
+                'user' => fn ($query) => $query->select('id', 'username'),
+            ])
+            ->firstOrFail();
+
+        // Flags if the object clicked is a Sequence Flow.
+        $token->is_sequence_flow = $elementId ? true : false;
+
+        $translatedStatus = match ($token->status) {
+            'CLOSED' => __('Completed'),
+            'ACTIVE' => __('In Progress'),
+            default => $token->status,
+        };
+        $token->status_translation = $translatedStatus;
+        $token->completed_by = $token->completed_at ? ($token->user['username'] ?? '-') : '-';
+
+        // Get the number of times the flow has run.
+        $tokensCount = $request->tokens()
+            ->where([
+                'element_id' => $httpRequest->element_id,
+                'process_request_id'=> $request->id,
+            ])->count();
+        $token->count = $tokensCount;
+
+        return new ApiResource($token);
     }
 }
