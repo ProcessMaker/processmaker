@@ -9,7 +9,7 @@ class SensitiveDataHelper
         'idp.client_secret',
         'abe_imap_password',
         'EMAIL_CONNECTOR_MAIL_PASSWORD',
-        'services.ldap.authentication.password'
+        'services.ldap.authentication.password',
     ];
 
     public const MASK = '*';

@@ -20,6 +20,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     use RepositoryTrait;
 
     private bool $abortIfInstanceNotFound = true;
+
     private bool $loadTokens = true;
 
     /**

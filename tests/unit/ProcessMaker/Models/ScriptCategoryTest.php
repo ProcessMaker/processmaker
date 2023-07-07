@@ -35,14 +35,14 @@ class ScriptCategoryTest extends TestCase
         //Case 3: without Id
         $stringIds = '';
         $this->assertEquals(
-            "",
+            '',
             ScriptCategory::getNamesByIds($stringIds)
         );
 
         //Case 4: non-existentId
         $stringIds = '9452';
         $this->assertEquals(
-            "",
+            '',
             ScriptCategory::getNamesByIds($stringIds)
         );
     }

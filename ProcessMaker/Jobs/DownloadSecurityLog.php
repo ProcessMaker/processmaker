@@ -33,8 +33,11 @@ class DownloadSecurityLog implements ShouldQueue
     private ?int $userId;
 
     public const CSV_SEPARATOR = ',';
+
     public const EXPIRATION_HOURS = 24;
+
     public const FORMAT_CSV = 'csv';
+
     public const FORMAT_XML = 'xml';
 
     /**
@@ -60,6 +63,7 @@ class DownloadSecurityLog implements ShouldQueue
         // Check if the S3 is ready to use
         if (!Media::s3IsReady()) {
             event(new SecurityLogDownloadFailed($this->user, false, __('Sorry, this feature requires the configured AWS S3 service. Please contact the administrator.')));
+
             return;
         }
         try {
@@ -69,7 +73,7 @@ class DownloadSecurityLog implements ShouldQueue
             $expires = $this->getExpires();
             // Export the file and get the URL
             $url = $this->export($filename, $expires);
-            $message = __('Click on the link and download the file. This link will be available until '. $expires->toString());
+            $message = __('Click on the link and download the file. This link will be available until ' . $expires->toString());
             // Call the event
             event(new SecurityLogDownloadJobCompleted($this->user, true, $message, $url));
         } catch (Exception $e) {
@@ -97,7 +101,7 @@ class DownloadSecurityLog implements ShouldQueue
     {
         $uuid = Uuid::uuid4()->toString() . Str::random(8);
 
-        return 'security-logs/' . $uuid . '.'  . $this->format;
+        return 'security-logs/' . $uuid . '.' . $this->format;
     }
 
     /**
@@ -125,7 +129,7 @@ class DownloadSecurityLog implements ShouldQueue
         // Save the stream to S3
         $disk->put($filename, stream_get_contents($stream), [
             'ACL' => 'private', // private|public-read,
-            'Expires' => $expires->toString()
+            'Expires' => $expires->toString(),
         ]);
 
         // Close the stream
@@ -212,7 +216,7 @@ class DownloadSecurityLog implements ShouldQueue
      *
      * @return void
      */
-    protected function initialTagsXML($write = false, $stream)
+    protected function initialTagsXML($write, $stream)
     {
         if ($write) {
             $contentXml = '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
@@ -229,7 +233,7 @@ class DownloadSecurityLog implements ShouldQueue
      *
      * @return void
      */
-    protected function endTagsXML($write = false, $stream)
+    protected function endTagsXML($write, $stream)
     {
         if ($write) {
             $contentXml = PHP_EOL . '</securityLogs>';

@@ -13,7 +13,9 @@ class PersistenceHandler
     use PersistenceTokenTrait;
 
     protected Deserializer $deserializer;
+
     protected ExecutionInstanceRepository $instanceRepository;
+
     protected TokenRepository $tokenRepository;
 
     /**

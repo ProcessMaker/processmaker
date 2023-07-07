@@ -14,12 +14,16 @@ class UserUpdated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private User $user;
+
     private array $changes;
+
     private array $original;
+
     public const REMOVE_KEYS = [
         'meta',
-        'schedule'
+        'schedule',
     ];
+
     /**
      * Create a new event instance.
      *

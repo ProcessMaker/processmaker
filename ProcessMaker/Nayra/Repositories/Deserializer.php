@@ -19,10 +19,15 @@ use ProcessMaker\Repositories\TokenRepository;
 class Deserializer
 {
     private $definitions = [];
+
     private $requests = [];
+
     private $tokens = [];
+
     private ExecutionInstanceRepository $instanceRepository;
+
     private TokenRepository $tokenRepository;
+
     private DefinitionsRepository $factory;
 
     /**
@@ -230,6 +235,7 @@ class Deserializer
     public function unserializeEntity(array $serialized): EntityInterface
     {
         $definition = $this->findProcessDefinition($serialized['model_id']);
+
         return $definition->getElementInstanceById($serialized['id']);
     }
 
