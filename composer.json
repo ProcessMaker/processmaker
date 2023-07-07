@@ -95,7 +95,7 @@
         "processmaker": {
             "build": "96619e27",
             "custom": {
-                "package-ellucian-ethos": "1.12.1"
+                "package-ellucian-ethos": "1.12.2"
             },
             "enterprise": {
                 "connector-docusign": "1.2.1",
