@@ -126,7 +126,6 @@ export default {
       },
       iconAndFile: {
         handler: function(value) {
-          console.log('ICON AND FILE WATCH CORE', value);
           this.form.icon = value?.icon;
           this.form.file = value?.file;
         },
