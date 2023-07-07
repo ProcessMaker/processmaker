@@ -1,7 +1,7 @@
 {
     "name": "processmaker/processmaker",
     "version": "4.7.0+alpha-3",
-    "description": "BPM PHP Software ai",
+    "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
     ],
@@ -44,8 +44,6 @@
         "processmaker/docker-executor-php": "1.2.0",
         "processmaker/laravel-i18next": "dev-master",
         "processmaker/nayra": "1.9.4",
-        "processmaker/package-ai": "dev-feature/nl-to-process-IT2",
-        "processmaker/package-product-analytics": "1.2.1",
         "processmaker/pmql": "1.9.0",
         "pusher/pusher-php-server": "^7.0",
         "ralouphie/getallheaders": "^3.0",
@@ -97,7 +95,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "d904e7a5",
+            "build": "712aa8ff",
             "custom": {
                 "package-ellucian-ethos": "1.12.1"
             },
@@ -110,7 +108,7 @@
                 "docker-executor-node-ssr": "1.2.1",
                 "package-actions-by-email": "1.12.0",
                 "package-advanced-user-manager": "1.5.0",
-                "package-ai": "dev-feature/nl-to-process-IT2",
+                "package-ai": "0.1.1",
                 "package-auth": "1.11.1",
                 "package-collections": "2.10.0",
                 "package-comments": "1.6.0",
@@ -154,12 +152,12 @@
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
         ]
     },
-    "repositories": {
-        "0": {
+    "repositories": [
+        {
             "type": "vcs",
             "url": "https://github.com/ProcessMaker/SocialiteProviders"
         }
-    },
+    ],
     "config": {
         "preferred-install": "dist",
         "sort-packages": true,
