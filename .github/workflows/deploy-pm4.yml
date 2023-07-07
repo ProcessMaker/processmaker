@@ -7,7 +7,6 @@ on:
     types: [opened, reopened, synchronize, edited, closed]
   schedule:
     - cron: '0 0 * * *'  # every day at midnight     
-    - cron: '35 * * * *'  # test
   #workflow_dispatch:
   #pull_request:
   #  branches:
