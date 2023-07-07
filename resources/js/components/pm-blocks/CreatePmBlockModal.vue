@@ -124,14 +124,6 @@ export default {
       name(newValue, oldValue) {
         this.validateName(newValue, oldValue);
       },
-      iconAndFile: {
-        handler: function(value) {
-          console.log('ICON AND FILE WATCH CORE', value);
-          this.form.icon = value?.icon;
-          this.form.file = value?.file;
-        },
-        deep: true,
-      },
     },  
     methods: {
       show() {
