@@ -282,8 +282,11 @@ class FileController extends Controller
         $path = Storage::disk('public')->getAdapter()->getPathPrefix() .
                 $file->id . '/' .
                 $file->file_name;
+
         // Register the Event
-        FilesDownloaded::dispatch($file);
+        if (!empty($file->file_name)) {
+            FilesDownloaded::dispatch($file->file_name);
+        }
 
         return response()->download($path);
     }

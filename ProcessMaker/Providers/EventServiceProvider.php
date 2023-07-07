@@ -14,6 +14,7 @@ use ProcessMaker\Events\CustomizeUiUpdated;
 use ProcessMaker\Events\EnvironmentVariablesUpdated;
 use ProcessMaker\Events\EnvironmentVariablesCreated;
 use ProcessMaker\Events\EnvironmentVariablesDeleted;
+use ProcessMaker\Events\FilesAccessed;
 use ProcessMaker\Events\FilesCreated;
 use ProcessMaker\Events\FilesDeleted;
 use ProcessMaker\Events\FilesDownloaded;
@@ -102,6 +103,7 @@ class EventServiceProvider extends ServiceProvider
             $this->app['events']->listen(EnvironmentVariablesCreated::class, SecurityLogger::class);
             $this->app['events']->listen(EnvironmentVariablesDeleted::class, SecurityLogger::class);
             $this->app['events']->listen(EnvironmentVariablesUpdated::class, SecurityLogger::class);
+            $this->app['events']->listen(FilesAccessed::class, SecurityLogger::class);
             $this->app['events']->listen(FilesCreated::class, SecurityLogger::class);
             $this->app['events']->listen(FilesDeleted::class, SecurityLogger::class);
             $this->app['events']->listen(FilesDownloaded::class, SecurityLogger::class);
