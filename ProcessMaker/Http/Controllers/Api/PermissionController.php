@@ -104,7 +104,7 @@ class PermissionController extends Controller
 
         // Call Event to store Permissions Changes in Log
         PermissionUpdated::dispatch($requestPermissions, $originalPermissionNames, $entity->is_administrator, $request->input('user_id'));
-        
+
         //Sync the entity's permissions with the database
         $entity->permissions()->sync($permissions->pluck('id')->toArray());
 

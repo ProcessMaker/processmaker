@@ -37,7 +37,7 @@ class ProcessRestored implements SecurityLogEventInterface
                 'link' => route('modeler.show', $this->process),
             ],
             'action' => $this->process->getAttribute('status'),
-            'updated_at' => $this->process->getAttribute('updated_at'),
+            'last_modified' => $this->process->getAttribute('updated_at'),
         ];
     }
 

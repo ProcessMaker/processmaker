@@ -13,6 +13,7 @@ class GroupCreated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private Group $group;
+
     /**
      * Create a new event instance.
      *
@@ -47,7 +48,9 @@ class GroupCreated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return $this->group->getAttributes();
+        return [
+            'id' => $this->group->getAttribute('id')
+        ];
     }
 
     /**
@@ -57,6 +60,6 @@ class GroupCreated implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'CreatedGroup';
+        return 'GroupCreated';
     }
 }

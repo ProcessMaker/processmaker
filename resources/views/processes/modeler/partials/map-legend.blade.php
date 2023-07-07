@@ -13,6 +13,11 @@
 
 @section('css')
   <style>
+    :root {
+      --color-line-in-progress: #1572C2;
+      --color-line-completed: #00875A;
+    }
+
     #map-legend.map-legend-card {
       position: absolute;
       top: 70px;
@@ -44,12 +49,12 @@
 
     .in-progress-line {
       border-right-style: dashed;
-      border-right-color: #00875A;
+      border-right-color: var(--color-line-in-progress);
     }
 
     .completed-line {
       border-right-style: solid;
-      border-right-color: #5faaee;
+      border-right-color: var(--color-line-completed);
     }
   </style>
 @endsection

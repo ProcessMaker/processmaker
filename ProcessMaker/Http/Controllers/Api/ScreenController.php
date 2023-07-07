@@ -219,6 +219,7 @@ class ScreenController extends Controller
         $screen->saveOrFail();
         //Call event to store New Screen data in LOG
         ScreenCreated::dispatch($newScreen->getAttributes());
+
         return new ApiResource($screen);
     }
 
@@ -407,7 +408,6 @@ class ScreenController extends Controller
      */
     public function destroy(Screen $screen)
     {
-     
         $screen->delete();
         //Call new event to store changes in LOG
         ScreenDeleted::dispatch($screen);
