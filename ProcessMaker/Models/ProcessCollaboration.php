@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Models;
 
+use ProcessMaker\Traits\HasUuids;
+
 /**
  * Represents an Eloquent model of a Request which is an instance of a Process.
  *
@@ -12,6 +14,8 @@ namespace ProcessMaker\Models;
  */
 class ProcessCollaboration extends ProcessMakerModel
 {
+    use HasUuids;
+
     protected $connection = 'processmaker';
 
     /**
