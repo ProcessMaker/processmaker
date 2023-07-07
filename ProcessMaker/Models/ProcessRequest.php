@@ -41,6 +41,7 @@ use Throwable;
  * @property string $name
  * @property string $status
  * @property string $data
+ * @property string $collaboration_uuid
  * @property \Carbon\Carbon $initiated_at
  * @property \Carbon\Carbon $completed_at
  * @property \Carbon\Carbon $updated_at

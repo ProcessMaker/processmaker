@@ -14,6 +14,8 @@ use ProcessMaker\Bpmn\Process;
  * @method static mixed runServiceTask(\ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface $serviceTask, Token $token)
  * @method static void throwSignalEventDefinition(\ProcessMaker\Nayra\Contracts\Bpmn\EventDefinitionInterface $sourceEventDefinition, \ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface $token)
  * @method static void throwSignalEvent($signalRef, array $data = [], array $exclude = [])
+ * @method static void throwSignalEventProcess($processId, $signalRef, array $data)
+ * @method static void throwSignalEventRequest(\ProcessMaker\Models\ProcessRequest $request, $signalRef, array $data)
  * @method static void throwMessageEvent($instanceId, $elementId, $messageRef, array $payload = [])
  * @method static void onDataValidation(callable $callback)
  * @method static void validateData(array $data, $definitions, $element)
