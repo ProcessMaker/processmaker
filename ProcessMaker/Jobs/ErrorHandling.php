@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Notification;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptVersion;
 use ProcessMaker\Notifications\ErrorExecutionNotification;
 
@@ -147,7 +148,7 @@ class ErrorHandling
      * @param ScriptVersion $script
      * @return void
      */
-    public function setDefaultsFromScript(ScriptVersion $script)
+    public function setDefaultsFromScript(Script|ScriptVersion $script)
     {
         $this->defaultErrorHandling = [
             'timeout' => $script->timeout,
