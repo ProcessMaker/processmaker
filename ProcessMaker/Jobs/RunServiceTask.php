@@ -128,14 +128,14 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
             $message = $errorHandling->handleRetries($this, $exception);
 
             $error = $element->getRepository()->createError();
-            $error->setName($exception->getMessage());
+            $error->setName($message);
 
             $token->setProperty('error', $error);
             $exceptionClass = get_class($exception);
             $modifiedException = new $exceptionClass($message);
             $token->logError($modifiedException, $element);
 
-            Log::error('Service task failed: ' . $implementation . ' - ' . $exception->getMessage());
+            Log::error('Service task failed: ' . $implementation . ' - ' . $message);
             Log::error($exception->getTraceAsString());
         }
     }
