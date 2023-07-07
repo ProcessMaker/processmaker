@@ -13,6 +13,7 @@ class FilesDeleted implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private int $fileId;
+
     private string $fileName;
 
     /**
@@ -47,7 +48,7 @@ class FilesDeleted implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            'id' => $this->fileId
+            'id' => $this->fileId,
         ];
     }
 

@@ -32,7 +32,6 @@ class ScriptExecutorUpdated implements SecurityLogEventInterface
         $this->scriptId = $scriptId;
     }
 
-
     /**
      * Return event data
      * Return event data
@@ -41,10 +40,9 @@ class ScriptExecutorUpdated implements SecurityLogEventInterface
     {
         return array_merge([
             'script_executor_id' => $this->scriptId,
-            'last_modified' => $this->changes['updated_at'] ?? Carbon::now()
+            'last_modified' => $this->changes['updated_at'] ?? Carbon::now(),
         ], $this->formatChanges($this->changes, $this->original));
     }
-
 
     /**
      * Return event changes
@@ -53,7 +51,7 @@ class ScriptExecutorUpdated implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            'script_executor_id' => $this->scriptId
+            'script_executor_id' => $this->scriptId,
         ];
     }
 

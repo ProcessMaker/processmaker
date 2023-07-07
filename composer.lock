@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ecf10e5a16c7ac3a853670610c981858",
+    "content-hash": "adb7ed8ebcbdf6345e0caa7bd7156cc9",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -6776,18 +6776,17 @@
             },
             "autoload": {
                 "psr-4": {
-                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners",
-                    "ProcessMaker\\Package\\DockerExecutorPhp\\": "src"
+                    "ProcessMaker\\Package\\DockerExecutorPhp\\": "src",
+                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GAGPL-3.0-or-later"
             ],
             "description": "PHP script executor for processmaker 4",
             "support": {
-                "issues": "https://github.com/ProcessMaker/docker-executor-php/issues",
-                "source": "https://github.com/ProcessMaker/docker-executor-php/tree/v1.2.0"
+                "source": "https://github.com/ProcessMaker/docker-executor-php/tree/v1.2.0",
+                "issues": "https://github.com/ProcessMaker/docker-executor-php/issues"
             },
             "time": "2023-04-29T06:11:07+00:00"
         },
@@ -6913,7 +6912,11 @@
                     "ProcessMaker\\Query\\": "src"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "ProcessMaker\\Query\\Tests\\": "tests/"
+                }
+            },
             "authors": [
                 {
                     "name": "Taylor Dondich",
@@ -6922,8 +6925,8 @@
             ],
             "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent",
             "support": {
-                "issues": "https://github.com/ProcessMaker/pmql/issues",
-                "source": "https://github.com/ProcessMaker/pmql/tree/v1.9.0"
+                "source": "https://github.com/ProcessMaker/pmql/tree/v1.9.0",
+                "issues": "https://github.com/ProcessMaker/pmql/issues"
             },
             "time": "2023-05-04T04:21:46+00:00"
         },

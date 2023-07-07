@@ -78,8 +78,9 @@ class ScriptCategory extends ProcessMakerModel
     {
         $resultString = '';
         $arrayIds = explode($delimiter, $ids);
-        $results = ScriptCategory::whereIn('id', array_map('intval', $arrayIds))->pluck('name');
+        $results = self::whereIn('id', array_map('intval', $arrayIds))->pluck('name');
         $resultString = implode(', ', $results->toArray());
+
         return $resultString;
     }
 }

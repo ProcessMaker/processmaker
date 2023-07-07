@@ -35,14 +35,14 @@ class ScreenCategoryTest extends TestCase
         //Case 3: without Id
         $stringIds = '';
         $this->assertEquals(
-            "",
+            '',
             ScreenCategory::getNamesByIds($stringIds)
         );
 
         //Case 4: non-existentId
         $stringIds = '9452';
         $this->assertEquals(
-            "",
+            '',
             ScreenCategory::getNamesByIds($stringIds)
         );
     }

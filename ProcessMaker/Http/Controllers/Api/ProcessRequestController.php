@@ -137,9 +137,9 @@ class ProcessRequestController extends Controller
         if (!empty($filter)) {
             $query->filter($filter);
         }
-        
+
         $query->nonSystem();
-        
+
         $pmql = $request->input('pmql', '');
         if (!empty($pmql)) {
             try {

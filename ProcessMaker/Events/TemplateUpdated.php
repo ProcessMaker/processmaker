@@ -4,8 +4,8 @@ namespace ProcessMaker\Events;
 
 use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
-use ProcessMaker\Helpers\ArrayHelper;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
+use ProcessMaker\Helpers\ArrayHelper;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
@@ -50,7 +50,7 @@ class TemplateUpdated implements SecurityLogEventInterface
                 'name' => [
                     'label' => $this->processType,
                 ],
-                'last_modified' => $this->changes['updated_at'] ?? Carbon::now()
+                'last_modified' => $this->changes['updated_at'] ?? Carbon::now(),
             ];
         } else {
             $oldData = array_diff_assoc($this->original, $this->changes);
@@ -60,7 +60,7 @@ class TemplateUpdated implements SecurityLogEventInterface
                 'name' => [
                     'label' => $this->processType,
                 ],
-                'last_modified' => $this->changes['updated_at'] ?? Carbon::now()
+                'last_modified' => $this->changes['updated_at'] ?? Carbon::now(),
             ], ArrayHelper::getArrayDifferencesWithFormat($this->changes, $this->original));
         }
     }

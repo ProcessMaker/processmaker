@@ -54,7 +54,7 @@ class CategoryCreated implements SecurityLogEventInterface
         return [
             'id' => $this->category->getAttribute('id'),
             'name' => $this->category->getAttribute('name'),
-            'status' => $this->category->getAttribute('status')
+            'status' => $this->category->getAttribute('status'),
         ];
     }
 

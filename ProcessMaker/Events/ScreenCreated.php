@@ -38,7 +38,7 @@ class ScreenCreated implements SecurityLogEventInterface
             'name' => $this->newScreen['title'] ?? '',
             'description' => $this->newScreen['description'] ?? '',
             'type' => $this->newScreen['type'] ?? '',
-            'screen_category_id' => $this->newScreen['screen_category_id'] ?? ''
+            'screen_category_id' => $this->newScreen['screen_category_id'] ?? '',
         ];
     }
 

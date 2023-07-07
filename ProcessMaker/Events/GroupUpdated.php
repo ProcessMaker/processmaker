@@ -15,6 +15,7 @@ class GroupUpdated implements SecurityLogEventInterface
     private Group $group;
 
     private array $changes;
+
     private array $original;
 
     /**
@@ -53,7 +54,7 @@ class GroupUpdated implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            'id' => $this->group->getAttribute('id')
+            'id' => $this->group->getAttribute('id'),
         ];
     }
 

@@ -35,14 +35,14 @@ class ProcessCategoryTest extends TestCase
         //Case 3: without Id
         $stringIds = '';
         $this->assertEquals(
-            "",
+            '',
             ProcessCategory::getNamesByIds($stringIds)
         );
 
         //Case 4: non-existentId
         $stringIds = '9452';
         $this->assertEquals(
-            "",
+            '',
             ProcessCategory::getNamesByIds($stringIds)
         );
     }
