@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4a74cd504e4fe1c48f4b9801ba65e827",
+    "content-hash": "012901e01d621ca1ee5f9cf2fe65d41b",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -6776,17 +6776,18 @@
             },
             "autoload": {
                 "psr-4": {
-                    "ProcessMaker\\Package\\DockerExecutorPhp\\": "src",
-                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
+                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners",
+                    "ProcessMaker\\Package\\DockerExecutorPhp\\": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GAGPL-3.0-or-later"
             ],
             "description": "PHP script executor for processmaker 4",
             "support": {
-                "source": "https://github.com/ProcessMaker/docker-executor-php/tree/v1.2.0",
-                "issues": "https://github.com/ProcessMaker/docker-executor-php/issues"
+                "issues": "https://github.com/ProcessMaker/docker-executor-php/issues",
+                "source": "https://github.com/ProcessMaker/docker-executor-php/tree/v1.2.0"
             },
             "time": "2023-04-29T06:11:07+00:00"
         },
