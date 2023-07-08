@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "adb7ed8ebcbdf6345e0caa7bd7156cc9",
+    "content-hash": "4a74cd504e4fe1c48f4b9801ba65e827",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -6882,16 +6882,16 @@
         },
         {
             "name": "processmaker/pmql",
-            "version": "1.9.0",
+            "version": "1.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/pmql.git",
-                "reference": "2e1a2a8a9d8e74ab5763515304e8cd2267d0f659"
+                "reference": "7855236c81162d3501b096a6691c6f2e3c7b2cb2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/2e1a2a8a9d8e74ab5763515304e8cd2267d0f659",
-                "reference": "2e1a2a8a9d8e74ab5763515304e8cd2267d0f659",
+                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/7855236c81162d3501b096a6691c6f2e3c7b2cb2",
+                "reference": "7855236c81162d3501b096a6691c6f2e3c7b2cb2",
                 "shasum": ""
             },
             "require": {
@@ -6912,11 +6912,7 @@
                     "ProcessMaker\\Query\\": "src"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "ProcessMaker\\Query\\Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "authors": [
                 {
                     "name": "Taylor Dondich",
@@ -6925,10 +6921,10 @@
             ],
             "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent",
             "support": {
-                "source": "https://github.com/ProcessMaker/pmql/tree/v1.9.0",
-                "issues": "https://github.com/ProcessMaker/pmql/issues"
+                "issues": "https://github.com/ProcessMaker/pmql/issues",
+                "source": "https://github.com/ProcessMaker/pmql/tree/v1.9.1"
             },
-            "time": "2023-05-04T04:21:46+00:00"
+            "time": "2023-07-08T02:31:00+00:00"
         },
         {
             "name": "psr/cache",
