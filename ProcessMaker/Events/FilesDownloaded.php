@@ -2,20 +2,17 @@
 
 namespace ProcessMaker\Events;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
-use ProcessMaker\Models\Media;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
-class FilesCreated implements SecurityLogEventInterface
+class FilesDownloaded implements SecurityLogEventInterface
 {
     use Dispatchable;
     use FormatSecurityLogChanges;
 
-    public const NAME_PUBLIC_FILES = 'Public Files';
-
-    private array $media;
     private array $name = [];
     private string $processName = '';
 
@@ -24,25 +21,21 @@ class FilesCreated implements SecurityLogEventInterface
      *
      * @return void
      */
-    public function __construct(int $fileId, ProcessRequest $data)
+    public function __construct(string $file, ProcessRequest $data = null)
     {
-        $this->media = Media::find(['id' => $fileId])->toArray();
-        $this->media = head($this->media);
-
-        // Check if the request is related to the package files
-        if (static::NAME_PUBLIC_FILES === $data->getAttribute('name')) {
-            $this->processName = '';
-            // Link to file in the package
-            $this->name = [
-                'label' => $this->media['name'],
-                'link' => route('file-manager.index', ['public/' . $this->media['name']]),
-            ];
-        } else {
+        // Check if the file is related to the request
+        if (!is_null($data)) {
             $this->processName = $data->getAttribute('name');
             // Link to the request
             $this->name = [
                 'label' => $data->getAttribute('id'),
                 'link' => route('requests.show', $data)
+            ];
+        } else {
+            // Link to file in the package
+            $this->name = [
+                'label' => $file,
+                'link' => route('file-manager.index', ['public/' . $file]),
             ];
         }
     }
@@ -57,7 +50,7 @@ class FilesCreated implements SecurityLogEventInterface
         return [
             'name' => $this->name,
             'process' => $this->processName,
-            'created_at' => $this->media['created_at'],
+            'accessed_at' => Carbon::now()
         ];
     }
 
@@ -68,9 +61,7 @@ class FilesCreated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return [
-            'id' => $this->media['id']
-        ];
+        return [];
     }
 
     /**
@@ -80,6 +71,6 @@ class FilesCreated implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'FilesCreated';
+        return 'FilesDownloaded';
     }
 }

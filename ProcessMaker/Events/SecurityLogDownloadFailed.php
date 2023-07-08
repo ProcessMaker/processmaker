@@ -9,7 +9,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use ProcessMaker\Models\User;
 
-class SecurityLogDownloadJobCompleted implements ShouldBroadcastNow
+class SecurityLogDownloadFailed implements ShouldBroadcastNow
 {
     use Dispatchable;
     use InteractsWithSockets;
@@ -56,7 +56,7 @@ class SecurityLogDownloadJobCompleted implements ShouldBroadcastNow
      */
     public function broadcastAs()
     {
-        return 'SecurityLogDownloadJobCompleted';
+        return 'SecurityLogDownloadFailed';
     }
 
     /**

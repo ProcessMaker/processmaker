@@ -24,7 +24,7 @@ class ScriptExecutorCreated implements SecurityLogEventInterface
         $this->data = [
             'script_executor_id' => $created_values['id'],
             'title' => $created_values['title'],
-            'description' => $created_values['description'],
+            'description' => isset($created_values['description']) ? $created_values['description'] : "",
             'language' => $created_values['language'],
             'config' => $created_values['config'],
         ];
