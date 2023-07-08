@@ -6,20 +6,16 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Notification;
 use Mustache_Engine;
 use ProcessMaker\Exception\HttpInvalidArgumentException;
 use ProcessMaker\Exception\HttpResponseException;
 use ProcessMaker\Helpers\StringHelper;
+use ProcessMaker\Jobs\ErrorHandling;
 use ProcessMaker\Models\FormalExpression;
-use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Notifications\ErrorExecutionNotification;
 use Psr\Http\Message\ResponseInterface;
 
 trait MakeHttpRequests
@@ -40,20 +36,6 @@ trait MakeHttpRequests
     private $mustache = null;
 
     private $timeout = 0;
-
-    private $retryAttempts = 0;
-
-    private $retryWaitTime = 0;
-
-    private $attemptedRetries = 0;
-
-    private $retryMessage = null;
-
-    private $inappNotification = false;
-
-    private $emailNotification = false;
-
-    private $tokenId = null;
 
     private function getMustache()
     {
@@ -82,64 +64,8 @@ trait MakeHttpRequests
             $request = $this->prepareRequestWithOutboundConfig($data, $config);
 
             return $this->responseWithHeaderData($this->call(...$request), $data, $config);
-        } catch (TransferException $exception) {
-            $result = $this->handleRetries($data, $config);
-            if ($result) {
-                // Retry was successful
-                return $result;
-            }
-
-            $message = $exception->getMessage();
-            $message = $this->retryMessage ? $this->retryMessage . "\n" . $message : $message;
-
-            $this->sendErrorNotification($data, $message);
-
-            if ($exception instanceof ClientException) {
-                $response = $exception->getResponse();
-                throw new HttpResponseException($response, $message);
-            } else {
-                throw new \Exception($message);
-            }
-        }
-    }
-
-    /**
-     * Handle retry attempts if configured
-     */
-    private function handleRetries(array $data, array $config)
-    {
-        if ($this->retryAttempts === 0) {
-            return false;
-        }
-
-        if ($this->attemptedRetries >= $this->retryAttempts) {
-            $this->retryMessage = __('Failed after :num total attempts', ['num' => $this->attemptedRetries + 1]);
-
-            return false;
-        }
-
-        $this->attemptedRetries++;
-
-        if ($this->retryWaitTime > 0) {
-            sleep($this->retryWaitTime);
-        }
-        Log::info('Retry the runScript process. Attempt ' . ($this->attemptedRetries) . ' of ' . $this->retryAttempts);
-
-        return $this->request($data, $config);
-    }
-
-    private function sendErrorNotification(array $data, string $message)
-    {
-        if ($this->tokenId) {
-            $processRequestToken = ProcessRequestToken::findOrFail($this->tokenId);
-            $user = $processRequestToken->processRequest->processVersion->manager;
-            if ($user !== null) {
-                $errorHandling = [
-                    'inapp_notification' => $this->inappNotification,
-                    'email_notification' => $this->emailNotification,
-                ];
-                Notification::send($user, new ErrorExecutionNotification($processRequestToken, $message, $errorHandling));
-            }
+        } catch (ClientException $exception) {
+            throw new HttpResponseException($exception->getResponse());
         }
     }
 
@@ -173,53 +99,6 @@ trait MakeHttpRequests
         $request = $this->addAuthorizationHeaders(...$request);
 
         return $request;
-    }
-
-    /**
-     * Set error handling properties from endpoint config or from BPMN errorHandling
-     *
-     * @param array $endpoint
-     * @param array $config
-     *
-     * @return void
-     */
-    private function setErrorHandlingProperties(array $endpoint, array $config)
-    {
-        $properties = [
-            'timeout' => 'timeout',
-            'retryAttempts' => 'retry_attempts',
-            'retryWaitTime' => 'retry_wait_time',
-        ];
-
-        foreach ($properties as $classProperty => $settingProperty) {
-            $this->$classProperty = (int) Arr::get($endpoint, $settingProperty, 0);
-            $bpmnSetting = Arr::get($config, "errorHandling.{$settingProperty}", null);
-            if (is_numeric($bpmnSetting)) {
-                $this->$classProperty = (int) $bpmnSetting;
-            }
-        }
-
-        $this->inappNotification = Arr::get($endpoint, 'inapp_notification', false);
-        $this->emailNotification = Arr::get($endpoint, 'email_notification', false);
-
-        $this->tokenId = Arr::get($config, 'tokenId', null);
-
-        if (Arr::get($config, 'errorHandling.inapp_notification', false) === true) {
-            $this->inappNotification = true;
-        }
-        if (Arr::get($config, 'errorHandling.email_notification', false) === true) {
-            $this->emailNotification = true;
-        }
-    }
-
-    /**
-     * Return the value of $this->timeout
-     *
-     * @return int
-     */
-    public function getTimeout()
-    {
-        return $this->timeout;
     }
 
     /**
@@ -325,8 +204,6 @@ trait MakeHttpRequests
 
         $request = [$method, $url, $headers, $body, $bodyType];
         $request = $this->addAuthorizationHeaders(...$request);
-
-        $this->setErrorHandlingProperties($endpoint, $config);
 
         return $request;
     }
@@ -556,10 +433,9 @@ trait MakeHttpRequests
         $client = $this->client ?? app()->make(Client::class, [
             'config' => [
                 'verify' => $this->verifySsl,
-                'timeout' => $this->getTimeout(),
+                'timeout' => $this->timeout,
             ],
         ]);
-
         $options = [];
         if ($bodyType === 'form-data') {
             $options['form_params'] = json_decode($body, true);

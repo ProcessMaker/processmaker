@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\ProcessRequest;
 
 class CatchSignalEventRequest implements ShouldQueue
@@ -34,10 +35,10 @@ class CatchSignalEventRequest implements ShouldQueue
 
     public function handle()
     {
-        $this->payload = unpackTemporalData($this->payload_uid);
+        $payload = unpackTemporalData($this->payload_uid);
         foreach ($this->chunck as $requestId) {
             $request = ProcessRequest::find($requestId);
-            CatchSignalEventInRequest::dispatchNow($request, $this->payload, $this->signalRef);
+            WorkflowManager::throwSignalEventRequest($request, $this->signalRef, $payload);
         }
         removeTemporalData($this->payload_uid);
     }

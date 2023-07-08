@@ -20,6 +20,7 @@ trait ExtendedPMQL
     }
 
     protected $dataStoreTable = '';
+
     protected $dataStoreColumns = [];
 
     /**
@@ -111,7 +112,8 @@ trait ExtendedPMQL
             if ($value instanceof IntervalExpression) {
                 $value = $value->toEloquent();
             }
-            return function($query) use($expression, $value, $realFieldName) {
+
+            return function ($query) use ($expression, $value, $realFieldName) {
                 switch ($expression->operator) {
                     case Expression::OPERATOR_IN:
                         $query->whereIn($realFieldName, $value);

@@ -111,7 +111,7 @@ class CssOverrideController extends Controller
             $altText['changes'] ?? [],
             $changes
         );
-        
+
         if (!empty($changes)) {
             $original['config'] = array_merge(
                 $footer['original'] ?? [],
@@ -144,7 +144,7 @@ class CssOverrideController extends Controller
         if ((!$setting->wasRecentlyCreated && $setting->wasChanged()) || $setting->wasRecentlyCreated) {
             $response = [
                 'changes' => ['loginFooter' => $setting->getAttribute('config')['html'] ?? ''],
-                'original' => ['loginFooter' => $original->getAttribute('config')['html'] ?? '']
+                'original' => ['loginFooter' => $original->getAttribute('config')['html'] ?? ''],
             ];
         }
 
@@ -172,7 +172,7 @@ class CssOverrideController extends Controller
         if ((!$setting->wasRecentlyCreated && $setting->wasChanged()) || $setting->wasRecentlyCreated) {
             $response = [
                 'changes' => ['altText' => $setting->getAttribute('config') ?? ''],
-                'original' => ['altText' => $original->getAttribute('config') ?? '']
+                'original' => ['altText' => $original->getAttribute('config') ?? ''],
             ];
         }
 

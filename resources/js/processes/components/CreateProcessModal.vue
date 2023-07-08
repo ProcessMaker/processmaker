@@ -6,6 +6,7 @@
       :ok-disabled="disabled"
       @ok.prevent="onSubmit"
       @hidden="onClose"
+      @shown="onShown()"
     >
       <template v-if="countCategories">
         <required></required>
@@ -114,9 +115,15 @@
           this.description = this.templateData.description;  
           this.process_category_id = this.templateData.category_id;
         }
-      }
+      },
     },
     methods: {
+      onShown() {
+        if (this.generativeProcessData) {
+          this.name = this.generativeProcessData.process_title;
+          this.description = this.generativeProcessData.process_description;
+        }
+      },
       show() {
       this.$bvModal.show("createProcess");
       },
