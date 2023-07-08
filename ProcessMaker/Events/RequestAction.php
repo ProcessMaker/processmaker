@@ -13,7 +13,9 @@ class RequestAction implements SecurityLogEventInterface
     use Dispatchable;
 
     const ACTION_CANCELED = 'CANCELED';
+
     const ACTION_COMPLETED = 'COMPLETED';
+
     const ACTION_CREATED = 'CREATED';
 
     const ACTIONS = [
@@ -21,8 +23,9 @@ class RequestAction implements SecurityLogEventInterface
         'CANCELED' => 'canceled_at',
         'CREATED' => 'created_at',
     ];
-    
+
     private ProcessRequest $data;
+
     private string $action;
 
     /**
@@ -35,34 +38,35 @@ class RequestAction implements SecurityLogEventInterface
         $this->data = $data;
         $this->action = $action;
     }
-    
+
     /**
-     * Return event data 
+     * Return event data
      */
     public function getData(): array
     {
         $parentProcess = Process::find($this->data->getAttribute('process_id'));
+
         return [
             'process' => [
                 'label' => $parentProcess->getAttribute('name'),
-                'link' => route('modeler.show', $parentProcess)
+                'link' => route('modeler.show', $parentProcess),
             ],
             'request' => [
                 'label' => $this->data->getAttribute('id'),
-                'link' => route('requests.show', $this->data)
+                'link' => route('requests.show', $this->data),
             ],
             'action' => $this->action,
-            $this::ACTIONS[$this->action] => Carbon::now()
+            $this::ACTIONS[$this->action] => Carbon::now(),
         ];
     }
-    
+
     /**
-     * Return event changes 
+     * Return event changes
      */
     public function getChanges(): array
     {
         return [
-            'request_id' => $this->data->getAttribute('id')
+            'request_id' => $this->data->getAttribute('id'),
         ];
     }
 

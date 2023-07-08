@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Events\FilesDeleted;
+use ProcessMaker\Events\FilesDownloaded;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -281,6 +282,11 @@ class FileController extends Controller
         $path = Storage::disk('public')->getAdapter()->getPathPrefix() .
                 $file->id . '/' .
                 $file->file_name;
+
+        // Register the Event
+        if (!empty($file->file_name)) {
+            FilesDownloaded::dispatch($file->file_name);
+        }
 
         return response()->download($path);
     }

@@ -44,6 +44,7 @@
       <!-- Caching config -->
       <env name="CACHE_DRIVER" value="array" />
       <env name="QUEUE_DRIVER" value="sync" />
+      <env name="MESSAGE_BROKER_DRIVER" value="default" />
 
       <!-- Workflow Database -->
       <env name="DB_ADAPTER" value="mysql" />

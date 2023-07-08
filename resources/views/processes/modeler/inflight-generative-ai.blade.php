@@ -29,6 +29,7 @@
     const breadcrumbData = [];
     window.ProcessMaker.modeler = {
       xml: @json($bpmn),
+      enableProcessMapping: false,
     }
 
     window.ProcessMaker.EventBus.$on('modeler-start', ({

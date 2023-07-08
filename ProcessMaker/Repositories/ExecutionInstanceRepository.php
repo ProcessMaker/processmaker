@@ -20,6 +20,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     use RepositoryTrait;
 
     private bool $abortIfInstanceNotFound = true;
+
     private bool $loadTokens = true;
 
     /**
@@ -61,9 +62,9 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      * @param string $instanceId
      * @param StorageInterface $storage
      *
-     * @return ExecutionInstanceInterface
+     * @return ExecutionInstanceInterface|null
      */
-    public function loadExecutionInstanceByUid($instanceId, StorageInterface $storage): ExecutionInstanceInterface
+    public function loadExecutionInstanceByUid($instanceId, StorageInterface $storage): ?ExecutionInstanceInterface
     {
         // Get process request
         if (is_numeric($instanceId)) {
@@ -152,6 +153,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
 
         // Save process request
         $instance->callable_id = $process->getId();
+        $instance->collaboration_uuid = $instance->getProperty('collaboration_uuid', null);
         $instance->process_id = $definition->getKey();
         $instance->process_version_id = $definition->getLatestVersion()->getKey();
         $instance->user_id = pmUser() ? pmUser()->getKey() : null;
@@ -208,7 +210,9 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         }
 
         // Save updated instance
-        $instance->status = 'ACTIVE';
+        if (!$instance->status) {
+            $instance->status = 'ACTIVE';
+        }
         $instance->mergeLatestStoredData();
         $instance->saveOrFail();
     }
@@ -278,28 +282,40 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     {
         // Get valid engine
         $engine = $request->getProcess()->getEngine();
-        if (count($engine->getExecutionInstances()) <= 1) {
-            return;
-        }
+        if ($engine) {
+            if (count($engine->getExecutionInstances()) <= 1) {
+                return;
+            }
 
-        // Get current collaboration
-        $collaboration = null;
-        foreach ($engine->getExecutionInstances() as $instance) {
-            if ($instance->collaboration) {
-                $collaboration = $instance->collaboration;
-                break;
+            // Get current collaboration
+            $collaboration = null;
+            foreach ($engine->getExecutionInstances() as $instance) {
+                if ($instance->collaboration) {
+                    $collaboration = $instance->collaboration;
+                    break;
+                }
+            }
+
+            // If not exists a collaboration, create a new one
+            if (!$collaboration) {
+                $collaboration = new ProcessCollaboration();
+                $collaboration->process_id = $request->process->getKey();
+                $collaboration->saveOrFail();
+            }
+
+            // Update collaboration id
+            $request->process_collaboration_id = $collaboration->id;
+            $request->saveOrFail();
+        } elseif ($request->collaboration_uuid) {
+            // find by uuid or create
+            $collaboration = ProcessCollaboration::firstOrCreate([
+                'uuid' => $request->collaboration_uuid,
+                'process_id' => $request->process_id,
+            ]);
+            if ($collaboration) {
+                $request->process_collaboration_id = $collaboration->id;
+                $request->saveOrFail();
             }
         }
-
-        // If not exists a collaboration, create a new one
-        if (!$collaboration) {
-            $collaboration = new ProcessCollaboration();
-            $collaboration->process_id = $request->process->getKey();
-            $collaboration->saveOrFail();
-        }
-
-        // Update collaboration id
-        $request->process_collaboration_id = $collaboration->id;
-        $request->saveOrFail();
     }
 }

@@ -22,6 +22,7 @@ abstract class TestCase extends BaseTestCase
     use ArraySubsetAsserts;
 
     public $withPermissions = false;
+
     protected $skipTeardownPDOException = false;
 
     /**
