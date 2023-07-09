@@ -30,7 +30,7 @@ class PopulateProcessRequestsCollaborationUuid extends Upgrade
                     } else {
                         $request->collaboration_uuid = ProcessCollaboration::generateUuid();
                     }
-                    $request->save();
+                    ProcessRequest::where('id', $request->id)->update(['collaboration_uuid' => $request->collaboration_uuid]);
                 }
             });
     }
