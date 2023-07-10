@@ -56,7 +56,7 @@ trait HideSystemResources
         } elseif (static::class === Process::class) {
             $systemCategory = ProcessCategory::where('is_system', true)->pluck('id');
 
-            return $query->whereNotIn('process_category_id', $systemCategory)->where('is_template', false)->whereNull('asset_type');
+            return $query->whereNotIn('process_category_id', $systemCategory)->where('is_template', false);
         } elseif (static::class === Screen::class) {
             $systemCategory = ScreenCategory::where('is_system', true)->pluck('id');
 
