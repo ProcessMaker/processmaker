@@ -74,7 +74,7 @@ class ProcessPublished implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            'id' => $this->process->getAttribute('id')
+            'id' => $this->process->getAttribute('id'),
         ];
     }
 

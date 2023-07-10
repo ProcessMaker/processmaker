@@ -14,6 +14,7 @@ class FilesAccessed implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private array $linkFile = [];
+
     private string $processName = '';
 
     /**
@@ -29,7 +30,7 @@ class FilesAccessed implements SecurityLogEventInterface
             // Link to the request
             $this->linkFile = [
                 'label' => $data->getAttribute('id'),
-                'link' => route('requests.show', $data)
+                'link' => route('requests.show', $data),
             ];
         } else {
             // Link to file in the package
@@ -50,7 +51,7 @@ class FilesAccessed implements SecurityLogEventInterface
         return [
             'name' => $this->linkFile,
             'process' => $this->processName,
-            'accessed_at' => Carbon::now()
+            'accessed_at' => Carbon::now(),
         ];
     }
 

@@ -16,7 +16,7 @@ class ArrayHelperTest extends TestCase
         $this->assertEquals(
             [
                 'name' => 'John',
-                'id' => 5
+                'id' => 5,
             ],
             ArrayHelper::stdClassToArray($myObject)
         );
@@ -29,45 +29,45 @@ class ArrayHelperTest extends TestCase
             '+ name' => 'Maria',
             '- name' => 'Laura',
             '+ email' => 'maria@mail.com',
-            '- email' => 'laura@mail.com'
+            '- email' => 'laura@mail.com',
         ], ArrayHelper::getArrayDifferencesWithFormat(
             [
                 'name' => 'Maria',
-                'email' => 'maria@mail.com'
+                'email' => 'maria@mail.com',
             ],
             [
                 'name' => 'Laura',
-                'email' => 'laura@mail.com'
+                'email' => 'laura@mail.com',
             ]
         ));
 
         //Case 2: Two arrays with same keys and only one value different
         $this->assertEquals([
             '+ email' => 'maria@mail.com',
-            '- email' => 'laura@mail.com'
+            '- email' => 'laura@mail.com',
         ], ArrayHelper::getArrayDifferencesWithFormat(
             [
                 'name' => 'Maria',
-                'email' => 'maria@mail.com'
+                'email' => 'maria@mail.com',
             ],
             [
                 'name' => 'Maria',
-                'email' => 'laura@mail.com'
+                'email' => 'laura@mail.com',
             ]
         ));
 
         //Case 3: One array has more keys than second array
         $this->assertEquals([
-            '+ phone' => '123456'
+            '+ phone' => '123456',
         ], ArrayHelper::getArrayDifferencesWithFormat(
             [
                 'name' => 'Maria',
                 'email' => 'maria@mail.com',
-                'phone' => '123456'
+                'phone' => '123456',
             ],
             [
                 'name' => 'Maria',
-                'email' => 'maria@mail.com'
+                'email' => 'maria@mail.com',
             ]
         ));
     }
