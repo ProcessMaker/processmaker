@@ -4,6 +4,7 @@ namespace ProcessMaker\Console\Commands;
 
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Facades\MessageBrokerService;
 
 class Consumer extends Command
@@ -40,7 +41,8 @@ class Consumer extends Command
         try {
             MessageBrokerService::worker();
         } catch (Exception $e) {
-            $this->warn($e->getMessage());
+            Log::error($e->getMessage());
+            Log::error($e->getTraceAsString());
         }
     }
 }
