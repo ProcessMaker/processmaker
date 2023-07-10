@@ -116,6 +116,9 @@ class PersistenceHandler
                 case 'instance_updated':
                     $this->persistInstanceUpdated($transaction);
                     break;
+                case 'call_activity_activated':
+                    $this->persistCallActivityActivated($transaction);
+                    break;
                 case 'schedule_date':
                     $this->persistScheduleDate($transaction);
                     break;
@@ -139,7 +142,8 @@ class PersistenceHandler
             }
         } catch (Exception $error) {
             Log::error($error->getMessage());
-            if ($transaction['token']) {
+            Log::error($error->getTraceAsString());
+            if (!empty($transaction['token'])) {
                 $token = $this->deserializer->unserializeToken($transaction['token']);
                 $request = $token->getInstance();
                 if ($request && $request instanceof ProcessRequest) {

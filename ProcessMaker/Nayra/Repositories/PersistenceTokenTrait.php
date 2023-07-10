@@ -2,8 +2,12 @@
 
 namespace ProcessMaker\Nayra\Repositories;
 
+use ProcessMaker\Repositories\TokenRepository;
+
 trait PersistenceTokenTrait
 {
+    protected TokenRepository $tokenRepository;
+
     /**
      * Persists instance and token data when a token arrives to an activity
      *
@@ -207,5 +211,18 @@ trait PersistenceTokenTrait
         $passedToken = $this->deserializer->unserializeToken($transaction['passed_token']);
         $consumedTokens = $this->deserializer->unserializeTokensCollection($transaction['consumed_tokens']);
         $this->tokenRepository->persistEventBasedGatewayActivated($gateway, $passedToken, $consumedTokens);
+    }
+
+    /**
+     * Persists a Call Activity Activated
+     *
+     * @param array $transaction
+     */
+    public function persistCallActivityActivated(array $transaction)
+    {
+        $token = $this->deserializer->unserializeToken($transaction['token']);
+        $subprocessInstance = $this->deserializer->unserializeInstance($transaction['subprocess']);
+        $startId = $transaction['start_id'];
+        $this->tokenRepository->persistCallActivityActivated($token, $subprocessInstance, $startId);
     }
 }

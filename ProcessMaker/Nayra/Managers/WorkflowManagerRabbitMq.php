@@ -482,17 +482,25 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             $tokensRows = [];
             $tokens = $request->tokens()->where('status', '!=', 'CLOSED')->where('status', '!=', 'TRIGGERED')->get();
             foreach ($tokens as $token) {
-                $tokensRows[] = array_merge($token->token_properties ?: [], [
+                $tokenRow = array_merge($token->token_properties ?: [], [
                     'id' => $token->uuid,
                     'status' => $token->status,
                     'index' => $token->element_index,
                     'element_id' => $token->element_id,
                     'created_at' => $token->created_at->getTimestamp(),
                 ]);
+                if ($token->subprocess_request_id) {
+                    $subRequest = ProcessRequest::select(['process_version_id', 'uuid'])
+                        ->find($token->subprocess_request_id);
+                    $tokenRow['subprocess_request_id'] = $subRequest->uuid;
+                    $tokenRow['subprocess_request_version'] = $subRequest->process_version_id;
+                }
+                $tokensRows[] = $tokenRow;
             }
 
             return [
                 'id' => $request->uuid,
+                'process_version_id' => $request->process_version_id,
                 'callable_id' => $request->callable_id,
                 'collaboration_uuid' => $request->collaboration_uuid,
                 'data' => $request->data,
