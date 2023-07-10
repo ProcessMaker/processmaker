@@ -373,11 +373,12 @@ class ScriptController extends Controller
     public function update(Script $script, Request $request)
     {
         $request->validate(Script::rules($script));
-
         $script->fill($request->input());
         $original = array_intersect_key($script->getOriginal(), $script->getDirty());
         $script->saveOrFail();
-        ScriptUpdated::dispatch($script, $script->getChanges(), $original);
+        $changes = $script->getChanges();
+        $changes['script_category_id'] = $request->input('script_category_id');
+        ScriptUpdated::dispatch($script, $changes, $original);
 
         return response($request, 204);
     }
