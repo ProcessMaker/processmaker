@@ -8,6 +8,10 @@
       <span class="line completed-line"></span>
       {{ __('Completed') }}
     </p>
+    <p class="map-legend-label map-legend-label-margin">
+      <span class="line idle-line"></span>
+      {{ __('Pending / Not Executed') }}
+    </p>
   </div>
 </div>
 
@@ -17,6 +21,7 @@
     :root {
       --color-line-in-progress: #3FA6FF;
       --color-line-completed: #00BA7C;
+      --color-line-idle: #CCCCCC;
     }
 
     #map-legend.map-legend-card {
@@ -57,5 +62,10 @@
       border-right-style: solid;
       border-right-color: var(--color-line-completed);
     }
+    .idle-line {
+      border-right-style: solid;
+      border-right-color: var(--color-line-idle);
+    }
+
   </style>
 @endsection
