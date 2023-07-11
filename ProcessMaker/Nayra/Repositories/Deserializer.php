@@ -12,6 +12,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\EventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
+use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Repositories\DefinitionsRepository;
 use ProcessMaker\Repositories\ExecutionInstanceRepository;
@@ -56,7 +57,7 @@ class Deserializer
             $version = ProcessVersion::find($modelId);
             $model = $version->process;
 
-            $definition = new BpmnDocument($model);
+            $definition = app(BpmnDocumentInterface::class, ['process' => $model]);
             $definition->setFactory($this->factory);
             $definition->loadXML($version->bpmn);
 
