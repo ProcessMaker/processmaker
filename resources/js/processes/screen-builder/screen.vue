@@ -385,7 +385,7 @@ export default {
             variant: "secondary",
             icon: "fas fa-desktop",
             action: "changeDeviceScreen(\"desktop\")",
-            title:this.$t('Mobile'),
+            title:this.$t('Desktop'),
           },
           {
             id: "button_preview_mobile",
