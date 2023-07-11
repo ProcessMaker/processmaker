@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Traits\Exportable;
@@ -56,9 +57,13 @@ class EnvironmentVariable extends ProcessMakerModel
     {
         try {
             return decrypt($this->attributes['value']);
-        } catch (\Exception $e) {
-            Log::error('EnvironmentVariable: ' . $this->attributes['value']. "\n" . $e->getMessage());
-            Log::error($e->getTraceAsString());
+        } catch (Exception $e) {
+            Log::error(
+                'Can not decrypt environment variable: ' .
+                $this->attributes['name'] .
+                "\n" . $e->getMessage() .
+                "\n" . $e->getTraceAsString()
+            );
             return null;
         }
     }
