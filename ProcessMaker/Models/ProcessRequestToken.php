@@ -823,7 +823,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
     public function updateTokenProperties()
     {
-        $allowed = ['conditionals', 'loopCharacteristics', 'data'];
+        $allowed = ['conditionals', 'loopCharacteristics', 'data', 'error'];
         $this->token_properties = array_filter(
             $this->getProperties(),
             function ($key) use ($allowed) {

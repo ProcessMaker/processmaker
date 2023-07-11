@@ -398,7 +398,7 @@
           canViewPrint: @json($canPrintScreens),
           status: 'ACTIVE',
           userRequested: [],
-          errorLogs: @json(['data' => $request->errors]),
+          errorLogs: @json(['data' => $request->getErrors()]),
           disabled: false,
           retryDisabled: false,
           packages: [],
