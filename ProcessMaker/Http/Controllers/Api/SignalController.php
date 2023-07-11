@@ -8,6 +8,9 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
+use ProcessMaker\Events\SignalCreated;
+use ProcessMaker\Events\SignalDeleted;
+use ProcessMaker\Events\SignalUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
@@ -226,6 +229,13 @@ class SignalController extends Controller
 
         SignalManager::addSignal($newSignal, ['detail' => $request->input('detail', '')]);
 
+        // Register the Event
+        SignalCreated::dispatch([
+            'id' => $newSignal->getId(),
+            'name' => $newSignal->getName(),
+            'detail' => $request->input('detail', '')
+        ]);
+
         return response(['id' => $newSignal->getId(), 'name' => $newSignal->getName()], 200);
     }
 
@@ -284,6 +294,20 @@ class SignalController extends Controller
 
         SignalManager::replaceSignal($newSignal, $oldSignal, ['detail' => $request->input('detail', '')]);
 
+        // Register the Event
+        SignalUpdated::dispatch(
+            [
+                'id' => $newSignal->getId() ?? '',
+                'name' => $newSignal->getName() ?? '',
+                'detail' => $newSignal->getDetail() ?? '',
+            ],
+            [
+                'id' => $oldSignal->getId() ?? '',
+                'name' => $oldSignal->getName() ?? '',
+                'detail' => $oldSignal->getDetail() ?? '',
+            ]
+        );
+
         return response(['id' => $newSignal->getId(), 'name' => $newSignal->getName()], 200);
     }
 
@@ -313,9 +337,11 @@ class SignalController extends Controller
         $signal = SignalManager::findSignal($signalId);
         $signalProcesses = SignalManager::getSignalProcesses($signalId, true);
 
-        $catches = array_reduce($signalProcesses, function ($carry, $process) {
-            return $carry + count($process['catches']);
-        },
+        $catches = array_reduce(
+            $signalProcesses,
+            function ($carry, $process) {
+                return $carry + count($process['catches']);
+            },
             0
         );
 
@@ -325,6 +351,12 @@ class SignalController extends Controller
 
         if ($signal) {
             SignalManager::removeSignal($signal);
+
+            // Register the Event
+            SignalDeleted::dispatch([
+                'id' => $signal->getId(),
+                'name' => $signal->getName()
+            ]);
         }
 
         return response('', 201);

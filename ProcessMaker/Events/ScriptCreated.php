@@ -57,19 +57,20 @@ class ScriptCreated implements SecurityLogEventInterface
             $categoryName = ScriptCategory::where('id', $categoryId)->value('name');
         }
 
-        $basic = isset($this->changes['code']) ? [
-            'name' => $this->script->getAttribute('title'),
-            'created_at' => $this->script->getAttribute('created_at'),
+        $configCode = isset($this->changes['code']) ? [
         ] : [
-            'name' => $this->script->getAttribute('title'),
             'description' => $this->script->getAttribute('description'),
             'category' => $categoryName,
             'language' => $this->script->getAttribute('language'),
         ];
-        unset($this->changes['code']);
-        unset($this->original['code']);
 
-        return array_merge($basic, $this->formatChanges($this->changes, []));
+        return array_merge([
+            'name' => [
+                'label' => $this->script->getAttribute('title'),
+                'link' => route('scripts.index'),
+            ],
+            'created_at' => $this->script->getAttribute('created_at'),
+        ], $configCode);
     }
 
     public function getEventName(): string

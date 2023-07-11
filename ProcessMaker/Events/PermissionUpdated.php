@@ -9,7 +9,8 @@ use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class PermissionUpdated implements SecurityLogEventInterface
 {
-    use Dispatchable, FormatSecurityLogChanges;
+    use Dispatchable;
+    use FormatSecurityLogChanges;
 
     private array $changedPermissions;
 
@@ -24,8 +25,12 @@ class PermissionUpdated implements SecurityLogEventInterface
      *
      * @return void
      */
-    public function __construct(array $changedPermissions, array $originalPermissions, bool $permissionType, string $userId)
-    {
+    public function __construct(
+        array $changedPermissions,
+        array $originalPermissions,
+        bool $permissionType,
+        string $userId
+    ) {
         $this->changedPermissions = $changedPermissions;
         $this->originalPermissions = $originalPermissions;
         $this->permissionType = $permissionType;
