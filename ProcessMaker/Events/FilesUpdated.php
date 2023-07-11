@@ -15,6 +15,7 @@ class FilesUpdated implements SecurityLogEventInterface
     private Media $media;
 
     private array $changes;
+
     private array $original;
 
     /**
@@ -52,7 +53,7 @@ class FilesUpdated implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            'id' => $this->media->getAttribute('id')
+            'id' => $this->media->getAttribute('id'),
         ];
     }
 

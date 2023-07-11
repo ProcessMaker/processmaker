@@ -23,7 +23,7 @@ class ArrayHelper
 
     /**
      * This method compares the keys of two arrays(new Values, old values) and adds (+) and (-) prefix
-     * to the keys which are different between the arrays with "formatChanges" Trait function. 
+     * to the keys which are different between the arrays with "formatChanges" Trait function.
      * The method returns an array with different keys values, and new values only with (+) prefix.
      * @param array $changedArray
      * @param array $originalArray
@@ -35,8 +35,9 @@ class ArrayHelper
         $displayChanges = array_diff_assoc($changedArray, $originalArray);
         $displayOriginal = array_diff_assoc($originalArray, $changedArray);
 
-        $arrayHelper = new ArrayHelper();
+        $arrayHelper = new self();
         $arrayDiff = $arrayHelper->formatChanges($displayChanges, $displayOriginal);
+
         return $arrayDiff;
     }
 

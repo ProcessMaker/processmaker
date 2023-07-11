@@ -13,9 +13,10 @@
 
 @section('css')
   <style>
+    /* See node_modules/@processmaker/modeler/src/components/highlightColors.js */
     :root {
-      --color-line-in-progress: #1572C2;
-      --color-line-completed: #00875A;
+      --color-line-in-progress: #3FA6FF;
+      --color-line-completed: #00BA7C;
     }
 
     #map-legend.map-legend-card {
@@ -48,7 +49,7 @@
     }
 
     .in-progress-line {
-      border-right-style: dashed;
+      border-right-style: solid;
       border-right-color: var(--color-line-in-progress);
     }
 

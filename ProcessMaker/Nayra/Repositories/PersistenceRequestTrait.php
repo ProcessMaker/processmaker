@@ -7,6 +7,7 @@ use ProcessMaker\Repositories\ExecutionInstanceRepository;
 trait PersistenceRequestTrait
 {
     protected ExecutionInstanceRepository $instanceRepository;
+    protected Deserializer $deserializer;
 
     /**
      * Store data related to the event Process Instance Created

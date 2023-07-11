@@ -32,7 +32,7 @@ class AuthClientDeleted implements SecurityLogEventInterface
         return [
             'auth_client_id' => $this->changes['id'] ?? 0,
             'name' => $this->changes['name'] ?? 0,
-            'deleted_at' => Carbon::now()
+            'deleted_at' => Carbon::now(),
         ];
     }
 

@@ -24,10 +24,9 @@ class TokenCreated implements SecurityLogEventInterface
     {
         $this->data = [
             'token_id' => $token->getKey(),
-            'created_at' => Carbon::now()
+            'created_at' => Carbon::now(),
         ];
     }
-
 
     /**
      * Return event data
@@ -37,7 +36,6 @@ class TokenCreated implements SecurityLogEventInterface
     {
         return $this->data;
     }
-
 
     /**
      * Return event changes
