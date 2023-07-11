@@ -33,9 +33,11 @@ class ScriptUpdated implements SecurityLogEventInterface
         $this->original = $original;
 
         // Get category name
-        $this->original['script_category'] = isset($original['script_category_id']) ? ScriptCategory::getNamesByIds($this->original['script_category_id']) : '';
+        $this->original['script_category'] = isset($original['script_category_id'])
+        ? ScriptCategory::getNamesByIds($this->original['script_category_id']) : '';
         unset($this->original['script_category_id']);
-        $this->changes['script_category'] = isset($changes['script_category_id']) ? ScriptCategory::getNamesByIds($this->changes['script_category_id']) : '';
+        $this->changes['script_category'] = isset($changes['script_category_id'])
+        ? ScriptCategory::getNamesByIds($this->changes['script_category_id']) : '';
         unset($this->changes['script_category_id']);
     }
 
@@ -58,19 +60,22 @@ class ScriptUpdated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        $changes = $this->changes;
-        $original = $this->original;
-        $basic = isset($changes['code']) ? [
-            'script_name' => $this->script->getAttribute('title'),
-            'last_modified' => $this->script->getAttribute('updated_at'),
-        ] : [
-            'script_name' => $this->script->getAttribute('title'),
-            'last_modified' => $this->script->getAttribute('updated_at'),
-        ];
-        unset($changes['code']);
-        unset($original['code']);
+        unset($this->changes['code']);
+        unset($this->original['code']);
 
-        return array_merge($basic, $this->formatChanges($changes, $original));
+        $linkName = [
+            'label' => $this->script->getAttribute('title'),
+            'link' => route('scripts.index'),
+        ];
+
+        return array_merge(
+            [
+                'name' => $linkName,
+                'script_name' => $this->script->getAttribute('title'),
+                'last_modified' => $this->script->getAttribute('updated_at'),
+            ],
+            $this->formatChanges($this->changes, $this->original)
+        );
     }
 
     public function getEventName(): string

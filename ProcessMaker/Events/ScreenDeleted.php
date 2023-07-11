@@ -31,8 +31,8 @@ class ScreenDeleted implements SecurityLogEventInterface
     public function getData(): array
     {
         return [
-            'title' => $this->screen->getAttributes()['title'],
-            'description' => $this->screen->getAttributes()['description'],
+            'name' => $this->screen->getAttribute('title'),
+            'description' => $this->screen->getAttribute('description'),
             'deleted_at' => Carbon::now(),
         ];
     }

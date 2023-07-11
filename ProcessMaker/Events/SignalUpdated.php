@@ -5,29 +5,26 @@ namespace ProcessMaker\Events;
 use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
+use ProcessMaker\Helpers\ArrayHelper;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
-class AuthClientUpdated implements SecurityLogEventInterface
+class SignalUpdated implements SecurityLogEventInterface
 {
     use Dispatchable;
     use FormatSecurityLogChanges;
 
-    private array $original;
     private array $changes;
-    private string $clientId;
-    private string $clientName;
+    private array $original;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(string $clientId, array $originalValues, array $changedValues, $name = '')
+    public function __construct(array $changes, array $original)
     {
-        $this->original = $originalValues;
-        $this->changes = $changedValues;
-        $this->clientId = $clientId;
-        $this->clientName = $name;
+        $this->changes = $changes;
+        $this->original = $original;
     }
 
     /**
@@ -37,11 +34,11 @@ class AuthClientUpdated implements SecurityLogEventInterface
     {
         return array_merge([
             'name' => [
-                'label' => $this->changes['name'] ?? $this->clientName,
-                'link' => route('auth-clients.index'),
+                'label' => $this->changes['name'],
+                'link' => route('signals.edit', ['signalId' => $this->changes['id']]),
             ],
-            'last_modified' => $this->changes['updated_at'] ?? Carbon::now(),
-        ], $this->formatChanges($this->changes, $this->original));
+            'last_modified' => Carbon::now()
+        ], ArrayHelper::getArrayDifferencesWithFormat($this->changes, $this->original));
     }
 
     /**
@@ -50,7 +47,7 @@ class AuthClientUpdated implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            'id' => $this->clientId,
+            'id' => $this->changes['id'] ?? '',
         ];
     }
 
@@ -59,6 +56,6 @@ class AuthClientUpdated implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'AuthClientUpdated';
+        return 'SignalUpdated';
     }
 }

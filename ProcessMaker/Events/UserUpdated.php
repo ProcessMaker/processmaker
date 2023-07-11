@@ -51,6 +51,7 @@ class UserUpdated implements SecurityLogEventInterface
                 'link' => route('users.edit', $this->user->getAttribute('id')) . '#nav-home',
             ],
             'username' => $this->user->getAttribute('username'),
+            'last_modified' => $this->user->getAttribute('updated_at')
         ], ArrayHelper::getArrayDifferencesWithFormat($this->changes, $this->original));
     }
 

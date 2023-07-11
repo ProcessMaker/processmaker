@@ -3,17 +3,25 @@
 namespace Tests\Feature\Api;
 
 use Database\Seeders\PermissionSeeder;
+use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Events\SettingsUpdated;
+use ProcessMaker\Events\SignalCreated;
+use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Models\Setting;
+use ProcessMaker\Models\SignalData;
 use ProcessMaker\Models\User;
 use ProcessMaker\Providers\AuthServiceProvider;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
+/**
+ * @covers \ProcessMaker\Models\SecurityLog
+ */
 class SecurityLogsTest extends TestCase
 {
     use RequestHelper;
@@ -54,6 +62,9 @@ class SecurityLogsTest extends TestCase
         $response->assertStatus(200);
     }
 
+    /**
+     * Return status 200
+     */
     public function testSearchSecurityLogsApi()
     {
         $permission = Permission::byName('view-security-logs');
@@ -118,6 +129,9 @@ class SecurityLogsTest extends TestCase
         $this->assertCount(2, $results);
     }
 
+    /**
+     * Return status 201
+     */
     public function testStore()
     {
         $response = $this->apiCall('POST', '/security-logs');
@@ -156,6 +170,9 @@ class SecurityLogsTest extends TestCase
         $this->assertIsObject($securityLog->data);
     }
 
+    /**
+     * This test the Setting Update
+     */
     public function testSettingUpdated()
     {
         $setting = Setting::factory()->create(['key' => 'users.properties']);
