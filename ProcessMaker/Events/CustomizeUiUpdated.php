@@ -39,7 +39,6 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
      * Building the data
      */
     public function buildData()
-    public function buildData()
     {
         if (isset($this->changes['variables'])) {
             $varChanges = [];
