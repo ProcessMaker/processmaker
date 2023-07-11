@@ -378,6 +378,8 @@ class ScriptController extends Controller
         $request->validate(Script::rules($script));
         $script->fill($request->input());
         $original = array_intersect_key($script->getOriginal(), $script->getDirty());
+        //Creating temporary Key to store multiple id categories
+        $original['tmp_script_category_id'] = $script->script_category_id;
         $script->saveOrFail();
         $changes = $script->getChanges();
         //Creating temporary Key to store multiple id categories
