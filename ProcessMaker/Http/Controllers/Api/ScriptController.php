@@ -332,7 +332,10 @@ class ScriptController extends Controller
         $script->fill($request->input());
 
         $script->saveOrFail();
-        ScriptCreated::dispatch($script, $script->getChanges());
+        $changes = $script->getChanges();
+        //Creating temporary Key to store multiple id categories
+        $changes['tmp_script_category_id'] = $request->input('script_category_id');
+        ScriptCreated::dispatch($script, $changes);
 
         return new ScriptResource($script);
     }
@@ -377,7 +380,8 @@ class ScriptController extends Controller
         $original = array_intersect_key($script->getOriginal(), $script->getDirty());
         $script->saveOrFail();
         $changes = $script->getChanges();
-        $changes['script_category_id'] = $request->input('script_category_id');
+        //Creating temporary Key to store multiple id categories
+        $changes['tmp_script_category_id'] = $request->input('script_category_id');
         ScriptUpdated::dispatch($script, $changes, $original);
 
         return response($request, 204);

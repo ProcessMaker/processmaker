@@ -52,25 +52,25 @@ class ScriptCreated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        $categoryId = $this->script['script_category_id'] ?? '';
-        if (!empty($categoryId)) {
-            $categoryName = ScriptCategory::where('id', $categoryId)->value('name');
+        if (isset($this->changes['tmp_script_category_id'])) {
+            $categoryName = ScriptCategory::getNamesByIds($this->changes['tmp_script_category_id']);
+            unset($this->changes['tmp_script_category_id']);
         }
 
-        $configCode = isset($this->changes['code']) ? [
+        $basic = isset($this->changes['code']) ? [
+            'name' => $this->script->getAttribute('title'),
+            'created_at' => $this->script->getAttribute('created_at'),
         ] : [
+            'name' => $this->script->getAttribute('title'),
+            'created_at' => $this->script->getAttribute('created_at'),
             'description' => $this->script->getAttribute('description'),
             'category' => $categoryName,
             'language' => $this->script->getAttribute('language'),
         ];
+        unset($this->changes['code']);
+        unset($this->original['code']);
 
-        return array_merge([
-            'name' => [
-                'label' => $this->script->getAttribute('title'),
-                'link' => route('scripts.index'),
-            ],
-            'created_at' => $this->script->getAttribute('created_at'),
-        ], $configCode);
+        return array_merge($basic, $this->formatChanges($this->changes, []));
     }
 
     public function getEventName(): string

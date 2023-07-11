@@ -215,8 +215,8 @@ class ScreenController extends Controller
         $screen = new Screen();
         $screen->fill($request->input());
         $newScreen = $screen->fill($request->input());
-
         $screen->saveOrFail();
+        $newScreen['tmp_screen_category_id'] = $request->input('screen_category_id');
         //Call event to store New Screen data in LOG
         ScreenCreated::dispatch($newScreen->getAttributes());
 
@@ -265,6 +265,7 @@ class ScreenController extends Controller
         //Call event to store Screen Changes into Log
         $request->validate(Screen::rules($screen));
         $changes = $screen->getChanges();
+        $changes['tmp_screen_category_id'] = $request->input('screen_category_id');
         ScreenUpdated::dispatch($screen, $changes, $original);
 
         return response([], 204);
