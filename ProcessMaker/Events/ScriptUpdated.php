@@ -19,6 +19,11 @@ class ScriptUpdated implements SecurityLogEventInterface
 
     private Script $script;
 
+    public const REMOVE_KEYS = [
+        'script_category_id',
+        'tmp_script_category_id'
+    ];
+
     /**
      * Create a new event instance.
      *
@@ -27,16 +32,24 @@ class ScriptUpdated implements SecurityLogEventInterface
      * @param array $original
      */
     public function __construct(Script $script, array $changes, array $original)
-    {
+    {var_dump('ORIGINAL: ',$original);
+     var_dump('CHANGES: ',$changes);
+     dd($script);
         $this->script = $script;
         $this->changes = $changes;
         $this->original = $original;
 
         // Get category name
-        $this->original['script_category'] = isset($original['script_category_id']) ? ScriptCategory::getNamesByIds($this->original['script_category_id']) : '';
-        unset($this->original['script_category_id']);
-        $this->changes['script_category'] = isset($changes['script_category_id']) ? ScriptCategory::getNamesByIds($this->changes['script_category_id']) : '';
-        unset($this->changes['script_category_id']);
+        if (isset($original['script_category_id'])) {
+            $this->original['script_category'] = ScriptCategory::getNamesByIds($this->original['script_category_id']);
+            $this->changes['script_category'] = isset($changes['tmp_script_category_id'])
+            ? ScriptCategory::getNamesByIds($this->changes['tmp_script_category_id'])
+            : '';
+            $this->original = array_diff_key($this->original, array_flip($this::REMOVE_KEYS));
+        } else {
+            unset($this->original['script_category_id']);
+        }
+        $this->changes = array_diff_key($this->changes, array_flip($this::REMOVE_KEYS));
     }
 
     /**
@@ -69,6 +82,7 @@ class ScriptUpdated implements SecurityLogEventInterface
         ];
         unset($changes['code']);
         unset($original['code']);
+        $this->changes = array_diff_key($this->changes, array_flip($this::REMOVE_KEYS));
 
         return array_merge($basic, $this->formatChanges($changes, $original));
     }
