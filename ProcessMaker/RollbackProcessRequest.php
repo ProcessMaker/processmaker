@@ -48,19 +48,37 @@ class RollbackProcessRequest
     private $processDefinitions;
 
     /**
+     * Return the last task if its status was failing.
+     * We may need to update this logic later.
+     *
+     * @param ProcessRequest $processRequest
+     *
+     * @return ProcessRequestToken|null
+     */
+    public function getErrorTask(ProcessRequest $processRequest) : ?ProcessRequestToken
+    {
+        $lastTask = $processRequest->tokens()->orderBy('id', 'desc')->first();
+        if ($lastTask->status === 'FAILING') {
+            return $lastTask;
+        }
+
+        return null;
+    }
+
+    /**
      * Find an element in the request that can be rolled-back to.
      * Return null if none are eligible.
      *
      * @return ProcessRequestToken|null
      */
-    public function eligibleRollbackTask() : ?ProcessRequestToken
+    public function eligibleRollbackTask(ProcessRequestToken $currentTask) : ?ProcessRequestToken
     {
-        $processRequest = $this->currentTask->processRequest;
+        $processRequest = $currentTask->processRequest;
 
         return $processRequest->tokens()
             ->where('status', 'CLOSED')
-            ->where('id', '<', $this->currentTask->id)
-            ->where('element_id', '!=', $this->currentTask->element_id)
+            ->where('id', '<', $currentTask->id)
+            ->where('element_id', '!=', $currentTask->element_id)
             ->whereIn('element_type', $this->eligibleTypes)
             ->orderBy('id', 'desc')
             ->first();
@@ -78,7 +96,7 @@ class RollbackProcessRequest
         ) : ProcessRequestToken {
         $this->currentTask = $currentTask;
         $this->processDefinitions = $processDefinitions;
-        $this->rollbackToTask = $rollbackToTask = $this->eligibleRollbackTask();
+        $this->rollbackToTask = $this->eligibleRollbackTask($currentTask);
         if (!$this->rollbackToTask) {
             throw new \Exception('No eligible rollback task found');
         }
@@ -121,6 +139,8 @@ class RollbackProcessRequest
         $bpmnTask = $this->processDefinitions->getEvent($this->newTask->element_id);
 
         WorkflowManager::runScripTask($bpmnTask, $this->newTask);
+
+        $this->addComment();
     }
 
     private function copyTask()
@@ -140,7 +160,7 @@ class RollbackProcessRequest
     private function addComment() : void
     {
         $user = Auth::user();
-        $userName = $user ? $user->name : __('The System');
+        $userName = $user ? $user->fullname : __('The System');
         Comment::create([
             'type' => 'LOG',
             'user_id' => $user ? $user->id : null,

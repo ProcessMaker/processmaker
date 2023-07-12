@@ -313,6 +313,18 @@
                     </button>
                   </li>
                 @endif
+                @if ($eligibleRollbackTask)
+                  @can('update', $request)
+                    <li class="list-group-item">
+                      <h5>{{ __('Rollback Request') }}</h5>
+                      <button id="retryRequestButton" type="button" class="btn btn-outline-info btn-block"
+                        data-toggle="modal" @click="rollback('{{ $eligibleRollbackTask->element_name }}')">
+                        <i class="fas fa-undo"></i> {{ __('Rollback') }}
+                      </button>
+                      <small>{{ __('Rollback to task') }}: <b>{{ $eligibleRollbackTask->element_name }}</b> ({{ $eligibleRollbackTask->element_id }})</small>
+                    </li>
+                  @endcan
+                @endif
                 @if ($request->parentRequest)
                   <li class="list-group-item">
                     <h5>{{ __('Parent Request') }}</h5>
@@ -700,6 +712,14 @@
             'default',
             apiRequest
           );
+        },
+        rollback(name) {
+          ProcessMaker.confirmModal(
+            this.$t('Confirm'),
+            this.$t('Are you sure you want to rollback to the task: ')  + name,
+            'default',
+            () => { console.log("foo") } 
+          )
         },
         getConfigurationComments() {
           if (this.canViewComments) {
