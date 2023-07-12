@@ -141,6 +141,7 @@ class PersistenceHandler
                     throw new Exception('Unknown transaction type ' . $transaction['type']);
             }
         } catch (Exception $error) {
+            error_log($error->getMessage());
             Log::error($error->getMessage());
             Log::error($error->getTraceAsString());
             if (!empty($transaction['token'])) {
