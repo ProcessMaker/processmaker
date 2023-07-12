@@ -149,7 +149,7 @@ jobs:
          docker pull $IMAGE          
          docker-compose down -v          
          docker-compose build phpunit          
-         docker-compose run phpunit --coverage-clover=coverage.xml
+         docker-compose run phpunit
   sonarqube:
     name: SonarQube Scan
     if: github.event.action != 'closed'
