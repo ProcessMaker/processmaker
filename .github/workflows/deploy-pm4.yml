@@ -1,16 +1,12 @@
-name: BUILD-PM4
+name: Build ProcessMaker
 on: 
-  #push:
-  #  branches:
-  #    - kr-github-actions
+  push:
+    branches:
+      - workflow-refactor
   pull_request:
     types: [opened, reopened, synchronize, edited, closed]
   schedule:
     - cron: '0 0 * * *'  # every day at midnight     
-  #workflow_dispatch:
-  #pull_request:
-  #  branches:
-  #    - main
   workflow_dispatch:
   workflow_call:
 env:
@@ -19,9 +15,7 @@ env:
   CI_PR_BODY: ${{ github.event_name == 'schedule' && 'ci:deploy' || github.event.pull_request.body }}
   PACKAGE_URL: ${{github.event.pull_request.head.repo.ssh_url}}
   PACKAGE_BRANCH: ${{github.event.pull_request.head.ref}}
-  #MY_GITHUB_TOKEN: ${{ secrets.GH_STATUS_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
-  #GIT_TOKEN: ${{ secrets.MY_GH_TOKEN }}
   OWNER: ${{ github.event.pull_request.head.repo.owner.login }}  
   #Other Parameters
   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -39,8 +33,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 jobs:
-  job1:
-    name: build-stm-image 
+  build-stm-image:
+    name: Build STM Image
     if: github.event.action != 'closed'
     runs-on: ubuntu-22.04    
     steps:     
@@ -52,7 +46,7 @@ jobs:
           echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
           #Additional
           echo "CACHEBUSTER="$(date +%s) >> $GITHUB_ENV
-      - name: Clone Repo STM
+      - name: Clone STM Repo
         run: |
           git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
       - name: Configure AWS Credentials
@@ -77,10 +71,10 @@ jobs:
           cd pm4-stm-docker
           docker-compose build processmaker
           docker push ${IMAGE}
-  job2: 
-    name: deploy-stm    
+  deploy-stm:
+    name: Deploy to STM
     if: github.event.action != 'closed'
-    needs: job1
+    needs: build-stm-image
     runs-on: ubuntu-22.04
     container:
       image:  cimg/php:7.4
@@ -125,10 +119,10 @@ jobs:
           cd pm4-stm-docker
           echo "Instance URL: '${INSTANCE_URL}'"
           bash ./github_comment.sh "$PROJECT" "$pull_req_id"
-  job3: 
-   name: run-phpunit
+  run-phpunit:
+   name: Run PHPUnit
    if: github.event.action != 'closed'
-   needs: job1
+   needs: build-stm-image
    runs-on: ubuntu-22.04
    steps:
      - name: Export Params                
@@ -155,32 +149,8 @@ jobs:
          docker pull $IMAGE          
          docker-compose down -v          
          docker-compose build phpunit          
-         docker-compose run phpunit
-  #job4: 
-  #  name: run-benchmarks
-  #  needs: job2
-  #  runs-on: ubuntu-22.04
-  #  steps:
-  #    - name: my-step
-  #      run: |
-  #        echo "Fifth Step"
-  #job5: 
-  #  name: run-cypress
-  #  needs: job2
-  #  runs-on: ubuntu-22.04
-  #  steps:
-  #    - name: my-step
-  #      run: |
-  #        echo "fourth Step"
-  #job6: 
-  #  name: run-cypress-qa
-  #  needs: job2
-  #  runs-on: ubuntu-22.04
-  #  steps:
-  #    - name: my-step
-  #      run: |
-  #        echo "Sixt Step"
-  job7: 
+         docker-compose run "phpunit --coverage-clover=coverage.xml"
+  delete-instance:
     name: Delete Instance
     if: github.event.action == 'closed'
     runs-on: ubuntu-22.04
