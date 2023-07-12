@@ -36,7 +36,7 @@ jobs:
   build-stm-image:
     name: Build STM Image
     if: github.event.action != 'closed'
-    runs-on: self-hosted
+    runs-on: ubuntu-22.04
     steps:     
       - name: Export Params                
         run: |
@@ -75,7 +75,7 @@ jobs:
     name: Deploy to STM
     if: github.event.action != 'closed'
     needs: build-stm-image
-    runs-on: self-hosted
+    runs-on: ubuntu-22.04
     container:
       image:  cimg/php:7.4
       options: --user root
@@ -123,7 +123,7 @@ jobs:
    name: Run PHPUnit
    if: github.event.action != 'closed'
    needs: build-stm-image
-   runs-on: self-hosted
+   runs-on: ubuntu-22.04
    steps:
      - name: Export Params                
        run: |
@@ -154,7 +154,7 @@ jobs:
     name: SonarQube Scan
     if: github.event.action != 'closed'
     needs: run-phpunit
-    runs-on: self-hosted
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
         with:
@@ -166,7 +166,7 @@ jobs:
   delete-instance:
     name: Delete Instance
     if: github.event.action == 'closed'
-    runs-on: self-hosted
+    runs-on: ubuntu-22.04
     container:
       image:  cimg/php:7.4
       options: --user root
