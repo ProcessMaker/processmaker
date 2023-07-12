@@ -151,6 +151,7 @@ jobs:
          docker-compose build phpunit
      - name: PHPUnit
        run: |
+         cd pm4-stm-docker
          docker-compose run phpunit
   sonarqube:
     name: SonarQube Scan
