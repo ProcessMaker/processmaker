@@ -143,12 +143,14 @@ jobs:
      - name: Login to Amazon ECR
        id: login-ecr
        uses: aws-actions/amazon-ecr-login@v1
-     - name: PHPUnit
+     - name: Prepare PHPUnit
        run: |          
          cd pm4-stm-docker          
          docker pull $IMAGE          
          docker-compose down -v          
-         docker-compose build phpunit          
+         docker-compose build phpunit
+     - name: PHPUnit
+       run: |
          docker-compose run phpunit
   sonarqube:
     name: SonarQube Scan
