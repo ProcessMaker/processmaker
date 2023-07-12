@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Carbon\Carbon;
+use Facades\ProcessMaker\RollbackProcessRequest;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -416,5 +417,23 @@ class TaskController extends Controller
     {
         // Authorized in policy
         return new ApiResource($screen->versionFor($task->processRequest));
+    }
+
+    public function eligibleRollbackTask(Request $request, ProcessRequestToken $task)
+    {
+        $eligibleTask = RollbackProcessRequest::eligibleRollbackTask($task);
+        if (!$eligibleTask) {
+            return ['message' => __('Task can not be rolled back')];
+        }
+
+        return new Resource($eligibleTask);
+    }
+
+    public function rollbackTask(Request $request, ProcessRequestToken $task)
+    {
+        $processDefinitions = $task->processRequest->getVersionDefinitions();
+        $newTask = RollbackProcessRequest::rollback($task, $processDefinitions);
+
+        return new Resource($newTask);
     }
 }
