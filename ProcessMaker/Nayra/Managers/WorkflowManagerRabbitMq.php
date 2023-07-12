@@ -10,13 +10,15 @@ use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Facades\MessageBrokerService;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\GenerateAccessToken;
+use ProcessMaker\Jobs\RunNayraServiceTask;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\EnvironmentVariable;
-use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Contracts\Bpmn\BoundaryEventInterface;
@@ -30,11 +32,17 @@ use Throwable;
 class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements WorkflowManagerInterface
 {
     const ACTION_START_PROCESS = 'START_PROCESS';
+
     const ACTION_COMPLETE_TASK = 'COMPLETE_TASK';
+
     const ACTION_TRIGGER_INTERMEDIATE_EVENT = 'TRIGGER_INTERMEDIATE_EVENT';
+
     const ACTION_RUN_SCRIPT = 'RUN_SCRIPT';
+
     const ACTION_TRIGGER_BOUNDARY_EVENT = 'TRIGGER_BOUNDARY_EVENT';
+
     const ACTION_TRIGGER_MESSAGE_EVENT = 'TRIGGER_MESSAGE_EVENT';
+
     const ACTION_TRIGGER_SIGNAL_EVENT = 'TRIGGER_SIGNAL_EVENT';
 
     /**
@@ -222,6 +230,16 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         // Log execution
         Log::info('Dispatch a service task: ' . $serviceTask->getId());
 
+        RunNayraServiceTask::dispatch($token)->onQueue('bpmn');
+    }
+
+    /**
+     * Run a service task.
+     *
+     * @param ProcessRequestToken $token
+     */
+    public function handleServiceTask(ProcessRequestToken $token)
+    {
         // Get complementary information
         $element = $token->getDefinition(true);
         $instance = $token->processRequest;
@@ -302,6 +320,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             $token->setProperty('error', $error);
 
             // Log message errors
+            error_log('Service task failed: ' . $implementation . ' - ' . $exception->getMessage());
             Log::info('Service task failed: ' . $implementation . ' - ' . $exception->getMessage());
             Log::error($exception->getTraceAsString());
         }
