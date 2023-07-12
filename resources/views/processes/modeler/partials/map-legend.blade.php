@@ -26,8 +26,8 @@
 
     #map-legend.map-legend-card {
       position: absolute;
-      top: 70px;
-      right: 35px;
+      top: 30px;
+      right: 30px;
     }
 
     .map-legend-body {
