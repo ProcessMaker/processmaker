@@ -32,7 +32,6 @@ class AuthClientUpdated implements SecurityLogEventInterface
         $this->clientId = $clientId;
     }
 
-
     /**
      * Return event data
      * Return event data
@@ -41,10 +40,9 @@ class AuthClientUpdated implements SecurityLogEventInterface
     {
         return array_merge([
             'auth_client_id' => $this->clientId,
-            'last_modified' => $this->changes['updated_at'] ?? Carbon::now()
+            'last_modified' => $this->changes['updated_at'] ?? Carbon::now(),
         ], $this->formatChanges($this->changes, $this->original));
     }
-
 
     /**
      * Return event changes

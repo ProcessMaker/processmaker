@@ -46,7 +46,7 @@ class ScriptDeleted implements SecurityLogEventInterface
     {
         return [
             'name' => $this->script->getAttribute('title'),
-            'deleted_at' => Carbon::now()
+            'deleted_at' => Carbon::now(),
         ];
     }
 

@@ -16,7 +16,9 @@ class FilesCreated implements SecurityLogEventInterface
     public const NAME_PUBLIC_FILES = 'Public Files';
 
     private array $media;
+
     private array $name = [];
+
     private string $processName = '';
 
     /**
@@ -42,7 +44,7 @@ class FilesCreated implements SecurityLogEventInterface
             // Link to the request
             $this->name = [
                 'label' => $data->getAttribute('id'),
-                'link' => route('requests.show', $data)
+                'link' => route('requests.show', $data),
             ];
         }
     }
@@ -69,7 +71,7 @@ class FilesCreated implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            'id' => $this->media['id']
+            'id' => $this->media['id'],
         ];
     }
 

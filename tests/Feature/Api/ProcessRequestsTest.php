@@ -833,7 +833,6 @@ class ProcessRequestsTest extends TestCase
         $this->assertEquals(20, $response->json()['meta']['total']);
     }
 
-
     public function testGetRequestToken()
     {
         $expectedResponse = [
@@ -865,7 +864,7 @@ class ProcessRequestsTest extends TestCase
         $token = ProcessRequestToken::factory()->create([
             'process_request_id' => $request->id,
             'user_id' => $this->user,
-        ]);        
+        ]);
 
         // Validate the status is correct
         $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $request->id . '/tokens?element_id=' . $token->element_id);
@@ -878,20 +877,19 @@ class ProcessRequestsTest extends TestCase
         $nonExistentElementId = 999;
 
         $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $request->id . '/tokens?element_id=' . $nonExistentElementId);
-        $response->assertStatus(404);        
+        $response->assertStatus(404);
 
         // Verify with other user without permissions
         $this->user = $otherUser;
 
         $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $request->id . '/tokens?element_id=' . $token->element_id);
         $response->assertStatus(403);
-        
+
         $this->user->giveDirectPermission('view-all_requests');
         $this->user->refresh();
 
         // Verify with other user with permissions
         $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $request->id . '/tokens?element_id=' . $token->element_id);
         $response->assertStatus(200);
-
     }
 }

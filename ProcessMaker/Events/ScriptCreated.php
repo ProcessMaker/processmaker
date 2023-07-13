@@ -14,8 +14,11 @@ class ScriptCreated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private array $changes;
+
     private array $original;
+
     public string $categoryName = '';
+
     private Script $script;
 
     /**
@@ -38,7 +41,7 @@ class ScriptCreated implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            'script_id' => $this->script->id
+            'script_id' => $this->script->id,
         ];
     }
 
@@ -61,7 +64,7 @@ class ScriptCreated implements SecurityLogEventInterface
             'name' => $this->script->getAttribute('title'),
             'description' => $this->script->getAttribute('description'),
             'category' => $categoryName,
-            'language' => $this->script->getAttribute('language')
+            'language' => $this->script->getAttribute('language'),
         ];
         unset($this->changes['code']);
         unset($this->original['code']);

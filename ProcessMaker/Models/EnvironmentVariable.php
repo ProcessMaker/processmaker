@@ -57,8 +57,9 @@ class EnvironmentVariable extends ProcessMakerModel
         try {
             return decrypt($this->attributes['value']);
         } catch (\Exception $e) {
-            Log::error('EnvironmentVariable: ' . $this->attributes['value']. "\n" . $e->getMessage());
+            Log::error('EnvironmentVariable: ' . $this->attributes['value'] . "\n" . $e->getMessage());
             Log::error($e->getTraceAsString());
+
             return null;
         }
     }
