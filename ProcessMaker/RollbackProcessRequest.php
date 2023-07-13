@@ -59,6 +59,10 @@ class RollbackProcessRequest
     {
         $lastTask = $processRequest->tokens()->orderBy('id', 'desc')->first();
 
+        if (!$lastTask) {
+            return null;
+        }
+
         if ($lastTask->status === 'FAILING') {
             return $lastTask;
         }
