@@ -34,8 +34,8 @@ class UserUpdated implements SecurityLogEventInterface
         $this->user = $user;
         $this->changes = array_diff_key($changes, array_flip($this::REMOVE_KEYS));
         $this->original = array_diff_key($original, array_flip($this::REMOVE_KEYS));
-        $this->changes = ArrayHelper::replaceKeyInArray($changes, 'title', 'job_title');
-        $this->original = ArrayHelper::replaceKeyInArray($original, 'title', 'job_title');
+        $this->changes = ArrayHelper::replaceKeyInArray($changes, 'title', 'Job title');
+        $this->original = ArrayHelper::replaceKeyInArray($original, 'title', 'Job title');
     }
 
     /**
@@ -50,7 +50,8 @@ class UserUpdated implements SecurityLogEventInterface
                 'label' => $this->user->getAttribute('username'),
                 'link' => route('users.edit', $this->user->getAttribute('id')) . '#nav-home',
             ],
-            'username' => $this->user->getAttribute('username'),
+            'user_name' => $this->user->getAttribute('username'),
+            'last_modified' => $this->user->getAttribute('updated_at')
         ], ArrayHelper::getArrayDifferencesWithFormat($this->changes, $this->original));
     }
 

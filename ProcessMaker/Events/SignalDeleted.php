@@ -4,26 +4,22 @@ namespace ProcessMaker\Events;
 
 use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
-use Laravel\Passport\Token;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 
-class TokenCreated implements SecurityLogEventInterface
+class SignalDeleted implements SecurityLogEventInterface
 {
     use Dispatchable;
 
-    private array $data;
+    private array $signal;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Token $token)
+    public function __construct(array $data)
     {
-        $this->data = [
-            'token_id' => $token->getKey(),
-            'created_at' => Carbon::now(),
-        ];
+        $this->signal = $data;
     }
 
     /**
@@ -32,15 +28,21 @@ class TokenCreated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        return $this->data;
+        return [
+            'name' => $this->signal['name'] ?? '',
+            'deleted_at' => Carbon::now(),
+        ];
     }
 
     /**
      * Return event changes
+     * Return event changes
      */
     public function getChanges(): array
     {
-        return [];
+        return [
+            'id' => $this->signal['id'] ?? '',
+        ];
     }
 
     /**
@@ -48,6 +50,6 @@ class TokenCreated implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'TokenCreated';
+        return 'SignalDeleted';
     }
 }

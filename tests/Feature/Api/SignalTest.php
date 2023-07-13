@@ -6,6 +6,7 @@ use Database\Seeders\SignalSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use ProcessMaker\Events\SignalCreated;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
