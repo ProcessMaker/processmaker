@@ -320,7 +320,6 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             $token->setProperty('error', $error);
 
             // Log message errors
-            error_log('Service task failed: ' . $implementation . ' - ' . $exception->getMessage());
             Log::info('Service task failed: ' . $implementation . ' - ' . $exception->getMessage());
             Log::error($exception->getTraceAsString());
         }
