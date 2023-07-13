@@ -76,7 +76,7 @@ class JsonColumnIndexTest extends TestCase
     {
         $processRequest = ProcessRequest::pmql('data.firstname = "Agustin"')->toSql();
         $this->assertEquals(
-            'select * from `process_requests` where (data->>"$.firstname" = ?)',
+            'select * from `process_requests` where (LEFT(data->>"$.firstname", 255) = ?)',
             $processRequest
         );
     }

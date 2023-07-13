@@ -4,14 +4,16 @@ namespace ProcessMaker\Nayra\MessageBrokers;
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
-use ProcessMaker\Nayra\Repositories\EntityRepositoryFactory;
+use ProcessMaker\Nayra\Repositories\PersistenceHandler;
 
 class ServiceRabbitMq
 {
     const QUEUE_NAME_CONSUME = 'nayra-store';
+
     const QUEUE_NAME_PUBLISH = 'requests';
 
     private $connection;
+
     private $channel;
 
     /**
@@ -30,7 +32,6 @@ class ServiceRabbitMq
         // Create connection
         $this->connection = new AMQPStreamConnection($rabbitMqHost, $rabbitMqPort, $rabbitMqLogin, $rabbitMqPassword);
         $this->channel = $this->connection->channel();
-
 
         // Set channel config
         $this->channel->queue_declare(self::QUEUE_NAME_PUBLISH, false, true, false, false);
@@ -60,16 +61,15 @@ class ServiceRabbitMq
     public function sendMessage(string $subject, string $collaborationId, mixed $body): void
     {
         // Connect to RabbitMQ
-        $this->connect();
+        if (!($this->connection instanceof AMQPStreamConnection) || !$this->connection->isConnected()) {
+            $this->connect();
+        }
 
         // Prepare the message to send
         $message = new AMQPMessage(json_encode(['data' => $body, 'collaboration_id' => $collaborationId]));
 
         // Publish the message
         $this->channel->basic_publish($message, '', self::QUEUE_NAME_PUBLISH);
-
-        // Close connection to RabbitMQ
-        $this->disconnect();
     }
 
     /**
@@ -113,7 +113,9 @@ class ServiceRabbitMq
         }
 
         // Disconnect from service
-        $this->disconnect();
+        if ($this->connection->isConnected()) {
+            $this->disconnect();
+        }
     }
 
     /**
@@ -123,8 +125,9 @@ class ServiceRabbitMq
      */
     private function storeData(array $transactions): void
     {
+        $handler = new PersistenceHandler();
         foreach ($transactions as $transaction) {
-            EntityRepositoryFactory::createRepository($transaction['entity'])->save($transaction);
+            $handler->save($transaction);
         }
     }
 }

@@ -28,6 +28,7 @@
                         @can('view-process-translations')
                             <a class="nav-item nav-link" id="nav-groups-tab" data-toggle="tab" href="#nav-translations"
                                 role="tab"
+                                data-test="translation-tab"
                                 aria-controls="nav-translations" aria-selected="true">{{__('Translations')}}</a>
                         @endcan
                         <a class="nav-item nav-link" id="nav-groups-tab" data-toggle="tab" href="#nav-notifications"
@@ -46,7 +47,7 @@
                     <div class="tab-content" id="nav-tabContent">
 
                         {{-- Configuration --}}
-                        <div class="tab-pane fade show active" id="nav-config" role="tabpanel"
+                        <div class="tab-pane fade show" :class="{'active': activeTab === ''}" id="nav-config" role="tabpanel"
                              aria-labelledby="nav-config-tab">
                             <required></required>
                             <div class="form-group">
@@ -171,7 +172,7 @@
 
                         {{-- Translations --}}
                         @can('view-process-translations')
-                            <div class="tab-pane fade show" id="nav-translations" role="tabpanel"
+                            <div class="tab-pane fade show" :class="{'active': activeTab === 'nav-translations'}" id="nav-translations" ref="nav-translations" role="tabpanel"
                                 aria-labelledby="nav-translations-tab">
                                 
                                 <div class="page-content mb-0" id="processTranslationIndex">
@@ -193,14 +194,19 @@
                                                 <div class="d-flex ml-md-0 flex-column flex-md-row">
                                                     @can('import-process-translations')
                                                         <div class="mb-3 mb-md-0 ml-md-2">
-                                                            <a href="#" aria-label="{{ __('Import Translation') }}" id="import_translation" class="btn btn-outline-secondary w-100" @click="importTranslation">
+                                                            <a href="#" aria-label="{{ __('Import Translation') }}" id="import_translation" class="btn btn-outline-secondary w-100" @click="importTranslation" data-test="translation-import">
                                                                 <i class="fas fa-file-import"></i> {{__('Import')}}
                                                             </a>
                                                         </div>
                                                     @endcan
                                                     @can('create-process-translations')
                                                         <div class="mb-3 mb-md-0 ml-md-2">
-                                                            <a href="#" aria-label="{{ __('New Translation') }}" id="new_translation" class="btn btn-primary w-100" @click="newTranslation">
+                                                            <a href="#" 
+                                                                aria-label="{{ __('New Translation') }}" 
+                                                                id="new_translation" 
+                                                                class="btn btn-primary w-100" 
+                                                                @click="newTranslation"
+                                                                data-test="translation-create-button">
                                                                 {{__('+ Translation')}}
                                                             </a>
                                                         </div>
@@ -396,12 +402,22 @@
             manager: @json($process->manager),
             translatedLanguages: [],
             editTranslation: null,
+            activeTab: "",
           }
         },
         mounted() {
+            this.activeTab = "";
             if (_.get(this.formData, 'properties.manager_can_cancel_request')) {
                 this.canCancel.push(this.processManagerOption());
             }
+            
+            let path = new URL(location.href).href;
+            let target = path.split('#');
+
+            if (target[1] !== undefined) {
+                this.activeTab = target[1];
+            }
+            
         },
         computed: {
             activeUsersAndGroupsWithManager() {

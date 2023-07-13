@@ -14,7 +14,7 @@
           <b-col>
             <required></required>
             <div v-html="descriptionText" class="my-3"></div>
-            <b-form-group
+             <b-form-group
               required
               :label="$t('PM Block Name')"
               :description="formDescription('The PM Block name must be unique.', 'name', errors)"
@@ -31,7 +31,7 @@
               ></b-form-input>
             </b-form-group>
 
-            <b-form-group
+           <b-form-group
               required
               :label="$t('Description')"
               :invalid-feedback="errorMessage('description', errors)"
@@ -47,15 +47,30 @@
               ></b-form-textarea>
             </b-form-group>
 
-              <category-select
-                v-model="pm_block_category_id"
-                :label="$t('Category')"
-                api-get="pm-blocks-categories"
-                api-list="pm-blocks-categories"
-                name="category"
-                :errors="addError.pm_block_category_id"
+            <b-form-group
+              required
+              :label="$t('Icon')"
+              :description="formDescription('Choose an icon for this PM Block.', 'icon', errors)"
+            >
+              <icon-selector
+                v-model="iconAndFile"
+                name="icon"
+                @error="fileError"
+                @input="clearFileError"
               />
+              <small v-if="fileUploadError === true" class="text-danger">
+                {{ $t('The custom icon file is too large. File size must be less than 2KB.') }}
+              </small>
+            </b-form-group>
 
+            <category-select
+              v-model="pm_block_category_id"
+              :label="$t('Category')"
+              api-get="pm-blocks-categories"
+              api-list="pm-blocks-categories"
+              name="category"
+              :errors="addError.pm_block_category_id"
+            />
           </b-col>
         </b-row>
       </template>
@@ -64,11 +79,11 @@
 </template>
 
 <script>
-import { FormErrorsMixin, Modal, Required } from "SharedComponents";
+import { FormErrorsMixin, Modal, Required, IconSelector } from "SharedComponents";
 import CategorySelect from "../../processes/categories/components/CategorySelect.vue";
 
 export default {
-  components: { Modal, Required, CategorySelect },
+  components: { Modal, Required, CategorySelect, IconSelector },
   mixins: [FormErrorsMixin],
   props: ["assetName", "assetType", "assetId", "currentUserId"],
   data() {
@@ -77,7 +92,12 @@ export default {
       name: "",
       description: "",
       pm_block_category_id: "",
+      iconAndFile: {
+        icon: "cube",
+        file: null,
+      },
       addError: {},
+      fileUploadError: false,
       showModal: false,
       disabled: true,
       showWarning: false,
@@ -103,7 +123,7 @@ export default {
       },
       name(newValue, oldValue) {
         this.validateName(newValue, oldValue);
-      }
+      },
     },  
     methods: {
       show() {
@@ -120,14 +140,17 @@ export default {
         this.description = "";
         this.pm_block_category_id = "";
         this.showWarning = false;
+        this.iconAndFile.icon = 'cube';
+        this.iconAndFile.file = '';
       },
       savePmBlock() {
         let formData = new FormData();
-        formData.append("creation_process_id", this.assetId);
+        formData.append("editing_process_id", this.assetId);
         formData.append("name", this.name);
         formData.append("description", this.description);
         formData.append("user_id", this.currentUserId);
         formData.append("pm_block_category_id", this.pm_block_category_id);
+        formData.append("meta", JSON.stringify(this.iconAndFile));
         ProcessMaker.apiClient.post("pm-blocks", formData)
         .then(response => {
           ProcessMaker.alert(this.$t("PM Block successfully created"), "success");
@@ -136,11 +159,11 @@ export default {
           }, 3000)
           this.close();
         }).catch(error => {
-          this.errors = error.response.data;
+          this.errors = error.response?.data;
           if (this.errors.hasOwnProperty('errors')) {
-            this.errors = this.errors.errors;
+            this.errors = this.errors?.errors;
           } else {
-            const message = error.response.data.error;
+            const message = error.response?.data?.error;
             ProcessMaker.alert(this.$t(message), "danger");
           }
         });
@@ -171,6 +194,12 @@ export default {
         } else {
           this.errors.name = null;
         }
+      },
+      fileError() {
+        this.fileUploadError = true;
+      },
+      clearFileError() {
+        this.fileUploadError = false;
       }
     },
   };

@@ -6,7 +6,6 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Arr;
@@ -15,6 +14,7 @@ use Mustache_Engine;
 use ProcessMaker\Exception\HttpInvalidArgumentException;
 use ProcessMaker\Exception\HttpResponseException;
 use ProcessMaker\Helpers\StringHelper;
+use ProcessMaker\Jobs\ErrorHandling;
 use ProcessMaker\Models\FormalExpression;
 use Psr\Http\Message\ResponseInterface;
 
@@ -36,14 +36,6 @@ trait MakeHttpRequests
     private $mustache = null;
 
     private $timeout = 0;
-
-    private $retryAttempts = 0;
-
-    private $retryWaitTime = 0;
-
-    private $attemptedRetries = 0;
-
-    private $retryMessage = null;
 
     private function getMustache()
     {
@@ -72,45 +64,9 @@ trait MakeHttpRequests
             $request = $this->prepareRequestWithOutboundConfig($data, $config);
 
             return $this->responseWithHeaderData($this->call(...$request), $data, $config);
-        } catch (TransferException $exception) {
-            $result = $this->handleRetries($data, $config);
-            if ($result) {
-                // Retry was successful
-                return $result;
-            }
-
-            if ($exception instanceof ClientException) {
-                $response = $exception->getResponse();
-                throw new HttpResponseException($response, $this->retryMessage);
-            } else {
-                $message = $exception->getMessage();
-                throw new \Exception($this->retryMessage ? $this->retryMessage . "\n" . $message : $message);
-            }
+        } catch (ClientException $exception) {
+            throw new HttpResponseException($exception->getResponse());
         }
-    }
-
-    /**
-     * Handle retry attempts if configured
-     */
-    private function handleRetries(array $data, array $config)
-    {
-        if ($this->retryAttempts === 0) {
-            return false;
-        }
-
-        if ($this->attemptedRetries >= $this->retryAttempts) {
-            $this->retryMessage = __('Failed after :num total attempts', ['num' => $this->attemptedRetries + 1]);
-
-            return false;
-        }
-
-        $this->attemptedRetries++;
-
-        if ($this->retryWaitTime > 0) {
-            sleep($this->retryWaitTime);
-        }
-
-        return $this->request($data, $config);
     }
 
     /**
@@ -143,41 +99,6 @@ trait MakeHttpRequests
         $request = $this->addAuthorizationHeaders(...$request);
 
         return $request;
-    }
-
-    /**
-     * Set error handling properties from endpoint config or from BPMN errorHandling
-     *
-     * @param array $endpoint
-     * @param array $config
-     *
-     * @return void
-     */
-    private function setErrorHandlingProperties(array $endpoint, array $config)
-    {
-        $properties = [
-            'timeout' => 'timeout',
-            'retryAttempts' => 'retry_attempts',
-            'retryWaitTime' => 'retry_wait_time',
-        ];
-
-        foreach ($properties as $classProperty => $settingProperty) {
-            $this->$classProperty = (int) Arr::get($endpoint, $settingProperty, 0);
-            $bpmnSetting = Arr::get($config, "errorHandling.{$settingProperty}", null);
-            if (is_numeric($bpmnSetting)) {
-                $this->$classProperty = (int) $bpmnSetting;
-            }
-        }
-    }
-
-    /**
-     * Return the value of $this->timeout
-     *
-     * @return int
-     */
-    public function getTimeout()
-    {
-        return $this->timeout;
     }
 
     /**
@@ -252,7 +173,7 @@ trait MakeHttpRequests
     /**
      * Prepares data for the http request replacing mustache with pm instance and OutboundConfig
      *
-     * @param array $data, request data
+     * @param array $requestData request data
      * @param array $config, datasource configuration
      *
      * @return array
@@ -283,8 +204,6 @@ trait MakeHttpRequests
 
         $request = [$method, $url, $headers, $body, $bodyType];
         $request = $this->addAuthorizationHeaders(...$request);
-
-        $this->setErrorHandlingProperties($endpoint, $config);
 
         return $request;
     }
@@ -514,10 +433,9 @@ trait MakeHttpRequests
         $client = $this->client ?? app()->make(Client::class, [
             'config' => [
                 'verify' => $this->verifySsl,
-                'timeout' => $this->getTimeout(),
+                'timeout' => $this->timeout,
             ],
         ]);
-
         $options = [];
         if ($bodyType === 'form-data') {
             $options['form_params'] = json_decode($body, true);
@@ -753,7 +671,7 @@ trait MakeHttpRequests
                 'path' => storage_path("logs/data-sources/$connectorName.log"),
                 'days' => env('DATA_SOURCE_CLEAR_LOG', 21),
             ])->info($label . str_replace(["\n", "\t", "\r"], '', $cleanedLog));
-        } catch(\Throwable $e) {
+        } catch (\Throwable $e) {
             Log::error($e->getMessage());
         }
     }

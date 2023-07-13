@@ -27,6 +27,7 @@
         :key="action.value"
         :href="action.link ? itemLink(action, data) : null"
         class="ellipsis-dropdown-item mx-auto"
+        :data-test="action.dataTest"
         @click="!action.link ? onClick(action, data) : null"
       >
         <div class="ellipsis-dropdown-content">
@@ -55,21 +56,24 @@
       </b-dropdown-item>
     </div>
     <div v-else>
-      <b-dropdown-item
-        v-for="action in filterActions"
-        :key="action.value"
-        :href="action.link ? itemLink(action, data) : null"
-        class="ellipsis-dropdown-item mx-auto"
-        @click="!action.link ? onClick(action, data) : null"
-      >
-        <div class="ellipsis-dropdown-content">
-          <i
-            class="pr-1 fa-fw"
-            :class="action.icon"
-          />
-          <span>{{ $t(action.content) }}</span>
-        </div>
-      </b-dropdown-item>
+      <div v-for="action in filterActions">
+        <b-dropdown-divider v-if="action.value == 'divider'"/>
+        <b-dropdown-item v-else
+            :key="action.value"
+            :href="action.link ? itemLink(action, data) : null"
+            class="ellipsis-dropdown-item mx-auto"
+            @click="!action.link ? onClick(action, data) : null"
+        >
+          <div class="ellipsis-dropdown-content">
+            <i
+                class="pr-1 fa-fw"
+                :class="action.icon"
+            />
+            <span>{{ $t(action.content) }}</span>
+          </div>
+        </b-dropdown-item>
+
+      </div>
     </div>
   </b-dropdown>
 </template>

@@ -284,7 +284,6 @@ export default {
   },
 
   mounted() {
-    this.$emit("filterspmqlchange", [this.pmql, this.getSelectedFilters()]);
     ProcessMaker.EventBus.$on("removefilter", (filter) => {
       this.removeFilter(filter);
     });

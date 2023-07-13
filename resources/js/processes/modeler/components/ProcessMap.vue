@@ -6,20 +6,25 @@
         data-test="body-container"
       >
         <ProcessMapTooltip
-          v-show="tooltip.isActive"
+          v-show="showTooltip"
           ref="tooltip"
           :node-id="tooltip.nodeId"
+          :node-name="tooltip.nodeName"
+          :request-id="requestId"
           :style="{
             left: `${tooltip.newX}px`,
             top: `${tooltip.newY}px`
           }"
+          @is-loading="getIsLoading"
         />
-        <ModelerReadonly
+        <Modeler
           ref="modeler"
           :owner="self"
           :decorations="decorations"
           :request-completed-nodes="requestCompletedNodes"
           :request-in-progress-nodes="requestInProgressNodes"
+          :request-idle-nodes="requestIdleNodes"
+          :read-only="true"
           @set-xml-manager="xmlManager = $event"
           @click="handleClick"
         />
@@ -29,27 +34,28 @@
 </template>
 
 <script>
-import { ModelerReadonly } from "@processmaker/modeler";
+import { Modeler } from "@processmaker/modeler";
 import ProcessMapTooltip from "./ProcessMapTooltip.vue";
 
 export default {
   name: "ProcessMap",
   components: {
-    ModelerReadonly,
+    Modeler,
     ProcessMapTooltip,
   },
   data() {
     return {
       self: this,
       validationBar: [],
-      process: window.ProcessMaker.modeler.process,
       xmlManager: null,
       decorations: {
         borderOutline: {},
       },
       tooltip: {
         isActive: false,
+        isLoading: false,
         nodeId: null,
+        nodeName: null,
         allowedNodes: [
           "bpmn:Task",
           "bpmn:ManualTask",
@@ -63,7 +69,31 @@ export default {
       },
       requestCompletedNodes: window.ProcessMaker.modeler.requestCompletedNodes,
       requestInProgressNodes: window.ProcessMaker.modeler.requestInProgressNodes,
+      requestIdleNodes: window.ProcessMaker.modeler.requestIdleNodes,
+      requestId: window.ProcessMaker.modeler.requestId,
     };
+  },
+  computed: {
+    isMappingActive() {
+      return window.ProcessMaker.modeler.enableProcessMapping !== undefined
+        ? window.ProcessMaker.modeler.enableProcessMapping
+        : true;
+    },
+    showTooltip() {
+      return this.tooltip.isActive;
+    },
+  },
+  watch: {
+    "tooltip.isLoading": {
+      handler(value) {
+        if (!value) {
+          this.$nextTick(() => {
+            this.calculateTooltipPosition();
+          });
+        }
+      },
+      deep: true,
+    },
   },
   mounted() {
     ProcessMaker.$modeler = this.$refs.modeler;
@@ -77,13 +107,16 @@ export default {
       });
     }, 60000),
     handleClick(payload) {
-      this.setupTooltip(payload);
+      if (this.isMappingActive) {
+        this.setupTooltip(payload);
+      }
     },
     setupTooltip({ event, node }) {
       const isNodeTooltipAllowed = this.tooltip.allowedNodes.includes(node.$type);
       if ((isNodeTooltipAllowed && this.tooltip.isActive === false)
         || (isNodeTooltipAllowed && this.tooltip.nodeId !== node.id)) {
         this.tooltip.nodeId = node.id;
+        this.tooltip.nodeName = node.name;
         this.tooltip.isActive = true;
         this.$nextTick(() => {
           this.tooltip.coordinates = { x: event.clientX, y: event.clientY };
@@ -105,6 +138,9 @@ export default {
       } else if (this.tooltip.newX + this.rectTooltip.width > window.innerWidth) {
         this.tooltip.newX = window.innerWidth - this.rectTooltip.width;
       }
+    },
+    getIsLoading(value) {
+      this.tooltip.isLoading = value;
     },
   },
 };

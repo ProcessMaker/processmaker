@@ -2,15 +2,9 @@
 
 namespace ProcessMaker\Models;
 
-use Hamcrest\Type\IsNumeric;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Contracts\ScriptInterface;
-use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
-use ProcessMaker\Exception\ScriptTimeoutException;
-use ProcessMaker\GenerateAccessToken;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
 use ProcessMaker\ScriptRunners\ScriptRunner;
@@ -83,12 +77,8 @@ class Script extends ProcessMakerModel implements ScriptInterface
     protected $casts = [
         'timeout' => 'integer',
         'retry_attempts' => 'integer',
-        'retry_wait_time' => 'integer',
+        'retry_wait_time' => 'integer'
     ];
-
-    private $errorHandling = [];
-
-    private $attemptedRetries = 1;
 
     /**
      * Override the default boot method to allow access to lifecycle hooks
@@ -127,8 +117,6 @@ class Script extends ProcessMakerModel implements ScriptInterface
             'description' => 'required',
             'run_as_user_id' => 'required',
             'timeout' => 'integer|min:0|max:65535',
-            'retry_attempts' => 'integer|min:0|max:65535',
-            'retry_wait_time' => 'integer|min:0|max:65535',
             'script_category_id' => [new CategoryRule($existing)],
         ];
     }
@@ -139,12 +127,11 @@ class Script extends ProcessMakerModel implements ScriptInterface
      * @param array $data
      * @param array $config
      */
-    public function runScript(array $data, array $config, $tokenId = '', $errorHandling = [])
+    public function runScript(array $data, array $config, $tokenId = '', $timeout = 60)
     {
         if (!$this->scriptExecutor) {
             throw new ScriptLanguageNotSupported($this->language);
         }
-        $this->errorHandling = $errorHandling;
         $runner = new ScriptRunner($this->scriptExecutor);
         $runner->setTokenId($tokenId);
         $user = User::find($this->run_as_user_id);
@@ -152,34 +139,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
             throw new \RuntimeException('A user is required to run scripts');
         }
 
-        try {
-            return $runner->run($this->code, $data, $config, $this->timeout(), $user);
-        } catch (ScriptException | \RuntimeException $e) {
-            if ($this->retryAttempts() !== null && $this->retryWaitTime() !== null) {
-                Log::info('Retry the runScript process. Attempt ' . $this->attemptedRetries . ' of ' . $this->retryAttempts());
-                if ($this->attemptedRetries > $this->retryAttempts()) {
-                    $message = __('Script failed after :attempts total attempts', ['attempts' => $this->attemptedRetries]);
-                    $message = $message . "\n" . $e->getMessage();
-                    Log::error($message);
-                    if ($e instanceof ScriptTimeoutException) {
-                        throw new ScriptTimeoutException($message);
-                    }
-                    throw new ScriptException($message);
-                }
-
-                Log::info("Waiting {$this->retryWaitTime()} seconds before retrying.");
-                sleep($this->retryWaitTime());
-                $this->attemptedRetries++;
-
-                Log::info('Re-running the script');
-                $result = $this->runScript($data, $config, $tokenId, $errorHandling);
-                Log::info('The script completed successfully');
-
-                return $result;
-            } else {
-                throw $e;
-            }
-        }
+        return $runner->run($this->code, $data, $config, $timeout, $user);
     }
 
     /**
@@ -352,49 +312,5 @@ class Script extends ProcessMakerModel implements ScriptInterface
         if (empty($this->language)) {
             $this->language = $this->scriptExecutor->language;
         }
-    }
-
-    /**
-     * This method retrieves the error number by type.
-     * In case of not finding it, -1 is returned.
-     */
-    private function getErrorHandlingNumberByType($type)
-    {
-        $result = Arr::get($this->errorHandling, $type, null);
-        if (is_numeric($result)) {
-            return (int) $result;
-        }
-
-        return -1;
-    }
-
-    /**
-     * Get the value of the timeout property if there hasn't been a defined error in the errorHandling array.
-     */
-    private function timeout()
-    {
-        $result = $this->getErrorHandlingNumberByType('timeout');
-
-        return $result === -1 ? $this->timeout : $result;
-    }
-
-    /**
-     * Get the value of the retryAttempts property if there hasn't been a defined error in the errorHandling array.
-     */
-    private function retryAttempts()
-    {
-        $result = $this->getErrorHandlingNumberByType('retry_attempts');
-
-        return $result === -1 ? $this->retry_attempts : $result;
-    }
-
-    /**
-     * Get the value of the retryWaitTime property if there hasn't been a defined error in the errorHandling array.
-     */
-    private function retryWaitTime()
-    {
-        $result = $this->getErrorHandlingNumberByType('retry_wait_time');
-
-        return $result === -1 ? $this->retry_wait_time : $result;
     }
 }

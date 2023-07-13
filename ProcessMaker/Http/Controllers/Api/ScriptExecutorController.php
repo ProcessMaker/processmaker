@@ -168,14 +168,16 @@ class ScriptExecutorController extends Controller
     {
         $this->checkAuth($request);
         $request->validate(ScriptExecutor::rules());
-        
+
         $original_values = $scriptExecutor->getAttributes();
-        
+
         $scriptExecutor->update(
             $request->only($scriptExecutor->getFillable())
         );
-        
-        ScriptExecutorUpdated::dispatch($scriptExecutor->id, $original_values, $scriptExecutor->getChanges());
+
+        if (!empty($scriptExecutor->getChanges())) {
+            ScriptExecutorUpdated::dispatch($scriptExecutor->id, $original_values, $scriptExecutor->getChanges());
+        }
 
         BuildScriptExecutor::dispatch($scriptExecutor->id, $request->user()->id);
 

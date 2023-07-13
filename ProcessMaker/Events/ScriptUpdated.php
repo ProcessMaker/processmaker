@@ -5,6 +5,7 @@ namespace ProcessMaker\Events;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class ScriptUpdated implements SecurityLogEventInterface
@@ -13,7 +14,9 @@ class ScriptUpdated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private array $changes;
+
     private array $original;
+
     private Script $script;
 
     /**
@@ -28,6 +31,12 @@ class ScriptUpdated implements SecurityLogEventInterface
         $this->script = $script;
         $this->changes = $changes;
         $this->original = $original;
+
+        // Get category name
+        $this->original['script_category'] = isset($original['script_category_id']) ? ScriptCategory::getNamesByIds($this->original['script_category_id']) : '';
+        unset($this->original['script_category_id']);
+        $this->changes['script_category'] = isset($changes['script_category_id']) ? ScriptCategory::getNamesByIds($this->changes['script_category_id']) : '';
+        unset($this->changes['script_category_id']);
     }
 
     /**
@@ -37,9 +46,9 @@ class ScriptUpdated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return array_merge([
-            'script_id' => $this->script->id
-        ], $this->changes);
+        return [
+            'script_id' => $this->script->id,
+        ];
     }
 
     /**
@@ -52,13 +61,15 @@ class ScriptUpdated implements SecurityLogEventInterface
         $changes = $this->changes;
         $original = $this->original;
         $basic = isset($changes['code']) ? [
-            'Name' => $this->script->getAttribute('title'),
-            'Script Last Modified' => $this->script->getAttribute('updated_at'),
+            'script_name' => $this->script->getAttribute('title'),
+            'last_modified' => $this->script->getAttribute('updated_at'),
         ] : [
-            'Name' => $this->script->getAttribute('title'),
+            'script_name' => $this->script->getAttribute('title'),
+            'last_modified' => $this->script->getAttribute('updated_at'),
         ];
         unset($changes['code']);
         unset($original['code']);
+
         return array_merge($basic, $this->formatChanges($changes, $original));
     }
 
