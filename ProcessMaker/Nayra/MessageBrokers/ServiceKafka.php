@@ -80,6 +80,7 @@ class ServiceKafka
      */
     private function storeData(array $transactions)
     {
+        db_health_check();
         $handler = new PersistenceHandler();
         foreach ($transactions as $transaction) {
             $handler->save($transaction);
