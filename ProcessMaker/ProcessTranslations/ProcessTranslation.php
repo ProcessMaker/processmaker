@@ -590,6 +590,10 @@ class ProcessTranslation
                     foreach ($screenTranslations as $language => $translations) {
                         if ($language === $languageCode) {
                             $screenTranslations[$languageCode]['strings'] = $newTranslations;
+                            if (!array_key_exists('created_at', $screenTranslations[$languageCode])) {
+                                $screenTranslations[$languageCode]['created_at'] = Carbon::now();
+                            }
+                            $screenTranslations[$languageCode]['updated_at'] = Carbon::now();
                         }
                     }
                 }
