@@ -120,7 +120,6 @@
                 "package-files": "1.9.0",
                 "package-googleplaces": "1.6.0",
                 "package-photo-video": "0.3.0",
-                "package-plaid": "0.2.0",
                 "package-pm-blocks": "0.3.0",
                 "package-process-documenter": "1.5.0",
                 "package-process-optimization": "1.6.0",
@@ -133,6 +132,9 @@
                 "package-vocabularies": "2.11.0",
                 "package-webentry": "2.16.0",
                 "packages": "^0"
+            },
+            "optional" : {
+                "package-plaid": "0.2.0"
             },
             "release": "Summer 2023 (Alpha 4)"
         }
