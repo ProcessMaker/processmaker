@@ -556,6 +556,11 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         return $webGuard ?: $apiGuard;
     }
 
+    private function getAdminUser(): ? User
+    {
+        return User::where('is_administrator', true)->first();
+    }
+
     /**
      * Send payload
      *
@@ -578,25 +583,25 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
      */
     private function getEnvironmentVariables()
     {
-        $variablesParameter = [];
-        EnvironmentVariable::chunk(50, function ($variables) use (&$variablesParameter) {
+        $environmentVariables = [];
+        EnvironmentVariable::chunk(50, function ($variables) use (&$environmentVariables) {
             foreach ($variables as $variable) {
-                $variablesParameter[$variable['name']] = $variable['value'];
+                $environmentVariables[$variable['name']] = $variable['value'];
             }
         });
 
         // Add the url to the host
-        $variablesParameter['HOST_URL'] = config('app.docker_host_url');
+        $environmentVariables['HOST_URL'] = config('app.docker_host_url');
 
-        $user = $this->getCurrentUser();
+        $user = $this->getAdminUser();
         if ($user) {
             $token = new GenerateAccessToken($user);
             $environmentVariables['API_TOKEN'] = $token->getToken();
-            $environmentVariables['API_HOST'] = config('app.url') . '/api/1.0';
-            $environmentVariables['APP_URL'] = config('app.url');
+            $environmentVariables['API_HOST'] = config('app.docker_host_url') . '/api/1.0';
+            $environmentVariables['APP_URL'] = config('app.docker_host_url');
             $environmentVariables['API_SSL_VERIFY'] = (config('app.api_ssl_verify') ? '1' : '0');
         }
 
-        return $variablesParameter;
+        return $environmentVariables;
     }
 }
