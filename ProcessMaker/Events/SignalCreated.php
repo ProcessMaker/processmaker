@@ -28,7 +28,10 @@ class SignalCreated implements SecurityLogEventInterface
     public function getData(): array
     {
         return [
-            'name' => $this->signal['name'] ?? '',
+            'name' => [
+                'label' => $this->signal['name'],
+                'link' => route('signals.edit', ['signalId' => $this->signal['id']]),
+            ],
             'detail' => $this->signal['detail'] ?? '',
             'created_at' => Carbon::now(),
         ];

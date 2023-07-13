@@ -31,10 +31,10 @@ class ScreenUpdated implements SecurityLogEventInterface
         $this->original = $original;
 
         // Get category name
-        $this->original['screen_category'] = isset($original['screen_category_id'])
+        $this->original['Screen Categories'] = isset($original['screen_category_id'])
         ? ScreenCategory::getNamesByIds($this->original['screen_category_id']) : '';
         unset($this->original['screen_category_id']);
-        $this->changes['screen_category'] = isset($changes['screen_category_id'])
+        $this->changes['Screen Categories'] = isset($changes['screen_category_id'])
         ? ScreenCategory::getNamesByIds($this->changes['screen_category_id']) : '';
         unset($this->changes['screen_category_id']);
     }
