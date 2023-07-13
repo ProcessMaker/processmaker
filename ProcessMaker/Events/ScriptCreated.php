@@ -14,10 +14,7 @@ class ScriptCreated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private array $changes;
-
-    private array $original;
-
-    public string $categoryName = '';
+    private string $categoryName = '';
 
     private Script $script;
 
@@ -31,6 +28,10 @@ class ScriptCreated implements SecurityLogEventInterface
     {
         $this->script = $script;
         $this->changes = $changes;
+        if (isset($this->changes['tmp_script_category_id'])) {
+            $this->categoryName = ScriptCategory::getNamesByIds($this->changes['tmp_script_category_id']);
+            unset($this->changes['tmp_script_category_id']);
+        }
     }
 
     /**
@@ -52,15 +53,9 @@ class ScriptCreated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        $categoryId = $this->script['script_category_id'] ?? '';
-        if (!empty($categoryId)) {
-            $categoryName = ScriptCategory::where('id', $categoryId)->value('name');
-        }
-
-        $configCode = isset($this->changes['code']) ? [
-        ] : [
+        $configCode = isset($this->changes['code']) ? [] : [
             'description' => $this->script->getAttribute('description'),
-            'category' => $categoryName,
+            'category' => $this->categoryName,
             'language' => $this->script->getAttribute('language'),
         ];
 

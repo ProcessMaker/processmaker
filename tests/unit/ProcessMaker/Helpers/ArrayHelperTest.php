@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\unit\ProcessMaker\Helpers;
+namespace ProcessMaker\Helpers;
 
 use ProcessMaker\Helpers\ArrayHelper;
 use stdClass;

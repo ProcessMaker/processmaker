@@ -4,6 +4,7 @@ namespace ProcessMaker\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
+use ProcessMaker\Helpers\ArrayHelper;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
@@ -19,6 +20,11 @@ class ScriptUpdated implements SecurityLogEventInterface
 
     private Script $script;
 
+    public const REMOVE_KEYS = [
+        'script_category_id',
+        'tmp_script_category_id'
+    ];
+
     /**
      * Create a new event instance.
      *
@@ -33,12 +39,12 @@ class ScriptUpdated implements SecurityLogEventInterface
         $this->original = $original;
 
         // Get category name
-        $this->original['script_category'] = isset($original['script_category_id'])
-        ? ScriptCategory::getNamesByIds($this->original['script_category_id']) : '';
-        unset($this->original['script_category_id']);
-        $this->changes['script_category'] = isset($changes['script_category_id'])
-        ? ScriptCategory::getNamesByIds($this->changes['script_category_id']) : '';
-        unset($this->changes['script_category_id']);
+        $this->original['script_category'] = isset($original['tmp_script_category_id'])
+        ? ScriptCategory::getNamesByIds($this->original['tmp_script_category_id']) : '';
+        $this->changes['script_category'] = isset($changes['tmp_script_category_id'])
+        ? ScriptCategory::getNamesByIds($this->changes['tmp_script_category_id']) : '';
+        $this->changes = array_diff_key($this->changes, array_flip($this::REMOVE_KEYS));
+        $this->original = array_diff_key($this->original, array_flip($this::REMOVE_KEYS));
     }
 
     /**
@@ -74,7 +80,7 @@ class ScriptUpdated implements SecurityLogEventInterface
                 'script_name' => $this->script->getAttribute('title'),
                 'last_modified' => $this->script->getAttribute('updated_at'),
             ],
-            $this->formatChanges($this->changes, $this->original)
+            ArrayHelper::getArrayDifferencesWithFormat($this->changes, $this->original)
         );
     }
 

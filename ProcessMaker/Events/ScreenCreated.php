@@ -22,9 +22,9 @@ class ScreenCreated implements SecurityLogEventInterface
     {
         $this->newScreen = $newScreen;
 
-        if (isset($newScreen['screen_category_id'])) {
-            $this->newScreen['screen_category'] = ScreenCategory::getNamesByIds($newScreen['screen_category_id']);
-            unset($this->newScreen['screen_category_id']);
+        if (isset($newScreen['tmp_screen_category_id'])) {
+            $this->newScreen['screen_category'] = ScreenCategory::getNamesByIds($newScreen['tmp_screen_category_id']);
+            unset($newScreen['tmp_screen_category_id']);
         }
     }
 
@@ -42,7 +42,7 @@ class ScreenCreated implements SecurityLogEventInterface
             ],
             'description' => $this->newScreen['description'] ?? '',
             'type' => $this->newScreen['type'] ?? '',
-            'screen_category_id' => $this->newScreen['screen_category_id'] ?? '',
+            'Screen Categories' => $this->newScreen['screen_category'] ?? '',
             'created_at' => $this->newScreen['created_at'] ?? Carbon::now(),
         ];
     }
