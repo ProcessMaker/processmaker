@@ -153,7 +153,8 @@ class RequestController extends Controller
             'screenRequested',
             'addons',
             'isProcessManager',
-            'eligibleRollbackTask'
+            'eligibleRollbackTask',
+            'errorTask',
         ));
     }
 
