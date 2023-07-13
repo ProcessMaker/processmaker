@@ -541,8 +541,9 @@ class ProcessTranslation
                 $availableStrings,
                 $newScreenTranslations[$languageCode]['strings'] ?? []
             );
+            $createdAt = $newScreenTranslations[$languageCode]['created_at'] ?? Carbon::now();
             $newScreenTranslations[$languageCode]['updated_at'] = Carbon::now();
-            $newScreenTranslations[$languageCode]['created_at'] = $newScreenTranslations[$languageCode]['created_at'] ?? Carbon::now();
+            $newScreenTranslations[$languageCode]['created_at'] = $createdAt;
         }
 
         return $newScreenTranslations;
