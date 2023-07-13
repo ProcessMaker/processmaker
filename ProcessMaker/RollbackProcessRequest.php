@@ -58,7 +58,17 @@ class RollbackProcessRequest
     public function getErrorTask(ProcessRequest $processRequest) : ?ProcessRequestToken
     {
         $lastTask = $processRequest->tokens()->orderBy('id', 'desc')->first();
+
         if ($lastTask->status === 'FAILING') {
+            return $lastTask;
+        }
+
+        // Allow for gateway tasks
+        if (
+            $lastTask->element_type === 'gateway' &&
+            $lastTask->status === 'CLOSED' &&
+            $processRequest->status === 'ERROR'
+        ) {
             return $lastTask;
         }
 
