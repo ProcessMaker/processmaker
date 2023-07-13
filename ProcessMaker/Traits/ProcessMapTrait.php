@@ -77,7 +77,7 @@ trait ProcessMapTrait
     {
         $inProgressAndCompletedNodes = $completedNodesStr . ' ' . $inProgressNodesStr;
         $query = '//bpmn:sequenceFlow[contains("' . $completedNodesStr . '", @sourceRef) and contains("' . $inProgressAndCompletedNodes . '", @targetRef)]/@id';
-        $query = $query. ' | //bpmn:sequenceFlow[contains("' . $completedInProgressNode . '", @sourceRef) and contains("' . $inProgressAndCompletedNodes . '", @targetRef)]/@id';
+        $query = $query . ' | //bpmn:sequenceFlow[contains("' . $completedInProgressNode . '", @sourceRef) and contains("' . $inProgressAndCompletedNodes . '", @targetRef)]/@id';
 
         return $this->filterXML($xml, $query);
     }
@@ -98,10 +98,11 @@ trait ProcessMapTrait
             'sourceRef' => (string) $sequenceFlowNode[0]['sourceRef'],
         ]);
     }
+
     /**
      * Validates if the sourceRef token is in progress when the repeat count is the same as the targetRef
      */
-    private function getCountFlag(int $sourceCount, int $targetCount,string $sourceRef, ProcessRequest $request) :bool 
+    private function getCountFlag(int $sourceCount, int $targetCount, string $sourceRef, ProcessRequest $request) :bool
     {
         $maxToken = $request->tokens()->find($this->getMaxTokenId($request, $sourceRef));
 
