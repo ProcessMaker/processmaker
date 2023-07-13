@@ -224,7 +224,7 @@ class ProcessController extends Controller
     {
         $request->validate(Process::rules());
         $data = $request->all();
-
+        $processCreated = ProcessCreated::BLANK_CREATION;
         // If bpmn exists (from Generative AI)
         if ($request->input('bpmn')) {
             $data['bpmn'] = $request->input('bpmn');
@@ -236,6 +236,7 @@ class ProcessController extends Controller
             $request->request->add(['bpmn' => $data['bpmn']]);
             $request->request->remove('file');
             unset($data['file']);
+            $processCreated = ProcessCreated::BPMN_CREATION;
         }
 
         if ($schemaErrors = $this->validateBpmn($request)) {
@@ -278,7 +279,7 @@ class ProcessController extends Controller
             );
         }
         // Register the Event
-        ProcessCreated::dispatch($process->refresh(), ProcessCreated::BLANK_CREATION);
+        ProcessCreated::dispatch($process->refresh(), $processCreated);
 
         return new Resource($process->refresh());
     }
