@@ -14,7 +14,6 @@ use ProcessMaker\Jobs\RunNayraServiceTask;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\EnvironmentVariable;
-use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
@@ -413,7 +412,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         // Get complementary information
         $userId = $this->getCurrentUserId();
         // get process variable
-        $process = Process::find($processId);
+        $process = Definitions::find($processId);
         $definitions = $process->getDefinitions();
         $catches = SignalManager::getSignalCatchEvents($signalRef, $definitions);
         $processVariable = '';
