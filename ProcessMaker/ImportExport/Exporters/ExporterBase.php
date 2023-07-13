@@ -421,8 +421,13 @@ abstract class ExporterBase implements ExporterInterface
     public function handleDuplicateAttributes() : array
     {
         $handlers = [];
-        foreach ($this->handleDuplicatesByIncrementing as $attr) {
-            $handlers[$attr] = fn ($name) => $this->incrementString($name);
+        foreach ($this->handleDuplicatesByIncrementing as  $index => $attr) {
+            if (is_array($this->incrementStringSeparator)) {
+                $seperator = $this->incrementStringSeparator[$index];
+                $handlers[$attr] = fn ($name) => $this->incrementString($name, $seperator);
+            } else {
+                $handlers[$attr] = fn ($name) => $this->incrementString($name, $this->incrementStringSeparator);
+            }
         }
 
         return $handlers;
@@ -433,20 +438,20 @@ abstract class ExporterBase implements ExporterInterface
         $this->log[$key] = $value;
     }
 
-    protected function incrementString(string $string)
+    protected function incrementString(string $string, $seperator = ' ')
     {
-        if (preg_match('/' . $this->incrementStringSeparator . '(\d+)$/', $string, $matches)) {
+        if (preg_match('/' . $seperator . '(\d+)$/', $string, $matches)) {
             $num = (int) $matches[1];
             $new = $num + 1;
 
             return preg_replace(
-                '/' . $this->incrementStringSeparator . '\d+$/',
-                $this->incrementStringSeparator . (string) $new,
+                '/' . $seperator . '\d+$/',
+                $seperator . (string) $new,
                 $string
             );
         }
 
-        return $string . $this->incrementStringSeparator . '2';
+        return $string . $seperator . '2';
     }
 
     protected function exportCategories()

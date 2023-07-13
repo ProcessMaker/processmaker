@@ -10,14 +10,13 @@ use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Facades\MessageBrokerService;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\GenerateAccessToken;
-use ProcessMaker\Jobs\RunNayraServiceTask;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\EnvironmentVariable;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Contracts\Bpmn\BoundaryEventInterface;
@@ -43,8 +42,6 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
     const ACTION_TRIGGER_MESSAGE_EVENT = 'TRIGGER_MESSAGE_EVENT';
 
     const ACTION_TRIGGER_SIGNAL_EVENT = 'TRIGGER_SIGNAL_EVENT';
-
-    const ACTION_TASK_FAILED = 'TASK_FAILED';
 
     /**
      * Trigger a start event and return the process request instance.
@@ -115,7 +112,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
      *
      * @param Definitions $definitions
      * @param ExecutionInstanceInterface $instance
-     * @param TokenInterface|ProcessRequestToken $token
+     * @param TokenInterface $token
      * @param array $data
      *
      * @return void
@@ -140,39 +137,6 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
                 'token_id' => $token->uuid,
                 'element_id' => $token->element_id,
                 'data' => $data,
-            ],
-            'state' => $state,
-            'session' => [
-                'user_id' => $userId,
-            ],
-        ]);
-    }
-
-    /**
-     * Fail a task.
-     *
-     * @param ExecutionInstanceInterface $instance
-     * @param TokenInterface|ProcessRequestToken $token
-     * @param string $error
-     *
-     * @return void
-     */
-    public function taskFailed(ExecutionInstanceInterface $instance, TokenInterface $token, string $error)
-    {
-        // Get complementary information
-        $version = $instance->process_version_id;
-        $userId = $this->getCurrentUserId();
-        $state = $this->serializeState($instance);
-
-        // Dispatch complete task action
-        $this->dispatchAction([
-            'bpmn' => $version,
-            'action' => self::ACTION_TASK_FAILED,
-            'params' => [
-                'request_id' => $token->process_request_id,
-                'token_id' => $token->uuid,
-                'element_id' => $token->element_id,
-                'error' => $error,
             ],
             'state' => $state,
             'session' => [
@@ -264,16 +228,6 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         // Log execution
         Log::info('Dispatch a service task: ' . $serviceTask->getId());
 
-        RunNayraServiceTask::dispatch($token)->onQueue('bpmn');
-    }
-
-    /**
-     * Run a service task.
-     *
-     * @param ProcessRequestToken $token
-     */
-    public function handleServiceTask(ProcessRequestToken $token)
-    {
         // Get complementary information
         $element = $token->getDefinition(true);
         $instance = $token->processRequest;
@@ -347,10 +301,15 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
                 ],
             ]);
         } catch (Throwable $exception) {
+            // Change to error status
+            $token->setStatus(ServiceTaskInterface::TOKEN_STATE_FAILING);
+            $error = $element->getRepository()->createError();
+            $error->setName($exception->getMessage());
+            $token->setProperty('error', $error);
+
             // Log message errors
             Log::info('Service task failed: ' . $implementation . ' - ' . $exception->getMessage());
             Log::error($exception->getTraceAsString());
-            $this->taskFailed($instance, $token, $exception->getMessage());
         }
     }
 
@@ -442,7 +401,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         // Get complementary information
         $userId = $this->getCurrentUserId();
         // get process variable
-        $process = Definitions::find($processId);
+        $process = Process::find($processId);
         $definitions = $process->getDefinitions();
         $catches = SignalManager::getSignalCatchEvents($signalRef, $definitions);
         $processVariable = '';
@@ -527,25 +486,17 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             $tokensRows = [];
             $tokens = $request->tokens()->where('status', '!=', 'CLOSED')->where('status', '!=', 'TRIGGERED')->get();
             foreach ($tokens as $token) {
-                $tokenRow = array_merge($token->token_properties ?: [], [
+                $tokensRows[] = array_merge($token->token_properties ?: [], [
                     'id' => $token->uuid,
                     'status' => $token->status,
                     'index' => $token->element_index,
                     'element_id' => $token->element_id,
                     'created_at' => $token->created_at->getTimestamp(),
                 ]);
-                if ($token->subprocess_request_id) {
-                    $subRequest = ProcessRequest::select(['process_version_id', 'uuid'])
-                        ->find($token->subprocess_request_id);
-                    $tokenRow['subprocess_request_id'] = $subRequest->uuid;
-                    $tokenRow['subprocess_request_version'] = $subRequest->process_version_id;
-                }
-                $tokensRows[] = $tokenRow;
             }
 
             return [
                 'id' => $request->uuid,
-                'process_version_id' => $request->process_version_id,
                 'callable_id' => $request->callable_id,
                 'collaboration_uuid' => $request->collaboration_uuid,
                 'data' => $request->data,
@@ -586,11 +537,6 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         return $webGuard ?: $apiGuard;
     }
 
-    private function getAdminUser(): ? User
-    {
-        return User::where('is_administrator', true)->first();
-    }
-
     /**
      * Send payload
      *
@@ -613,25 +559,25 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
      */
     private function getEnvironmentVariables()
     {
-        $environmentVariables = [];
-        EnvironmentVariable::chunk(50, function ($variables) use (&$environmentVariables) {
+        $variablesParameter = [];
+        EnvironmentVariable::chunk(50, function ($variables) use (&$variablesParameter) {
             foreach ($variables as $variable) {
-                $environmentVariables[$variable['name']] = $variable['value'];
+                $variablesParameter[$variable['name']] = $variable['value'];
             }
         });
 
         // Add the url to the host
-        $environmentVariables['HOST_URL'] = config('app.docker_host_url');
+        $variablesParameter['HOST_URL'] = config('app.docker_host_url');
 
-        $user = $this->getAdminUser();
+        $user = $this->getCurrentUser();
         if ($user) {
             $token = new GenerateAccessToken($user);
             $environmentVariables['API_TOKEN'] = $token->getToken();
-            $environmentVariables['API_HOST'] = config('app.docker_host_url') . '/api/1.0';
-            $environmentVariables['APP_URL'] = config('app.docker_host_url');
+            $environmentVariables['API_HOST'] = config('app.url') . '/api/1.0';
+            $environmentVariables['APP_URL'] = config('app.url');
             $environmentVariables['API_SSL_VERIFY'] = (config('app.api_ssl_verify') ? '1' : '0');
         }
 
-        return $environmentVariables;
+        return $variablesParameter;
     }
 }
