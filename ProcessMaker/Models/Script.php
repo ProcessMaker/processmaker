@@ -77,7 +77,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
     protected $casts = [
         'timeout' => 'integer',
         'retry_attempts' => 'integer',
-        'retry_wait_time' => 'integer'
+        'retry_wait_time' => 'integer',
     ];
 
     /**

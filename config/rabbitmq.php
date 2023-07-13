@@ -2,7 +2,7 @@
 
 $_port = env('RABBITMQ_PORT', 5672);
 if (preg_match('/\d+$/', $_port, $_match)) {
-	$_port = intval($_match[0]) ?: 5672;
+    $_port = intval($_match[0]) ?: 5672;
 }
 
 return [
