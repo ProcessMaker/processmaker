@@ -64,6 +64,7 @@
             </b-form-group>
 
             <b-form-group
+              v-if="!meta.isImported"
               required
               :label="$t('Author')"
               :description="formDescription('Enter the name of the PM Block author.', 'author', errors)"
@@ -81,12 +82,39 @@
             </b-form-group>
 
             <b-form-group
+              v-else
+              :label="$t('Author')"
+              :description="formDescription('Enter the name of the PM Block author.', 'author', errors)"
+              :invalid-feedback="errorMessage('author', errors)"
+              :state="errorState('author', errors)"
+            >
+              <b-form-input
+                disabled
+                autofocus
+                v-model="meta.author"
+                autocomplete="off"
+                :state="errorState('author', errors)"
+                name="author"
+              ></b-form-input>
+            </b-form-group>
+
+            <b-form-group
               :label="$t('Version')"
               :description="formDescription('Enter the version of this PM Block.', 'version', errors)"
               :invalid-feedback="errorMessage('version', errors)"
               :state="errorState('version', errors)"
             >
               <b-form-input
+                v-if="!meta.isImported"
+                autofocus
+                v-model="meta.version"
+                autocomplete="off"
+                :state="errorState('version', errors)"
+                name="version"
+              ></b-form-input>
+              <b-form-input
+                v-else
+                disabled
                 autofocus
                 v-model="meta.version"
                 autocomplete="off"
