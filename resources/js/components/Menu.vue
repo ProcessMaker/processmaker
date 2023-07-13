@@ -14,6 +14,7 @@
               :variant="button.variant || 'secondary'"
               class="text-capitalize"
               :title="button.title"
+              v-b-tooltip.hover
               tabindex="1"
               @click="executeFunction(button.action)"
             >
@@ -28,6 +29,7 @@
             class="text-capitalize"
             size="sm"
             :variant="item.variant || 'secondary'"
+            v-b-tooltip.hover
             :title="item.title"
             @click="executeFunction(item.action)"
           >
