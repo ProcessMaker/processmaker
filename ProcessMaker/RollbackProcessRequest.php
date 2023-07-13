@@ -115,7 +115,11 @@ class RollbackProcessRequest
 
         $processRequest = $this->newTask->processRequest;
         $processRequest->status = 'ACTIVE';
+        $processRequest->process_version_id = $processRequest->process->getLatestVersion()->id;
         $processRequest->saveOrFail();
+
+        $currentTask->status = 'CLOSED';
+        $currentTask->saveOrFail();
 
         return $this->newTask;
     }
@@ -139,6 +143,17 @@ class RollbackProcessRequest
         $bpmnTask = $this->processDefinitions->getEvent($this->newTask->element_id);
 
         WorkflowManager::runScripTask($bpmnTask, $this->newTask);
+
+        $this->addComment();
+    }
+
+    private function rollbackToServiceTask()
+    {
+        $this->copyTask();
+
+        $bpmnTask = $this->processDefinitions->getEvent($this->newTask->element_id);
+
+        WorkflowManager::runServiceTask($bpmnTask, $this->newTask);
 
         $this->addComment();
     }

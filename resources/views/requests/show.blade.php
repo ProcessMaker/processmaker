@@ -318,7 +318,7 @@
                     <li class="list-group-item">
                       <h5>{{ __('Rollback Request') }}</h5>
                       <button id="retryRequestButton" type="button" class="btn btn-outline-info btn-block"
-                        data-toggle="modal" @click="rollback('{{ $eligibleRollbackTask->element_name }}')">
+                        data-toggle="modal" @click="rollback({{ $errorTask->id }}, '{{ $eligibleRollbackTask->element_name }}')">
                         <i class="fas fa-undo"></i> {{ __('Rollback') }}
                       </button>
                       <small>{{ __('Rollback to task') }}: <b>{{ $eligibleRollbackTask->element_name }}</b> ({{ $eligibleRollbackTask->element_id }})</small>
@@ -713,12 +713,16 @@
             apiRequest
           );
         },
-        rollback(name) {
+        rollback(errorTaskId, rollbackToName) {
           ProcessMaker.confirmModal(
             this.$t('Confirm'),
-            this.$t('Are you sure you want to rollback to the task: ')  + name,
+            this.$t('Are you sure you want to rollback to the task @{{name}}? Warning! This request will continue as the current published process version.', { name: rollbackToName }),
             'default',
-            () => { console.log("foo") } 
+            () => {
+              ProcessMaker.apiClient.post(`tasks/${errorTaskId}/rollback`).then(response => {
+                location.reload();
+              });
+            } 
           )
         },
         getConfigurationComments() {

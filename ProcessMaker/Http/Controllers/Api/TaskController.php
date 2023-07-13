@@ -431,7 +431,7 @@ class TaskController extends Controller
 
     public function rollbackTask(Request $request, ProcessRequestToken $task)
     {
-        $processDefinitions = $task->processRequest->getVersionDefinitions();
+        $processDefinitions = $task->process->getDefinitions();
         $newTask = RollbackProcessRequest::rollback($task, $processDefinitions);
 
         return new Resource($newTask);
