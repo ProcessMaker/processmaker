@@ -93,6 +93,8 @@ class ServiceRabbitMq
 
         // Set callback to process the transactions
         $callback = function ($message) {
+            db_health_check();
+
             // Parse transactions
             $transactions = json_decode($message->body, true);
 
