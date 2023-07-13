@@ -907,4 +907,18 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     {
         return \ProcessMaker\Models\Media::getFilesRequest($this);
     }
+
+    public function getErrors()
+    {
+        if ($this->errors) {
+            return $this->errors;
+        }
+        // select tokens with errors
+        return $this->tokens()
+            ->select('token_properties->error as message', 'created_at', 'element_name')
+            ->where('status', '=', ActivityInterface::TOKEN_STATE_FAILING)
+            ->limit(10)
+            ->get()
+            ->toArray();
+    }
 }

@@ -10,13 +10,14 @@ use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Facades\MessageBrokerService;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\GenerateAccessToken;
+use ProcessMaker\Jobs\RunNayraServiceTask;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Process as Definitions;
-use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Contracts\Bpmn\BoundaryEventInterface;
@@ -30,11 +31,17 @@ use Throwable;
 class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements WorkflowManagerInterface
 {
     const ACTION_START_PROCESS = 'START_PROCESS';
+
     const ACTION_COMPLETE_TASK = 'COMPLETE_TASK';
+
     const ACTION_TRIGGER_INTERMEDIATE_EVENT = 'TRIGGER_INTERMEDIATE_EVENT';
+
     const ACTION_RUN_SCRIPT = 'RUN_SCRIPT';
+
     const ACTION_TRIGGER_BOUNDARY_EVENT = 'TRIGGER_BOUNDARY_EVENT';
+
     const ACTION_TRIGGER_MESSAGE_EVENT = 'TRIGGER_MESSAGE_EVENT';
+
     const ACTION_TRIGGER_SIGNAL_EVENT = 'TRIGGER_SIGNAL_EVENT';
 
     /**
@@ -222,6 +229,16 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         // Log execution
         Log::info('Dispatch a service task: ' . $serviceTask->getId());
 
+        RunNayraServiceTask::dispatch($token)->onQueue('bpmn');
+    }
+
+    /**
+     * Run a service task.
+     *
+     * @param ProcessRequestToken $token
+     */
+    public function handleServiceTask(ProcessRequestToken $token)
+    {
         // Get complementary information
         $element = $token->getDefinition(true);
         $instance = $token->processRequest;
@@ -395,7 +412,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         // Get complementary information
         $userId = $this->getCurrentUserId();
         // get process variable
-        $process = Process::find($processId);
+        $process = Definitions::find($processId);
         $definitions = $process->getDefinitions();
         $catches = SignalManager::getSignalCatchEvents($signalRef, $definitions);
         $processVariable = '';
@@ -480,17 +497,25 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             $tokensRows = [];
             $tokens = $request->tokens()->where('status', '!=', 'CLOSED')->where('status', '!=', 'TRIGGERED')->get();
             foreach ($tokens as $token) {
-                $tokensRows[] = array_merge($token->token_properties ?: [], [
+                $tokenRow = array_merge($token->token_properties ?: [], [
                     'id' => $token->uuid,
                     'status' => $token->status,
                     'index' => $token->element_index,
                     'element_id' => $token->element_id,
                     'created_at' => $token->created_at->getTimestamp(),
                 ]);
+                if ($token->subprocess_request_id) {
+                    $subRequest = ProcessRequest::select(['process_version_id', 'uuid'])
+                        ->find($token->subprocess_request_id);
+                    $tokenRow['subprocess_request_id'] = $subRequest->uuid;
+                    $tokenRow['subprocess_request_version'] = $subRequest->process_version_id;
+                }
+                $tokensRows[] = $tokenRow;
             }
 
             return [
                 'id' => $request->uuid,
+                'process_version_id' => $request->process_version_id,
                 'callable_id' => $request->callable_id,
                 'collaboration_uuid' => $request->collaboration_uuid,
                 'data' => $request->data,
