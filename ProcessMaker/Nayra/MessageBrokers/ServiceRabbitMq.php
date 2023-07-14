@@ -4,6 +4,7 @@ namespace ProcessMaker\Nayra\MessageBrokers;
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
+use ProcessMaker\Helpers\DBHelper;
 use ProcessMaker\Nayra\Repositories\PersistenceHandler;
 
 class ServiceRabbitMq
@@ -93,7 +94,7 @@ class ServiceRabbitMq
 
         // Set callback to process the transactions
         $callback = function ($message) {
-            db_health_check();
+            DBHelper::db_health_check();
 
             // Parse transactions
             $transactions = json_decode($message->body, true);
