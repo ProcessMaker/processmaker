@@ -72,8 +72,8 @@ abstract class Base
         if ($user) {
             $token = new GenerateAccessToken($user);
             $environmentVariables[] = 'API_TOKEN=' . $token->getToken();
-            $environmentVariables[] = 'API_HOST=' . config('app.url') . '/api/1.0';
-            $environmentVariables[] = 'APP_URL=' . config('app.url');
+            $environmentVariables[] = 'API_HOST=' . config('app.docker_host_url') . '/api/1.0';
+            $environmentVariables[] = 'APP_URL=' . config('app.docker_host_url');
             $environmentVariables[] = 'API_SSL_VERIFY=' . (config('app.api_ssl_verify') ? '1' : '0');
         }
 
