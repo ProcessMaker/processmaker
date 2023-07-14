@@ -44,6 +44,8 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
 
     const ACTION_TRIGGER_SIGNAL_EVENT = 'TRIGGER_SIGNAL_EVENT';
 
+    const ACTION_TASK_FAILED = 'TASK_FAILED';
+
     /**
      * Trigger a start event and return the process request instance.
      *
@@ -113,7 +115,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
      *
      * @param Definitions $definitions
      * @param ExecutionInstanceInterface $instance
-     * @param TokenInterface $token
+     * @param TokenInterface|ProcessRequestToken $token
      * @param array $data
      *
      * @return void
@@ -138,6 +140,39 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
                 'token_id' => $token->uuid,
                 'element_id' => $token->element_id,
                 'data' => $data,
+            ],
+            'state' => $state,
+            'session' => [
+                'user_id' => $userId,
+            ],
+        ]);
+    }
+
+    /**
+     * Fail a task.
+     *
+     * @param ExecutionInstanceInterface $instance
+     * @param TokenInterface|ProcessRequestToken $token
+     * @param string $error
+     *
+     * @return void
+     */
+    public function taskFailed(ExecutionInstanceInterface $instance, TokenInterface $token, string $error)
+    {
+        // Get complementary information
+        $version = $instance->process_version_id;
+        $userId = $this->getCurrentUserId();
+        $state = $this->serializeState($instance);
+
+        // Dispatch complete task action
+        $this->dispatchAction([
+            'bpmn' => $version,
+            'action' => self::ACTION_TASK_FAILED,
+            'params' => [
+                'request_id' => $token->process_request_id,
+                'token_id' => $token->uuid,
+                'element_id' => $token->element_id,
+                'error' => $error,
             ],
             'state' => $state,
             'session' => [
@@ -312,15 +347,10 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
                 ],
             ]);
         } catch (Throwable $exception) {
-            // Change to error status
-            $token->setStatus(ServiceTaskInterface::TOKEN_STATE_FAILING);
-            $error = $element->getRepository()->createError();
-            $error->setName($exception->getMessage());
-            $token->setProperty('error', $error);
-
             // Log message errors
             Log::info('Service task failed: ' . $implementation . ' - ' . $exception->getMessage());
             Log::error($exception->getTraceAsString());
+            $this->taskFailed($instance, $token, $exception->getMessage());
         }
     }
 
