@@ -290,7 +290,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
             $signalRef
         );
     }
-    
+
     /**
      * Catch a signal event.
      *

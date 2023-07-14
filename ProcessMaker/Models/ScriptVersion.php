@@ -50,7 +50,7 @@ class ScriptVersion extends ProcessMakerModel implements ScriptInterface
      * @param array $data
      * @param array $config
      */
-    public function runScript(array $data, array $config, $tokenId = '')
+    public function runScript(array $data, array $config, $tokenId = '', $timeout = null)
     {
         $script = $this->parent->replicate();
         $except = $script->getGuarded();
@@ -58,7 +58,7 @@ class ScriptVersion extends ProcessMakerModel implements ScriptInterface
             $script->$prop = $this->$prop;
         }
 
-        return $script->runScript($data, $config, $tokenId);
+        return $script->runScript($data, $config, $tokenId, $timeout);
     }
 
     /**

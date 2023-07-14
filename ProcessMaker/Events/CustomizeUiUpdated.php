@@ -39,7 +39,6 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
      * Building the data
      */
     public function buildData()
-    public function buildData()
     {
         if (isset($this->changes['variables'])) {
             $varChanges = [];
@@ -56,7 +55,13 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
             $this->original['variables'] = $varOriginal;
         }
         $this->data = array_merge(
-            ['last_modified' => Carbon::now()],
+            [
+                'name' => [
+                    'label' => 'Customize Ui',
+                    'link' => route('customize-ui.edit'),
+                ],
+                'last_modified' => Carbon::now()
+            ],
             $this->formatChanges($this->changes, $this->original)
         );
     }

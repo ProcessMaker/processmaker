@@ -10,6 +10,7 @@ use ProcessMaker\Repositories\ExecutionInstanceRepository;
 trait PersistenceRequestTrait
 {
     protected ExecutionInstanceRepository $instanceRepository;
+
     protected Deserializer $deserializer;
 
     /**

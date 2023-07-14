@@ -15,9 +15,7 @@ class TemplateUpdated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private array $changes;
-
     private array $original;
-
     private bool $processType;
 
     /**
@@ -32,9 +30,11 @@ class TemplateUpdated implements SecurityLogEventInterface
         $this->processType = $processType;
 
         // Get category name
-        $this->original['process_category'] = isset($original['process_category_id']) ? ProcessCategory::getNamesByIds($this->original['process_category_id']) : '';
+        $this->original['process_category'] = isset($original['process_category_id'])
+        ? ProcessCategory::getNamesByIds($this->original['process_category_id']) : '';
         unset($this->original['process_category_id']);
-        $this->changes['process_category'] = isset($changes['process_category_id']) ? ProcessCategory::getNamesByIds($this->changes['process_category_id']) : '';
+        $this->changes['process_category'] = isset($changes['process_category_id'])
+        ? ProcessCategory::getNamesByIds($this->changes['process_category_id']) : '';
         unset($this->changes['process_category_id']);
     }
 
@@ -61,7 +61,7 @@ class TemplateUpdated implements SecurityLogEventInterface
                     'label' => $this->processType,
                 ],
                 'last_modified' => $this->changes['updated_at'] ?? Carbon::now(),
-            ], ArrayHelper::getArrayDifferencesWithFormat($this->changes, $this->original));
+            ], ArrayHelper::getArrayDifferencesWithFormat($newData, $oldData));
         }
     }
 

@@ -43,10 +43,10 @@
   export default {
     props: ["value", "label", "helper", "params", 'required'],
     data() {
-      return {
-        content: "",
-        loading: false,
-        scripts: [],
+        return {
+            content: "",
+            loading: false,
+            scripts: [],
         error: ''
       };
     },
@@ -80,6 +80,7 @@
               .then(response => {
                 this.loading = false;
                 this.content = response.data;
+                this.$root.$emit("contentChanged", this.content);
               })
               .catch(error => {
                 this.loading = false;

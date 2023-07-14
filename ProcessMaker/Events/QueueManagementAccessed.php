@@ -5,24 +5,18 @@ namespace ProcessMaker\Events;
 use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
-use ProcessMaker\Models\User;
-use ProcessMaker\Traits\FormatSecurityLogChanges;
 
-class UserDeleted implements SecurityLogEventInterface
+class QueueManagementAccessed implements SecurityLogEventInterface
 {
     use Dispatchable;
-    use FormatSecurityLogChanges;
-
-    private User $user;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(User $dataDeleted)
+    public function __construct()
     {
-        $this->user = $dataDeleted;
     }
 
     /**
@@ -33,10 +27,8 @@ class UserDeleted implements SecurityLogEventInterface
     public function getData(): array
     {
         return [
-            'name' => $this->user->getAttribute('username'),
-            'firstname' => $this->user->getAttribute('firstname'),
-            'lastname' => $this->user->getAttribute('lastname'),
-            'deleted_at' => Carbon::now(),
+            'name' => 'Laravel Horizon',
+            'accessed_at' => Carbon::now(),
         ];
     }
 
@@ -47,7 +39,7 @@ class UserDeleted implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return $this->user->getAttributes();
+        return [];
     }
 
     /**
@@ -57,6 +49,6 @@ class UserDeleted implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'UserDeleted';
+        return 'QueueManagementAccessed';
     }
 }
