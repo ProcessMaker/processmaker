@@ -1773,5 +1773,11 @@
   "Seconds to wait before retrying. Leave empty to use script default. Set to 0 for no retry wait time. This setting is only used when running a script task in a process.": "Seconds to wait before retrying. Leave empty to use script default. Set to 0 for no retry wait time. This setting is only used when running a script task in a process.",
   "Number of times to retry. Leave empty to use script default. Set to 0 for no retry attempts. This setting is only used when running a script task in a process.": "Number of times to retry. Leave empty to use script default. Set to 0 for no retry attempts. This setting is only used when running a script task in a process.",
   "View Request": "View Request",
-  "Execution Error": "Execution Error"
+  "Execution Error": "Execution Error",
+  "Task can not be rolled back": "Task can not be rolled back",
+  ":user rolled back :failed_task_name to :new_task_name": ":user rolled back :failed_task_name to :new_task_name",
+  "Rollback Request": "Rollback Request",
+  "Rollback": "Rollback",
+  "Rollback to task" : "Rollback to task",
+  "Are you sure you want to rollback to the task @{{name}}? Warning! This request will continue as the current published process version.": "Are you sure you want to rollback to the task @{{name}}? Warning! This request will continue as the current published process version."
 }
