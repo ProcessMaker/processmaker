@@ -166,11 +166,11 @@ export default {
       let key = "";
       let value = "";
       let auxKey = "";
-      const auxArray = {};
+      let auxArray = {};
 
       for ([key, value] of Object.entries(data)) {
         if (key.startsWith("+")) {
-          auxKey = key.split(" ")[1];
+          auxKey = this.capitalizeKey(key.split(" ")[1]);
           if (auxArray[auxKey]) {
             auxArray[auxKey].new = this.booleanToString(value);
           } else {
@@ -179,7 +179,7 @@ export default {
             };
           }
         } else if (key.startsWith("-")) {
-          auxKey = key.split(" ")[1];
+          auxKey = this.capitalizeKey(key.split(" ")[1]);
           if (auxArray[auxKey]) {
             auxArray[auxKey].old = this.booleanToString(value);
           } else {
@@ -188,10 +188,39 @@ export default {
             };
           }
         } else {
-          auxArray[key] = this.booleanToString(value);
+          auxArray[this.capitalizeKey(key)] = this.booleanToString(value);
         }
       }
-      return auxArray;
+
+      return this.sortModalArray(auxArray);
+    },
+    /**
+     * Sort modal Array
+     */
+    sortModalArray(auxArray) {
+      let sortKey = ["Name"];
+      let auxArraySorted = {};
+      let dateKey = Object.keys(auxArray).find(key => ["Created_at", "Deleted_at", "Updated_at", "Last_modified", "Accessed_at"].includes(key));
+
+      if (dateKey) {
+        sortKey.push(dateKey);
+      }
+
+      sortKey.push("Description");
+
+      Object.keys(auxArray).forEach(key => {
+        if (!sortKey.includes(key)) {
+          sortKey.push(key);
+        }
+      });
+
+      sortKey.forEach(key => {
+        if (key in auxArray) {
+          auxArraySorted[key] = auxArray[key];
+        }
+      });
+
+      return auxArraySorted;
     },
     /**
      * Verify if value is a string o null
@@ -244,6 +273,9 @@ export default {
         return value.new;
       }
       return false;
+    },
+    capitalizeKey(value) {
+      return value.charAt(0).toUpperCase() + value.slice(1);
     },
   },
 };

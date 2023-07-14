@@ -8,8 +8,8 @@ use ProcessMaker\Events\TemplateDeleted;
 use ProcessMaker\Events\TemplateUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\TemplateCollection;
-use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Template;
 
 class TemplateController extends Controller
@@ -71,17 +71,17 @@ class TemplateController extends Controller
         return $this->template->store($type, $request);
     }
 
-     /**
-      * Update the template manifest
-      *
-      * @param  string  $type
-      * @param  Request $request
-      * @return \Illuminate\Http\Response
-      */
-     public function updateTemplateManifest(string $type, int $processId, Request $request)
-     {
-         return $this->template->updateTemplateManifest($type, $processId, $request);
-     }
+    /**
+     * Update the template manifest
+     *
+     * @param  string  $type
+     * @param  Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function updateTemplateManifest(string $type, int $processId, Request $request)
+    {
+        return $this->template->updateTemplateManifest($type, $processId, $request);
+    }
 
     /**
      * Update stored template with new.
@@ -148,6 +148,7 @@ class TemplateController extends Controller
         $response = $this->template->deleteTemplate($type, $request);
         //Call event to Store Template Deleted on LOG
         TemplateDeleted::dispatch($template);
+
         return $response;
     }
 

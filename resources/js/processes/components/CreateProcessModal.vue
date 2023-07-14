@@ -6,6 +6,7 @@
       :ok-disabled="disabled"
       @ok.prevent="onSubmit"
       @hidden="onClose"
+      @shown="onShown()"
     >
       <template v-if="countCategories">
         <required></required>
@@ -55,7 +56,7 @@
           ></select-user>
         </b-form-group>
         <b-form-group
-          v-if="!selectedTemplate"
+          v-if="!selectedTemplate && !generativeProcessData"
           :label="$t('Upload BPMN File (optional)')"
           :invalid-feedback="errorMessage('bpmn', addError)"
           :state="errorState('bpmn', addError)"
@@ -87,7 +88,7 @@
   export default {
     components: { Modal, Required, TemplateSearch },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories", "blankTemplate", "selectedTemplate", "templateData"],
+    props: ["countCategories", "blankTemplate", "selectedTemplate", "templateData", "generativeProcessData"],
     data: function() {
       return {
         showModal: false,
@@ -114,9 +115,15 @@
           this.description = this.templateData.description;  
           this.process_category_id = this.templateData.category_id;
         }
-      }
+      },
     },
     methods: {
+      onShown() {
+        if (this.generativeProcessData) {
+          this.name = this.generativeProcessData.process_title;
+          this.description = this.generativeProcessData.process_description;
+        }
+      },
       show() {
       this.$bvModal.show("createProcess");
       },
@@ -172,6 +179,9 @@
         if (this.selectedTemplate) {
           this.handleCreateFromTemplate(this.templateData.id, formData);
         } else {
+          if (this.generativeProcessData) {
+            formData.append("bpmn", this.generativeProcessData.bpmn);
+          }
           this.handleCreateBlank(formData);
         }
       },
@@ -206,7 +216,7 @@
           this.disabled = false;
           this.addError = error.response.data.errors;
         });
-      }
+      },
     },
   };
 </script>

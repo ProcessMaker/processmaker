@@ -92,9 +92,9 @@ class CssOverrideController extends Controller
         $setting->fill($request->input());
 
         $original = array_intersect_key($setting->getOriginal(), $setting->getDirty());
-        
+
         $setting->saveOrFail();
-        
+
         $footer = $this->setLoginFooter($request);
         $altText = $this->setAltText($request);
 
@@ -104,11 +104,21 @@ class CssOverrideController extends Controller
 
         $changes = [];
         if (isset($setting->getChanges()['config'])) {
-            $changes = (array)json_decode($setting->getChanges()['config']);
+            $changes = (array) json_decode($setting->getChanges()['config']);
         }
-        
+        $changes = array_merge(
+            $footer['changes'] ?? [],
+            $altText['changes'] ?? [],
+            $changes
+        );
+
         if (!empty($changes)) {
-            event(new CustomizeUiUpdated($original, array_merge($footer, $altText, $changes), $setting->getChanges()['updated_at']));
+            $original['config'] = array_merge(
+                $footer['original'] ?? [],
+                $altText['original'] ?? [],
+                $original['config'] ?? []
+            );
+            event(new CustomizeUiUpdated($original, $changes));
         }
 
         return new ApiResource($setting);
@@ -121,6 +131,8 @@ class CssOverrideController extends Controller
             $footerContent = '';
         }
 
+        $original = Setting::where('key', 'login-footer')->first();
+
         $setting = Setting::updateOrCreate([
             'key' => 'login-footer',
         ], [
@@ -130,7 +142,10 @@ class CssOverrideController extends Controller
         $response = [];
 
         if ((!$setting->wasRecentlyCreated && $setting->wasChanged()) || $setting->wasRecentlyCreated) {
-            $response = ['html' => $setting->getAttributes()['config']['html']];
+            $response = [
+                'changes' => ['loginFooter' => $setting->getAttribute('config')['html'] ?? ''],
+                'original' => ['loginFooter' => $original->getAttribute('config')['html'] ?? ''],
+            ];
         }
 
         return $response;
@@ -143,6 +158,8 @@ class CssOverrideController extends Controller
             $altText = '';
         }
 
+        $original = Setting::where('key', 'logo-alt-text')->first();
+
         $setting = Setting::updateOrCreate([
             'key' => 'logo-alt-text',
         ], [
@@ -153,7 +170,10 @@ class CssOverrideController extends Controller
         $response = [];
 
         if ((!$setting->wasRecentlyCreated && $setting->wasChanged()) || $setting->wasRecentlyCreated) {
-            $response = ['altText' => $setting->getAttributes()['config']];
+            $response = [
+                'changes' => ['altText' => $setting->getAttribute('config') ?? ''],
+                'original' => ['altText' => $original->getAttribute('config') ?? ''],
+            ];
         }
 
         return $response;

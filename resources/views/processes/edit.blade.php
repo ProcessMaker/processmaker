@@ -47,7 +47,7 @@
                     <div class="tab-content" id="nav-tabContent">
 
                         {{-- Configuration --}}
-                        <div class="tab-pane fade show active" id="nav-config" role="tabpanel"
+                        <div class="tab-pane fade show" :class="{'active': activeTab === ''}" id="nav-config" role="tabpanel"
                              aria-labelledby="nav-config-tab">
                             <required></required>
                             <div class="form-group">
@@ -172,7 +172,7 @@
 
                         {{-- Translations --}}
                         @can('view-process-translations')
-                            <div class="tab-pane fade show" id="nav-translations" role="tabpanel"
+                            <div class="tab-pane fade show" :class="{'active': activeTab === 'nav-translations'}" id="nav-translations" ref="nav-translations" role="tabpanel"
                                 aria-labelledby="nav-translations-tab">
                                 
                                 <div class="page-content mb-0" id="processTranslationIndex">
@@ -402,12 +402,22 @@
             manager: @json($process->manager),
             translatedLanguages: [],
             editTranslation: null,
+            activeTab: "",
           }
         },
         mounted() {
+            this.activeTab = "";
             if (_.get(this.formData, 'properties.manager_can_cancel_request')) {
                 this.canCancel.push(this.processManagerOption());
             }
+            
+            let path = new URL(location.href).href;
+            let target = path.split('#');
+
+            if (target[1] !== undefined) {
+                this.activeTab = target[1];
+            }
+            
         },
         computed: {
             activeUsersAndGroupsWithManager() {

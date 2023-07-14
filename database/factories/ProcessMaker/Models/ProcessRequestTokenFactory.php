@@ -39,14 +39,14 @@ class ProcessRequestTokenFactory extends Factory
         ];
     }
 
-     public function overdue(): Factory
-     {
-         return $this->state(function (array $attributes) {
-             return [
-                 'status' => 'ACTIVE',
-                 'due_at' => Carbon::yesterday(),
-                 'completed_at' => null,
-             ];
-         });
-     }
+    public function overdue(): Factory
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'status' => 'ACTIVE',
+                'due_at' => Carbon::yesterday(),
+                'completed_at' => null,
+            ];
+        });
+    }
 }

@@ -62,7 +62,7 @@ class BoundaryEvent extends BpmnAction
     }
 
     /**
-     * Updata data for a message event
+     * Update data for a message event
      *
      * If variableName is set, then the event payload will be set to that variable name.
      * If the data name exists, then the data is merged.

@@ -10,6 +10,7 @@ class ScriptExecutorCreated implements SecurityLogEventInterface
     use Dispatchable;
 
     private array $data;
+
     private array $changes;
 
     /**
@@ -23,26 +24,26 @@ class ScriptExecutorCreated implements SecurityLogEventInterface
         $this->data = [
             'script_executor_id' => $created_values['id'],
             'title' => $created_values['title'],
-            'description' => $created_values['description'],
+            'description' => isset($created_values['description']) ? $created_values['description'] : '',
             'language' => $created_values['language'],
-            'config' => $created_values['config']
+            'config' => $created_values['config'],
         ];
     }
-    
+
     /**
-     * Return event data 
+     * Return event data
      */
     public function getData(): array
     {
         return $this->data;
     }
-    
+
     /**
-     * Return event changes 
+     * Return event changes
      */
     public function getChanges(): array
     {
-        return $this->changes;
+        return [];
     }
 
     /**

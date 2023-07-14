@@ -15,6 +15,7 @@ class CategoryUpdated implements SecurityLogEventInterface
     private ProcessCategory $category;
 
     private array $changes;
+
     private array $original;
 
     /**
@@ -52,7 +53,9 @@ class CategoryUpdated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return $this->formatChanges($this->changes, $this->original);
+        return [
+            'id' => $this->category->getAttribute('id'),
+        ];
     }
 
     /**

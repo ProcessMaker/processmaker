@@ -5,12 +5,14 @@ namespace ProcessMaker\Events;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class ProcessPublished implements SecurityLogEventInterface
 {
     use Dispatchable;
     use FormatSecurityLogChanges;
+
     // Currently is not required to register the following columns (related to the diagram)
     public const REMOVE_KEYS = [
         'bpmn',
@@ -19,12 +21,13 @@ class ProcessPublished implements SecurityLogEventInterface
         'self_service_tasks',
         'signal_events',
         'conditional_events',
-        'properties'
+        'properties',
     ];
 
     private Process $process;
 
     private array $changes;
+
     private array $original;
 
     /**
@@ -37,6 +40,12 @@ class ProcessPublished implements SecurityLogEventInterface
         $this->process = $data;
         $this->changes = array_diff_key($changes, array_flip($this::REMOVE_KEYS));
         $this->original = array_diff_key($original, array_flip($this::REMOVE_KEYS));
+
+        // Get category name
+        $this->original['process_category'] = isset($original['process_category_id']) ? ProcessCategory::getNamesByIds($this->original['process_category_id']) : '';
+        unset($this->original['process_category_id']);
+        $this->changes['process_category'] = isset($changes['process_category_id']) ? ProcessCategory::getNamesByIds($this->changes['process_category_id']) : '';
+        unset($this->changes['process_category_id']);
     }
 
     /**
@@ -53,7 +62,7 @@ class ProcessPublished implements SecurityLogEventInterface
             ],
             'category' => $this->process->category ? $this->process->category->name : null,
             'action' => $this->process->getAttribute('status'),
-            'updated_at' => $this->process->getAttribute('updated_at'),
+            'last_modified' => $this->process->getAttribute('updated_at'),
         ], $this->formatChanges($this->changes, $this->original));
     }
 
@@ -64,10 +73,9 @@ class ProcessPublished implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return array_merge(
-            ['id' => $this->process->getAttribute('id')],
-            $this->getData()
-        );
+        return [
+            'id' => $this->process->getAttribute('id'),
+        ];
     }
 
     /**

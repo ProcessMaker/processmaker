@@ -11,11 +11,16 @@ use ProcessMaker\Models\User;
 
 class SecurityLogDownloadJobCompleted implements ShouldBroadcastNow
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
     public $user;
+
     private bool $success;
+
     private ?string $link;
+
     private ?string $message;
 
     /**
@@ -64,7 +69,7 @@ class SecurityLogDownloadJobCompleted implements ShouldBroadcastNow
         return [
             'success' => $this->success,
             'message' => $this->message,
-            'link' => $this->link
+            'link' => $this->link,
         ];
     }
 }

@@ -4,10 +4,12 @@ namespace ProcessMaker\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
+use ProcessMaker\Models\ScreenCategory;
 
 class ScreenCreated implements SecurityLogEventInterface
 {
     use Dispatchable;
+
     private array $newScreen;
 
     /**
@@ -17,7 +19,12 @@ class ScreenCreated implements SecurityLogEventInterface
      */
     public function __construct(array $newScreen)
     {
-        $this->newScreen =  $newScreen;
+        $this->newScreen = $newScreen;
+
+        if (isset($newScreen['screen_category_id'])) {
+            $this->newScreen['screen_category'] = ScreenCategory::getNamesByIds($newScreen['screen_category_id']);
+            unset($this->newScreen['screen_category_id']);
+        }
     }
 
     /**
@@ -28,10 +35,10 @@ class ScreenCreated implements SecurityLogEventInterface
     public function getData(): array
     {
         return [
-            'name' => $this->newScreen['title'],
-            'description' => $this->newScreen['description'],
-            'type' => $this->newScreen['type'],
-            'screen_category_id' => $this->newScreen['screen_category_id']
+            'name' => $this->newScreen['title'] ?? '',
+            'description' => $this->newScreen['description'] ?? '',
+            'type' => $this->newScreen['type'] ?? '',
+            'screen_category_id' => $this->newScreen['screen_category_id'] ?? '',
         ];
     }
 
@@ -42,7 +49,9 @@ class ScreenCreated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return $this->getData();
+        return [
+            'id' => $this->newScreen['id'] ?? '',
+        ];
     }
 
     /**

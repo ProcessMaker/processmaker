@@ -51,7 +51,7 @@
             :permission="permission"
             :data="props.rowData"
             :is-documenter-installed="isDocumenterInstalled"
-            :divider="true"
+            :divider="false"
           />
         </template>
       </vuetable>
@@ -95,9 +95,11 @@
         { value: "create-pm-block", content: "Save as PM Block", permission: "create-pm-blocks", icon: "fas nav-icon fa-cube" },
         { value: "edit-item", content: "Configure", link: true, href:"/processes/{{id}}/edit", permission: "edit-processes", icon: "fas fa-cog", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
         { value: "view-documentation", content: "View Documentation", link: true, href:"/modeler/{{id}}/print", permission: "view-processes", icon: "fas fa-sign", conditional: "isDocumenterInstalled"},
+        { value: "remove-item", content: "Archive", permission: "archive-processes", icon: "fas fa-archive", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)" },
+        { value: "divider" },
         { value: "export-item", content: "Export", link: true, href:"/processes/{{id}}/export", permission: "export-processes", icon: "fas fa-file-export"},
-        { value: "remove-item", content: "Archive", permission: "archive-processes", icon: "fas fa-download", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)" },
         { value: "restore-item", content: "Restore", permission: "archive-processes", icon: "fas fa-upload", conditional: "if(status == 'ARCHIVED', true, false)" },
+        { value: "download-bpmn", content: "Download BPMN", permission: "view-processes", icon: "fas fa-file-download"},
       ],
         orderBy: "name",
         processId: null,
@@ -231,6 +233,33 @@
                             "success"
                         );
                         this.$refs.pagination.loadPage(1);
+                      });
+                }
+            );
+            break;
+
+          case "download-bpmn":
+            ProcessMaker.confirmModal(
+                this.$t("Caution!"),
+                this.$t("Are you sure you want to download the BPMN definition of the process?"),
+                "",
+                () => {
+                  ProcessMaker.apiClient
+                      .get("processes/" + data.id + "/bpmn")
+                      .then(response => {
+
+                        const link = document.createElement("a");
+                        const file = new Blob([response.data], { type: 'text/plain' });
+
+                        link.href = URL.createObjectURL(file);
+                        link.download = "bpmnProcess.xml";
+                        link.click();
+                        URL.revokeObjectURL(link.href);
+
+                        ProcessMaker.alert(
+                            this.$t("The process BPMN has been downloaded."),
+                            "success"
+                        );
                       });
                 }
             );

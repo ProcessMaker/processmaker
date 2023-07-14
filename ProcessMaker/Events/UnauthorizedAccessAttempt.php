@@ -13,15 +13,14 @@ class UnauthorizedAccessAttempt implements SecurityLogEventInterface
 
     /**
      * Create a new event instance.
-     *
      */
     public function __construct()
     {
         $this->data = [
             'url' => [
                 'link' => url()->current(),
-                'label' => url()->current()
-            ]
+                'label' => url()->current(),
+            ],
         ];
     }
 
