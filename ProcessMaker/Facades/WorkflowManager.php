@@ -10,6 +10,8 @@ use ProcessMaker\Bpmn\Process;
  *
  * @method static mixed callProcess($filename, $processId)
  * @method static mixed triggerStartEvent($definitions, $event, array $data)
+ * @method static mixed completeTask(\ProcessMaker\Models\Process $definitions, \ProcessMaker\Nayra\Contracts\Bpmn\ExecutionInstanceInterface $instance, \ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface $token, array $data)
+ * @method static mixed taskFailed(\ProcessMaker\Nayra\Contracts\Bpmn\ExecutionInstanceInterface $instance, \ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface $token, string $error)
  * @method static mixed runScripTask(\ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface $scriptTask, Token $token)
  * @method static mixed runServiceTask(\ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface $serviceTask, Token $token)
  * @method static void throwSignalEventDefinition(\ProcessMaker\Nayra\Contracts\Bpmn\EventDefinitionInterface $sourceEventDefinition, \ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface $token)

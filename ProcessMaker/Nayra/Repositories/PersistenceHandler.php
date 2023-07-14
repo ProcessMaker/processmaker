@@ -5,6 +5,7 @@ namespace ProcessMaker\Nayra\Repositories;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Jobs\RunNayraScriptTask;
 use ProcessMaker\Listeners\BpmnSubscriber;
 use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Models\ProcessRequest;
@@ -136,6 +137,13 @@ class PersistenceHandler
                     // Trigger service task listener
                     $subscriber = new BpmnSubscriber();
                     $subscriber->onServiceTaskActivated($serviceTask, $token);
+                    break;
+                case 'script_task_executor':
+                    // Get object instances
+                    $token = $this->deserializer->unserializeToken($transaction['token']);
+
+                    // Trigger script task executor
+                    RunNayraScriptTask::dispatch($token)->onQueue('bpmn');
                     break;
                 default:
                     throw new Exception('Unknown transaction type ' . $transaction['type']);
