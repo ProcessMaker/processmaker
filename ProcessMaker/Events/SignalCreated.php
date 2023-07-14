@@ -6,22 +6,20 @@ use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 
-class ScriptExecutorDeleted implements SecurityLogEventInterface
+class SignalCreated implements SecurityLogEventInterface
 {
     use Dispatchable;
 
-    private array $data;
+    private array $signal;
 
     /**
      * Create a new event instance.
-     *
-     * @param array $data
      *
      * @return void
      */
     public function __construct(array $data)
     {
-        $this->data = $data;
+        $this->signal = $data;
     }
 
     /**
@@ -30,9 +28,12 @@ class ScriptExecutorDeleted implements SecurityLogEventInterface
     public function getData(): array
     {
         return [
-            'name' => $this->data['title'] ?? '',
-            'description' => $this->data['description'] ?? '',
-            'deleted_at' => Carbon::now(),
+            'name' => [
+                'label' => $this->signal['name'],
+                'link' => route('signals.edit', ['signalId' => $this->signal['id']]),
+            ],
+            'detail' => $this->signal['detail'] ?? '',
+            'created_at' => Carbon::now(),
         ];
     }
 
@@ -42,7 +43,7 @@ class ScriptExecutorDeleted implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            'id' => $this->data['id'] ?? '',
+            'id' => $this->signal['id'] ?? '',
         ];
     }
 
@@ -51,6 +52,6 @@ class ScriptExecutorDeleted implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'ScriptExecutorDeleted';
+        return 'SignalCreated';
     }
 }
