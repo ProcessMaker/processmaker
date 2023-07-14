@@ -48,6 +48,18 @@ export default {
         if (!configString) {
           this.config.timeout = this.valueContent.timeout;
         }
+        if (this.valueContent.method) {
+            this.config.timeout = this.valueContent.timeout;
+            if (this.config.id !== this.valueContent.id) {
+              this.config.timeout = this.valueContent.timeout;
+              this.config.id = this.valueContent.id;
+            } else {
+              if (configString) {
+                const config = JSON.parse(configString);
+                this.config.timeout = _.get(config, 'timeout');
+              }
+            }
+        }
       }
     },
     setNodeConfig() {
