@@ -46,7 +46,7 @@ class SettingsUpdated implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            'setting_id' => $this->setting->id
+            'setting_id' => $this->setting->id,
         ];
     }
 

@@ -11,8 +11,9 @@ use ProcessMaker\Models\ProcessRequest;
 class RequestError implements SecurityLogEventInterface
 {
     use Dispatchable;
-    
+
     private ProcessRequest $data;
+
     private string $error;
 
     /**
@@ -25,24 +26,24 @@ class RequestError implements SecurityLogEventInterface
         $this->data = $data;
         $this->error = $error;
     }
-    
+
     /**
-     * Return event data 
+     * Return event data
      */
     public function getData(): array
     {
         return [
             'request' => [
                 'label' => $this->data->getAttribute('id'),
-                'link' => route('requests.show', $this->data)
+                'link' => route('requests.show', $this->data),
             ],
             'error' => $this->error,
-            'occurred_at' => Carbon::now()
+            'occurred_at' => Carbon::now(),
         ];
     }
-    
+
     /**
-     * Return event changes 
+     * Return event changes
      */
     public function getChanges(): array
     {

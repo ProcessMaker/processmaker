@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use ProcessMaker\Events\FilesDownloaded;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\DataManager;
@@ -134,7 +135,17 @@ class RequestController extends Controller
         $isProcessManager = $request->process?->manager_id === Auth::user()->id;
 
         return view('requests.show', compact(
-            'request', 'files', 'canCancel', 'canViewComments', 'canManuallyComplete', 'canRetry', 'manager', 'canPrintScreens', 'screenRequested', 'addons', 'isProcessManager'
+            'request',
+            'files',
+            'canCancel',
+            'canViewComments',
+            'canManuallyComplete',
+            'canRetry',
+            'manager',
+            'canPrintScreens',
+            'screenRequested',
+            'addons',
+            'isProcessManager'
         ));
     }
 
@@ -186,6 +197,9 @@ class RequestController extends Controller
         $file = $request->downloadFile($media);
 
         if ($file) {
+            // Register the Event
+            FilesDownloaded::dispatch(basename($file), $request);
+
             return response()->download($file);
         }
 
