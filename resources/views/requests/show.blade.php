@@ -244,7 +244,6 @@
                       src="{{ route('modeler.inflight', ['process' => $request->process->id, 'request' => $request->id]) }}"
                       width="100%" height="640px" frameborder="0" style="border-radius: 4px;"
                       @load="onLoadIframe"></iframe>
-                    @include('processes.modeler.partials.map-legend')
                   </div>
                 </div>
               </div>
