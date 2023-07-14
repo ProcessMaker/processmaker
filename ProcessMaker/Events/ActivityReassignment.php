@@ -33,11 +33,11 @@ class ActivityReassignment implements SecurityLogEventInterface
             'name_action' => $this::ACTION_REASSIGNMENT,
             'request' => [
                 'label' => $this->processRequest->getAttribute('process_request_id'),
-                'link' => route('requests.show', ['request' => $this->processRequest->getAttribute('process_request_id')])
+                'link' => route('requests.show', ['request' => $this->processRequest->getAttribute('process_request_id')]),
             ],
             'task' => $this->processRequest->getAttribute('element_name'),
             'process' => $this->processRequest->process->name ?? '',
-            'actionated_at' => $this->processRequest->getAttribute('updated_at')
+            'actionated_at' => $this->processRequest->getAttribute('updated_at'),
         ];
     }
 

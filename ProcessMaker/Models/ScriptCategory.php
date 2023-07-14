@@ -67,4 +67,20 @@ class ScriptCategory extends ProcessMakerModel
     {
         return $this->morphedByMany(Script::class, 'assignable', 'category_assignments', 'category_id');
     }
+
+    /**
+     * Get Script Category Names
+     * @param string String of ids separated by a custom delimiter.
+     * @param string Delimiter to split ids. By default ','
+     * @return string A string separated by commas with Script Category Names
+     */
+    public static function getNamesByIds(string $ids, string $delimiter = ','): string
+    {
+        $resultString = '';
+        $arrayIds = explode($delimiter, $ids);
+        $results = self::whereIn('id', array_map('intval', $arrayIds))->pluck('name');
+        $resultString = implode(', ', $results->toArray());
+
+        return $resultString;
+    }
 }

@@ -5,6 +5,7 @@ namespace ProcessMaker\Events;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class ScriptUpdated implements SecurityLogEventInterface
@@ -30,6 +31,12 @@ class ScriptUpdated implements SecurityLogEventInterface
         $this->script = $script;
         $this->changes = $changes;
         $this->original = $original;
+
+        // Get category name
+        $this->original['script_category'] = isset($original['script_category_id']) ? ScriptCategory::getNamesByIds($this->original['script_category_id']) : '';
+        unset($this->original['script_category_id']);
+        $this->changes['script_category'] = isset($changes['script_category_id']) ? ScriptCategory::getNamesByIds($this->changes['script_category_id']) : '';
+        unset($this->changes['script_category_id']);
     }
 
     /**
@@ -40,7 +47,7 @@ class ScriptUpdated implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            'script_id' => $this->script->id
+            'script_id' => $this->script->id,
         ];
     }
 

@@ -22,10 +22,9 @@ class TokenDeleted implements SecurityLogEventInterface
     public function __construct(Token $token)
     {
         $this->data = [
-            "token_id" => $token->getKey()
+            'token_id' => $token->getKey(),
         ];
     }
-
 
     /**
      * Return event data
@@ -35,7 +34,6 @@ class TokenDeleted implements SecurityLogEventInterface
     {
         return $this->data;
     }
-
 
     /**
      * Return event changes

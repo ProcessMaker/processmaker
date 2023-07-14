@@ -31,10 +31,9 @@ class ScriptExecutorDeleted implements SecurityLogEventInterface
         return [
             'script_executor_id' => $this->changes['id'] ?? '',
             'title' => $this->changes['title'] ?? '',
-            'description' => $this->changes['description'] ?? ''
+            'description' => $this->changes['description'] ?? '',
         ];
     }
-
 
     /**
      * Return event changes
@@ -43,7 +42,7 @@ class ScriptExecutorDeleted implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            'id' => $this->changes['id'] ?? ''
+            'id' => $this->changes['id'] ?? '',
         ];
     }
 

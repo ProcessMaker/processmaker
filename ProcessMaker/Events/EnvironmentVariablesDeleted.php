@@ -47,7 +47,7 @@ class EnvironmentVariablesDeleted implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            'id' => $this->enVariable->getAttribute('id')
+            'id' => $this->enVariable->getAttribute('id'),
         ];
     }
 
