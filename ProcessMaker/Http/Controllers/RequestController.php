@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers;
 
+use Facades\ProcessMaker\RollbackProcessRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -134,6 +135,12 @@ class RequestController extends Controller
 
         $isProcessManager = $request->process?->manager_id === Auth::user()->id;
 
+        $eligibleRollbackTask = null;
+        $errorTask = RollbackProcessRequest::getErrorTask($request);
+        if ($errorTask) {
+            $eligibleRollbackTask = RollbackProcessRequest::eligibleRollbackTask($errorTask);
+        }
+
         return view('requests.show', compact(
             'request',
             'files',
@@ -145,7 +152,9 @@ class RequestController extends Controller
             'canPrintScreens',
             'screenRequested',
             'addons',
-            'isProcessManager'
+            'isProcessManager',
+            'eligibleRollbackTask',
+            'errorTask',
         ));
     }
 
