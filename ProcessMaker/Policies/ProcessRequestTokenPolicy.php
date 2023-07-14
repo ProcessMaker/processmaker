@@ -93,7 +93,7 @@ class ProcessRequestTokenPolicy
      * Determine if a user can rollback the process request.
      *
      * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Models\ProcessRequest  $processRequest
+     * @param  \ProcessMaker\Models\ProcessRequestToken  $processRequestToken
      *
      * @return bool
      */
