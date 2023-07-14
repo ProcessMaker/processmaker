@@ -426,7 +426,8 @@ abstract class ExporterBase implements ExporterInterface
                 $seperator = $this->incrementStringSeparator[$index];
                 $handlers[$attr] = fn ($name) => $this->incrementString($name, $seperator);
             } else {
-                $handlers[$attr] = fn ($name) => $this->incrementString($name, $this->incrementStringSeparator);
+                $seperator = $this->incrementStringSeparator;
+                $handlers[$attr] = fn ($name) => $this->incrementString($name, $seperator);
             }
         }
 
