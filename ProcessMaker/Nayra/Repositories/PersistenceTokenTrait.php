@@ -2,6 +2,10 @@
 
 namespace ProcessMaker\Nayra\Repositories;
 
+use ProcessMaker\Listeners\BpmnSubscriber;
+use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
+use ProcessMaker\Nayra\Bpmn\Events\ActivityClosedEvent;
+use ProcessMaker\Nayra\Bpmn\Events\ActivityCompletedEvent;
 use ProcessMaker\Repositories\TokenRepository;
 
 trait PersistenceTokenTrait
@@ -18,6 +22,11 @@ trait PersistenceTokenTrait
         $activity = $this->deserializer->unserializeEntity($transaction['activity']);
         $token = $this->deserializer->unserializeToken($transaction['token']);
         $this->tokenRepository->persistActivityActivated($activity, $token);
+
+        // Event
+        $bpmnSubscriber = new BpmnSubscriber();
+        $event = new ActivityActivatedEvent($activity, $token);
+        $bpmnSubscriber->onActivityActivated($event);
     }
 
     /**
@@ -42,6 +51,11 @@ trait PersistenceTokenTrait
         $activity = $this->deserializer->unserializeEntity($transaction['activity']);
         $token = $this->deserializer->unserializeToken($transaction['token']);
         $this->tokenRepository->persistActivityCompleted($activity, $token);
+
+        // Event
+        $bpmnSubscriber = new BpmnSubscriber();
+        $event = new ActivityCompletedEvent($activity, $token);
+        $bpmnSubscriber->onActivityCompleted($event);
     }
 
     /**
@@ -54,6 +68,11 @@ trait PersistenceTokenTrait
         $activity = $this->deserializer->unserializeEntity($transaction['activity']);
         $token = $this->deserializer->unserializeToken($transaction['token']);
         $this->tokenRepository->persistActivityClosed($activity, $token);
+
+        // Event
+        $bpmnSubscriber = new BpmnSubscriber();
+        $event = new ActivityClosedEvent($activity, $token);
+        $bpmnSubscriber->onActivityClosed($event);
     }
 
     /**
@@ -138,6 +157,10 @@ trait PersistenceTokenTrait
         $event = $this->deserializer->unserializeEntity($transaction['catch_event']);
         $token = $this->deserializer->unserializeToken($transaction['token']);
         $this->tokenRepository->persistCatchEventTokenArrives($event, $token);
+
+        // Event
+        $bpmnSubscriber = new BpmnSubscriber();
+        $bpmnSubscriber->onIntermediateCatchEventActivated($event, $token);
     }
 
     /**
