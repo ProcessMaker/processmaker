@@ -48,6 +48,18 @@ export default {
         if (!configString) {
           this.config.retry_wait_time = this.valueContent.retry_wait_time;
         }
+        if (this.valueContent.method) {
+            this.config.retry_wait_time = this.valueContent.retry_wait_time;
+            if (this.config.id !== this.valueContent.id) {
+              this.config.retry_wait_time = this.valueContent.retry_wait_time;
+              this.config.id = this.valueContent.id;
+            } else {
+              if (configString) {
+                const config = JSON.parse(configString);
+                this.config.retry_wait_time = _.get(config, 'retry_wait_time');
+              }
+            }
+        }
       }
     },
     setNodeConfig() {
