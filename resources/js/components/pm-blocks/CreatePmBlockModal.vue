@@ -53,7 +53,7 @@
               :description="formDescription('Choose an icon for this PM Block.', 'icon', errors)"
             >
               <icon-selector
-                v-model="meta.icon"
+                v-model="meta"
                 name="icon"
                 @error="fileError"
                 @input="clearFileError"
