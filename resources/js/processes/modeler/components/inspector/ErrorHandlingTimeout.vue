@@ -1,7 +1,7 @@
 <template>
   <div role="group">
     <label for="timeout">{{ $t('Timeout') }}</label>
-    <b-form-input id="timeout" type="number" min="0" max="3600" v-model="config.timeout"></b-form-input>
+    <b-form-input id="timeout" type="number" min="0" max="3600" v-model="config.timeout" @input="updateConfig"></b-form-input>
     <small class="form-text text-muted">{{ helper }}</small>
   </div>
 </template>
@@ -15,6 +15,7 @@ export default {
       config: {
         timeout: "",
       },
+      valueContent: ""
     }
   },
   watch: {
@@ -29,11 +30,36 @@ export default {
     node() {
       return this.$root.$children[0].$refs.modeler.highlightedNode.definition;
     },
-    getNodeConfig() {
+    getNodeConfig(newValue) {
+      this.valueContent = newValue;
       const configString = _.get(this.node(), 'errorHandling', null);
-      if (configString) {
-        const config = JSON.parse(configString);
-        this.config.timeout = _.get(config, 'timeout', "");
+      if (this.config.id) {
+        if (this.config.id !== this.valueContent.id) {
+          this.config.timeout = this.valueContent.timeout;
+          this.config.id = this.valueContent.id;
+        } else {
+          if (configString) {
+            const config = JSON.parse(configString);
+            this.config.timeout = _.get(config, 'timeout');
+          }
+        }
+      } else {
+        this.config.id = this.valueContent.id;
+        if (!configString) {
+          this.config.timeout = this.valueContent.timeout;
+        }
+        if (this.valueContent.method) {
+            this.config.timeout = this.valueContent.timeout;
+            if (this.config.id !== this.valueContent.id) {
+              this.config.timeout = this.valueContent.timeout;
+              this.config.id = this.valueContent.id;
+            } else {
+              if (configString) {
+                const config = JSON.parse(configString);
+                this.config.timeout = _.get(config, 'timeout');
+              }
+            }
+        }
       }
     },
     setNodeConfig() {
@@ -41,9 +67,17 @@ export default {
       const json = JSON.stringify({ ...existingSetting, timeout: this.config.timeout });
       Vue.set(this.node(), 'errorHandling', json);
     },
+    updateConfig() {
+      if (this.valueContent.timeout !== this.config.timeout) {
+        this.setNodeConfig();
+      }
+    },
   },
   mounted() {
-    this.getNodeConfig();
+    this.$root.$on("contentChanged", this.getNodeConfig);
+  },
+  beforeDestroy() {
+    this.$root.$off("contentChanged", this.getNodeConfig);
   },
   computed: {
     helper() {
