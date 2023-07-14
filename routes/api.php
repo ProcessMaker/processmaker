@@ -149,8 +149,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('tasks', [TaskController::class, 'index'])->name('tasks.index'); // Already filtered in controller
     Route::get('tasks/{task}', [TaskController::class, 'show'])->name('tasks.show')->middleware('can:view,task');
     Route::get('tasks/{task}/screens/{screen}', [TaskController::class, 'getScreen'])->name('tasks.get_screen')->middleware('can:viewScreen,task,screen');
-    Route::get('tasks/{task}/eligibleRollbackTask', [TaskController::class, 'eligibleRollbackTask'])->name('tasks.eligible_rollback_task')->middleware('can:update,task');
-    Route::post('tasks/{task}/rollback', [TaskController::class, 'rollbackTask'])->name('tasks.rollback_task')->middleware('can:update,task');
+    Route::get('tasks/{task}/eligibleRollbackTask', [TaskController::class, 'eligibleRollbackTask'])->name('tasks.eligible_rollback_task')->middleware('can:rollback,task');
+    Route::post('tasks/{task}/rollback', [TaskController::class, 'rollbackTask'])->name('tasks.rollback_task')->middleware('can:rollback,task');
 
     // Requests
     Route::get('requests', [ProcessRequestController::class, 'index'])->name('requests.index'); // Already filtered in controller
