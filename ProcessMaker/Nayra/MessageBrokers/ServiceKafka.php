@@ -71,6 +71,7 @@ class ServiceKafka
         })->build();
 
         // Consume incoming messages
+        echo "\033[0;32m" . 'ProcessMaker consumer using kafka.' . "\033[0m" . PHP_EOL;
         $consumer->consume();
     }
 

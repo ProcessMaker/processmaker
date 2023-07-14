@@ -89,7 +89,9 @@ class ServiceRabbitMq
      */
     public function worker(): void
     {
+
         // Connect to service
+        echo "\033[0;32m" . 'ProcessMaker consumer using rabbitmq.' . "\033[0m" . PHP_EOL;
         $this->connect();
 
         // Set callback to process the transactions
