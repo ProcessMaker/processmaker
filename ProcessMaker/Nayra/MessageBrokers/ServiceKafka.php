@@ -3,9 +3,9 @@
 namespace ProcessMaker\Nayra\MessageBrokers;
 
 use Junges\Kafka\Contracts\KafkaConsumerMessage;
-use ProcessMaker\Nayra\Repositories\PersistenceHandler;
 use Junges\Kafka\Facades\Kafka;
 use ProcessMaker\Helpers\DBHelper;
+use ProcessMaker\Nayra\Repositories\PersistenceHandler;
 
 class ServiceKafka
 {
