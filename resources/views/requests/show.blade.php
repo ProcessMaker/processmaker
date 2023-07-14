@@ -314,7 +314,7 @@
                   </li>
                 @endif
                 @if ($eligibleRollbackTask)
-                  @can('update', $request)
+                  @can('rollback', $errorTask)
                     <li class="list-group-item">
                       <h5>{{ __('Rollback Request') }}</h5>
                       <button id="retryRequestButton" type="button" class="btn btn-outline-info btn-block"
