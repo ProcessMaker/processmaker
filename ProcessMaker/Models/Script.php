@@ -77,7 +77,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
     protected $casts = [
         'timeout' => 'integer',
         'retry_attempts' => 'integer',
-        'retry_wait_time' => 'integer'
+        'retry_wait_time' => 'integer',
     ];
 
     /**
@@ -127,8 +127,12 @@ class Script extends ProcessMakerModel implements ScriptInterface
      * @param array $data
      * @param array $config
      */
-    public function runScript(array $data, array $config, $tokenId = '', $timeout = 60)
+    public function runScript(array $data, array $config, $tokenId = '', $timeout = null)
     {
+        if (!$timeout) {
+            $timeout = $this->timeout;
+        }
+
         if (!$this->scriptExecutor) {
             throw new ScriptLanguageNotSupported($this->language);
         }
