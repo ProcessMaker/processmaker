@@ -53,7 +53,7 @@
               :description="formDescription('Choose an icon for this PM Block.', 'icon', errors)"
             >
               <icon-selector
-                v-model="meta.icon"
+                v-model="meta"
                 name="icon"
                 @error="fileError"
                 @input="clearFileError"
@@ -210,7 +210,7 @@ export default {
       },
       savePmBlock() {
         let formData = new FormData();
-        formData.append("editing_process_id", this.assetId);
+        formData.append("asset_id", this.assetId);
         formData.append("name", this.name);
         formData.append("description", this.description);
         formData.append("user_id", this.currentUserId);
@@ -221,7 +221,7 @@ export default {
           ProcessMaker.alert(this.$t("PM Block successfully created"), "success");
           window.setTimeout(() => {
             window.location.href = `/designer/pm-blocks/${response.data.id}/edit/`;
-          }, 3000)
+          }, 1000)
           this.close();
         }).catch(error => {
           this.errors = error.response?.data;

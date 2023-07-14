@@ -13,8 +13,8 @@ use ProcessMaker\GenerateAccessToken;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\EnvironmentVariable;
-use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Script;
@@ -30,13 +30,17 @@ use Throwable;
 class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements WorkflowManagerInterface
 {
     const ACTION_START_PROCESS = 'START_PROCESS';
+
     const ACTION_COMPLETE_TASK = 'COMPLETE_TASK';
 
     const ACTION_TRIGGER_INTERMEDIATE_EVENT = 'TRIGGER_INTERMEDIATE_EVENT';
 
     const ACTION_RUN_SCRIPT = 'RUN_SCRIPT';
+
     const ACTION_TRIGGER_BOUNDARY_EVENT = 'TRIGGER_BOUNDARY_EVENT';
+
     const ACTION_TRIGGER_MESSAGE_EVENT = 'TRIGGER_MESSAGE_EVENT';
+
     const ACTION_TRIGGER_SIGNAL_EVENT = 'TRIGGER_SIGNAL_EVENT';
 
     /**
