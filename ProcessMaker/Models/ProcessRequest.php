@@ -22,6 +22,7 @@ use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
 use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\ForUserScope;
+use ProcessMaker\Traits\HasUuids;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\SqlsrvSupportTrait;
@@ -40,6 +41,7 @@ use Throwable;
  * @property string $name
  * @property string $status
  * @property string $data
+ * @property string $collaboration_uuid
  * @property \Carbon\Carbon $initiated_at
  * @property \Carbon\Carbon $completed_at
  * @property \Carbon\Carbon $updated_at
@@ -82,13 +84,14 @@ use Throwable;
 class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInterface, HasMedia
 {
     use ExecutionInstanceTrait;
-    use SerializeToIso8601;
-    use InteractsWithMedia;
     use ExtendedPMQL;
-    use SqlsrvSupportTrait;
-    use HideSystemResources;
-    use Searchable;
     use ForUserScope;
+    use HasUuids;
+    use HideSystemResources;
+    use InteractsWithMedia;
+    use Searchable;
+    use SerializeToIso8601;
+    use SqlsrvSupportTrait;
 
     /**
      * The attributes that aren't mass assignable.
@@ -97,6 +100,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      */
     protected $guarded = [
         'id',
+        'uuid',
         'created_at',
         'updated_at',
     ];

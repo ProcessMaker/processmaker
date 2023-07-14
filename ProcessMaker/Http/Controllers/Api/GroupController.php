@@ -5,6 +5,9 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Events\GroupCreated;
+use ProcessMaker\Events\GroupDeleted;
+use ProcessMaker\Events\GroupUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Groups as GroupResource;
@@ -136,6 +139,8 @@ class GroupController extends Controller
         $group = new Group();
         $group->fill($request->input());
         $group->saveOrFail();
+        // Register the Event
+        GroupCreated::dispatch($group);
 
         return new GroupResource($group);
     }
@@ -216,8 +221,12 @@ class GroupController extends Controller
     public function update(Group $group, Request $request)
     {
         $request->validate(Group::rules($group));
+        $original = $group->getOriginal();
         $group->fill($request->input());
         $group->saveOrFail();
+        $changes = $group->getChanges();
+        // Register the Event
+        GroupUpdated::dispatch($group, $changes, $original);
 
         return response([], 204);
     }
@@ -253,7 +262,21 @@ class GroupController extends Controller
      */
     public function destroy(Group $group)
     {
+        // Get the current user members
+        $usersMembers = GroupMember::where([
+            ['group_id', '=', $group->id],
+            ['member_type', '=', User::class],
+        ])->get()->toArray();
+        // Get the current group members
+        $groupMembers = GroupMember::where([
+            ['group_id', '=', $group->id],
+            ['member_type', '=', Group::class],
+        ])->get()->toArray();
+
         $group->delete();
+
+        // Register the Event
+        GroupDeleted::dispatch($group, $usersMembers, $groupMembers);
 
         return response([], 204);
     }

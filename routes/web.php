@@ -20,6 +20,7 @@ use ProcessMaker\Http\Controllers\HomeController;
 use ProcessMaker\Http\Controllers\NotificationController;
 use ProcessMaker\Http\Controllers\Process\EnvironmentVariablesController;
 use ProcessMaker\Http\Controllers\Process\ModelerController;
+use ProcessMaker\Http\Controllers\Process\ProcessTranslationController;
 use ProcessMaker\Http\Controllers\Process\ScreenBuilderController;
 use ProcessMaker\Http\Controllers\Process\ScreenController;
 use ProcessMaker\Http\Controllers\Process\ScriptController;
@@ -52,6 +53,10 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
         Route::get('customize-ui/{tab?}', [CssOverrideController::class, 'edit'])->name('customize-ui.edit');
 
         Route::get('script-executors', [ScriptExecutorController::class, 'index'])->name('script-executors.index');
+
+        // temporary, should be removed
+        Route::get('security-logs/download/all', [\ProcessMaker\Http\Controllers\Api\SecurityLogController::class, 'downloadForAllUsers'])->middleware('can:view-security-logs');
+        Route::get('security-logs/download/{user}', [\ProcessMaker\Http\Controllers\Api\SecurityLogController::class, 'downloadForUser'])->middleware('can:view-security-logs');
     });
 
     Route::get('admin', [AdminController::class, 'index'])->name('admin.index');
@@ -89,10 +94,11 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
     Route::get('processes/create', [ProcessController::class, 'create'])->name('processes.create')->middleware('can:create-processes');
     Route::post('processes', [ProcessController::class, 'store'])->name('processes.store')->middleware('can:edit-processes');
     Route::get('processes/{process}', [ProcessController::class, 'show'])->name('processes.show')->middleware('can:view-processes');
-    Route::put('processes/{process}', [ProcessController::class, 'update'])->name('processes.edit')->middleware('can:edit-processes');
+    Route::put('processes/{process}', [ProcessController::class, 'update'])->name('processes.update')->middleware('can:edit-processes');
     Route::delete('processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy')->middleware('can:archive-processes');
 
-    Route::get('process_events/{process}', [ProcessController::class, 'triggerStartEventApi'])->middleware('can:start,process');
+    Route::get('processes/{process}/export/translation/{language}', [ProcessTranslationController::class, 'export']);
+    Route::get('processes/{process}/import/translation', [ProcessTranslationController::class, 'import']);
 
     Route::get('about', [AboutController::class, 'index'])->name('about.index');
 
@@ -100,6 +106,7 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
     Route::get('profile/{id}', [ProfileController::class, 'show'])->name('profile.show');
     // Ensure our modeler loads at a distinct url
     Route::get('modeler/{process}', [ModelerController::class, 'show'])->name('modeler.show')->middleware('can:edit-processes');
+    Route::get('modeler/{process}/inflight/{request?}', [ModelerController::class, 'inflight'])->name('modeler.inflight')->middleware('can:view,request');
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -153,7 +160,7 @@ Route::get('oauth/clients', [ClientController::class, 'index'])->name('passport.
 Route::get('oauth/clients/{client_id}', [ClientController::class, 'show'])->name('passport.clients.show')->middleware('can:view-auth_clients');
 Route::post('oauth/clients', [ClientController::class, 'store'])->name('passport.clients.store')->middleware('can:create-auth_clients');
 Route::put('oauth/clients/{client_id}', [ClientController::class, 'update'])->name('passport.clients.update')->middleware('can:edit-auth_clients');
-Route::delete('oauth/clients/{client_id}', [ClientController::class, 'destroy'])->name('passport.clients.update')->middleware('can:delete-auth_clients');
+Route::delete('oauth/clients/{client_id}', [ClientController::class, 'destroy'])->name('passport.clients.delete')->middleware('can:delete-auth_clients');
 
 Route::get('password/success', function () {
     return view('auth.passwords.success', ['title' => __('Password Reset')]);

@@ -29,6 +29,8 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
 
     public $backoff = 60;
 
+    public $attemptNum;
+
     /**
      * Create a new job instance.
      *
@@ -37,7 +39,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
      * @param \ProcessMaker\Models\ProcessRequestToken $token
      * @param array $data
      */
-    public function __construct(Definitions $definitions, ProcessRequest $instance, ProcessRequestToken $token, array $data)
+    public function __construct(Definitions $definitions, ProcessRequest $instance, ProcessRequestToken $token, array $data, $attemptNum = 1)
     {
         if ($token->getOwner()) {
             $pmConfig = json_decode($token->getOwnerElement()->getProperty('config', '{}'), true);
@@ -50,6 +52,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
         $this->tokenId = $token->getKey();
         $this->elementId = $token->getProperty('element_ref');
         $this->data = $data;
+        $this->attemptNum = $attemptNum;
     }
 
     /**
@@ -65,6 +68,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
         }
         $implementation = $element->getImplementation();
         $configuration = json_decode($element->getProperty('config'), true);
+
         // Check to see if we've failed parsing.  If so, let's convert to empty array.
         if ($configuration === null) {
             $configuration = [];
@@ -82,16 +86,23 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
                 throw new ScriptException('Service task not implemented: ' . $implementation);
             }
 
+            $errorHandling = new ErrorHandling($element, $token);
+            $errorHandling->setDefaultsFromDataSourceConfig($configuration);
+
             $this->unlock();
             $dataManager = new DataManager();
             $data = $dataManager->getData($token);
 
+            /**
+             * todo: Please review the "else" section as it appears unreachable since if `$existsImpl`
+             * is not true, an exception is thrown a few lines above.
+             */
             if ($existsImpl) {
                 $response = [
-                    'output' => WorkflowManager::runServiceImplementation($implementation, $data, $configuration, $token->getId()),
+                    'output' => WorkflowManager::runServiceImplementation($implementation, $data, $configuration, $token->getId(), $errorHandling->timeout()),
                 ];
             } else {
-                $response = $script->runScript($data, $configuration, $token->getId());
+                $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling->timeout());
             }
             $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
                 // Exit if the task was completed or closed
@@ -113,10 +124,18 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
         } catch (Throwable $exception) {
             // Change to error status
             $token->setStatus(ServiceTaskInterface::TOKEN_STATE_FAILING);
+
+            $message = $errorHandling->handleRetries($this, $exception);
+
             $error = $element->getRepository()->createError();
-            $error->setName($exception->getMessage());
+            $error->setName($message);
+
             $token->setProperty('error', $error);
-            Log::info('Service task failed: ' . $implementation . ' - ' . $exception->getMessage());
+            $exceptionClass = get_class($exception);
+            $modifiedException = new $exceptionClass($message);
+            $token->logError($modifiedException, $element);
+
+            Log::error('Service task failed: ' . $implementation . ' - ' . $message);
             Log::error($exception->getTraceAsString());
         }
     }

@@ -70,15 +70,24 @@
     </template>
     <slot></slot>
     <template v-if="setCustomButtons" #modal-footer>
-      <b-button v-for="button in customButtons" 
-        :key="button.content" 
-        @click="executeFunction(button.action)" 
-        :variant="button.variant" 
-        :disabled="button.disabled"
-        :hidden="button.hidden"
-      >
-        {{ button.content }}
-      </b-button>
+      <div class="d-flex justify-content-end align-items-center w-100">
+        <div v-if="showAiSlogan" class="slogan">
+          <img src="/img/favicon.svg"> {{ $t("Powered by ProcessMaker AI") }}
+        </div>
+        <div>
+          <b-button v-for="button in customButtons" 
+            :key="button.content" 
+            @click="executeFunction(button.action)" 
+            :variant="button.variant" 
+            :disabled="button.disabled"
+            :hidden="button.hidden"
+            :data-test="button.dataTest"
+            class="ml-2"
+          >
+            {{ button.content }}
+          </b-button>
+        </div>
+      </div>
     </template>
   </b-modal>
 </template>
@@ -90,7 +99,8 @@
       "title", 
       "okDisabled", 
       "okOnly", 
-      "okTitle", "setCustomButtons",
+      "okTitle", 
+      "setCustomButtons",
       "customButtons", 
       "subtitle", 
       "size", 
@@ -98,7 +108,8 @@
       "hasHeaderButtons", 
       "headerButtons", 
       "hasTitleButtons", 
-      "titleButtons"
+      "titleButtons",
+      "showAiSlogan"
     ],
     methods: {
       onEvent(name, event) {
@@ -133,5 +144,14 @@
 
   .subtitle {
     font-size: 70%;
+  }
+  .slogan {
+    font-size: 80%;
+    font-weight: 600;
+  }
+
+  .slogan img {
+    display: inline-block;
+    height: 16px;
   }
 </style>

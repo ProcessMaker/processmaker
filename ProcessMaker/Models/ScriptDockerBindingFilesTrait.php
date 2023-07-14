@@ -77,11 +77,13 @@ trait ScriptDockerBindingFilesTrait
                 Log::error('Script timed out');
                 throw new ScriptTimeoutException(
                     __('Script took too long to complete. Consider increasing the timeout.')
-                  . ' '
+                  . "\n"
+                  . __('Timeout: :timeout seconds', ['timeout' => $timeout])
+                  . "\n"
                   . implode("\n", $output)
                 );
             }
-            Log::error('Script threw return code ' . $returnCode . 'Message: ' . implode("\n", $output));
+            Log::error('Script threw return code ' . $returnCode . ' Message: ' . implode("\n", $output));
 
             $message = implode("\n", $output);
             $message .= "\n\nProcessMaker Stack:\n";

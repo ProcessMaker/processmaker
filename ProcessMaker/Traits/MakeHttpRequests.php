@@ -14,6 +14,7 @@ use Mustache_Engine;
 use ProcessMaker\Exception\HttpInvalidArgumentException;
 use ProcessMaker\Exception\HttpResponseException;
 use ProcessMaker\Helpers\StringHelper;
+use ProcessMaker\Jobs\ErrorHandling;
 use ProcessMaker\Models\FormalExpression;
 use Psr\Http\Message\ResponseInterface;
 
@@ -33,6 +34,8 @@ trait MakeHttpRequests
     protected $verifySsl = true;
 
     private $mustache = null;
+
+    private $timeout = 0;
 
     private function getMustache()
     {
@@ -170,7 +173,7 @@ trait MakeHttpRequests
     /**
      * Prepares data for the http request replacing mustache with pm instance and OutboundConfig
      *
-     * @param array $data, request data
+     * @param array $requestData request data
      * @param array $config, datasource configuration
      *
      * @return array
@@ -427,7 +430,12 @@ trait MakeHttpRequests
      */
     private function call($method, $url, array $headers, $body, $bodyType)
     {
-        $client = $this->client ?? new Client(['verify' => $this->verifySsl]);
+        $client = $this->client ?? app()->make(Client::class, [
+            'config' => [
+                'verify' => $this->verifySsl,
+                'timeout' => $this->timeout,
+            ],
+        ]);
         $options = [];
         if ($bodyType === 'form-data') {
             $options['form_params'] = json_decode($body, true);
@@ -663,7 +671,7 @@ trait MakeHttpRequests
                 'path' => storage_path("logs/data-sources/$connectorName.log"),
                 'days' => env('DATA_SOURCE_CLEAR_LOG', 21),
             ])->info($label . str_replace(["\n", "\t", "\r"], '', $cleanedLog));
-        } catch(\Throwable $e) {
+        } catch (\Throwable $e) {
             Log::error($e->getMessage());
         }
     }

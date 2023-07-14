@@ -5,7 +5,6 @@ namespace ProcessMaker\Repositories;
 use Carbon\Carbon;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Nayra\Contracts\Bpmn\ParticipantInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\ExecutionInstanceRepositoryInterface;
@@ -20,14 +19,38 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
 {
     use RepositoryTrait;
 
+    private bool $abortIfInstanceNotFound = true;
+
+    private bool $loadTokens = true;
+
+    /**
+     * Set not found flag
+     *
+     * @param bool $abortIfInstanceNotFound
+     */
+    public function setAbortIfInstanceNotFound(bool $abortIfInstanceNotFound)
+    {
+        $this->abortIfInstanceNotFound = $abortIfInstanceNotFound;
+    }
+
+    /**
+     * Set load tokens flag
+     *
+     * @param bool $loadTokens
+     */
+    public function setLoadTokens(bool $loadTokens)
+    {
+        $this->loadTokens = $loadTokens;
+    }
+
     /**
      * Create an execution instance.
      *
      * @return ExecutionInstanceInterface
      */
-    public function createExecutionInstance()
+    public function createExecutionInstance(): ExecutionInstanceInterface
     {
-        $instance = new Instance();
+        $instance = new ProcessRequest();
         $instance->setId(uniqid('request', true));
 
         return $instance;
@@ -37,25 +60,48 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      * Load an execution instance from a persistent storage.
      *
      * @param string $instanceId
+     * @param StorageInterface $storage
      *
-     * @return \ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface
+     * @return ExecutionInstanceInterface|null
      */
-    public function loadExecutionInstanceByUid($instanceId, StorageInterface $storage)
+    public function loadExecutionInstanceByUid($instanceId, StorageInterface $storage): ?ExecutionInstanceInterface
     {
-        $instance = Instance::find($instanceId);
-        if (!$instance) {
-            abort(404, 'Instance not found');
+        // Get process request
+        if (is_numeric($instanceId)) {
+            $instance = ProcessRequest::find($instanceId);
+        } else {
+            $instance = ProcessRequest::where('uuid', $instanceId)->first();
         }
+
+        // Finish if process request not exists
+        if (!$instance && $this->abortIfInstanceNotFound) {
+            abort(404, 'Instance not found');
+        } elseif (!$instance) {
+            return null;
+        }
+
+        // Get process
         $callableId = $instance->callable_id;
         $process = $storage->getProcess($callableId);
+
+        // Set data store
         $dataStore = $storage->getFactory()->createDataStore();
         $dataStore->setData($instance->data);
-        $instance->setId($instanceId);
+
+        // Set process request properties
+        $instance->setId($instance->getKey());
         $instance->setProcess($process);
         $instance->setDataStore($dataStore);
+
+        // Get transitions
         $process->getTransitions($storage->getFactory());
 
-        //Load tokens:
+        // Finish if is not necessary load the tokens
+        if (!$this->loadTokens) {
+            return $instance;
+        }
+
+        // Load tokens
         $tokens = $instance->tokens()->where('status', '!=', 'CLOSED')->get();
         foreach ($tokens as $token) {
             $tokenInfo = [
@@ -76,12 +122,10 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      * Create or update an execution instance to a persistent storage.
      *
      * @param \ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface $instance
-     *
-     * @return $this
      */
     public function storeExecutionInstance(ExecutionInstanceInterface $instance)
     {
-        // TODO: Implement store() method. or Remove from Interface
+        // TODO: Implement store() method or Remove from Interface
     }
 
     /**
@@ -93,19 +137,23 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      */
     public function persistInstanceCreated(ExecutionInstanceInterface $instance)
     {
-        //Get instance data
+        // Get instance data
         $data = $instance->getDataStore()->getData();
-        //Get the process
+
+        // Get the process
         $process = $instance->getProcess();
-        //Get process definition
+
+        // Get process definition
         $definition = $process->getOwnerDocument()->getModel();
 
+        // Do nothing if is not persistent
         if ($process->isNonPersistent()) {
             return;
         }
 
-        //Save the row
+        // Save process request
         $instance->callable_id = $process->getId();
+        $instance->collaboration_uuid = $instance->getProperty('collaboration_uuid', null);
         $instance->process_id = $definition->getKey();
         $instance->process_version_id = $definition->getLatestVersion()->getKey();
         $instance->user_id = pmUser() ? pmUser()->getKey() : null;
@@ -115,39 +163,31 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->do_not_sanitize = SanitizeHelper::getDoNotSanitizeFields($definition);
         $instance->data = $data;
         $instance->saveOrFail();
+
+        // Set id
         $instance->setId($instance->getKey());
 
+        // Persists collaboration
         $this->persistCollaboration($instance);
-    }
-
-    private function findParticipantFor(ExecutionInstanceInterface $instance)
-    {
-        $collaboration = $instance->getProcess()->getEngine()->getEventDefinitionBus()->getCollaboration();
-        if (!$collaboration) {
-            return;
-        }
-        foreach ($collaboration->getParticipants() as $participant) {
-            if ($participant->getProcess()->getId() === $instance->getProcess()->getId()) {
-                return $participant;
-            }
-        }
     }
 
     /**
      * Persists instance when an error occurs
      *
      * @param ExecutionInstanceInterface $instance
-     *
      * @return mixed
      */
     public function persistInstanceError(ExecutionInstanceInterface $instance)
     {
+        // Get process
         $process = $instance->getProcess();
+
+        // Do nothing if is not persistent
         if ($process->isNonPersistent()) {
             return;
         }
 
-        //Save instance
+        // Save instance with error
         $instance->status = 'ERROR';
         $instance->mergeLatestStoredData();
         $instance->saveOrFail();
@@ -157,17 +197,22 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      * Persists instance data related to the event Process Instance Completed
      *
      * @param ExecutionInstanceInterface $instance
-     *
      * @return mixed
      */
     public function persistInstanceUpdated(ExecutionInstanceInterface $instance)
     {
+        // Get process
         $process = $instance->getProcess();
+
+        // Do nothing if is not persistent
         if ($process->isNonPersistent()) {
             return;
         }
-        //Save instance
-        $instance->status = 'ACTIVE';
+
+        // Save updated instance
+        if (!$instance->status) {
+            $instance->status = 'ACTIVE';
+        }
         $instance->mergeLatestStoredData();
         $instance->saveOrFail();
     }
@@ -176,16 +221,19 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      * Persists instance data related to the event Process Instance Completed
      *
      * @param ExecutionInstanceInterface $instance
-     *
      * @return mixed
      */
     public function persistInstanceCompleted(ExecutionInstanceInterface $instance)
     {
+        // Get process
         $process = $instance->getProcess();
+
+        // Do nothing if is not persistent
         if ($process->isNonPersistent()) {
             return;
         }
-        //Save instance
+
+        // Save completed instance
         $instance->status = 'COMPLETED';
         $instance->completed_at = Carbon::now();
         $instance->mergeLatestStoredData();
@@ -198,14 +246,19 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      * @param ExecutionInstanceInterface $instance Target instance
      * @param ParticipantInterface $participant Participant related to the target instance
      * @param ExecutionInstanceInterface $source Source instance
-     * @param ParticipantInterface $sourceParticipant
+     * @param ParticipantInterface $sourceParticipant Source participant
      */
     public function persistInstanceCollaboration(ExecutionInstanceInterface $instance, ParticipantInterface $participant = null, ExecutionInstanceInterface $source, ParticipantInterface $sourceParticipant = null)
     {
+        // Get process
         $process = $instance->getProcess();
+
+        // Do nothing if is not persistent
         if ($process->isNonPersistent()) {
             return;
         }
+
+        // Get collaboration id if not exists
         if ($source->process_collaboration_id === null) {
             $collaboration = new ProcessCollaboration();
             $collaboration->process_id = $instance->process->getKey();
@@ -213,6 +266,8 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
             $source->process_collaboration_id = $collaboration->getKey();
             $source->saveOrFail();
         }
+
+        // Save collaboration
         $instance->process_collaboration_id = $source->process_collaboration_id;
         $instance->participant_id = $participant ? $participant->getId() : null;
         $instance->saveOrFail();
@@ -221,28 +276,46 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     /**
      * Persist current collaboration.
      *
-     * @param ProcessRequest $instance
-     * @return void
+     * @param ProcessRequest $request
      */
     private function persistCollaboration(ProcessRequest $request)
     {
+        // Get valid engine
         $engine = $request->getProcess()->getEngine();
-        if (count($engine->getExecutionInstances()) <= 1) {
-            return;
-        }
-        $collaboration = null;
-        foreach ($engine->getExecutionInstances() as $instance) {
-            if ($instance->collaboration) {
-                $collaboration = $instance->collaboration;
-                break;
+        if ($engine) {
+            if (count($engine->getExecutionInstances()) <= 1) {
+                return;
+            }
+
+            // Get current collaboration
+            $collaboration = null;
+            foreach ($engine->getExecutionInstances() as $instance) {
+                if ($instance->collaboration) {
+                    $collaboration = $instance->collaboration;
+                    break;
+                }
+            }
+
+            // If not exists a collaboration, create a new one
+            if (!$collaboration) {
+                $collaboration = new ProcessCollaboration();
+                $collaboration->process_id = $request->process->getKey();
+                $collaboration->saveOrFail();
+            }
+
+            // Update collaboration id
+            $request->process_collaboration_id = $collaboration->id;
+            $request->saveOrFail();
+        } elseif ($request->collaboration_uuid) {
+            // find by uuid or create
+            $collaboration = ProcessCollaboration::firstOrCreate([
+                'uuid' => $request->collaboration_uuid,
+                'process_id' => $request->process_id,
+            ]);
+            if ($collaboration) {
+                $request->process_collaboration_id = $collaboration->id;
+                $request->saveOrFail();
             }
         }
-        if (!$collaboration) {
-            $collaboration = new ProcessCollaboration();
-            $collaboration->process_id = $request->process->getKey();
-            $collaboration->saveOrFail();
-        }
-        $request->process_collaboration_id = $collaboration->id;
-        $request->saveOrFail();
     }
 }

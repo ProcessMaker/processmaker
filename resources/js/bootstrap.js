@@ -238,6 +238,13 @@ if (openAiEnabled) {
 const userID = document.head.querySelector("meta[name=\"user-id\"]");
 const formatDate = document.head.querySelector("meta[name=\"datetime-format\"]");
 const timezone = document.head.querySelector("meta[name=\"timezone\"]");
+const appUrl = document.head.querySelector("meta[name=\"app-url\"]");
+
+if (appUrl) {
+  window.ProcessMaker.app = {
+    url: appUrl.content,
+  };
+}
 
 if (userID) {
   window.ProcessMaker.user = {
@@ -330,6 +337,15 @@ if (userID) {
               window.location.href = '/logout';
             }
           }, 100);
+        }
+      })
+      .listen('.SecurityLogDownloadJobCompleted', (e) => {
+        if (e.success) {
+          const link = e.link;
+          const message = e.message;
+          window.ProcessMaker.alert(message, "success", 0, false, false, link);
+        } else {
+          window.ProcessMaker.alert(e.message, "warning");
         }
       });
 }

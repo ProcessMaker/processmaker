@@ -10,6 +10,30 @@
         <b-form-input v-model="filter" id="search-box" class="pl-0" :placeholder="$t('Search Templates')"></b-form-input>
       </b-input-group>
     </div>
+
+    <b-card-group id="template-options" deck class="d-flex small-deck-margin">
+      <button-card
+        v-show="component === 'template-select-card'"
+        :button="blankProcessButton"
+        @show-details="showDetails($event)"
+        @card-button-clicked="$emit('blank-process-button-clicked')"
+      />
+
+      <div v-if="packageAi">
+        <button-card
+          v-if="component === 'template-select-card'"
+          :button="aiProcessButton"
+          @show-details="showDetails($event)"
+          @card-button-clicked="$emit('ai-process-button-clicked')"
+        />
+      </div>
+      <div v-if="component === 'template-select-card'" class="d-flex w-100 align-items-center my-3 card-separator">
+        <small class="mr-2 text-secondary">Templates</small>
+        <div class="flex-grow-1 border-bottom"></div>
+      </div>
+
+    </b-card-group>
+
     <div class="pb-2 template-container">
       <template v-if="noResults === true">
         <div class="no-data-icon d-flex d-block justify-content-center mt-5 pt-5 pb-2">
@@ -20,25 +44,47 @@
         </div>
       </template>
       <template v-else>
-        <b-card-group deck class="d-flex">
-          <template-select-card v-show="component === 'template-select-card'" v-for="(template, index) in templates" :key="index" :template="template" @show-details="showDetails($event)"/>
+        <b-card-group id="template-options" deck class="d-flex small-deck-margin">
+          <template-select-card
+            v-show="component === 'template-select-card'"
+            v-for="(template, index) in templates"
+            :key="index"
+            :template="template"
+            @show-details="showDetails($event)"
+          />
         </b-card-group>
       </template>
       <template-details v-if="component === 'template-details'" :template="template"></template-details>
+      <template v-else>
+          <b-pagination
+          v-model="currentPage"
+          v-if="templates.length > 0"
+          class="template-modal-pagination"
+          :total-rows="totalRow"
+          :per-page="perPage"
+          :limit="limit"
+          prev-class="caretBtn prevBtn"
+          next-class="caretBtn nextBtn"
+          size="sm"
+          last-number
+          first-number
+        ></b-pagination>
+      </template>
     </div>
   </div>
 </template>
 
 <script>
+import ButtonCard from "./ButtonCard.vue";
 import TemplateSelectCard from "./TemplateSelectCard.vue";
 import TemplateDetails from "./TemplateDetails.vue";
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 
 export default {
-  components: { TemplateSelectCard, TemplateDetails},
+  components: { ButtonCard, TemplateSelectCard, TemplateDetails },
   mixins: [datatableMixin, dataLoadingMixin],
-  props: ['type', 'component'],
+  props: ["type", "component", "packageAi"],
   data() {
     return {
       filter: "",
@@ -46,13 +92,33 @@ export default {
       currentdata: [],
       template: {},
       noResults: false,
+      currentPage: 1,
+      totalRow: null,
+      perPage: 18,
+      limit: 7,
+      blankProcessButton: {
+        title: `Blank ${this.type}`,
+        icon: "fa fa-plus",
+      },
+      aiProcessButton: {
+        title: `AI ${this.type}`,
+        helperEnabled: true,
+        helperTitle: "Your word is our command!",
+        helperDescription: "Try our new modeler powered by artificial intelligence and create complex processes, just like you were talking to a person.",
+        icon: "fa fa-robot",
+      },
     };
   },
-  computed: {},
   watch: {
+    currentPage() {
+      this.fetch();
+    },
+    perPage() {
+      this.fetch();
+    },
     filter() {
       this.fetch();
-    }
+    },
   },
   beforeMount() {},
   methods: {
@@ -80,8 +146,10 @@ export default {
             .get(
                 url +
                 "page=" +
-                this.page +
-                "&per_page=300&filter=" +
+                this.currentPage +
+                "&per_page=" +
+                this.perPage + 
+                "&filter=" +
                 this.filter +
                 "&order_by=" +
                 this.orderBy +
@@ -94,6 +162,7 @@ export default {
                 this.noResults = true;
               } else {
                 this.templates = response.data.data;
+                this.totalRow = response.data.meta.total;
                 this.apiDataLoading = false;
                 this.apiNoResults = false;
                 this.loading = false;
@@ -127,12 +196,6 @@ export default {
   color: #6C757D;
 }
 
-.template-container {
-  height: 375px;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-
 .no-data {
   font-size: 1.75rem;
 }
@@ -140,5 +203,13 @@ export default {
 .no-data-icon {
   font-size: 5em;
   color: #b7bfc5;
+}
+.small-deck-margin {
+  margin-left: -9px;
+  margin-right: -9px;
+}
+.card-separator {
+  margin-left: 0.7rem;
+  margin-right: 0.7rem;
 }
 </style>
