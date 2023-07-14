@@ -19,94 +19,67 @@ use ProcessMaker\Repositories\BpmnDocument;
 
 class RollbackProcessRequestTest extends TestCase
 {
-    public function testRollbackToFormTask()
+    public $processRequest;
+
+    public $rollbackToTask;
+
+    public function createTasks($rollbackToType)
     {
-        $processRequest = ProcessRequest::factory()->create(['status' => 'ERROR']);
-        $task1 = ProcessRequestToken::factory()->create([
+        $this->processRequest = ProcessRequest::factory()->create(['status' => 'ERROR']);
+        $this->rollbackToTask = ProcessRequestToken::factory()->create([
             'status' => 'CLOSED',
-            'process_request_id' => $processRequest->id,
+            'process_request_id' => $this->processRequest->id,
             'element_id' => 'node_5',
-            'element_type' => 'task',
+            'element_type' => $rollbackToType,
         ]);
-        $task2 = ProcessRequestToken::factory()->create([
+        ProcessRequestToken::factory()->create([
             'status' => 'CLOSED',
-            'process_request_id' => $processRequest->id,
+            'process_request_id' => $this->processRequest->id,
             'element_id' => 'node_6',
             'element_type' => 'gateway',
         ]);
-        $task3 = ProcessRequestToken::factory()->create([
+        $task = ProcessRequestToken::factory()->create([
             'status' => 'FAILING',
-            'process_request_id' => $processRequest->id,
+            'process_request_id' => $this->processRequest->id,
             'element_id' => 'node_7',
             'element_type' => 'scriptTask',
         ]);
 
+        return $task;
+    }
+
+    public function testRollbackToFormTask()
+    {
+        $task = $this->createTasks('task');
+
         $mockProcessDefinitions = Mockery::mock(BpmnDocument::class);
-        $newTask = RollbackProcessRequest::rollback($task3, $mockProcessDefinitions);
+        $newTask = RollbackProcessRequest::rollback($task, $mockProcessDefinitions);
         $this->assertEquals('node_5', $newTask->element_id);
         $this->assertEquals('ACTIVE', $newTask->status);
 
         $comment = Comment::orderBy('id', 'desc')->first();
-        $this->assertEquals($comment->body, "The System rolled back {$task3->element_name} to {$newTask->element_name}");
+        $this->assertEquals($comment->body, "The System rolled back {$task->element_name} to {$newTask->element_name}");
     }
 
     public function testRollbackToScriptTask()
     {
-        $processRequest = ProcessRequest::factory()->create(['status' => 'ERROR']);
-        $task1 = ProcessRequestToken::factory()->create([
-            'status' => 'CLOSED',
-            'process_request_id' => $processRequest->id,
-            'element_id' => 'node_5',
-            'element_type' => 'scriptTask',
-        ]);
-        $task2 = ProcessRequestToken::factory()->create([
-            'status' => 'CLOSED',
-            'process_request_id' => $processRequest->id,
-            'element_id' => 'node_6',
-            'element_type' => 'gateway',
-        ]);
-        $task3 = ProcessRequestToken::factory()->create([
-            'status' => 'FAILING',
-            'process_request_id' => $processRequest->id,
-            'element_id' => 'node_7',
-            'element_type' => 'scriptTask',
-        ]);
-
+        $task = $this->createTasks('scriptTask');
         $mockProcessDefinitions = $this->mockRunScriptTask();
 
-        $newTask = RollbackProcessRequest::rollback($task3, $mockProcessDefinitions);
+        $newTask = RollbackProcessRequest::rollback($task, $mockProcessDefinitions);
         $this->assertEquals('node_5', $newTask->element_id);
         $this->assertEquals('ACTIVE', $newTask->status);
     }
 
     public function testRollbackToServiceTask()
     {
-        $processRequest = ProcessRequest::factory()->create(['status' => 'ERROR']);
-        $task1 = ProcessRequestToken::factory()->create([
-            'status' => 'CLOSED',
-            'process_request_id' => $processRequest->id,
-            'element_id' => 'node_5',
-            'element_type' => 'serviceTask',
-        ]);
-        $task2 = ProcessRequestToken::factory()->create([
-            'status' => 'CLOSED',
-            'process_request_id' => $processRequest->id,
-            'element_id' => 'node_6',
-            'element_type' => 'gateway',
-        ]);
-        $task3 = ProcessRequestToken::factory()->create([
-            'status' => 'FAILING',
-            'process_request_id' => $processRequest->id,
-            'element_id' => 'node_7',
-            'element_type' => 'scriptTask',
-        ]);
-
+        $task = $this->createTasks('serviceTask');
         $mockProcessDefinitions = $this->mockRunServiceTask();
 
-        $newTask = RollbackProcessRequest::rollback($task3, $mockProcessDefinitions);
+        $newTask = RollbackProcessRequest::rollback($task, $mockProcessDefinitions);
         $this->assertEquals('node_5', $newTask->element_id);
         $this->assertEquals('ACTIVE', $newTask->status);
-        $this->assertEquals('ACTIVE', $processRequest->refresh()->status);
+        $this->assertEquals('ACTIVE', $this->processRequest->refresh()->status);
     }
 
     private function mockRunScriptTask()
