@@ -1,0 +1,246 @@
+{
+    "type": "screen_package",
+    "version": "2",
+    "screens": [
+        {
+            "id": 85,
+            "uuid": "99ab9f4d-d19b-47df-8fa7-cf2e8f5e77a2",
+            "screen_category_id": "1",
+            "title": "Default Display Screen",
+            "description": "Default Display Screen",
+            "type": "DISPLAY",
+            "config": [
+                {
+                    "name": "Default Display Screen",
+                    "items": [
+                        {
+                            "label": "Image",
+                            "config": {
+                                "icon": "fas fa-image",
+                                "name": "default-screens-illustration",
+                                "event": "submit",
+                                "image": "data:image\/png;base64,iVBORw0KGgoAAAANSUhEUgAAARkAAAEZCAYAAACjEFEXAAAABmJLR0QA\/wD\/AP+gvaeTAAAaMklEQVR42u3de3hU5Z0HcIta7c1L3WrrbvexPrbVqs+2tbvbZ7f2eXYfW+1F21qprla33bZKhjsiKFYLiBWEtgJqgcwk3AMxhEtCuIQQEJBwCfcQcOa8JzeS857JnSSQy8x3\/zgDBDKZOZPM5Jwz8\/08z+\/p87Q14Jz5fXPOeztXXUVERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERENlZTg1sUiYdUDeMUHe8oErlColBoOKBKHBQSu4XEFiGxVOh4U0g8V1mHbwAYxk+PiMKHioanVQ0ZQqJCSGCA1So07FAkZgkdDzJ0iFIYgGFCw2OKxFoh0TmIYIlUmiKxQEj88CBwLT91ohShSDwuJI4lKFj6q1pFYmqVH7fzChAlKZ+GW4XEuiEOlyurS0hkCx0P8ooQJVfA3Cck6iwOmCtrZ0Ud\/otXx5nUJtxU2Yybe5fXi+v4yaTi45GG+4WE32YB07s+9Gn4b14pm4SHiutVHd9UNTyl6HhZaJgvJNYrEqVCQhUSTVGuZ7eQqFclTgiJTUKHW0i8pEo8zMflJFRdjU8JHSdtHDC9a1NFLe7hVRs6NTW4RdXxiJB4LfQo7RUSPYm4vkeqAsg+fB7zd7c1zyg+e2xq4dnlY9a3PDI8G1fzSjiYkHjbIQFz6beghvk1NbiFVy8Bdyl1uEPR8VshsVRIKENxTU\/VBjF7ZxueyKrH4yv61jOrGrpeKmjJG7G26Q5eIac9JjXiRiHR6rCQuVANqo4xnPoenFN+fE7oeELV4Ak96gzpdVQ0YPKmlrDhcmU9tboh+JedbRuVRtzIK+eUuxgdIx0aMJdKQ7mi48e8muZVaPiKqmOMkNiawDVQpmrzyS5TAdO7Zu1oO6doGA\/wMcoJj0rZjg+ZS7VZ0XA\/r2p43gb8kyIxQejYb6frlnP0fJ8QeWJlPZ5e3RAxaDL2d0BI7OMYnd1DRkNVEoUMhERASCyrlLiTV\/eqq1QdXwzdrX4Y+mxsd81OngnihXVNF8Nl\/p52HK8JQkjgYGUA6fs68OvsvoHzZFYDjlYHICRaVQ0\/49W2751Md5KFzMUFfarE+xV+fCnVrqlPw62KRJqiY3uiZoESMfCbc\/Q89oqesP\/7PtGD\/\/2gsU\/QLD5w7uIvF0XHb9nRNlMMXJOkAdO72hWJBd463JvkvyxuUyVeUCWKnBIssdbCko4+IfNG0dnL72J1DGdn2+kZ3YvrUiBkLlRQSGxTJJ6prcWnk+IXhI4HhY43Qwvggsl+DZeXnusTMtO2tV75\/zur1uNudre9fgPqKRQ0F4+bUCQyhYbHnBI4AIb5NNynSrwgJHKERHMqXTOfBozPb+4TMgtLOsKuDgfwCXa3fQZ+D6RgyPSuDqFjg9AxWkj8i13Ot\/E24AZF4iFV4nUhsSnVQqV3Ha4MYMqW1rAzUPvU8GM4qsTP2d12mX2QWJHiIXNlNakaNgodbwodv6qoxT3FwDWJ+vxP+fG5Cj++LSSeVSRmqRo2DvJQsKSoj+uCWHesE38qbMWvVoafyn5nV1ukn1HI7rbPncwfGCxRq1OV8IVmaxYrElNDx47+VpF4XJF4yOfHA71LqcO\/KhIPCR3DhYbfKRrGKxJThcRCVcPG0MbAZn62fR+L3CUdeDY78hqZ17e2wlcXeSmD2oSb2OF2mO7UcRe\/3Cw71Om6IF4qiLy9YPjKeizY2w6fFv3nVej4ETvcPoO\/gl9yltU1bVtrv+HyZFYD3t7RhtLKgOmfp0o8z+62S8jomMEvOcvKKjrdHTZcXOubsOLQOZw8E4z5Z6oaxrG7bULx42v8orOsrCmbW8IO7CrawH8mVwDb75HpI37ZWVZU+Zlgn3NkJha0QBnkz1U1fJedba+QeZZfeJYVdbwmiCdWXh4yG8u6Bvtz23iWsM0AuFqV8PFLz7LquIc\/5DZduovRBv0zF7Or7Tg2I+HiF55l9W7seOxTU\/z4Djvajqt\/VVxvw1eisFixlY5V7GZ7T2eP4heVNRRVWhnArOKzmFTQgvl72gc0TR2mdFXHF9nJNnYQuFZoKGcTsBJZx6oDfbYOjMtrjrZVwMybR3\/ALnbC2IyGn7IRWIksd5gDqB5fUY+t5QOeVQoKiV+ze501pb2FzcAKV2XVwK5TwIaDwJKdwNwCYHYe4N4OHFbN\/Yx3drWFDZncY50D2sCqaHiaXeswofdid7KpUjdIdp8C8kqBZR8C8wqAaTnAuCVAmrv\/Gr8UOOCL\/vO3lPd9DcpTqxpwuCoQ699V47vSnX03M50Nl7x1shrYexrYdBjI2gMsKARmrgMmLoscJNHqr\/nm\/nzPvg4MDy3Ceya7ARtOxHwXs0lI3MZOdTCvF9cpEmVsSGcHyZ7TwMZDwLJdwPxNwPQcYMKSwQVJpBqdAdOL6cpqgvhI6YE3tsV3tULiOR6xmSyDwDq+Z9f39bBCe39qwt+RvLIycUESrY5UJObwMCHxtrcBN7Azk++x6T02s9XHURpjHXYKkkhVXBb3z6BQ0fFVdmOy3s004sbQLaqtG7GqHvC3AM3tQHsn0NEJnO8y\/rOlA\/C3AlV++\/79vRGCxOW2Z5j0V7n74\/a5nFUlRvDRKDXWzvyPXZtTNgPnumDauU6gttG6IDmkAoXHnB8kkcqzPQ6fl4byZH8pH\/V9bCq0U7hU+mMLlyu1dgCqziBJRM3JG\/z+o2R4CR8NbO2MLQaBq+uBngAGraMTUGMNEQ0o8QL5pUBmMZC1G3h\/C\/DmWuCl5akRItHqj6sHcaKdxEw+HqXyY5NErtUBU6EDXT2Im5b2CHtsKo1BzA9KgHc3A1NzjCnaC800dnFyhcPEZcCs9UZ45h8C9nmNVbzFZcC8TeZ\/zqgMmHqjQJh6kV2W6nczfjxgdcg0tiHuhDSmgfNKjeXxM9cBE5Ym513Gi8uAmesBT7Hx77vPZzw2tp2P\/jmdrDH+eTN\/zuEYp7F58DddGpvRUWxlyHRHuYs512XMMDWcNersOSAQjPzPbDsee7M6ZXxl3BLjTux0rfFZxCOQR2VE\/3O3n4hpDGYGO4suUiWet3Kwtz\/dPcCZxstXu+4qNxoso9i4fe9PVX1y3rVMywH0lvjf+WXtMTGNvc\/0dV3GMRi6TGUzbrZq82RFPyETCBrjBot3GDMb4fbfvLjMGOjt7+4n2QJm\/BLjTi4RFBn9z3ebm8Y+wlkkCv\/IpGGHJYcdVRoDtVcqOGyu8Y5Vhm+arp7kC5n8Q0iY7h5gpGfQ09gtlRJ3spsofMhIzE70fpxd5cDa\/cZvxBm5wJjQTM6rq4Cahktf+DON0Y8guFClInzT+FuTL2TONCKh\/rg68p\/\/6qqoi+1+x06i\/sdlNDwVjzDx9VpKv\/xD47efmf04LrcRPHPyLp9SjvbP1LeGb5hDavKFTGd3YkMm2pT2KE\/EaexCdhFFC5l\/H8ijzpVrTkZlDF3TuYv6bxhPcfKFTGtHYkPGzODvofAn5fUoGu5nF1FE3jrcG+1RJ3cfsLDQuOOwetHaH1f333QtHcCYzOQLGVVPbMgUHR\/wNPYidhBFv5Opwx1CAgcVYONhYPFO49Fl8gr7NdvkFZGncc38RnZi7fMlNmSOVUb\/O6wp6burusKPL7GDKKrV+\/Ho9Bz7N9qkFZEHQE\/XRp8l4exSeHVNJnZjF\/XZlzSN3UNRTZ2Ka8YuRq0TVrpWN0TYs9RhzzuveFVmcWJDpjsQPaBnXz6N3VXlx+3sIIpqxCI87IjHBW\/\/DdLZDczekNw7oWetR8JFm8aesoqvj6UBcKXjSbs32Mz1QH\/blXoCse0odvJGyESL9jmOzACUuosh8312D5ny8ir80O4NdlhNvYHecGVmZ\/VQTGMrEmXsHDKtVOAlO+9AHpnR\/0K0A77UOjwq4dPYJ6L\/HYqOA0LDFHYOmQJgmNBx0s4DptNy+m+KN9emVshEGpeKh+NV0f8OOSVAhY5vsXvIFEXH\/wlprImx8\/my\/e3UdnlSK2TySxMbMsLEbuyFhWjjUQ5kLmCMV6NoQhqL75wWMu3nU++s3YwET2OXVZu6s6xi95ApQmL5henIgkPOe1wKBJN34V2kWbZEWncg+t9h7GLUsnvI9GPShbLzAGqkgd9Ue5vA+CXRjx4dqLbz4Q8HC1Pdzy\/Etewi6ldox3X7ZcvD64Z2B3Wsdbwq\/ONSMm6EjFYf18U\/YLp6Yltr5HLjLnYShVVZh28IiYZwu63\/lG3vR6b6s5cawltnLHFPxXcg\/W0jEIzT3UwQQPkZY2d9jIeuP8Juor5jMH58XZGo6e9Ih3c327\/BxmSaP9QqmWvVR7EFTXfA2AB5rNJ4k0PWHmBuwSAeNz0YzY6iy4TOi9EiHUK16iM2r5Nq9gbjMfLCi\/G6A4DWbPx3RaEgmbfJ2I8U9wHydMxjV1HvWaQfCInGaCfdFR1n4zqxXB5jX9MQr9ouYGeRMchrvFOpy8xxmkcrndFQ03OAP681f9g4KyHlZXeluGLgGqFhXqzn9k6wceP+Jf\/yE\/E6u42DnFJt1a9NitPYqcyn4VZFx\/aBvG3grbX2nV3qb63M1mNseivqhUx8ld2WghSJh4RE3UBfaZJeZM8v9J7T\/c+cBILGO4HY+EMcMun4MTsuxR6PFImpQiIwmPcmmVlWbkVV10eeol28g00\/1DUiHWPYealy91KLfxYSu+PxcrY9p+35hfZGWeW6ZCebfsgH4d2Yz+5LhYDR8LSQaIrX62RP19pzIHXNvsirVl\/PZtMPeXmwmR2YzOFiHNOwLBHvrX4ly54rfSv94UOmuIwNb1H52InJPbhbnYiAERL4a749v9QTlgI7yoBzXZdegbL+QOod92Cj6hmejU+yI5OIquJ6oWGukAgmKmCEBJZ9aO8v98jQClc2uQ2uxSJ8jZ2ZJCpqcY+QOJLIcLlQmw+zeVim6yfsziQgJJ678vyXRNZBhc3DMj3DNJYd6uTHoybcJDSsHqpwuVA+LTUPg2INaIbpXXaqUwNGw3cjnf2S6JqWwwZimaot7FYnPh5p+J2QOG9VwAgJvLeVDcQyVQo71kFCWwNmWhkuF+qDvWwgFqexk8rpWvyDKlFkh4ARkgvcWDGNy3ydHWz36WkNXxESXrsEjJDmXvLFYqW5gRGL8FN2sY1563CvlQO8kWoiF7yxzE1jj2cn23WA14+vRzvc28qauY4NxDJxJ+PGe+xmG\/LpuEtI1No1YIQEPNvZQCxTdzJb2dE2U12Nz9ttDCZcbTjIBmKZKpVdbbNpaiGxze4BIySw9zQbiGWqAqPn4Tp2t13GYXTMcELACGm8c5nHKLDM1PMLcTe72w5T1Tq+ZfYdSHYpHtDNMjku8yg73GIAhgmJo04KGCGBdwrYQCxTC\/ImsMutfkyS+LXTAkZIYPkuNhDLVL3PLrd+sFdxYshsOcoGYpmodBSy060di\/mREwNGSOCQygZimaoKdrqFFB1ZTg0ZRQJjF7OJWNGnsX+TievZ7dY9KrU5NWSEBN5YkzrNMirD+Pf1FAObjwD5pQwQ06+tzcA32PFW3MX48R0nB4yQwN+T9ACrF5cBc\/KA7L3ArnLj2NGunsvf6dR2nuERwwzTY+x4axbfjXR6yOSUOPvLPzoDmL7GeF\/2lqPAsUrjnU1mvbySAWLy3dgvsuOtmbp+2+khs\/Okc77oL68E3t8KrN0PlHiB2iYgGMSgzNvEADG5IG8BO94CqgaP00OmrMa+jzordgPbTxiPOp3dSIg1+xggJo982MaOt+ZO5gOnh4yQwKTl1g3EXvmo09yOIVXiZYCYrEp2vDV3MhnJEDKzN1jzqBMIwnJV9QwQs9PY47PxKXb9UIeMxF+TIWQyd8TvyzhxGfC3jcDqj4DdpwBVB853wba6egBXBkPE5Lux72XXD33ITEqGkBnIepHRGcCbuUZAbT1qHE7e1A7b6wkANQ3Afp9xVzV\/M+BigJgLmXT8jF0\/9GMyP0iGkIl1XOKQMJrV7hrbgONVxnhPRjEwI9cYB2JgDHiGaSK7fohVNuNmIRF0esh4NWBUDAdYlQp7hcm5LqDSb4Rl9l5gbgEwaQVDIQEL8hay6625mzmVDHczr602\/2XLK7UmTAJBwN9qzELlHwLSi4zZKRdP+BuqkClix1sTMnOSIWTmxrAo7e+FiQ+U9vPG+pjtJ4z1MnPyuJnTBlXFjrdma8GDyRAyWbvNf9leWx2\/MOkOGNPZJV5jIPb9rVzqb+MKchrbAgCuFhqqnB4y247FNACIcwOYlm5uNx51thw1FuBNX2Pfw8xdbuMM5HcKgJW7gcJjwNEKoMIPfLA3pVf+3seut2Yq+09OD5kjFbF92RTZf5h0dBqPOrvKjYHYOXnAuCX2DJIpWca6nhW7ga3HjM\/hTGPfHdtXmpaToiHjwS\/Y8Rao8uN2IdHp5JBRZGxBsKvceNSprjcedXJDa07s+qgTbrd2WfXAH\/M8xSk7jT2JHW8RReLvTr+bmZFr\/ss2drF915yY3a0dCBpT3wORV5qyj0uL2O0W8Z3Bl4XEOSeHzMJtzjyYajC7tdvPAw1nubEyhipmt3NsZsCVu9++x2ZOX2Osi8k\/ZDzq+FvjN8Plb419IFvIlL2TqWanW6isDJ9UJMqcGjK7yu3xqDO3wBgwLvEajzPdPYlfl1OhA7FsCtdbUncae+JSfIbdbuVjk4b7nHq4+KkzQ7dZcMJS4K11xkDs9hNA+RnjzF0rfVxr7v8XBJCbwoddjcrE\/ex06weBn3HqnqaXV8T\/UWdGrrFBcctRY8NiY5s9N1QGQ3c0vQeG61uBkzXAjjJjfcx7W4xp75TeKJmOx9nldggaDeOdGDJz8uL7qNPVA9vrvYVh5R5gUZGxDmY0d2z3V5PZ4fYKmoCTQmZJjAdY\/Xmt8Zu+\/bz9w6Sz2zhEa\/cpIwj\/ttE4ZIuhEXOls7ttpELiF0Ki2Skhs\/FwbF+43o8XdhEIArLZOPcmr9SYmn89m7u141hZ7Gy7TW3X4Q6ho9gJIbNfie0LV9NgbaCcPWcMWBedAJZ9CMxcB4zJZBAkdEzGg+nsavsOCP9yiKa4m4WEX0goikSZKnHwQik6tguJwoulY78qcVBoKBcSik\/DmVGZCJr9wu33Dd2xmbVNxoFZ+YeMFb2xnIHDik+NXYx2Vya+yG62MQCfUHU8oujIEhJnYwyPOiGxS5VYoWp4S5FwqRp+puj4nlqPu711+AKAYYP9O6a5cdjsl27dgfgHypW7td9ax0FYq2vMYmBeAVDixXp2scMW7\/kk\/kPVMFZomCcksoXEFqEhX5VYqUjMFBp+75P4z8pm3DxUf6+0dCwx++V7b8vAwyTcbu3xS9jQlq1\/8QCvrDQeOd3bjb1fxWXAIRVQtNAvOg357FwaNJcbE81+MadkmTuYqroB2Ndrt\/YrWWxq2wZJ5NrKDqFBG7EID8fyxe19sHjDWWPB3eYjxnEIb6zhGwKsDJIFhcAHJTEHSaTayQ6hQRvlwe2xfrFfXWVsFWCTWx8kPi2hkwp8JzbFaVzGDZ3NbPHL1DIuD5KsPcYxoEMQJJGKA78Ut5DZzkZP2SCJVMvZHRSfwV8P5jIEEhckmw4DB3y2DZJIx7TOYndQvO5kfs+AiE+QKHXOf2XOxdIxit1B8ZlhcuPfGB5XLKfvJ0j2ngY+TqYgiVCqxMPsDoqLiUvxmTQ3Ain4KlaMyjB2Z89YAyzaBmw7bmy29KVIkER8b3odvsDuoHg+MnmTOVDGLzUO1LqwKG1XeerckQywKtgVFN\/B33TkJkmgdKa5UZbmxtI0Nya73Hh00Xbcq+qYLCQqGR6mx2Pc7AqKd8hMdWCg1KZ5kJfmxkyXB8+NXIR7p07tf9PoQeBaoeNXQmIXgyRqyAxnV1B8B389+KWNw6QxzY3daR4sdLkx1uXB9wZ7ir6q45tCYqGQaGeo9KmzZTo+y66guBq5CF+zQZh0hR51sl3pmOpy49G0DNyZyH9vbx2+IHS8KSRaGC6hWSUNGewIirupUzEszY22IX3USUehy4O5Lg+eS0vHA6Pn4Tqr\/v2rq\/F5ITHdScenJmwRnh\/fYUdQYsZl3DiQgDBpTnPjYJobS11ujE3LwEMjl+AWu34Gp\/z4XGiQuCFFQ2YTO4ESJs2N2YN81DnqSsfyNDcmp3nwI1cGvuzUz8LbgBuEhleFRH0KBUyAdzGU2JDJwJ2hQdZogVLlcmNjmhsz09x4elQm7n9+Ia5Nxs+kTMdnU+jO5l12ASV+ADgD3x7hxrbQ+ExLmgd7XG4scLnhGunG98dl4qZU\/Fy8DbhBSLwmJBqTdAuBT2nEjewAIospjbhRaJgiJLQkCplzFX58m1eXyE6PUWX4pJB4Tug46fCA6VE1PMkrSmRTAIapEj8Pvdsq6LCA6RYSz\/IqEjmET8ddisTM0Mv2bL+qV9HwU141IgdSVVyvaHha1bAxdLdgt31J+ytqcQ+vFFEy3N1ouFXoGC0kPhISAYsDplmVmFQMXMMrQ5SEhMRtQsPvhcT6Id6Y2SQk3q6pse9KayKKM68X1wkdD4bW3mwTEm1xDpbzQmKrquM3tbX4ND9xohQH4OqKWtyjanhKkZipSKwVEodNLv7rFBJC6MgTOt4QGh7jUQ1EZFqZjs9W1+Mf1Xrc7fPjgQul1uNuIXEbPyEiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiKT\/h+KddUiiEEpOQAAAABJRU5ErkJggg==",
+                                "label": "Image",
+                                "value": null,
+                                "variant": "primary",
+                                "renderImage": false,
+                                "customCssSelector": "illustration"
+                            },
+                            "component": "FormImage",
+                            "inspector": [
+                                {
+                                    "type": "FormInput",
+                                    "field": "name",
+                                    "config": {
+                                        "label": "Name",
+                                        "helper": "Image name"
+                                    }
+                                },
+                                {
+                                    "type": "ImageUpload",
+                                    "field": "image",
+                                    "config": {
+                                        "label": "Upload",
+                                        "helper": "Upload image"
+                                    }
+                                },
+                                {
+                                    "type": "ImageVariable",
+                                    "field": "imageName",
+                                    "config": {
+                                        "label": "Render from a variable name",
+                                        "helper": null
+                                    }
+                                },
+                                {
+                                    "type": "FormInput",
+                                    "field": "height",
+                                    "config": {
+                                        "type": "number",
+                                        "label": "Height",
+                                        "helper": "Image height"
+                                    }
+                                },
+                                {
+                                    "type": "FormInput",
+                                    "field": "width",
+                                    "config": {
+                                        "type": "number",
+                                        "label": "Width",
+                                        "helper": "image width"
+                                    }
+                                },
+                                {
+                                    "type": "FormInput",
+                                    "field": "conditionalHide",
+                                    "config": {
+                                        "label": "Visibility Rule",
+                                        "helper": "This control is hidden until this expression is true"
+                                    }
+                                },
+                                {
+                                    "type": "DeviceVisibility",
+                                    "field": "deviceVisibility",
+                                    "config": {
+                                        "label": "Device Visibility",
+                                        "helper": "This control is hidden until this expression is true"
+                                    }
+                                },
+                                {
+                                    "type": "FormInput",
+                                    "field": "customFormatter",
+                                    "config": {
+                                        "label": "Custom Format String",
+                                        "helper": "Use the Mask Pattern format <br> Date ##\/##\/#### <br> SSN ###-##-#### <br> Phone (###) ###-####",
+                                        "validation": null
+                                    }
+                                },
+                                {
+                                    "type": "FormInput",
+                                    "field": "customCssSelector",
+                                    "config": {
+                                        "label": "CSS Selector Name",
+                                        "helper": "Use this in your custom css rules",
+                                        "validation": "regex: [-?[_a-zA-Z]+[_-a-zA-Z0-9]*]"
+                                    }
+                                },
+                                {
+                                    "type": "FormInput",
+                                    "field": "ariaLabel",
+                                    "config": {
+                                        "label": "Aria Label",
+                                        "helper": "Attribute designed to help assistive technology (e.g. screen readers) attach a label"
+                                    }
+                                },
+                                {
+                                    "type": "FormInput",
+                                    "field": "tabindex",
+                                    "config": {
+                                        "label": "Tab Order",
+                                        "helper": "Order in which a user will move focus from one control to another by pressing the Tab key",
+                                        "validation": "regex: [0-9]*"
+                                    }
+                                }
+                            ],
+                            "editor-control": "FormImage",
+                            "editor-component": "FormImage"
+                        },
+                        {
+                            "label": "Rich Text",
+                            "config": {
+                                "icon": "fas fa-pencil-ruler",
+                                "label": null,
+                                "content": "<h2 style=\"text-align: center;\">No screen assigned<\/h2>\n<p style=\"text-align: center;\">This is a placeholder screen. Please assign a screen to this task.<\/p>",
+                                "interactive": true,
+                                "renderVarHtml": false
+                            },
+                            "component": "FormHtmlViewer",
+                            "inspector": [
+                                {
+                                    "type": "FormTextArea",
+                                    "field": "content",
+                                    "config": {
+                                        "rows": 5,
+                                        "label": "Content",
+                                        "value": null,
+                                        "helper": "The HTML text to display"
+                                    }
+                                },
+                                {
+                                    "type": "FormCheckbox",
+                                    "field": "renderVarHtml",
+                                    "config": {
+                                        "label": "Render HTML from a Variable",
+                                        "value": null,
+                                        "helper": null
+                                    }
+                                },
+                                {
+                                    "type": "FormInput",
+                                    "field": "conditionalHide",
+                                    "config": {
+                                        "label": "Visibility Rule",
+                                        "helper": "This control is hidden until this expression is true"
+                                    }
+                                },
+                                {
+                                    "type": "DeviceVisibility",
+                                    "field": "deviceVisibility",
+                                    "config": {
+                                        "label": "Device Visibility",
+                                        "helper": "This control is hidden until this expression is true"
+                                    }
+                                },
+                                {
+                                    "type": "FormInput",
+                                    "field": "customFormatter",
+                                    "config": {
+                                        "label": "Custom Format String",
+                                        "helper": "Use the Mask Pattern format <br> Date ##\/##\/#### <br> SSN ###-##-#### <br> Phone (###) ###-####",
+                                        "validation": null
+                                    }
+                                },
+                                {
+                                    "type": "FormInput",
+                                    "field": "customCssSelector",
+                                    "config": {
+                                        "label": "CSS Selector Name",
+                                        "helper": "Use this in your custom css rules",
+                                        "validation": "regex: [-?[_a-zA-Z]+[_-a-zA-Z0-9]*]"
+                                    }
+                                },
+                                {
+                                    "type": "FormInput",
+                                    "field": "ariaLabel",
+                                    "config": {
+                                        "label": "Aria Label",
+                                        "helper": "Attribute designed to help assistive technology (e.g. screen readers) attach a label"
+                                    }
+                                },
+                                {
+                                    "type": "FormInput",
+                                    "field": "tabindex",
+                                    "config": {
+                                        "label": "Tab Order",
+                                        "helper": "Order in which a user will move focus from one control to another by pressing the Tab key",
+                                        "validation": "regex: [0-9]*"
+                                    }
+                                }
+                            ],
+                            "editor-control": "FormHtmlEditor",
+                            "editor-component": "FormHtmlEditor"
+                        }
+                    ]
+                }
+            ],
+            "computed": [],
+            "custom_css": "[selector='illustration'] {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}",
+            "created_at": "2023-07-17T13:58:31-06:00",
+            "updated_at": "2023-07-17T14:01:48-06:00",
+            "status": "ACTIVE",
+            "key": "default-display-screen",
+            "watchers": [],
+            "translations": null,
+            "is_template": 0,
+            "asset_type": null,
+            "categories": [
+                {
+                    "id": 1,
+                    "uuid": "990abaeb-7ffb-4065-a2a2-9cab61d9c01b",
+                    "name": "Uncategorized",
+                    "status": "ACTIVE",
+                    "is_system": 0,
+                    "created_at": "2023-04-28T14:27:27-06:00",
+                    "updated_at": "2023-04-28T14:27:27-06:00",
+                    "pivot": {
+                        "assignable_id": 85,
+                        "category_id": 1,
+                        "category_type": "ProcessMaker\\Models\\ScreenCategory"
+                    }
+                }
+            ]
+        }
+    ],
+    "screen_categories": [],
+    "scripts": []
+}
