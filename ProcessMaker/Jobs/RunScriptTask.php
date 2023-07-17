@@ -3,7 +3,9 @@
 namespace ProcessMaker\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Exception\ConfigurationException;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Managers\DataManager;
@@ -70,7 +72,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             if (empty($scriptRef)) {
                 $code = $element->getScript();
                 if (empty($code)) {
-                    throw new ScriptException(__('No code or script assigned to ":name"', ['name' => $element->getName()]));
+                    throw new ConfigurationException(__('No code or script assigned to ":name"', ['name' => $element->getName()]));
                 }
                 $language = Script::scriptFormat2Language($element->getProperty('scriptFormat', 'application/x-php'));
                 $script = new Script([
@@ -80,7 +82,11 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
                     'script_executor_id' => ScriptExecutor::initialExecutor($language)->id,
                 ]);
             } else {
-                $script = Script::findOrFail($scriptRef)->versionFor($instance);
+                $script = Script::find($scriptRef);
+                if (!$script) {
+                    throw new ConfigurationException(__('Script ":id" not found', ['id' => $scriptRef]));
+                }
+                $script = $script->versionFor($instance);
             }
 
             $errorHandling = new ErrorHandling($element, $token);
@@ -91,23 +97,11 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             $data = $dataManager->getData($token);
             $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling->timeout());
 
-            $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
-                // Exit if the task was completed or closed
-                if (!$token || !$element) {
-                    return;
-                }
-                // Update data
-                if (is_array($response['output'])) {
-                    // Validate data
-                    WorkflowManager::validateData($response['output'], $processModel, $element);
-                    $dataManager = new DataManager();
-                    $dataManager->updateData($token, $response['output']);
-                    $engine->runToNextState();
-                }
-                $element->complete($token);
-                $this->engine = $engine;
-                $this->instance = $instance;
-            });
+            $this->updateData($response);
+        } catch (ConfigurationException $exception) {
+            $this->unlock();
+            $output = ['ScriptConfigurationError' => $element->getName() . ': ' . $exception->getMessage()];
+            $this->updateData(['output' => $output]);
         } catch (Throwable $exception) {
             $token->setStatus(ScriptTaskInterface::TOKEN_STATE_FAILING);
 
@@ -127,6 +121,27 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             Log::error('Script failed: ' . $scriptRef . ' - ' . $message);
             Log::error($exception->getTraceAsString());
         }
+    }
+
+    public function updateData($response)
+    {
+        $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
+            // Exit if the task was completed or closed
+            if (!$token || !$element) {
+                return;
+            }
+            // Update data
+            if (is_array($response['output'])) {
+                // Validate data
+                WorkflowManager::validateData($response['output'], $processModel, $element);
+                $dataManager = new DataManager();
+                $dataManager->updateData($token, $response['output']);
+                $engine->runToNextState();
+            }
+            $element->complete($token);
+            $this->engine = $engine;
+            $this->instance = $instance;
+        });
     }
 
     /**

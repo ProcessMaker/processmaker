@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Exception\ConfigurationException;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Managers\DataManager;
@@ -78,7 +79,7 @@ class RunNayraScriptTask implements ShouldQueue
             if (empty($scriptRef)) {
                 $code = $element->getScript();
                 if (empty($code)) {
-                    throw new ScriptException(__('No code or script assigned to ":name"', ['name' => $element->getName()]));
+                    throw new ConfigurationException(__('No code or script assigned to ":name"', ['name' => $element->getName()]));
                 }
                 $language = Script::scriptFormat2Language($element->getProperty('scriptFormat', 'application/x-php'));
                 $script = new Script([
@@ -88,7 +89,11 @@ class RunNayraScriptTask implements ShouldQueue
                     'script_executor_id' => ScriptExecutor::initialExecutor($language)->id,
                 ]);
             } else {
-                $script = Script::findOrFail($scriptRef)->versionFor($instance);
+                $script = Script::find($scriptRef);
+                if (!$script) {
+                    throw new ConfigurationException(__('Script ":id" not found', ['id' => $scriptRef]));
+                }
+                $script = $script->versionFor($instance);
             }
 
             $dataManager = new DataManager();
@@ -97,6 +102,9 @@ class RunNayraScriptTask implements ShouldQueue
 
             // Dispatch complete task action
             WorkflowManager::completeTask($processModel, $instance, $token, $response['output']);
+        } catch (ConfigurationException $exception) {
+            $output = ['ScriptConfigurationError' => $element->getName() . ': ' . $exception->getMessage()];
+            WorkflowManager::completeTask($processModel, $instance, $token, $output);
         } catch (Throwable $exception) {
             Log::error('Script failed: ' . $scriptRef . ' - ' . $exception->getMessage());
             Log::error($exception->getTraceAsString());
