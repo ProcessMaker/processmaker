@@ -16,6 +16,10 @@ use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
+use ProcessMaker\Package\PackageDecisionEngine\Models\DecisionTable;
+use ProcessMaker\Package\PackageDecisionEngine\Models\DecisionTableCategory;
+use ProcessMaker\Packages\Connectors\DataSources\Models\DataSource as DataSourceModel;
+use ProcessMaker\Packages\Connectors\DataSources\Models\DataSourceCategory as DataSourceCategoryModel;
 
 trait HideSystemResources
 {
@@ -80,6 +84,22 @@ trait HideSystemResources
             return $query->whereNotIn('script_category_id', $systemCategory)
                     ->where('is_template', false)
                     ->when(Schema::hasColumn('scripts', 'asset_type'), function ($query) {
+                        return $query->whereNull('asset_type');
+                    });
+        } elseif (static::class === DecisionTable::class) {
+            $systemCategory = DecisionTableCategory::where('is_system', true)->pluck('id');
+
+            return $query->whereNotIn('decision_table_category_id', $systemCategory)
+                    ->where('is_template', false)
+                    ->when(Schema::hasColumn('decision_tables', 'asset_type'), function ($query) {
+                        return $query->whereNull('asset_type');
+                    });
+        } elseif (static::class === DataSourceModel::class) {
+            $systemCategory = DataSourceCategoryModel::where('is_system', true)->pluck('id');
+
+            return $query->whereNotIn('data_source_category_id', $systemCategory)
+                    ->where('is_template', false)
+                    ->when(Schema::hasColumn('data_sources', 'asset_type'), function ($query) {
                         return $query->whereNull('asset_type');
                     });
         } elseif (static::class == ProcessRequest::class) {
