@@ -1,7 +1,7 @@
 <template>
   <div role="group">
     <label for="timeout">{{ $t('Timeout') }}</label>
-    <b-form-input id="timeout" type="number" min="0" max="3600" v-model="config.timeout" @input="updateConfig"></b-form-input>
+    <b-form-input id="timeout" type="number" min="0" max="3600" v-model="value" @input="userHasUpdatedValue"></b-form-input>
     <small class="form-text text-muted">{{ helper }}</small>
   </div>
 </template>
@@ -12,17 +12,15 @@ export default {
   props: ['type'],
   data() {
     return {
-      config: {
-        timeout: "",
-      },
-      valueContent: ""
+      value: "",
+      valueFromModel: "",
+      userHasUpdated: false,
     }
   },
   watch: {
-    config: {
-      deep: true,
+    value: {
       handler() {
-        this.setNodeConfig();
+        this.emitValue();
       }
     },
   },
@@ -30,50 +28,33 @@ export default {
     node() {
       return this.$root.$children[0].$refs.modeler.highlightedNode.definition;
     },
-    getNodeConfig(newValue) {
-      this.valueContent = newValue;
+    valueFromNode()
+    {
       const configString = _.get(this.node(), 'errorHandling', null);
-      if (this.config.id) {
-        if (this.config.id !== this.valueContent.id) {
-          this.config.timeout = this.valueContent.timeout;
-          this.config.id = this.valueContent.id;
-        } else {
-          if (configString) {
-            const config = JSON.parse(configString);
-            this.config.timeout = _.get(config, 'timeout');
-          }
-        }
-      } else {
-        this.config.id = this.valueContent.id;
-        if (!configString) {
-          this.config.timeout = this.valueContent.timeout;
-        }
-        if (this.valueContent.method) {
-            this.config.timeout = this.valueContent.timeout;
-            if (this.config.id !== this.valueContent.id) {
-              this.config.timeout = this.valueContent.timeout;
-              this.config.id = this.valueContent.id;
-            } else {
-              if (configString) {
-                const config = JSON.parse(configString);
-                this.config.timeout = _.get(config, 'timeout');
-              }
-            }
-        }
-      }
+      const config = JSON.parse(configString);
+      return _.get(config, 'timeout', null);
     },
-    setNodeConfig() {
+    getNodeConfig(valueFromModel) {
+      if (this.valueFromNode()) {
+        return;
+      }
+
+      this.valueFromModel = this.value = valueFromModel.timeout;
+    },
+    emitValue() {
+      if (!this.userHasUpdated) {
+        return;
+      }
       const existingSetting = JSON.parse(_.get(this.node(), 'errorHandling', '{}'));
-      const json = JSON.stringify({ ...existingSetting, timeout: this.config.timeout });
+      const json = JSON.stringify({ ...existingSetting, timeout: this.value });
       Vue.set(this.node(), 'errorHandling', json);
     },
-    updateConfig() {
-      if (this.valueContent.timeout !== this.config.timeout) {
-        this.setNodeConfig();
-      }
+    userHasUpdatedValue() {
+      this.userHasUpdated = true;
     },
   },
   mounted() {
+    this.value = this.valueFromNode();
     this.$root.$on("contentChanged", this.getNodeConfig);
   },
   beforeDestroy() {
