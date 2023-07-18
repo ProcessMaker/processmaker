@@ -319,14 +319,20 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
     /**
      * Get the form assigned to the task.
-     *
-     * @return Screen
      */
-    public function getScreen()
+    public function getScreen(): Screen
     {
         $definition = $this->getDefinition();
+        $screenRef = $definition['screenRef'] ?? null;
+        $screen = Screen::find($screenRef);
 
-        return empty($definition['screenRef']) ? null : Screen::find($definition['screenRef']);
+        if ($screen === null) {
+            $isManualTask = $this->getBpmnDefinition()->localName === 'manualTask';
+            $defaultScreen = $isManualTask ? 'default-display-screen' : 'default-form-screen';
+            $screen = Screen::firstWhere('key', $defaultScreen);
+        }
+
+        return $screen;
     }
 
     /**
@@ -337,10 +343,6 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     public function getScreenVersion()
     {
         $screen = $this->getScreen();
-
-        if (!$screen) {
-            return null;
-        }
 
         return $screen->versionFor($this->processRequest);
     }
