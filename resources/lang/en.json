@@ -1017,6 +1017,7 @@
   "UserCreated": "User Created",
   "UserDeleted": "User Deleted",
   "UserGroupsUpdated": "User Groups Updated",
+  "UserRestored": "User Restored",
   "UserUpdated": "User Updated",
   "Username": "Username",
   "Users that should be notified about task events": "Users that should be notified about task events",
