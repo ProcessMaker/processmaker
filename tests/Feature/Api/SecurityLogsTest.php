@@ -6,14 +6,18 @@ use Database\Seeders\PermissionSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Events\EnvironmentVariablesCreated;
+use ProcessMaker\Events\EnvironmentVariablesDeleted;
+use ProcessMaker\Events\EnvironmentVariablesUpdated;
 use ProcessMaker\Events\SettingsUpdated;
-use ProcessMaker\Events\SignalCreated;
-use ProcessMaker\Managers\SignalManager;
+use ProcessMaker\Events\UserCreated;
+use ProcessMaker\Events\UserDeleted;
+use ProcessMaker\Events\UserRestored;
+use ProcessMaker\Events\UserUpdated;
+use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\Process;
 use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Models\Setting;
-use ProcessMaker\Models\SignalData;
 use ProcessMaker\Models\User;
 use ProcessMaker\Providers\AuthServiceProvider;
 use Tests\Feature\Shared\RequestHelper;
@@ -171,6 +175,85 @@ class SecurityLogsTest extends TestCase
     }
 
     /**
+     * This test Environment Variables Created
+     */
+    public function testEnvironmentVariablesCreated()
+    {
+        $fields = [
+            'name' => 'var_1',
+            'description' => 'description 1',
+            'created_at' => '2019-01-01',
+        ];
+        $vars = EnvironmentVariable::factory()->create($fields);
+        EnvironmentVariablesCreated::dispatch($fields);
+        $collection = SecurityLog::get();
+        // Check if the variable security_log is enable
+        if (config('app.security_log')) {
+            $this->assertCount(1, $collection);
+            $securityLog = $collection->first();
+            $this->assertEquals('EnvironmentVariablesCreated', $securityLog->getAttribute('event'));
+            $this->assertIsObject($securityLog->getAttribute('data'));
+            $this->assertArrayHasKey('name', get_object_vars($securityLog->getAttribute('data')));
+            $this->assertArrayHasKey('created_at', get_object_vars($securityLog->getAttribute('data')));
+            $this->assertIsObject($securityLog->getAttribute('changes'));
+        } else {
+            $this->assertCount(0, $collection);
+        }
+    }
+
+    /**
+     * This test Environment Variables Deleted
+     */
+    public function testEnvironmentVariablesDeleted()
+    {
+        $vars = EnvironmentVariable::factory()->create([
+            'name' => 'var_2',
+        ]);
+        EnvironmentVariablesDeleted::dispatch($vars);
+        $collection = SecurityLog::get();
+        // Check if the variable security_log is enable
+        if (config('app.security_log')) {
+            $this->assertCount(1, $collection);
+            $securityLog = $collection->first();
+            $this->assertEquals('EnvironmentVariablesDeleted', $securityLog->getAttribute('event'));
+            $this->assertIsObject($securityLog->getAttribute('data'));
+            $this->assertArrayHasKey('name', get_object_vars($securityLog->getAttribute('data')));
+            $this->assertArrayHasKey('deleted_at', get_object_vars($securityLog->getAttribute('data')));
+            $this->assertIsObject($securityLog->getAttribute('changes'));
+        } else {
+            $this->assertCount(0, $collection);
+        }
+    }
+
+    /**
+     * This test Environment Variables Updated
+     */
+    public function testEnvironmentVariablesUpdated()
+    {
+        $vars = EnvironmentVariable::factory()->create([
+            'name' => 'var_3',
+        ]);
+        $original = $vars->getOriginal();
+        $vars->fill(['description' => 'test']);
+        $vars->save();
+        $changes = $vars->getChanges();
+        EnvironmentVariablesUpdated::dispatch($vars, $changes, $original);
+        $collection = SecurityLog::get();
+        // Check if the variable security_log is enable
+        if (config('app.security_log')) {
+            $this->assertCount(1, $collection);
+            $securityLog = $collection->first();
+            $this->assertEquals('EnvironmentVariablesUpdated', $securityLog->getAttribute('event'));
+            $this->assertIsObject($securityLog->getAttribute('data'));
+            $this->assertArrayHasKey('name', get_object_vars($securityLog->getAttribute('data')));
+            $this->assertArrayHasKey('last_modified', get_object_vars($securityLog->getAttribute('data')));
+            $this->assertIsObject($securityLog->getAttribute('changes'));
+        } else {
+            $this->assertCount(0, $collection);
+        }
+    }
+
+    /**
      * This test the Setting Update
      */
     public function testSettingUpdated()
@@ -186,6 +269,114 @@ class SecurityLogsTest extends TestCase
             $this->assertCount(1, $collection);
             $securityLog = $collection->first();
             $this->assertEquals('SettingsUpdated', $securityLog->getAttribute('event'));
+            $this->assertIsObject($securityLog->getAttribute('data'));
+            $this->assertIsObject($securityLog->getAttribute('changes'));
+        } else {
+            $this->assertCount(0, $collection);
+        }
+    }
+
+    /**
+     * This test User Created
+     */
+    public function testUserCreated()
+    {
+        // Create a user created
+        $user = User::factory()->create([
+            'status' => 'ACTIVE',
+        ]);
+        UserCreated::dispatch($user);
+        $collection = SecurityLog::get();
+        // Check if the variable security_log is enable
+        if (config('app.security_log')) {
+            $this->assertCount(1, $collection);
+            $securityLog = $collection->first();
+            $this->assertEquals('UserCreated', $securityLog->getAttribute('event'));
+            $this->assertIsObject($securityLog->getAttribute('data'));
+            $this->assertArrayHasKey('name', get_object_vars($securityLog->getAttribute('data')));
+            $this->assertArrayHasKey('created_at', get_object_vars($securityLog->getAttribute('data')));
+            $this->assertIsObject($securityLog->getAttribute('changes'));
+        } else {
+            $this->assertCount(0, $collection);
+        }
+    }
+
+    /**
+     * This test User Deleted
+     */
+    public function testUserDeleted()
+    {
+        // Create a user deleted
+        $user = User::factory()->create([
+            'status' => 'ACTIVE',
+        ]);
+        $user->delete();
+        UserDeleted::dispatch($user);
+        $collection = SecurityLog::get();
+        // Check if the variable security_log is enable
+        if (config('app.security_log')) {
+            $this->assertCount(1, $collection);
+            $securityLog = $collection->first();
+            $this->assertEquals('UserDeleted', $securityLog->getAttribute('event'));
+            $this->assertIsObject($securityLog->getAttribute('data'));
+            $this->assertArrayHasKey('name', get_object_vars($securityLog->getAttribute('data')));
+            $this->assertArrayHasKey('deleted_at', get_object_vars($securityLog->getAttribute('data')));
+            $this->assertIsObject($securityLog->getAttribute('changes'));
+        } else {
+            $this->assertCount(0, $collection);
+        }
+    }
+
+    /**
+     * This test User Restored
+     */
+    public function testUserRestored()
+    {
+        // Create a user restored
+        $user = User::factory()->create([
+            'deleted_at' => null,
+            'status' => 'ACTIVE',
+        ]);
+        UserRestored::dispatch($user);
+        $collection = SecurityLog::get();
+        // Check if the variable security_log is enable
+        if (config('app.security_log')) {
+            $this->assertCount(1, $collection);
+            $securityLog = $collection->first();
+            $this->assertEquals('UserRestored', $securityLog->getAttribute('event'));
+            $this->assertIsObject($securityLog->getAttribute('data'));
+            $this->assertArrayHasKey('name', get_object_vars($securityLog->getAttribute('data')));
+            $this->assertArrayHasKey('last_modified', get_object_vars($securityLog->getAttribute('data')));
+            $this->assertIsObject($securityLog->getAttribute('changes'));
+        } else {
+            $this->assertCount(0, $collection);
+        }
+    }
+
+    /**
+     * This test User Updated
+     */
+    public function testUserUpdated()
+    {
+        // Create a user updated
+        $user = User::factory()->create([
+            'status' => 'ACTIVE',
+        ]);
+        $original = $user->getOriginal();
+        $user->fill(['timezone' => 'America/Monterrey']);
+        $user->saveOrFail();
+        $changes = $user->getChanges();
+        UserUpdated::dispatch($user, $changes, $original);
+        $collection = SecurityLog::get();
+        // Check if the variable security_log is enable
+        if (config('app.security_log')) {
+            $this->assertCount(1, $collection);
+            $securityLog = $collection->first();
+            $this->assertEquals('UserUpdated', $securityLog->getAttribute('event'));
+            $this->assertIsObject($securityLog->getAttribute('data'));
+            $this->assertArrayHasKey('name', get_object_vars($securityLog->getAttribute('data')));
+            $this->assertArrayHasKey('last_modified', get_object_vars($securityLog->getAttribute('data')));
+            $this->assertIsObject($securityLog->getAttribute('changes'));
         } else {
             $this->assertCount(0, $collection);
         }
