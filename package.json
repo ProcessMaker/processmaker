@@ -43,6 +43,7 @@
         "vue-loader": "^15.10.0"
     },
     "dependencies": {
+        "@braintree/sanitize-url": "^6.0.2",
         "@fortawesome/fontawesome-free": "^5.15.1",
         "@fortawesome/fontawesome-svg-core": "^1.2.32",
         "@fortawesome/free-brands-svg-icons": "^5.15.1",
