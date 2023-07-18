@@ -2,9 +2,8 @@
 
 namespace ProcessMaker\Http\Resources;
 
-use ProcessMaker\Models\Process;
+use Illuminate\Support\Arr;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\ProcessTranslations\ProcessTranslation;
 use ProcessMaker\ProcessTranslations\ScreenTranslation;
 
 class ScreenVersion extends ApiResource
@@ -24,6 +23,7 @@ class ScreenVersion extends ApiResource
         $task = null;
 
         if (in_array('nested', $include)) {
+            $this->setDefaultScreenForNestedScreens($screenVersion);
             $task = $request->route('task');
             $processRequest = null;
             if ($task) {
@@ -53,5 +53,25 @@ class ScreenVersion extends ApiResource
         }
 
         return $screenVersion;
+    }
+
+    /**
+     * Set the default screen for nested screens when no screen has been selected.
+     */
+    private function setDefaultScreenForNestedScreens(array &$screenVersion): void
+    {
+        $defaultScreen = Screen::firstWhere('key', 'default-form-screen');
+        $configArray = $screenVersion['config'];
+        foreach ($configArray as $key => $config) {
+            foreach ($config['items'] as $itemKey => $item) {
+                if (isset($item['component']) && $item['component'] === 'FormNestedScreen') {
+                    $path = "{$key}.items.{$itemKey}.config.screen";
+                    if (!Arr::has($configArray, $path)) {
+                        Arr::set($configArray, $path, $defaultScreen->id);
+                    }
+                }
+            }
+        }
+        $screenVersion['config'] = $configArray;
     }
 }
