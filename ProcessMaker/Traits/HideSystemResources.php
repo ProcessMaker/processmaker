@@ -4,6 +4,8 @@ namespace ProcessMaker\Traits;
 
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use ProcessMaker\Client\Model\DataSource;
+use ProcessMaker\Client\Model\DataSourceCategory;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessRequest;
@@ -11,6 +13,8 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
+use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
 
 trait HideSystemResources
@@ -68,6 +72,14 @@ trait HideSystemResources
             return $query->whereNotIn('screen_category_id', $systemCategory)
                     ->where('is_template', false)
                     ->when(Schema::hasColumn('screens', 'asset_type'), function ($query) {
+                        return $query->whereNull('asset_type');
+                    });
+        } elseif (static::class === Script::class) {
+            $systemCategory = ScriptCategory::where('is_system', true)->pluck('id');
+
+            return $query->whereNotIn('script_category_id', $systemCategory)
+                    ->where('is_template', false)
+                    ->when(Schema::hasColumn('scripts', 'asset_type'), function ($query) {
                         return $query->whereNull('asset_type');
                     });
         } elseif (static::class == ProcessRequest::class) {
