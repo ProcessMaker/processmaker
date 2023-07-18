@@ -166,7 +166,7 @@ export default {
       let key = "";
       let value = "";
       let auxKey = "";
-      let auxArray = {};
+      const auxArray = {};
 
       for ([key, value] of Object.entries(data)) {
         if (key.startsWith("+")) {
@@ -198,9 +198,11 @@ export default {
      * Sort modal Array
      */
     sortModalArray(auxArray) {
-      let sortKey = ["Name"];
-      let auxArraySorted = {};
-      let dateKey = Object.keys(auxArray).find(key => ["Created_at", "Deleted_at", "Updated_at", "Last_modified", "Accessed_at"].includes(key));
+      const sortKey = ["Name"];
+      const auxArraySorted = {};
+      const dateKey = Object.keys(auxArray).find(
+        (key) => ["Created_at", "Deleted_at", "Updated_at", "Last_modified", "Accessed_at"].includes(key)
+      );
 
       if (dateKey) {
         sortKey.push(dateKey);
@@ -208,13 +210,13 @@ export default {
 
       sortKey.push("Description");
 
-      Object.keys(auxArray).forEach(key => {
+      Object.keys(auxArray).forEach((key) => {
         if (!sortKey.includes(key)) {
           sortKey.push(key);
         }
       });
 
-      sortKey.forEach(key => {
+      sortKey.forEach((key) => {
         if (key in auxArray) {
           auxArraySorted[key] = auxArray[key];
         }
@@ -302,7 +304,7 @@ export default {
   white-space: nowrap
 }
 p {
-  word-break: break-all;
+  word-break: break-word;
 }
 .subItem {
   display: block;
