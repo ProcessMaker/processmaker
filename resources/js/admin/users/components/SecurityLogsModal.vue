@@ -198,11 +198,15 @@ export default {
      * Sort modal Array
      */
     sortModalArray(auxArray) {
-      const sortKey = ["Name"];
-      const auxArraySorted = {};
-      const dateKey = Object.keys(auxArray).find(
-        (key) => ["Created_at", "Deleted_at", "Updated_at", "Last_modified", "Accessed_at"].includes(key)
-      );
+      let sortKey = [];
+      let auxArraySorted = {};
+      let dateKey = Object.keys(auxArray).find(key => ["Created_at", "Deleted_at", "Updated_at", "Last_modified", "Accessed_at"].includes(key));
+
+      Object.keys(auxArray).forEach(function (key) {
+        if (key.includes("name") || key.includes("Name")) {
+          auxArraySorted[key] = auxArray[key];
+        }
+      });
 
       if (dateKey) {
         sortKey.push(dateKey);
