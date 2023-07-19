@@ -103,8 +103,8 @@ export default {
       aiProcessButton: {
         title: `AI ${this.type}`,
         helperEnabled: true,
-        helperTitle: "Your word is our command!",
-        helperDescription: "Try our new modeler powered by artificial intelligence and create complex processes, just like you were talking to a person.",
+        helperTitle: this.$t("Your word is our command!"),
+        helperDescription: this.$t("Use Artificial Intelligence in any natural language to create complex Processes, just like writing to a person. Even describe your Process in one language, but output your model in another."),
         icon: "fa fa-robot",
       },
     };
