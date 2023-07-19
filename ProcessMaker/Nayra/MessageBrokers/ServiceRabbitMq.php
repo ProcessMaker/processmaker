@@ -29,9 +29,11 @@ class ServiceRabbitMq
         $rabbitMqPort = config('rabbitmq.port');
         $rabbitMqLogin = config('rabbitmq.login');
         $rabbitMqPassword = config('rabbitmq.password');
-
+        $rabbitmqKeepalive = true;
+        $rabbitmqHeartbeat = config('rabbitmq.heartbeat', 60);
+        
         // Create connection
-        $this->connection = new AMQPStreamConnection($rabbitMqHost, $rabbitMqPort, $rabbitMqLogin, $rabbitMqPassword);
+        $this->connection = new AMQPStreamConnection($rabbitMqHost, $rabbitMqPort, $rabbitMqLogin, $rabbitMqPassword, '/', false, 'AMQPLAIN', null, 'en_US', 3, 3, null, $rabbitmqKeepalive, $rabbitmqHeartbeat);
         $this->channel = $this->connection->channel();
 
         // Set channel config
