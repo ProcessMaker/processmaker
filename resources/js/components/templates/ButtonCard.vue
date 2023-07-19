@@ -1,13 +1,13 @@
 <template>
   <div :class="{'d-flex': button.helperEnabled}">
-    <b-card no-body class="button-card" @mouseenter="addHoverClass" @mouseleave="removeHoverClass" @click="$emit('card-button-clicked')">
+    <b-card no-body class="button-card" :class="{'col-6 p-0': button.helperEnabled}" @mouseenter="addHoverClass" @mouseleave="removeHoverClass" @click="$emit('card-button-clicked')">
       <div class="card-body text-center d-flex justify-content-center flex-column">
         <i class="icon mb-1 text-primary" :class="button.icon"></i>
         <h5 class="m-0">{{ button.title }}</h5>
       </div>
     </b-card>
 
-    <div v-if="button.helperEnabled" class="helper-container">
+    <div v-if="button.helperEnabled" class="helper-container col-6 p-0">
       <div class="arrow-left"></div>
       <b-card no-body class="button-card card-helper p-4">
         <div class="card-body card-helper text-center d-flex justify-content-center flex-column">
