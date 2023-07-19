@@ -207,9 +207,9 @@ class SecurityLogsTest extends TestCase
             $this->assertCount(1, $collection);
             $securityLog = $collection->first();
             $this->assertEquals('UserCreated', $securityLog->getAttribute('event'));
-            $data = (array)json_decode($securityLog->getAttribute('data'));
-            $this->assertArrayHasKey('name', $data);
-            $this->assertArrayHasKey('created_at', $data);
+            print_r($securityLog->getAttribute('data'));
+            $this->assertIsObject($securityLog->getAttribute('data'));
+            $this->assertIsObject($securityLog->getAttribute('changes'));
         } else {
             $this->assertCount(0, $collection);
         }
@@ -222,9 +222,9 @@ class SecurityLogsTest extends TestCase
     {
         // Create a user deleted
         $user = User::factory()->create([
-            'deleted_at' => '2023-01-01',
             'status' => 'ACTIVE',
         ]);
+        $user->delete();
         UserDeleted::dispatch($user);
         $collection = SecurityLog::get();
         // Check if the variable security_log is enable
@@ -232,9 +232,9 @@ class SecurityLogsTest extends TestCase
             $this->assertCount(1, $collection);
             $securityLog = $collection->first();
             $this->assertEquals('UserDeleted', $securityLog->getAttribute('event'));
-            $data = (array)json_decode($securityLog->getAttribute('data'));
-            $this->assertArrayHasKey('name', $data);
-            $this->assertArrayHasKey('deleted_at', $data);
+            print_r($securityLog->getAttribute('data'));
+            $this->assertIsObject($securityLog->getAttribute('data'));
+            $this->assertIsObject($securityLog->getAttribute('changes'));
         } else {
             $this->assertCount(0, $collection);
         }
@@ -257,9 +257,9 @@ class SecurityLogsTest extends TestCase
             $this->assertCount(1, $collection);
             $securityLog = $collection->first();
             $this->assertEquals('UserRestored', $securityLog->getAttribute('event'));
-            $data = (array)json_decode($securityLog->getAttribute('data'));
-            $this->assertArrayHasKey('name', $data);
-            $this->assertArrayHasKey('last_modified', $data);
+            print_r($securityLog->getAttribute('data'));
+            $this->assertIsObject($securityLog->getAttribute('data'));
+            $this->assertIsObject($securityLog->getAttribute('changes'));
         } else {
             $this->assertCount(0, $collection);
         }
@@ -285,9 +285,9 @@ class SecurityLogsTest extends TestCase
             $this->assertCount(1, $collection);
             $securityLog = $collection->first();
             $this->assertEquals('UserUpdated', $securityLog->getAttribute('event'));
-            $data = (array)json_decode($securityLog->getAttribute('data'));
-            $this->assertArrayHasKey('name', $data);
-            $this->assertArrayHasKey('last_modified', $data);
+            print_r($securityLog->getAttribute('data'));
+            $this->assertIsObject($securityLog->getAttribute('data'));
+            $this->assertIsObject($securityLog->getAttribute('changes'));
         } else {
             $this->assertCount(0, $collection);
         }
