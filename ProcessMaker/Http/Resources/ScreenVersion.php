@@ -32,8 +32,10 @@ class ScreenVersion extends ApiResource
 
             $nested = [];
             foreach ($this->parent->nestedScreenIds($processRequest) as $id) {
-                $nestedScreen = Screen::findOrFail($id);
-                $nested[] = $nestedScreen->versionFor($processRequest)->toArray();
+                $nestedScreen = Screen::find($id);
+                if ($nestedScreen) {
+                    $nested[] = $nestedScreen->versionFor($processRequest)->toArray();
+                }
             }
             $screenVersion['nested'] = $nested;
         }
@@ -64,9 +66,10 @@ class ScreenVersion extends ApiResource
         foreach ($configArray as $key => $config) {
             foreach ($config['items'] as $itemKey => $item) {
                 if (isset($item['component']) && $item['component'] === 'FormNestedScreen') {
-                    $path = "{$key}.items.{$itemKey}.config.screen";
-                    if (!Arr::has($configArray, $path)) {
+                    $configScreen = $item['config']['screen'] ?? null;
+                    if (Screen::where('id', $configScreen)->doesntExist()) {
                         $defaultScreenId = Screen::where('key', 'default-form-screen')->value('id');
+                        $path = "{$key}.items.{$itemKey}.config.screen";
                         Arr::set($configArray, $path, $defaultScreenId);
                     }
                 }
