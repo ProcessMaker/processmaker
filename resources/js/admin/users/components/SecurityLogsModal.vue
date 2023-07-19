@@ -166,7 +166,7 @@ export default {
       let key = "";
       let value = "";
       let auxKey = "";
-      let auxArray = {};
+      const auxArray = {};
 
       for ([key, value] of Object.entries(data)) {
         if (key.startsWith("+")) {
@@ -214,13 +214,13 @@ export default {
 
       sortKey.push("Description");
 
-      Object.keys(auxArray).forEach(key => {
+      Object.keys(auxArray).forEach((key) => {
         if (!sortKey.includes(key)) {
           sortKey.push(key);
         }
       });
 
-      sortKey.forEach(key => {
+      sortKey.forEach((key) => {
         if (key in auxArray) {
           auxArraySorted[key] = auxArray[key];
         }
@@ -308,7 +308,7 @@ export default {
   white-space: nowrap
 }
 p {
-  word-break: break-all;
+  word-break: break-word;
 }
 .subItem {
   display: block;

@@ -70,5 +70,8 @@
 
       <env name="THEMES_CACHE" value="false" />
       <env name="SESSION_SECURE_COOKIE" value="true" />
+
+      <env name="PRODUCT_ANALYTICS_ENABLED" value="false" />
+      <env name="PRODUCT_ANALYTICS_INTERCOM_ENABLED" value="false" />
     </php>
 </phpunit>
