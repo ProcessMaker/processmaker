@@ -37,7 +37,7 @@ class FilesCreated implements SecurityLogEventInterface
             // Link to file in the package
             $this->name = [
                 'label' => $this->media['name'],
-                'link' => route('file-manager.index', ['public/' . $this->media['name']]),
+                'link' => route('file-manager.index', ['public/' . $this->media['file_name']]),
             ];
         } else {
             $this->processName = $data->getAttribute('name');
