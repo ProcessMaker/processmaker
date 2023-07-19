@@ -67,8 +67,9 @@ class TemplateController extends Controller
             ], 409);
         }
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
-
-        return $this->template->store($type, $request);
+        $storeTemplate = $this->template->store($type, $request);
+        //TemplatePublished::dispatch($storeTemplate);
+        return $storeTemplate;
     }
 
     /**
