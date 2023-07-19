@@ -11,66 +11,69 @@
       </b-input-group>
     </div>
 
-    <b-card-group id="template-options" deck class="d-flex small-deck-margin">
-      <button-card
-        v-show="component === 'template-select-card'"
-        :button="blankProcessButton"
-        @show-details="showDetails($event)"
-        @card-button-clicked="$emit('blank-process-button-clicked')"
-      />
-
-      <div v-if="packageAi">
+    <div class="cards-container">
+      <b-card-group id="template-options" deck class="d-flex small-deck-margin">
         <button-card
-          v-if="component === 'template-select-card'"
-          :button="aiProcessButton"
+          class="col-4 p-0"
+          v-show="component === 'template-select-card'"
+          :button="blankProcessButton"
           @show-details="showDetails($event)"
-          @card-button-clicked="$emit('ai-process-button-clicked')"
+          @card-button-clicked="$emit('blank-process-button-clicked')"
         />
-      </div>
-      <div v-if="component === 'template-select-card'" class="d-flex w-100 align-items-center my-3 card-separator">
-        <small class="mr-2 text-secondary">Templates</small>
-        <div class="flex-grow-1 border-bottom"></div>
-      </div>
 
-    </b-card-group>
-
-    <div class="pb-2 template-container">
-      <template v-if="noResults === true">
-        <div class="no-data-icon d-flex d-block justify-content-center mt-5 pt-5 pb-2">
-          <i class="fas fa-umbrella-beach mt-5 pt-5" />
-        </div>
-        <div class="no-data d-block d-flex justify-content-center">
-          {{ $t('No Data Available') }}
-        </div>
-      </template>
-      <template v-else>
-        <b-card-group id="template-options" deck class="d-flex small-deck-margin">
-          <template-select-card
-            v-show="component === 'template-select-card'"
-            v-for="(template, index) in templates"
-            :key="index"
-            :template="template"
+        <div v-if="packageAi" class="col-8 p-0">
+          <button-card
+            v-if="component === 'template-select-card'"
+            :button="aiProcessButton"
             @show-details="showDetails($event)"
+            @card-button-clicked="$emit('ai-process-button-clicked')"
           />
-        </b-card-group>
-      </template>
-      <template-details v-if="component === 'template-details'" :template="template"></template-details>
-      <template v-else>
-          <b-pagination
-          v-model="currentPage"
-          v-if="templates.length > 0"
-          class="template-modal-pagination"
-          :total-rows="totalRow"
-          :per-page="perPage"
-          :limit="limit"
-          prev-class="caretBtn prevBtn"
-          next-class="caretBtn nextBtn"
-          size="sm"
-          last-number
-          first-number
-        ></b-pagination>
-      </template>
+        </div>
+        <div v-if="component === 'template-select-card'" class="d-flex w-100 align-items-center my-3 card-separator">
+          <small class="mr-2 text-secondary">Templates</small>
+          <div class="flex-grow-1 border-bottom"></div>
+        </div>
+
+      </b-card-group>
+
+      <div class="pb-2 template-container">
+        <template v-if="noResults === true">
+          <div class="no-data-icon d-flex d-block justify-content-center mt-5 pt-5 pb-2">
+            <i class="fas fa-umbrella-beach mt-5 pt-5" />
+          </div>
+          <div class="no-data d-block d-flex justify-content-center">
+            {{ $t('No Data Available') }}
+          </div>
+        </template>
+        <template v-else>
+          <b-card-group id="template-options" deck class="d-flex small-deck-margin template-options">
+            <template-select-card
+              v-show="component === 'template-select-card'"
+              v-for="(template, index) in templates"
+              :key="index"
+              :template="template"
+              @show-details="showDetails($event)"
+            />
+          </b-card-group>
+        </template>
+        <template-details v-if="component === 'template-details'" :template="template"></template-details>
+      </div>
     </div>
+    <template v-if="component !== 'template-details'">
+        <b-pagination
+        v-model="currentPage"
+        v-if="templates.length > 0"
+        class="template-modal-pagination"
+        :total-rows="totalRow"
+        :per-page="perPage"
+        :limit="limit"
+        prev-class="caretBtn prevBtn"
+        next-class="caretBtn nextBtn"
+        size="sm"
+        last-number
+        first-number
+      ></b-pagination>
+    </template>
   </div>
 </template>
 
@@ -211,5 +214,15 @@ export default {
 .card-separator {
   margin-left: 0.7rem;
   margin-right: 0.7rem;
+}
+.cards-container {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 415px;
+}
+.template-options {
+  display: flex;
+  flex-wrap: wrap;
+  padding-left: 0;
 }
 </style>
