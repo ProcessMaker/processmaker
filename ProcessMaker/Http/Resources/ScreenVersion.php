@@ -60,14 +60,14 @@ class ScreenVersion extends ApiResource
      */
     private function setDefaultScreenForNestedScreens(array &$screenVersion): void
     {
-        $defaultScreen = Screen::firstWhere('key', 'default-form-screen');
         $configArray = $screenVersion['config'];
         foreach ($configArray as $key => $config) {
             foreach ($config['items'] as $itemKey => $item) {
                 if (isset($item['component']) && $item['component'] === 'FormNestedScreen') {
                     $path = "{$key}.items.{$itemKey}.config.screen";
                     if (!Arr::has($configArray, $path)) {
-                        Arr::set($configArray, $path, $defaultScreen->id);
+                        $defaultScreenId = Screen::where('key', 'default-form-screen')->value('id');
+                        Arr::set($configArray, $path, $defaultScreenId);
                     }
                 }
             }
