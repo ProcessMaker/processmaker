@@ -11,7 +11,11 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
+use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
+use ProcessMaker\Packages\Connectors\DataSources\Models\DataSource;
+use ProcessMaker\Packages\Connectors\DataSources\Models\DataSourceCategory;
 
 trait HideSystemResources
 {
@@ -68,6 +72,22 @@ trait HideSystemResources
             return $query->whereNotIn('screen_category_id', $systemCategory)
                     ->where('is_template', false)
                     ->when(Schema::hasColumn('screens', 'asset_type'), function ($query) {
+                        return $query->whereNull('asset_type');
+                    });
+        } elseif (static::class === Script::class) {
+            $systemCategory = ScriptCategory::where('is_system', true)->pluck('id');
+
+            return $query->whereNotIn('script_category_id', $systemCategory)
+                    ->where('is_template', false)
+                    ->when(Schema::hasColumn('scripts', 'asset_type'), function ($query) {
+                        return $query->whereNull('asset_type');
+                    });
+        } elseif (static::class === DataSource::class) {
+            $systemCategory = DataSourceCategory::where('is_system', true)->pluck('id');
+
+            return $query->whereNotIn('data_source_category_id', $systemCategory)
+                    ->where('is_template', false)
+                    ->when(Schema::hasColumn('data_sources', 'asset_type'), function ($query) {
                         return $query->whereNull('asset_type');
                     });
         } elseif (static::class == ProcessRequest::class) {
