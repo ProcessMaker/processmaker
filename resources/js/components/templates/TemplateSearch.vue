@@ -46,7 +46,7 @@
           </div>
         </template>
         <template v-else>
-          <b-card-group id="template-options" deck class="d-flex small-deck-margin">
+          <b-card-group id="template-options" deck class="d-flex small-deck-margin template-options">
             <template-select-card
               v-show="component === 'template-select-card'"
               v-for="(template, index) in templates"
@@ -57,23 +57,23 @@
           </b-card-group>
         </template>
         <template-details v-if="component === 'template-details'" :template="template"></template-details>
-        <template v-else>
-            <b-pagination
-            v-model="currentPage"
-            v-if="templates.length > 0"
-            class="template-modal-pagination"
-            :total-rows="totalRow"
-            :per-page="perPage"
-            :limit="limit"
-            prev-class="caretBtn prevBtn"
-            next-class="caretBtn nextBtn"
-            size="sm"
-            last-number
-            first-number
-          ></b-pagination>
-        </template>
       </div>
     </div>
+    <template v-if="component !== 'template-details'">
+        <b-pagination
+        v-model="currentPage"
+        v-if="templates.length > 0"
+        class="template-modal-pagination"
+        :total-rows="totalRow"
+        :per-page="perPage"
+        :limit="limit"
+        prev-class="caretBtn prevBtn"
+        next-class="caretBtn nextBtn"
+        size="sm"
+        last-number
+        first-number
+      ></b-pagination>
+    </template>
   </div>
 </template>
 
@@ -218,6 +218,11 @@ export default {
 .cards-container {
   overflow-y: auto;
   overflow-x: hidden;
-  height: 400px;
+  height: 415px;
+}
+.template-options {
+  display: flex;
+  flex-wrap: wrap;
+  padding-left: 0;
 }
 </style>

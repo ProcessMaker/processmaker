@@ -41,7 +41,6 @@ export default {
 
 <style lang="scss" scoped>
 .button-card {
-  width: 292px;
   height: 172px;
   border-radius: 4px;
   padding: 10px 8px 10px 8px;
