@@ -97,7 +97,7 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
     Route::put('processes/{process}', [ProcessController::class, 'update'])->name('processes.update')->middleware('can:edit-processes');
     Route::delete('processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy')->middleware('can:archive-processes');
 
-    Route::get('process_events/{process}', [ProcessController::class, 'triggerStartEventApi'])->middleware('can:start,process');
+    Route::get('process_events/{process}', [ProcessController::class, 'triggerStartEventApi'])->name('process_events.trigger')->middleware('can:start,process');
     Route::get('processes/{process}/export/translation/{language}', [ProcessTranslationController::class, 'export']);
     Route::get('processes/{process}/import/translation', [ProcessTranslationController::class, 'import']);
 
