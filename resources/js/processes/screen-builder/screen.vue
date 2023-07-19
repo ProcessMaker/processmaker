@@ -41,7 +41,7 @@
           id="preview"
           class="h-100 m-0"
         >
-          <b-col class="overflow-auto h-100">
+          <b-col class="d-flex overflow-auto h-100">
             <vue-form-renderer
               v-if="renderComponent === 'task-screen'"
               ref="renderer"
@@ -55,6 +55,7 @@
               :watchers="preview.watchers"
               :show-errors="true"
               :mock-magic-variables="mockMagicVariables"
+              :device-screen="deviceScreen"
               @submit="previewSubmit"
               @update="onUpdate"
               @css-errors="cssErrors = $event"
@@ -373,6 +374,30 @@ export default {
         ],
       },
       {
+        id: "group_preview",
+        type: "group",
+        section: "left",
+        displayCondition: "displayPreview",
+        items: [
+          {
+            id: "button_preview_desktop",
+            type: "button",
+            title: this.$t("Preview Desktop"),
+            variant: "secondary",
+            icon: "fas fa-desktop",
+            action: "changeDeviceScreen(\"desktop\")",
+          },
+          {
+            id: "button_preview_mobile",
+            type: "button",
+            title: this.$t("Preview Mobile"),
+            variant: "outline-secondary",
+            icon: "fas fa-mobile pr-1",
+            action: "changeDeviceScreen(\"mobile\")",
+          },
+        ],
+      },
+      {
         id: "group_properties",
         type: "group",
         section: "right",
@@ -454,6 +479,7 @@ export default {
       },
       type: formTypes.form,
       mode: "editor",
+      deviceScreen: "desktop",
       // Computed properties
       computed: [],
       // Watchers
@@ -770,6 +796,20 @@ export default {
       } else {
         this.$refs.builder.refreshContent();
       }
+    },
+    changeDeviceScreen(deviceScreen) {
+      this.$refs.menuScreen.changeItem("button_preview_desktop", {
+        variant: deviceScreen === "desktop" ? "secondary" : "outline-secondary",
+      });
+      this.$refs.menuScreen.changeItem("button_preview_mobile", {
+        variant: deviceScreen === "mobile" ? "secondary" : "outline-secondary",
+      });
+
+      this.deviceScreen = deviceScreen;
+
+      this.$nextTick(() => {
+        this.$refs.renderer.checkIfIsMobile();
+      });
     },
     onUpdate(data) {
       this.updateDataPreview();

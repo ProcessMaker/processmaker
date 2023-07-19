@@ -6,6 +6,7 @@
 
 @section('content')
   <div id="modeler-app"></div>
+  @include('processes.modeler.partials.map-legend')
 @endsection
 
 @section('css')

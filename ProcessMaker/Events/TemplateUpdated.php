@@ -5,6 +5,8 @@ namespace ProcessMaker\Events;
 use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
+use ProcessMaker\Helpers\ArrayHelper;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class TemplateUpdated implements SecurityLogEventInterface
@@ -13,9 +15,7 @@ class TemplateUpdated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private array $changes;
-
     private array $original;
-
     private bool $processType;
 
     /**
@@ -28,6 +28,14 @@ class TemplateUpdated implements SecurityLogEventInterface
         $this->changes = $changes;
         $this->original = $original;
         $this->processType = $processType;
+
+        // Get category name
+        $this->original['process_category'] = isset($original['process_category_id'])
+        ? ProcessCategory::getNamesByIds($this->original['process_category_id']) : '';
+        unset($this->original['process_category_id']);
+        $this->changes['process_category'] = isset($changes['process_category_id'])
+        ? ProcessCategory::getNamesByIds($this->changes['process_category_id']) : '';
+        unset($this->changes['process_category_id']);
     }
 
     /**
@@ -42,7 +50,7 @@ class TemplateUpdated implements SecurityLogEventInterface
                 'name' => [
                     'label' => $this->processType,
                 ],
-                'last_modified' => $this->changes['updated_at'] ?? Carbon::now()
+                'last_modified' => $this->changes['updated_at'] ?? Carbon::now(),
             ];
         } else {
             $oldData = array_diff_assoc($this->original, $this->changes);
@@ -52,8 +60,8 @@ class TemplateUpdated implements SecurityLogEventInterface
                 'name' => [
                     'label' => $this->processType,
                 ],
-                'last_modified' => $this->changes['updated_at'] ?? Carbon::now()
-            ], $this->formatChanges($newData, $oldData));
+                'last_modified' => $this->changes['updated_at'] ?? Carbon::now(),
+            ], ArrayHelper::getArrayDifferencesWithFormat($newData, $oldData));
         }
     }
 

@@ -2,11 +2,16 @@
 
 namespace ProcessMaker\Nayra\Repositories;
 
+use ProcessMaker\Listeners\BpmnSubscriber;
+use ProcessMaker\Nayra\Bpmn\Events\ProcessInstanceCompletedEvent;
+use ProcessMaker\Nayra\Bpmn\Events\ProcessInstanceCreatedEvent;
 use ProcessMaker\Repositories\ExecutionInstanceRepository;
 
 trait PersistenceRequestTrait
 {
     protected ExecutionInstanceRepository $instanceRepository;
+
+    protected Deserializer $deserializer;
 
     /**
      * Store data related to the event Process Instance Created
@@ -17,6 +22,11 @@ trait PersistenceRequestTrait
     {
         $instance = $this->deserializer->unserializeInstance($transaction['instance']);
         $this->instanceRepository->persistInstanceCreated($instance);
+
+        // Event
+        $bpmnSubscriber = new BpmnSubscriber();
+        $event = new ProcessInstanceCreatedEvent($instance->getProcess(), $instance);
+        $bpmnSubscriber->onProcessCreated($event);
     }
 
     /**
@@ -28,6 +38,11 @@ trait PersistenceRequestTrait
     {
         $instance = $this->deserializer->unserializeInstance($transaction['instance']);
         $this->instanceRepository->persistInstanceCompleted($instance);
+
+        // Event
+        $bpmnSubscriber = new BpmnSubscriber();
+        $event = new ProcessInstanceCompletedEvent($instance->getProcess(), $instance);
+        $bpmnSubscriber->onProcessCompleted($event);
     }
 
     /**

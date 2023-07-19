@@ -13,8 +13,6 @@ class TokenCreated implements SecurityLogEventInterface
 
     private array $data;
 
-    private array $changes;
-
     /**
      * Create a new event instance.
      *
@@ -24,10 +22,9 @@ class TokenCreated implements SecurityLogEventInterface
     {
         $this->data = [
             'token_id' => $token->getKey(),
-            'created_at' => Carbon::now()
+            'created_at' => Carbon::now(),
         ];
     }
-
 
     /**
      * Return event data
@@ -38,14 +35,12 @@ class TokenCreated implements SecurityLogEventInterface
         return $this->data;
     }
 
-
     /**
-     * Return event changes
      * Return event changes
      */
     public function getChanges(): array
     {
-        return $this->data;
+        return [];
     }
 
     /**

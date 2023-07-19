@@ -4,6 +4,7 @@ namespace ProcessMaker\Nayra\MessageBrokers;
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
+use ProcessMaker\Helpers\DBHelper;
 use ProcessMaker\Nayra\Repositories\PersistenceHandler;
 
 class ServiceRabbitMq
@@ -61,16 +62,15 @@ class ServiceRabbitMq
     public function sendMessage(string $subject, string $collaborationId, mixed $body): void
     {
         // Connect to RabbitMQ
-        $this->connect();
+        if (!($this->connection instanceof AMQPStreamConnection) || !$this->connection->isConnected()) {
+            $this->connect();
+        }
 
         // Prepare the message to send
         $message = new AMQPMessage(json_encode(['data' => $body, 'collaboration_id' => $collaborationId]));
 
         // Publish the message
         $this->channel->basic_publish($message, '', self::QUEUE_NAME_PUBLISH);
-
-        // Close connection to RabbitMQ
-        $this->disconnect();
     }
 
     /**
@@ -89,11 +89,15 @@ class ServiceRabbitMq
      */
     public function worker(): void
     {
+
         // Connect to service
+        echo "\033[0;32m" . 'ProcessMaker consumer using rabbitmq.' . "\033[0m" . PHP_EOL;
         $this->connect();
 
         // Set callback to process the transactions
         $callback = function ($message) {
+            DBHelper::db_health_check();
+
             // Parse transactions
             $transactions = json_decode($message->body, true);
 
@@ -114,7 +118,9 @@ class ServiceRabbitMq
         }
 
         // Disconnect from service
-        $this->disconnect();
+        if ($this->connection->isConnected()) {
+            $this->disconnect();
+        }
     }
 
     /**

@@ -1,7 +1,7 @@
 <template>
   <div role="group">
     <label for="retry_attempts">{{ $t('Retry Attempts') }}</label>
-    <b-form-input id="retry_attempts" type="number" v-model="config.retry_attempts" min="0" max="50"></b-form-input>
+    <b-form-input id="retry_attempts" type="number" v-model="config.retry_attempts"  @input="updateConfig" min="0" max="50"></b-form-input>
     <small class="form-text text-muted">{{ helper }}</small>
   </div>
 </template>
@@ -15,6 +15,7 @@ export default {
       config: {
         retry_attempts: "",
       },
+      valueContent: "",
     }
   },
   watch: {
@@ -29,11 +30,36 @@ export default {
     node() {
       return this.$root.$children[0].$refs.modeler.highlightedNode.definition;
     },
-    getNodeConfig() {
+    getNodeConfig(newValue) {
+      this.valueContent = newValue;
       const configString = _.get(this.node(), 'errorHandling', null);
-      if (configString) {
-        const config = JSON.parse(configString);
-        this.config.retry_attempts = _.get(config, 'retry_attempts', "");
+      if (this.config.id) {
+        if (this.config.id !== this.valueContent.id) {
+          this.config.retry_attempts = this.valueContent.retry_attempts;
+          this.config.id = this.valueContent.id;
+        } else {
+          if (configString) {
+            const config = JSON.parse(configString);
+            this.config.retry_attempts = _.get(config, 'retry_attempts');
+          }
+        }
+      } else {
+        this.config.id = this.valueContent.id;
+        if (!configString) {
+          this.config.retry_attempts = this.valueContent.retry_attempts;
+        }
+        if (this.valueContent.method) {
+            this.config.retry_attempts = this.valueContent.retry_attempts;
+            if (this.config.id !== this.valueContent.id) {
+              this.config.retry_attempts = this.valueContent.retry_attempts;
+              this.config.id = this.valueContent.id;
+            } else {
+              if (configString) {
+                const config = JSON.parse(configString);
+                this.config.retry_attempts = _.get(config, 'retry_attempts');
+              }
+            }
+        }
       }
     },
     setNodeConfig() {
@@ -41,9 +67,17 @@ export default {
       const json = JSON.stringify({ ...existingSetting, retry_attempts: this.config.retry_attempts });
       Vue.set(this.node(), 'errorHandling', json);
     },
+    updateConfig() {
+      if (this.valueContent.retry_attempts !== this.config.retry_attempts) {
+        this.setNodeConfig();
+      }
+    },
   },
   mounted() {
-    this.getNodeConfig();
+    this.$root.$on("contentChanged", this.getNodeConfig);
+  },
+  beforeDestroy() {
+    this.$root.$off("contentChanged", this.getNodeConfig);
   },
   computed: {
     helper() {

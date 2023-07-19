@@ -24,7 +24,7 @@
                         </div>
                     @endcan
                     @can('create-processes')
-                        <select-template-modal :type="__('Process')" :count-categories="@json($config->countCategories)" :package-ai="{{ hasPackage('package-ai') }}"></select-template-modal>
+                        <select-template-modal :type="__('Process')" :count-categories="@json($config->countCategories)" :package-ai="{{ hasPackage('package-ai') ? '1' : '0' }}"></select-template-modal>
                     @endcan
                 </div>
             @endcan

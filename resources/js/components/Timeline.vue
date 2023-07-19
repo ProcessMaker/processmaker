@@ -30,6 +30,7 @@
 const SubjectIcons = {
   'Task Complete': 'far fa-square',
   'Gateway': 'far fa-square fa-rotate-45',
+  'Rollback': 'fa fa-undo',
 };
 export default {
   props: ["commentable_id", 

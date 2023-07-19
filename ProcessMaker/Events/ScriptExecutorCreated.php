@@ -11,23 +11,16 @@ class ScriptExecutorCreated implements SecurityLogEventInterface
 
     private array $data;
 
-    private array $changes;
-
     /**
      * Create a new event instance.
      *
+     * @param array $data
+     *
      * @return void
      */
-    public function __construct(array $created_values)
+    public function __construct(array $data)
     {
-        $this->changes = $created_values;
-        $this->data = [
-            'script_executor_id' => $created_values['id'],
-            'title' => $created_values['title'],
-            'description' => $created_values['description'],
-            'language' => $created_values['language'],
-            'config' => $created_values['config'],
-        ];
+        $this->data = $data;
     }
 
     /**
@@ -35,7 +28,17 @@ class ScriptExecutorCreated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        return $this->data;
+        return [
+            'name' => [
+                'label' => $this->data['title'],
+                'link' => route('script-executors.index'),
+            ],
+            'script_executor_id' => $this->data['id'] ?? '',
+            'description' => isset($this->data['description']) ? $this->data['description'] : '',
+            'language' => $this->data['language'] ?? '',
+            'config' => $this->data['config'] ?? '',
+            'created_at' => $this->data['created_at'] ?? '',
+        ];
     }
 
     /**
@@ -43,7 +46,9 @@ class ScriptExecutorCreated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return [];
+        return [
+            'script_executor_id' => $this->data['id'] ?? '',
+        ];
     }
 
     /**

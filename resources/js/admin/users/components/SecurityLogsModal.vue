@@ -191,7 +191,38 @@ export default {
           auxArray[this.capitalizeKey(key)] = this.booleanToString(value);
         }
       }
-      return auxArray;
+
+      return this.sortModalArray(auxArray);
+    },
+    /**
+     * Sort modal Array
+     */
+    sortModalArray(auxArray) {
+      const sortKey = ["Name"];
+      const auxArraySorted = {};
+      const dateKey = Object.keys(auxArray).find(
+        (key) => ["Created_at", "Deleted_at", "Updated_at", "Last_modified", "Accessed_at"].includes(key)
+      );
+
+      if (dateKey) {
+        sortKey.push(dateKey);
+      }
+
+      sortKey.push("Description");
+
+      Object.keys(auxArray).forEach((key) => {
+        if (!sortKey.includes(key)) {
+          sortKey.push(key);
+        }
+      });
+
+      sortKey.forEach((key) => {
+        if (key in auxArray) {
+          auxArraySorted[key] = auxArray[key];
+        }
+      });
+
+      return auxArraySorted;
     },
     /**
      * Verify if value is a string o null
@@ -273,7 +304,7 @@ export default {
   white-space: nowrap
 }
 p {
-  word-break: break-all;
+  word-break: break-word;
 }
 .subItem {
   display: block;

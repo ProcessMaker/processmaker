@@ -32,10 +32,11 @@ class UserCreated implements SecurityLogEventInterface
     public function getData(): array
     {
         return [
-            'username' => [
+            'name' => [
                 'label' => $this->user->getAttribute('username'),
                 'link' => route('users.edit', $this->user),
             ],
+            'username' => $this->user->getAttribute('username'),
             'firstname' => $this->user->getAttribute('firstname'),
             'lastname' => $this->user->getAttribute('lastname'),
             'title' => $this->user->getAttribute('title'),

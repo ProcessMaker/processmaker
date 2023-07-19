@@ -522,80 +522,60 @@ class ProcessTranslation
 
     public function importTranslations($payload)
     {
-        $screens = [];
         foreach ($payload as $screenUuid => $value) {
             $screen = Screen::where('uuid', $screenUuid)->first();
-            $newScreenTranslations = [];
             if ($screen) {
-                $screenTranslations = $screen->translations;
-                $availableStrings = $this->getStringsInScreen($screen);
-
-                foreach ($value as $languageCode => $translations) {
-                    if (!array_key_exists($languageCode, $screenTranslations)) {
-                        $screenTranslations[$languageCode]['strings'] = [];
-                    }
-
-                    $newTranslations = [];
-                    // For each of the available elements in the screens
-                    foreach ($availableStrings as $availableString) {
-                        // We need to check if there are current translations in the translation
-                        // column (old translations) for that available string
-                        $foundOld = false;
-                        foreach ($screenTranslations[$languageCode]['strings'] as $inDbTranslation) {
-                            if ($availableString === $inDbTranslation['key']) {
-                                $foundOld = true;
-                                $oldTranslation = [
-                                    'key' => $inDbTranslation['key'],
-                                    'string' => $inDbTranslation['string'],
-                                ];
-                            }
-                        }
-
-                        // We need to check if there are some translation in the translation file
-                        // for that available string
-                        $foundInFile = false;
-                        foreach ($translations as $importedTranslation) {
-                            if ($availableString === $importedTranslation['key']) {
-                                $foundInFile = true;
-                                $inFileTranslation = [
-                                    'key' => $importedTranslation['key'],
-                                    'string' => $importedTranslation['string'],
-                                ];
-                            }
-                        }
-
-                        if ($foundOld && !$foundInFile) {
-                            $newTranslations[] = $oldTranslation;
-                        }
-
-                        if (!$foundOld && $foundInFile) {
-                            $newTranslations[] = $inFileTranslation;
-                        }
-
-                        if ($foundOld && $foundInFile && $inFileTranslation['string'] === '') {
-                            $newTranslations[] = $inFileTranslation;
-                        }
-
-                        if ($foundOld && $foundInFile && $inFileTranslation['string'] === null) {
-                            $newTranslations[] = $oldTranslation;
-                        }
-
-                        if ($foundOld && $foundInFile && $inFileTranslation['string'] && $inFileTranslation['string'] !== '') {
-                            $newTranslations[] = $inFileTranslation;
-                        }
-                    }
-
-                    // Assign new translations to language in screen
-                    // $newScreenTranslations[$languageCode]['strings'] = $newTranslations;
-                    foreach ($screenTranslations as $language => $translations) {
-                        if ($language === $languageCode) {
-                            $screenTranslations[$languageCode]['strings'] = $newTranslations;
-                        }
-                    }
-                }
-                $screen->translations = $screenTranslations;
+                $screen->translations = $this->generateNewTranslations($value, $screen);
                 $screen->save();
             }
         }
+    }
+
+    protected function generateNewTranslations($value, $screen)
+    {
+        $newScreenTranslations = $screen->translations;
+        $availableStrings = $this->getStringsInScreen($screen);
+        foreach ($value as $languageCode => $translations) {
+            $newScreenTranslations[$languageCode]['strings'] = $this->generateNewLanguageTranslations(
+                $translations,
+                $availableStrings,
+                $newScreenTranslations[$languageCode]['strings'] ?? []
+            );
+            $createdAt = $newScreenTranslations[$languageCode]['created_at'] ?? Carbon::now();
+            $newScreenTranslations[$languageCode]['updated_at'] = Carbon::now();
+            $newScreenTranslations[$languageCode]['created_at'] = $createdAt;
+        }
+
+        return $newScreenTranslations;
+    }
+
+    protected function generateNewLanguageTranslations($translations, $availableStrings, $existingTranslations)
+    {
+        $newTranslations = [];
+        foreach ($availableStrings as $availableString) {
+            $oldTranslation = $this->getTranslation($availableString, $existingTranslations);
+            $inFileTranslation = $this->getTranslation($availableString, $translations);
+            if (($oldTranslation !== null && $inFileTranslation === null)
+                || ($oldTranslation !== null && $inFileTranslation !== null && $inFileTranslation['string'] === null)) {
+                $newTranslations[] = $oldTranslation;
+            }
+            if ($inFileTranslation !== null
+                && ($oldTranslation === null || $oldTranslation !== null && $inFileTranslation !== null)) {
+                $newTranslations[] = $inFileTranslation;
+            }
+        }
+
+        return $newTranslations;
+    }
+
+    protected function getTranslation($key, $translationArray)
+    {
+        foreach ($translationArray as $translation) {
+            if ($key === $translation['key']) {
+                return $translation;
+            }
+        }
+
+        return null;
     }
 }

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Models\ProcessRequestToken as Token;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\Collection;
 use ProcessMaker\Nayra\Bpmn\Models\EndEvent;
@@ -63,6 +64,7 @@ class TokenRepository implements TokenRepositoryInterface
         if (is_numeric($uid)) {
             return Token::find($uid);
         }
+
         return Token::where('uuid', $uid)->first();
     }
 
@@ -201,7 +203,7 @@ class TokenRepository implements TokenRepositoryInterface
      * Persists instance and token data when a token within an activity change to error state
      *
      * @param ActivityInterface $activity
-     * @param TokenInterface $token
+     * @param TokenInterface|ProcessRequestToken $token
      *
      * @return mixed
      */

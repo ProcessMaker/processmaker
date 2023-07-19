@@ -71,17 +71,17 @@ class TemplateController extends Controller
         return $this->template->store($type, $request);
     }
 
-     /**
-      * Update the template manifest
-      *
-      * @param  string  $type
-      * @param  Request $request
-      * @return \Illuminate\Http\Response
-      */
-     public function updateTemplateManifest(string $type, int $processId, Request $request)
-     {
-         return $this->template->updateTemplateManifest($type, $processId, $request);
-     }
+    /**
+     * Update the template manifest
+     *
+     * @param  string  $type
+     * @param  Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function updateTemplateManifest(string $type, int $processId, Request $request)
+    {
+        return $this->template->updateTemplateManifest($type, $processId, $request);
+    }
 
     /**
      * Update stored template with new.

@@ -1,7 +1,7 @@
 <template>
   <div role="group">
     <label for="retry_wait_time">{{ $t('Retry Wait Time') }}</label>
-    <b-form-input id="retry_wait_time" type="number" v-model="config.retry_wait_time" min="0" max="3600"></b-form-input>
+    <b-form-input id="retry_wait_time" type="number" v-model="config.retry_wait_time" @input="updateConfig" min="0" max="3600"></b-form-input>
     <small class="form-text text-muted">{{ helper }}</small>
   </div>
 </template>
@@ -15,6 +15,7 @@ export default {
       config: {
         retry_wait_time: "",
       },
+      valueContent: "",
     }
   },
   watch: {
@@ -29,11 +30,36 @@ export default {
     node() {
       return this.$root.$children[0].$refs.modeler.highlightedNode.definition;
     },
-    getNodeConfig() {
+    getNodeConfig(newValue) {
+      this.valueContent = newValue;
       const configString = _.get(this.node(), 'errorHandling', null);
-      if (configString) {
-        const config = JSON.parse(configString);
-        this.config.retry_wait_time = _.get(config, 'retry_wait_time', "");
+      if (this.config.id) {
+        if (this.config.id !== this.valueContent.id) {
+          this.config.retry_wait_time = this.valueContent.retry_wait_time;
+          this.config.id = this.valueContent.id;
+        } else {
+          if (configString) {
+            const config = JSON.parse(configString);
+            this.config.retry_wait_time = _.get(config, 'retry_wait_time');
+          }
+        }
+      } else {
+        this.config.id = this.valueContent.id;
+        if (!configString) {
+          this.config.retry_wait_time = this.valueContent.retry_wait_time;
+        }
+        if (this.valueContent.method) {
+            this.config.retry_wait_time = this.valueContent.retry_wait_time;
+            if (this.config.id !== this.valueContent.id) {
+              this.config.retry_wait_time = this.valueContent.retry_wait_time;
+              this.config.id = this.valueContent.id;
+            } else {
+              if (configString) {
+                const config = JSON.parse(configString);
+                this.config.retry_wait_time = _.get(config, 'retry_wait_time');
+              }
+            }
+        }
       }
     },
     setNodeConfig() {
@@ -41,9 +67,17 @@ export default {
       const json = JSON.stringify({ ...existingSetting, retry_wait_time: this.config.retry_wait_time });
       Vue.set(this.node(), 'errorHandling', json);
     },
+    updateConfig() {
+      if (this.valueContent.retry_wait_time !== this.config.retry_wait_time) {
+        this.setNodeConfig();
+      }
+    },
   },
   mounted() {
-    this.getNodeConfig();
+    this.$root.$on("contentChanged", this.getNodeConfig);
+  },
+  beforeDestroy() {
+    this.$root.$off("contentChanged", this.getNodeConfig);
   },
   computed: {
     helper() {

@@ -39,6 +39,9 @@
         </p>
       </div>
       <div v-if="!tokenResult.hasOwnProperty('message') && tokenResult.is_sequence_flow">
+        <p class="tooltip-title">
+          <span class="text-info">{{ nodeName }}</span>
+        </p>
         <p class="tooltip-data">
           <span class="tooltip-data-title">
             {{ repeatMessage }}
@@ -75,7 +78,7 @@ export default {
       },
     },
     requestId: {
-      type: String,
+      type: Number,
       default() {
         return null;
       },

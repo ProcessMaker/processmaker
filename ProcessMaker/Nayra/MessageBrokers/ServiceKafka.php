@@ -3,8 +3,9 @@
 namespace ProcessMaker\Nayra\MessageBrokers;
 
 use Junges\Kafka\Contracts\KafkaConsumerMessage;
-use ProcessMaker\Nayra\Repositories\PersistenceHandler;
 use Junges\Kafka\Facades\Kafka;
+use ProcessMaker\Helpers\DBHelper;
+use ProcessMaker\Nayra\Repositories\PersistenceHandler;
 
 class ServiceKafka
 {
@@ -70,6 +71,7 @@ class ServiceKafka
         })->build();
 
         // Consume incoming messages
+        echo "\033[0;32m" . 'ProcessMaker consumer using kafka.' . "\033[0m" . PHP_EOL;
         $consumer->consume();
     }
 
@@ -80,6 +82,7 @@ class ServiceKafka
      */
     private function storeData(array $transactions)
     {
+        DBHelper::db_health_check();
         $handler = new PersistenceHandler();
         foreach ($transactions as $transaction) {
             $handler->save($transaction);

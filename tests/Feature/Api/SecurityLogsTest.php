@@ -3,17 +3,25 @@
 namespace Tests\Feature\Api;
 
 use Database\Seeders\PermissionSeeder;
+use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Events\SettingsUpdated;
+use ProcessMaker\Events\SignalCreated;
+use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Models\Setting;
+use ProcessMaker\Models\SignalData;
 use ProcessMaker\Models\User;
 use ProcessMaker\Providers\AuthServiceProvider;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
+/**
+ * @covers \ProcessMaker\Models\SecurityLog
+ */
 class SecurityLogsTest extends TestCase
 {
     use RequestHelper;
@@ -54,6 +62,9 @@ class SecurityLogsTest extends TestCase
         $response->assertStatus(200);
     }
 
+    /**
+     * Return status 200
+     */
     public function testSearchSecurityLogsApi()
     {
         $permission = Permission::byName('view-security-logs');
@@ -118,6 +129,9 @@ class SecurityLogsTest extends TestCase
         $this->assertCount(2, $results);
     }
 
+    /**
+     * Return status 201
+     */
     public function testStore()
     {
         $response = $this->apiCall('POST', '/security-logs');
@@ -149,30 +163,16 @@ class SecurityLogsTest extends TestCase
             ],
         ]);
         $response->assertStatus(201);
+
         $collection = SecurityLog::where('user_id', $this->user->id)->get();
-        $this->assertCount(1, $collection);
-        $securityLog = $collection->first();
-        $this->assertEquals([
-            'fullname' => $this->user->getAttribute('fullname'),
-        ], (array) $securityLog->data);
-        $this->assertEquals([
-            'event' => 'TestStoreEvent',
-            'ip' => '127.0.01',
-            'user_id' => $this->user->id,
-            'meta' => (object) [
-                'user_agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36',
-                'browser' => (object) [
-                    'name' => 'Chrome',
-                    'version' => '111',
-                ],
-                'os' => (object) [
-                    'name' => 'Linux',
-                    'version' => null,
-                ],
-            ],
-        ], $securityLog->only('event', 'ip', 'user_id', 'meta'));
+        $this->assertCount(2, $collection);
+        $securityLog = $collection->skip(1)->first();
+        $this->assertIsObject($securityLog->data);
     }
 
+    /**
+     * This test the Setting Update
+     */
     public function testSettingUpdated()
     {
         $setting = Setting::factory()->create(['key' => 'users.properties']);

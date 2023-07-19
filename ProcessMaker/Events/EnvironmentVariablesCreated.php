@@ -49,7 +49,7 @@ class EnvironmentVariablesCreated implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            'id' => $this->enVariable->getAttribute('name')
+            'id' => $this->enVariable->getAttribute('name'),
         ];
     }
 

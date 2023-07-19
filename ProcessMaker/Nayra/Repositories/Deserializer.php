@@ -9,8 +9,10 @@ use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Nayra\Bpmn\Collection;
 use ProcessMaker\Nayra\Contracts\Bpmn\CollectionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\EventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
+use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Repositories\DefinitionsRepository;
 use ProcessMaker\Repositories\ExecutionInstanceRepository;
@@ -19,10 +21,15 @@ use ProcessMaker\Repositories\TokenRepository;
 class Deserializer
 {
     private $definitions = [];
+
     private $requests = [];
+
     private $tokens = [];
+
     private ExecutionInstanceRepository $instanceRepository;
+
     private TokenRepository $tokenRepository;
+
     private DefinitionsRepository $factory;
 
     /**
@@ -50,7 +57,7 @@ class Deserializer
             $version = ProcessVersion::find($modelId);
             $model = $version->process;
 
-            $definition = new BpmnDocument($model);
+            $definition = app(BpmnDocumentInterface::class, ['process' => $model]);
             $definition->setFactory($this->factory);
             $definition->loadXML($version->bpmn);
 
@@ -202,7 +209,7 @@ class Deserializer
      * Return a process request token from serialized data
      *
      * @param array $serialized
-     * @return TokenInterface
+     * @return TokenInterface|ProcessRequestToken
      */
     public function unserializeToken(array $serialized): TokenInterface
     {
@@ -230,6 +237,7 @@ class Deserializer
     public function unserializeEntity(array $serialized): EntityInterface
     {
         $definition = $this->findProcessDefinition($serialized['model_id']);
+
         return $definition->getElementInstanceById($serialized['id']);
     }
 
@@ -247,5 +255,22 @@ class Deserializer
         }
 
         return $collection;
+    }
+
+    /**
+     * Return event definition from serialized data
+     *
+     * @param array $serialized
+     * @return EventDefinitionInterface
+     */
+    public function unserializeEventDefinition(array $serialized): EventDefinitionInterface
+    {
+        $definition = $this->findProcessDefinition($serialized['model_id']);
+        $element = $definition->getElementInstanceById($serialized['element_id']);
+        $node = $element->getBpmnElement();
+        $childNode = $node->childNodes->item($serialized['index']);
+        $eventDefinition = $childNode->getBpmnElementInstance();
+
+        return $eventDefinition;
     }
 }

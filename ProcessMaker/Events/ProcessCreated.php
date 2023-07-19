@@ -18,6 +18,8 @@ class ProcessCreated implements SecurityLogEventInterface
 
     public const TEMPLATE_CREATION = 'TEMPLATE';
 
+    public const BPMN_CREATION = 'BPMN';
+
     /**
      * Create a new event instance.
      *
@@ -60,7 +62,7 @@ class ProcessCreated implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            'id' => $this->process->getAttribute('id')
+            'id' => $this->process->getAttribute('id'),
         ];
     }
 
