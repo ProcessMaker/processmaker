@@ -18,10 +18,20 @@ class RunNayraServiceTask implements ShouldQueue
         Queueable,
         SerializesModels;
 
+    public $definitionsId;
+
+    public $instanceId;
+
     public $tokenId;
 
-    public $userId;
+    public $data;
 
+    public $tries = 3;
+
+    public $backoff = 60;
+
+    public $attemptNum;
+    
     /**
      * Create a new job instance.
      *
@@ -48,6 +58,6 @@ class RunNayraServiceTask implements ShouldQueue
         $token->setInstance($instance);
 
         // Run service task
-        WorkflowManager::handleServiceTask($token);
+        WorkflowManager::handleServiceTask($token, $this);
     }
 }

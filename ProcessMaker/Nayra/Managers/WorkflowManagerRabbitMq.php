@@ -272,7 +272,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
      *
      * @param ProcessRequestToken $token
      */
-    public function handleServiceTask(ProcessRequestToken $token)
+    public function handleServiceTask(ProcessRequestToken $token, RunNayraServiceTask $job)
     {
         // Get complementary information
         $element = $token->getDefinition(true);
@@ -347,10 +347,25 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
                 ],
             ]);
         } catch (Throwable $exception) {
+
+            $message = $errorHandling->handleRetries($job, $exception);
+            $isLastTry = true;
+
+            $error = $element->getRepository()->createError();
+            $error->setName($message);
+
+            $token->setProperty('error', $error);
+            $exceptionClass = get_class($exception);
+            $modifiedException = new $exceptionClass($message);
+            $token->logError($modifiedException, $element);
+
             // Log message errors
             Log::info('Service task failed: ' . $implementation . ' - ' . $exception->getMessage());
             Log::error($exception->getTraceAsString());
-            $this->taskFailed($instance, $token, $exception->getMessage());
+
+            if ($isLastTry) {
+                $this->taskFailed($instance, $token, $exception->getMessage());
+            }
         }
     }
 
