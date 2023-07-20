@@ -28,6 +28,7 @@ return [
     'vhost' => env('RABBITMQ_VHOST', '/'),
     'login' => env('RABBITMQ_LOGIN', 'guest'),
     'password' => env('RABBITMQ_PASSWORD', 'guest'),
+    'heartbeat' => intval(env('RABBITMQ_HEARTBEAT') ?: 60),
 
     'queue' => env('RABBITMQ_QUEUE', 'default'),
 

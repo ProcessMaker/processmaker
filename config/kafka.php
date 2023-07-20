@@ -55,4 +55,9 @@ return [
      | The sleep time in milliseconds that will be used when retrying flush
      */
     'flush_retry_sleep_in_ms' => 100,
+
+    /*
+     | heartbeat interval in milliseconds
+     */
+    'heartbeat_interval_ms' => intval(env('KAFKA_HEARTBEAT_INTERVAL_MS') ?: 3000),
 ];
