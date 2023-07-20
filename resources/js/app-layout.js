@@ -17,7 +17,7 @@ import SelectFromApi from "./components/SelectFromApi";
 import Breadcrumbs from "./components/Breadcrumbs";
 import TimelineItem from "./components/TimelineItem";
 import Required from "./components/shared/Required";
-
+import { sanitizeUrl } from "@braintree/sanitize-url";
 import { FileUpload, FileDownload } from "./processes/screen-builder/components";
 import RequiredCheckbox from "./processes/screen-builder/components/inspector/RequiredCheckbox";
 
@@ -42,6 +42,8 @@ Vue.prototype.moment = moment;
 // initializing global instance of a moment object
 window.moment = moment;
 /** ***** */
+
+Vue.prototype.$sanitize = sanitizeUrl;
 
 Vue.component("Multiselect", Multiselect);
 Vue.component("Sidebaricon", Sidebaricon);

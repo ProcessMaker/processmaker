@@ -62,7 +62,11 @@ class ServiceKafka
     public function worker()
     {
         // Create Kafka consumer
-        $consumer = Kafka::createConsumer([self::QUEUE_NAME])->withHandler(function (KafkaConsumerMessage $message) {
+        $heartbeat = config('kafka.heartbeat_interval_ms', 3000);
+        $consumer = Kafka::createConsumer([self::QUEUE_NAME])
+            ->withOption('heartbeat.interval.ms', $heartbeat)
+            ->withOption('session.timeout.ms', $heartbeat * 10)
+            ->withHandler(function (KafkaConsumerMessage $message) {
             // Get transactions
             $transactions = $message->getBody();
 
