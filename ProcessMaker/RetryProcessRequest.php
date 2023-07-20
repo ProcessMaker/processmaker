@@ -83,9 +83,6 @@ class RetryProcessRequest
 
         $this->unlockProcessRequest();
 
-        // disable the next line: Rerun the task will move the task to the proper state
-        // $this->reactivateRequest();
-
         $this->getRetriableTasks()->each(function (ProcessRequestToken $token) {
             // Load the token instance
             $token = $token->loadTokenInstance();

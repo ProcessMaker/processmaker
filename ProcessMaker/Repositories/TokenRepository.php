@@ -237,6 +237,9 @@ class TokenRepository implements TokenRepositoryInterface
      */
     public function persistActivityCompleted(ActivityInterface $activity, TokenInterface $token)
     {
+        if ($token->getInstance()->status === 'ERROR') {
+            $token->getInstance()->status = 'ACTIVE';
+        }
         $process = $token->getInstance()->getProcess();
         if ($process->isNonPersistent()) {
             return;

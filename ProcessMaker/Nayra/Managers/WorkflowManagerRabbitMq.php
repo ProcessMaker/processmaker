@@ -631,6 +631,8 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
      * Send payload
      *
      * @param array $action
+     * @param string $subject
+     * @return void
      */
     private function dispatchAction(array $action, $subject = 'requests'): void
     {
