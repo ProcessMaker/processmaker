@@ -327,7 +327,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         $screen = Screen::find($screenRef);
 
         if ($screen === null) {
-            $isManualTask = $this->getBpmnDefinition()->localName === 'manualTask';
+            $isManualTask = $this->getBpmnDefinition()?->localName === 'manualTask';
             $defaultScreen = $isManualTask ? 'default-display-screen' : 'default-form-screen';
             $screen = Screen::firstWhere('key', $defaultScreen);
         }

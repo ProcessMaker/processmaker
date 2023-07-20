@@ -16,7 +16,7 @@ app()->make(Kernel::class)->bootstrap();
 // Cache with new config so we don't overwrite our local development database
 Artisan::call('config:cache', ['--env' => 'testing']);
 
-//Ensure storage directory is linked
+// Ensure storage directory is linked
 Artisan::call('storage:link', []);
 
 if (env('RUN_MSSQL_TESTS')) {
@@ -95,6 +95,7 @@ if (env('TEST_TOKEN')) {
     Artisan::call('db:wipe', ['--database' => \DB::connection()->getName()]);
     Artisan::call('migrate:fresh', []);
     Artisan::call('db:seed', ['--class' => 'AnonymousUserSeeder']);
+    Artisan::call('db:seed', ['--class' => 'ScreenSystemSeeder']);
 
     \Illuminate\Foundation\Testing\RefreshDatabaseState::$migrated = true;
 
