@@ -10,6 +10,7 @@ use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Facades\MessageBrokerService;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\GenerateAccessToken;
+use ProcessMaker\Jobs\ErrorHandling;
 use ProcessMaker\Jobs\RunNayraServiceTask;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\SignalManager;
@@ -290,7 +291,6 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         // Get service task configuration
         $implementation = $element->getImplementation();
         $configuration = json_decode($element->getProperty('config'), true);
-        $errorHandling = json_decode($element->getProperty('errorHandling'), true);
 
         // Check to see if we've failed parsing.  If so, let's convert to empty array.
         if ($configuration === null) {
@@ -310,6 +310,10 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
                 throw new ScriptException('Service task not implemented: ' . $implementation);
             }
 
+            // Parse config
+            $errorHandling = new ErrorHandling($element, $token);
+            $errorHandling->setDefaultsFromDataSourceConfig($configuration);
+
             // Get data
             $dataManager = new DataManager();
             $data = $dataManager->getData($token);
@@ -317,10 +321,10 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             // Run implementation/script
             if ($existsImpl) {
                 $response = [
-                    'output' => WorkflowManager::runServiceImplementation($implementation, $data, $configuration, $token->getId(), $errorHandling),
+                    'output' => WorkflowManager::runServiceImplementation($implementation, $data, $configuration, $token->getId(), $errorHandling->timeout()),
                 ];
             } else {
-                $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling);
+                $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling->timeout());
             }
 
             // Update data
