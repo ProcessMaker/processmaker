@@ -100,8 +100,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             $this->updateData($response);
         } catch (ConfigurationException $exception) {
             $this->unlock();
-            $output = ['ScriptConfigurationError' => $element->getName() . ': ' . $exception->getMessage()];
-            $this->updateData(['output' => $output]);
+            $this->updateData(['output' => $exception->getMessageForData($token)]);
         } catch (Throwable $exception) {
             $token->setStatus(ScriptTaskInterface::TOKEN_STATE_FAILING);
 
@@ -123,7 +122,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
         }
     }
 
-    public function updateData($response)
+    private function updateData($response)
     {
         $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
             // Exit if the task was completed or closed

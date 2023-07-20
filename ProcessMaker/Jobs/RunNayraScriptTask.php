@@ -103,7 +103,7 @@ class RunNayraScriptTask implements ShouldQueue
             // Dispatch complete task action
             WorkflowManager::completeTask($processModel, $instance, $token, $response['output']);
         } catch (ConfigurationException $exception) {
-            $output = ['ScriptConfigurationError' => $element->getName() . ': ' . $exception->getMessage()];
+            $output = $exception->getMessageForData($token);
             WorkflowManager::completeTask($processModel, $instance, $token, $output);
         } catch (Throwable $exception) {
             Log::error('Script failed: ' . $scriptRef . ' - ' . $exception->getMessage());

@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Contracts\WorkflowManagerInterface;
+use ProcessMaker\Exception\ConfigurationException;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Facades\MessageBrokerService;
 use ProcessMaker\Facades\WorkflowManager;
@@ -332,26 +333,34 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             }
 
             // Dispatch complete task action
-            $this->dispatchAction([
-                'bpmn' => $version,
-                'action' => self::ACTION_COMPLETE_TASK,
-                'params' => [
-                    'request_id' => $token->process_request_id,
-                    'token_id' => $token->uuid,
-                    'element_id' => $token->element_id,
-                    'data' => $response['output'],
-                ],
-                'state' => $state,
-                'session' => [
-                    'user_id' => $userId,
-                ],
-            ]);
+            $this->dispatchActionForServiceTask($version, $token, $response, $state, $userId);
+        } catch (ConfigurationException $exception) {
+            $response = ['output' => $exception->getMessageForData($token)];
+            $this->dispatchActionForServiceTask($version, $token, $response, $state, $userId);
         } catch (Throwable $exception) {
             // Log message errors
             Log::info('Service task failed: ' . $implementation . ' - ' . $exception->getMessage());
             Log::error($exception->getTraceAsString());
             $this->taskFailed($instance, $token, $exception->getMessage());
         }
+    }
+
+    private function dispatchActionForServiceTask($version, $token, $response, $state, $userId)
+    {
+        $this->dispatchAction([
+            'bpmn' => $version,
+            'action' => self::ACTION_COMPLETE_TASK,
+            'params' => [
+                'request_id' => $token->process_request_id,
+                'token_id' => $token->uuid,
+                'element_id' => $token->element_id,
+                'data' => $response['output'],
+            ],
+            'state' => $state,
+            'session' => [
+                'user_id' => $userId,
+            ],
+        ]);
     }
 
     /**
