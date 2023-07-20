@@ -1,5 +1,5 @@
 <template>
-  <div class="pb-2">
+  <div class="pb-2 template-select-card-container">
     <b-card no-body class="template-select-card" @click="showDetails()" @mouseenter="addHoverClass" @mouseleave="removeHoverClass">
       <b-card-body :title="template.name | str_limit(30)" class="card-body">
         <b-card-text class="mb-2">
@@ -63,8 +63,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.template-select-card-container {
+  flex: 0 0 33.333333%;
+}
 .template-select-card {
-  width: 292px;
+  // width: 292px;
   height: 172px;
   border-radius: 4px;
   padding: 10px 8px 10px 8px;
