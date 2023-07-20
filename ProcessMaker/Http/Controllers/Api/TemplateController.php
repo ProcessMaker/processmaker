@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use ProcessMaker\Events\ProcessCreated;
 use ProcessMaker\Events\TemplateDeleted;
+use ProcessMaker\Events\TemplatePublished;
 use ProcessMaker\Events\TemplateUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\TemplateCollection;
@@ -68,7 +69,7 @@ class TemplateController extends Controller
         }
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
         $storeTemplate = $this->template->store($type, $request);
-        //TemplatePublished::dispatch($storeTemplate);
+        TemplatePublished::dispatch($request->request->all());
         return $storeTemplate;
     }
 

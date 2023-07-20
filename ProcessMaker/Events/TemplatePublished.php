@@ -23,7 +23,9 @@ class TemplatePublished implements SecurityLogEventInterface
         $this->newTemplate = $newTemplate;
 
         if (isset($newTemplate['process_category_id'])) {
-            $this->newTemplate['process_category'] = ProcessCategory::getNamesByIds($newTemplate['process_category_id']);
+            $this->newTemplate['process_category'] = ProcessCategory::getNamesByIds(
+                $newTemplate['process_category_id']
+            );
             unset($newTemplate['process_category_id']);
         }
     }
@@ -38,7 +40,7 @@ class TemplatePublished implements SecurityLogEventInterface
         return [
             'name' => [
                 'label' => $this->newTemplate['name'],
-                'link' => route('processes.index') . '#nav-categories',
+                'link' => route('processes.index') . '#nav-templates',
             ],
             'description' => $this->newTemplate['description'] ?? '',
             'save assets mode' => $this->newTemplate['saveAssetsMode'] ?? '',
