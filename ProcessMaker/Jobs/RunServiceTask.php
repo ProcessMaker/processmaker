@@ -73,6 +73,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
         if ($configuration === null) {
             $configuration = [];
         }
+        $errorHandling = null;
         try {
             if (empty($implementation)) {
                 throw new ScriptException('Service task implementation not defined');
@@ -122,10 +123,15 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
                 $this->instance = $instance;
             });
         } catch (Throwable $exception) {
-            // Change to error status
-            $token->setStatus(ServiceTaskInterface::TOKEN_STATE_FAILING);
+            $finalAttempt = true;
+            if ($errorHandling) {
+                [$message, $finalAttempt] = $errorHandling->handleRetries($this, $exception);
+            }
 
-            $message = $errorHandling->handleRetries($this, $exception);
+            if ($finalAttempt) {
+                // Change to error status
+                $token->setStatus(ServiceTaskInterface::TOKEN_STATE_FAILING);
+            }
 
             $error = $element->getRepository()->createError();
             $error->setName($message);
