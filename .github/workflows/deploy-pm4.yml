@@ -1,10 +1,10 @@
 name: BUILD-PM4
 on: 
-  #push:
-  #  branches:
-  #    - kr-github-actions
-  pull_request:
-    types: [opened, reopened, synchronize, edited, closed]
+  push:
+    branches:
+      - kr-github-actions
+  #pull_request:
+  #  types: [opened, reopened, synchronize, edited, closed]
   schedule:
     - cron: '0 0 * * *'  # every day at midnight     
   #workflow_dispatch:
@@ -42,7 +42,7 @@ jobs:
   job1:
     name: build-stm-image 
     if: github.event.action != 'closed'
-    runs-on: ubuntu-22.04    
+    runs-on: self-hosted
     steps:     
       - name: Export Params                
         run: |
