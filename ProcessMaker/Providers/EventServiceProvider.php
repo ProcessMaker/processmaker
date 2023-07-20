@@ -56,6 +56,7 @@ use ProcessMaker\Events\UnauthorizedAccessAttempt;
 use ProcessMaker\Events\UserCreated;
 use ProcessMaker\Events\UserDeleted;
 use ProcessMaker\Events\UserGroupMembershipUpdated;
+use ProcessMaker\Events\UserRestored;
 use ProcessMaker\Events\UserUpdated;
 use ProcessMaker\Listeners\SecurityLogger;
 
@@ -150,6 +151,7 @@ class EventServiceProvider extends ServiceProvider
             $this->app['events']->listen(UserCreated::class, SecurityLogger::class);
             $this->app['events']->listen(UserDeleted::class, SecurityLogger::class);
             $this->app['events']->listen(UserGroupMembershipUpdated::class, SecurityLogger::class);
+            $this->app['events']->listen(UserRestored::class, SecurityLogger::class);
             $this->app['events']->listen(UserUpdated::class, SecurityLogger::class);
         }
     }

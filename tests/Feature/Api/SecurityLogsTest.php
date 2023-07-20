@@ -6,14 +6,18 @@ use Database\Seeders\PermissionSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Events\EnvironmentVariablesCreated;
+use ProcessMaker\Events\EnvironmentVariablesDeleted;
+use ProcessMaker\Events\EnvironmentVariablesUpdated;
 use ProcessMaker\Events\SettingsUpdated;
-use ProcessMaker\Events\SignalCreated;
-use ProcessMaker\Managers\SignalManager;
+use ProcessMaker\Events\UserCreated;
+use ProcessMaker\Events\UserDeleted;
+use ProcessMaker\Events\UserRestored;
+use ProcessMaker\Events\UserUpdated;
+use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\Process;
 use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Models\Setting;
-use ProcessMaker\Models\SignalData;
 use ProcessMaker\Models\User;
 use ProcessMaker\Providers\AuthServiceProvider;
 use Tests\Feature\Shared\RequestHelper;
@@ -186,6 +190,8 @@ class SecurityLogsTest extends TestCase
             $this->assertCount(1, $collection);
             $securityLog = $collection->first();
             $this->assertEquals('SettingsUpdated', $securityLog->getAttribute('event'));
+            $this->assertIsObject($securityLog->getAttribute('data'));
+            $this->assertIsObject($securityLog->getAttribute('changes'));
         } else {
             $this->assertCount(0, $collection);
         }
