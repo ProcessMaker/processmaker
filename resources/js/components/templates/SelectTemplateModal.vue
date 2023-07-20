@@ -56,7 +56,7 @@
     },
     computed: {
       subtitle() {
-        return this.$t(`Start a new ${this.type} from a blank canvas or select a template`);
+        return this.$t(`Create a new ${this.type}.`);
       },
       createProcess() {
         return this.$t('Create Process');

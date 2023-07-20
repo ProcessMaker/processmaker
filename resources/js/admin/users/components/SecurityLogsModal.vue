@@ -28,7 +28,7 @@
           <template v-if="isLink(info)">
             <p class="link-value">
               <b>{{ $t(key) }}:</b>
-              <a :href="info.link">
+              <a :href="$sanitize(info.link)">
                 {{ info.label }}
               </a>
             </p>
@@ -36,7 +36,7 @@
           <template v-if="hasOldValue(info)">
             <p class="old-value">
               <b>- {{ $t(key) }}:</b>
-              <template v-if="!isString(info.old)">
+              <template v-if="isCollection(info.old)">
                 <div class="subItem">
                   <template
                     v-for="(subInfo, skey) in info.old"
@@ -45,7 +45,7 @@
                       v-if="isLink(subInfo)"
                       :key="skey"
                     >
-                      <a :href="subInfo.link">
+                      <a :href="$sanitize(subInfo.link)">
                         {{ subInfo.label }}
                       </a>
                     </span>
@@ -58,6 +58,14 @@
                   </template>
                 </div>
               </template>
+              <span
+                v-if="isLink(info.old)"
+                class="link-value"
+              >
+                <a :href="$sanitize(info.old.link)">
+                  {{ info.old.label }}
+                </a>
+              </span>
               <span v-if="isString(info.old)">{{ info.old }}</span>
             </p>
           </template>
@@ -73,7 +81,7 @@
                       v-if="isLink(subInfo)"
                       :key="skey"
                     >
-                      <a :href="subInfo.link">
+                      <a :href="$sanitize(subInfo.link)">
                         {{ subInfo.label }}
                       </a>
                     </span>
@@ -90,7 +98,7 @@
                 v-if="isLink(info.new)"
                 class="link-value"
               >
-                <a :href="info.new.link">
+                <a :href="$sanitize(info.new.link)">
                   {{ info.new.label }}
                 </a>
               </span>
@@ -106,7 +114,7 @@
                   :key="skey"
                   class="link-value"
                 >
-                  <a :href="subInfo.link">
+                  <a :href="$sanitize(subInfo.link)">
                     {{ subInfo.label }}
                   </a>
                 </p>
@@ -123,7 +131,7 @@
       </div>
       <template #modal-footer>
         <b-button @click="closeModal">
-          {{ $t('Close') }}
+          {{ $t("Close") }}
         </b-button>
       </template>
     </b-modal>
@@ -131,6 +139,7 @@
 </template>
 
 <script>
+
 export default {
   props: ["data"],
   data() {
@@ -198,11 +207,21 @@ export default {
      * Sort modal Array
      */
     sortModalArray(auxArray) {
-      const sortKey = ["Name"];
+      const sortKey = [];
       const auxArraySorted = {};
-      const dateKey = Object.keys(auxArray).find(
-        (key) => ["Created_at", "Deleted_at", "Updated_at", "Last_modified", "Accessed_at"].includes(key)
-      );
+      const dateKey = Object.keys(auxArray).find((key) => [
+        "Created_at",
+        "Deleted_at",
+        "Updated_at",
+        "Last_modified",
+        "Accessed_at",
+      ].includes(key));
+
+      Object.keys(auxArray).forEach((key) => {
+        if (key.includes("name") || key.includes("Name")) {
+          auxArraySorted[key] = auxArray[key];
+        }
+      });
 
       if (dateKey) {
         sortKey.push(dateKey);
@@ -228,7 +247,9 @@ export default {
      * Verify if value is a string o null
      */
     isString(value) {
-      return typeof value === "string" || typeof value === "number" || value === null;
+      return (
+        typeof value === "string" || typeof value === "number" || value === null
+      );
     },
     /**
      * Verify if value has link and label
@@ -301,7 +322,7 @@ export default {
   background-color: #e9ffee;
 }
 .link-value {
-  white-space: nowrap
+  white-space: nowrap;
 }
 p {
   word-break: break-word;

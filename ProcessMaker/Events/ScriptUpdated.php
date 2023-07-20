@@ -45,6 +45,9 @@ class ScriptUpdated implements SecurityLogEventInterface
         ? ScriptCategory::getNamesByIds($this->changes['tmp_script_category_id']) : '';
         $this->changes = array_diff_key($this->changes, array_flip($this::REMOVE_KEYS));
         $this->original = array_diff_key($this->original, array_flip($this::REMOVE_KEYS));
+        if (empty($this->changes['script_category'])) {
+            $this->original['script_category'] = '';
+        }
     }
 
     /**
