@@ -159,7 +159,7 @@ export default {
         {'content': '< Back', 'action': 'showSelectTargetLanguage', 'variant': 'link', 'disabled': false, 'hidden': true, 'ariaLabel': 'Back to select language'},
       ],
       customModalButtons: [
-        {'content': 'Cancel', 'action': 'hide()', 'variant': 'outline-secondary', 'disabled': false, 'hidden': false},
+        {'content': 'Close', 'action': 'hide()', 'variant': 'outline-secondary', 'disabled': false, 'hidden': false},
         {'content': 'Translate Process', 'action': 'translate', 'variant': 'secondary', 'disabled': true, 'hidden': false, 'dataTest': 'translation-translate-process'},
         {'content': 'Save Translation', 'action': 'saveTranslations', 'variant': 'secondary', 'disabled': false, 'hidden': true, 'dataTest': 'translation-save-translation-button'},
       ],
