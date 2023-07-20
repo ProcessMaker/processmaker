@@ -43,7 +43,11 @@ jobs:
     name: build-stm-image 
     if: github.event.action != 'closed'
     runs-on: self-hosted
-    container: docker:23.0.6-git
+    container: 
+      image: docker:23.0.6-git
+    defaults:
+      run:
+        working-directory: /
     steps:     
       - name: Export Params                
         run: |
