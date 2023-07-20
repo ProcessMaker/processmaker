@@ -189,7 +189,7 @@ export default {
           process_id: this.assetId,
           process_category_id: this.process_category_id,
         };
-      ProcessMaker.apiClient.put("template/" + this.assetType + "/" + this.existingAssetId, putData)
+        ProcessMaker.apiClient.put("template/" + this.assetType + "/" + this.existingAssetId, putData)
         .then(response => {
           ProcessMaker.alert( this.$t("Template successfully updated"),"success");
           this.close();
