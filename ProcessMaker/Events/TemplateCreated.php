@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Events;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 
@@ -32,6 +33,7 @@ class TemplateCreated implements SecurityLogEventInterface
             'type' => $this->payload['type'] ?? '',
             'version' => $this->payload['version'] ?? '',
             'name' => $this->payload['name'] ?? '',
+            'created_at' => $this->payload['created_at'] ?? Carbon::now(),
         ];
     }
 
