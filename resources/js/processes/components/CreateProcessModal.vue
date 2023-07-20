@@ -152,6 +152,10 @@
         this.$emit('resetModal');
       },
       onSubmit () {
+        if (this.generativeProcessData) {
+          this.$emit("clear-ai-history");
+        }
+
         this.errors = Object.assign({}, {
           name: null,
           description: null,
