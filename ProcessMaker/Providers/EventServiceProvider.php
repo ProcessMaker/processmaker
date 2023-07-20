@@ -48,6 +48,7 @@ use ProcessMaker\Events\SignalDeleted;
 use ProcessMaker\Events\SignalUpdated;
 use ProcessMaker\Events\TemplateCreated;
 use ProcessMaker\Events\TemplateDeleted;
+use ProcessMaker\Events\TemplatePublished;
 use ProcessMaker\Events\TemplateUpdated;
 use ProcessMaker\Events\TokenCreated;
 use ProcessMaker\Events\TokenDeleted;
@@ -141,6 +142,7 @@ class EventServiceProvider extends ServiceProvider
             $this->app['events']->listen(SignalUpdated::class, SecurityLogger::class);
             $this->app['events']->listen(TemplateCreated::class, SecurityLogger::class);
             $this->app['events']->listen(TemplateDeleted::class, SecurityLogger::class);
+            $this->app['events']->listen(TemplatePublished::class, SecurityLogger::class);
             $this->app['events']->listen(TemplateUpdated::class, SecurityLogger::class);
             $this->app['events']->listen(TokenCreated::class, SecurityLogger::class);
             $this->app['events']->listen(TokenDeleted::class, SecurityLogger::class);
