@@ -69,10 +69,15 @@ class ServiceRabbitMq
         }
 
         // Prepare the message to send
-        $message = new AMQPMessage(json_encode(['data' => $body, 'collaboration_id' => $collaborationId]));
+        if ($subject === 'scripts') {
+            $payload = json_encode($body);
+        } else {
+            $payload = json_encode(['data' => $body, 'collaboration_id' => $collaborationId]);
+        }
+        $message = new AMQPMessage($payload);
 
         // Publish the message
-        $this->channel->basic_publish($message, '', self::QUEUE_NAME_PUBLISH);
+        $this->channel->basic_publish($message, '', $subject);
     }
 
     /**

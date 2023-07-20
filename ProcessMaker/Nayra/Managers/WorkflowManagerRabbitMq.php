@@ -243,7 +243,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             'bpmn' => $version,
             'action' => self::ACTION_RUN_SCRIPT,
             'params' => [
-                'request_id' => $token->process_request_id,
+                'instance_id' => $instance->uuid,
                 'token_id' => $token->uuid,
                 'element_id' => $token->element_id,
                 'data' => [],
@@ -252,7 +252,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             'session' => [
                 'user_id' => $userId,
             ],
-        ]);
+        ], 'scripts');
     }
 
     /**
@@ -632,12 +632,11 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
      *
      * @param array $action
      */
-    private function dispatchAction(array $action): void
+    private function dispatchAction(array $action, $subject = 'requests'): void
     {
         // add environment variables to session
         $environmentVariables = $this->getEnvironmentVariables();
         $action['session']['env'] = $environmentVariables;
-        $subject = 'requests';
         $thread = $action['collaboration_id'] ?? 0;
         MessageBrokerService::sendMessage($subject, $thread, $action);
     }
