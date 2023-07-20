@@ -65,14 +65,20 @@ class ErrorHandling
     private function requeue($job)
     {
         $class = get_class($job);
-        $newJob = new $class(
-            Process::findOrFail($job->definitionsId),
-            ProcessRequest::findOrFail($job->instanceId),
-            ProcessRequestToken::findOrFail($job->tokenId),
-            $job->data,
-            $job->attemptNum + 1
-        );
+        if ($job instanceof RunNayraServiceTask) {
+            $newJob = new RunNayraServiceTask($this->processRequestToken);
+            $newJob->attemptNum = $job->attemptNum + 1;
+        } else {
+            $newJob = new $class(
+                Process::findOrFail($job->definitionsId),
+                ProcessRequest::findOrFail($job->instanceId),
+                ProcessRequestToken::findOrFail($job->tokenId),
+                $job->data,
+                $job->attemptNum + 1
+            );
+        }
         $newJob->delay($this->retryWaitTime());
+        $newJob->onQueue('bpmn');
         dispatch($newJob);
     }
 

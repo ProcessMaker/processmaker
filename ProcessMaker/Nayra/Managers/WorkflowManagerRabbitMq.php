@@ -274,7 +274,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
      *
      * @param ProcessRequestToken $token
      */
-    public function handleServiceTask(ProcessRequestToken $token)
+    public function handleServiceTask(ProcessRequestToken $token, RunNayraServiceTask $job)
     {
         // Get complementary information
         $element = $token->getDefinition(true);
@@ -339,13 +339,36 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             // Dispatch complete task action
             $this->dispatchActionForServiceTask($version, $token, $response, $state, $userId);
         } catch (ConfigurationException $exception) {
-            $response = ['output' => $exception->getMessageForData($token)];
+            // If Task failed because of configuration error: Complete the task with the error message
+            $response = [
+                'output' => $exception->getMessageForData($token),
+            ];
             $this->dispatchActionForServiceTask($version, $token, $response, $state, $userId);
+
         } catch (Throwable $exception) {
+
+            $thisWasFinalAttempt = true;
+            if (isset($errorHandling)) {
+                $thisWasFinalAttempt = ($errorHandling->retryAttempts() === 0) || ($job->attemptNum >= $errorHandling->retryAttempts());
+                $message = $errorHandling->handleRetries($job, $exception);
+
+                $error = $element->getRepository()->createError();
+                $error->setName($message);
+
+                $token->setProperty('error', $error);
+                $exceptionClass = get_class($exception);
+                $modifiedException = new $exceptionClass($message);
+                $token->logError($modifiedException, $element);
+            }
+
             // Log message errors
             Log::info('Service task failed: ' . $implementation . ' - ' . $exception->getMessage());
             Log::error($exception->getTraceAsString());
-            $this->taskFailed($instance, $token, $exception->getMessage());
+
+            if ($thisWasFinalAttempt) {
+                // When the last 
+                $this->taskFailed($instance, $token, $exception->getMessage());
+            }
         }
     }
 
@@ -531,7 +554,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
     private function serializeState(ProcessRequest $instance)
     {
         if ($instance->collaboration) {
-            $requests = $instance->collaboration->requests()->where('status', 'ACTIVE')->get();
+            $requests = $instance->collaboration->requests()->whereIn('status', ['ACTIVE', 'ERROR'])->get();
         } else {
             $requests = collect([$instance]);
         }
