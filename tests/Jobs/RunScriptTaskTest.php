@@ -24,10 +24,9 @@ class RunScriptTaskTest extends TestCase
     public function testScriptNotSet($class)
     {
         $request = $this->runJob($class, '');
-        $tokens = $request->tokens;
 
         $this->assertEmpty($request->errors);
-        $this->assertEquals('Script Task: No code or script assigned to "Script Task"', $request->data['ScriptConfigurationError']);
+        $this->assertEquals('my node (node_2): No code or script assigned to "Script Task"', $request->data['_configuration_error_node_2']);
     }
 
     /**
@@ -36,10 +35,9 @@ class RunScriptTaskTest extends TestCase
     public function testScriptNotFound($class)
     {
         $request = $this->runJob($class, 12345);
-        $tokens = $request->tokens;
 
         $this->assertEmpty($request->errors);
-        $this->assertEquals('Script Task: Script "12345" not found', $request->data['ScriptConfigurationError']);
+        $this->assertEquals('my node (node_2): Script "12345" not found', $request->data['_configuration_error_node_2']);
     }
 
     /**
@@ -49,10 +47,9 @@ class RunScriptTaskTest extends TestCase
     {
         $script = Script::factory()->create(['run_as_user_id' => null]);
         $request = $this->runJob($class, $script->id);
-        $tokens = $request->tokens;
 
         $this->assertEmpty($request->errors);
-        $this->assertEquals('Script Task: A user is required to run scripts', $request->data['ScriptConfigurationError']);
+        $this->assertEquals('my node (node_2): A user is required to run scripts', $request->data['_configuration_error_node_2']);
     }
 
     private function runJob($class, $scriptId)
@@ -73,6 +70,7 @@ class RunScriptTaskTest extends TestCase
         $token = ProcessRequestToken::factory()->create([
             'process_request_id' => $request->id,
             'element_id' => 'node_2',
+            'element_name' => 'my node',
             'status' => 'ACTIVE',
         ]);
 
