@@ -321,7 +321,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     /**
      * Get the form assigned to the task.
      */
-    public function getScreen(): Screen
+    public function getScreen(): ?Screen
     {
         $definition = $this->getDefinition();
         $screenRef = $definition['screenRef'] ?? null;
@@ -344,6 +344,10 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     public function getScreenVersion()
     {
         $screen = $this->getScreen();
+
+        if ($screen === null) {
+            return null;
+        }
 
         return $screen->versionFor($this->processRequest);
     }
