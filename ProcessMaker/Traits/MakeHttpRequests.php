@@ -11,6 +11,7 @@ use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Mustache_Engine;
+use ProcessMaker\Exception\ConfigurationException;
 use ProcessMaker\Exception\HttpInvalidArgumentException;
 use ProcessMaker\Exception\HttpResponseException;
 use ProcessMaker\Helpers\StringHelper;
@@ -181,6 +182,9 @@ trait MakeHttpRequests
     private function prepareRequestWithOutboundConfig(array $requestData, array &$config)
     {
         $outboundConfig = $config['outboundConfig'] ?? [];
+        if (!array_key_exists($config['endpoint'], $this->endpoints)) {
+            throw new ConfigurationException("Endpoint '{$config['endpoint']}' not found");
+        }
         $endpoint = $this->endpoints[$config['endpoint']];
         $this->verifySsl = array_key_exists('verify_certificate', $this->credentials)
             ? $this->credentials['verify_certificate']

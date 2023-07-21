@@ -2,24 +2,26 @@
 
 namespace ProcessMaker\Events;
 
-use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
+use ProcessMaker\Models\User;
+use ProcessMaker\Traits\FormatSecurityLogChanges;
 
-class TemplateCreated implements SecurityLogEventInterface
+class UserRestored implements SecurityLogEventInterface
 {
     use Dispatchable;
+    use FormatSecurityLogChanges;
 
-    private array $payload;
+    private User $user;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(array $payload)
+    public function __construct(User $data)
     {
-        $this->payload = $payload;
+        $this->user = $data;
     }
 
     /**
@@ -30,10 +32,12 @@ class TemplateCreated implements SecurityLogEventInterface
     public function getData(): array
     {
         return [
-            'type' => $this->payload['type'] ?? '',
-            'version' => $this->payload['version'] ?? '',
-            'name' => $this->payload['name'] ?? '',
-            'created_at' => $this->payload['created_at'] ?? Carbon::now(),
+            'name' => [
+                'label' => $this->user->getAttribute('username'),
+                'link' => route('users.edit', $this->user),
+            ],
+            'email' => $this->user->getAttribute('email'),
+            'last_modified' => $this->user->getAttribute('updated_at'),
         ];
     }
 
@@ -45,7 +49,8 @@ class TemplateCreated implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            'root' => $this->payload['root'] ?? '',
+            'id' => $this->user->getAttribute('id'),
+            'username' => $this->user->getAttribute('username'),
         ];
     }
 
@@ -56,6 +61,6 @@ class TemplateCreated implements SecurityLogEventInterface
      */
     public function getEventName(): string
     {
-        return 'TemplateCreated';
+        return 'UserRestored';
     }
 }

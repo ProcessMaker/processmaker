@@ -62,9 +62,10 @@ class ScreenUpdated implements SecurityLogEventInterface
         if (array_key_exists('config', $this->changes)) {
             return $basic;
         } else {
-            return array_merge([
-                'last_modified' => $this->screen->getAttribute('updated_at'),
-            ], ArrayHelper::getArrayDifferencesWithFormat($this->changes, $this->original));
+            return array_merge(
+                $basic,
+                ArrayHelper::getArrayDifferencesWithFormat($this->changes, $this->original)
+            );
         }
     }
 
