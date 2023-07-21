@@ -30,10 +30,10 @@ class TemplateUpdated implements SecurityLogEventInterface
         $this->processType = $processType;
 
         // Get category name
-        $this->original['process_category'] = isset($original['process_category_id'])
+        $this->original['template_category'] = isset($original['process_category_id'])
         ? ProcessCategory::getNamesByIds($this->original['process_category_id']) : '';
         unset($this->original['process_category_id']);
-        $this->changes['process_category'] = isset($changes['process_category_id'])
+        $this->changes['template_category'] = isset($changes['process_category_id'])
         ? ProcessCategory::getNamesByIds($this->changes['process_category_id']) : '';
         unset($this->changes['process_category_id']);
     }
