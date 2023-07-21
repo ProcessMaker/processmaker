@@ -4,6 +4,7 @@ namespace ProcessMaker\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
+use ProcessMaker\Helpers\ArrayHelper;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
@@ -19,6 +20,11 @@ class ScreenUpdated implements SecurityLogEventInterface
 
     private array $original;
 
+    public const REMOVE_KEYS = [
+        'screen_category_id',
+        'tmp_screen_category_id'
+    ];
+
     /**
      * Create a new event instance.
      *
@@ -31,10 +37,12 @@ class ScreenUpdated implements SecurityLogEventInterface
         $this->original = $original;
 
         // Get category name
-        $this->original['screen_category'] = isset($original['screen_category_id']) ? ScreenCategory::getNamesByIds($this->original['screen_category_id']) : '';
+        $this->original['screen_category'] = isset($original['screen_category_id'])
+        ? ScreenCategory::getNamesByIds($this->original['screen_category_id']) : '';
         unset($this->original['screen_category_id']);
-        $this->changes['screen_category'] = isset($changes['screen_category_id']) ? ScreenCategory::getNamesByIds($this->changes['screen_category_id']) : '';
-        unset($this->changes['screen_category_id']);
+        $this->changes['screen_category'] = isset($changes['tmp_screen_category_id'])
+        ? ScreenCategory::getNamesByIds($this->changes['tmp_screen_category_id']) : '';
+        $this->changes = array_diff_key($this->changes, array_flip($this::REMOVE_KEYS));
     }
 
     /**
@@ -44,14 +52,20 @@ class ScreenUpdated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
+        $basic = [
+            'name' => [
+                'label' => $this->screen->getAttribute('title'),
+                'link' => route('screen-builder.edit', ['screen' => $this->screen->getAttribute('id')]),
+            ],
+            'last_modified' => $this->screen->getAttribute('updated_at'),
+        ];
         if (array_key_exists('config', $this->changes)) {
-            return array_merge([
-                'last_modified' => $this->screen->getAttribute('updated_at'),
-            ]);
+            return $basic;
         } else {
-            return array_merge([
-                'last_modified' => $this->screen->getAttribute('updated_at'),
-            ], $this->formatChanges($this->changes, $this->original));
+            return array_merge(
+                $basic,
+                ArrayHelper::getArrayDifferencesWithFormat($this->changes, $this->original)
+            );
         }
     }
 

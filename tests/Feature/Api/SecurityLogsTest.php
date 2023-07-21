@@ -3,17 +3,48 @@
 namespace Tests\Feature\Api;
 
 use Database\Seeders\PermissionSeeder;
+use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Events\CategoryCreated;
+use ProcessMaker\Events\CategoryDeleted;
+use ProcessMaker\Events\CategoryUpdated;
+use ProcessMaker\Events\EnvironmentVariablesCreated;
+use ProcessMaker\Events\EnvironmentVariablesDeleted;
+use ProcessMaker\Events\EnvironmentVariablesUpdated;
+use ProcessMaker\Events\GroupCreated;
+use ProcessMaker\Events\GroupDeleted;
+use ProcessMaker\Events\GroupUpdated;
+use ProcessMaker\Events\ProcessArchived;
+use ProcessMaker\Events\ProcessCreated;
+use ProcessMaker\Events\ProcessPublished;
+use ProcessMaker\Events\ProcessRestored;
+use ProcessMaker\Events\ScreenCreated;
+use ProcessMaker\Events\ScreenDeleted;
+use ProcessMaker\Events\ScreenUpdated;
 use ProcessMaker\Events\SettingsUpdated;
+use ProcessMaker\Events\TemplateCreated;
+use ProcessMaker\Events\UserCreated;
+use ProcessMaker\Events\UserDeleted;
+use ProcessMaker\Events\UserRestored;
+use ProcessMaker\Events\UserUpdated;
+use ProcessMaker\Models\EnvironmentVariable;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Models\Setting;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use ProcessMaker\Providers\AuthServiceProvider;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
+/**
+ * @covers \ProcessMaker\Models\SecurityLog
+ */
 class SecurityLogsTest extends TestCase
 {
     use RequestHelper;
@@ -54,6 +85,9 @@ class SecurityLogsTest extends TestCase
         $response->assertStatus(200);
     }
 
+    /**
+     * Return status 200
+     */
     public function testSearchSecurityLogsApi()
     {
         $permission = Permission::byName('view-security-logs');
@@ -118,6 +152,9 @@ class SecurityLogsTest extends TestCase
         $this->assertCount(2, $results);
     }
 
+    /**
+     * Return status 201
+     */
     public function testStore()
     {
         $response = $this->apiCall('POST', '/security-logs');
@@ -156,6 +193,9 @@ class SecurityLogsTest extends TestCase
         $this->assertIsObject($securityLog->data);
     }
 
+    /**
+     * This test the Setting Update
+     */
     public function testSettingUpdated()
     {
         $setting = Setting::factory()->create(['key' => 'users.properties']);
@@ -163,14 +203,319 @@ class SecurityLogsTest extends TestCase
         $original = array_intersect_key($setting->getOriginal(), $setting->getDirty());
         $setting->save();
         SettingsUpdated::dispatch($setting, $setting->getChanges(), $original);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('SettingsUpdated', 'last_modified');
+    }
+
+    /**
+     * This test the asserts related to the Security Log
+     */
+    public function checkAssertsSegurityLog(string $event, $date = 'created_at', $total = 1)
+    {
         $collection = SecurityLog::get();
         // Check if the variable security_log is enable
         if (config('app.security_log')) {
-            $this->assertCount(1, $collection);
+            $this->assertCount($total, $collection);
             $securityLog = $collection->first();
-            $this->assertEquals('SettingsUpdated', $securityLog->getAttribute('event'));
+            $this->assertEquals($event, $securityLog->getAttribute('event'));
+            $this->assertIsObject($securityLog->getAttribute('data'));
+            $this->assertArrayHasKey('name', get_object_vars($securityLog->getAttribute('data')));
+            $this->assertArrayHasKey($date, get_object_vars($securityLog->getAttribute('data')));
+            $this->assertIsObject($securityLog->getAttribute('changes'));
         } else {
             $this->assertCount(0, $collection);
         }
+    }
+
+    /**
+     * This test Category Created
+     */
+    public function testCategoryCreated()
+    {
+        $fields = [
+            'name' => 'var_1',
+        ];
+        ProcessCategory::factory()->create($fields);
+        CategoryCreated::dispatch($fields);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('CategoryCreated', 'created_at');
+    }
+
+    /**
+     * This test Category Deleted
+     */
+    public function testCategoryDeleted()
+    {
+        $processCategory = ProcessCategory::factory()->create();
+        $processCategory->delete();
+        CategoryDeleted::dispatch($processCategory);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('CategoryDeleted', 'deleted_at');
+    }
+
+    /**
+     * This test Category Updated
+     */
+    public function testCategoryUpdated()
+    {
+        $processCategory = ProcessCategory::factory()->create();
+        $original = $processCategory->getOriginal();
+        $processCategory->fill(['name' => 'update name']);
+        $processCategory->saveOrFail();
+        $changes = $processCategory->getChanges();
+        CategoryUpdated::dispatch($processCategory, $changes, $original);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('CategoryUpdated', 'last_modified');
+    }
+
+    /**
+     * This test Environment Variables Created
+     */
+    public function testEnvironmentVariablesCreated()
+    {
+        $fields = [
+            'name' => 'var_1',
+            'description' => 'description 1',
+            'created_at' => '2019-01-01',
+        ];
+        EnvironmentVariable::factory()->create($fields);
+        EnvironmentVariablesCreated::dispatch($fields);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('EnvironmentVariablesCreated', 'created_at');
+    }
+
+    /**
+     * This test Environment Variables Deleted
+     */
+    public function testEnvironmentVariablesDeleted()
+    {
+        $vars = EnvironmentVariable::factory()->create([
+            'name' => 'var_2',
+        ]);
+        $vars->delete();
+        EnvironmentVariablesDeleted::dispatch($vars);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('EnvironmentVariablesDeleted', 'deleted_at');
+    }
+
+    /**
+     * This test Environment Variables Updated
+     */
+    public function testEnvironmentVariablesUpdated()
+    {
+        $vars = EnvironmentVariable::factory()->create([
+            'name' => 'var_3',
+        ]);
+        $original = $vars->getOriginal();
+        $vars->fill(['description' => 'var description']);
+        $vars->save();
+        $changes = $vars->getChanges();
+        EnvironmentVariablesUpdated::dispatch($vars, $changes, $original);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('EnvironmentVariablesUpdated', 'last_modified');
+    }
+
+    /**
+     * This test Group Created
+     */
+    public function testGroupCreated()
+    {
+        $fields = [
+            'name' => 'group_1',
+        ];
+        $group = Group::factory()->create($fields);
+        GroupCreated::dispatch($group);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('GroupCreated', 'created_at');
+    }
+
+    /**
+     * This test Group Deleted
+     */
+    public function testGroupDeleted()
+    {
+        $group = Group::factory()->create([
+            'name' => 'group_1',
+        ]);
+        $group->delete();
+        GroupDeleted::dispatch($group, [], []);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('GroupDeleted', 'deleted_at');
+    }
+
+    /**
+     * This test Group Updated
+     */
+    public function testGroupUpdated()
+    {
+        $group = Group::factory()->create([
+            'name' => 'group_2',
+        ]);
+        $original = $group->getOriginal();
+        $group->fill(['description' => 'group description']);
+        $group->save();
+        $changes = $group->getChanges();
+        GroupUpdated::dispatch($group, $changes, $original);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('GroupUpdated', 'last_modified');
+    }
+
+    /**
+     * This test Process Archived
+     */
+    public function testProcessArchived()
+    {
+        $process = Process::factory()->create();
+        $process->status = 'ARCHIVED';
+        $process->save();
+        ProcessArchived::dispatch($process);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('ProcessArchived', 'last_modified');
+    }
+
+    /**
+     * This test Process Created
+     */
+    public function testProcessCreated()
+    {
+        $process = Process::factory()->create();
+        ProcessCreated::dispatch($process);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('ProcessCreated', 'created_at');
+    }
+
+    /**
+     * This test Process Published
+     */
+    public function testProcessPublished()
+    {
+        $process = Process::factory()->create();
+        $original = $process->getOriginal();
+        $process->fill(['description' => 'process description']);
+        $process->saveOrFail();
+        $changes = $process->getChanges();
+        ProcessPublished::dispatch($process, $changes, $original);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('ProcessUpdated', 'last_modified');
+    }
+
+    /**
+     * This test Process Restored
+     */
+    public function testProcessRestored()
+    {
+        $process = Process::factory()->create();
+        $process->status = 'ARCHIVED';
+        $process->save();
+        $process->status = 'ACTIVE';
+        $process->save();
+        ProcessRestored::dispatch($process);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('ProcessRestored', 'last_modified');
+    }
+
+    /**
+     * This test Screen Created
+     */
+    public function testScreenCreated()
+    {
+        $fields = [
+            'id' => 999,
+            'title' => 'screen_1',
+            'description' => 'screen_1',
+        ];
+        Screen::factory()->create($fields);
+        ScreenCreated::dispatch($fields);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('ScreenCreated', 'created_at');
+    }
+
+    /**
+     * This test Screen Deleted
+     */
+    public function testScreenDeleted()
+    {
+        $screen = Screen::factory()->create();
+        $screen->delete();
+        ScreenDeleted::dispatch($screen);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('ScreenDeleted', 'deleted_at');
+    }
+
+    /**
+     * This test Screen Updated
+     */
+    public function testScreenUpdated()
+    {
+        $screen = Screen::factory()->create();
+        $original = $screen->getOriginal();
+        $screen->fill(['description' => 'screen description']);
+        $screen->saveOrFail();
+        $changes = $screen->getChanges();
+        ScreenUpdated::dispatch($screen, $changes, $original);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('ScreenUpdated', 'last_modified');
+    }
+
+    /**
+     * This test User Created
+     */
+    public function testUserCreated()
+    {
+        // Create a user created
+        $user = User::factory()->create([
+            'status' => 'ACTIVE',
+        ]);
+        UserCreated::dispatch($user);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('UserCreated', 'created_at');
+    }
+
+    /**
+     * This test User Deleted
+     */
+    public function testUserDeleted()
+    {
+        // Create a user deleted
+        $user = User::factory()->create([
+            'status' => 'ACTIVE',
+        ]);
+        $user->delete();
+        UserDeleted::dispatch($user);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('UserDeleted', 'deleted_at');
+    }
+
+    /**
+     * This test User Restored
+     */
+    public function testUserRestored()
+    {
+        // Create a user restored
+        $user = User::factory()->create([
+            'deleted_at' => null,
+            'status' => 'ACTIVE',
+        ]);
+        UserRestored::dispatch($user);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('UserRestored', 'last_modified');
+    }
+
+    /**
+     * This test User Updated
+     */
+    public function testUserUpdated()
+    {
+        // Create a user updated
+        $user = User::factory()->create([
+            'status' => 'ACTIVE',
+        ]);
+        $original = $user->getOriginal();
+        $user->fill(['timezone' => 'America/Monterrey']);
+        $user->saveOrFail();
+        $changes = $user->getChanges();
+        UserUpdated::dispatch($user, $changes, $original);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('UserUpdated', 'last_modified');
     }
 }

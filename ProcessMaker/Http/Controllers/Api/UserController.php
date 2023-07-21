@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Events\UserCreated;
 use ProcessMaker\Events\UserDeleted;
 use ProcessMaker\Events\UserGroupMembershipUpdated;
+use ProcessMaker\Events\UserRestored;
 use ProcessMaker\Events\UserUpdated;
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Http\Controllers\Controller;
@@ -579,6 +580,9 @@ class UserController extends Controller
 
         if ($user instanceof User) {
             $user->restore();
+
+            // Register the Event
+            UserRestored::dispatch($user);
         }
 
         return response([], 200);

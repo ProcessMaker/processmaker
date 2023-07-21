@@ -53,7 +53,7 @@
               :description="formDescription('Choose an icon for this PM Block.', 'icon', errors)"
             >
               <icon-selector
-                v-model="iconAndFile"
+                v-model="meta"
                 name="icon"
                 @error="fileError"
                 @input="clearFileError"
@@ -61,6 +61,66 @@
               <small v-if="fileUploadError === true" class="text-danger">
                 {{ $t('The custom icon file is too large. File size must be less than 2KB.') }}
               </small>
+            </b-form-group>
+
+            <b-form-group
+              v-if="!meta.isImported"
+              required
+              :label="$t('Author')"
+              :description="formDescription('Enter the name of the PM Block author.', 'author', errors)"
+              :invalid-feedback="errorMessage('author', errors)"
+              :state="errorState('author', errors)"
+            >
+              <b-form-input
+                required
+                autofocus
+                v-model="meta.author"
+                autocomplete="off"
+                :state="errorState('author', errors)"
+                name="author"
+              ></b-form-input>
+            </b-form-group>
+
+            <b-form-group
+              v-else
+              :label="$t('Author')"
+              :description="formDescription('Enter the name of the PM Block author.', 'author', errors)"
+              :invalid-feedback="errorMessage('author', errors)"
+              :state="errorState('author', errors)"
+            >
+              <b-form-input
+                disabled
+                autofocus
+                v-model="meta.author"
+                autocomplete="off"
+                :state="errorState('author', errors)"
+                name="author"
+              ></b-form-input>
+            </b-form-group>
+
+            <b-form-group
+              :label="$t('Version')"
+              :description="formDescription('Enter the version of this PM Block.', 'version', errors)"
+              :invalid-feedback="errorMessage('version', errors)"
+              :state="errorState('version', errors)"
+            >
+              <b-form-input
+                v-if="!meta.isImported"
+                autofocus
+                v-model="meta.version"
+                autocomplete="off"
+                :state="errorState('version', errors)"
+                name="version"
+              ></b-form-input>
+              <b-form-input
+                v-else
+                disabled
+                autofocus
+                v-model="meta.version"
+                autocomplete="off"
+                :state="errorState('version', errors)"
+                name="version"
+              ></b-form-input>
             </b-form-group>
 
             <category-select
@@ -92,9 +152,12 @@ export default {
       name: "",
       description: "",
       pm_block_category_id: "",
-      iconAndFile: {
+      meta: {
         icon: "cube",
         file: null,
+        author: "",
+        version: "",
+        isImported: false,
       },
       addError: {},
       fileUploadError: false,
@@ -140,26 +203,30 @@ export default {
         this.description = "";
         this.pm_block_category_id = "";
         this.showWarning = false;
-        this.iconAndFile.icon = 'cube';
-        this.iconAndFile.file = '';
+        this.meta.icon = "cube";
+        this.meta.file = "";
+        this.meta.author = "";
+        this.meta.version = "";
       },
       savePmBlock() {
         let formData = new FormData();
-        formData.append("editing_process_id", this.assetId);
+        formData.append("asset_id", this.assetId);
         formData.append("name", this.name);
         formData.append("description", this.description);
         formData.append("user_id", this.currentUserId);
         formData.append("pm_block_category_id", this.pm_block_category_id);
-        formData.append("meta", JSON.stringify(this.iconAndFile));
+        formData.append("meta", JSON.stringify(this.meta));
+        this.customModalButtons[1].disabled = true;
         ProcessMaker.apiClient.post("pm-blocks", formData)
         .then(response => {
           ProcessMaker.alert(this.$t("PM Block successfully created"), "success");
           window.setTimeout(() => {
             window.location.href = `/designer/pm-blocks/${response.data.id}/edit/`;
-          }, 3000)
+          }, 1000)
           this.close();
         }).catch(error => {
           this.errors = error.response?.data;
+          this.customModalButtons[1].disabled = false;
           if (this.errors.hasOwnProperty('errors')) {
             this.errors = this.errors?.errors;
           } else {

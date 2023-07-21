@@ -4,6 +4,7 @@ namespace ProcessMaker\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Exception\ConfigurationException;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Managers\DataManager;
@@ -73,6 +74,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
         if ($configuration === null) {
             $configuration = [];
         }
+        $errorHandling = null;
         try {
             if (empty($implementation)) {
                 throw new ScriptException('Service task implementation not defined');
@@ -104,28 +106,20 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
             } else {
                 $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling->timeout());
             }
-            $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
-                // Exit if the task was completed or closed
-                if (!$token || !$element) {
-                    return;
-                }
-                // Update data
-                if (is_array($response['output'])) {
-                    // Validate data
-                    WorkflowManager::validateData($response['output'], $processModel, $element);
-                    $dataManager = new DataManager();
-                    $dataManager->updateData($token, $response['output']);
-                    $engine->runToNextState();
-                }
-                $element->complete($token);
-                $this->engine = $engine;
-                $this->instance = $instance;
-            });
+            $this->updateData($response);
+        } catch (ConfigurationException $exception) {
+            $this->unlock();
+            $this->updateData(['output' => $exception->getMessageForData($token)]);
         } catch (Throwable $exception) {
-            // Change to error status
-            $token->setStatus(ServiceTaskInterface::TOKEN_STATE_FAILING);
+            $finalAttempt = true;
+            if ($errorHandling) {
+                [$message, $finalAttempt] = $errorHandling->handleRetries($this, $exception);
+            }
 
-            $message = $errorHandling->handleRetries($this, $exception);
+            if ($finalAttempt) {
+                // Change to error status
+                $token->setStatus(ServiceTaskInterface::TOKEN_STATE_FAILING);
+            }
 
             $error = $element->getRepository()->createError();
             $error->setName($message);
@@ -138,6 +132,27 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
             Log::error('Service task failed: ' . $implementation . ' - ' . $message);
             Log::error($exception->getTraceAsString());
         }
+    }
+
+    private function updateData($response)
+    {
+        $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
+            // Exit if the task was completed or closed
+            if (!$token || !$element) {
+                return;
+            }
+            // Update data
+            if (is_array($response['output'])) {
+                // Validate data
+                WorkflowManager::validateData($response['output'], $processModel, $element);
+                $dataManager = new DataManager();
+                $dataManager->updateData($token, $response['output']);
+                $engine->runToNextState();
+            }
+            $element->complete($token);
+            $this->engine = $engine;
+            $this->instance = $instance;
+        });
     }
 
     /**

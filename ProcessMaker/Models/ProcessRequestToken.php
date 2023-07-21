@@ -16,6 +16,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\MultiInstanceLoopCharacteristicsInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
+use ProcessMaker\Nayra\Managers\WorkflowManagerDefault;
 use ProcessMaker\Notifications\ActivityActivatedNotification;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasUuids;
@@ -823,7 +824,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
     public function updateTokenProperties()
     {
-        $allowed = ['conditionals', 'loopCharacteristics', 'data'];
+        $allowed = ['conditionals', 'loopCharacteristics', 'data', 'error'];
         $this->token_properties = array_filter(
             $this->getProperties(),
             function ($key) use ($allowed) {
@@ -900,7 +901,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         }
         $assignmentProcess = Process::where('name', Process::ASSIGNMENT_PROCESS)->first();
         if ($assignmentProcess) {
-            $res = WorkflowManager::runProcess($assignmentProcess, 'assign', [
+            $res = (new WorkflowManagerDefault)->runProcess($assignmentProcess, 'assign', [
                 'task_id' => $this->id,
                 'user_id' => $userId,
                 'process_id' => $this->process_id,

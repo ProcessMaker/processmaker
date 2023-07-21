@@ -1,59 +1,23 @@
 <template>
   <div role="group">
     <label for="timeout">{{ $t('Timeout') }}</label>
-    <b-form-input id="timeout" type="number" min="0" max="3600" v-model="config.timeout"></b-form-input>
+    <b-form-input id="timeout" type="number" min="0" max="3600" v-model="value" @input="userHasUpdatedValue"></b-form-input>
     <small class="form-text text-muted">{{ helper }}</small>
   </div>
 </template>
 
 <script>
+import ErrorHandlingMixin from './ErrorHandlingMixin';
 
 export default {
-  props: ['type'],
+  mixins: [ErrorHandlingMixin],
   data() {
     return {
-      config: {
-        timeout: "",
-      },
+      configKey: 'timeout',
+      scriptHelperText: 'Set maximum run time in seconds. Leave empty to use script default. Set to 0 for no timeout.',
+      dataConnectorHelperText: 'Set maximum run time in seconds. Leave empty to use data connector default. Set to 0 for no timeout.'
     }
   },
-  watch: {
-    config: {
-      deep: true,
-      handler() {
-        this.setNodeConfig();
-      }
-    },
-  },
-  methods: {
-    node() {
-      return this.$root.$children[0].$refs.modeler.highlightedNode.definition;
-    },
-    getNodeConfig() {
-      const configString = _.get(this.node(), 'errorHandling', null);
-      if (configString) {
-        const config = JSON.parse(configString);
-        this.config.timeout = _.get(config, 'timeout', "");
-      }
-    },
-    setNodeConfig() {
-      const existingSetting = JSON.parse(_.get(this.node(), 'errorHandling', '{}'));
-      const json = JSON.stringify({ ...existingSetting, timeout: this.config.timeout });
-      Vue.set(this.node(), 'errorHandling', json);
-    },
-  },
-  mounted() {
-    this.getNodeConfig();
-  },
-  computed: {
-    helper() {
-      if (this.type === 'script') {
-        return this.$t('Set maximum run time in seconds. Leave empty to use script default. Set to 0 for no timeout.');
-      } else if (this.type === 'data-connector') {
-        return this.$t('Set maximum run time in seconds. Leave empty to use data connector default. Set to 0 for no timeout.');
-      }
-    }
-  }
 }
 </script>
 

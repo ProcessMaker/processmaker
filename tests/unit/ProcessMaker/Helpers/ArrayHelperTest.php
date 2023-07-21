@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\unit\ProcessMaker\Helpers;
+namespace ProcessMaker\Helpers;
 
 use ProcessMaker\Helpers\ArrayHelper;
 use stdClass;
@@ -70,5 +70,38 @@ class ArrayHelperTest extends TestCase
                 'email' => 'maria@mail.com',
             ]
         ));
+    }
+
+    public function testReplaceKeyInArray()
+    {
+        //Case 1: Existing Key
+        $myArray = [
+            'name' => 'John',
+            'title' => 'Musician'
+        ];
+        $oldKey = 'title';
+        $newKey = 'job_title';
+        $this->assertEquals(
+            [
+                'name' => 'John',
+                'job_title' => 'Musician'
+            ],
+            ArrayHelper::replaceKeyInArray($myArray, $oldKey, $newKey)
+        );
+
+        //Case 2: Not Existing Key
+        $myArray = [
+            'name' => 'John',
+            'title' => 'Musician'
+        ];
+        $oldKey = 'titles';
+        $newKey = 'job_title';
+        $this->assertEquals(
+            [
+                'name' => 'John',
+                'title' => 'Musician'
+            ],
+            ArrayHelper::replaceKeyInArray($myArray, $oldKey, $newKey)
+        );
     }
 }

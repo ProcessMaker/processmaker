@@ -29,6 +29,7 @@ use ProcessMaker\Events\ProcessCreated;
 use ProcessMaker\Events\ProcessPublished;
 use ProcessMaker\Events\ProcessRestored;
 use ProcessMaker\Events\ProcessUpdated;
+use ProcessMaker\Events\QueueManagementAccessed;
 use ProcessMaker\Events\RequestAction;
 use ProcessMaker\Events\RequestError;
 use ProcessMaker\Events\ScreenCreated;
@@ -42,8 +43,12 @@ use ProcessMaker\Events\ScriptExecutorDeleted;
 use ProcessMaker\Events\ScriptExecutorUpdated;
 use ProcessMaker\Events\ScriptUpdated;
 use ProcessMaker\Events\SettingsUpdated;
+use ProcessMaker\Events\SignalCreated;
+use ProcessMaker\Events\SignalDeleted;
+use ProcessMaker\Events\SignalUpdated;
 use ProcessMaker\Events\TemplateCreated;
 use ProcessMaker\Events\TemplateDeleted;
+use ProcessMaker\Events\TemplatePublished;
 use ProcessMaker\Events\TemplateUpdated;
 use ProcessMaker\Events\TokenCreated;
 use ProcessMaker\Events\TokenDeleted;
@@ -51,6 +56,7 @@ use ProcessMaker\Events\UnauthorizedAccessAttempt;
 use ProcessMaker\Events\UserCreated;
 use ProcessMaker\Events\UserDeleted;
 use ProcessMaker\Events\UserGroupMembershipUpdated;
+use ProcessMaker\Events\UserRestored;
 use ProcessMaker\Events\UserUpdated;
 use ProcessMaker\Listeners\SecurityLogger;
 
@@ -93,9 +99,9 @@ class EventServiceProvider extends ServiceProvider
         // Check if the variable security_log is enable
         if (config('app.security_log')) {
             $this->app['events']->listen(ActivityReassignment::class, SecurityLogger::class);
-            $this->app['events']->listen(AuthClientUpdated::class, SecurityLogger::class);
             $this->app['events']->listen(AuthClientCreated::class, SecurityLogger::class);
             $this->app['events']->listen(AuthClientDeleted::class, SecurityLogger::class);
+            $this->app['events']->listen(AuthClientUpdated::class, SecurityLogger::class);
             $this->app['events']->listen(CategoryCreated::class, SecurityLogger::class);
             $this->app['events']->listen(CategoryDeleted::class, SecurityLogger::class);
             $this->app['events']->listen(CategoryUpdated::class, SecurityLogger::class);
@@ -118,8 +124,9 @@ class EventServiceProvider extends ServiceProvider
             $this->app['events']->listen(ProcessPublished::class, SecurityLogger::class);
             $this->app['events']->listen(ProcessRestored::class, SecurityLogger::class);
             $this->app['events']->listen(ProcessUpdated::class, SecurityLogger::class);
-            $this->app['events']->listen(RequestError::class, SecurityLogger::class);
+            $this->app['events']->listen(QueueManagementAccessed::class, SecurityLogger::class);
             $this->app['events']->listen(RequestAction::class, SecurityLogger::class);
+            $this->app['events']->listen(RequestError::class, SecurityLogger::class);
             $this->app['events']->listen(ScreenCreated::class, SecurityLogger::class);
             $this->app['events']->listen(ScreenDeleted::class, SecurityLogger::class);
             $this->app['events']->listen(ScreenUpdated::class, SecurityLogger::class);
@@ -131,8 +138,12 @@ class EventServiceProvider extends ServiceProvider
             $this->app['events']->listen(ScriptExecutorUpdated::class, SecurityLogger::class);
             $this->app['events']->listen(ScriptUpdated::class, SecurityLogger::class);
             $this->app['events']->listen(SettingsUpdated::class, SecurityLogger::class);
+            $this->app['events']->listen(SignalCreated::class, SecurityLogger::class);
+            $this->app['events']->listen(SignalDeleted::class, SecurityLogger::class);
+            $this->app['events']->listen(SignalUpdated::class, SecurityLogger::class);
             $this->app['events']->listen(TemplateCreated::class, SecurityLogger::class);
             $this->app['events']->listen(TemplateDeleted::class, SecurityLogger::class);
+            $this->app['events']->listen(TemplatePublished::class, SecurityLogger::class);
             $this->app['events']->listen(TemplateUpdated::class, SecurityLogger::class);
             $this->app['events']->listen(TokenCreated::class, SecurityLogger::class);
             $this->app['events']->listen(TokenDeleted::class, SecurityLogger::class);
@@ -140,6 +151,7 @@ class EventServiceProvider extends ServiceProvider
             $this->app['events']->listen(UserCreated::class, SecurityLogger::class);
             $this->app['events']->listen(UserDeleted::class, SecurityLogger::class);
             $this->app['events']->listen(UserGroupMembershipUpdated::class, SecurityLogger::class);
+            $this->app['events']->listen(UserRestored::class, SecurityLogger::class);
             $this->app['events']->listen(UserUpdated::class, SecurityLogger::class);
         }
     }

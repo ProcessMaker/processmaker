@@ -63,7 +63,7 @@
 <style lang="scss" scoped>
     .error-body {
       word-break: break-word;
-      overflow-x: scroll;
+      overflow-x: auto;
       font-size: 87.5%;
       max-width: 992px; // Not a fan of hard-coding this value, but it's equivalent to $screen-md-max
     }

@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Events;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Models\ScreenCategory;
@@ -21,9 +22,9 @@ class ScreenCreated implements SecurityLogEventInterface
     {
         $this->newScreen = $newScreen;
 
-        if (isset($newScreen['screen_category_id'])) {
-            $this->newScreen['screen_category'] = ScreenCategory::getNamesByIds($newScreen['screen_category_id']);
-            unset($this->newScreen['screen_category_id']);
+        if (isset($newScreen['tmp_screen_category_id'])) {
+            $this->newScreen['screen_category'] = ScreenCategory::getNamesByIds($newScreen['tmp_screen_category_id']);
+            unset($newScreen['tmp_screen_category_id']);
         }
     }
 
@@ -35,10 +36,14 @@ class ScreenCreated implements SecurityLogEventInterface
     public function getData(): array
     {
         return [
-            'name' => $this->newScreen['title'] ?? '',
+            'name' => [
+                'label' => $this->newScreen['title'],
+                'link' => route('screen-builder.edit', ['screen' => $this->newScreen['id']]),
+            ],
             'description' => $this->newScreen['description'] ?? '',
             'type' => $this->newScreen['type'] ?? '',
-            'screen_category_id' => $this->newScreen['screen_category_id'] ?? '',
+            'Screen Categories' => $this->newScreen['screen_category'] ?? '',
+            'created_at' => $this->newScreen['created_at'] ?? Carbon::now(),
         ];
     }
 

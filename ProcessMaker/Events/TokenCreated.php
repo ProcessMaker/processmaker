@@ -13,8 +13,6 @@ class TokenCreated implements SecurityLogEventInterface
 
     private array $data;
 
-    private array $changes;
-
     /**
      * Create a new event instance.
      *
@@ -39,11 +37,10 @@ class TokenCreated implements SecurityLogEventInterface
 
     /**
      * Return event changes
-     * Return event changes
      */
     public function getChanges(): array
     {
-        return $this->data;
+        return [];
     }
 
     /**

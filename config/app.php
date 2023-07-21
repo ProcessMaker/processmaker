@@ -109,8 +109,14 @@ return [
     // Security log
     'security_log' => env('SECURITY_LOG', 'true'),
 
+    // Security log
+    'analytics_reporting_default_graph' => env('ANALYTICS_REPORTING_DEFAULT_GRAPH', 'https://localhost'),
+
     // Message broker driver to use in Workflow Manager
     'message_broker_driver' => env('MESSAGE_BROKER_DRIVER', 'default'),
+
+    // When true, halt process execution if certain configuration settings are missing
+    'configuration_debug_mode' => env('CONFIGURATION_DEBUG_MODE', false),
 
     // Global app settings
     'settings' => [

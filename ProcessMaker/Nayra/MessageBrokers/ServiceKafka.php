@@ -4,6 +4,7 @@ namespace ProcessMaker\Nayra\MessageBrokers;
 
 use Junges\Kafka\Contracts\KafkaConsumerMessage;
 use Junges\Kafka\Facades\Kafka;
+use ProcessMaker\Helpers\DBHelper;
 use ProcessMaker\Nayra\Repositories\PersistenceHandler;
 
 class ServiceKafka
@@ -61,7 +62,11 @@ class ServiceKafka
     public function worker()
     {
         // Create Kafka consumer
-        $consumer = Kafka::createConsumer([self::QUEUE_NAME])->withHandler(function (KafkaConsumerMessage $message) {
+        $heartbeat = config('kafka.heartbeat_interval_ms', 3000);
+        $consumer = Kafka::createConsumer([self::QUEUE_NAME])
+            ->withOption('heartbeat.interval.ms', $heartbeat)
+            ->withOption('session.timeout.ms', $heartbeat * 10)
+            ->withHandler(function (KafkaConsumerMessage $message) {
             // Get transactions
             $transactions = $message->getBody();
 
@@ -70,6 +75,7 @@ class ServiceKafka
         })->build();
 
         // Consume incoming messages
+        echo "\033[0;32m" . 'ProcessMaker consumer using kafka.' . "\033[0m" . PHP_EOL;
         $consumer->consume();
     }
 
@@ -80,6 +86,7 @@ class ServiceKafka
      */
     private function storeData(array $transactions)
     {
+        DBHelper::db_health_check();
         $handler = new PersistenceHandler();
         foreach ($transactions as $transaction) {
             $handler->save($transaction);

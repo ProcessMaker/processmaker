@@ -43,13 +43,16 @@ class ErrorHandling
     public function handleRetries($job, $exception)
     {
         $message = $exception->getMessage();
+        $finalAttempt = true;
 
         if ($this->retryAttempts() > 0) {
             if ($job->attemptNum <= $this->retryAttempts()) {
                 Log::info('Retry the job process. Attempt ' . $job->attemptNum . ' of ' . $this->retryAttempts() . ', Wait time: ' . $this->retryWaitTime());
                 $this->requeue($job);
 
-                return $message;
+                $finalAttempt = false;
+
+                return [$message, $finalAttempt];
             }
 
             $message = __('Job failed after :attempts total attempts', ['attempts' => $job->attemptNum]) . "\n" . $message;
@@ -59,20 +62,26 @@ class ErrorHandling
             $this->sendExecutionErrorNotification($message);
         }
 
-        return $message;
+        return [$message, $finalAttempt];
     }
 
     private function requeue($job)
     {
         $class = get_class($job);
-        $newJob = new $class(
-            Process::findOrFail($job->definitionsId),
-            ProcessRequest::findOrFail($job->instanceId),
-            ProcessRequestToken::findOrFail($job->tokenId),
-            $job->data,
-            $job->attemptNum + 1
-        );
+        if ($job instanceof RunNayraServiceTask) {
+            $newJob = new RunNayraServiceTask($this->processRequestToken);
+            $newJob->attemptNum = $job->attemptNum + 1;
+        } else {
+            $newJob = new $class(
+                Process::findOrFail($job->definitionsId),
+                ProcessRequest::findOrFail($job->instanceId),
+                ProcessRequestToken::findOrFail($job->tokenId),
+                $job->data,
+                $job->attemptNum + 1
+            );
+        }
         $newJob->delay($this->retryWaitTime());
+        $newJob->onQueue('bpmn');
         dispatch($newJob);
     }
 
