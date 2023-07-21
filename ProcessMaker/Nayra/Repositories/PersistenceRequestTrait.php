@@ -37,6 +37,12 @@ trait PersistenceRequestTrait
     public function persistInstanceCompleted(array $transaction)
     {
         $instance = $this->deserializer->unserializeInstance($transaction['instance']);
+
+        // Remove unnecessary data before complete instance
+        $instance->getDataStore()->removeData('_user');
+        $instance->getDataStore()->removeData('_request');
+
+        // Persist instance
         $this->instanceRepository->persistInstanceCompleted($instance);
 
         // Event
