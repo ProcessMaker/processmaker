@@ -33,6 +33,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TransitionInterface;
 use ProcessMaker\Notifications\ActivityActivatedNotification;
 use ProcessMaker\Notifications\ActivityCompletedNotification;
+use ProcessMaker\Notifications\ErrorExecutionNotification;
 use ProcessMaker\Notifications\ProcessCompletedNotification;
 use ProcessMaker\Notifications\ProcessCreatedNotification;
 
@@ -165,6 +166,7 @@ class BpmnSubscriber
     public function onActivityException(ActivityInterface $activity, ProcessRequestToken $token)
     {
         $error = $token->getProperty('error');
+        $msg = '';
         if ($error instanceof ErrorInterface) {
             $msg = $error->getName();
             $token->logError(new Exception($msg), $activity);
@@ -172,6 +174,12 @@ class BpmnSubscriber
             $msg = "$error";
             $token->logError(new Exception($msg), $activity);
         }
+
+        $notifiables = $token->getInstance()->getNotifiables('error');
+        Notification::send($notifiables, new ErrorExecutionNotification($token, $msg, [
+            'email_notification' => true,
+            'inapp_notification' => true,
+        ]));
     }
 
     /**
