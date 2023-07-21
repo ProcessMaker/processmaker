@@ -9,7 +9,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Notification;
 use Laravel\Scout\Searchable;
 use Log;
-use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Facades\WorkflowUserManager;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
@@ -328,7 +327,14 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         $screen = Screen::find($screenRef);
 
         if ($screen === null) {
-            $isManualTask = $this->getBpmnDefinition()?->localName === 'manualTask';
+            // Attempt to retrieve the localName property from the bpmnDefinition object.
+            // It uses a try-catch block to handle any exceptions that might occur, for example in test environments.
+            try {
+                $localName = $this->getBpmnDefinition()->localName;
+            } catch (\Throwable $t) {
+                $localName = null;
+            }
+            $isManualTask = $localName === 'manualTask';
             $defaultScreen = $isManualTask ? 'default-display-screen' : 'default-form-screen';
             $screen = Screen::firstWhere('key', $defaultScreen);
         }
