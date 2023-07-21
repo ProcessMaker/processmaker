@@ -77,14 +77,14 @@ class ArrayHelperTest extends TestCase
         //Case 1: Existing Key
         $myArray = [
             'name' => 'John',
-            'title' => 'Musician'
+            'title' => 'Musician',
         ];
         $oldKey = 'title';
         $newKey = 'job_title';
         $this->assertEquals(
             [
                 'name' => 'John',
-                'job_title' => 'Musician'
+                'job_title' => 'Musician',
             ],
             ArrayHelper::replaceKeyInArray($myArray, $oldKey, $newKey)
         );
@@ -92,14 +92,14 @@ class ArrayHelperTest extends TestCase
         //Case 2: Not Existing Key
         $myArray = [
             'name' => 'John',
-            'title' => 'Musician'
+            'title' => 'Musician',
         ];
         $oldKey = 'titles';
         $newKey = 'job_title';
         $this->assertEquals(
             [
                 'name' => 'John',
-                'title' => 'Musician'
+                'title' => 'Musician',
             ],
             ArrayHelper::replaceKeyInArray($myArray, $oldKey, $newKey)
         );

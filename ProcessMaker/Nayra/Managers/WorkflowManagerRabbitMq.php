@@ -344,9 +344,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
                 'output' => $exception->getMessageForData($token),
             ];
             $this->dispatchActionForServiceTask($version, $token, $response, $state, $userId);
-
         } catch (Throwable $exception) {
-
             $thisWasFinalAttempt = true;
             if (isset($errorHandling)) {
                 $thisWasFinalAttempt = ($errorHandling->retryAttempts() === 0) || ($job->attemptNum >= $errorHandling->retryAttempts());
@@ -366,7 +364,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             Log::error($exception->getTraceAsString());
 
             if ($thisWasFinalAttempt) {
-                // When the last 
+                // When the last
                 $this->taskFailed($instance, $token, $exception->getMessage());
             }
         }

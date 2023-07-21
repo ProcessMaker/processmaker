@@ -76,7 +76,7 @@ class PermissionUpdated implements SecurityLogEventInterface
                     'label' => $userData->getAttribute('username'),
                     'link' => route('users.edit', $this->userId) . '#nav-profile',
                 ],
-                'last_modified' => $userData->getAttribute('updated_at')
+                'last_modified' => $userData->getAttribute('updated_at'),
             ], $this->arrayPermissions);
         }
     }

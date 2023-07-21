@@ -70,6 +70,7 @@ class TemplateController extends Controller
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
         $storeTemplate = $this->template->store($type, $request);
         TemplatePublished::dispatch($request->request->all());
+
         return $storeTemplate;
     }
 

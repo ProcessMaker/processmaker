@@ -11,6 +11,7 @@ class TokenDeleted implements SecurityLogEventInterface
     use Dispatchable;
 
     private array $data;
+
     private array $changes;
 
     /**

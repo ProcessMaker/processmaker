@@ -60,7 +60,7 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
                     'label' => 'Customize Ui',
                     'link' => route('customize-ui.edit'),
                 ],
-                'last_modified' => Carbon::now()
+                'last_modified' => Carbon::now(),
             ],
             $this->formatChanges($this->changes, $this->original)
         );

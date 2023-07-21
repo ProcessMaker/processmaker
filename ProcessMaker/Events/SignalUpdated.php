@@ -14,6 +14,7 @@ class SignalUpdated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private array $changes;
+
     private array $original;
 
     /**
@@ -37,7 +38,7 @@ class SignalUpdated implements SecurityLogEventInterface
                 'label' => $this->changes['name'],
                 'link' => route('signals.edit', ['signalId' => $this->changes['id']]),
             ],
-            'last_modified' => Carbon::now()
+            'last_modified' => Carbon::now(),
         ], ArrayHelper::getArrayDifferencesWithFormat($this->changes, $this->original));
     }
 
