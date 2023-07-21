@@ -21,7 +21,7 @@ class RunNayraServiceTask implements ShouldQueue
     public $tokenId;
 
     public $attemptNum = 1;
-    
+
     /**
      * Create a new job instance.
      *

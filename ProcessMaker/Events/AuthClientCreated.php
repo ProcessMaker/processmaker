@@ -49,7 +49,7 @@ class AuthClientCreated implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            'id' => $this->data['id']
+            'id' => $this->data['id'],
         ];
     }
 

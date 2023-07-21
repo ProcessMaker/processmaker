@@ -22,7 +22,7 @@ class ScreenUpdated implements SecurityLogEventInterface
 
     public const REMOVE_KEYS = [
         'screen_category_id',
-        'tmp_screen_category_id'
+        'tmp_screen_category_id',
     ];
 
     /**

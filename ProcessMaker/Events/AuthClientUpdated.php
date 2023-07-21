@@ -13,8 +13,11 @@ class AuthClientUpdated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private array $original;
+
     private array $changes;
+
     private string $clientId;
+
     private string $clientName;
 
     /**

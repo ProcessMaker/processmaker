@@ -22,7 +22,7 @@ class ScriptUpdated implements SecurityLogEventInterface
 
     public const REMOVE_KEYS = [
         'script_category_id',
-        'tmp_script_category_id'
+        'tmp_script_category_id',
     ];
 
     /**
