@@ -237,7 +237,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         $version = $instance->process_version_id;
         $userId = $this->getCurrentUserId();
         $state = $this->serializeState($instance);
-\Log::info(json_encode($state));
+
         // Dispatch complete task action
         $this->dispatchAction([
             'bpmn' => $version,
