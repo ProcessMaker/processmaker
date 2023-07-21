@@ -45,7 +45,7 @@
 
         <div class="mt-3" v-if="showLanguageWarning">
           <p class="alert alert-warning m-0">
-            The translations for the selected language are only be applied to anonymous web entry screens.
+            {{ $t("Since there is no interface translation for this language, translations for these screens will only render for anonymous users in web entries.") }}
           </p>
         </div>
       </div>
