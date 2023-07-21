@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Validation\Rule;
 use ProcessMaker\Contracts\ScriptInterface;
+use ProcessMaker\Exception\ConfigurationException;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
@@ -140,7 +141,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
         $runner->setTokenId($tokenId);
         $user = User::find($this->run_as_user_id);
         if (!$user) {
-            throw new \RuntimeException('A user is required to run scripts');
+            throw new ConfigurationException('A user is required to run scripts');
         }
 
         return $runner->run($this->code, $data, $config, $timeout, $user);
