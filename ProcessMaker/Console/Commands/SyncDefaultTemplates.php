@@ -40,7 +40,7 @@ class SyncDefaultTemplates extends Command
     public function handle()
     {
         if ($this->option('queue')) {
-            $randomDelay = rand(10, 120);
+            $randomDelay = random_int(10, 120);
             Job::dispatch()->delay(now()->addMinutes($randomDelay));
         } else {
             Job::dispatchNow();
