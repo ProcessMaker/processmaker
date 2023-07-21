@@ -370,7 +370,7 @@ class ProcessController extends Controller
                 $response = (new TemplateController(new Template()))->updateTemplateManifest('process', $process->id, $request);
 
                 //Call Event to Log Template Changes
-                TemplateUpdated::dispatch([], [], true);
+                TemplateUpdated::dispatch([], [], true, $process);
 
                 return new Resource($process->refresh());
             } catch (\Exception $error) {
