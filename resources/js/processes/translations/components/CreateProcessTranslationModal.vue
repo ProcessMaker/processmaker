@@ -42,6 +42,12 @@
             </b-form-checkbox>
           </div>
         </div>
+
+        <div class="mt-3" v-if="showLanguageWarning">
+          <p class="alert alert-warning m-0">
+            The translations for the selected language are only be applied to anonymous web entry screens.
+          </p>
+        </div>
       </div>
 
       <!-- Processing translations section -->
@@ -143,6 +149,7 @@ export default {
       disabled: false,
       aiLoading: false,
       availableLanguages: [],
+      availablePmLanguages: [],
       selectedLanguage: null,
       selectedScreen: null,
       screensTranslations: [],
@@ -166,6 +173,18 @@ export default {
     };
   },
 
+  computed: {
+    showLanguageWarning() {
+      if (!this.selectedLanguage) {
+        return false;
+      }
+
+      if (this.availablePmLanguages[this.selectedLanguage.language] === undefined) {
+        return true;
+      }
+      return false;
+    },
+  },
   watch: {
     selectedScreen(val) {
       this.currentScreenTranslations = [];
@@ -390,6 +409,7 @@ export default {
       ProcessMaker.apiClient.post("/process/translations/languages", params)
         .then((response) => {
           this.availableLanguages = JSON.parse(JSON.stringify(response.data.availableLanguages));
+          this.availablePmLanguages = JSON.parse(JSON.stringify(response.data.availablePmLanguages));
           this.loading = false;
         });
     },
