@@ -166,6 +166,7 @@ class BpmnSubscriber
     public function onActivityException(ActivityInterface $activity, ProcessRequestToken $token)
     {
         $error = $token->getProperty('error');
+        $msg = '';
         if ($error instanceof ErrorInterface) {
             $msg = $error->getName();
             $token->logError(new Exception($msg), $activity);
