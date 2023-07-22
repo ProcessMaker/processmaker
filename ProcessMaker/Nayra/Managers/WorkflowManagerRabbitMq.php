@@ -243,7 +243,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             'bpmn' => $version,
             'action' => self::ACTION_RUN_SCRIPT,
             'params' => [
-                'request_id' => $token->process_request_id,
+                'instance_id' => $instance->uuid,
                 'token_id' => $token->uuid,
                 'element_id' => $token->element_id,
                 'data' => [],
@@ -252,7 +252,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             'session' => [
                 'user_id' => $userId,
             ],
-        ]);
+        ], 'scripts');
     }
 
     /**
@@ -344,9 +344,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
                 'output' => $exception->getMessageForData($token),
             ];
             $this->dispatchActionForServiceTask($version, $token, $response, $state, $userId);
-
         } catch (Throwable $exception) {
-
             $thisWasFinalAttempt = true;
             if (isset($errorHandling)) {
                 $thisWasFinalAttempt = ($errorHandling->retryAttempts() === 0) || ($job->attemptNum >= $errorHandling->retryAttempts());
@@ -366,7 +364,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             Log::error($exception->getTraceAsString());
 
             if ($thisWasFinalAttempt) {
-                // When the last 
+                // When the last
                 $this->taskFailed($instance, $token, $exception->getMessage());
             }
         }
@@ -631,13 +629,14 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
      * Send payload
      *
      * @param array $action
+     * @param string $subject
+     * @return void
      */
-    private function dispatchAction(array $action): void
+    private function dispatchAction(array $action, $subject = 'requests'): void
     {
         // add environment variables to session
         $environmentVariables = $this->getEnvironmentVariables();
         $action['session']['env'] = $environmentVariables;
-        $subject = 'requests';
         $thread = $action['collaboration_id'] ?? 0;
         MessageBrokerService::sendMessage($subject, $thread, $action);
     }

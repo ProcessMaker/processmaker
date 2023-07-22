@@ -13,7 +13,9 @@ class ScriptExecutorUpdated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private array $changes;
+
     private array $original;
+
     private int $scriptId;
 
     /**

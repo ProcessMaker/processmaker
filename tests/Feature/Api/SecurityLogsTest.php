@@ -22,24 +22,44 @@ use ProcessMaker\Events\ProcessRestored;
 use ProcessMaker\Events\ScreenCreated;
 use ProcessMaker\Events\ScreenDeleted;
 use ProcessMaker\Events\ScreenUpdated;
+use ProcessMaker\Events\ScriptCreated;
+use ProcessMaker\Events\ScriptDeleted;
+use ProcessMaker\Events\ScriptDuplicated;
+use ProcessMaker\Events\ScriptExecutorCreated;
+use ProcessMaker\Events\ScriptExecutorDeleted;
+use ProcessMaker\Events\ScriptExecutorUpdated;
+use ProcessMaker\Events\ScriptUpdated;
 use ProcessMaker\Events\SettingsUpdated;
+use ProcessMaker\Events\SignalCreated;
+use ProcessMaker\Events\SignalDeleted;
+use ProcessMaker\Events\SignalUpdated;
 use ProcessMaker\Events\TemplateCreated;
+use ProcessMaker\Events\TemplateDeleted;
+use ProcessMaker\Events\TemplatePublished;
+use ProcessMaker\Events\TemplateUpdated;
+use ProcessMaker\Events\TokenCreated;
+use ProcessMaker\Events\TokenDeleted;
 use ProcessMaker\Events\UserCreated;
 use ProcessMaker\Events\UserDeleted;
 use ProcessMaker\Events\UserRestored;
 use ProcessMaker\Events\UserUpdated;
+use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Models\Setting;
-use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ScriptExecutor;
+use ProcessMaker\Models\SignalData;
 use ProcessMaker\Models\User;
 use ProcessMaker\Providers\AuthServiceProvider;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\Feature\Templates\HelperTrait;
 use Tests\TestCase;
 
 /**
@@ -47,6 +67,7 @@ use Tests\TestCase;
  */
 class SecurityLogsTest extends TestCase
 {
+    use HelperTrait;
     use RequestHelper;
 
     protected function withUserSetup()
@@ -455,6 +476,281 @@ class SecurityLogsTest extends TestCase
         ScreenUpdated::dispatch($screen, $changes, $original);
         // Review the asserts about the response of Security Log
         $this->checkAssertsSegurityLog('ScreenUpdated', 'last_modified');
+    }
+
+    /**
+     * This test Script Created
+     */
+    public function testScriptCreated()
+    {
+        $script = Script::factory()->create();
+        $changes = $script->getChanges();
+        ScriptCreated::dispatch($script, $changes);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('ScriptCreated', 'created_at');
+    }
+
+    /**
+     * This test Script Deleted
+     */
+    public function testScriptDeleted()
+    {
+        $script = Script::factory()->create();
+        $script->delete();
+        ScriptDeleted::dispatch($script);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('ScriptDeleted', 'deleted_at');
+    }
+
+    /**
+     * This test Script Duplicated
+     */
+    public function testScriptDuplicated()
+    {
+        $script = Script::factory()->create();
+        $changes = $script->getChanges();
+        ScriptDuplicated::dispatch($script, $changes);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('ScriptDuplicated', 'created_at');
+    }
+
+    /**
+     * This test Script Updated
+     */
+    public function testScriptUpdated()
+    {
+        $script = Script::factory()->create();
+        $original = array_intersect_key($script->getOriginal(), $script->getDirty());
+        $script->fill(['description' => 'screen description']);
+        $script->saveOrFail();
+        $changes = $script->getChanges();
+        ScriptUpdated::dispatch($script, $changes, $original);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('ScriptUpdated', 'last_modified');
+    }
+
+    /**
+     * This test Script Executor Created
+     */
+    public function testScriptExecutorCreated()
+    {
+        $fields = [
+            'id' => 999,
+            'uuid' => '999fa7a8-893c-4eaf-test-389777b979a3',
+            'title' => 'scriptexecutors_1',
+            'description' => 'description_1',
+            'language' => 'php',
+        ];
+        $scriptExecutor = ScriptExecutor::create($fields);
+        ScriptExecutorCreated::dispatch($scriptExecutor->getAttributes());
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('ScriptExecutorCreated', 'created_at');
+    }
+
+    /**
+     * This test Script Executor Deleted
+     */
+    public function testScriptExecutorDeleted()
+    {
+        $fields = [
+            'id' => 99999,
+            'title' => 'scriptexecutors_3',
+            'description' => 'description_3',
+            'language' => 'php',
+        ];
+        $scriptExecutor = ScriptExecutor::create($fields);
+        ScriptExecutor::destroy($scriptExecutor->id);
+        ScriptExecutorDeleted::dispatch($scriptExecutor->getAttributes());
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('ScriptExecutorDeleted', 'deleted_at');
+    }
+
+    /**
+     * This test Script Executor Updated
+     */
+    public function testScriptExecutorUpdated()
+    {
+        $fields = [
+            'id' => 9999,
+            'uuid' => '999fa7a8-test-test-test-389777b979a3',
+            'title' => 'scriptexecutors_2',
+            'description' => 'description_2',
+            'language ' => 'php',
+        ];
+        $scriptExecutor = ScriptExecutor::create($fields);
+        $original = $scriptExecutor->getAttributes();
+        $scriptExecutor->update(['description' => 'scriptexecutors description']);
+        ScriptExecutorUpdated::dispatch($scriptExecutor->id, $original, $scriptExecutor->getChanges());
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('ScriptExecutorUpdated', 'last_modified');
+    }
+
+    /**
+     * This test Signal Created
+     */
+    public function testSignalCreated()
+    {
+        $this->addGlobalSignalProcess();
+        $fields = [
+            'id' => 'id test',
+            'name' => 'name test',
+            'detail' => 'detail test',
+        ];
+        $signal = new SignalData($fields['id'], $fields['name'], $fields['detail']);
+        SignalManager::addSignal($signal, $fields['detail']);
+        SignalCreated::dispatch($fields);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('SignalCreated', 'created_at');
+    }
+
+    /**
+     * This test Signal Deleted
+     */
+    public function testSignalDeleted()
+    {
+        $this->addGlobalSignalProcess();
+        $fields = [
+            'id' => 'id test',
+            'name' => 'name test',
+            'detail' => 'detail test',
+        ];
+        $signal = new SignalData($fields['id'], $fields['name'], $fields['detail']);
+        SignalManager::addSignal($signal, $fields['detail']);
+        SignalManager::removeSignal($signal);
+        SignalDeleted::dispatch($fields);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('SignalDeleted', 'deleted_at');
+    }
+
+    /**
+     * This test Signal Updated
+     */
+    public function testSignalUpdated()
+    {
+        $this->addGlobalSignalProcess();
+        $oldSignal = [
+            'id' => 'id test',
+            'name' => 'name test',
+            'detail' => 'detail test',
+        ];
+        $signal = new SignalData($oldSignal['id'], $oldSignal['name'], $oldSignal['detail']);
+        SignalManager::addSignal($signal, $oldSignal['detail']);
+        $oldSignal = SignalManager::findSignal($oldSignal['id']);
+        $newSignal = [
+            'id' => 'id test_1',
+            'name' => 'name test_1',
+            'detail' => 'detail test_1',
+        ];
+        $newSignal = new SignalData($newSignal['id'], $newSignal['name'], $newSignal['detail']);
+        SignalManager::replaceSignal($newSignal, $oldSignal, 'detail test_1');
+        SignalUpdated::dispatch(
+            [
+                'id' => $newSignal->getId() ?? '',
+                'name' => $newSignal->getName() ?? '',
+                'detail' => $newSignal->getDetail() ?? '',
+            ],
+            [
+                'id' => $oldSignal->getId() ?? '',
+                'name' => $oldSignal->getName() ?? '',
+                'detail' => $oldSignal->getDetail() ?? '',
+            ]
+        );
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('SignalUpdated', 'last_modified');
+    }
+
+    /**
+     * This test Template Created
+     */
+    public function testTemplateCreated()
+    {
+        $this->addGlobalSignalProcess();
+        $fields = [
+            'name' => 'template_1',
+            'description' => 'description_1',
+        ];
+        ProcessTemplates::factory()->create($fields);
+        TemplateCreated::dispatch($fields);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('TemplateCreated', 'created_at');
+    }
+
+    /**
+     * This test Template Deleted
+     */
+    public function testTemplateDeleted()
+    {
+        $this->addGlobalSignalProcess();
+        $templates = ProcessTemplates::factory()->create();
+        TemplateDeleted::dispatch($templates);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('TemplateDeleted', 'deleted_at');
+    }
+
+    /**
+     * This test Template Published
+     */
+    public function testTemplatePublished()
+    {
+        $this->addGlobalSignalProcess();
+        $fields = [
+            'name' => 'template_1',
+            'description' => 'description_1',
+        ];
+        ProcessTemplates::factory()->create($fields);
+        TemplatePublished::dispatch($fields);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('TemplatePublished', 'created_at');
+    }
+
+    /**
+     * This test Template Updated
+     */
+    public function testTemplateUpdated()
+    {
+        $this->addGlobalSignalProcess();
+        // When the template is a process
+        $process = Process::factory()->create([
+            'is_template' => 1
+        ]);
+        TemplateUpdated::dispatch([], [], true, $process);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('TemplateUpdated', 'last_modified');
+        // When the template is a process
+        $process = ProcessTemplates::factory()->create();
+        TemplateUpdated::dispatch([], [], true, $process);
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('TemplateUpdated', 'last_modified', 2);
+    }
+
+    /**
+     * This test Token Created
+     */
+    public function testTokenCreated()
+    {
+        $user = User::factory()->create([
+            'status' => 'ACTIVE',
+            'is_administrator' => true
+        ]);
+        $token = $user->createToken('API Token');
+        TokenCreated::dispatch($token->token, $user, 'API token');
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('TokenCreated', 'created_at', 1);
+    }
+
+    /**
+     * This test Token Deleted
+     */
+    public function testTokenDeleted()
+    {
+        $user = User::factory()->create([
+            'status' => 'ACTIVE',
+            'is_administrator' => true
+        ]);
+        $token = $user->createToken('API Token');
+        TokenDeleted::dispatch($token->token, $user, 'API token');
+        // Review the asserts about the response of Security Log
+        $this->checkAssertsSegurityLog('TokenDeleted', 'deleted_at', 1);
     }
 
     /**

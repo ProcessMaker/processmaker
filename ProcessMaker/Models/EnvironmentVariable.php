@@ -64,6 +64,7 @@ class EnvironmentVariable extends ProcessMakerModel
                 "\n" . $e->getMessage() .
                 "\n" . $e->getTraceAsString()
             );
+
             return null;
         }
     }

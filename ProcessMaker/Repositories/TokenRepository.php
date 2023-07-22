@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest as Instance;
-use ProcessMaker\Models\ProcessRequestToken as Token;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\ProcessRequestToken as Token;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\Collection;
 use ProcessMaker\Nayra\Bpmn\Models\EndEvent;
@@ -237,6 +237,9 @@ class TokenRepository implements TokenRepositoryInterface
      */
     public function persistActivityCompleted(ActivityInterface $activity, TokenInterface $token)
     {
+        if ($token->getInstance()->status === 'ERROR') {
+            $token->getInstance()->status = 'ACTIVE';
+        }
         $process = $token->getInstance()->getProcess();
         if ($process->isNonPersistent()) {
             return;

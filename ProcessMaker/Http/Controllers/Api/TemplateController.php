@@ -70,6 +70,7 @@ class TemplateController extends Controller
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
         $storeTemplate = $this->template->store($type, $request);
         TemplatePublished::dispatch($request->request->all());
+
         return $storeTemplate;
     }
 
@@ -109,11 +110,12 @@ class TemplateController extends Controller
     public function updateTemplateConfigs(string $type, Request $request)
     {
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
+        $proTemplates = ProcessTemplates::select()->find($request->id)->getOriginal();
         $changes = $request->all();
-        $original = ProcessTemplates::select(array_keys($changes))->find($request->id)->getOriginal();
+        $original = array_intersect_key($proTemplates->getOriginal(), $changes);
         $response = $this->template->updateTemplateConfigs($type, $request);
         //Call event to log Template Config changes
-        TemplateUpdated::dispatch($changes, $original, false);
+        TemplateUpdated::dispatch($changes, $original, false, $proTemplates);
 
         return $response;
     }

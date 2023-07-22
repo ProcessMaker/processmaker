@@ -67,12 +67,12 @@ class ServiceKafka
             ->withOption('heartbeat.interval.ms', $heartbeat)
             ->withOption('session.timeout.ms', $heartbeat * 10)
             ->withHandler(function (KafkaConsumerMessage $message) {
-            // Get transactions
-            $transactions = $message->getBody();
+                // Get transactions
+                $transactions = $message->getBody();
 
-            // Store transactions
-            $this->storeData($transactions);
-        })->build();
+                // Store transactions
+                $this->storeData($transactions);
+            })->build();
 
         // Consume incoming messages
         echo "\033[0;32m" . 'ProcessMaker consumer using kafka.' . "\033[0m" . PHP_EOL;

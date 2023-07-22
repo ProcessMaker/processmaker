@@ -233,7 +233,7 @@ class SignalController extends Controller
         SignalCreated::dispatch([
             'id' => $newSignal->getId(),
             'name' => $newSignal->getName(),
-            'detail' => $request->input('detail', '')
+            'detail' => $request->input('detail', ''),
         ]);
 
         return response(['id' => $newSignal->getId(), 'name' => $newSignal->getName()], 200);
@@ -355,7 +355,7 @@ class SignalController extends Controller
             // Register the Event
             SignalDeleted::dispatch([
                 'id' => $signal->getId(),
-                'name' => $signal->getName()
+                'name' => $signal->getName(),
             ]);
         }
 

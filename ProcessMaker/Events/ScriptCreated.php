@@ -14,6 +14,7 @@ class ScriptCreated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private array $changes;
+
     private string $categoryName = '';
 
     private Script $script;

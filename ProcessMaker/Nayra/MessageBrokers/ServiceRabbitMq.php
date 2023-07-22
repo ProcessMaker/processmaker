@@ -31,7 +31,7 @@ class ServiceRabbitMq
         $rabbitMqPassword = config('rabbitmq.password');
         $rabbitmqKeepalive = true;
         $rabbitmqHeartbeat = config('rabbitmq.heartbeat', 60);
-        
+
         // Create connection
         $this->connection = new AMQPStreamConnection($rabbitMqHost, $rabbitMqPort, $rabbitMqLogin, $rabbitMqPassword, '/', false, 'AMQPLAIN', null, 'en_US', 3, 3, null, $rabbitmqKeepalive, $rabbitmqHeartbeat);
         $this->channel = $this->connection->channel();
@@ -69,10 +69,15 @@ class ServiceRabbitMq
         }
 
         // Prepare the message to send
-        $message = new AMQPMessage(json_encode(['data' => $body, 'collaboration_id' => $collaborationId]));
+        if ($subject === 'scripts') {
+            $payload = json_encode($body);
+        } else {
+            $payload = json_encode(['data' => $body, 'collaboration_id' => $collaborationId]);
+        }
+        $message = new AMQPMessage($payload);
 
         // Publish the message
-        $this->channel->basic_publish($message, '', self::QUEUE_NAME_PUBLISH);
+        $this->channel->basic_publish($message, '', $subject);
     }
 
     /**
@@ -91,7 +96,6 @@ class ServiceRabbitMq
      */
     public function worker(): void
     {
-
         // Connect to service
         echo "\033[0;32m" . 'ProcessMaker consumer using rabbitmq.' . "\033[0m" . PHP_EOL;
         $this->connect();
