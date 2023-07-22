@@ -216,6 +216,7 @@ export default {
         formData.append("user_id", this.currentUserId);
         formData.append("pm_block_category_id", this.pm_block_category_id);
         formData.append("meta", JSON.stringify(this.meta));
+        this.customModalButtons[1].disabled = true;
         ProcessMaker.apiClient.post("pm-blocks", formData)
         .then(response => {
           ProcessMaker.alert(this.$t("PM Block successfully created"), "success");
@@ -225,6 +226,7 @@ export default {
           this.close();
         }).catch(error => {
           this.errors = error.response?.data;
+          this.customModalButtons[1].disabled = false;
           if (this.errors.hasOwnProperty('errors')) {
             this.errors = this.errors?.errors;
           } else {

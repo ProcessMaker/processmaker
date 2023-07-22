@@ -2,9 +2,8 @@
 
 namespace ProcessMaker\Http\Resources;
 
-use ProcessMaker\Models\Process;
+use Illuminate\Support\Arr;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\ProcessTranslations\ProcessTranslation;
 use ProcessMaker\ProcessTranslations\ScreenTranslation;
 
 class ScreenVersion extends ApiResource
@@ -24,6 +23,7 @@ class ScreenVersion extends ApiResource
         $task = null;
 
         if (in_array('nested', $include)) {
+            $this->setDefaultScreenForNestedScreens($screenVersion);
             $task = $request->route('task');
             $processRequest = null;
             if ($task) {
@@ -32,8 +32,10 @@ class ScreenVersion extends ApiResource
 
             $nested = [];
             foreach ($this->parent->nestedScreenIds($processRequest) as $id) {
-                $nestedScreen = Screen::findOrFail($id);
-                $nested[] = $nestedScreen->versionFor($processRequest)->toArray();
+                $nestedScreen = Screen::find($id);
+                if ($nestedScreen) {
+                    $nested[] = $nestedScreen->versionFor($processRequest)->toArray();
+                }
             }
             $screenVersion['nested'] = $nested;
         }
@@ -53,5 +55,26 @@ class ScreenVersion extends ApiResource
         }
 
         return $screenVersion;
+    }
+
+    /**
+     * Set the default screen for nested screens when no screen has been selected.
+     */
+    private function setDefaultScreenForNestedScreens(array &$screenVersion): void
+    {
+        $configArray = $screenVersion['config'];
+        foreach ($configArray as $key => $config) {
+            foreach ($config['items'] as $itemKey => $item) {
+                if (isset($item['component']) && $item['component'] === 'FormNestedScreen') {
+                    $configScreen = $item['config']['screen'] ?? null;
+                    if (Screen::where('id', $configScreen)->doesntExist()) {
+                        $defaultScreenId = Screen::where('key', 'default-form-screen')->value('id');
+                        $path = "{$key}.items.{$itemKey}.config.screen";
+                        Arr::set($configArray, $path, $defaultScreenId);
+                    }
+                }
+            }
+        }
+        $screenVersion['config'] = $configArray;
     }
 }

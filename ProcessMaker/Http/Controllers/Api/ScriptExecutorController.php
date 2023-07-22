@@ -245,9 +245,9 @@ class ScriptExecutorController extends Controller
             }
         }
 
-        ScriptExecutorDeleted::dispatch($scriptExecutor->getAttributes());
-
         ScriptExecutor::destroy($scriptExecutor->id);
+
+        ScriptExecutorDeleted::dispatch($scriptExecutor->getAttributes());
 
         return ['status' => 'done'];
     }

@@ -43,10 +43,10 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
         if (isset($this->changes['variables'])) {
             $varChanges = [];
             $varOriginal = [];
-            foreach ((array)json_decode($this->changes['variables'], true) as $variable) {
+            foreach ((array) json_decode($this->changes['variables'], true) as $variable) {
                 $varChanges[$variable['title']] = $variable['value'];
             }
-            foreach ((array)json_decode($this->original['variables'], true) as $variable) {
+            foreach ((array) json_decode($this->original['variables'], true) as $variable) {
                 $varOriginal[$variable['title']] = $variable['value'];
             }
             $varChanges = array_diff($varChanges, $varOriginal);
@@ -60,7 +60,7 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
                     'label' => 'Customize Ui',
                     'link' => route('customize-ui.edit'),
                 ],
-                'last_modified' => Carbon::now()
+                'last_modified' => Carbon::now(),
             ],
             $this->formatChanges($this->changes, $this->original)
         );

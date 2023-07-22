@@ -257,6 +257,7 @@
                                         <th class="action">{{__('Request Started')}}</th>
                                         <th class="action">{{__('Request Canceled')}}</th>
                                         <th class="action">{{__('Request Completed')}}</th>
+                                        <th class="action">{{__('Request Error')}}</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -289,6 +290,15 @@
                                                            for="notify-manager-completed"></label>
                                                 </div>
                                             </td>
+                                            <td class="action">
+                                                <div class="custom-control custom-switch">
+                                                    <input id="notify-manager-error" type="checkbox"
+                                                           v-model="formData.notifications.manager.error"
+                                                           class="custom-control-input">
+                                                    <label class="custom-control-label"
+                                                           for="notify-manager-error"></label>
+                                                </div>
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td class="notify">{{__('Notify Requester')}}</td>
@@ -310,7 +320,7 @@
                                                            for="notify-requester-canceled"></label>
                                                 </div>
                                             </td>
-                                            <td class="action">
+                                            <td class="action" colspan="2">
                                                 <div class="custom-control custom-switch">
                                                     <input id="notify-requester-completed" type="checkbox"
                                                            v-model="formData.notifications.requester.completed"
@@ -336,7 +346,7 @@
                                                            for="notify-participants-canceled"></label>
                                                 </div>
                                             </td>
-                                            <td class="action">
+                                            <td class="action" colspan="2">
                                                 <div class="custom-control custom-switch">
                                                     <input id="notify-participants-completed" type="checkbox"
                                                            v-model="formData.notifications.participants.completed"
@@ -549,11 +559,9 @@
         }
 
         #table-notifications td.notify {
-            width: 40%;
         }
 
         #table-notifications td.action {
-            width: 20%;
         }
 
         .inline-input {

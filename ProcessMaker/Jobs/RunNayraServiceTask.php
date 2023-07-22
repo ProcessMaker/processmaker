@@ -20,7 +20,7 @@ class RunNayraServiceTask implements ShouldQueue
 
     public $tokenId;
 
-    public $userId;
+    public $attemptNum = 1;
 
     /**
      * Create a new job instance.
@@ -48,6 +48,6 @@ class RunNayraServiceTask implements ShouldQueue
         $token->setInstance($instance);
 
         // Run service task
-        WorkflowManager::handleServiceTask($token);
+        WorkflowManager::handleServiceTask($token, $this);
     }
 }

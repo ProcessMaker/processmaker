@@ -43,7 +43,7 @@
         </b-form-group>
         <category-select :label="$t('Category')" api-get="process_categories"
           api-list="process_categories" v-model="process_category_id"
-          :errors="addError.process_category_id"
+          :errors="addError?.process_category_id"
           name="category"
         ></category-select>
        <b-form-group
@@ -152,6 +152,10 @@
         this.$emit('resetModal');
       },
       onSubmit () {
+        if (this.generativeProcessData) {
+          this.$emit("clear-ai-history");
+        }
+
         this.errors = Object.assign({}, {
           name: null,
           description: null,
