@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.7.0+nightly-20230721",
+    "version": "4.7.0+nightly-20230725",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -96,9 +96,9 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "3cd182e1",
+            "build": "2c93a90c",
             "custom": {
-                "package-ellucian-ethos": "1.12.1"
+                "package-ellucian-ethos": "1.12.3"
             },
             "enterprise": {
                 "connector-docusign": "1.4.0",
@@ -110,7 +110,7 @@
                 "package-actions-by-email": "1.13.0",
                 "package-advanced-user-manager": "1.6.0",
                 "package-ai": "0.4.2",
-                "package-analytics-reporting": "0.1.5",
+                "package-analytics-reporting": "0.1.6",
                 "package-auth": "1.12.0",
                 "package-collections": "2.11.0",
                 "package-comments": "1.7.0",
@@ -127,15 +127,15 @@
                 "package-process-optimization": "1.6.0",
                 "package-product-analytics": "1.5.0",
                 "package-savedsearch": "1.27.2",
-                "package-sentry": "1.5.0",
+                "package-sentry": "1.5.1",
                 "package-signature": "1.8.0",
                 "package-translations": "2.5.0",
                 "package-versions": "1.6.0",
                 "package-vocabularies": "2.11.1",
-                "package-webentry": "2.16.2",
+                "package-webentry": "2.16.3",
                 "packages": "^0"
             },
-            "release": "Summer 2023 (Nightly 20230721)"
+            "release": "Summer 2023 (Nightly 20230725)"
         }
     },
     "scripts": {

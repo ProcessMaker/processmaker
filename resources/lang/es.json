@@ -1779,5 +1779,8 @@
   "Rollback Request": "Solicitud de Reversión",
   "Rollback": "Reversión",
   "Rollback to task": "Revertir a la tarea",
-  "Are you sure you want to rollback to the task @{{name}}? Warning! This request will continue as the current published process version.": "¿Estás seguro de que quieres volver a la tarea @{{name}}? ¡Advertencia! Esta solicitud continuará como la versión actual del proceso publicado."
+  "Are you sure you want to rollback to the task @{{name}}? Warning! This request will continue as the current published process version.": "¿Estás seguro de que quieres volver a la tarea @{{name}}? ¡Advertencia! Esta solicitud continuará como la versión actual del proceso publicado.",
+  "Request Error": "Error de Solicitud",
+  "UserRestored": "Usuario Restaurado",
+  "Since there is no interface translation for this language, translations for these screens will only render for anonymous users in web entries.": "Dado que no hay traducción de interfaz para este idioma, las traducciones para estas pantallas solo se mostrarán para usuarios anónimos en entradas web."
 }
