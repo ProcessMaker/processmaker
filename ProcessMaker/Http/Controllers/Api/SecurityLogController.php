@@ -143,7 +143,7 @@ class SecurityLogController extends Controller
         if (!Media::s3IsReady()) {
             return response()->json([
                 'success' => false,
-                'message' => __('Sorry, this feature requires the configured AWS S3 service. Please contact the administrator.'),
+                'message' => __('This feature requires the configured AWS S3 service. Please contact your Customer Success Manager to use it.'),
             ]);
         }
         $request->validate([
@@ -157,7 +157,7 @@ class SecurityLogController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => __('The file is processing... Please wait for an alert with the download link.'),
+            'message' => __('The file is processing. You may continue working while the log file compiles.'),
         ]);
     }
 
