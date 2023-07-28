@@ -48,26 +48,25 @@ class ReviewCategoryNull extends Command
         DB::table($table)->select('id', 'title')
             ->whereNull([$field, 'key'])
             ->orderBy('id', 'DESC')->chunkById(100, function (Collection $items) use ($table, $field, $class, $default) {
-            foreach ($items as $item) {
-                $category = DB::table('category_assignments')
-                    ->select('category_id')
-                    ->where([
-                        ['assignable_type', '=', $class],
-                        ['assignable_id', '=', $item->id],
-                    ])->first();
-                
-                $categoryId = $default;
-                if ($category) {
-                    $categoryId = $category->category_id;
-                }
+                foreach ($items as $item) {
+                    $category = DB::table('category_assignments')
+                        ->select('category_id')
+                        ->where([
+                            ['assignable_type', '=', $class],
+                            ['assignable_id', '=', $item->id],
+                        ])->first();
 
-                DB::table($table)
-                    ->where('id', $item->id)
-                    ->update([$field => $categoryId]);
-                
-                $this->info('- ' . $item->title . '   ==>   Category: ' . $categoryId);
-                
-            }
-        });
+                    $categoryId = $default;
+                    if ($category) {
+                        $categoryId = $category->category_id;
+                    }
+
+                    DB::table($table)
+                        ->where('id', $item->id)
+                        ->update([$field => $categoryId]);
+
+                    $this->info('- ' . $item->title . '   ==>   Category: ' . $categoryId);
+                }
+            });
     }
 }
