@@ -18,7 +18,6 @@ use ProcessMaker\Exception\InvalidUserAssignmentException;
 use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Exception\ThereIsNoProcessManagerAssignedException;
-use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Facades\WorkflowUserManager;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Nayra\Bpmn\Models\Activity;
@@ -1639,5 +1638,13 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         });
 
         return $query;
+    }
+
+    /**
+     * Define the "belongsTo" relationship between the Process model and the PmBlock model.
+     */
+    public function pmBlock()
+    {
+        return $this->belongsTo('ProcessMaker\Package\PackagePmBlocks\Models\PmBlock', 'id', 'editing_process_id');
     }
 }

@@ -28,6 +28,15 @@ class ProcessPolicy
         }
     }
 
+    public function edit(User $user, Process $process)
+    {
+        if ($process->pmBlock?->is_imported_locked) {
+            return false;
+        }
+
+        return $user->can('edit-processes');
+    }
+
     /**
      * Determine whether the user can start the process.
      *
