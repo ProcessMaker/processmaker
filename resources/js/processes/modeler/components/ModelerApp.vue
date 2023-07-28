@@ -79,7 +79,6 @@ export default {
       processName: window.ProcessMaker.modeler.process.name,
       processId: window.ProcessMaker.modeler.process.id,
       currentUserId: window.ProcessMaker.modeler.process.user_id,
-      closeHref: "/processes",
     };
   },
   computed: {
@@ -122,6 +121,9 @@ export default {
           });
       };
     },
+    closeHref() {
+      return this.process?.asset_type === 'PM_BLOCK' ? "/designer/pm-blocks" : "/processes";
+    }
   },
   watch: {
     validationErrors: {
