@@ -151,8 +151,7 @@ class Handler extends ExceptionHandler
      * This prevents the symfony console from handling the error and returning an
      * exit status of 0, which it does by default surprisingly.
      *
-     * @override
-     * 
+     * @param  \Symfony\Component\Console\Output\OutputInterface  $output
      * @param  \Throwable  $e
      * @return void
      */
