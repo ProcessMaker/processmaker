@@ -33,8 +33,6 @@ class AuthClientCreated implements SecurityLogEventInterface
                 'label' => $this->data['name'],
                 'link' => route('auth-clients.index'),
             ],
-            'auth_client_id' => $this->data['id'] ?? '',
-            'user_id' => $this->data['user_id'] ?? '',
             'revoked' => $this->data['revoked'] ?? '',
             'provider' => $this->data['provider'] ?? '',
             'redirect' => $this->data['redirect'] ?? '',
@@ -50,6 +48,7 @@ class AuthClientCreated implements SecurityLogEventInterface
     {
         return [
             'id' => $this->data['id'],
+            'user_id' => $this->data['user_id'] ?? '',
         ];
     }
 
