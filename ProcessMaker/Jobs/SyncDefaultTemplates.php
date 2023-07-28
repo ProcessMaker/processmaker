@@ -4,6 +4,8 @@ namespace ProcessMaker\Jobs;
 
 use Exception;
 use Facades\ProcessMaker\JsonColumnIndex;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -41,7 +43,7 @@ class SyncDefaultTemplates implements ShouldQueue
         $config = config('services.github');
         $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/index.json';
 
-        // If there are multiple categories of templates defined in the .env then separate them into an array.
+        // If there are multiple categories of templates defined in the .env, then separate them into an array.
         $categories = (strpos($config['template_categories'], ',') !== false) ? explode(',', $config['template_categories']) : [$config['template_categories']];
 
         $processCategoryId = ProcessCategory::firstOrCreate(
@@ -53,50 +55,62 @@ class SyncDefaultTemplates implements ShouldQueue
             ]
         )->getKey();
 
-        // Get the default template list from Github.
-        $response = Http::get($url);
+        try {
+            $client = new Client();
+            $response = $client->get($url);
 
-        if (!$response->successful()) {
-            throw new Exception('Unable to fetch default template list.');
-        }
-
-        // Extract the json data from the response and iterate over the categories and templates to retrieve them.
-        $data = $response->json();
-        foreach ($data as $templateCategory => $templates) {
-            if (!in_array($templateCategory, $categories) && !in_array('all', $categories)) {
-                continue;
+            if ($response->getStatusCode() !== 200) {
+                throw new Exception('Unable to fetch default template list.');
             }
-            foreach ($templates as $template) {
-                $existingTemplate = ProcessTemplates::where('uuid', $template['uuid'])->first();
-                // If the template already exists in the database with a user then skip it, since we don't want to overwrite their changes.
-                if (!is_null($existingTemplate) && !is_null($existingTemplate->user_id)) {
+
+            // Extract the json data from the response and iterate over the categories and templates to retrieve them.
+            $data = json_decode($response->getBody(), true);
+            foreach ($data as $templateCategory => $templates) {
+                if (!in_array($templateCategory, $categories) && !in_array('all', $categories)) {
                     continue;
                 }
+                foreach ($templates as $template) {
+                    $existingTemplate = ProcessTemplates::where('uuid', $template['uuid'])->first();
+                    // If the template already exists in the database with a user then skip it,
+                    // since we don't want to overwrite their changes.
+                    if (!is_null($existingTemplate) && !is_null($existingTemplate->user_id)) {
+                        continue;
+                    }
 
-                $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/' . $template['relative_path'];
-                $response = Http::get($url);
-                if (!$response->successful()) {
-                    throw new Exception("Unable to fetch default template {$template['name']}.");
+                    $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/' . $template['relative_path'];
+
+                    try {
+                        $response = $client->get($url);
+                        if ($response->getStatusCode() !== 200) {
+                            throw new Exception("Unable to fetch default template {$template['name']}.");
+                        }
+
+                        $payload = json_decode($response->getBody(), true);
+                        data_set($payload, 'export.' . $payload['root'] . '.attributes.process_category_id', $processCategoryId);
+
+                        $options = new Options([
+                            'mode' => 'update',
+                            'isTemplate' => true,
+                            'saveAssetsMode' => 'saveAllAssets',
+                        ]);
+                        $importer = new Importer($payload, $options);
+                        $manifest = $importer->doImport();
+
+                        $template = ProcessTemplates::where('uuid', $template['uuid'])->first();
+                        $template->setRawAttributes([
+                            'key' => 'default_templates',
+                            'process_id' => null,
+                            'user_id' => null,
+                            'process_category_id' => $processCategoryId,
+                        ]);
+                        $template->save();
+                    } catch (RequestException $e) {
+                        throw new Exception("Unable to fetch default template {$template['name']}. Error: " . $e->getMessage());
+                    }
                 }
-                $payload = $response->json();
-                data_set($payload, 'export.' . $payload['root'] . '.attributes.process_category_id', $processCategoryId);
-                $options = new Options([
-                    'mode' => 'update',
-                    'isTemplate' => true,
-                    'saveAssetsMode' => 'saveAllAssets',
-                ]);
-                $importer = new Importer($payload, $options);
-                $manifest = $importer->doImport();
-
-                $template = ProcessTemplates::where('uuid', $template['uuid'])->first();
-                $template->setRawAttributes([
-                    'key' => 'default_templates',
-                    'process_id' => null,
-                    'user_id' => null,
-                    'process_category_id' => $processCategoryId,
-                ]);
-                $template->save();
             }
+        } catch (RequestException $e) {
+            throw new Exception('Unable to fetch default template list. Error: ' . $e->getMessage());
         }
     }
 }
