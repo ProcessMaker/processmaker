@@ -62,7 +62,7 @@ class DownloadSecurityLog implements ShouldQueue
     {
         // Check if the S3 is ready to use
         if (!Media::s3IsReady()) {
-            event(new SecurityLogDownloadFailed($this->user, false, __('Sorry, this feature requires the configured AWS S3 service. Please contact the administrator.')));
+            event(new SecurityLogDownloadFailed($this->user, false, __('This feature requires the configured AWS S3 service. Please contact your Customer Success Manager to use it.')));
 
             return;
         }
@@ -73,11 +73,11 @@ class DownloadSecurityLog implements ShouldQueue
             $expires = $this->getExpires();
             // Export the file and get the URL
             $url = $this->export($filename, $expires);
-            $message = __('Click on the link and download the file. This link will be available until ' . $expires->toString());
+            $message = __('Click on the link to download the log file. This link will be available until ' . $expires->toString());
             // Call the event
             event(new SecurityLogDownloadJobCompleted($this->user, true, $message, $url));
         } catch (Exception $e) {
-            $message = __('Sorry, it was not possible to connect AWS S3 service. Please contact the administrator.');
+            $message = __('It was not possible to connect AWS S3 service. Please contact your Customer Success Manager to use it.');
             event(new SecurityLogDownloadFailed($this->user, false, $e->getMessage()));
         }
     }
