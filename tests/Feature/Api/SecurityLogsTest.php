@@ -90,6 +90,14 @@ class SecurityLogsTest extends TestCase
     }
 
     /**
+     * @before
+     */
+    public function setupCleanSomeTables(): void
+    {
+        SecurityLog::query()->delete();
+    }
+
+    /**
      * Attempt to access security logs
      */
     public function testAccessSecurityLogsApi()
