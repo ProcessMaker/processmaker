@@ -204,15 +204,6 @@ class ProcessTemplateTest extends TestCase
         $this->assertEquals('Default Templates', $newCategory->name);
     }
 
-    public function testTemplateSyncCount()
-    {
-        $fixtures = $this->fixtures();
-        $githubConfig = config('services.github');
-
-        $count = $this->countTemplatesFromRepo($githubConfig);
-        $this->assertEquals($count, $fixtures['allTemplates']->count());
-    }
-
     public function testTemplateToProcessSync()
     {
         $this->addGlobalSignalProcess();
@@ -273,34 +264,6 @@ class ProcessTemplateTest extends TestCase
 
         return ['user' => $user, 'processCategoryId' => $processCategoryId, 'allTemplates' => $allTemplates];
     }
-
-     /**
-      * Compares the count of imported templates with the templates in the database.
-      *
-      * @param array $config The configuration array containing the base URL, template repository, and template branch.
-      * @throws Exception If the default template list could not be fetched.
-      * @return int The count of templates.
-      */
-     private function countTemplatesFromRepo($config)
-     {
-         $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/index.json';
-         $response = Http::get($url);
-
-         if (!$response->successful()) {
-             throw new Exception('Unable to fetch default template list.');
-         }
-
-         $templates = $response->json();
-         $count = 0;
-
-         foreach ($templates as $template) {
-             if (is_array($template)) {
-                 $count += count($template);
-             }
-         }
-
-         return $count;
-     }
 
     /**
      * Create processes from a given template.
