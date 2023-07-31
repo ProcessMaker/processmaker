@@ -2,21 +2,15 @@
 
 namespace Tests\Feature\Templates\Api;
 
-use Database\Seeders\UserSeeder;
 use Exception;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
-use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\Setting;
-use ProcessMaker\Models\Templates;
 use ProcessMaker\Models\User;
 use ProcessMaker\Packages\Connectors\DataSources\Models\DataSourceCategory;
 use Tests\Feature\Shared\RequestHelper;
