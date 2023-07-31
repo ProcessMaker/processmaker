@@ -382,7 +382,7 @@ abstract class ExporterBase implements ExporterInterface
         foreach ($this->handleDuplicateAttributes() as $attribute => $handler) {
             $value = $this->model->$attribute;
             $i = 0;
-            while ($this->duplicateExists($attribute, $value)) {
+            while ($value !== null && $this->duplicateExists($attribute, $value)) {
                 if ($i > 100) {
                     throw new \Exception('Can not fix duplicate attribute after 100 iterations');
                 }
