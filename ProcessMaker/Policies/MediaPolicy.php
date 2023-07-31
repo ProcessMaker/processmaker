@@ -102,13 +102,17 @@ class MediaPolicy
     {
         if ($user->hasPermission('delete-files')) {
             return true;
-        }     
+        }
 
         if ($user->can('update', $media->model)) {
             return $user->can('update', $media->model);    
-        } else if($user->can('participate', $media->model)) {
+        }
+        
+        if($user->can('participate', $media->model)) {
             return $user->can('participate', $media->model);
         }
+
+        return false;
         
     }
 }
