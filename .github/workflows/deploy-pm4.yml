@@ -57,7 +57,7 @@ jobs:
           echo "CACHEBUSTER="$(date +%s) >> $GITHUB_ENV
       - name: Clone Repo STM
         run: |
-          mkdir $CI_PROJECT
+          sudo mkdir $CI_PROJECT
           cd $CI_PROJECT
           git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
           echo "*************************************"
