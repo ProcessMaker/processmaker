@@ -51,10 +51,10 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\SecurityLog;
-use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptExecutor;
+use ProcessMaker\Models\SecurityLog;
+use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\SignalData;
 use ProcessMaker\Models\User;
 use ProcessMaker\Providers\AuthServiceProvider;
@@ -711,7 +711,7 @@ class SecurityLogsTest extends TestCase
         $this->addGlobalSignalProcess();
         // When the template is a process
         $process = Process::factory()->create([
-            'is_template' => 1
+            'is_template' => 1,
         ]);
         TemplateUpdated::dispatch([], [], true, $process);
         // Review the asserts about the response of Security Log
@@ -730,7 +730,7 @@ class SecurityLogsTest extends TestCase
     {
         $user = User::factory()->create([
             'status' => 'ACTIVE',
-            'is_administrator' => true
+            'is_administrator' => true,
         ]);
         $token = $user->createToken('API Token');
         TokenCreated::dispatch($token->token, $user, 'API token');
@@ -745,7 +745,7 @@ class SecurityLogsTest extends TestCase
     {
         $user = User::factory()->create([
             'status' => 'ACTIVE',
-            'is_administrator' => true
+            'is_administrator' => true,
         ]);
         $token = $user->createToken('API Token');
         TokenDeleted::dispatch($token->token, $user, 'API token');

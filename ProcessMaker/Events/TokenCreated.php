@@ -12,7 +12,9 @@ class TokenCreated implements SecurityLogEventInterface
     use Dispatchable;
 
     private Token $data;
+
     private User $user;
+
     private string $name;
 
     /**

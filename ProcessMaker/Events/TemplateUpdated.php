@@ -17,6 +17,7 @@ class TemplateUpdated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private Process|ProcessTemplates $process;
+
     private array $changes;
 
     private array $original;
@@ -79,7 +80,7 @@ class TemplateUpdated implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            'id' => $this->process->id ?? ''
+            'id' => $this->process->id ?? '',
         ];
     }
 
