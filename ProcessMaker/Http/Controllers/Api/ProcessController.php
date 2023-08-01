@@ -389,6 +389,7 @@ class ProcessController extends Controller
             );
         }
         $changes = $process->getChanges();
+        $changes['tmp_process_category_id'] = $request->input('process_category_id');
 
         // Register the Event
         ProcessPublished::dispatch($process->refresh(), $changes, $original);
