@@ -57,8 +57,6 @@ jobs:
           echo "CACHEBUSTER="$(date +%s) >> $GITHUB_ENV
       - name: Clone Repo STM
         run: |
-          sudo mkdir $CI_PROJECT
-          cd $CI_PROJECT
           git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
           echo "*************************************"
           pwd
@@ -75,14 +73,14 @@ jobs:
       - name: Build and Push the base images
         if: contains(github.event.pull_request.body, 'ci:build-base') || github.event_name == 'schedule'
         run: |
-          cd $CI_PROJECT/pm4-stm-docker
+          cd pm4-stm-docker
           docker-compose build --no-cache base
           docker-compose build --no-cache cache
           docker push ${REPOSITORY}:ci-base
           docker push ${REPOSITORY}:ci-cache
       - name: Build and Push the image to ECR
         run: |
-          cd $CI_PROJECT/pm4-stm-docker
+          cd pm4-stm-docker
           docker-compose build processmaker
           docker push ${IMAGE}
           echo "*************************************"
