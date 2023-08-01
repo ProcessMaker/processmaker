@@ -51,6 +51,7 @@
             }
 
             $defaultNav = Menu::get('topnav')->items->all();
+
             foreach($defaultNav as $item) {
                 $item->hasSubItems = false;
             }
@@ -64,6 +65,22 @@
                 $newItem['isCustom'] = count($itemsInCustom) > 0;
                 $menuItems[] = $newItem;
             }
+            $falseFlag = true;
+            foreach ($menuItems as $key => $menuItem) {
+                if ($menuItem['link'] === url()->current()) {
+                    if ($menuItem['isActive'] !== true) {
+                        $menuItems[$key]['isActive'] = false;
+                    } else {
+                        $falseFlag = false;
+                    }
+                } else {
+                    $menuItems[$key]['isActive'] = false;
+                }
+                if ($menuItems[$key]['title'] === 'Admin' && $falseFlag === true) {
+                    $menuItems[$key]['isActive'] = true;
+                }
+            }
+
             // If a menu provider is installed, remove menu items from ProcessMaker but preserve any other (from packages, for example)
             if ($existsMenuProvider) {
                 $menuItems = array_filter($menuItems, function ($item) use($customNav) {
