@@ -105,11 +105,11 @@ class MediaPolicy
         }
 
         if ($user->can('update', $media->model)) {
-            return $user->can('update', $media->model);    
+            return true;    
         }
         
         if($user->can('participate', $media->model)) {
-            return $user->can('participate', $media->model);
+            return true;
         }
 
         return false;
