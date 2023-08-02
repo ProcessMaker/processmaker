@@ -206,4 +206,58 @@ class ScreenExporterTest extends TestCase
         $screen->watchers = $watchers;
         $screen->saveOrFail();
     }
+
+    public function testExportScreenInLoop()
+    {
+        $child = Screen::factory()->create(['title' => 'child screen']);
+        $anotherChild = Screen::factory()->create(['title' => 'another child screen']);
+        $config = [
+            [
+                'items' => [
+                    [
+                        'items' => [
+                            [
+                                'config' => [
+                                    'screen' => $child->id,
+                                ],
+                                'component' => 'FormNestedScreen',
+                            ],
+                            [
+                                'config' => [
+                                    'screen' => $anotherChild->id,
+                                ],
+                                'component' => 'FormNestedScreen',
+                            ],
+                        ],
+                        'component' => 'FormLoop',
+                    ],
+                ],
+            ],
+        ];
+        $parent = Screen::factory()->create(['title' => 'parent screen', 'config' => $config]);
+
+        $exporter = new Exporter();
+        $exporter->exportScreen($parent);
+        $payload = $exporter->payload();
+
+        // Assert the child was exported in the payload
+        $this->assertEquals('child screen', Arr::get($payload, "export.{$child->uuid}.attributes.title"));
+        $this->assertEquals('another child screen', Arr::get($payload, "export.{$anotherChild->uuid}.attributes.title"));
+
+        $options = new Options([
+            $parent->uuid => ['mode' => 'copy'],
+            $child->uuid => ['mode' => 'copy'],
+            $anotherChild->uuid => ['mode' => 'copy'],
+        ]);
+        $importer = new Importer($payload, $options);
+        $importer->doImport();
+
+        $newParent = Screen::where('title', 'parent screen 2')->firstOrFail();
+        $newChild = Screen::where('title', 'child screen 2')->firstOrFail();
+        $newAnotherChild = Screen::where('title', 'another child screen 2')->firstOrFail();
+
+        // Assert the new child was correctly associated in the new parent config
+        $this->assertEquals($newChild->id, Arr::get($newParent->config, '0.items.0.items.0.config.screen'));
+        $this->assertEquals($newAnotherChild->id, Arr::get($newParent->config, '0.items.0.items.1.config.screen'));
+    }
 }
