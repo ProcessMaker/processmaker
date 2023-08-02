@@ -73,8 +73,8 @@ trait HideSystemResources
                 ->when(Schema::hasColumn('screens', 'asset_type'), function ($query) {
                     return $query->whereNull('asset_type');
                 })
-                ->whereDoesntHave('categories', function ($query) {
-                    $query->where('is_system', true);
+                ->whereHas('categories', function ($query) {
+                    $query->where('is_system', false);
                 });
         } elseif (static::class === Script::class) {
             return $query
