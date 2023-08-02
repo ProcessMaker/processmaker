@@ -29,7 +29,7 @@ export default {
     formData.append('file', file);
     formData.append('options', optionsBlob);
     
-    return ProcessMaker.apiClient.post(`/template/do-import/${type}`, formData,
+    return ProcessMaker.apiClient.post(`/template/${type}/do-import`, formData,
     {
         headers: {
             'Content-Type': 'multipart/form-data'
