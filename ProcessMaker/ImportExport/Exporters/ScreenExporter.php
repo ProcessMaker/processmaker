@@ -109,7 +109,12 @@ class ScreenExporter extends ExporterBase
             return $config;
         }
         foreach ($config as $i => $item) {
-            if (Arr::has($item, 'items')) {
+            if (Arr::get($item, 'component') === 'FormMultiColumn') {
+                foreach ($item['items'] as $mi => $mcItems) {
+                    $config[$i]['items'][$mi] = $this->associateNestedScreens($screenIdMap, $mcItems);
+                }
+            } elseif (Arr::has($item, 'items')) {
+                // This covers both pages and FormLoops
                 $config[$i]['items'] = $this->associateNestedScreens($screenIdMap, $item['items']);
             } elseif (Arr::get($item, 'component') === 'FormNestedScreen') {
                 $originalId = Arr::get($item, 'config.screen', null);

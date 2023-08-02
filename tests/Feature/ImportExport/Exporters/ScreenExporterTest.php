@@ -209,31 +209,14 @@ class ScreenExporterTest extends TestCase
 
     public function testExportScreenInLoop()
     {
-        $child = Screen::factory()->create(['title' => 'child screen']);
-        $anotherChild = Screen::factory()->create(['title' => 'another child screen']);
-        $config = [
-            [
-                'items' => [
-                    [
-                        'items' => [
-                            [
-                                'config' => [
-                                    'screen' => $child->id,
-                                ],
-                                'component' => 'FormNestedScreen',
-                            ],
-                            [
-                                'config' => [
-                                    'screen' => $anotherChild->id,
-                                ],
-                                'component' => 'FormNestedScreen',
-                            ],
-                        ],
-                        'component' => 'FormLoop',
-                    ],
-                ],
-            ],
-        ];
+        $child1 = Screen::factory()->create(['title' => 'first child screen']);
+        $child2 = Screen::factory()->create(['title' => 'second child screen']);
+        $child3 = Screen::factory()->create(['title' => 'third child screen']);
+        $config = file_get_contents(__DIR__ . '/../fixtures/screen_with_nested_screens_in_loop_and_multicolumns.json');
+        $config = json_decode($config, true);
+        Arr::set($config, '0.items.1.items.0.items.0.0.config.screen', $child1->id);
+        Arr::set($config, '0.items.1.items.0.items.1.0.config.screen', $child2->id);
+        Arr::set($config, '0.items.1.items.1.config.screen', $child3->id);
         $parent = Screen::factory()->create(['title' => 'parent screen', 'config' => $config]);
 
         $exporter = new Exporter();
@@ -241,23 +224,27 @@ class ScreenExporterTest extends TestCase
         $payload = $exporter->payload();
 
         // Assert the child was exported in the payload
-        $this->assertEquals('child screen', Arr::get($payload, "export.{$child->uuid}.attributes.title"));
-        $this->assertEquals('another child screen', Arr::get($payload, "export.{$anotherChild->uuid}.attributes.title"));
+        $this->assertEquals('first child screen', Arr::get($payload, "export.{$child1->uuid}.attributes.title"));
+        $this->assertEquals('second child screen', Arr::get($payload, "export.{$child2->uuid}.attributes.title"));
+        $this->assertEquals('third child screen', Arr::get($payload, "export.{$child3->uuid}.attributes.title"));
 
         $options = new Options([
             $parent->uuid => ['mode' => 'copy'],
-            $child->uuid => ['mode' => 'copy'],
-            $anotherChild->uuid => ['mode' => 'copy'],
+            $child1->uuid => ['mode' => 'copy'],
+            $child2->uuid => ['mode' => 'copy'],
+            $child3->uuid => ['mode' => 'copy'],
         ]);
         $importer = new Importer($payload, $options);
         $importer->doImport();
 
         $newParent = Screen::where('title', 'parent screen 2')->firstOrFail();
-        $newChild = Screen::where('title', 'child screen 2')->firstOrFail();
-        $newAnotherChild = Screen::where('title', 'another child screen 2')->firstOrFail();
+        $newChild1 = Screen::where('title', 'first child screen 2')->firstOrFail();
+        $newChild2 = Screen::where('title', 'second child screen 2')->firstOrFail();
+        $newChild3 = Screen::where('title', 'third child screen 2')->firstOrFail();
 
         // Assert the new child was correctly associated in the new parent config
-        $this->assertEquals($newChild->id, Arr::get($newParent->config, '0.items.0.items.0.config.screen'));
-        $this->assertEquals($newAnotherChild->id, Arr::get($newParent->config, '0.items.0.items.1.config.screen'));
+        $this->assertEquals($newChild1->id, Arr::get($newParent->config, '0.items.1.items.0.items.0.0.config.screen'));
+        $this->assertEquals($newChild2->id, Arr::get($newParent->config, '0.items.1.items.0.items.1.0.config.screen'));
+        $this->assertEquals($newChild3->id, Arr::get($newParent->config, '0.items.1.items.1.config.screen'));
     }
 }
