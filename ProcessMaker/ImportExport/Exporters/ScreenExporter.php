@@ -42,14 +42,13 @@ class ScreenExporter extends ExporterBase
     public function import() : bool
     {
         $screen = $this->model;
-
-        $config = $this->model->config;
         $watchers = $this->model->watchers;
 
+        $screenIdMap = [];
         foreach ($this->dependents as $dependent) {
             switch ($dependent->type) {
                 case DependentType::SCREENS:
-                    $this->associateNestedScreen($dependent, $config);
+                    $screenIdMap[$dependent->originalId] = $dependent->model->id;
                     break;
                 case DependentType::SCRIPTS:
                     $originalId = $dependent->meta;
@@ -58,8 +57,8 @@ class ScreenExporter extends ExporterBase
             }
         }
 
+        $screen->config = $this->associateNestedScreens($screenIdMap, $screen->config);
         $this->associateCategories(ScreenCategory::class, 'screen_category_id');
-        $screen->config = $config;
         $screen->watchers = $watchers;
 
         $success = $screen->saveOrFail();
@@ -104,19 +103,34 @@ class ScreenExporter extends ExporterBase
         return null;
     }
 
-    private function associateNestedScreen($dependent, &$config) : void
+    private function associateNestedScreens($screenIdMap, $config, $recursion = 0)
     {
-        $originalId = $dependent->originalId;
-        $newId = $dependent->model->id;
-        foreach ($config as $pageKey => $page) {
-            foreach (Arr::get($page, 'items', []) as $itemKey => $item) {
-                if (Arr::get($item, 'component') === 'FormNestedScreen') {
-                    if (Arr::get($item, 'config.screen') === $originalId) {
-                        Arr::set($config, "$pageKey.items.$itemKey.config.screen", $newId);
-                    }
+        if ($recursion > 100) {
+            throw new \Exception('Recursion limit exceeded. Screen is self-referencing');
+        }
+
+        if (!is_array($config)) {
+            return $config;
+        }
+
+        foreach ($config as $i => $item) {
+            if (Arr::get($item, 'component') === 'FormMultiColumn') {
+                foreach ($item['items'] as $mi => $mcItems) {
+                    $config[$i]['items'][$mi] = $this->associateNestedScreens($screenIdMap, $mcItems, $recursion + 1);
+                }
+            } elseif (Arr::has($item, 'items')) {
+                // This covers both pages and FormLoops
+                $config[$i]['items'] = $this->associateNestedScreens($screenIdMap, $item['items'], $recursion + 1);
+            } elseif (Arr::get($item, 'component') === 'FormNestedScreen') {
+                $originalId = Arr::get($item, 'config.screen', null);
+                if ($originalId) {
+                    $newId = Arr::get($screenIdMap, $originalId, null);
+                    Arr::set($config, "{$i}.config.screen", $newId);
                 }
             }
         }
+
+        return $config;
     }
 
     private function associateWatchers($type, $dependent, &$watchers, $originalId) : void
