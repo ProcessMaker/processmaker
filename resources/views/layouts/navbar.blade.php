@@ -59,6 +59,7 @@
             foreach(array_merge($customNav, $defaultNav) as $item) {
                 $newItem = (array) $item;
                 $newItem['link'] = $item->url();
+                $newItem['prefix'] = "/" . $item->link->path['prefix'];
                 $itemsInCustom = array_filter($customNav, function ($el) use($item) {
                     return $el === $item;
                 });
@@ -77,8 +78,9 @@
                 } else {
                     $menuItems[$key]['isActive'] = false;
                 }
-                // Admin link is different as url()->current() because controller route adds /users
-                if ($menuItems[$key]['title'] === 'Admin' && $falseFlag === true) {
+                // If all Top Navbar options Highlights are inactive this code actives current Option 
+                $prefix = Request::route()->getPrefix();
+                if ($menuItems[$key]['prefix'] === $prefix && $falseFlag === true) {
                     $menuItems[$key]['isActive'] = true;
                 }
             }
