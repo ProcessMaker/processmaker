@@ -105,7 +105,7 @@ export default {
             window.ProcessMaker.EventBus.$emit("save-changes");
             this.$set(this, "warnings", response.data.warnings || []);
             if (response.data.warnings && response.data.warnings.length > 0) {
-              this.$refs.validationStatus.autoValidate = true;
+              window.ProcessMaker.EventBus.$emit("save-changes-activate-autovalidate");
             }
             // Set draft status.
             this.setVersionIndicator(true);
@@ -249,7 +249,7 @@ export default {
         window.ProcessMaker.EventBus.$emit("save-changes");
         this.$set(this, "warnings", response.data.warnings || []);
         if (response.data.warnings && response.data.warnings.length > 0) {
-          this.$refs.validationStatus.autoValidate = true;
+          window.ProcessMaker.EventBus.$emit("save-changes-activate-autovalidate");
         }
         if (typeof onSuccess === "function") {
           onSuccess(response);
