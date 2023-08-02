@@ -79,7 +79,7 @@
                 <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('requesters') }}</span>
             </template>
             <template slot="option" slot-scope="props">
-                <img v-if="props.option.avatar.length > 0" class="option__image"
+                <img v-if="props.option.avatar && props.option.avatar.length > 0" class="option__image"
                     :src="props.option.avatar">
                 <span v-else class="initials bg-warning text-white p-1"> {{getInitials(props.option.firstname, props.option.lastname)}}</span>
                 <span class="ml-1">{{props.option.fullname}}</span>
@@ -109,7 +109,7 @@
                 <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('requesters') }}</span>
             </template>
             <template slot="option" slot-scope="props">
-                <img v-if="props.option.avatar.length > 0" class="option__image"
+                <img v-if="props.option.avatar && props.option.avatar.length > 0" class="option__image"
                     :src="props.option.avatar">
                 <span v-else class="initials bg-warning text-white p-1"> {{getInitials(props.option.firstname, props.option.lastname)}}</span>
                 <span class="ml-1">{{props.option.fullname}}</span>
