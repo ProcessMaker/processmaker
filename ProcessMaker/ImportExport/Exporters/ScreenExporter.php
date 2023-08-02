@@ -103,19 +103,24 @@ class ScreenExporter extends ExporterBase
         return null;
     }
 
-    private function associateNestedScreens($screenIdMap, $config)
+    private function associateNestedScreens($screenIdMap, $config, $recursion = 0)
     {
+        if ($recursion > 100) {
+            throw new \Exception('Recursion limit exceeded. Screen is self-referencing');
+        }
+
         if (!is_array($config)) {
             return $config;
         }
+
         foreach ($config as $i => $item) {
             if (Arr::get($item, 'component') === 'FormMultiColumn') {
                 foreach ($item['items'] as $mi => $mcItems) {
-                    $config[$i]['items'][$mi] = $this->associateNestedScreens($screenIdMap, $mcItems);
+                    $config[$i]['items'][$mi] = $this->associateNestedScreens($screenIdMap, $mcItems, $recursion + 1);
                 }
             } elseif (Arr::has($item, 'items')) {
                 // This covers both pages and FormLoops
-                $config[$i]['items'] = $this->associateNestedScreens($screenIdMap, $item['items']);
+                $config[$i]['items'] = $this->associateNestedScreens($screenIdMap, $item['items'], $recursion + 1);
             } elseif (Arr::get($item, 'component') === 'FormNestedScreen') {
                 $originalId = Arr::get($item, 'config.screen', null);
                 if ($originalId) {
