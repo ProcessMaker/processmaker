@@ -65,6 +65,7 @@
                 $newItem['isCustom'] = count($itemsInCustom) > 0;
                 $menuItems[] = $newItem;
             }
+            // New logic to highlight options in Top navbar when Analytics package is installed
             $falseFlag = true;
             foreach ($menuItems as $key => $menuItem) {
                 if ($menuItem['link'] === url()->current()) {
@@ -76,6 +77,7 @@
                 } else {
                     $menuItems[$key]['isActive'] = false;
                 }
+                // Admin link is different as url()->current() because controller route adds /users
                 if ($menuItems[$key]['title'] === 'Admin' && $falseFlag === true) {
                     $menuItems[$key]['isActive'] = true;
                 }
