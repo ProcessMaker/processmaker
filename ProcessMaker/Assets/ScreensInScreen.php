@@ -78,7 +78,6 @@ class ScreensInScreen
                     $oldRef = $item['config']['screen'];
                     if ((array_key_exists($oldRef, $references[Screen::class]))) {
                         $newRef = $references[Screen::class][$oldRef]->getKey();
-                        
                     } else {
                         $newRef = null;
                         $exportManager->addLogMessage(

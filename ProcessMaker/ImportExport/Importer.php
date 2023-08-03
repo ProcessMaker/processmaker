@@ -13,6 +13,8 @@ class Importer
 
     public $manifest;
 
+    public $newScriptId;
+
     public function __construct(array $payload, Options $options)
     {
         $this->payload = $payload;
@@ -40,7 +42,31 @@ class Importer
                     if ($exporter->disableEventsWhenImporting) {
                         $exporter->model->saveQuietly();
                     } else {
+                        $exporterClass = get_class($exporter->model);
+                        if ($exporterClass === 'ProcessMaker\Packages\Connectors\DataSources\Models\Script') {
+                            switch ($exporter->mode) {
+                                case 'copy':
+                                    $exporter->model->script_id = $this->newScriptId;
+                                    break;
+                                case 'update':
+                                    $script = Script::find($exporter->model->script_id);
+                                    if ($script) {
+                                        $script->fill($exporter->model->getAttributes());
+                                        $script->save();
+                                    }
+                                    break;
+
+                                default:
+                                    // code...
+                                    break;
+                            }
+                        }
+
                         $exporter->model->save();
+
+                        if ($exporterClass === 'ProcessMaker\Models\Script') {
+                            $this->newScriptId = $exporter->model->id;
+                        }
                     }
                     $exporter->log('newId', $exporter->model->id);
                 }

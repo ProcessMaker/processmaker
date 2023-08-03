@@ -24,6 +24,7 @@ class ProcessPublished implements SecurityLogEventInterface
         'conditional_events',
         'properties',
     ];
+
     public const REMOVE_KEYS_AUX = [
         'tmp_process_category_id',
         'process_category_id',
