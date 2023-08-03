@@ -60,6 +60,7 @@
       </div>
     </div>
     <template v-if="component !== 'template-details'">
+      <div class="d-flex justify-content-between align-items-center">
         <b-pagination
         v-model="currentPage"
         v-if="templates.length > 0"
@@ -72,7 +73,16 @@
         size="sm"
         last-number
         first-number
-      ></b-pagination>
+        ></b-pagination>
+        <div>
+          <a href="https://www.processmaker.com/resources/customer-success/templates/" 
+            class="text-muted"
+            target="_blank">
+            Visit our Gallery for more Templates
+          </a>
+          <i class="ml-1 fas fa-external-link-alt text-muted"></i>
+        </div>
+      </div>
     </template>
   </div>
 </template>
@@ -100,7 +110,7 @@ export default {
       perPage: 18,
       limit: 7,
       blankProcessButton: {
-        title: `Blank ${this.type}`,
+        title: this.$t("Build Your Own"),
         icon: "fa fa-plus",
         iconStyle: "font-size: 2em;",
       },
