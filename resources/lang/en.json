@@ -1755,6 +1755,7 @@
   "The selected file is invalid or not supported for the Templates importer. Please verify that this file is a Template.":"The selected file is invalid or not supported for the Templates importer. Please verify that this file is a Template.",
   "The selected file is invalid or not supported for the Process importer. Please verify that this file is a Process.":"The selected file is invalid or not supported for the Process importer. Please verify that this file is a Process.",
   "Host URL": "Host URL",
+  "Visit our Gallery for more Templates": "Visit our Gallery for more Templates",
   "Start a new process from a blank canvas, a text description, or a preset template.": "Start a new process from a blank canvas, a text description, or a preset template.",
   "Enter the integration key from ProcessMaker IDP": "Enter the integration key from ProcessMaker IDP",
   "Enter the secret key from ProcessMaker IDP": "Enter the secret key from ProcessMaker IDP",

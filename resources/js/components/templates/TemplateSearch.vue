@@ -78,7 +78,7 @@
           <a href="https://www.processmaker.com/resources/customer-success/templates/" 
             class="text-muted"
             target="_blank">
-            Visit our Gallery for more Templates
+            {{ $t("Visit our Gallery for more Templates") }}
           </a>
           <i class="ml-1 fas fa-external-link-alt text-muted"></i>
         </div>
