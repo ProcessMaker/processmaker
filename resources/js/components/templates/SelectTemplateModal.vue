@@ -56,7 +56,7 @@
     },
     computed: {
       subtitle() {
-        return this.$t(`Create a new ${this.type}.`);
+        return this.$t(`Start a new process from a blank canvas, select a template or create a custom process by simply describing it to our AI modeler.`);
       },
       createProcess() {
         return this.$t('Create Process');

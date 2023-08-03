@@ -102,13 +102,16 @@ export default {
       blankProcessButton: {
         title: `Blank ${this.type}`,
         icon: "fa fa-plus",
+        iconStyle: "font-size: 2em;",
       },
       aiProcessButton: {
-        title: `AI ${this.type}`,
+        title: this.$t("Generate from Text"),
         helperEnabled: true,
-        helperTitle: this.$t("Your word is our command!"),
-        helperDescription: this.$t("Use Artificial Intelligence in any natural language to create complex Processes, just like writing to a person. Even describe your Process in one language, but output your model in another."),
-        icon: "fa fa-robot",
+        helperTitle: this.$t("Try our new Generative AI"),
+        helperDescription: this.$t("Describe your process. Our AI will build the model for you. Use it immediately or tweak it as needed."),
+        svgIcon: "../../../img/nl-to-process.svg",
+        svgIconStyle: "height: 2em;",
+        showAiSlogan: true,
       },
     };
   },
