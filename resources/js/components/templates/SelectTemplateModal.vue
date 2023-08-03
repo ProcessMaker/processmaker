@@ -56,7 +56,7 @@
     },
     computed: {
       subtitle() {
-        return this.$t(`Start a new process from a blank canvas, select a template or create a custom process by simply describing it to our AI modeler.`);
+        return this.$t(`Start a new process from a blank canvas, a text description, or a preset template.`);
       },
       createProcess() {
         return this.$t('Create Process');
