@@ -121,7 +121,7 @@ export default {
   text-align: center;
 }
 .ai-slogan {
-  font-size: 80%;
+  font-size: 70%;
   font-weight: 600;
 }
 .ai-slogan > img {
