@@ -96,7 +96,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "cbdcc157",
+            "build": "73d28c69",
             "custom": {
                 "package-ellucian-ethos": "1.12.4"
             },
@@ -104,7 +104,7 @@
                 "connector-docusign": "1.4.0",
                 "connector-idp": "1.4.0",
                 "connector-pdf-print": "1.13.0",
-                "connector-send-email": "y1.21.1",
+                "connector-send-email": "1.21.1",
                 "connector-slack": "1.5.0",
                 "docker-executor-node-ssr": "1.4.0",
                 "package-actions-by-email": "1.13.1",
