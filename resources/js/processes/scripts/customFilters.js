@@ -64,7 +64,7 @@ Vue.filter("lua", (value) => {
       line = line.replace("{dataVariable}", "data");
       line = line.replace("{configVariable}", "config");
       line = line.replace("{apiExample}", "users_api:get_users(filter, order_by, order_direction, per_page, include)");
-      line = line.replace("{apiDocsUrl}", "https://processmaker.gitbook.io/processmaker/designing-processes/scripts/script-editor#processmaker-and-environment-variable-syntax-usage-sdk-and-examples");
+      line = line.replace("{apiDocsUrl}", "https://docs.processmaker.com/designing-processes/scripts/script-editor#processmaker-and-environment-variable-syntax-usage-sdk-and-examples");
       format = `  ${line}`;
     }
     content.push(format);
@@ -89,7 +89,7 @@ Vue.filter("csharp", (value) => {
       line = line.replace("{dataVariable}", "data");
       line = line.replace("{configVariable}", "config");
       line = line.replace("{apiExample}", "apiInstance.GetUserById(id)");
-      line = line.replace("{apiDocsUrl}", "https://processmaker.gitbook.io/processmaker/designing-processes/scripts/script-editor#processmaker-and-environment-variable-syntax-usage-sdk-and-examples");
+      line = line.replace("{apiDocsUrl}", "https://docs.processmaker.com/designing-processes/scripts/script-editor#processmaker-and-environment-variable-syntax-usage-sdk-and-examples");
       format = line;
     }
     content.push(format);
@@ -114,7 +114,7 @@ Vue.filter("java", (value) => {
       line = line.replace("{dataVariable}", "data");
       line = line.replace("{configVariable}", "config");
       line = line.replace("{apiExample}", "apiInstance.getUserByID(id);");
-      line = line.replace("{apiDocsUrl}", "https://processmaker.gitbook.io/processmaker/designing-processes/scripts/script-editor#processmaker-and-environment-variable-syntax-usage-sdk-and-examples");
+      line = line.replace("{apiDocsUrl}", "https://docs.processmaker.com/designing-processes/scripts/script-editor#processmaker-and-environment-variable-syntax-usage-sdk-and-examples");
       format = ` * ${line}`;
     }
     content.push(format);
@@ -135,7 +135,7 @@ Vue.filter("python", (value) => {
     line = line.replace("{dataVariable}", "the data variable");
     line = line.replace("{configVariable}", "the config variable");
     line = line.replace("{apiExample}", ":");
-    line = line.replace("{apiDocsUrl}", "https://processmaker.gitbook.io/processmaker/designing-processes/scripts/script-editor#processmaker-and-environment-variable-syntax-usage-sdk-and-examples");
+    line = line.replace("{apiDocsUrl}", "https://docs.processmaker.com/designing-processes/scripts/script-editor#processmaker-and-environment-variable-syntax-usage-sdk-and-examples");
     format = `# ${line}`;
     content.push(format);
   });
