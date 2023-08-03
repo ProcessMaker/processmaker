@@ -59,37 +59,41 @@ trait HideSystemResources
         if (substr(static::class, -8) === 'Category') {
             return $query->where('is_system', false);
         } elseif (static::class === Process::class) {
-            $systemCategory = ProcessCategory::where('is_system', true)->pluck('id');
-
-            return $query->whereNotIn('process_category_id', $systemCategory)
+            return $query
                 ->where('is_template', false)
                 ->when(Schema::hasColumn('processes', 'asset_type'), function ($query) {
                     return $query->whereNull('asset_type');
+                })
+                ->whereDoesntHave('categories', function ($query) {
+                    $query->where('is_system', true);
                 });
         } elseif (static::class === Screen::class) {
-            $systemCategory = ScreenCategory::where('is_system', true)->pluck('id');
-
-            return $query->whereNotIn('screen_category_id', $systemCategory)
-                    ->where('is_template', false)
-                    ->when(Schema::hasColumn('screens', 'asset_type'), function ($query) {
-                        return $query->whereNull('asset_type');
-                    });
+            return $query
+                ->where('is_template', false)
+                ->when(Schema::hasColumn('screens', 'asset_type'), function ($query) {
+                    return $query->whereNull('asset_type');
+                })
+                ->whereDoesntHave('categories', function ($query) {
+                    $query->where('is_system', true);
+                });
         } elseif (static::class === Script::class) {
-            $systemCategory = ScriptCategory::where('is_system', true)->pluck('id');
-
-            return $query->whereNotIn('script_category_id', $systemCategory)
-                    ->where('is_template', false)
-                    ->when(Schema::hasColumn('scripts', 'asset_type'), function ($query) {
-                        return $query->whereNull('asset_type');
-                    });
+            return $query
+                ->where('is_template', false)
+                ->when(Schema::hasColumn('scripts', 'asset_type'), function ($query) {
+                    return $query->whereNull('asset_type');
+                })
+                ->whereDoesntHave('categories', function ($query) {
+                    $query->where('is_system', true);
+                });
         } elseif (static::class === DataSource::class) {
-            $systemCategory = DataSourceCategory::where('is_system', true)->pluck('id');
-
-            return $query->whereNotIn('data_source_category_id', $systemCategory)
-                    ->where('is_template', false)
-                    ->when(Schema::hasColumn('data_sources', 'asset_type'), function ($query) {
-                        return $query->whereNull('asset_type');
-                    });
+            return $query
+                ->where('is_template', false)
+                ->when(Schema::hasColumn('data_sources', 'asset_type'), function ($query) {
+                    return $query->whereNull('asset_type');
+                })
+                ->whereDoesntHave('categories', function ($query) {
+                    $query->where('is_system', true);
+                });
         } elseif (static::class == ProcessRequest::class) {
             // ProcessRequests must be filtered this way since
             // they could be in a separate database
