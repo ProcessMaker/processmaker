@@ -28,9 +28,7 @@ class AddDefaultScreensToSystemCategory extends Upgrade
     private function assignToSystemCategory(string $key)
     {
         $screens = Screen::where('key', $key)->get();
-        $screenCategory = ScreenCategory::where('name', 'System')
-            ->where('is_system', 1)
-            ->firstOrFail();
+        $screenCategory = ScreenCategory::firstOrCreate(['name' => 'System', 'is_system' => 1]);
 
         foreach ($screens as $screen) {
             $screen->categories()->attach([$screenCategory->id]);
