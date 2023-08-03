@@ -179,7 +179,7 @@ class GenerateMenus
                 'id' => 'dropdownItem',
             ]);
             $submenu->add(__('Documentation'), [
-                'url' => 'https://processmaker.gitbook.io/processmaker',
+                'url' => 'https://docs.processmaker.com',
                 'icon' => 'fa-question-circle',
                 'id' => 'dropdownItem',
                 'target' => '_blank',
