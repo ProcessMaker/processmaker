@@ -100,15 +100,4 @@ class ErrorExecutionNotificationTest extends TestCase
             }
         );
     }
-
-    // public function testInAppNotificationFromDataSource()
-    // {
-    //     app()->bind(Client::class, function () {
-    //         $exception = new RequestException('Error Communicating with Server', new Request('GET', 'test'));
-    //         $handlerStack = HandlerStack::create(new MockHandler([
-    //             $exception,
-    //         ]));
-    //         return new Client(['handler' => $handlerStack]);
-    //     });
-    // }
 }
