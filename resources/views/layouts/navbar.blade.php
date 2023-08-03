@@ -59,32 +59,32 @@
             foreach(array_merge($customNav, $defaultNav) as $item) {
                 $newItem = (array) $item;
                 $newItem['link'] = $item->url();
-                $newItem['prefix'] = "/" . $item->link->path['prefix'];
+                $newItem['route'] = $item->link->path['route'] ?? null;
                 $itemsInCustom = array_filter($customNav, function ($el) use($item) {
                     return $el === $item;
                 });
                 $newItem['isCustom'] = count($itemsInCustom) > 0;
                 $menuItems[] = $newItem;
             }
-            // New logic to highlight options in Top navbar when Analytics package is installed
-            $falseFlag = true;
-            foreach ($menuItems as $key => $menuItem) {
-                if ($menuItem['link'] === url()->current()) {
-                    if ($menuItem['isActive'] !== true) {
-                        $menuItems[$key]['isActive'] = false;
+            // New logic to highlight options in Top navbar only when Analytics package is installed
+            if (in_array('package.analytics.tab.index', array_column($menuItems, 'route'))) {
+                $falseFlag = true;
+                foreach ($menuItems as $key => $menuItem) {
+                    if ($menuItem['link'] === url()->current()) {
+                        if ($menuItem['isActive'] !== true) {
+                            $menuItems[$key]['isActive'] = false;
+                        } else {
+                            $falseFlag = false;
+                        }
                     } else {
-                        $falseFlag = false;
+                        $menuItems[$key]['isActive'] = false;
                     }
-                } else {
-                    $menuItems[$key]['isActive'] = false;
-                }
-                // If all Top Navbar options Highlights are inactive this code actives current Option 
-                $prefix = Request::route()->getPrefix();
-                if ($menuItems[$key]['prefix'] === $prefix && $falseFlag === true) {
-                    $menuItems[$key]['isActive'] = true;
+                    // Admin link is different as url()->current() because controller route adds /users
+                    if ($menuItems[$key]['route'] === 'admin.index' && $falseFlag === true) {
+                        $menuItems[$key]['isActive'] = true;
+                    }
                 }
             }
-
             // If a menu provider is installed, remove menu items from ProcessMaker but preserve any other (from packages, for example)
             if ($existsMenuProvider) {
                 $menuItems = array_filter($menuItems, function ($item) use($customNav) {
