@@ -62,13 +62,13 @@ class TemplateUpdated implements SecurityLogEventInterface
                 'last_modified' => $this->changes['updated_at'] ?? Carbon::now(),
             ];
         } else {
-            $oldData = array_diff_assoc($this->original, $this->changes);
-            $newData = array_diff_assoc($this->changes, $this->original);
-
             return array_merge([
-                'name' => $this->process->name ?? '',
+                'name' => [
+                    'label' => $this->process->name ?? '',
+                    'link' => route('processes.index') . '#nav-templates',
+                ],
                 'last_modified' => $this->changes['updated_at'] ?? Carbon::now(),
-            ], ArrayHelper::getArrayDifferencesWithFormat($newData, $oldData));
+            ], ArrayHelper::getArrayDifferencesWithFormat($this->changes, $this->original));
         }
     }
 
