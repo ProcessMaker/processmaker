@@ -33,6 +33,8 @@
         </div>
         @php
             $menuItems = [];
+            // Add here the package to add in the topNav menu
+            $packagesList = ['package-analytics-reporting'];
             $existsMenuProvider = Menu::get('customtopnav') !== null;
             $items = $existsMenuProvider ? Menu::get('customtopnav')->items->all() : [];
 
@@ -64,6 +66,12 @@
                 $newItem['isCustom'] = count($itemsInCustom) > 0;
                 $menuItems[] = $newItem;
             }
+            // Add a menu in the topNav the Request is always highligth, for avoid this is necesary to register here
+            // @todo make a refactor in the topNav reviewing the active() function
+            if (in_array(Request::path(), $packagesList)) {
+                $menuItems[0]['isActive'] = false;
+            }
+
             // If a menu provider is installed, remove menu items from ProcessMaker but preserve any other (from packages, for example)
             if ($existsMenuProvider) {
                 $menuItems = array_filter($menuItems, function ($item) use($customNav) {
