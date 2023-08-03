@@ -348,7 +348,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             $thisWasFinalAttempt = true;
             if (isset($errorHandling)) {
                 $thisWasFinalAttempt = ($errorHandling->retryAttempts() === 0) || ($job->attemptNum >= $errorHandling->retryAttempts());
-                $message = $errorHandling->handleRetries($job, $exception);
+                [$message] = $errorHandling->handleRetries($job, $exception);
 
                 $error = $element->getRepository()->createError();
                 $error->setName($message);
