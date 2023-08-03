@@ -766,7 +766,7 @@
   "Script Source": "Script Source",
   "Script Task": "Script Task",
   "Script": "Script",
-  "Script_category": "Script Category",
+  "Script_category": "Category",
   "ScriptCreated": "Script Created",
   "ScriptDeleted": "Script Deleted",
   "ScriptDuplicated": "Script Duplicated",
@@ -871,6 +871,7 @@
   "Tasks": "Tasks",
   "TemplateCreated": "Template Created",
   "TemplateDeleted": "Template Deleted",
+  "TemplatePublished": "Template Published"
   "TemplateUpdated": "Template Updated",
   "Text Annotation": "Text Annotation",
   "Text Box": "Text Box",
