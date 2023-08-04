@@ -110,7 +110,7 @@ class TemplateController extends Controller
     public function updateTemplateConfigs(string $type, Request $request)
     {
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
-        $proTemplates = ProcessTemplates::select()->find($request->id)->getOriginal();
+        $proTemplates = ProcessTemplates::select()->find($request->id);
         $changes = $request->all();
         $original = array_intersect_key($proTemplates->getOriginal(), $changes);
         $response = $this->template->updateTemplateConfigs($type, $request);

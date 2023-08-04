@@ -8,42 +8,14 @@ use ProcessMaker\Models\ScreenCategory;
 
 class ScreenSystemSeeder extends Seeder
 {
-    const SCREENS_PATH = 'processes/screens/';
-
     /**
      * Run the database seeds.
+     *
+     * @return void
      */
-    public function run(): void
+    public function run()
     {
-        $this->installInterstitial();
-        $this->installScreen('default-display-screen');
-        $this->installScreen('default-form-screen');
-    }
-
-    /**
-     * Install a screen.
-     */
-    private function installScreen(string $key): Screen
-    {
-        $path = database_path(self::SCREENS_PATH . "{$key}.json");
-        $json = json_decode(file_get_contents($path), true);
-        $screen = collect($json['screens'])->first();
-
-        // By default, the screen is initially installed as a system screen.
-        unset($screen['categories']);
-        $screen['screen_category_id'] = null;
-
-        return Screen::updateOrCreate([
-            'key' => $screen['key'],
-        ], $screen);
-    }
-
-    /**
-     * Install the interstitial screen.
-     */
-    private function installInterstitial()
-    {
-        $path = database_path(self::SCREENS_PATH . 'interstitial.json');
+        $path = database_path('processes/screens/interstitial.json');
         if (file_exists($path)) {
             $json = json_decode(file_get_contents($path));
             $screen = Screen::where('title', $json[0]->name)->first();
@@ -68,6 +40,8 @@ class ScreenSystemSeeder extends Seeder
                 ]);
                 $screen->save();
             }
+
+            return $screen;
         }
     }
 }

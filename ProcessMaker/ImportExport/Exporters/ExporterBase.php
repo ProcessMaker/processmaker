@@ -388,6 +388,9 @@ abstract class ExporterBase implements ExporterInterface
                 }
                 $i++;
                 $value = $handler($value);
+                if ($value === null) {
+                    break;
+                }
             }
             $this->model->$attribute = $value;
         }

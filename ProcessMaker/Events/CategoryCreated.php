@@ -37,7 +37,7 @@ class CategoryCreated implements SecurityLogEventInterface
         return [
             'name' => [
                 'label' => $this->variable['name'],
-                'link' => route('processes.create', $this->category),
+                'link' => route('processes.index') . '#nav-categories',
             ],
             'created_at' => $this->category->getAttribute('created_at'),
         ];

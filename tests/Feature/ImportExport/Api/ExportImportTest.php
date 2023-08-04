@@ -35,7 +35,7 @@ class ExportImportTest extends TestCase
 
     public function testDownloadExportFile()
     {
-        $screen = Screen::factory()->create(['title' => 'Screen']);
+        $screen = Screen::factory()->create(['title' => 'Screen With Space']);
 
         $response = $this->apiCall(
             'POST',
@@ -51,7 +51,7 @@ class ExportImportTest extends TestCase
 
         // Ensure we can download the exported file.
         $response->assertStatus(200);
-        $response->assertHeader('content-disposition', "attachment; filename={$screen->title}.json");
+        $response->assertHeader('content-disposition', 'attachment; filename=screen_with_space.json');
 
         // Ensure it's encrypted.
         $payload = json_decode($response->streamedContent(), true);

@@ -4,6 +4,7 @@ namespace ProcessMaker\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
+use ProcessMaker\Helpers\ArrayHelper;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
@@ -22,6 +23,11 @@ class ProcessPublished implements SecurityLogEventInterface
         'signal_events',
         'conditional_events',
         'properties',
+    ];
+
+    public const REMOVE_KEYS_AUX = [
+        'tmp_process_category_id',
+        'process_category_id',
     ];
 
     private Process $process;
@@ -46,8 +52,11 @@ class ProcessPublished implements SecurityLogEventInterface
         ? ProcessCategory::getNamesByIds($this->original['process_category_id']) : '';
         unset($this->original['process_category_id']);
         $this->changes['process_category'] = isset($changes['process_category_id'])
-        ? ProcessCategory::getNamesByIds($this->changes['process_category_id']) : '';
-        unset($this->changes['process_category_id']);
+        ? ProcessCategory::getNamesByIds($this->changes['tmp_process_category_id']) : '';
+        $this->changes = array_diff_key($this->changes, array_flip($this::REMOVE_KEYS_AUX));
+        if (empty($this->changes['process_category'])) {
+            unset($this->changes['process_category']);
+        }
     }
 
     /**
@@ -65,7 +74,7 @@ class ProcessPublished implements SecurityLogEventInterface
             'category' => $this->process->category ? $this->process->category->name : null,
             'action' => $this->process->getAttribute('status'),
             'last_modified' => $this->process->getAttribute('updated_at'),
-        ], $this->formatChanges($this->changes, $this->original));
+        ], ArrayHelper::getArrayDifferencesWithFormat($this->changes, $this->original));
     }
 
     /**
