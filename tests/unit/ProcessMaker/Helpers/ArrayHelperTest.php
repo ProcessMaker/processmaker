@@ -146,5 +146,26 @@ class ArrayHelperTest extends TestCase
         ];
         $actual = ArrayHelper::customArrayDiffAssoc($array1, $array2);
         $this->assertEquals($expected, $actual);
+
+        $array1 = [
+            "a" => "green",
+            "b" => "brown",
+            "c" => "blue",
+            "red",
+            "d" => []
+        ];
+        $array2 = [
+            "a" => "green",
+            "yellow",
+            1 => "red",
+            "d" => []
+        ];
+        $expected = [
+            "b" => "brown",
+            "c" => "blue",
+            0 => "red"
+        ];
+        $actual = ArrayHelper::customArrayDiffAssoc($array1, $array2);
+        $this->assertEquals($expected, $actual);
     }
 }
