@@ -22,9 +22,10 @@ class DuplicatedRoutesTest extends TestCase
 
         foreach ($routes as $route) {
             $routeName = $route->getName();
+            $routeUrl = $route->uri();
             if ($routeName !== null) {
                 if (in_array($routeName, $routeNames)) {
-                    $duplicated[] = $routeName;
+                    $duplicated[] = "$routeName -> $routeUrl";
                 }
                 $routeNames[] = $routeName;
             }
@@ -33,7 +34,7 @@ class DuplicatedRoutesTest extends TestCase
         $this->assertCount(
             0,
             $duplicated,
-            'There are duplicate route names: ' . implode(', ', $duplicated)
+            "There are duplicate route names: \n" . implode("\n", $duplicated)
         );
     }
 }
