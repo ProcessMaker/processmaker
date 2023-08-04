@@ -165,14 +165,21 @@ abstract class ExporterBase implements ExporterInterface
         return $dependent;
     }
 
-    public function getDependents($type = null)
+    public function getDependents($type = null, $includeEmptyModels = false)
     {
         return array_values(
-            array_filter($this->dependents, function ($dependent) use ($type) {
+            array_filter($this->dependents, function ($dependent) use ($type, $includeEmptyModels) {
                 if ($type && $dependent->type !== $type) {
                     return false;
                 }
                 if ($dependent->model === null) {
+                    if ($includeEmptyModels) {
+                        // Return an empty model when the dependent does not exist
+                        $dependent->model = new $dependent->modelClass();
+
+                        return true;
+                    }
+
                     return false;
                 }
 

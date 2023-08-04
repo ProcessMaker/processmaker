@@ -29,7 +29,7 @@ class ScriptExporter extends ExporterBase
     {
         $this->associateCategories(ScriptCategory::class, 'script_category_id');
 
-        foreach ($this->getDependents('user') as $dependent) {
+        foreach ($this->getDependents('user', true) as $dependent) {
             $scriptUser = $dependent->model;
             $this->model->run_as_user_id = $scriptUser->id;
         }
