@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
 /**
@@ -14,8 +15,18 @@ class DuplicatedRoutesTest extends TestCase
      */
     public function testRoutesCacheGeneration()
     {
-        $this->artisan('route:cache');
+        $routes = Route::getRoutes();
 
-        $this->assertTrue(true);
+        $routeNames = [];
+
+        foreach ($routes as $route) {
+            if ($route->getName() !== null) {
+                $routeNames[] = $route->getName();
+            }
+        }
+
+        $uniqueRouteNames = array_unique($routeNames);
+
+        $this->assertCount(count($uniqueRouteNames), $routeNames, 'There are duplicate route names.');
     }
 }
