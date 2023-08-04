@@ -152,10 +152,6 @@
         this.$emit('resetModal');
       },
       onSubmit () {
-        if (this.generativeProcessData) {
-          this.$emit("clear-ai-history");
-        }
-
         this.errors = Object.assign({}, {
           name: null,
           description: null,
@@ -213,6 +209,9 @@
           }
         })
         .then(response => {
+          if (this.generativeProcessData) {
+            this.$emit("clear-ai-history");
+          }
           ProcessMaker.alert(this.$t('The process was created.'), "success");
           window.location = "/modeler/" + response.data.id;
         })
