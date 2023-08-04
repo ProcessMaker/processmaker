@@ -66,8 +66,8 @@
                 $newItem['isCustom'] = count($itemsInCustom) > 0;
                 $menuItems[] = $newItem;
             }
-            // Add a menu in the topNav the Request is always highligth, for avoid this is necesary to register here
             // @todo make a refactor in the topNav reviewing the active() function
+            // The add a menu the Request is always highligth
             if (in_array(Request::path(), $packagesList)) {
                 $menuItems[0]['isActive'] = false;
             }
