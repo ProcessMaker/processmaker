@@ -2,8 +2,12 @@
   <div :class="{'d-flex': button.helperEnabled}">
     <b-card no-body class="button-card" :class="{'col-6 p-0': button.helperEnabled}" @mouseenter="addHoverClass" @mouseleave="removeHoverClass" @click="$emit('card-button-clicked')">
       <div class="card-body text-center d-flex justify-content-center flex-column">
-        <i class="icon mb-1 text-primary" :class="button.icon"></i>
+        <i v-if="button.icon" class="icon mb-2 text-primary" :class="button.icon" :style="button.iconStyle"></i>
+        <img v-if="button.svgIcon" :src="button.svgIcon" class="mb-2" :style="button.svgIconStyle">
         <h5 class="m-0">{{ button.title }}</h5>
+      </div>
+      <div v-if="button.showAiSlogan" class="ai-slogan-container mb-2">
+        <div class="ai-slogan"><img src="/img/favicon.svg"> {{ $t("Powered by ProcessMaker AI") }}</div>
       </div>
     </b-card>
 
@@ -108,6 +112,20 @@ export default {
 }
 .button-card.card-helper .card-text {
   color:#363A3E;
+}
+.ai-slogan-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+.ai-slogan {
+  font-size: 70%;
+  font-weight: 600;
+}
+.ai-slogan > img {
+  height: 16px;
 }
 
 @media (min-width: 576px) {

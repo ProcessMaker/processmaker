@@ -104,23 +104,24 @@
         return this.$t('Caution: {{type}} Already Exists', {type: asset.typeHuman});
       },
       helperText(asset) {
-        let text = this.$t('This environment contains a {{ item }} with the same name', {
+        let assetTiming = this.$t("This environment already contains ");
+
+        const existingUpdatedAt = new Date(asset.existingUpdatedAt);
+        const importingUpdatedAt = new Date(`${asset.importingUpdatedAt.replace(" ", "T")}.000000Z`);
+
+        if (existingUpdatedAt > importingUpdatedAt) {
+          assetTiming += this.$t("a newer");
+        } else if (existingUpdatedAt < importingUpdatedAt) {
+          assetTiming += this.$t("an older");
+        } else {
+          assetTiming += this.$t("the same");
+        }
+        
+        const text = this.$t('{{ assetTiming }} version of the {{ item }} named "{{ name }}."', {
+          assetTiming,
           item: asset.typeHuman.toLowerCase(),
+          name: asset.importingName,
         });
-
-        text += ': ' + asset.existingName + '.';
-
-        if (asset.matchedBy !== 'uuid') {
-          text += ' ' + this.$t('We found it by its {{ matchedBy }}.', {
-            matchedBy: asset.matchedBy
-          });
-        }
-
-        if (asset.existingName !== asset.importingName) {
-          text += ' ' + this.$t('Its name is {{ name }} in the file you are importing.', {
-            name: asset.importingName
-          });
-        }
 
         return text;
       },

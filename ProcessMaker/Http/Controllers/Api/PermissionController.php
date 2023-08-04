@@ -80,20 +80,21 @@ class PermissionController extends Controller
      */
     public function update(Request $request)
     {
-        //Obtain old Permissions before save
-        $user = User::findOrFail($request->input('user_id'));
-        $user->memberships = $user->groupMembersFromMemberable()->get();
-        $originalPermissionNames = $user->permissions()->pluck('name')->toArray();
-
         //Obtain the requested user or group
         if ($request->input('user_id')) {
             $entity = User::findOrFail($request->input('user_id'));
+            //Obtain user old Permissions before save
+            $entity->memberships = $entity->groupMembersFromMemberable()->get();
+            $originalPermissionNames = $entity->permissions()->pluck('name')->toArray();
+
             if ($request->has('is_administrator')) {
                 $entity->is_administrator = filter_var($request->input('is_administrator'), FILTER_VALIDATE_BOOLEAN);
                 $entity->save();
             }
         } elseif ($request->input('group_id')) {
             $entity = Group::findOrFail($request->input('group_id'));
+            // Obtain group old Permissions before save
+            $originalPermissionNames = $entity->permissions()->pluck('name')->toArray();
         }
 
         //Obtain the requested permission names for that entity
@@ -103,7 +104,7 @@ class PermissionController extends Controller
         $permissions = Permission::whereIn('name', $requestPermissions)->get();
 
         // Call Event to store Permissions Changes in Log
-        PermissionUpdated::dispatch($requestPermissions, $originalPermissionNames, $entity->is_administrator, $request->input('user_id'));
+        PermissionUpdated::dispatch($requestPermissions, $originalPermissionNames, $entity->is_administrator ?: false, $request->input('user_id'), $request->input('group_id'));
 
         //Sync the entity's permissions with the database
         $entity->permissions()->sync($permissions->pluck('id')->toArray());

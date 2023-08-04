@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.7.0+beta-1",
+    "version": "4.7.0+nightly-20230803",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -96,7 +96,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "73d28c69",
+            "build": "47275ccd",
             "custom": {
                 "package-ellucian-ethos": "1.12.4"
             },
@@ -110,32 +110,32 @@
                 "package-actions-by-email": "1.13.1",
                 "package-advanced-user-manager": "1.6.0",
                 "package-ai": "0.4.2",
-                "package-analytics-reporting": "0.1.8",
+                "package-analytics-reporting": "0.1.9",
                 "package-auth": "1.12.0",
-                "package-collections": "2.11.1",
+                "package-collections": "2.11.2",
                 "package-comments": "1.7.0",
                 "package-conversational-forms": "1.4.1",
-                "package-data-sources": "1.21.6",
+                "package-data-sources": "1.21.7",
                 "package-decision-engine": "1.4.2",
-                "package-dynamic-ui": "1.13.3",
-                "package-files": "1.10.1",
+                "package-dynamic-ui": "1.13.4",
+                "package-files": "1.10.2",
                 "package-googleplaces": "1.7.1",
-                "package-photo-video": "0.4.4",
+                "package-photo-video": "0.4.5",
                 "package-plaid": "0.2.1",
-                "package-pm-blocks": "0.4.9",
+                "package-pm-blocks": "0.4.10",
                 "package-process-documenter": "1.6.0",
                 "package-process-optimization": "1.6.0",
-                "package-product-analytics": "1.5.0",
+                "package-product-analytics": "1.5.1",
                 "package-savedsearch": "1.27.4",
                 "package-sentry": "1.5.1",
                 "package-signature": "1.8.0",
                 "package-translations": "2.5.0",
                 "package-versions": "1.6.0",
                 "package-vocabularies": "2.11.2",
-                "package-webentry": "2.16.3",
+                "package-webentry": "2.16.4",
                 "packages": "^0"
             },
-            "release": "Summer 2023 (Beta 1)"
+            "release": "Summer 2023 (Nightly 20230803)"
         }
     },
     "scripts": {

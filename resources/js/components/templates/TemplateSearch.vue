@@ -60,6 +60,7 @@
       </div>
     </div>
     <template v-if="component !== 'template-details'">
+      <div class="d-flex justify-content-between align-items-center">
         <b-pagination
         v-model="currentPage"
         v-if="templates.length > 0"
@@ -72,7 +73,16 @@
         size="sm"
         last-number
         first-number
-      ></b-pagination>
+        ></b-pagination>
+        <div>
+          <a href="https://www.processmaker.com/resources/customer-success/templates/" 
+            class="text-muted"
+            target="_blank">
+            {{ $t("Visit our Gallery for more Templates") }}
+          </a>
+          <i class="ml-1 fas fa-external-link-alt text-muted"></i>
+        </div>
+      </div>
     </template>
   </div>
 </template>
@@ -100,15 +110,18 @@ export default {
       perPage: 18,
       limit: 7,
       blankProcessButton: {
-        title: `Blank ${this.type}`,
+        title: this.$t("Build Your Own"),
         icon: "fa fa-plus",
+        iconStyle: "font-size: 2em;",
       },
       aiProcessButton: {
-        title: `AI ${this.type}`,
+        title: this.$t("Generate from Text"),
         helperEnabled: true,
-        helperTitle: this.$t("Your word is our command!"),
-        helperDescription: this.$t("Use Artificial Intelligence in any natural language to create complex Processes, just like writing to a person. Even describe your Process in one language, but output your model in another."),
-        icon: "fa fa-robot",
+        helperTitle: this.$t("Try our new Generative AI"),
+        helperDescription: this.$t("Describe your process. Our AI will build the model for you. Use it immediately or tweak it as needed."),
+        svgIcon: "../../../img/nl-to-process.svg",
+        svgIconStyle: "height: 2em;",
+        showAiSlogan: true,
       },
     };
   },
