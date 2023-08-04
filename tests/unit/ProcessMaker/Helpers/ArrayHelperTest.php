@@ -104,4 +104,47 @@ class ArrayHelperTest extends TestCase
             ArrayHelper::replaceKeyInArray($myArray, $oldKey, $newKey)
         );
     }
+    
+    public function testCustomArrayDiffAssoc()
+    {
+        $array1 = [
+            "a" => "green",
+            "b" => "brown",
+            "c" => "blue",
+            "red"
+        ];
+        $array2 = [
+            "a" => "green",
+            "yellow",
+            1 => "red"
+        ];
+        $expected = [
+            "b" => "brown",
+            "c" => "blue",
+            0 => "red"
+        ];
+        $actual = ArrayHelper::customArrayDiffAssoc($array1, $array2);
+        $this->assertEquals($expected, $actual);
+
+        $array1 = [
+            "a" => "green",
+            "b" => "brown",
+            "c" => "blue",
+            "red",
+            "d" => []
+        ];
+        $array2 = [
+            "a" => "green",
+            "yellow",
+            1 => "red"
+        ];
+        $expected = [
+            "b" => "brown",
+            "c" => "blue",
+            0 => "red",
+            "d" => []
+        ];
+        $actual = ArrayHelper::customArrayDiffAssoc($array1, $array2);
+        $this->assertEquals($expected, $actual);
+    }
 }
