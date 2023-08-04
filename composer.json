@@ -96,7 +96,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "47275ccd",
+            "build": "9721c0be",
             "custom": {
                 "package-ellucian-ethos": "1.12.4"
             },
