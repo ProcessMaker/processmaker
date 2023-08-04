@@ -110,7 +110,9 @@ return [
     'security_log' => env('SECURITY_LOG', 'true'),
 
     // Security log
-    'analytics_reporting_default_graph' => env('ANALYTICS_REPORTING_DEFAULT_GRAPH', 'https://localhost'),
+    'analytics_reporting_default_graph_1' => env('ANALYTICS_REPORTING_DEFAULT_GRAPH_1', 'https://localhost'),
+    'analytics_reporting_default_graph_2' => env('ANALYTICS_REPORTING_DEFAULT_GRAPH_2', 'https://localhost'),
+    'analytics_reporting_default_graph_3' => env('ANALYTICS_REPORTING_DEFAULT_GRAPH_3', 'https://localhost'),
 
     // Message broker driver to use in Workflow Manager
     'message_broker_driver' => env('MESSAGE_BROKER_DRIVER', 'default'),
