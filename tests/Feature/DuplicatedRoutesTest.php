@@ -23,7 +23,8 @@ class DuplicatedRoutesTest extends TestCase
         foreach ($routes as $route) {
             $routeName = $route->getName();
             $routeUrl = $route->uri();
-            if ($routeName !== null) {
+            // Ignore routes without name
+            if ($routeName !== null && $routeName !== 'api.') {
                 if (in_array($routeName, $routeNames)) {
                     $duplicated[] = "$routeName -> $routeUrl";
                 }
