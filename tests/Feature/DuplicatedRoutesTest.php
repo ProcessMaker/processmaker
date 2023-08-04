@@ -18,15 +18,22 @@ class DuplicatedRoutesTest extends TestCase
         $routes = Route::getRoutes();
 
         $routeNames = [];
+        $duplicated = [];
 
         foreach ($routes as $route) {
-            if ($route->getName() !== null) {
-                $routeNames[] = $route->getName();
+            $routeName = $route->getName();
+            if ($routeName !== null) {
+                if (in_array($routeName, $routeNames)) {
+                    $duplicated[] = $routeName;
+                }
+                $routeNames[] = $routeName;
             }
         }
 
-        $uniqueRouteNames = array_unique($routeNames);
-
-        $this->assertCount(count($uniqueRouteNames), $routeNames, 'There are duplicate route names.');
+        $this->assertCount(
+            0,
+            $duplicated,
+            'There are duplicate route names: ' . implode(', ', $duplicated)
+        );
     }
 }
