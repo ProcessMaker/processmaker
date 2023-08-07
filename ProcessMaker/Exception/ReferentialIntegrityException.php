@@ -4,6 +4,7 @@ namespace ProcessMaker\Exception;
 
 use Exception;
 use ProcessMaker\Models\ProcessMakerModel;
+use Illuminate\Database\Eloquent\Model;
 
 class ReferentialIntegrityException extends Exception
 {
