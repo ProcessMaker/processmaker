@@ -20,7 +20,9 @@ class ScriptExporter extends ExporterBase
             $this->addDependent(DependentType::ENVIRONMENT_VARIABLES, $environmentVariable, EnvironmentVariableExporter::class);
         }
 
-        $this->addDependent('user', $this->model->runAsUser, UserExporter::class);
+        if ($this->model->runAsUser) {
+            $this->addDependent('user', $this->model->runAsUser, UserExporter::class);
+        }
 
         $this->addDependent('executor', $this->model->scriptExecutor, ScriptExecutorExporter::class);
     }
