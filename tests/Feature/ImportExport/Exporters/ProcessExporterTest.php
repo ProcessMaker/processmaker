@@ -164,6 +164,30 @@ class ProcessExporterTest extends TestCase
         $this->assertEquals(0, Process::where('name', 'package')->count());
     }
 
+    public function testSubprocessNotOnTargetInstance()
+    {
+        $this->addGlobalSignalProcess();
+
+        \DB::beginTransaction();
+        $parentProcess = $this->createProcess('process-with-different-kinds-of-call-activities', ['name' => 'parent']);
+        $subProcess = $this->createProcess('basic-process', ['name' => 'sub']);
+
+        $xpath = '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]';
+        Utils::setAttributeAtXPath($parentProcess, $xpath, 'calledElement', 'ProcessId-' . $subProcess->id);
+        Utils::setPmConfigValueAtXPath($parentProcess, $xpath, 'calledElement', 'ProcessId-' . $subProcess->id);
+        Utils::setPmConfigValueAtXPath($parentProcess, $xpath, 'processId', $subProcess->id);
+        $parentProcess->save();
+
+        $payload = $this->export($parentProcess, ProcessExporter::class, null, false);
+        \DB::rollBack(); // Delete all created items since DB::beginTransaction
+
+        $this->import($payload);
+
+        $process = Process::where('name', 'parent')->firstOrFail();
+        $this->assertEquals('', Utils::getAttributeAtXPath($process, $xpath, 'calledElement'));
+        $this->assertEquals('{}', Utils::getAttributeAtXPath($process, $xpath, 'pm:config'));
+    }
+
     public function testProcessTaskScreen()
     {
         // Create process from template
