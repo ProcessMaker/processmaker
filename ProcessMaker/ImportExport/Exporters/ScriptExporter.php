@@ -51,7 +51,7 @@ class ScriptExporter extends ExporterBase
 
         // Search for environment variable present in the code
         foreach ($environmentVariables as $variable) {
-            if (strpos($this->model->code, $variable->name)) {
+            if (preg_match('/[^a-zA-Z0-9\s]' . $variable->name . '[^a-zA-Z0-9\s]?/', $this->model->code)) {
                 $environmentVariablesFound[] = $variable;
             }
         }
