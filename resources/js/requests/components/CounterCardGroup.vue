@@ -5,7 +5,7 @@
 </template>
 
 <script>
-  import CounterCard from "./CounterCard";
+  import CounterCard from "./CounterCard.vue";
 
   export default {
     components: { CounterCard },

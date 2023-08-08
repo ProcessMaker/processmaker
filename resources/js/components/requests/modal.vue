@@ -74,7 +74,7 @@
 </template>
 
 <script>
-  import card from "./card";
+  import card from "./card.vue";
   import datatableMixin from "../common/mixins/datatable";
 
   export default {

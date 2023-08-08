@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import SettingsListing from './SettingsListing';
+import SettingsListing from './SettingsListing.vue';
 
 export default {
   components: { SettingsListing },

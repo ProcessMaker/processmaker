@@ -12,8 +12,8 @@
 </template>
 
 <script>
-  import PTab from "./PTab";
-  import SidebarNav from "./SidebarNav";
+  import PTab from "./PTab.vue";
+  import SidebarNav from "./SidebarNav.vue";
   
   export default {
     components: { PTab, SidebarNav },

@@ -117,7 +117,7 @@
 
 <script>
   import { FormErrorsMixin, Modal, Required } from "SharedComponents";
-  import SliderWithInput from "../../../components/shared/SliderWithInput";
+  import SliderWithInput from "../../../components/shared/SliderWithInput.vue";
 
   export default {
     components: { Modal, Required, SliderWithInput },

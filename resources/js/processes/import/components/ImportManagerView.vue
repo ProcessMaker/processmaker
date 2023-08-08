@@ -73,10 +73,10 @@
 
 <script>
 const importingCode = window.location.hash.match(/#code=(.+)/);
-import DraggableFileUpload from '../../../components/shared/DraggableFileUpload';
-import EnterPasswordModal from '../components/EnterPasswordModal';
-import ImportProcessModal from '../components/ImportProcessModal';
-import OldProcessImporter from '../components/OldProcessImporter';
+import DraggableFileUpload from '../../../components/shared/DraggableFileUpload.vue';
+import EnterPasswordModal from '../components/EnterPasswordModal.vue';
+import ImportProcessModal from '../components/ImportProcessModal.vue';
+import OldProcessImporter from '../components/OldProcessImporter.vue';
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import DataProvider from '../../export/DataProvider';
 const uniqIdsMixin = createUniqIdsMixin();

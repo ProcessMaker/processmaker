@@ -128,8 +128,8 @@
 <script>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FormErrorsMixin, Modal } from "SharedComponents";
-import SelectLanguage from "../../../components/SelectLanguage"
-import SelectScreen from "../../../components/SelectScreen"
+import SelectLanguage from "../../../components/SelectLanguage.vue"
+import SelectScreen from "../../../components/SelectScreen.vue"
 import TranslateOptionsPopup from './TranslateOptionsPopup.vue';
 
 Vue.component("font-awesome-icon", FontAwesomeIcon);
