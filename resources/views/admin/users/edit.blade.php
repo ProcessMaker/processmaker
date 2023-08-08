@@ -169,7 +169,7 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/admin/users/edit.js')}}"></script>
+    @vite('resources/js/admin/users/edit.js')
 
     <script>
       var modalVueInstance = new Vue({

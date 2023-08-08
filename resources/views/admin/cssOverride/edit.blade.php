@@ -35,7 +35,7 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/admin/cssOverride/edit.js')}}"></script>
+    @vite('resources/js/admin/cssOverride/edit.js')
     <script>
       const config = @json($config);
       const loginFooterSetting = @json($loginFooter);

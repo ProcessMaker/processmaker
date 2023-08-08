@@ -76,7 +76,7 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/admin/auth-clients/index.js')}}"></script>
+    @vite('resources/js/admin/auth-clients/index.js')
 
     <script>
       new Vue({

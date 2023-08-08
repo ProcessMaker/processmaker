@@ -44,9 +44,9 @@
 @endsection
 
 @section('js')
-  <script src="{{mix('js/leave-warning.js')}}"></script>
+  @vite('resources/js/leave-warning.js')
   @foreach ($manager->getScripts() as $script)
     <script src="{{ $script }}"></script>
   @endforeach
-  <script src="{{ mix('js/processes/scripts/edit.js') }}"></script>
+  @vite('resources/js/processes/scripts/edit.js')
 @endsection

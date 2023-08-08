@@ -104,7 +104,7 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/templates/configure.js')}}"></script>
+    @vite('resources/js/templates/configure.js')
     <script>
       test = new Vue({
         el: '#configureTemplate',

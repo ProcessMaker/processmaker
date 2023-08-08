@@ -76,7 +76,7 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/processes/screens/edit.js')}}"></script>
+    @vite('resources/js/processes/screens/edit.js')
     <script>
         new Vue({
             el: '#editGroup',

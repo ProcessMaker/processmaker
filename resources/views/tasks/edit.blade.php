@@ -233,7 +233,7 @@
     @foreach($manager->getScripts() as $script)
         <script src="{{$script}}"></script>
     @endforeach
-    <script src="{{mix('js/tasks/show.js')}}"></script>
+    @vite('resources/js/tasks/show.js')
     <script>
       const store = new Vuex.Store();
       const main = new Vue({

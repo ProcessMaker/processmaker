@@ -80,7 +80,7 @@
 @endsection
 
 @section('js')
-<script src="{{mix('js/processes/signals/edit.js')}}"></script>
+@vite('resources/js/processes/signals/edit.js')
 
 <script>
   new Vue({

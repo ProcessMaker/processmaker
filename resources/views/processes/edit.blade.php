@@ -384,7 +384,7 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/processes/edit.js')}}"></script>
+    @vite('resources/js/processes/edit.js')
     <script>
       test = new Vue({
         el: '#editProcess',

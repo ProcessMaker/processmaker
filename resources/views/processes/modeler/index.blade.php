@@ -35,7 +35,7 @@ div.main {
 @endsection
 
 @section('js')
-  <script src="{{mix('js/leave-warning.js')}}"></script>
+  @vite('resources/js/leave-warning.js')
   <script>
   const breadcrumbData = [
     {
@@ -86,5 +86,5 @@ div.main {
     @foreach($manager->getScripts() as $script)
       <script src="{{$script}}"></script>
     @endforeach
-  <script src="{{ mix('js/processes/modeler/index.js') }}"></script>
+  @vite('resources/js/processes/modeler/index.js')
 @endsection

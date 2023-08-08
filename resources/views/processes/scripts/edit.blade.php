@@ -132,7 +132,7 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/processes/scripts/editConfig.js')}}"></script>
+    @vite('resources/js/processes/scripts/editConfig.js')
     <script>
       window.DesignerScripts = new Vue({
         el: '#editScript',

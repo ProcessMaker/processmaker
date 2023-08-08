@@ -233,7 +233,7 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/admin/groups/edit.js')}}"></script>
+    @vite('resources/js/admin/groups/edit.js')
     <script>
       new Vue({
         el: '#editGroup',

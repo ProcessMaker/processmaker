@@ -46,5 +46,5 @@
   @foreach ($manager->getScripts() as $script)
     <script src="{{ $script }}"></script>
   @endforeach
-  <script src="{{ mix('js/processes/modeler/process-map.js') }}"></script>
+  @vite('resources/js/processes/modeler/process-map.js')
 @endsection

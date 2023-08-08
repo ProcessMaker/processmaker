@@ -88,9 +88,9 @@
         }
       });
     </script>
-    <script src="{{mix('js/leave-warning.js')}}"></script>
+    @vite('resources/js/leave-warning.js')
     @foreach($manager->getScripts() as $script)
         <script src="{{$script}}"></script>
     @endforeach
-    <script src="{{mix('js/processes/screen-builder/main.js')}}"></script>
+    @vite('resources/js/processes/screen-builder/main.js')
 @endsection

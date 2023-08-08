@@ -61,7 +61,7 @@
 </div>
 
 @section('js')
-    <script src="{{mix('js/processes/categories/index.js')}}"></script>
+    @vite('resources/js/processes/categories/index.js')
     <script>
       ProcessMaker.CategoriesIndex = new Vue({
         el: "#categories-listing",

@@ -35,7 +35,7 @@
         <script src="{{$script}}"></script>
     @endforeach
 
-    <script src="{{mix('js/requests/preview.js')}}"></script>
+    @vite('resources/js/requests/preview.js')
     <script>
       new Vue({
         el: "#request",

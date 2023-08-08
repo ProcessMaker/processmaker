@@ -65,7 +65,7 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/tasks/index.js')}}"></script>
+    @vite('resources/js/tasks/index.js')
 @endsection
 
 @section('css')

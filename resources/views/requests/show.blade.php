@@ -382,7 +382,7 @@
     };
   </script>
 
-  <script src="{{ mix('js/requests/show.js') }}"></script>
+  @vite('resources/js/requests/show.js')
   <script>
     new Vue({
       el: '#request',
