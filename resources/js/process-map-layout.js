@@ -1,6 +1,6 @@
 import moment from "moment";
 
-require("bootstrap");
+import "bootstrap";
 
 const { Vue } = window;
 if (window.ProcessMaker && window.ProcessMaker.user) {

@@ -26,7 +26,7 @@ import RequiredCheckbox from "./processes/screen-builder/components/inspector/Re
  */
 import __ from "./modules/lang";
 
-require("bootstrap");
+import "bootstrap";
 
 const { Vue } = window;
 if (window.ProcessMaker && window.ProcessMaker.user) {

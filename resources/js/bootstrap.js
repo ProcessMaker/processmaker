@@ -29,18 +29,21 @@ import PmqlInput from "./components/shared/PmqlInput.vue";
 import GlobalSearch from "./components/shared/GlobalSearch.vue";
 
 window.__ = translator;
-window._ = require("lodash");
+import _ from "lodash";
+window._ = _;
 window.Popper = require("popper.js").default;
 
 /**
  * Give node plugins access to our custom screen builder components
  */
-window.ProcessmakerComponents = require("./processes/screen-builder/components");
+import ProcessmakerComponents from "./processes/screen-builder/components";
+window.ProcessmakerComponents = ProcessmakerComponents;
 
 /**
  * Give node plugins access to additional components
  */
-window.SharedComponents = require("./components/shared");
+import SharedComponents from "./components/shared";
+window.SharedComponents = SharedComponents;
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -65,8 +68,10 @@ window.Vue.use(VueCookies);
 if (!document.head.querySelector("meta[name=\"is-horizon\"]")) {
   window.Vue.use(Router);
 }
-window.VueMonaco = require("vue-monaco");
-window.ScreenBuilder = require("@processmaker/screen-builder");
+import VueMonaco from "vue-monaco";
+window.VueMonaco = VueMonaco;
+import ScreenBuilder from "@processmaker/screen-builder";
+window.ScreenBuilder = ScreenBuilder;
 
 window.VueRouter = Router;
 
@@ -195,7 +200,8 @@ window.ProcessMaker.i18nPromise.then(() => { translationsLoaded = true; });
  * REST api endpoints through oauth authentication
  *
  */
-window.ProcessMaker.apiClient = require("axios");
+import ProcessMaker.apiClient from "axios";
+window.ProcessMaker.apiClient = ProcessMaker.apiClient;
 
 window.ProcessMaker.apiClient.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
