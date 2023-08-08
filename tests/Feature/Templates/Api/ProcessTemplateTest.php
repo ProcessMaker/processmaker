@@ -4,6 +4,7 @@ namespace Tests\Feature\Templates\Api;
 
 use Exception;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\DB;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
@@ -209,7 +210,9 @@ class ProcessTemplateTest extends TestCase
 
         $failedProcess = [];
         foreach ($fixtures['allTemplates'] as $template) {
-            $response = $this->createProcessesFromTemplate($template, $fixtures['user'], $fixtures['processCategoryId']);
+            $response = $this->createProcessesFromTemplate(
+                $template, $fixtures['user'], $fixtures['processCategoryId']
+            );
 
             if ($response->getStatusCode() != 200) {
                 array_push($failedProcess, $template->name . ': ' . $response->getContent());
@@ -237,7 +240,8 @@ class ProcessTemplateTest extends TestCase
     private function fixtures()
     {
         $user = User::factory()->create();
-        $processCategoryId = ProcessCategory::factory()->create(['name' => 'Default Templates', 'status' => 'ACTIVE'])->getKey();
+        $processCategoryId = ProcessCategory::factory()
+                                ->create(['name' => 'Default Templates', 'status' => 'ACTIVE'])->getKey();
         ProcessCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
         ScreenCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
         ScriptCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
@@ -267,22 +271,33 @@ class ProcessTemplateTest extends TestCase
      */
     private function createProcessesFromTemplate($template, $user, $processCategoryId)
     {
-        $response = $this->apiCall(
-            'POST',
-            route('api.template.create', [
-                'type' => 'process',
-                'id' => $template->id,
-            ]),
-            [
-                'user_id' => $user->getKey(),
-                'name' => $template->name,
-                'description' => $template->description,
-                'process_category_id' => $processCategoryId,
-                'mode' => 'copy',
-                'saveAssetMode' => 'saveAllAssets',
-            ]
-        );
+        try {
+            // Begin a transaction
+            DB::beginTransaction();
+            $response = $this->apiCall(
+                'POST',
+                route('api.template.create', [
+                    'type' => 'process',
+                    'id' => $template->id,
+                ]),
+                [
+                    'user_id' => $user->getKey(),
+                    'name' => $template->name,
+                    'description' => $template->description,
+                    'process_category_id' => $processCategoryId,
+                    'mode' => 'copy',
+                    'saveAssetMode' => 'saveAllAssets',
+                ]
+            );
+            // Commit the transaction
+            DB::commit();
 
-        return $response;
+            return $response;
+        } catch(\Exception $e) {
+            // Rollback; cancel the transaction...
+            DB::rollback();
+
+            throw $e;
+        }
     }
 }
