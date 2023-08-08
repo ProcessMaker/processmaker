@@ -78,7 +78,7 @@ class CssOverrideController extends Controller
             );
             Cache::forget('css-logo');
             // Check if the default logo value was updated
-            if (isset($initConfig['logo']) && $initConfig['logo'] != "null" && !is_null($initConfig['logo'])) {
+            if (isset($initConfig['logo']) && $initConfig['logo'] != 'null' && !is_null($initConfig['logo'])) {
                 $changes['logo'] = $initConfig['logo'];
             }
         }
@@ -92,7 +92,7 @@ class CssOverrideController extends Controller
             );
             Cache::forget('css-icon');
             // Check if the default icon value was updated
-            if (isset($initConfig['icon']) && $initConfig['icon'] != "null" && !is_null($initConfig['icon'])) {
+            if (isset($initConfig['icon']) && $initConfig['icon'] != 'null' && !is_null($initConfig['icon'])) {
                 $changes['icon'] = $initConfig['icon'];
             }
         }
@@ -106,7 +106,7 @@ class CssOverrideController extends Controller
             );
             Cache::forget('css-favicon');
             // Check if the default favicon value was updated
-            if (isset($initConfig['favicon']) && $initConfig['favicon'] != "null" && !is_null($initConfig['favicon'])) {
+            if (isset($initConfig['favicon']) && $initConfig['favicon'] != 'null' && !is_null($initConfig['favicon'])) {
                 $changes['favicon'] = $initConfig['favicon'];
             }
         }
@@ -120,7 +120,7 @@ class CssOverrideController extends Controller
             );
             Cache::forget('css-login');
             // Check if the default value was updated
-            if (isset($initConfig['login']) && $initConfig['login'] != "null" && !is_null($initConfig['login'])) {
+            if (isset($initConfig['login']) && $initConfig['login'] != 'null' && !is_null($initConfig['login'])) {
                 $changes['login'] = $initConfig['login'];
             }
         }
