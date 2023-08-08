@@ -26,7 +26,7 @@ fi
 composer install --no-dev ;
 npm install ;
 export NODE_OPTIONS="--max-old-space-size=4096" ;
-npm run prod ;
+npm run build ;
 
 echo "\n\n\n\nDone deploy.\n\n\n\n"
 
