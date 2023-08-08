@@ -68,7 +68,7 @@ return [
             'unix_socket' => env('DATA_DB_SOCKET'),
             'charset' => $charset,
             'collation' => $collation,
-            'schema' => env('DATA_DB_SCHEMA'),
+            'search_path' => env('DATA_DB_SCHEMA'),
             'engine' => env('DATA_DB_ENGINE'),
             'date_format' => env('DATA_DB_DATE_FORMAT'),
             'timezone'  => env('DATA_DB_TIMEZONE'),
