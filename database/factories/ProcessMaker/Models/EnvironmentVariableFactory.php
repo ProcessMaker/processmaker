@@ -15,9 +15,9 @@ class EnvironmentVariableFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->word,
-            'description' => $this->faker->sentence,
-            'value' => $this->faker->sentence,
+            'name' => $this->faker->word(),
+            'description' => $this->faker->sentence(),
+            'value' => $this->faker->sentence(),
         ];
     }
 }

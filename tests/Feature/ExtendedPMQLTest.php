@@ -61,8 +61,8 @@ class ExtendedPMQLTest extends TestCase
 
         //Generate fake data
         $data = [
-            'first_name' => $faker->firstName,
-            'last_name' => $faker->lastName,
+            'first_name' => $faker->firstName(),
+            'last_name' => $faker->lastName(),
         ];
 
         // Create a process request

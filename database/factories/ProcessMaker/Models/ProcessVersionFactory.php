@@ -31,7 +31,7 @@ class ProcessVersionFactory extends Factory
             'user_id' => function () {
                 return User::factory()->create()->getKey();
             },
-            'description' => $this->faker->sentence,
+            'description' => $this->faker->sentence(),
             'process_category_id' => function () {
                 return ProcessCategory::factory()->create()->getKey();
             },

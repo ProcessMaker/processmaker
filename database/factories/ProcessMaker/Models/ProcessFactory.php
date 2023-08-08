@@ -22,7 +22,7 @@ class ProcessFactory extends Factory
         return [
             'name' => $this->faker->unique()->sentence(3),
             'bpmn' => Process::getProcessTemplate('OnlyStartElement.bpmn'),
-            'description' => $this->faker->unique()->name,
+            'description' => $this->faker->unique()->name(),
             'status' => 'ACTIVE',
             'user_id' => function () {
                 return User::factory()->create()->getKey();

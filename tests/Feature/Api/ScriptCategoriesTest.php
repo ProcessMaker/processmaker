@@ -312,7 +312,7 @@ class ScriptCategoriesTest extends TestCase
 
         $route = route($this->resource . '.update', [$item->id]);
         $fields = [
-            'name' => $this->faker->name,
+            'name' => $this->faker->name(),
             'status' => 'ACTIVE',
         ];
         $response = $this->apiCall('PUT', $route, $fields);
