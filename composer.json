@@ -16,7 +16,6 @@
         "darkaonline/l5-swagger": "^8.3",
         "doctrine/dbal": "^3.3",
         "fakerphp/faker": "^1.9.1",
-        "fruitcake/laravel-cors": "^2.0",
         "google/apiclient": "^2.12",
         "guzzlehttp/guzzle": "^7.4",
         "igaster/laravel-theme": "2.0.*",
