@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\Permission;
 
-class AddProcessTranslationPermissionsToPermissionsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -42,4 +42,4 @@ class AddProcessTranslationPermissionsToPermissionsTable extends Migration
     {
         Permission::where('group', 'Process Translations')->delete();
     }
-}
+};

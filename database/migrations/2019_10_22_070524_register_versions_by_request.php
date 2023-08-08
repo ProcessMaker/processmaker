@@ -7,7 +7,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessVersion;
 
-class RegisterVersionsByRequest extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -38,4 +38,4 @@ class RegisterVersionsByRequest extends Migration
             $table->dropColumn('process_version_id');
         });
     }
-}
+};

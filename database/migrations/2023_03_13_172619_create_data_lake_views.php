@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Artisan;
 
-class CreateDataLakeViews extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -24,4 +24,4 @@ class CreateDataLakeViews extends Migration
     {
         Artisan::call('processmaker:create-data-lake-views --drop');
     }
-}
+};

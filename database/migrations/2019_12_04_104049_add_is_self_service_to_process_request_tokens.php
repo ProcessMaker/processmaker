@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddIsSelfServiceToProcessRequestTokens extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -30,4 +30,4 @@ class AddIsSelfServiceToProcessRequestTokens extends Migration
             $table->dropColumn(['is_self_service', 'self_service_groups']);
         });
     }
-}
+};

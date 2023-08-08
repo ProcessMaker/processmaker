@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\ProcessRequest;
 
-class CreateProcessRequestLocksTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -33,4 +33,4 @@ class CreateProcessRequestLocksTable extends Migration
         $model = new ProcessRequest;
         Schema::connection($model->getConnectionName())->dropIfExists('process_request_locks');
     }
-}
+};

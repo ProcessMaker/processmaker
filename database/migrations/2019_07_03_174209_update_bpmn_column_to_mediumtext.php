@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\Process;
 
-class UpdateBpmnColumnToMediumtext extends Migration
+return new class extends Migration
 {
     public function __construct()
     {
@@ -41,4 +41,4 @@ class UpdateBpmnColumnToMediumtext extends Migration
             $table->text('bpmn')->comment('')->change();
         });
     }
-}
+};

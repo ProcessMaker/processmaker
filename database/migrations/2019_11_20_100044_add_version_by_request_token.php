@@ -9,7 +9,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 
-class AddVersionByRequestToken extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -66,4 +66,4 @@ class AddVersionByRequestToken extends Migration
             // Skip unique for key column in script_versions table if it cause problems
         }
     }
-}
+};

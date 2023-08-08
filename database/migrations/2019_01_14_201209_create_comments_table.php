@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\Comment;
 
-class CreateCommentsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -40,4 +40,4 @@ class CreateCommentsTable extends Migration
         $model = new Comment();
         Schema::connection($model->getConnectionName())->dropIfExists('comments');
     }
-}
+};

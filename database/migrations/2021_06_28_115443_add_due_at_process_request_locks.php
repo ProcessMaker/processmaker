@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\ProcessRequest;
 
-class AddDueAtProcessRequestLocks extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -34,4 +34,4 @@ class AddDueAtProcessRequestLocks extends Migration
             $table->dropIndex(['id', 'process_request_id', 'due_at']);
         });
     }
-}
+};

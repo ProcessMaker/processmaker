@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\Permission;
 
-class AddProcessTemplatePermissionsToPermissionsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -41,4 +41,4 @@ class AddProcessTemplatePermissionsToPermissionsTable extends Migration
     {
         Permission::where('group', 'Process Templates')->delete();
     }
-}
+};

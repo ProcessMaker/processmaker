@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\Process;
 
-class AddStartEventsToProcess extends Migration
+return new class extends Migration
 {
     /**
      * Add column to store start events to speed up Start Request list
@@ -40,4 +40,4 @@ class AddStartEventsToProcess extends Migration
             $table->dropColumn('start_events');
         });
     }
-}
+};

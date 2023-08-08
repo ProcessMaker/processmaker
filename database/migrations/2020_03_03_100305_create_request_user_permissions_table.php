@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
 
-class CreateRequestUserPermissionsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -42,4 +42,4 @@ class CreateRequestUserPermissionsTable extends Migration
     {
         Schema::dropIfExists('request_user_permissions');
     }
-}
+};

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\ProcessTemplates;
 
-class RemoveSeededDefaultTemplates extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -26,4 +26,4 @@ class RemoveSeededDefaultTemplates extends Migration
     {
         //
     }
-}
+};

@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\User;
 
-class AddAnonymousUser extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -35,4 +35,4 @@ class AddAnonymousUser extends Migration
             $table->dropColumn('is_system');
         });
     }
-}
+};

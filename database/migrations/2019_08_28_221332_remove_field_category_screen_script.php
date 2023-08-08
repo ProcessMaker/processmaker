@@ -8,7 +8,7 @@ use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 
-class RemoveFieldCategoryScreenScript extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -76,4 +76,4 @@ class RemoveFieldCategoryScreenScript extends Migration
             $screen->save();
         }
     }
-}
+};

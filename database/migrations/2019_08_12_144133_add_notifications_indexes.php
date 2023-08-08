@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddNotificationsIndexes extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -29,4 +29,4 @@ class AddNotificationsIndexes extends Migration
             $table->dropIndex('notifications_notifiable_type_notifiable_id_read_at_index');
         });
     }
-}
+};

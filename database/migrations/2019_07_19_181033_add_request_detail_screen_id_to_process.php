@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddRequestDetailScreenIdToProcess extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -40,4 +40,4 @@ class AddRequestDetailScreenIdToProcess extends Migration
             $table->dropColumn('request_detail_screen_id');
         });
     }
-}
+};
