@@ -58,6 +58,9 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
         if (!isset($this->original['variables'])) {
             $this->original['variables'] = $this->defaultVariables;
         }
+        if (!isset($this->changes['variables'])) {
+            $this->changes['variables'] = $this->defaultVariables;
+        }
         if (isset($this->changes['variables']) && isset($this->original['variables'])) {
             $varChanges = [];
             $varOriginal = [];
@@ -75,11 +78,14 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
         if (!isset($this->original['sansSerifFont'])) {
             $this->original['sansSerifFont'] = $this->defaultFont;
         }
+        if (!isset($this->changes['sansSerifFont'])) {
+            $this->changes['sansSerifFont'] = $this->defaultFont;
+        }
         if ($this->original['sansSerifFont'] == $this->changes['sansSerifFont']) {
             unset($this->original['sansSerifFont']);
             unset($this->changes['sansSerifFont']);
         }
-        if ($this->original['variables'] == $this->changes['sansSevariablesrifFont']) {
+        if ($this->original['variables'] == $this->changes['variables']) {
             unset($this->original['variables']);
             unset($this->changes['variables']);
         }
