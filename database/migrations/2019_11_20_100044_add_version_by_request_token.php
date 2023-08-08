@@ -9,8 +9,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *

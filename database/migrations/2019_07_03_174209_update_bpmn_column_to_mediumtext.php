@@ -5,8 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\Process;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function __construct()
     {
         // I guess this is still a bug in laravel 5.7 and doctrine

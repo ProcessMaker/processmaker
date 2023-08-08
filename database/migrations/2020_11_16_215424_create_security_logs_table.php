@@ -6,8 +6,7 @@ use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\SecurityLog;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
