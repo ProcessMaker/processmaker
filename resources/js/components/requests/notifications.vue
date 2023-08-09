@@ -16,11 +16,20 @@
         <b-badge pill variant="danger" v-if="totalMessages>0 && totalMessages<=9">{{totalMessages}}</b-badge>
         <b-badge pill variant="danger" v-if="totalMessages>9" id="info-large">9+</b-badge>
       </b-button>
-      <b-popover container="#notificationMenu" :target="getTarget" :placement="'bottomleft'" offset="3" triggers="click blur" @shown="onShown" @hidden="onHidden">
+      <b-popover container="#notificationMenu" :target="getTarget" :placement="'bottomleft'" offset="1" triggers="click blur" @shown="onShown" @hidden="onHidden" @hide="e => e.preventDefault()" show="true">
+        
         <div class="notification-popover">
-          <header class="p-2 border-bottom">
-            {{$t('Notifications')}}
-          </header>
+
+          <div class="header p-2">
+            {{$t('Inbox')}}
+          </div>
+
+          <b-tabs class="p-2">
+            <b-tab :title="$t('All')"></b-tab>
+            <b-tab :title="$t('Notifications')"></b-tab>
+            <b-tab :title="$t('Comments')"></b-tab>
+          </b-tabs>
+
           <div class="p-2" v-if="messages.length == 0">
             {{ $t('No Notifications Found') }}
           </div>
@@ -196,26 +205,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "../../../sass/variables";
+@import '../../../sass/colors';
+
 .button-dismiss {
   font-size: 12px;
   padding: 0;
 }
 
-.popover-header {
-  font-size: 18px;
-  font-weight: 600;
-  margin: -12px;
-  margin-top: -8px;
-  margin-bottom: 18px;
-  display: block;
-}
-
 .notification-popover {
   font-size: 12px;
-  width: 250px;
+  width: 450px;
   
-  header {
+  .header {
     font-size: 18px;
+    font-weight: bold;
+    color: $info;
   }
   
   footer {
@@ -254,4 +259,11 @@ export default {
   right: 83px;
   top: 17px;
 }
+
+.popover {
+  max-width: 450px;
+  height: 600px;
+  top: -8px;
+}
+
 </style>
