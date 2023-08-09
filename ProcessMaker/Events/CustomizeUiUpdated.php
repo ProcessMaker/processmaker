@@ -59,6 +59,9 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
         if (!isset($this->original['variables'])) {
             $this->original['variables'] = $this->defaultVariables;
         }
+        if (!isset($this->changes['variables'])) {
+            $this->changes['variables'] = $this->defaultVariables;
+        }
         if (isset($this->changes['variables']) && isset($this->original['variables'])) {
             $varChanges = [];
             $varOriginal = [];

@@ -104,21 +104,21 @@
         return this.$t('Caution: {{type}} Already Exists', {type: asset.typeHuman});
       },
       helperText(asset) {
-        let assetTiming = this.$t("This environment already contains ");
+        let text = "This environment already contains the {{ item }} named '{{ name }}.'";
+        if (asset.existingUpdatedAt && asset.importingUpdatedAt) {
+          const existingUpdatedAt = new Date(asset.existingUpdatedAt);
+          const importingUpdatedAt = new Date(`${asset.importingUpdatedAt.replace(" ", "T")}.000000Z`);
 
-        const existingUpdatedAt = new Date(asset.existingUpdatedAt);
-        const importingUpdatedAt = new Date(`${asset.importingUpdatedAt.replace(" ", "T")}.000000Z`);
-
-        if (existingUpdatedAt > importingUpdatedAt) {
-          assetTiming += this.$t("a newer");
-        } else if (existingUpdatedAt < importingUpdatedAt) {
-          assetTiming += this.$t("an older");
-        } else {
-          assetTiming += this.$t("the same");
+          if (existingUpdatedAt > importingUpdatedAt) {
+            text = "This environment already contains a newer version of the {{ item }} named '{{ name }}.'";
+          } else if (existingUpdatedAt < importingUpdatedAt) {
+            text = "This environment already contains an older version of the {{ item }} named '{{ name }}.'";
+          } else {
+            text = "This environment already contains the same version of the {{ item }} named '{{ name }}.'";
+          }
         }
         
-        const text = this.$t('{{ assetTiming }} version of the {{ item }} named "{{ name }}."', {
-          assetTiming,
+        text = this.$t(text, {
           item: asset.typeHuman.toLowerCase(),
           name: asset.importingName,
         });

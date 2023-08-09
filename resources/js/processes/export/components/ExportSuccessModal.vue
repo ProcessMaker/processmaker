@@ -61,8 +61,6 @@ export default {
       }).map(([uuid, setting]) => {
         return this.$root.manifest[uuid];
       }).reduce((groups, asset) => {
-        console.log(asset);
-
         if(!(asset.type in groups)) {
           groups[asset.type] = {
             firstAsset: asset,
