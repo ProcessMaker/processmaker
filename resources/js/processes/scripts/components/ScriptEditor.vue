@@ -56,6 +56,7 @@
               </b-card-header>
 
               <b-card-body class="overflow-hidden p-0">
+                <AIScriptTab v-if="packageAI"/>
                 <b-list-group class="w-100 h-100 overflow-auto">
                   <b-list-group-item class="script-toggle border-0 mb-0">
                     <b-row v-b-toggle.configuration>
@@ -189,11 +190,13 @@ import TopMenu from "../../../components/Menu.vue";
 // eslint-disable-next-line no-unused-vars
 import customFilters from "../customFilters";
 import autosaveMixins from "../../../modules/autosave/mixins";
+import { AIScriptTab } from "../../../../../public/vendor/processmaker/packages/package-ai";
 
 export default {
   components: {
     MonacoEditor,
     TopMenu,
+    AIScriptTab
   },
   mixins: [...autosaveMixins],
   props: {
@@ -231,6 +234,7 @@ export default {
         title: this.$t("Save Script"),
         name: this.$t("Save"),
         icon: "fas fa-save",
+        packageAI: window.packageAI,
         action: () => {
           ProcessMaker.EventBus.$emit("save-script");
         },
