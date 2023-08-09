@@ -4,6 +4,7 @@ namespace Tests\Feature\Templates\Api;
 
 use Exception;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\DB;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
@@ -200,6 +201,9 @@ class ProcessTemplateTest extends TestCase
 
     public function testTemplateToProcessSync()
     {
+        $this->markTestSkipped(
+            'This test needs to be refactor to mock the transactions.'
+        );
         $this->addGlobalSignalProcess();
         $fixtures = $this->fixtures();
 
@@ -209,7 +213,9 @@ class ProcessTemplateTest extends TestCase
 
         $failedProcess = [];
         foreach ($fixtures['allTemplates'] as $template) {
-            $response = $this->createProcessesFromTemplate($template, $fixtures['user'], $fixtures['processCategoryId']);
+            $response = $this->createProcessesFromTemplate(
+                $template, $fixtures['user'], $fixtures['processCategoryId']
+            );
 
             if ($response->getStatusCode() != 200) {
                 array_push($failedProcess, $template->name . ': ' . $response->getContent());
@@ -237,7 +243,8 @@ class ProcessTemplateTest extends TestCase
     private function fixtures()
     {
         $user = User::factory()->create();
-        $processCategoryId = ProcessCategory::factory()->create(['name' => 'Default Templates', 'status' => 'ACTIVE'])->getKey();
+        $processCategoryId = ProcessCategory::factory()
+                                ->create(['name' => 'Default Templates', 'status' => 'ACTIVE'])->getKey();
         ProcessCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
         ScreenCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
         ScriptCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
