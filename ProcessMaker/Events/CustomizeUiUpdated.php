@@ -5,6 +5,7 @@ namespace ProcessMaker\Events;
 use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
+use ProcessMaker\Helpers\ArrayHelper;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class CustomizeUiUpdated implements SecurityLogEventInterface
@@ -75,20 +76,8 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
             $this->changes['variables'] = $varChanges;
             $this->original['variables'] = $varOriginal;
         }
-        if (!isset($this->original['sansSerifFont'])) {
-            $this->original['sansSerifFont'] = $this->defaultFont;
-        }
-        if (!isset($this->changes['sansSerifFont'])) {
-            $this->changes['sansSerifFont'] = $this->defaultFont;
-        }
-        if ($this->original['sansSerifFont'] == $this->changes['sansSerifFont']) {
-            unset($this->original['sansSerifFont']);
-            unset($this->changes['sansSerifFont']);
-        }
-        if ($this->original['variables'] == $this->changes['variables']) {
-            unset($this->original['variables']);
-            unset($this->changes['variables']);
-        }
+        // Set a value sansSerifFont
+        $this->original['sansSerifFont'] = !isset($this->original['sansSerifFont']) ? $this->defaultFont : $this->original['sansSerifFont'];
         // Define if the action reset was executed
         $actionReset = ($this->reset) ? ['Action' => 'Reset'] : [];
         $this->data = array_merge(
@@ -100,7 +89,7 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
                 'last_modified' => Carbon::now(),
             ],
             $actionReset,
-            $this->formatChanges($this->changes, $this->original)
+            ArrayHelper::getArrayDifferencesWithFormat($this->changes, $this->original)
         );
     }
 
