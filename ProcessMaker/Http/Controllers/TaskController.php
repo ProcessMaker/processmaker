@@ -36,7 +36,7 @@ class TaskController extends Controller
         return view('tasks.index', compact('title'));
     }
 
-    public function edit(ProcessRequestToken $task)
+    public function edit(ProcessRequestToken $task, string $preview = '')
     {
         $task = $task->loadTokenInstance();
         $dataManager = new DataManager();
@@ -73,6 +73,17 @@ class TaskController extends Controller
         if ($element instanceof ScriptTaskInterface) {
             return redirect(route('requests.show', ['request' => $task->processRequest->getKey()]));
         } else {
+            if (!empty($preview)) {
+                return view('tasks.preview', [
+                    'task' => $task,
+                    'dueLabels' => self::$dueLabels,
+                    'manager' => $manager,
+                    'submitUrl' => $submitUrl,
+                    'files' => $task->processRequest->requestFiles(),
+                    'addons' => $this->getPluginAddons('edit', []),
+                    'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
+                ]);
+            }
             return view('tasks.edit', [
                 'task' => $task,
                 'dueLabels' => self::$dueLabels,
