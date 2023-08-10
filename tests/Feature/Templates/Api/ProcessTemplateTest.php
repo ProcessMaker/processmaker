@@ -253,7 +253,7 @@ class ProcessTemplateTest extends TestCase
         ]);
 
         $allTemplates = ProcessTemplates::where(['key' => 'default_templates', 'user_id' => null])
-        ->select(['id', 'description', 'name', 'process_category_id'])
+        ->select(['id', 'description', 'name', 'process_category_id', 'version'])
         ->get();
 
         return ['user' => $user, 'processCategoryId' => $processCategoryId, 'allTemplates' => $allTemplates];
@@ -276,6 +276,7 @@ class ProcessTemplateTest extends TestCase
             [
                 'user_id' => $user->getKey(),
                 'name' => $template->name,
+                'version' => $template->version,
                 'description' => $template->description,
                 'process_category_id' => $processCategoryId,
                 'mode' => 'copy',
