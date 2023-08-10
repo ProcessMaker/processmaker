@@ -1,53 +1,68 @@
 <template>
   <b-container class="h-100">
-    <b-card
-      no-body
-      class="h-100"
-    >
-      <top-menu
-        ref="menuScript"
-        :options="optionsMenu"
-      />
+    <b-card no-body class="h-100" >
+      <top-menu ref="menuScript" :options="optionsMenu" />
 
-      <b-card-body
-        ref="editorContainer"
-        class="overflow-hidden p-4"
-      >
+      <b-card-body ref="editorContainer" class="overflow-hidden p-4" >
         <b-row class="h-100">
-          <b-col
-            cols="9"
-            class="h-100 p-0"
-          >
-            <monaco-editor
-              v-model="code"
-              class="h-100"
-              :class="{hidden: resizing}"
-              :options="monacoOptions"
-              :language="language"
-            />
+          <b-col cols="9" class="h-100 p-0">
+            <b-row class="h-100">
+              <b-col cols="12" class="h-100 p-0">
+                <monaco-editor
+                  v-show="showEditor"
+                  class="h-100"
+                  v-model="code"
+                  :class="{hidden: resizing}"
+                  :options="monacoOptions"
+                  :language="language"
+                  :diff-editor="false"
+                />
+
+                <div v-if="packageAi" v-show="showDiffEditor">
+                  <div class="d-flex">
+                    <div class="left-header-width pb-3 pl-3">
+                      <div class="card-header h-100 d-flex align-items-center justify-content-between editor-header-border">
+                        <b>Current Script</b>
+                      </div>
+                    </div>
+                    <div class="right-header-width pb-3 pl-3">
+                      <div class="card-header h-100 bg-primary-light d-flex align-items-center justify-content-between editor-header-border">
+                        <b>AI Generated Response</b>
+                        <div>
+                          <button class="btn btn-sm btn-light" @click="cancelChanges()">Cancel</button>
+                          <button class="btn btn-sm btn-primary" @click="applyChanges()" v-b-tooltip.hover :title="$t('Apply recommended changes')">Apply</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <monaco-editor
+                  ref="diffEditor"
+                  v-show="showDiffEditor"
+                  class="diff-height"
+                  :class="{hidden: resizing}"
+                  :options="monacoOptionsDiff"
+                  :language="language"
+                  :diff-editor="true"
+                  :value="newCode"
+                  :original="code"
+                  @hook:mounted="diffEditorMounted"
+                />
+              </b-col>
+            </b-row>
           </b-col>
-          <b-col
-            cols="3"
-            class="h-100"
-          >
-            <b-card
-              no-body
-              class="h-100"
-            >
+          <b-col cols="3" class="h-100 pl-5">
+            <b-card no-body class="h-100">
               <b-card-header class="light-gray-background">
                 <b-row class="d-flex align-items-center">
                   <b-col>{{ $t('Debugger') }}</b-col>
 
-                  <b-col
-                    align-self="end"
-                    class="text-right"
-                  >
+                  <b-col align-self="end" class="text-right">
                     <b-button
                       class="text-capitalize pl-3 pr-3"
                       :disabled="preview.executing"
                       size="sm"
-                      @click="execute"
-                    >
+                      @click="execute" >
                       <i class="fas fa-caret-square-right" />
                       {{ $t('Run') }}
                     </b-button>
@@ -273,6 +288,9 @@ export default {
       type: Boolean,
       default: false,
     },
+    packageAi: {
+      default: 0,
+    },
   },
   data() {
     const options = [
@@ -283,7 +301,6 @@ export default {
         title: this.$t("Save Script"),
         name: this.$t("Save"),
         icon: "fas fa-save",
-        packageAI: window.packageAI,
         action: () => {
           ProcessMaker.EventBus.$emit("save-script");
         },
@@ -298,7 +315,16 @@ export default {
       monacoOptions: {
         automaticLayout: true,
       },
+      monacoOptionsDiff: {
+        automaticLayout: true,
+        originalEditable: false, // for left pane
+        readOnly: true,
+        enableSplitViewResizing: false,
+        renderSideBySide: true,
+      },
       code: this.script.code,
+      changesApplied: false,
+      newCode: `${this.script.code}\n $a = 3+4; \n $b = $a / 2;`,
       preview: {
         error: {
           exception: "",
@@ -329,6 +355,12 @@ export default {
     };
   },
   computed: {
+    showEditor() {
+      return !this.showDiffEditor;
+    },
+    showDiffEditor() {
+      return this.packageAi && this.newCode !== "" && !this.changesApplied;
+    },
     language() {
       return this.scriptExecutor.language;
     },
@@ -393,6 +425,17 @@ export default {
   },
 
   methods: {
+    diffEditorMounted() {
+    },
+    applyChanges() {
+      this.code = this.newCode;
+      this.newCode = "";
+      this.changesApplied = true;
+    },
+    cancelChanges() {
+      this.newCode = "";
+      this.changesApplied = true;
+    },
     resizeEditor() {
       const domNode = this.editorReference.getDomNode();
       const { clientHeight } = this.$refs.editorContainer;
@@ -585,5 +628,26 @@ export default {
 
 .output {
   min-height: 300px;
+}
+
+.diff-height {
+  height: calc(100% - 30px);
+}
+
+.bg-primary-light {
+  background: #CBDFFF;
+}
+
+.left-header-width {
+  width: calc(50% - 9px);
+}
+
+.right-header-width {
+  width: calc(50% + 9px);
+}
+
+.editor-header-border {
+  border: 0;
+  border-radius: 5px;
 }
 </style>

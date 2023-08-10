@@ -384,9 +384,6 @@
 @endsection
 
 @section('js')
-    <script>
-        window.packageAI = hasPackage('package-ai') ? '1' : '0';
-    </script>
     <script src="{{mix('js/processes/edit.js')}}"></script>
     <script>
       test = new Vue({
