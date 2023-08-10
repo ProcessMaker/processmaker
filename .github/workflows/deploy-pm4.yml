@@ -35,6 +35,7 @@ env:
   IMAGE_TAG1: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
   GITHUB_COMMENT: ${{ secrets.GH_COMMENT }}
   pull_req_id: ${{github.event.pull_request.number}}
+  run_id: ${{ github.run_id }}
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -158,6 +159,8 @@ jobs:
        uses: aws-actions/amazon-ecr-login@v1
      - name: PHPUnits
        run: |    
+         mkdir testDevelop
+         mkdir $run_id
          echo $REPOSITORY
          echo $IMAGE     
          echo '***********************************' 
@@ -165,7 +168,7 @@ jobs:
          ls -la
          echo '***********************************'
          cd pm4-stm-docker          
-         docker pull $IMAGE          
+         #docker pull $IMAGE          
          docker-compose down -v          
          docker-compose build phpunit          
          docker-compose run phpunit
