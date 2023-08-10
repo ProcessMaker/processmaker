@@ -50,6 +50,7 @@ class ProcessTemplateTest extends TestCase
                 'name' => 'Test Duplicate Name Template',
                 'description' => 'Test template description',
                 'process_category_id' => 1,
+                'version' => $templateA->version,
                 'mode' => 'new',
                 'saveAssetsMode' => 'saveAllAssets',
             ]
@@ -184,6 +185,7 @@ class ProcessTemplateTest extends TestCase
                 'description' => 'Process from template description',
                 'process_category_id' => $template['process_category_id'],
                 'mode' => 'copy',
+                'version' => $template->version,
                 'saveAssetMode' => 'saveAllAssets',
             ]
         );
