@@ -51,6 +51,7 @@ class ProcessTemplateTest extends TestCase
                 'name' => 'Test Duplicate Name Template',
                 'description' => 'Test template description',
                 'process_category_id' => 1,
+                'version' => $templateA->version,
                 'mode' => 'new',
                 'saveAssetsMode' => 'saveAllAssets',
             ]
@@ -92,6 +93,7 @@ class ProcessTemplateTest extends TestCase
                 'asset_id' => $process->id,
                 'user_id' => $user->id,
                 'name' => 'Test Template',
+                'version' => '1.0.0',
                 'description' => 'description 1',
                 'process_category_id' => $process->process_category_id,
                 'mode' => 'copy',
@@ -133,6 +135,7 @@ class ProcessTemplateTest extends TestCase
                 'asset_id' => $process->id,
                 'user_id' => $user->id,
                 'name' => 'Test Template',
+                'version' => '1.0.0',
                 'description' => 'Test template description',
                 'process_category_id' => $process->process_category_id,
                 'mode' => 'discard',
@@ -185,6 +188,7 @@ class ProcessTemplateTest extends TestCase
                 'description' => 'Process from template description',
                 'process_category_id' => $template['process_category_id'],
                 'mode' => 'copy',
+                'version' => $template->version,
                 'saveAssetMode' => 'saveAllAssets',
             ]
         );
@@ -260,7 +264,7 @@ class ProcessTemplateTest extends TestCase
         ]);
 
         $allTemplates = ProcessTemplates::where(['key' => 'default_templates', 'user_id' => null])
-        ->select(['id', 'description', 'name', 'process_category_id'])
+        ->select(['id', 'description', 'name', 'process_category_id', 'version'])
         ->get();
 
         return ['user' => $user, 'processCategoryId' => $processCategoryId, 'allTemplates' => $allTemplates];
@@ -283,6 +287,7 @@ class ProcessTemplateTest extends TestCase
             [
                 'user_id' => $user->getKey(),
                 'name' => $template->name,
+                'version' => $template->version,
                 'description' => $template->description,
                 'process_category_id' => $processCategoryId,
                 'mode' => 'copy',
