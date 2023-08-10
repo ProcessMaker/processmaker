@@ -136,7 +136,7 @@ jobs:
    name: run-phpunit
    if: github.event.action != 'closed'
    #needs: job1
-   runs-on: ubuntu-22.04
+   runs-on: self-hosted
    steps:
      - name: Export Params                
        run: |
