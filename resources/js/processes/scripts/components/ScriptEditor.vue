@@ -103,6 +103,7 @@
                             class="d-flex flex-column justify-content-center align-items-center"
                             variant="light"
                           >
+                            <img :src="bookIcon" />
                             {{ $t('Document') }}
                           </b-btn>
                         </b-row>
@@ -111,12 +112,14 @@
                             class="d-flex flex-column justify-content-center align-items-center"
                             variant="light"
                           >
+                            <img :src="brushIcon" />
                             {{ $t('Clean') }}
                           </b-btn>
                           <b-btn
                             class="d-flex flex-column justify-content-center align-items-center"
                             variant="light"
                           >
+                            <img :src="listIcon" />
                             {{ $t('List Steps') }}
                           </b-btn>
                         </b-row>
@@ -310,6 +313,9 @@ export default {
     return {
       corneaIcon: require('./../../../../img/cornea_icon.svg'),
       penSparkleIcon: require('./../../../../img/pen_sparkle_icon.svg'),
+      bookIcon: require('./../../../../img/book_icon.svg'),
+      brushIcon: require('./../../../../img/brush_icon.svg'),
+      listIcon: require('./../../../../img/list_icon.svg'),
       executionKey: null,
       resizing: false,
       monacoOptions: {
