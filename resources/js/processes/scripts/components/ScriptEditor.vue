@@ -9,6 +9,7 @@
             <b-row class="h-100">
               <b-col cols="12" class="h-100 p-0">
                 <monaco-editor
+                  ref="editor"
                   v-show="showEditor"
                   class="h-100"
                   v-model="code"
@@ -90,36 +91,51 @@
                   </b-list-group-item>
                   <b-list-group-item class="p-0 border-left-0 border-right-0 border-top-0 mb-0">
                     <b-collapse id="assistant">
-                      <div class="m-1">
-                        <b-row class="px-2">
-                          <b-btn 
-                            class="d-flex flex-column justify-content-center align-items-center wrap"
-                            variant="light"
-                          >
-                            <img :src="penSparkleIcon" />
-                            {{ $t('Generate Script From Text') }}
-                          </b-btn>
-                          <b-btn
-                            class="d-flex flex-column justify-content-center align-items-center"
-                            variant="light"
-                          >
-                            {{ $t('Document') }}
-                          </b-btn>
-                        </b-row>
-                        <b-row class="px-2">
-                          <b-btn
-                            class="d-flex flex-column justify-content-center align-items-center"
-                            variant="light"
-                          >
-                            {{ $t('Clean') }}
-                          </b-btn>
-                          <b-btn
-                            class="d-flex flex-column justify-content-center align-items-center"
-                            variant="light"
-                          >
-                            {{ $t('List Steps') }}
-                          </b-btn>
-                        </b-row>
+                        <div class="card-header m-0 d-flex border-0 pb-1">
+                          <div class="d-flex w-50 p-2 ai-button-container" @click="toggleGenerateScriptPanel()">
+                            <div role="button" class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center">
+                              <div>
+                                <img :src="penSparkleIcon" />
+                              </div>
+                              <div class="text-center">
+                                {{ $t('Generate Script From Text') }}
+                              </div>
+                            </div>
+                          </div>
+                          <div class="d-flex w-50 p-2 ai-button-container" @click="documentScript()">
+                            <div role="button" class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center" >
+                              <div>
+                                <img :src="penSparkleIcon" />
+                              </div>
+                              <div class="text-center">
+                                {{ $t('Document') }}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="card-header m-0 d-flex border-0 pt-0">
+                          <div class="d-flex w-50 p-2 ai-button-container">
+                            <div role="button" class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center">
+                              <div>
+                                <img :src="penSparkleIcon" />
+                              </div>
+                              <div class="text-center">
+                                {{ $t('Clean') }}
+                              </div>
+                            </div>
+                          </div>
+                          <div class="d-flex w-50 p-2 ai-button-container">
+                            <div role="button" class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center" >
+                              <div>
+                                <img :src="penSparkleIcon" />
+                              </div>
+                              <div class="text-center">
+                                {{ $t('List Steps') }}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </b-collapse>
                   </b-list-group-item>
@@ -394,6 +410,20 @@ export default {
     },
   },
   mounted() {
+    if (this.packageAi) {
+      this.promptSessionId = localStorage.promptSessionId;
+      this.currentNonce = localStorage.currentNonce;
+
+      if (!localStorage.getItem("cancelledJobs") || localStorage.getItem("cancelledJobs") === "null") {
+        this.cancelledJobs = [];
+      } else {
+        this.cancelledJobs = JSON.parse(localStorage.getItem("cancelledJobs"));
+      }
+
+      this.getPromptSession();
+      this.subscribeToProgress();
+    }
+
     ProcessMaker.EventBus.$emit("script-builder-init", this);
     ProcessMaker.EventBus.$on("save-script", (onSuccess, onError) => {
       this.save(onSuccess, onError);
@@ -420,6 +450,7 @@ export default {
     // Display ellipsis menu.
     this.setEllipsisMenu();
   },
+
   beforeDestroy() {
     window.removeEventListener("resize", this.handleResize);
   },
@@ -427,6 +458,162 @@ export default {
   methods: {
     diffEditorMounted() {
     },
+    getMonacoSelection() {
+      const editor = this.$refs.editor.getMonaco();
+      const selection = editor.getSelection();
+      return selection;
+    },
+
+    getNonce() {
+      const max = 999999999999999;
+      const nonce = Math.floor(Math.random() * max);
+      this.currentNonce = nonce;
+      localStorage.currentNonce = this.currentNonce;
+    },
+
+    getPromptSession() {
+      const url = "/package-ai/getPromptSessionHistory";
+
+      let params = {
+        server: window.location.host,
+        tenant: this.user.id,
+        userId: this.user.id,
+        userName: this.user.username,
+      };
+
+      if (this.promptSessionId && this.promptSessionId !== null && this.promptSessionId !== "") {
+        params = {
+          promptSessionId: this.promptSessionId,
+        };
+      }
+
+      ProcessMaker.apiClient.post(url, params)
+        .then((response) => {
+          this.promptSessionId = response.data.promptSessionId;
+          localStorage.promptSessionId = response.data.promptSessionId;
+        }).catch((error) => {
+          const errorMsg = error.response?.data?.message || error.message;
+
+          if (error.response.status === 404) {
+            localStorage.promptSessionId = "";
+            this.promptSessionId = "";
+            this.getPromptSession();
+          } else {
+            window.ProcessMaker.alert(errorMsg, "danger");
+          }
+        });
+    },
+    generateScript() {
+      this.getNonce();
+
+      const params = {
+        promptSessionId: this.promptSessionId,
+        sourceCode: this.code,
+        selectionStartPos: 0,
+        selectionEndPos: 0,
+        language: this.language,
+        prompt: this.prompt,
+        nonce: this.currentNonce,
+      };
+
+      const url = "/package-ai/generateScript";
+
+      ProcessMaker.apiClient.post(url, params)
+        .then((response) => {
+          if (response.data?.progress?.status === "running") {
+            this.progress = response.data.progress;
+          }
+        })
+        .catch((error) => {
+          const errorMsg = error.response?.data?.message || error.message;
+          window.ProcessMaker.alert(errorMsg, "danger");
+        });
+    },
+
+    cleanScript() {
+      this.getNonce();
+
+      const params = {
+        promptSessionId: this.promptSessionId,
+        sourceCode: this.code,
+        selectionStartPos: 0,
+        selectionEndPos: 0,
+        language: this.language,
+        nonce: this.currentNonce,
+      };
+
+      const url = "/package-ai/cleanScript";
+
+      ProcessMaker.apiClient.post(url, params)
+        .then((response) => {
+          if (response.data?.progress?.status === "running") {
+            this.progress = response.data.progress;
+          }
+        })
+        .catch((error) => {
+          const errorMsg = error.response?.data?.message || error.message;
+          window.ProcessMaker.alert(errorMsg, "danger");
+        });
+    },
+
+    documentScript() {
+      this.getNonce();
+
+      const params = {
+        promptSessionId: this.promptSessionId,
+        sourceCode: this.code,
+        selectionStartPos: 0,
+        selectionEndPos: 0,
+        language: this.language,
+        nonce: this.currentNonce,
+      };
+
+      const url = "/package-ai/documentScript";
+
+      ProcessMaker.apiClient.post(url, params)
+        .then((response) => {
+          if (response.data?.progress?.status === "running") {
+            this.progress = response.data.progress;
+          }
+        })
+        .catch((error) => {
+          const errorMsg = error.response?.data?.message || error.message;
+          window.ProcessMaker.alert(errorMsg, "danger");
+        });
+    },
+
+    subscribeToProgress() {
+      const channel = `ProcessMaker.Models.User.${this.user.id}`;
+      const streamProgressEvent = ".ProcessMaker\\Package\\PackageAi\\Events\\GenerateScriptProgressEvent";
+      window.Echo.private(channel).listen(
+        streamProgressEvent,
+        (response) => {
+          if (response.data.promptSessionId !== this.promptSessionId) {
+            return;
+          }
+
+          if (this.cancelledJobs.some((element) => element === response.data.nonce)) {
+            return;
+          }
+
+          if (response.data) {
+            if (response.data.progress.status === "running") {
+              this.loading = true;
+              this.progress = response.data.progress;
+            } else if (response.data.progress.status === "error") {
+              this.loading = false;
+              this.progress.progress = 0;
+              window.ProcessMaker.alert(response.data.message, "danger");
+            } else {
+              this.newCode = response.data.newCode;
+              this.loading = false;
+              this.progress.progress = 0;
+            }
+          }
+        },
+      );
+    },
+
     applyChanges() {
       this.code = this.newCode;
       this.newCode = "";
@@ -649,5 +836,13 @@ export default {
 .editor-header-border {
   border: 0;
   border-radius: 5px;
+}
+
+.ai-button-container {
+  height: 8rem;
+}
+.ai-button {
+  border-radius: 8px;
+  box-shadow: 0 0 8px 0px #ddd;
 }
 </style>
