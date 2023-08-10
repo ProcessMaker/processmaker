@@ -91,6 +91,7 @@
                   </b-list-group-item>
                   <b-list-group-item class="p-0 border-left-0 border-right-0 border-top-0 mb-0">
                     <b-collapse id="assistant">
+                      <div>
                         <div class="card-header m-0 d-flex border-0 pb-1">
                           <div class="d-flex w-50 p-2 ai-button-container" @click="toggleGenerateScriptPanel()">
                             <div role="button" class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center">
@@ -105,7 +106,7 @@
                           <div class="d-flex w-50 p-2 ai-button-container" @click="documentScript()">
                             <div role="button" class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center" >
                               <div>
-                                <img :src="penSparkleIcon" />
+                                <img :src="bookIcon" />
                               </div>
                               <div class="text-center">
                                 {{ $t('Document') }}
@@ -118,7 +119,7 @@
                           <div class="d-flex w-50 p-2 ai-button-container">
                             <div role="button" class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center">
                               <div>
-                                <img :src="penSparkleIcon" />
+                                <img :src="brushIcon" />
                               </div>
                               <div class="text-center">
                                 {{ $t('Clean') }}
@@ -128,7 +129,7 @@
                           <div class="d-flex w-50 p-2 ai-button-container">
                             <div role="button" class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center" >
                               <div>
-                                <img :src="penSparkleIcon" />
+                                <img :src="listIcon" />
                               </div>
                               <div class="text-center">
                                 {{ $t('List Steps') }}
@@ -326,6 +327,9 @@ export default {
     return {
       corneaIcon: require('./../../../../img/cornea_icon.svg'),
       penSparkleIcon: require('./../../../../img/pen_sparkle_icon.svg'),
+      bookIcon: require('./../../../../img/book_icon.svg'),
+      brushIcon: require('./../../../../img/brush_icon.svg'),
+      listIcon: require('./../../../../img/list_icon.svg'),
       executionKey: null,
       resizing: false,
       monacoOptions: {
