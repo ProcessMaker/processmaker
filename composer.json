@@ -28,7 +28,7 @@
         "laravelcollective/html": "^6.3",
         "lavary/laravel-menu": "^1.8",
         "lcobucci/jwt": "^4.2",
-        "league/flysystem-aws-s3-v3": "^3.0",
+        "league/flysystem-aws-s3-v3": "^3.15",
         "mateusjunges/laravel-kafka": "^1.9",
         "microsoft/microsoft-graph": "^1.77",
         "moontoast/math": "^1.2",
@@ -43,6 +43,7 @@
         "processmaker/docker-executor-php": "1.2.0",
         "processmaker/laravel-i18next": "dev-master",
         "processmaker/nayra": "1.9.4",
+        "processmaker/package-data-sources": "^1.20",
         "processmaker/pmql": "1.9.1",
         "pusher/pusher-php-server": "^7.0",
         "ralouphie/getallheaders": "^3.0",
@@ -157,6 +158,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/ProcessMaker/SocialiteProviders"
+        },
+        {
+            "type": "path",
+            "url": "/Users/oskrojas/package-data-sources"
         }
     ],
     "config": {

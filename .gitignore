@@ -41,3 +41,4 @@ cypress/downloads
 .php-cs-fixer.cache
 .phpunit.result.cache
 .editorconfig
+composer.lock
