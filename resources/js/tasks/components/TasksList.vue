@@ -123,6 +123,7 @@
         @vuetable-pagination:change-page="onPageChange"
       />
     </div>
+    <tasks-preview ref="preview" />
   </div>
 </template>
 
@@ -134,9 +135,12 @@ import AvatarImage from "../../components/AvatarImage";
 import isPMQL from "../../modules/isPMQL";
 import moment from "moment";
 import { createUniqIdsMixin } from "vue-uniq-ids";
+import TasksPreview from './TasksPreview.vue';
+
 const uniqIdsMixin = createUniqIdsMixin();
 
 Vue.component("AvatarImage", AvatarImage);
+Vue.component("TasksPreview", TasksPreview);
 
 export default {
   components: { EllipsisMenu },
@@ -437,8 +441,8 @@ export default {
           });
       });
     },
-    previewTasks(data) {
-      console.log(data);
+    previewTasks(info) {
+      this.$refs.preview.showSideBar(info);
     },
   },
 };
