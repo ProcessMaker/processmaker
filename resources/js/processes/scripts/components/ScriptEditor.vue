@@ -56,8 +56,59 @@
               </b-card-header>
 
               <b-card-body class="overflow-hidden p-0">
-                <AIScriptTab v-if="packageAI"/>
                 <b-list-group class="w-100 h-100 overflow-auto">
+                  <b-list-group-item class="script-toggle border-0 mb-0">
+                    <b-row v-b-toggle.assistant>
+                      <b-col>
+                        <img :src="corneaIcon"/>
+                        {{ $t('Cornea AI Assistant') }}
+                      </b-col>
+                      <b-col class="bg-warning rounded" cols="2">{{ $t('New') }}</b-col>
+                      <b-col
+                        align-self="end"
+                        cols="1"
+                        class="mr-2"
+                      >
+                        <i class="fas fa-chevron-down accordion-icon" />
+                      </b-col>
+                    </b-row>
+                  </b-list-group-item>
+                  <b-list-group-item class="p-0 border-left-0 border-right-0 border-top-0 mb-0">
+                    <b-collapse id="assistant">
+                      <div class="m-1">
+                        <b-row class="px-2">
+                          <b-btn 
+                            class="d-flex flex-column justify-content-center align-items-center wrap"
+                            variant="light"
+                          >
+                            <img :src="penSparkleIcon" />
+                            {{ $t('Generate Script From Text') }}
+                          </b-btn>
+                          <b-btn
+                            class="d-flex flex-column justify-content-center align-items-center"
+                            variant="light"
+                          >
+                            {{ $t('Document') }}
+                          </b-btn>
+                        </b-row>
+                        <b-row class="px-2">
+                          <b-btn
+                            class="d-flex flex-column justify-content-center align-items-center"
+                            variant="light"
+                          >
+                            {{ $t('Clean') }}
+                          </b-btn>
+                          <b-btn
+                            class="d-flex flex-column justify-content-center align-items-center"
+                            variant="light"
+                          >
+                            {{ $t('List Steps') }}
+                          </b-btn>
+                        </b-row>
+                      </div>
+                    </b-collapse>
+                  </b-list-group-item>
+
                   <b-list-group-item class="script-toggle border-0 mb-0">
                     <b-row v-b-toggle.configuration>
                       <b-col>
@@ -190,13 +241,11 @@ import TopMenu from "../../../components/Menu.vue";
 // eslint-disable-next-line no-unused-vars
 import customFilters from "../customFilters";
 import autosaveMixins from "../../../modules/autosave/mixins";
-import { AIScriptTab } from "../../../../../public/vendor/processmaker/packages/package-ai";
 
 export default {
   components: {
     MonacoEditor,
-    TopMenu,
-    AIScriptTab
+    TopMenu
   },
   mixins: [...autosaveMixins],
   props: {
@@ -242,6 +291,8 @@ export default {
     ];
 
     return {
+      corneaIcon: require('./../../../../img/cornea_icon.svg'),
+      penSparkleIcon: require('./../../../../img/pen_sparkle_icon.svg'),
       executionKey: null,
       resizing: false,
       monacoOptions: {
