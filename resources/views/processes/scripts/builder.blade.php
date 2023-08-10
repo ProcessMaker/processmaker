@@ -27,7 +27,7 @@
       :auto-save-delay="{{ $autoSaveDelay }}"
       :is-versions-installed="@json($isVersionsInstalled)" 
       :is-draft="@json($isDraft)"
-      :package-ai="{{ hasPackage('package-ai') ? true : false }}"
+      :package-ai="{{ hasPackage('package-ai') ? 1 : 0 }}"
       >
     </script-editor>
   </div>
