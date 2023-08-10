@@ -75,19 +75,7 @@ class NotificationController extends Controller
         // This creates notifications for overdue tasks
         $this->notifyOverdueTasks();
 
-        $query = Notification::select(
-            'id',
-            'read_at',
-            'created_at',
-            'updated_at',
-            'data->type as type',
-            'data->name as name',
-            'data->message as message',
-            'data->processName as processName',
-            'data->userName as userName',
-            'data->request_id as request_id',
-            'url')
-            ->where('notifiable_type', User::class)
+        $query = Notification::where('notifiable_type', User::class)
             ->where('notifiable_id', Auth::user()->id);
 
         $filter = $request->input('filter', '');
@@ -122,7 +110,7 @@ class NotificationController extends Controller
                 $request->input('order_direction', 'DESC')
             )->paginate($request->input('per_page', 10));
 
-        return new ApiCollection($response);
+        return NotificationResource::collection($response);
     }
 
     /**

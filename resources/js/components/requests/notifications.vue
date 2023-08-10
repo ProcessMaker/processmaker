@@ -2,37 +2,54 @@
   <li class="nav-item d-none d-lg-block" v-cloak>
     <div id="notificationMenu">
       <b-button
-        ref="button"
-        variant="link"
-        class="nav-link count-info"
+        id="notification-menu-button"
+        :variant="buttonVariant"
+        :class="{'is-open': isOpen, 'has-messages': hasMessages}"
+        class="notification-menu-button"
         data-toggle="dropdown"
         role="button"
         aria-haspopup="menu"
-        :aria-expanded="ariaExpanded"
+        :aria-expanded="isOpen"
         :title="$t('Notifications')"
         :aria-label="ariaLabel"
+        size="sm"
       >
-        <i class="fas fa-bell fa-lg font-size-23"></i>
-        <b-badge pill variant="danger" v-if="totalMessages>0 && totalMessages<=9">{{totalMessages}}</b-badge>
-        <b-badge pill variant="danger" v-if="totalMessages>9" id="info-large">9+</b-badge>
+        <div class="bell-icon">
+          <i class="fas fa-bell"></i>
+          <span class="dot" v-if="hasMessages"></span>
+        </div>
+        <span class="message-count" v-if="hasMessages">{{totalMessages}}</span>
       </b-button>
-      <b-popover container="#notificationMenu" :target="getTarget" :placement="'bottomleft'" offset="1" triggers="click blur" @shown="onShown" @hidden="onHidden" @hide="e => e.preventDefault()" show="true">
+      <b-popover target="notification-menu-button" placement="bottomleft" offset="1" triggers="click" @shown="onShown" @hidden="onHidden">
         
         <div class="notification-popover">
 
-          <div class="header p-2">
-            {{$t('Inbox')}}
-          </div>
-
-          <b-tabs class="p-2">
-            <b-tab :title="$t('All')"></b-tab>
-            <b-tab :title="$t('Notifications')"></b-tab>
-            <b-tab :title="$t('Comments')"></b-tab>
-          </b-tabs>
+          <b-container fluid class="">
+            <b-row align-h="between">
+              <b-col>
+                <b-tabs>
+                  <b-tab>
+                    <template #title>
+                      <b-badge pill variant="warning">5</b-badge>
+                      {{ $t('Inbox') }}
+                    </template>
+                  </b-tab>
+                  <b-tab :title="$t('Notifications')"></b-tab>
+                  <b-tab :title="$t('Comments')"></b-tab>
+                </b-tabs>
+              </b-col>
+              <b-col align-self="center" lg="auto">
+                <i class="fas fa-external-link-alt fa-lg pr-3 external-link"></i>
+              </b-col>
+            </b-row>
+          </b-container>
+          
+          <notification-item v-for="(item, index) in messages" :key="index" :notification="item"></notification-item>
 
           <div class="p-2" v-if="messages.length == 0">
             {{ $t('No Notifications Found') }}
           </div>
+
           <ul v-else class="notification-list list-unstyled m-2">
             <li class="py-2 border-bottom" v-for="(task, index) in messages" :key="`message-${index}`">
               <div v-if="index <= 5">
@@ -81,14 +98,17 @@
 <script>
 import moment from "moment";
 import { PopoverPlugin } from "bootstrap-vue"
+import NotificationItem from "./notification-item.vue";
 
 Vue.use(PopoverPlugin);
 export default {
+  components: { NotificationItem },
   props: {
     messages: Array
   },
   watch: {
     messages(value, mutation) {
+      console.log("GOT MESSAGES UPDATED", value)
       //update the number of messages just whe the number has been initialized (in mounted)
       if (this.incrementTotalMessages) {
         this.updateTotalMessages();
@@ -100,7 +120,7 @@ export default {
   },
   data() {
     return {
-      ariaExpanded: false,
+      isOpen: false,
       totalMessages: 0,
       incrementTotalMessages: false,
       arrowStyle: {
@@ -120,16 +140,25 @@ export default {
         return this.$t('Notifications, {{count}} New Messages', {count});
       }
     },
+    buttonVariant() {
+      if (this.isOpen) {
+        return "primary"
+      }
+      if (this.hasMessages) {
+        return "warning";
+      }
+      return "link";
+    },
+    hasMessages() {
+      return this.totalMessages > 0;
+    }
   },
   methods: {
     onShown() {
-      this.ariaExpanded = true;
+      this.isOpen = true;
     },
     onHidden() {
-      this.ariaExpanded = false;
-    },
-    getTarget() {
-      return this.$refs.button;
+      this.isOpen = false;
     },
     icon(task) {
       return ProcessMaker.$notifications.icons[task.type];
@@ -144,7 +173,7 @@ export default {
     updateTotalMessages() {
       this.incrementTotalMessages = false;
       ProcessMaker.apiClient
-        .get("/notifications?per_page=5&filter=unread")
+        .get("/notifications?per_page=5&filter=unread&include=user")
         .then(response => {
           ProcessMaker.notifications.splice(0);
           response.data.data.forEach(function(element) {
@@ -206,7 +235,7 @@ export default {
 
 <style lang="scss" scoped>
 @import "../../../sass/variables";
-@import '../../../sass/colors';
+
 
 .button-dismiss {
   font-size: 12px;
@@ -216,18 +245,11 @@ export default {
 .notification-popover {
   font-size: 12px;
   width: 450px;
-  
-  .header {
-    font-size: 18px;
-    font-weight: bold;
-    color: $info;
-  }
-  
+
   footer {
     text-transform: uppercase;
   }
 }
-
 .notification-list {
   li:first-child {
     padding-top: 0 !important;
@@ -237,6 +259,35 @@ export default {
     border-bottom: 0 !important;
     padding-bottom: 0 !important;
   }
+}
+
+.notification-popover::v-deep .tabs {
+  .nav-tabs {
+    border: 0;
+    font-size: 1.1em;
+  }
+
+  .nav-link {
+    border: 0;
+    color: $secondary;
+    border-bottom: 3px solid transparent;
+  }
+
+  .nav-link.active {
+    color: $primary;
+    font-weight: bold;
+    border: 0;
+    border-bottom: 3px solid $primary;
+  }
+
+  .nav-link.hover {
+    border: 0;
+  }
+ 
+}
+
+.external-link {
+  color: $secondary;
 }
 
 .notification-link {
@@ -266,4 +317,39 @@ export default {
   top: -8px;
 }
 
+.notification-menu-button {
+}
+.notification-menu-button i {
+  color: $secondary; 
+}
+
+.notification-menu-button.has-messages i {
+  color: $light;
+}
+
+.notification-menu-button.is-open i {
+  color: $light;
+}
+
+.bell-icon {
+  display: inline-block;
+  vertical-align: middle;
+
+  i {
+    font-size: 19px;
+  }
+  .dot {
+    height: 10px;
+    width: 10px;
+    background-color: $danger;
+    border-radius: 50%;
+    position: relative;
+    display: inline-block;
+    top: -6px;
+    margin-left: -10px;
+  }
+
+  .message-count {
+  }
+}
 </style>
