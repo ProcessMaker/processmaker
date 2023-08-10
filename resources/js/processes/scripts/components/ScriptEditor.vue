@@ -1,53 +1,44 @@
 <template>
   <b-container class="h-100">
-    <b-card
-      no-body
-      class="h-100"
-    >
-      <top-menu
-        ref="menuScript"
-        :options="optionsMenu"
-      />
+    <b-card no-body class="h-100" >
+      <top-menu ref="menuScript" :options="optionsMenu" />
 
-      <b-card-body
-        ref="editorContainer"
-        class="overflow-hidden p-4"
-      >
+      <b-card-body ref="editorContainer" class="overflow-hidden p-4" >
         <b-row class="h-100">
-          <b-col
-            cols="9"
-            class="h-100 p-0"
-          >
-            <monaco-editor
-              v-model="code"
-              class="h-100"
-              :class="{hidden: resizing}"
-              :options="monacoOptions"
-              :language="language"
-            />
+          <b-col cols="9" class="h-100 p-0">
+            <b-row class="h-100">
+              <b-col :cols="packageAi && codePreview !== '' ? 6 : 12" class="h-100 p-0">
+                <monaco-editor
+                  v-model="code"
+                  class="h-100"
+                  :class="{hidden: resizing}"
+                  :options="monacoOptions"
+                  :language="language"
+                />
+              </b-col>
+              <b-col v-if="packageAi && codePreview !== ''" cols="6" class="h-100 p-0" >
+                <monaco-editor
+                  v-model="codePreview"
+                  class="h-100"
+                  :class="{hidden: resizing}"
+                  :options="monacoOptions"
+                  :language="language"
+                />
+              </b-col>
+            </b-row>
           </b-col>
-          <b-col
-            cols="3"
-            class="h-100"
-          >
-            <b-card
-              no-body
-              class="h-100"
-            >
+          <b-col cols="3" class="h-100">
+            <b-card no-body class="h-100">
               <b-card-header class="light-gray-background">
                 <b-row class="d-flex align-items-center">
                   <b-col>{{ $t('Debugger') }}</b-col>
 
-                  <b-col
-                    align-self="end"
-                    class="text-right"
-                  >
+                  <b-col align-self="end" class="text-right">
                     <b-button
                       class="text-capitalize pl-3 pr-3"
                       :disabled="preview.executing"
                       size="sm"
-                      @click="execute"
-                    >
+                      @click="execute" >
                       <i class="fas fa-caret-square-right" />
                       {{ $t('Run') }}
                     </b-button>
@@ -56,7 +47,7 @@
               </b-card-header>
 
               <b-card-body class="overflow-hidden p-0">
-                <AIScriptTab v-if="packageAI"/>
+                <!-- <AIScriptTab v-if="packageAi"/> -->
                 <b-list-group class="w-100 h-100 overflow-auto">
                   <b-list-group-item class="script-toggle border-0 mb-0">
                     <b-row v-b-toggle.configuration>
@@ -190,13 +181,11 @@ import TopMenu from "../../../components/Menu.vue";
 // eslint-disable-next-line no-unused-vars
 import customFilters from "../customFilters";
 import autosaveMixins from "../../../modules/autosave/mixins";
-import { AIScriptTab } from "../../../../../public/vendor/processmaker/packages/package-ai";
 
 export default {
   components: {
     MonacoEditor,
     TopMenu,
-    AIScriptTab
   },
   mixins: [...autosaveMixins],
   props: {
@@ -224,6 +213,9 @@ export default {
       type: Boolean,
       default: false,
     },
+    packageAi: {
+      default: 0,
+    },
   },
   data() {
     const options = [
@@ -234,7 +226,6 @@ export default {
         title: this.$t("Save Script"),
         name: this.$t("Save"),
         icon: "fas fa-save",
-        packageAI: window.packageAI,
         action: () => {
           ProcessMaker.EventBus.$emit("save-script");
         },
@@ -248,6 +239,7 @@ export default {
         automaticLayout: true,
       },
       code: this.script.code,
+      codePreview: "",
       preview: {
         error: {
           exception: "",
