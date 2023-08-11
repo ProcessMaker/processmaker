@@ -109,6 +109,7 @@ export default {
         } else {
           nextTask = this.data[task];
           this.existNext = true;
+          break;
         }
       }
       this.prevTask = prevTask;
