@@ -442,7 +442,7 @@ export default {
       });
     },
     previewTasks(info) {
-      this.$refs.preview.showSideBar(info);
+      this.$refs.preview.showSideBar(info, this.data.data);
     },
   },
 };
