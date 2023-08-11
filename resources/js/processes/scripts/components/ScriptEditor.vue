@@ -92,8 +92,13 @@
               <b-card-body class="overflow-hidden p-0">
                 <b-list-group class="w-100 h-100 overflow-auto">
                   <cornea-tab
-                    @documentScript="documentScript()"
+                    @changes-applied="onChangesApplied"
+                    @new-code-changed="onNewCodeChanged"
+                    @get-selection="onGetSelection"
                     :user="user"
+                    :sourceCode="code"
+                    :language="language"
+                    :selection="selection"
                   />
                   <b-list-group-item class="script-toggle border-0 mb-0">
                     <b-row v-b-toggle.configuration>
@@ -296,9 +301,9 @@ export default {
         renderSideBySide: true,
       },
       code: this.script.code,
-      changesApplied: false,
-      newCode: `${this.script.code}\n $a = 3+4; \n $b = $a / 2;`,
+      newCode: "",
       loading: false,
+      selection: null,
       progress: {
         progress: 76,
       },
@@ -372,20 +377,6 @@ export default {
     },
   },
   mounted() {
-    if (this.packageAi) {
-      this.promptSessionId = localStorage.promptSessionId;
-      this.currentNonce = localStorage.currentNonce;
-
-      if (!localStorage.getItem("cancelledJobs") || localStorage.getItem("cancelledJobs") === "null") {
-        this.cancelledJobs = [];
-      } else {
-        this.cancelledJobs = JSON.parse(localStorage.getItem("cancelledJobs"));
-      }
-
-      this.getPromptSession();
-      this.subscribeToProgress();
-    }
-
     ProcessMaker.EventBus.$emit("script-builder-init", this);
     ProcessMaker.EventBus.$on("save-script", (onSuccess, onError) => {
       this.save(onSuccess, onError);
@@ -418,172 +409,23 @@ export default {
   },
 
   methods: {
+    onGetSelection() {
+      this.$nextTick(() => {
+        const editor = this.$refs.editor.getMonaco();
+        if (editor) {
+          const selection = editor.getSelection();
+          this.selection = selection;
+          console.log(this.selection);
+        }
+      });
+    },
     diffEditorMounted() {
     },
-    getMonacoSelection() {
-      const editor = this.$refs.editor.getMonaco();
-      const selection = editor.getSelection();
-      return selection;
+    onNewCodeChanged(newCode) {
+      this.newCode = newCode;
     },
-
-    getNonce() {
-      const max = 999999999999999;
-      const nonce = Math.floor(Math.random() * max);
-      this.currentNonce = nonce;
-      localStorage.currentNonce = this.currentNonce;
-    },
-
-    getPromptSession() {
-      const url = "/package-ai/getPromptSessionHistory";
-
-      let params = {
-        server: window.location.host,
-        tenant: this.user.id,
-        userId: this.user.id,
-        userName: this.user.username,
-      };
-
-      if (this.promptSessionId && this.promptSessionId !== null && this.promptSessionId !== "") {
-        params = {
-          promptSessionId: this.promptSessionId,
-        };
-      }
-
-      ProcessMaker.apiClient.post(url, params)
-        .then((response) => {
-          this.promptSessionId = response.data.promptSessionId;
-          localStorage.promptSessionId = response.data.promptSessionId;
-        }).catch((error) => {
-          const errorMsg = error.response?.data?.message || error.message;
-
-          if (error.response.status === 404) {
-            localStorage.promptSessionId = "";
-            this.promptSessionId = "";
-            this.getPromptSession();
-          } else {
-            window.ProcessMaker.alert(errorMsg, "danger");
-          }
-        });
-    },
-    generateScript() {
-      this.getNonce();
-
-      const params = {
-        promptSessionId: this.promptSessionId,
-        sourceCode: this.code,
-        selectionStartPos: 0,
-        selectionEndPos: 0,
-        language: this.language,
-        prompt: this.prompt,
-        nonce: this.currentNonce,
-      };
-
-      const url = "/package-ai/generateScript";
-
-      ProcessMaker.apiClient.post(url, params)
-        .then((response) => {
-          if (response.data?.progress?.status === "running") {
-            this.progress = response.data.progress;
-          }
-        })
-        .catch((error) => {
-          const errorMsg = error.response?.data?.message || error.message;
-          window.ProcessMaker.alert(errorMsg, "danger");
-        });
-    },
-
-    cleanScript() {
-      this.getNonce();
-
-      const params = {
-        promptSessionId: this.promptSessionId,
-        sourceCode: this.code,
-        selectionStartPos: 0,
-        selectionEndPos: 0,
-        language: this.language,
-        nonce: this.currentNonce,
-      };
-
-      const url = "/package-ai/cleanScript";
-
-      ProcessMaker.apiClient.post(url, params)
-        .then((response) => {
-          if (response.data?.progress?.status === "running") {
-            this.progress = response.data.progress;
-          }
-        })
-        .catch((error) => {
-          const errorMsg = error.response?.data?.message || error.message;
-          window.ProcessMaker.alert(errorMsg, "danger");
-        });
-    },
-
-    documentScript() {
-      this.getNonce();
-
-      const params = {
-        promptSessionId: this.promptSessionId,
-        sourceCode: this.code,
-        selectionStartPos: 0,
-        selectionEndPos: 0,
-        language: this.language,
-        nonce: this.currentNonce,
-      };
-
-      const url = "/package-ai/documentScript";
-
-      ProcessMaker.apiClient.post(url, params)
-        .then((response) => {
-          if (response.data?.progress?.status === "running") {
-            this.progress = response.data.progress;
-          }
-        })
-        .catch((error) => {
-          const errorMsg = error.response?.data?.message || error.message;
-          window.ProcessMaker.alert(errorMsg, "danger");
-        });
-    },
-
-    subscribeToProgress() {
-      const channel = `ProcessMaker.Models.User.${this.user.id}`;
-      const streamProgressEvent = ".ProcessMaker\\Package\\PackageAi\\Events\\GenerateScriptProgressEvent";
-      window.Echo.private(channel).listen(
-        streamProgressEvent,
-        (response) => {
-          if (response.data.promptSessionId !== this.promptSessionId) {
-            return;
-          }
-
-          if (this.cancelledJobs.some((element) => element === response.data.nonce)) {
-            return;
-          }
-
-          if (response.data) {
-            if (response.data.progress.status === "running") {
-              this.loading = true;
-              this.progress = response.data.progress;
-            } else if (response.data.progress.status === "error") {
-              this.loading = false;
-              this.progress.progress = 0;
-              window.ProcessMaker.alert(response.data.message, "danger");
-            } else {
-              this.newCode = response.data.newCode;
-              this.loading = false;
-              this.progress.progress = 0;
-            }
-          }
-        },
-      );
-    },
-
-    applyChanges() {
-      this.code = this.newCode;
-      this.newCode = "";
-      this.changesApplied = true;
-    },
-    cancelChanges() {
-      this.newCode = "";
-      this.changesApplied = true;
+    onChangesApplied(newCode) {
+      this.code = newCode;
     },
     resizeEditor() {
       const domNode = this.editorReference.getDomNode();

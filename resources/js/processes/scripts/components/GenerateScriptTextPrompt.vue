@@ -17,7 +17,7 @@
       ></b-form-textarea>
     </div>
     <div align-self="end" cols="1" class="mr-2">
-      <b-btn class="p-1" variant="success">
+      <b-btn class="p-1" variant="success" @click="generateScript()">
         {{ $t("Generate") }}
       </b-btn>
     </div>
@@ -40,6 +40,9 @@ export default {
     },
   },
   methods: {
+    generateScript() {
+      this.$emit("generate-script", this.text);
+    },
     textFormatter(text) {
       return String(text).length <= this.maxTokens
         ? text
