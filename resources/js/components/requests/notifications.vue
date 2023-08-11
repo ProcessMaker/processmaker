@@ -229,8 +229,9 @@ export default {
 
 .popover {
   max-width: 450px;
-  height: 600px;
+  max-height: 600px;
   top: -8px;
+  overflow: scroll;
 }
 
 .notification-menu-button {
