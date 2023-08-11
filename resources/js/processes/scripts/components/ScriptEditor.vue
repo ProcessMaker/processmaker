@@ -52,7 +52,25 @@
               </b-col>
             </b-row>
           </b-col>
-          <b-col cols="3" class="h-100 pl-5">
+
+          <!-- Progress panel -->
+          <b-col v-if="packageAi && loading" cols="3" class="h-100 pl-5">
+            <div class="h-100 px-5 d-flex justify-items-center justify-content-center flex-column progress-panel">
+              <div class="w-100 d-flex justify-content-between text-muted">
+                <div><small>{{ currentAction }}</small></div>
+                <div v-if="progress.progress"><small>{{ Math.trunc(progress.progress) }}%</small></div>
+              </div>
+              <div class="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="{'width': progress.progress + '%'}" :aria-valuenow="progress.progress" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+              <div class="text-right progress-panel-footer">
+                <button class="btn btn-light">Cancel</button>
+              </div>
+            </div>
+          </b-col>
+
+          <!-- Right panel -->
+          <b-col v-if="!loading" cols="3" class="h-100 pl-5">
             <b-card no-body class="h-100">
               <b-card-header class="light-gray-background">
                 <b-row class="d-flex align-items-center">
@@ -75,6 +93,7 @@
                 <b-list-group class="w-100 h-100 overflow-auto">
                   <cornea-tab
                     @documentScript="documentScript()"
+                    :user="user"
                   />
                   <b-list-group-item class="script-toggle border-0 mb-0">
                     <b-row v-b-toggle.configuration>
@@ -214,7 +233,7 @@ export default {
   components: {
     MonacoEditor,
     TopMenu,
-    CorneaTab
+    CorneaTab,
   },
   mixins: [...autosaveMixins],
   props: {
@@ -244,6 +263,8 @@ export default {
     },
     packageAi: {
       default: 0,
+    },
+    user: {
     },
   },
   data() {
@@ -277,6 +298,11 @@ export default {
       code: this.script.code,
       changesApplied: false,
       newCode: `${this.script.code}\n $a = 3+4; \n $b = $a / 2;`,
+      loading: false,
+      progress: {
+        progress: 76,
+      },
+      currentAction: "Cleaning...",
       preview: {
         error: {
           exception: "",
@@ -772,5 +798,21 @@ export default {
 .editor-header-border {
   border: 0;
   border-radius: 5px;
+}
+
+.progress {
+  height: 0.7rem;
+  border-radius: 1em;
+}
+
+.progress-panel {
+  background: #f8f8f8;
+  border: 1px solid #dee2e6;
+  border-radius: 2px;
+}
+.progress-panel-footer {
+  position: absolute;
+  bottom: 1rem;
+  right: 2rem;
 }
 </style>

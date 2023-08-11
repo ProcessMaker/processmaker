@@ -98,8 +98,9 @@ import GenerateScriptTextPrompt from "./GenerateScriptTextPrompt.vue";
 export default {
   name: "CorneaTab",
   components: {
-    GenerateScriptTextPrompt
+    GenerateScriptTextPrompt,
   },
+  props: ["user"],
   data() {
     return {
       showPromptArea: false,
@@ -130,5 +131,8 @@ export default {
 .ai-button {
   border-radius: 8px;
   box-shadow: 0 0 8px 0px #ddd;
+}
+.ai-button:hover {
+  background: #f5f5f5 !important;
 }
 </style>

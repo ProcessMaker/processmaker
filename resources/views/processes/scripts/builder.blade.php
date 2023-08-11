@@ -28,6 +28,7 @@
       :is-versions-installed="@json($isVersionsInstalled)" 
       :is-draft="@json($isDraft)"
       :package-ai="{{ hasPackage('package-ai') ? 1 : 0 }}"
+      :user="{{ $user }}"
       >
     </script-editor>
   </div>
