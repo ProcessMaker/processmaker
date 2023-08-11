@@ -20,6 +20,10 @@
                 {{$t('Next')}}
                 <i class="fas fa-chevron-right"></i>
               </b-button>
+              <a class="text-secondary">|</a>
+              <b-button class="btn-light text-secondary" aria-label="$t('Open Task')" :href="'/tasks/' + task.id + '/edit'">
+                <i class="fas fa-external-link-alt"></i>
+              </b-button>
             </div>
           </div>
           <div>
