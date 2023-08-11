@@ -10,19 +10,44 @@
     >
       <template #default="{ hide }">
         <div class="p-3">
-          <div class="w-100 h-100 mb-3">
-            <div class="text-right">
-              <b-button class="btn-light text-secondary" aria-label="$t('Previous Tasks')" @click="goPrevious()">
+          <div class="d-flex w-100 h-100 mb-3">
+            <div class="my-1">
+              <a class="lead text-secondary font-weight-bold">
+                {{ task.element_name }}
+              </a>
+            </div>
+            <div class="ml-auto mr-0 text-right">
+              <b-button
+                class="btn-light text-secondary"
+                :aria-label="$t('Previous Tasks')"
+                @click="goPrevious()"
+              >
                 <i class="fas fa-chevron-left"></i>
-                {{$t('Prev')}}
+                {{ $t("Prev") }}
               </b-button>
-              <b-button class="btn-light text-secondary" aria-label="$t('Next Tasks')" @click="goNext()">
-                {{$t('Next')}}
+              <b-button
+                class="btn-light text-secondary"
+                :aria-label="$t('Next Tasks')"
+                @click="goNext()"
+              >
+                {{ $t("Next") }}
                 <i class="fas fa-chevron-right"></i>
               </b-button>
               <a class="text-secondary">|</a>
-              <b-button class="btn-light text-secondary" aria-label="$t('Open Task')" :href="'/tasks/' + task.id + '/edit'">
+              <b-button
+                class="btn-light text-secondary"
+                :aria-label="$t('Open Task')"
+                :href="openTask()"
+              >
                 <i class="fas fa-external-link-alt"></i>
+              </b-button>
+              <a class="text-secondary">|</a>
+              <b-button
+                class="btn-light text-secondary"
+                :aria-label="$t('Close')"
+                @click="hide"
+              >
+                <i class="fas fa-times"></i>
               </b-button>
             </div>
           </div>
@@ -56,6 +81,12 @@ export default {
       this.task = info;
       this.linkTasks = `/tasks/${info.id}/edit/preview`;
       this.showPreview = true;
+    },
+    /**
+     * Expand Open task
+     */
+    openTask() {
+      return `/tasks/${this.task.id}/edit`;
     },
   },
 };
