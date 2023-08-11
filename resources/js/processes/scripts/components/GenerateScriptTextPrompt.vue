@@ -1,12 +1,12 @@
 <template>
-  <div class="card-header m-0 d-flex border-0 pb-1">
-    <div>
+  <div class="p-2">
+    <div class="p-2 d-flex justify-content-between">
       <div>{{ $t("Description:") }}</div>
-      <div align-self="end" cols="1" class="mr-2">
+      <div>
         {{ tokens + "/" + maxTokens + " " + $t("tokens") }}
       </div>
     </div>
-    <div>
+    <div class="p-2">
       <b-form-textarea
         id="textarea"
         v-model="text"
@@ -16,8 +16,8 @@
         :formatter="textFormatter"
       ></b-form-textarea>
     </div>
-    <div align-self="end" cols="1" class="mr-2">
-      <b-btn class="p-1" variant="success" @click="generateScript()">
+    <div class="p-2">
+      <b-btn class="p-1 ml-auto" variant="success" @click="generateScript()">
         {{ $t("Generate") }}
       </b-btn>
     </div>
