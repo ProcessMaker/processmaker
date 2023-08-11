@@ -21,6 +21,7 @@
                 class="btn-light text-secondary"
                 :aria-label="$t('Previous Tasks')"
                 @click="goPrevNext('Prev')"
+                :disabled="!existPrev"
               >
                 <i class="fas fa-chevron-left"></i>
                 {{ $t("Prev") }}
@@ -29,6 +30,7 @@
                 class="btn-light text-secondary"
                 :aria-label="$t('Next Tasks')"
                 @click="goPrevNext('Next')"
+                :disabled="!existNext"
               >
                 {{ $t("Next") }}
                 <i class="fas fa-chevron-right"></i>
