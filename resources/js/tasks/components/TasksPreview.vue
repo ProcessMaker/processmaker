@@ -87,6 +87,8 @@ export default {
       this.linkTasks = `/tasks/${info.id}/edit/preview`;
       this.showPreview = true;
       this.data = data;
+      this.existPrev = false;
+      this.existNext = false;
       this.defineNextPrevTask();
     },
     /**
@@ -128,10 +130,6 @@ export default {
       if (action === "Prev") {
         this.showSideBar(this.prevTask, this.data);
       }
-      this.prevTask = {};
-      this.nextTask = {};
-      this.existPrev = false;
-      this.existNext = false;
     },
   },
 };
