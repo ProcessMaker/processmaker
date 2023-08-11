@@ -73,74 +73,9 @@
 
               <b-card-body class="overflow-hidden p-0">
                 <b-list-group class="w-100 h-100 overflow-auto">
-                  <b-list-group-item class="script-toggle border-0 mb-0">
-                    <b-row v-b-toggle.assistant>
-                      <b-col>
-                        <img :src="corneaIcon"/>
-                        {{ $t('Cornea AI Assistant') }}
-                      </b-col>
-                      <b-col class="bg-warning rounded" cols="2">{{ $t('New') }}</b-col>
-                      <b-col
-                        align-self="end"
-                        cols="1"
-                        class="mr-2"
-                      >
-                        <i class="fas fa-chevron-down accordion-icon" />
-                      </b-col>
-                    </b-row>
-                  </b-list-group-item>
-                  <b-list-group-item class="p-0 border-left-0 border-right-0 border-top-0 mb-0">
-                    <b-collapse id="assistant">
-                      <div>
-                        <div class="card-header m-0 d-flex border-0 pb-1">
-                          <div class="d-flex w-50 p-2 ai-button-container" @click="toggleGenerateScriptPanel()">
-                            <div role="button" class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center">
-                              <div>
-                                <img :src="penSparkleIcon" />
-                              </div>
-                              <div class="text-center">
-                                {{ $t('Generate Script From Text') }}
-                              </div>
-                            </div>
-                          </div>
-                          <div class="d-flex w-50 p-2 ai-button-container" @click="documentScript()">
-                            <div role="button" class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center" >
-                              <div>
-                                <img :src="bookIcon" />
-                              </div>
-                              <div class="text-center">
-                                {{ $t('Document') }}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="card-header m-0 d-flex border-0 pt-0">
-                          <div class="d-flex w-50 p-2 ai-button-container">
-                            <div role="button" class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center">
-                              <div>
-                                <img :src="brushIcon" />
-                              </div>
-                              <div class="text-center">
-                                {{ $t('Clean') }}
-                              </div>
-                            </div>
-                          </div>
-                          <div class="d-flex w-50 p-2 ai-button-container">
-                            <div role="button" class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center" >
-                              <div>
-                                <img :src="listIcon" />
-                              </div>
-                              <div class="text-center">
-                                {{ $t('List Steps') }}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </b-collapse>
-                  </b-list-group-item>
-
+                  <cornea-tab
+                    @documentScript="documentScript()"
+                  />
                   <b-list-group-item class="script-toggle border-0 mb-0">
                     <b-row v-b-toggle.configuration>
                       <b-col>
@@ -273,11 +208,13 @@ import TopMenu from "../../../components/Menu.vue";
 // eslint-disable-next-line no-unused-vars
 import customFilters from "../customFilters";
 import autosaveMixins from "../../../modules/autosave/mixins";
+import CorneaTab from "./CorneaTab.vue"
 
 export default {
   components: {
     MonacoEditor,
-    TopMenu
+    TopMenu,
+    CorneaTab
   },
   mixins: [...autosaveMixins],
   props: {
@@ -325,11 +262,6 @@ export default {
     ];
 
     return {
-      corneaIcon: require('./../../../../img/cornea_icon.svg'),
-      penSparkleIcon: require('./../../../../img/pen_sparkle_icon.svg'),
-      bookIcon: require('./../../../../img/book_icon.svg'),
-      brushIcon: require('./../../../../img/brush_icon.svg'),
-      listIcon: require('./../../../../img/list_icon.svg'),
       executionKey: null,
       resizing: false,
       monacoOptions: {
@@ -840,13 +772,5 @@ export default {
 .editor-header-border {
   border: 0;
   border-radius: 5px;
-}
-
-.ai-button-container {
-  height: 8rem;
-}
-.ai-button {
-  border-radius: 8px;
-  box-shadow: 0 0 8px 0px #ddd;
 }
 </style>
