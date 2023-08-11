@@ -1,18 +1,24 @@
 <template>
   <div>
     <b-list-group-item class="script-toggle border-0 mb-0">
-      <b-row v-b-toggle.assistant>
+      <b-row v-b-toggle.assistant data-test="cornea-tab-toggle">
         <b-col v-if="!showPromptArea">
           <img class="mr-2" :src="corneaIcon" />
           {{ $t("Cornea AI Assistant") }}
         </b-col>
-        <b-col v-else @click="showPromptArea = false">
+        <b-col
+          v-else
+          data-test="arrow-generate-back"
+          @click="showPromptArea = false"
+        >
           <i class="mr-2 fa fa-arrow-left" />
           {{ $t("Generate Script From Text") }}
         </b-col>
-        <b-col v-if="!showPromptArea" class="py-0" cols="3">
-          <span class="text-center px-2 bg-warning rounded">
-            {{ $t("New") }}
+        <b-col v-if="!showPromptArea" class="p-0 text-right" cols="3">
+          <span
+            class="text-center px-2 bg-warning rounded small"
+          >
+            {{ $t("NEW") }}
           </span>
         </b-col>
         <b-col align-self="end" cols="1" class="mr-2">
@@ -26,13 +32,12 @@
       <b-collapse id="assistant" :visible="showPromptArea">
         <div v-if="!showPromptArea">
           <div class="card-header m-0 d-flex border-0 pb-1">
-            <div
-              class="d-flex w-50 p-2 ai-button-container"
-              @click="showPromptArea = true"
-            >
+            <div class="d-flex w-50 p-2 ai-button-container">
               <div
                 role="button"
                 class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center"
+                data-test="generate-script-btn"
+                @click="showPromptArea = true"
               >
                 <div>
                   <img :src="penSparkleIcon" />
@@ -42,12 +47,11 @@
                 </div>
               </div>
             </div>
-            <div
-              class="d-flex w-50 p-2 ai-button-container"
-            >
+            <div class="d-flex w-50 p-2 ai-button-container">
               <div
                 role="button"
                 class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center"
+                data-test="document-script-btn"
                 @click="documentScript()"
               >
                 <div>
@@ -65,6 +69,7 @@
               <div
                 role="button"
                 class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center"
+                data-test="clean-script-btn"
                 @click="cleanScript()"
               >
                 <div>
@@ -79,6 +84,7 @@
               <div
                 role="button"
                 class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center"
+                data-test="list-steps-btn"
               >
                 <div>
                   <img :src="listIcon" />
@@ -90,7 +96,10 @@
             </div>
           </div>
         </div>
-        <generate-script-text-prompt v-else @generate-script="onGenerateScript" />
+        <generate-script-text-prompt
+          v-else
+          @generate-script="onGenerateScript"
+        />
       </b-collapse>
     </b-list-group-item>
   </div>
@@ -132,7 +141,10 @@ export default {
       this.promptSessionId = localStorage.promptSessionId;
       this.currentNonce = localStorage.currentNonce;
 
-      if (!localStorage.getItem("cancelledJobs") || localStorage.getItem("cancelledJobs") === "null") {
+      if (
+        !localStorage.getItem("cancelledJobs") ||
+        localStorage.getItem("cancelledJobs") === "null"
+      ) {
         this.cancelledJobs = [];
       } else {
         this.cancelledJobs = JSON.parse(localStorage.getItem("cancelledJobs"));
@@ -164,17 +176,23 @@ export default {
         userName: this.user.username,
       };
 
-      if (this.promptSessionId && this.promptSessionId !== null && this.promptSessionId !== "") {
+      if (
+        this.promptSessionId &&
+        this.promptSessionId !== null &&
+        this.promptSessionId !== ""
+      ) {
         params = {
           promptSessionId: this.promptSessionId,
         };
       }
 
-      ProcessMaker.apiClient.post(url, params)
+      ProcessMaker.apiClient
+        .post(url, params)
         .then((response) => {
           this.promptSessionId = response.data.promptSessionId;
           localStorage.promptSessionId = response.data.promptSessionId;
-        }).catch((error) => {
+        })
+        .catch((error) => {
           const errorMsg = error.response?.data?.message || error.message;
 
           if (error.response.status === 404) {
@@ -210,7 +228,8 @@ export default {
 
       const url = "/package-ai/generateScript";
 
-      ProcessMaker.apiClient.post(url, params)
+      ProcessMaker.apiClient
+        .post(url, params)
         .then((response) => {
           if (response.data?.progress?.status === "running") {
             this.progress = response.data.progress;
@@ -239,7 +258,8 @@ export default {
 
       const url = "/package-ai/cleanScript";
 
-      ProcessMaker.apiClient.post(url, params)
+      ProcessMaker.apiClient
+        .post(url, params)
         .then((response) => {
           if (response.data?.progress?.status === "running") {
             this.progress = response.data.progress;
@@ -268,7 +288,8 @@ export default {
 
       const url = "/package-ai/documentScript";
 
-      ProcessMaker.apiClient.post(url, params)
+      ProcessMaker.apiClient
+        .post(url, params)
         .then((response) => {
           if (response.data?.progress?.status === "running") {
             this.progress = response.data.progress;
@@ -282,35 +303,35 @@ export default {
 
     subscribeToProgress() {
       const channel = `ProcessMaker.Models.User.${this.user.id}`;
-      const streamProgressEvent = ".ProcessMaker\\Package\\PackageAi\\Events\\GenerateScriptProgressEvent";
-      window.Echo.private(channel).listen(
-        streamProgressEvent,
-        (response) => {
-          if (response.data.promptSessionId !== this.promptSessionId) {
-            return;
-          }
+      const streamProgressEvent =
+        ".ProcessMaker\\Package\\PackageAi\\Events\\GenerateScriptProgressEvent";
+      window.Echo.private(channel).listen(streamProgressEvent, (response) => {
+        if (response.data.promptSessionId !== this.promptSessionId) {
+          return;
+        }
 
-          if (this.cancelledJobs.some((element) => element === response.data.nonce)) {
-            return;
-          }
+        if (
+          this.cancelledJobs.some((element) => element === response.data.nonce)
+        ) {
+          return;
+        }
 
-          if (response.data) {
-            if (response.data.progress.status === "running") {
-              this.loading = true;
-              this.progress = response.data.progress;
-            } else if (response.data.progress.status === "error") {
-              this.loading = false;
-              this.progress.progress = 0;
-              window.ProcessMaker.alert(response.data.message, "danger");
-            } else {
-              this.newCode = response.data.diff;
-              this.loading = false;
-              this.progress.progress = 0;
-            }
-            console.log(response.data);
+        if (response.data) {
+          if (response.data.progress.status === "running") {
+            this.loading = true;
+            this.progress = response.data.progress;
+          } else if (response.data.progress.status === "error") {
+            this.loading = false;
+            this.progress.progress = 0;
+            window.ProcessMaker.alert(response.data.message, "danger");
+          } else {
+            this.newCode = response.data.diff;
+            this.loading = false;
+            this.progress.progress = 0;
           }
-        },
-      );
+          console.log(response.data);
+        }
+      });
     },
   },
 };
