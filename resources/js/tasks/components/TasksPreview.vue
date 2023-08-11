@@ -10,8 +10,11 @@
     >
       <template #default="{ hide }">
         <div class="p-3">
-          <div class="w-100 h-100 mb-3">
-            <div class="text-right">
+          <div class="d-flex w-100 h-100 mb-3">
+            <div class="my-2">
+              <a class="text-secondary font-weight-bold">{{ task.element_name }}</a>
+            </div>
+            <div class="ml-auto mr-0 text-right">
               <b-button class="btn-light text-secondary" aria-label="$t('Previous Tasks')" @click="goPrevious()">
                 <i class="fas fa-chevron-left"></i>
                 {{$t('Prev')}}
