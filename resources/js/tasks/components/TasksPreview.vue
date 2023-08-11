@@ -20,20 +20,20 @@
               <b-button
                 class="btn-light text-secondary"
                 :aria-label="$t('Previous Tasks')"
-                @click="goPrevNext('Prev')"
                 :disabled="!existPrev"
+                @click="goPrevNext('Prev')"
               >
-                <i class="fas fa-chevron-left"></i>
+                <i class="fas fa-chevron-left" />
                 {{ $t("Prev") }}
               </b-button>
               <b-button
                 class="btn-light text-secondary"
                 :aria-label="$t('Next Tasks')"
-                @click="goPrevNext('Next')"
                 :disabled="!existNext"
+                @click="goPrevNext('Next')"
               >
                 {{ $t("Next") }}
-                <i class="fas fa-chevron-right"></i>
+                <i class="fas fa-chevron-right" />
               </b-button>
               <a class="text-secondary">|</a>
               <b-button
@@ -41,7 +41,7 @@
                 :aria-label="$t('Open Task')"
                 :href="openTask()"
               >
-                <i class="fas fa-external-link-alt"></i>
+                <i class="fas fa-external-link-alt" />
               </b-button>
               <a class="text-secondary">|</a>
               <b-button
@@ -49,14 +49,24 @@
                 :aria-label="$t('Close')"
                 @click="hide"
               >
-                <i class="fas fa-times"></i>
+                <i class="fas fa-times" />
               </b-button>
             </div>
           </div>
           <div>
+            <div
+              v-show="loading"
+              class="text-center"
+            >
+              <b-spinner />
+            </div>
             <b-embed
+              v-show="!loading"
+              id="tasksFrame"
               type="iframe"
+              :class="loading ? 'loadingFrame' : ''"
               :src="linkTasks"
+              @load="frameLoaded"
             />
           </div>
         </div>
@@ -78,6 +88,7 @@ export default {
       nextTask: {},
       existPrev: false,
       existNext: false,
+      loading: true,
     };
   },
   methods: {
@@ -100,7 +111,7 @@ export default {
       let prevTask = {};
       let nextTask = {};
       let seeNextTask = false;
-      for (let task in this.data) {
+      for (const task in this.data) {
         if (!seeNextTask) {
           if (this.data[task] === this.task) {
             seeNextTask = true;
@@ -127,12 +138,20 @@ export default {
      * Go to previous or next task
      */
     goPrevNext(action) {
+      this.linkTasks = "";
+      this.loading = true;
       if (action === "Next") {
         this.showSideBar(this.nextTask, this.data);
       }
       if (action === "Prev") {
         this.showSideBar(this.prevTask, this.data);
       }
+    },
+    /**
+     * Show the frame when this is loaded
+     */
+    frameLoaded() {
+      this.loading = false;
     },
   },
 };
@@ -142,5 +161,8 @@ export default {
 #tasks-preview {
   top: 11%;
   width: 50%;
+}
+.loadingFrame {
+  opacity: 0.6;
 }
 </style>
