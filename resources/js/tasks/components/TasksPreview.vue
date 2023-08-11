@@ -20,6 +20,10 @@
                 {{$t('Next')}}
                 <i class="fas fa-chevron-right"></i>
               </b-button>
+              <a class="text-secondary">|</a>
+              <b-button class="btn-light text-secondary" aria-label="$t('Close')" @click="hide">
+                <i class="fas fa-times"></i>
+              </b-button>
             </div>
           </div>
           <div>
