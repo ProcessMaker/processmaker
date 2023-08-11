@@ -3,11 +3,11 @@
     <b-list-group-item class="script-toggle border-0 mb-0">
       <b-row v-b-toggle.assistant>
         <b-col v-if="!showPromptArea">
-          <img :src="corneaIcon" />
+          <img class="mr-2" :src="corneaIcon" />
           {{ $t("Cornea AI Assistant") }}
         </b-col>
         <b-col v-else @click="showPromptArea = false">
-          <i class="fa fa-arrow-left" />
+          <i class="mr-2 fa fa-arrow-left" />
           {{ $t("Generate Script From Text") }}
         </b-col>
         <b-col v-if="!showPromptArea" class="py-0" cols="3">

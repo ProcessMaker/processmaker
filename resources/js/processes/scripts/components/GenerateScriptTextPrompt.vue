@@ -2,7 +2,7 @@
   <div class="p-2">
     <div class="p-2 d-flex justify-content-between">
       <div>{{ $t("Description:") }}</div>
-      <div>
+      <div class="text-muted">
         {{ tokens + "/" + maxTokens + " " + $t("tokens") }}
       </div>
     </div>
@@ -16,7 +16,7 @@
         :formatter="textFormatter"
       ></b-form-textarea>
     </div>
-    <div class="p-2">
+    <div class="d-flex p-2">
       <b-btn class="p-1 ml-auto" variant="success" @click="generateScript()">
         {{ $t("Generate") }}
       </b-btn>
