@@ -20,7 +20,7 @@
               <b-button
                 class="btn-light text-secondary"
                 :aria-label="$t('Previous Tasks')"
-                @click="goPrevious()"
+                @click="goPrevNext('Prev')"
               >
                 <i class="fas fa-chevron-left"></i>
                 {{ $t("Prev") }}
@@ -28,7 +28,7 @@
               <b-button
                 class="btn-light text-secondary"
                 :aria-label="$t('Next Tasks')"
-                @click="goNext()"
+                @click="goPrevNext('Next')"
               >
                 {{ $t("Next") }}
                 <i class="fas fa-chevron-right"></i>
@@ -71,22 +71,67 @@ export default {
       showRight: true,
       linkTasks: "",
       task: {},
+      data: [],
+      prevTask: {},
+      nextTask: {},
+      existPrev: false,
+      existNext: false,
     };
   },
   methods: {
     /**
      * Show the sidebar
      */
-    showSideBar(info) {
+    showSideBar(info, data) {
       this.task = info;
       this.linkTasks = `/tasks/${info.id}/edit/preview`;
       this.showPreview = true;
+      this.data = data;
+      this.defineNextPrevTask();
+    },
+    /**
+     * Defined Previuos and Next task
+    */
+    defineNextPrevTask() {
+      let prevTask = {};
+      let nextTask = {};
+      let seeNextTask = false;
+      for (let task in this.data) {
+        if (!seeNextTask) {
+          if (this.data[task] === this.task) {
+            seeNextTask = true;
+          } else {
+            prevTask = this.data[task];
+            this.existPrev = true;
+          }
+        } else {
+          nextTask = this.data[task];
+          this.existNext = true;
+        }
+      }
+      this.prevTask = prevTask;
+      this.nextTask = nextTask;
     },
     /**
      * Expand Open task
      */
     openTask() {
       return `/tasks/${this.task.id}/edit`;
+    },
+    /**
+     * Go to previous or next task
+     */
+    goPrevNext(action) {
+      if (action === "Next") {
+        this.showSideBar(this.nextTask, this.data);
+      }
+      if (action === "Prev") {
+        this.showSideBar(this.prevTask, this.data);
+      }
+      this.prevTask = {};
+      this.nextTask = {};
+      this.existPrev = false;
+      this.existNext = false;
     },
   },
 };
