@@ -10,9 +10,11 @@
           <i class="fa fa-arrow-left" />
           {{ $t("Generate Script From Text") }}
         </b-col>
-        <b-col v-if="!showPromptArea" class="bg-warning rounded" cols="3">{{
-          $t("New")
-        }}</b-col>
+        <b-col v-if="!showPromptArea" class="py-0" cols="3">
+          <span class="text-center px-2 bg-warning rounded">
+            {{ $t("New") }}
+          </span>
+        </b-col>
         <b-col align-self="end" cols="1" class="mr-2">
           <i class="fas fa-chevron-down accordion-icon" />
         </b-col>
@@ -21,7 +23,7 @@
     <b-list-group-item
       class="p-0 border-left-0 border-right-0 border-top-0 mb-0"
     >
-      <b-collapse id="assistant">
+      <b-collapse id="assistant" :visible="showPromptArea">
         <div v-if="!showPromptArea">
           <div class="card-header m-0 d-flex border-0 pb-1">
             <div
@@ -324,6 +326,10 @@ export default {
 
 .accordion-icon {
   transition: all 200ms;
+}
+
+.collapsed .accordion-icon {
+  transform: rotate(-90deg);
 }
 
 .ai-button-container {
