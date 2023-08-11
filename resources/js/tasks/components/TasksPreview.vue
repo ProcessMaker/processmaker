@@ -6,15 +6,21 @@
       v-model="showPreview"
       :right="showRight"
       shadow
+      no-header
     >
       <template #default="{ hide }">
         <div class="p-3">
-          <div>
-            <!-- Set Controls to navigate -->
-            <i
-              class="fa fa-close"
-              @click="hide"
-            />
+          <div class="w-100 h-100 mb-3">
+            <div class="text-right">
+              <b-button class="btn-light text-secondary" aria-label="$t('Previous Tasks')" @click="goPrevious()">
+                <i class="fas fa-chevron-left"></i>
+                {{$t('Prev')}}
+              </b-button>
+              <b-button class="btn-light text-secondary" aria-label="$t('Next Tasks')" @click="goNext()">
+                {{$t('Next')}}
+                <i class="fas fa-chevron-right"></i>
+              </b-button>
+            </div>
           </div>
           <div>
             <b-embed
