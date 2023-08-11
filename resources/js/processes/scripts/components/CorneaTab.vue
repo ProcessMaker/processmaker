@@ -101,12 +101,7 @@ export default {
   components: {
     GenerateScriptTextPrompt,
   },
-  props: ["user", "sourceCode", "language", "selection"],
-  watch: {
-    newCode() {
-      this.$emit("new-code-changed", this.newCode);
-    },
-  },
+  props: ["user", "sourceCode", "language", "selection", "packageAi"],
   data() {
     return {
       showPromptArea: false,
@@ -118,10 +113,16 @@ export default {
       changesApplied: false,
       newCode: `\n $a = 3+4; \n $b = $a / 2;`,
       loading: false,
+      promptSessionId: "",
       progress: {
         progress: 0,
       },
     };
+  },
+  watch: {
+    newCode() {
+      this.$emit("new-code-changed", this.newCode);
+    },
   },
 
   mounted() {
@@ -187,17 +188,19 @@ export default {
       this.prompt = prompt;
       this.generateScript();
     },
-    generateScript() {
+    async generateScript() {
       this.getSelection();
       this.getNonce();
-      alert(1);
-      console.log(this.selection);
+
+      await this.$nextTick();
 
       const params = {
         promptSessionId: this.promptSessionId,
         sourceCode: this.sourceCode,
-        selectionStartPos: 0,
-        selectionEndPos: 0,
+        startColumn: this.selection.startColumn,
+        endColumn: this.selection.endColumn,
+        startLineNumber: this.selection.startLineNumber,
+        endLineNumber: this.selection.endLineNumber,
         language: this.language,
         prompt: this.prompt,
         nonce: this.currentNonce,
@@ -224,8 +227,10 @@ export default {
       const params = {
         promptSessionId: this.promptSessionId,
         sourceCode: this.sourceCode,
-        selectionStartPos: 0,
-        selectionEndPos: 0,
+        startColumn: this.selection.startColumn,
+        endColumn: this.selection.endColumn,
+        startLineNumber: this.selection.startLineNumber,
+        endLineNumber: this.selection.endLineNumber,
         language: this.language,
         nonce: this.currentNonce,
       };
@@ -251,8 +256,10 @@ export default {
       const params = {
         promptSessionId: this.promptSessionId,
         sourceCode: this.sourceCode,
-        selectionStartPos: 0,
-        selectionEndPos: 0,
+        startColumn: this.selection.startColumn,
+        endColumn: this.selection.endColumn,
+        startLineNumber: this.selection.startLineNumber,
+        endLineNumber: this.selection.endLineNumber,
         language: this.language,
         nonce: this.currentNonce,
       };
@@ -294,23 +301,14 @@ export default {
               this.progress.progress = 0;
               window.ProcessMaker.alert(response.data.message, "danger");
             } else {
-              this.newCode = response.data.newCode;
+              this.newCode = response.data.diff;
               this.loading = false;
               this.progress.progress = 0;
             }
+            console.log(response.data);
           }
         },
       );
-    },
-
-    applyChanges() {
-      this.$emit("changes-applied", this.newCode);
-      this.newCode = "";
-      this.changesApplied = true;
-    },
-    cancelChanges() {
-      this.newCode = "";
-      this.changesApplied = true;
     },
   },
 };

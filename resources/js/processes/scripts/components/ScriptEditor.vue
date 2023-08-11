@@ -92,13 +92,13 @@
               <b-card-body class="overflow-hidden p-0">
                 <b-list-group class="w-100 h-100 overflow-auto">
                   <cornea-tab
-                    @changes-applied="onChangesApplied"
                     @new-code-changed="onNewCodeChanged"
                     @get-selection="onGetSelection"
                     :user="user"
                     :sourceCode="code"
                     :language="language"
                     :selection="selection"
+                    :package-ai="packageAi"
                   />
                   <b-list-group-item class="script-toggle border-0 mb-0">
                     <b-row v-b-toggle.configuration>
@@ -409,23 +409,27 @@ export default {
   },
 
   methods: {
+    applyChanges() {
+      this.code = this.newCode;
+      this.newCode = "";
+      this.changesApplied = true;
+    },
+    cancelChanges() {
+      this.newCode = "";
+      this.changesApplied = true;
+    },
     onGetSelection() {
-      this.$nextTick(() => {
-        const editor = this.$refs.editor.getMonaco();
-        if (editor) {
-          const selection = editor.getSelection();
-          this.selection = selection;
-          console.log(this.selection);
-        }
-      });
+      const editor = this.$refs.editor.getMonaco();
+      if (editor) {
+        const selection = editor.getSelection();
+        this.selection = selection;
+        console.log(this.selection);
+      }
     },
     diffEditorMounted() {
     },
     onNewCodeChanged(newCode) {
       this.newCode = newCode;
-    },
-    onChangesApplied(newCode) {
-      this.code = newCode;
     },
     resizeEditor() {
       const domNode = this.editorReference.getDomNode();
