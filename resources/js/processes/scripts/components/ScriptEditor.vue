@@ -52,6 +52,21 @@
               </b-col>
             </b-row>
           </b-col>
+          
+          <!-- Progress Panel -->
+          <b-col v-if="loading" cols="3" class="h-100 pl-5">
+            <div class="h-100 pl-5">
+              <div class="w-100 d-flex justify-content-between pl-3 text-muted">
+                <div><small>{{ $t('Generating ...') }}</small></div>
+                <div v-if="progress.progress"><small>{{ Math.trunc(progress.progress) }}%</small></div>
+              </div>
+              <div class="progress ml-3">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="{'width': progress.progress + '%'}" :aria-valuenow="progress.progress" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+            </div>
+          </b-col>
+
+          <!-- Right Panel -->
           <b-col cols="3" class="h-100 pl-5">
             <b-card no-body class="h-100">
               <b-card-header class="light-gray-background">
@@ -75,8 +90,8 @@
                 <b-list-group class="w-100 h-100 overflow-auto">
                   <b-list-group-item class="script-toggle border-0 mb-0">
                     <b-row v-b-toggle.assistant>
-                      <b-col>
-                        <img :src="corneaIcon"/>
+                      <b-col class="col d-flex align-items-center">
+                        <img :src="corneaIcon" class="mr-2"/>
                         {{ $t('Cornea AI Assistant') }}
                       </b-col>
                       <b-col class="bg-warning rounded" cols="2">{{ $t('New') }}</b-col>
@@ -94,7 +109,7 @@
                       <div>
                         <div class="card-header m-0 d-flex border-0 pb-1">
                           <div class="d-flex w-50 p-2 ai-button-container" @click="toggleGenerateScriptPanel()">
-                            <div role="button" class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center">
+                            <div role="button" class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center px-3">
                               <div>
                                 <img :src="penSparkleIcon" />
                               </div>
@@ -104,7 +119,7 @@
                             </div>
                           </div>
                           <div class="d-flex w-50 p-2 ai-button-container" @click="documentScript()">
-                            <div role="button" class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center" >
+                            <div role="button" class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center px-3" >
                               <div>
                                 <img :src="bookIcon" />
                               </div>
@@ -117,7 +132,7 @@
 
                         <div class="card-header m-0 d-flex border-0 pt-0">
                           <div class="d-flex w-50 p-2 ai-button-container">
-                            <div role="button" class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center">
+                            <div role="button" class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center px-3">
                               <div>
                                 <img :src="brushIcon" />
                               </div>
@@ -127,7 +142,7 @@
                             </div>
                           </div>
                           <div class="d-flex w-50 p-2 ai-button-container">
-                            <div role="button" class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center" >
+                            <div role="button" class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center px-3">
                               <div>
                                 <img :src="listIcon" />
                               </div>
@@ -308,6 +323,7 @@ export default {
     packageAi: {
       default: 0,
     },
+    user: {},
   },
   data() {
     const options = [
@@ -345,6 +361,10 @@ export default {
       code: this.script.code,
       changesApplied: false,
       newCode: `${this.script.code}\n $a = 3+4; \n $b = $a / 2;`,
+      progress: {
+        progress: 76,
+      },
+      loading: false,
       preview: {
         error: {
           exception: "",
@@ -848,5 +868,8 @@ export default {
 .ai-button {
   border-radius: 8px;
   box-shadow: 0 0 8px 0px #ddd;
+}
+.ai-button:hover {
+    background: #1c72c200 !important;
 }
 </style>
