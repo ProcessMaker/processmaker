@@ -77,6 +77,7 @@ class ProcessCreatedNotification extends Notification
             'dateTime' => $instance->initiated_at->toIso8601String(),
             'uid' => $this->processName,
             'request_id' => $instance->getKey(),
+            'user_id' => $instance->user_id,
             'url' => sprintf(
                 '/requests/%s',
                 $this->instanceUid

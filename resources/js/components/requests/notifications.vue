@@ -44,51 +44,11 @@
             </b-row>
           </b-container>
           
-          <notification-item v-for="(item, index) in messages" :key="index" :notification="item"></notification-item>
-
-          <div class="p-2" v-if="messages.length == 0">
+          <div v-if="messages.length == 0">
             {{ $t('No Notifications Found') }}
           </div>
+          <notification-item v-else v-for="(item, index) in messages" :key="index" :notification="item"></notification-item>
 
-          <ul v-else class="notification-list list-unstyled m-2">
-            <li class="py-2 border-bottom" v-for="(task, index) in messages" :key="`message-${index}`">
-              <div v-if="index <= 5">
-                <div>
-                  <a class="notification-link text-primary" href="#" @click.stop="remove(task, task.url)">{{task.name}}</a>
-                  <div class="text-muted" v-if="task.processName && task.userName">
-                    {{task.processName}}
-                    <br>
-                    {{task.userName}}
-                  </div>
-                </div>
-                
-                <div class="d-flex align-items-center justify-content-end mt-2">
-                  <small class="muted" v-b-tooltip.hover :title="moment(task.created_at).format()">{{ moment(task.created_at).fromNow() }}</small>
-                  <b-button
-                    variant="link"
-                    class="float-right ml-2 button-dismiss"
-                    @click="remove(task)"
-                    v-b-tooltip.hover
-                    :title="$t('Dismiss Alert')"
-                  ><i class="fa fa-trash"></i></b-button>
-                </div>
-              </div>
-            </li>
-          </ul>
-          <footer class="p-2 border-top footer d-flex justify-content-end">
-            <b-button
-              variant="outline-secondary"
-              size="sm"
-              v-if="messages.length != 0"
-              @click="removeAll"
-            >{{$t('Dismiss All')}}</b-button>
-            <b-button
-              class="ml-auto"
-              variant="secondary"
-              size="sm"
-              href="/notifications"
-            >{{$t('View All')}}</b-button>
-          </footer>
         </div>
       </b-popover>
     </div>
@@ -108,7 +68,6 @@ export default {
   },
   watch: {
     messages(value, mutation) {
-      console.log("GOT MESSAGES UPDATED", value)
       //update the number of messages just whe the number has been initialized (in mounted)
       if (this.incrementTotalMessages) {
         this.updateTotalMessages();
@@ -185,35 +144,6 @@ export default {
           });
         });
     },
-    remove(message, redirectTo = null) {
-      ProcessMaker.removeNotifications([message.id]).then(() => {
-        if (this.totalMessages > 0) {
-          this.totalMessages--;
-        }
-        if (redirectTo) {
-          window.location.href = redirectTo
-        }
-      });
-    },
-    formatDateTime(iso8601) {
-      return moment(iso8601).format("MM/DD/YY HH:mm");
-    },
-    removeAll() {
-      let that = this;
-      //Remove all notification of current user
-      ProcessMaker.apiClient
-        .put("/read_all_notifications", {
-          id: ProcessMaker.user.id,
-          type: "ProcessMaker\\Models\\User"
-        })
-        .then(() => {
-          ProcessMaker.notifications.splice(
-            0,
-            ProcessMaker.notifications.length
-          );
-          that.totalMessages = 0;
-        });
-    }
   },
   mounted() {
     if ($("#navbar-request-button").length > 0) {
@@ -245,20 +175,6 @@ export default {
 .notification-popover {
   font-size: 12px;
   width: 450px;
-
-  footer {
-    text-transform: uppercase;
-  }
-}
-.notification-list {
-  li:first-child {
-    padding-top: 0 !important;
-  }
-  
-  li:last-child {
-    border-bottom: 0 !important;
-    padding-bottom: 0 !important;
-  }
 }
 
 .notification-popover::v-deep .tabs {
@@ -321,10 +237,6 @@ export default {
 }
 .notification-menu-button i {
   color: $secondary; 
-}
-
-.notification-menu-button.has-messages i {
-  color: $light;
 }
 
 .notification-menu-button.is-open i {
