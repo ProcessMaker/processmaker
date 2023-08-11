@@ -13,6 +13,9 @@
           <div>
             <span class="text-muted" v-b-tooltip.hover :title="moment(time).format()">{{ moment(time).fromNow() }}</span>
           </div>
+          <div v-if="displayBubble" class="bubble">
+            {{ displayBubble }}
+          </div>
         </b-col>
       </b-row>
     </b-container>
@@ -41,7 +44,7 @@ export default {
       return this.notification.data; 
     },
     displayUser() {
-      return this.data.user?.fullname || '';
+      return this.data.user?.fullname || this.$t('Unknown User');
     },
     displayAction() {
       switch(this.data.type) {
@@ -49,6 +52,8 @@ export default {
           return this.$t('has been assigned to the task');
         case "PROCESS_CREATED":
           return this.$t('started the process');
+        case "COMMENT":
+          return this.$t('commented on');
       }
       return null;
     },
@@ -58,6 +63,8 @@ export default {
           return this.data.name;
         case "PROCESS_CREATED":
           return this.data.uid;
+        case "COMMENT":
+          return this.data.processName;
       }
       return null;
     },
@@ -67,6 +74,13 @@ export default {
           return [this.$t('in the process'), this.data.processName];
       }
       return null;
+    },
+    displayBubble()
+    {
+      switch(this.data.type) {
+        case "COMMENT":
+          return this.data.message.substring(0, 200);
+      }
     },
     time() {
       return this.notification.created_at;
@@ -78,5 +92,10 @@ export default {
 <style lang="scss" scoped>
 @import "../../../sass/variables";
 
-.item {}
+.bubble {
+  background-color: lighten($primary, 55%);
+  border-radius: 1em;
+  padding: 1em;
+  margin-top: 1em;
+}
 </style>
