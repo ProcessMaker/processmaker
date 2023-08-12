@@ -15,6 +15,7 @@ export default {
     
     return ProcessMaker.apiClient.post('/import/do-import', formData,
     {
+        timeout: 60_000, // 60 seconds
         headers: {
             'Content-Type': 'multipart/form-data'
         }
