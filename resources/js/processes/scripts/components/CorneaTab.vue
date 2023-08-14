@@ -202,6 +202,7 @@ export default {
         .then((response) => {
           if (response.data?.progress?.status === "running") {
             this.progress = response.data.progress;
+            this.$emit("request-started", this.progress, this.$t("Generating"));
           }
         })
         .catch((error) => {
@@ -233,6 +234,7 @@ export default {
         .then((response) => {
           if (response.data?.progress?.status === "running") {
             this.progress = response.data.progress;
+            this.$emit("request-started", this.progress, this.$t("Cleaning"));
           }
         })
         .catch((error) => {
@@ -264,6 +266,7 @@ export default {
         .then((response) => {
           if (response.data?.progress?.status === "running") {
             this.progress = response.data.progress;
+            this.$emit("request-started", this.progress, this.$t("Documenting"));
           }
         })
         .catch((error) => {

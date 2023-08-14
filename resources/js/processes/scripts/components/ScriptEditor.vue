@@ -57,7 +57,7 @@
           <b-col v-if="packageAi && loading" cols="3" class="h-100 pl-5">
             <div class="h-100 px-5 d-flex justify-items-center justify-content-center flex-column progress-panel">
               <div class="w-100 d-flex justify-content-between text-muted">
-                <div><small>{{ currentAction }}</small></div>
+                <div><small>{{ loaderAction }}...</small></div>
                 <div v-if="progress.progress"><small>{{ Math.trunc(progress.progress) }}%</small></div>
               </div>
               <div class="progress">
@@ -93,6 +93,7 @@
                 <b-list-group class="w-100 h-100 overflow-auto">
                   <cornea-tab
                     @get-selection="onGetSelection"
+                    @request-started="onRequestStarted"
                     :user="user"
                     :sourceCode="code"
                     :language="language"
@@ -280,6 +281,7 @@ export default {
         title: this.$t("Save Script"),
         name: this.$t("Save"),
         icon: "fas fa-save",
+        loaderAction: "",
         action: () => {
           ProcessMaker.EventBus.$emit("save-script");
         },
@@ -306,7 +308,6 @@ export default {
       progress: {
         progress: 76,
       },
-      currentAction: "Cleaning...",
       preview: {
         error: {
           exception: "",
@@ -433,6 +434,11 @@ export default {
         this.selection = selection;
       }
     },
+    onRequestStarted(progress, action) {
+      this.loading = true;
+      this.progress = progress;
+      this.loaderAction = action;
+    },
     subscribeToProgress() {
       const channel = `ProcessMaker.Models.User.${this.user.id}`;
       const streamProgressEvent = ".ProcessMaker\\Package\\PackageAi\\Events\\GenerateScriptProgressEvent";
@@ -451,20 +457,16 @@ export default {
             if (response.data.progress.status === "running") {
               this.loading = true;
               this.progress = response.data.progress;
-              this.$emit("progress-updated", this.progress);
             } else if (response.data.progress.status === "error") {
               this.loading = false;
               this.progress.progress = 0;
               window.ProcessMaker.alert(response.data.message, "danger");
-              this.$emit("progress-updated", this.progress);
             } else {
               this.newCode = response.data.diff;
               this.loading = false;
-              this.$emit("progress-updated", this.progress);
               this.progress.progress = 0;
               this.changesApplied = false;
             }
-            console.log(response.data);
           }
         },
       );
