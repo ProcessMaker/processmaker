@@ -2,22 +2,28 @@
   <div class="p-2">
     <div class="p-2 d-flex justify-content-between">
       <div>{{ $t("Description:") }}</div>
-      <div class="text-muted">
+      <div class="text-muted" data-test="token-count">
         {{ tokens + "/" + maxTokens + " " + $t("tokens") }}
       </div>
     </div>
     <div class="p-2">
       <b-form-textarea
         id="textarea"
+        data-test="prompt-area"
         v-model="text"
         placeholder="Enter your prompt!..."
-        rows="3"
-        max-rows="6"
+        rows="4"
+        max-rows="4"
         :formatter="textFormatter"
       ></b-form-textarea>
     </div>
     <div class="d-flex p-2">
-      <b-btn class="p-1 ml-auto" variant="success" @click="generateScript()">
+      <b-btn
+        class="p-1 ml-auto"
+        variant="success"
+        data-test="generate-prompt-button"
+        @click="generateScript()"
+      >
         {{ $t("Generate") }}
       </b-btn>
     </div>
