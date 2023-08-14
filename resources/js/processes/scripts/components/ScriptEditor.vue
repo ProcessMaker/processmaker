@@ -306,7 +306,7 @@ export default {
       loading: false,
       selection: null,
       progress: {
-        progress: 76,
+        progress: 0,
       },
       preview: {
         error: {
