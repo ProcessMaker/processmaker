@@ -16,7 +16,7 @@ class AnonymousUser extends User
 
     public function receivesBroadcastNotificationsOn($notification)
     {
-        $class = str_replace('\\', '.', get_parent_class());
+        $class = str_replace('\\', '.', parent::class);
 
         return $class . '.' . $this->getKey();
     }
