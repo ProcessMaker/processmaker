@@ -293,6 +293,38 @@ export default {
           window.ProcessMaker.alert(errorMsg, "danger");
         });
     },
+    async explainScript() {
+      this.getSelection();
+      this.getNonce();
+
+      await this.$nextTick();
+
+      const params = {
+        promptSessionId: this.promptSessionId,
+        sourceCode: this.sourceCode,
+        startColumn: this.selection.startColumn,
+        endColumn: this.selection.endColumn,
+        startLineNumber: this.selection.startLineNumber,
+        endLineNumber: this.selection.endLineNumber,
+        language: this.language,
+        nonce: this.currentNonce,
+      };
+
+      const url = "/package-ai/explainScript";
+
+      ProcessMaker.apiClient
+        .post(url, params)
+        .then((response) => {
+          if (response.data?.progress?.status === "running") {
+            this.progress = response.data.progress;
+            this.$emit("request-started", this.progress, this.$t("Generating explanation"));
+          }
+        })
+        .catch((error) => {
+          const errorMsg = error.response?.data?.message || error.message;
+          window.ProcessMaker.alert(errorMsg, "danger");
+        });
+    }
   },
 };
 </script>
