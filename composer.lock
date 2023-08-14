@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "720eae23adf4a169c6c562741766f619",
+    "content-hash": "a40e055b44687d24a418ab8c9c89e005",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -62,16 +62,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.277.12",
+            "version": "3.278.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "2f7c7f7d4c949469eca4e4c18fb5646aafb0375c"
+                "reference": "d9c58e931efef8f053449e5374bbe0f1745c45d0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/2f7c7f7d4c949469eca4e4c18fb5646aafb0375c",
-                "reference": "2f7c7f7d4c949469eca4e4c18fb5646aafb0375c",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/d9c58e931efef8f053449e5374bbe0f1745c45d0",
+                "reference": "d9c58e931efef8f053449e5374bbe0f1745c45d0",
                 "shasum": ""
             },
             "require": {
@@ -151,9 +151,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.277.12"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.278.2"
             },
-            "time": "2023-08-09T18:09:09+00:00"
+            "time": "2023-08-14T18:09:33+00:00"
         },
         {
             "name": "babenkoivan/elastic-adapter",
@@ -1379,16 +1379,16 @@
         },
         {
             "name": "dragonmantank/cron-expression",
-            "version": "v3.3.2",
+            "version": "v3.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dragonmantank/cron-expression.git",
-                "reference": "782ca5968ab8b954773518e9e49a6f892a34b2a8"
+                "reference": "adfb1f505deb6384dc8b39804c5065dd3c8c8c0a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dragonmantank/cron-expression/zipball/782ca5968ab8b954773518e9e49a6f892a34b2a8",
-                "reference": "782ca5968ab8b954773518e9e49a6f892a34b2a8",
+                "url": "https://api.github.com/repos/dragonmantank/cron-expression/zipball/adfb1f505deb6384dc8b39804c5065dd3c8c8c0a",
+                "reference": "adfb1f505deb6384dc8b39804c5065dd3c8c8c0a",
                 "shasum": ""
             },
             "require": {
@@ -1428,7 +1428,7 @@
             ],
             "support": {
                 "issues": "https://github.com/dragonmantank/cron-expression/issues",
-                "source": "https://github.com/dragonmantank/cron-expression/tree/v3.3.2"
+                "source": "https://github.com/dragonmantank/cron-expression/tree/v3.3.3"
             },
             "funding": [
                 {
@@ -1436,7 +1436,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-09-10T18:51:20+00:00"
+            "time": "2023-08-10T19:36:49+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -2116,16 +2116,16 @@
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.311.1",
+            "version": "v0.312.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-api-php-client-services.git",
-                "reference": "e8816f6708fac9d78ab59ef27a61a08d0af84d1e"
+                "reference": "45d47fed73b28254c511882bc743b1690a99558d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/e8816f6708fac9d78ab59ef27a61a08d0af84d1e",
-                "reference": "e8816f6708fac9d78ab59ef27a61a08d0af84d1e",
+                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/45d47fed73b28254c511882bc743b1690a99558d",
+                "reference": "45d47fed73b28254c511882bc743b1690a99558d",
                 "shasum": ""
             },
             "require": {
@@ -2154,9 +2154,9 @@
             ],
             "support": {
                 "issues": "https://github.com/googleapis/google-api-php-client-services/issues",
-                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.311.1"
+                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.312.0"
             },
-            "time": "2023-08-06T00:56:12+00:00"
+            "time": "2023-08-14T00:56:12+00:00"
         },
         {
             "name": "google/auth",
@@ -3647,20 +3647,20 @@
         },
         {
             "name": "lcobucci/clock",
-            "version": "3.1.0",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lcobucci/clock.git",
-                "reference": "30a854ceb22bd87d83a7a4563b3f6312453945fc"
+                "reference": "039ef98c6b57b101d10bd11d8fdfda12cbd996dc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lcobucci/clock/zipball/30a854ceb22bd87d83a7a4563b3f6312453945fc",
-                "reference": "30a854ceb22bd87d83a7a4563b3f6312453945fc",
+                "url": "https://api.github.com/repos/lcobucci/clock/zipball/039ef98c6b57b101d10bd11d8fdfda12cbd996dc",
+                "reference": "039ef98c6b57b101d10bd11d8fdfda12cbd996dc",
                 "shasum": ""
             },
             "require": {
-                "php": "~8.2.0",
+                "php": "~8.1.0 || ~8.2.0",
                 "psr/clock": "^1.0"
             },
             "provide": {
@@ -3668,13 +3668,13 @@
             },
             "require-dev": {
                 "infection/infection": "^0.26",
-                "lcobucci/coding-standard": "^10.0.0",
+                "lcobucci/coding-standard": "^9.0",
                 "phpstan/extension-installer": "^1.2",
-                "phpstan/phpstan": "^1.10.7",
-                "phpstan/phpstan-deprecation-rules": "^1.1.3",
-                "phpstan/phpstan-phpunit": "^1.3.10",
-                "phpstan/phpstan-strict-rules": "^1.5.0",
-                "phpunit/phpunit": "^10.0.17"
+                "phpstan/phpstan": "^1.9.4",
+                "phpstan/phpstan-deprecation-rules": "^1.1.1",
+                "phpstan/phpstan-phpunit": "^1.3.2",
+                "phpstan/phpstan-strict-rules": "^1.4.4",
+                "phpunit/phpunit": "^9.5.27"
             },
             "type": "library",
             "autoload": {
@@ -3695,7 +3695,7 @@
             "description": "Yet another clock abstraction",
             "support": {
                 "issues": "https://github.com/lcobucci/clock/issues",
-                "source": "https://github.com/lcobucci/clock/tree/3.1.0"
+                "source": "https://github.com/lcobucci/clock/tree/3.0.0"
             },
             "funding": [
                 {
@@ -3707,7 +3707,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2023-03-20T19:12:25+00:00"
+            "time": "2022-12-19T15:00:24+00:00"
         },
         {
             "name": "lcobucci/jwt",
@@ -4841,16 +4841,16 @@
         },
         {
             "name": "microsoft/microsoft-graph",
-            "version": "1.103.0",
+            "version": "1.104.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/microsoftgraph/msgraph-sdk-php.git",
-                "reference": "6e325c22145dbed4e51970ffecca4d7648c3c27e"
+                "reference": "fc2a3549e8efc9501dbf5d55d350882d8d641295"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/microsoftgraph/msgraph-sdk-php/zipball/6e325c22145dbed4e51970ffecca4d7648c3c27e",
-                "reference": "6e325c22145dbed4e51970ffecca4d7648c3c27e",
+                "url": "https://api.github.com/repos/microsoftgraph/msgraph-sdk-php/zipball/fc2a3549e8efc9501dbf5d55d350882d8d641295",
+                "reference": "fc2a3549e8efc9501dbf5d55d350882d8d641295",
                 "shasum": ""
             },
             "require": {
@@ -4887,9 +4887,9 @@
             "homepage": "https://developer.microsoft.com/en-us/graph",
             "support": {
                 "issues": "https://github.com/microsoftgraph/msgraph-sdk-php/issues",
-                "source": "https://github.com/microsoftgraph/msgraph-sdk-php/tree/1.103.0"
+                "source": "https://github.com/microsoftgraph/msgraph-sdk-php/tree/1.104.0"
             },
-            "time": "2023-07-19T03:27:15+00:00"
+            "time": "2023-08-11T07:41:39+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -5412,16 +5412,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v4.16.0",
+            "version": "v4.17.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "19526a33fb561ef417e822e85f08a00db4059c17"
+                "reference": "a6303e50c90c355c7eeee2c4a8b27fe8dc8fef1d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/19526a33fb561ef417e822e85f08a00db4059c17",
-                "reference": "19526a33fb561ef417e822e85f08a00db4059c17",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/a6303e50c90c355c7eeee2c4a8b27fe8dc8fef1d",
+                "reference": "a6303e50c90c355c7eeee2c4a8b27fe8dc8fef1d",
                 "shasum": ""
             },
             "require": {
@@ -5462,9 +5462,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v4.16.0"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v4.17.1"
             },
-            "time": "2023-06-25T14:52:30+00:00"
+            "time": "2023-08-13T19:53:39+00:00"
         },
         {
             "name": "nunomaduro/termwind",
@@ -6906,7 +6906,7 @@
             "description": "Transform Laravel localization files into i18next compatible format. Provides routes for i18next-xhr-backend.",
             "support": {
                 "issues": "https://github.com/ProcessMaker/laravel-i18next/issues",
-                "source": "https://github.com/ProcessMaker/laravel-i18next/tree/master"
+                "source": "https://github.com/ProcessMaker/laravel-i18next/tree/develop"
             },
             "time": "2020-11-26T14:26:47+00:00"
         },
@@ -6943,47 +6943,6 @@
                 "source": "https://github.com/ProcessMaker/nayra/tree/v1.9.4"
             },
             "time": "2022-09-03T00:32:24+00:00"
-        },
-        {
-            "name": "processmaker/package-data-sources",
-            "version": "1.20.0",
-            "dist": {
-                "type": "path",
-                "url": "/Users/oskrojas/package-data-sources",
-                "reference": "6667977cd12714be0c05d02bb36018868e755c54"
-            },
-            "require": {
-                "vyuldashev/xml-to-array": "9999999-dev"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "ProcessMaker\\Packages\\Connectors\\DataSources\\PluginServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "ProcessMaker\\Packages\\Connectors\\DataSources\\": "src/",
-                    "ProcessMaker\\ScriptRunners\\": "tests/ScriptRunners/",
-                    "Tests\\DataSources\\": "tests/",
-                    "Database\\Factories\\ProcessMaker\\Plugins\\DataSources\\": "database/factories"
-                }
-            },
-            "scripts": {
-                "post-autoload-dump": []
-            },
-            "authors": [
-                {
-                    "name": "ProcessMaker 4 Development Team",
-                    "email": "support@processmaker.com"
-                }
-            ],
-            "description": "ProcessMaker BPM Connectors that provide package-data-sources service",
-            "transport-options": {
-                "relative": false
-            }
         },
         {
             "name": "processmaker/pmql",
@@ -8351,16 +8310,16 @@
         },
         {
             "name": "swagger-api/swagger-ui",
-            "version": "v5.3.1",
+            "version": "v5.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swagger-api/swagger-ui.git",
-                "reference": "5230d1be0f45f9d1836a9ca5c58057459dd1422a"
+                "reference": "b6802e0acad7bad11ef7144ee6bb144179ca309d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/5230d1be0f45f9d1836a9ca5c58057459dd1422a",
-                "reference": "5230d1be0f45f9d1836a9ca5c58057459dd1422a",
+                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/b6802e0acad7bad11ef7144ee6bb144179ca309d",
+                "reference": "b6802e0acad7bad11ef7144ee6bb144179ca309d",
                 "shasum": ""
             },
             "type": "library",
@@ -8406,9 +8365,9 @@
             ],
             "support": {
                 "issues": "https://github.com/swagger-api/swagger-ui/issues",
-                "source": "https://github.com/swagger-api/swagger-ui/tree/v5.3.1"
+                "source": "https://github.com/swagger-api/swagger-ui/tree/v5.3.2"
             },
-            "time": "2023-08-02T13:13:53+00:00"
+            "time": "2023-08-14T13:15:27+00:00"
         },
         {
             "name": "symfony/cache",
@@ -11549,52 +11508,6 @@
                 }
             ],
             "time": "2022-03-08T17:03:00+00:00"
-        },
-        {
-            "name": "vyuldashev/xml-to-array",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/vyuldashev/xml-to-array.git",
-                "reference": "28542261014674a3e9615da335dba43c9dcf304b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/vyuldashev/xml-to-array/zipball/28542261014674a3e9615da335dba43c9dcf304b",
-                "reference": "28542261014674a3e9615da335dba43c9dcf304b",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.1|^8.0"
-            },
-            "require-dev": {
-                "larapack/dd": "^1.1",
-                "phpunit/phpunit": "^7.5|^9.5",
-                "spatie/array-to-xml": "^2.7"
-            },
-            "default-branch": true,
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Vyuldashev\\XmlToArray\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Vladimir Yuldashev",
-                    "email": "misterio92@gmail.com"
-                }
-            ],
-            "description": "Convert xml to an array",
-            "support": {
-                "issues": "https://github.com/vyuldashev/xml-to-array/issues",
-                "source": "https://github.com/vyuldashev/xml-to-array/tree/v1.1.0"
-            },
-            "time": "2022-08-23T23:18:27+00:00"
         },
         {
             "name": "webmozart/assert",
