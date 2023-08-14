@@ -3,7 +3,7 @@
     <b-list-group-item class="script-toggle border-0 mb-0">
       <b-row v-b-toggle.assistant data-test="cornea-tab-toggle">
         <b-col v-if="!showPromptArea">
-          <img class="mb-1 mr-1" :src="corneaIcon" />
+          <img class="mb-1" :src="corneaIcon" />
           {{ $t("Cornea AI Assistant") }}
         </b-col>
         <b-col
