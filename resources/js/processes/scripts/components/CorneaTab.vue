@@ -85,12 +85,13 @@
                 role="button"
                 class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center"
                 data-test="list-steps-btn"
+                @click="explainScript()"
               >
                 <div>
                   <img :src="listIcon" />
                 </div>
                 <div class="text-center">
-                  {{ $t("List Steps") }}
+                  {{ $t("Explain") }}
                 </div>
               </div>
             </div>
