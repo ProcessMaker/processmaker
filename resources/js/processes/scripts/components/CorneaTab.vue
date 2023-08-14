@@ -130,28 +130,13 @@ export default {
       },
     };
   },
-  watch: {
-    newCode() {
-      this.$emit("new-code-changed", this.newCode);
-    },
-  },
 
   mounted() {
     if (this.packageAi) {
       this.promptSessionId = localStorage.promptSessionId;
       this.currentNonce = localStorage.currentNonce;
 
-      if (
-        !localStorage.getItem("cancelledJobs") ||
-        localStorage.getItem("cancelledJobs") === "null"
-      ) {
-        this.cancelledJobs = [];
-      } else {
-        this.cancelledJobs = JSON.parse(localStorage.getItem("cancelledJobs"));
-      }
-
       this.getPromptSession();
-      this.subscribeToProgress();
     }
   },
 
@@ -241,9 +226,11 @@ export default {
         });
     },
 
-    cleanScript() {
+    async cleanScript() {
       this.getSelection();
       this.getNonce();
+
+      await this.$nextTick();
 
       const params = {
         promptSessionId: this.promptSessionId,
@@ -271,9 +258,11 @@ export default {
         });
     },
 
-    documentScript() {
+    async documentScript() {
       this.getSelection();
       this.getNonce();
+
+      await this.$nextTick();
 
       const params = {
         promptSessionId: this.promptSessionId,
@@ -299,39 +288,6 @@ export default {
           const errorMsg = error.response?.data?.message || error.message;
           window.ProcessMaker.alert(errorMsg, "danger");
         });
-    },
-
-    subscribeToProgress() {
-      const channel = `ProcessMaker.Models.User.${this.user.id}`;
-      const streamProgressEvent =
-        ".ProcessMaker\\Package\\PackageAi\\Events\\GenerateScriptProgressEvent";
-      window.Echo.private(channel).listen(streamProgressEvent, (response) => {
-        if (response.data.promptSessionId !== this.promptSessionId) {
-          return;
-        }
-
-        if (
-          this.cancelledJobs.some((element) => element === response.data.nonce)
-        ) {
-          return;
-        }
-
-        if (response.data) {
-          if (response.data.progress.status === "running") {
-            this.loading = true;
-            this.progress = response.data.progress;
-          } else if (response.data.progress.status === "error") {
-            this.loading = false;
-            this.progress.progress = 0;
-            window.ProcessMaker.alert(response.data.message, "danger");
-          } else {
-            this.newCode = response.data.diff;
-            this.loading = false;
-            this.progress.progress = 0;
-          }
-          console.log(response.data);
-        }
-      });
     },
   },
 };

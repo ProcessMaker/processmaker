@@ -92,7 +92,6 @@
               <b-card-body class="overflow-hidden p-0">
                 <b-list-group class="w-100 h-100 overflow-auto">
                   <cornea-tab
-                    @new-code-changed="onNewCodeChanged"
                     @get-selection="onGetSelection"
                     :user="user"
                     :sourceCode="code"
@@ -320,6 +319,7 @@ export default {
         success: false,
         failure: false,
       },
+      changesApplied: true,
       outputOpen: true,
       optionsMenu: options,
       // eslint-disable-next-line max-len
@@ -377,6 +377,14 @@ export default {
     },
   },
   mounted() {
+    if (!localStorage.getItem("cancelledJobs") || localStorage.getItem("cancelledJobs") === "null") {
+      this.cancelledJobs = [];
+    } else {
+      this.cancelledJobs = JSON.parse(localStorage.getItem("cancelledJobs"));
+    }
+
+    this.subscribeToProgress();
+
     ProcessMaker.EventBus.$emit("script-builder-init", this);
     ProcessMaker.EventBus.$on("save-script", (onSuccess, onError) => {
       this.save(onSuccess, onError);
@@ -423,13 +431,45 @@ export default {
       if (editor) {
         const selection = editor.getSelection();
         this.selection = selection;
-        console.log(this.selection);
       }
     },
-    diffEditorMounted() {
+    subscribeToProgress() {
+      const channel = `ProcessMaker.Models.User.${this.user.id}`;
+      const streamProgressEvent = ".ProcessMaker\\Package\\PackageAi\\Events\\GenerateScriptProgressEvent";
+      window.Echo.private(channel).listen(
+        streamProgressEvent,
+        (response) => {
+          if (response.data.promptSessionId !== localStorage.promptSessionId) {
+            return;
+          }
+
+          if (this.cancelledJobs.some((element) => element === response.data.nonce)) {
+            return;
+          }
+
+          if (response.data) {
+            if (response.data.progress.status === "running") {
+              this.loading = true;
+              this.progress = response.data.progress;
+              this.$emit("progress-updated", this.progress);
+            } else if (response.data.progress.status === "error") {
+              this.loading = false;
+              this.progress.progress = 0;
+              window.ProcessMaker.alert(response.data.message, "danger");
+              this.$emit("progress-updated", this.progress);
+            } else {
+              this.newCode = response.data.diff;
+              this.loading = false;
+              this.$emit("progress-updated", this.progress);
+              this.progress.progress = 0;
+              this.changesApplied = false;
+            }
+            console.log(response.data);
+          }
+        },
+      );
     },
-    onNewCodeChanged(newCode) {
-      this.newCode = newCode;
+    diffEditorMounted() {
     },
     resizeEditor() {
       const domNode = this.editorReference.getDomNode();
