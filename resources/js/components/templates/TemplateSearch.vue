@@ -143,7 +143,8 @@ export default {
         'id': $event.template.id, 
         'name': $event.template.name, 
         'description': $event.template.description,
-        'category_id': $event.template.process_category_id
+        'category_id': $event.template.process_category_id,
+        'version' : $event.template.version,
       });
       this.template = $event.template;
     },
