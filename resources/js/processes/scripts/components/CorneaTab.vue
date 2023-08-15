@@ -99,6 +99,7 @@
         </div>
         <generate-script-text-prompt
           v-else
+          :prompt-session-id="promptSessionId"
           @generate-script="onGenerateScript"
         />
       </b-collapse>
