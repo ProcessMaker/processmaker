@@ -336,7 +336,7 @@ class CssOverrideController extends Controller
             'logo' => $request->input('fileLogoName', ''),
             'icon' => $request->input('fileIconName', ''),
             'favicon' => $request->input('fileFaviconName', ''),
-            'variables' => $request->input('variables', ''),
+            'variables' => $request->input('variables', '[]'),
             'sansSerifFont' => $request->input('sansSerifFont', $this->sansSerifFontDefault()),
         ];
     }

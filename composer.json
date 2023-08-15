@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.7.0+nightly-20230807",
+    "version": "4.7.1+alpha-1",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -96,46 +96,46 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "48844806",
+            "build": "e4eabf92",
             "custom": {
                 "package-ellucian-ethos": "1.12.4"
             },
             "enterprise": {
                 "connector-docusign": "1.4.0",
                 "connector-idp": "1.4.0",
-                "connector-pdf-print": "1.13.0",
-                "connector-send-email": "1.21.2",
+                "connector-pdf-print": "1.13.1",
+                "connector-send-email": "1.21.3",
                 "connector-slack": "1.5.0",
                 "docker-executor-node-ssr": "1.4.0",
-                "package-actions-by-email": "1.13.2",
+                "package-actions-by-email": "1.13.3",
                 "package-advanced-user-manager": "1.6.0",
-                "package-ai": "0.4.3",
-                "package-analytics-reporting": "0.1.10",
+                "package-ai": "1.0.1",
+                "package-analytics-reporting": "1.0.0",
                 "package-auth": "1.12.1",
-                "package-collections": "2.11.2",
+                "package-collections": "2.11.3",
                 "package-comments": "1.7.0",
                 "package-conversational-forms": "1.4.1",
-                "package-data-sources": "1.21.8",
-                "package-decision-engine": "1.4.3",
+                "package-data-sources": "1.21.9",
+                "package-decision-engine": "1.4.5",
                 "package-dynamic-ui": "1.13.4",
                 "package-files": "1.10.2",
                 "package-googleplaces": "1.7.1",
-                "package-photo-video": "0.4.6",
-                "package-plaid": "0.2.1",
-                "package-pm-blocks": "0.4.13",
+                "package-photo-video": "1.0.0",
+                "package-plaid": "1.0.0",
+                "package-pm-blocks": "1.0.0",
                 "package-process-documenter": "1.6.0",
                 "package-process-optimization": "1.6.0",
-                "package-product-analytics": "1.5.1",
+                "package-product-analytics": "1.5.3",
                 "package-savedsearch": "1.27.5",
                 "package-sentry": "1.5.1",
                 "package-signature": "1.8.0",
                 "package-translations": "2.5.0",
                 "package-versions": "1.6.0",
                 "package-vocabularies": "2.11.2",
-                "package-webentry": "2.16.4",
+                "package-webentry": "2.16.5",
                 "packages": "^0"
             },
-            "release": "Summer 2023 (Nightly 20230807)"
+            "release": "Summer 2023"
         }
     },
     "scripts": {

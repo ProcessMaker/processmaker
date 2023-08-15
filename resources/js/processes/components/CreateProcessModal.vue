@@ -116,6 +116,11 @@
           this.process_category_id = this.templateData.category_id;
         }
       },
+      manager: function() {
+        if (!this.manager) {
+          this.manager = "";
+        }
+      },
     },
     methods: {
       onShown() {
