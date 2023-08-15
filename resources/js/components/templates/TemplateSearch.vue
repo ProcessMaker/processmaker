@@ -88,6 +88,7 @@
 </template>
 
 <script>
+import { debounce } from "lodash";
 import ButtonCard from "./ButtonCard.vue";
 import TemplateSelectCard from "./TemplateSelectCard.vue";
 import TemplateDetails from "./TemplateDetails.vue";
@@ -133,12 +134,12 @@ export default {
       this.fetch();
     },
     filter() {
-      if (this.filter === "") {
-        this.fetch();
-      }
+      this.fetchDebounced();
     },
   },
-  beforeMount() {},
+  created() {
+    this.fetchDebounced = debounce(this.fetch, 300);
+  },
   methods: {
     showDetails($event) {
       this.$emit('show-details', {
