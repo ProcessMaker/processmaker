@@ -1,4 +1,5 @@
 {
+    "name": "processmaker/processmaker",
     "version": "4.7.0+nightly-20230807",
     "description": "BPM PHP Software",
     "keywords": [
