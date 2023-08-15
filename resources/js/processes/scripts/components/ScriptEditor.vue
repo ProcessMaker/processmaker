@@ -244,7 +244,7 @@ import TopMenu from "../../../components/Menu.vue";
 // eslint-disable-next-line no-unused-vars
 import customFilters from "../customFilters";
 import autosaveMixins from "../../../modules/autosave/mixins";
-import CorneaTab from "./CorneaTab.vue"
+import CorneaTab from "./CorneaTab.vue";
 
 export default {
   components: {
@@ -482,9 +482,12 @@ export default {
               window.ProcessMaker.alert(response.data.message, "danger");
             } else {
               this.newCode = response.data.diff;
-              this.loading = false;
-              this.progress.progress = 0;
-              this.changesApplied = false;
+              this.progress.progress = 100;
+              setTimeout(() => {
+                this.loading = false;
+                this.progress.progress = 0;
+                this.changesApplied = false;
+              }, 500);
             }
           }
         },
