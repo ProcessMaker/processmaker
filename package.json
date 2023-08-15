@@ -1,6 +1,6 @@
 {
     "name": "@processmaker/processmaker",
-    "version": "4.7.1+alpha-1",
+    "version": "4.7.1+nightly-20230814",
     "description": "ProcessMaker 4",
     "author": "DevOps <devops@processmaker.com>",
     "license": "ISC",
@@ -50,7 +50,7 @@
         "@fortawesome/free-solid-svg-icons": "^5.15.1",
         "@fortawesome/vue-fontawesome": "^0.1.9",
         "@panter/vue-i18next": "^0.15.2",
-        "@processmaker/modeler": "1.36.10",
+        "@processmaker/modeler": "1.37.0",
         "@processmaker/processmaker-bpmn-moddle": "0.14.0",
         "@processmaker/screen-builder": "2.76.6",
         "@processmaker/vue-form-elements": "0.49.3",
