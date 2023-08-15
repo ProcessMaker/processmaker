@@ -3,7 +3,7 @@
     <div class="pb-3">
       <b-input-group v-if="component === 'template-select-card'">
         <b-input-group-prepend>
-          <b-btn class="btn-search-run px-2" :title="$t('Search Templates')">
+          <b-btn class="btn-search-run px-2" :title="$t('Search Templates')" @click="fetch()">
             <i class="fas fa-search search-icon" />
           </b-btn>
         </b-input-group-prepend>
@@ -38,8 +38,8 @@
 
       <div class="pb-2 template-container">
         <template v-if="noResults === true">
-          <div class="no-data-icon d-flex d-block justify-content-center mt-5 pt-5 pb-2">
-            <i class="fas fa-umbrella-beach mt-5 pt-5" />
+          <div class="no-data-icon d-flex d-block justify-content-center pb-2">
+            <i class="fas fa-umbrella-beach mt-5" />
           </div>
           <div class="no-data d-block d-flex justify-content-center">
             {{ $t('No Data Available') }}
@@ -133,7 +133,9 @@ export default {
       this.fetch();
     },
     filter() {
-      this.fetch();
+      if (this.filter === "") {
+        this.fetch();
+      }
     },
   },
   beforeMount() {},
