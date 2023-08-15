@@ -147,5 +147,5 @@
 </script>
 
 <style lang="scss" scoped>
-    @import "~@processmaker/vue-multiselect/dist/vue-multiselect.min.css";
+    @import "~@processmaker/vue-multiselect/dist/vue-multiselect.css";
 </style>

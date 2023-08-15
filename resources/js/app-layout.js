@@ -1,7 +1,6 @@
 import { BNavbar } from "bootstrap-vue";
-import Multiselect from "@processmaker/vue-multiselect/src/Multiselect";
+import { Multiselect } from "@processmaker/vue-multiselect";
 import moment from "moment";
-import moment_timezone from "moment-timezone";
 import requestModal from "./components/requests/modal";
 import notifications from "./components/requests/notifications";
 import sessionModal from "./components/Session";
