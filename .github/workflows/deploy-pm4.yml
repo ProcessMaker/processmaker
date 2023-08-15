@@ -54,7 +54,7 @@ jobs:
           echo "CACHEBUSTER="$(date +%s) >> $GITHUB_ENV
       - name: Clone Repo STM
         run: |
-          git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
+          git clone --depth 1 -b vite "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -96,7 +96,7 @@ jobs:
           echo "STM_TOKEN=${{env.STM_TOKEN}}" >> $GITHUB_ENV 
       - name: Clone Repo STM
         run: |
-          git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
+          git clone --depth 1 -b vite "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
           cd pm4-stm-docker          
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
