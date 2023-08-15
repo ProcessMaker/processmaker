@@ -197,6 +197,7 @@ export default {
     async generateScript() {
       this.getSelection();
       this.getNonce();
+      this.$emit("set-diff", true);
 
       await this.$nextTick();
 
@@ -231,6 +232,7 @@ export default {
     async cleanScript() {
       this.getSelection();
       this.getNonce();
+      this.$emit("set-diff", true);
 
       await this.$nextTick();
 
@@ -264,6 +266,7 @@ export default {
     async documentScript() {
       this.getSelection();
       this.getNonce();
+      this.$emit("set-diff", true);
 
       await this.$nextTick();
 
@@ -296,6 +299,7 @@ export default {
     async explainScript() {
       this.getSelection();
       this.getNonce();
+      this.$emit("set-diff", false);
 
       await this.$nextTick();
 

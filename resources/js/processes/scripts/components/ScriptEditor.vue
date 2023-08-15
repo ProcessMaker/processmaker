@@ -19,6 +19,17 @@
                   :diff-editor="false"
                 />
 
+                <monaco-editor
+                  ref="explainEditor"
+                  v-show="showExplainEditor"
+                  class="diff-height"
+                  :class="{hidden: resizing}"
+                  :options="monacoOptionsExplain"
+                  :language="language"
+                  :diff-editor="false"
+                  :value="newCode"
+                />
+
                 <div v-if="packageAi" v-show="showDiffEditor">
                   <div class="d-flex">
                     <div class="left-header-width pb-3 pl-3">
@@ -94,6 +105,7 @@
                   <cornea-tab
                     @get-selection="onGetSelection"
                     @request-started="onRequestStarted"
+                    @set-diff="onSetDiff"
                     :user="user"
                     :sourceCode="code"
                     :language="language"
@@ -305,6 +317,7 @@ export default {
       newCode: "",
       loading: false,
       selection: null,
+      isDiffEditor: false,
       progress: {
         progress: 0,
       },
@@ -343,7 +356,10 @@ export default {
       return !this.showDiffEditor;
     },
     showDiffEditor() {
-      return this.packageAi && this.newCode !== "" && !this.changesApplied;
+      return this.packageAi && this.newCode !== "" && !this.changesApplied && this.isDiffEditor;
+    },
+    showExplainEditor() {
+      return this.packageAi && this.newCode !== "" && !this.changesApplied && !this.isDiffEditor;
     },
     language() {
       return this.scriptExecutor.language;
@@ -426,6 +442,9 @@ export default {
     cancelChanges() {
       this.newCode = "";
       this.changesApplied = true;
+    },
+    onSetDiff(isDiff) {
+      this.isDiffEditor = isDiff;
     },
     onGetSelection() {
       const editor = this.$refs.editor.getMonaco();
