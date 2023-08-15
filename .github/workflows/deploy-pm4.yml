@@ -35,108 +35,111 @@ env:
   IMAGE_TAG1: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
   GITHUB_COMMENT: ${{ secrets.GH_COMMENT }}
   pull_req_id: ${{github.event.pull_request.number}}
-  run_id: ${{ github.run_id }}
+  run_number: ${{ github.run_number }}
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 jobs:
-  #job1:
-  #  name: build-stm-image 
-  #  if: github.event.action != 'closed'
-  #  runs-on: self-hosted
-  #  steps:     
-  #    - name: Export Params                
-  #      run: |
-  #        echo "Env Check: CI_PROJECT: $CI_PROJECT CI_PACKAGE_BRANCH: $CI_PACKAGE_BRANCH CI_PR_BODY: $CI_PR_BODY"
-  #        echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
-  #        echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
-  #        echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
-  #        #Additional
-  #        echo "CACHEBUSTER="$(date +%s) >> $GITHUB_ENV
-  #    - name: Clone Repo STM
-  #      run: |
-  #        git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
-  #        echo "*************************************"
-  #        pwd
-  #        echo "*************************************"
-  #    - name: Configure AWS Credentials
-  #      uses: aws-actions/configure-aws-credentials@v1
-  #      with:
-  #        aws-access-key-id: ${{ env.aws-access-key-id }}
-  #        aws-secret-access-key: ${{ env.aws-secret-access-key }}
-  #        aws-region: ${{ env.aws-region }}
-  #    - name: Login to ECR
-  #      run: |          
-  #        aws ecr get-login-password | docker login --username AWS --password-stdin ${{env.aws-url}}
-  #    - name: Build and Push the base images
-  #      if: contains(github.event.pull_request.body, 'ci:build-base') || github.event_name == 'schedule'
-  #      run: |
-  #        cd pm4-stm-docker
-  #        docker-compose build --no-cache base
-  #        docker-compose build --no-cache cache
-  #        docker push ${REPOSITORY}:ci-base
-  #        docker push ${REPOSITORY}:ci-cache
-  #    - name: Build and Push the image to ECR
-  #      run: |
-  #        cd pm4-stm-docker
-  #        docker-compose build processmaker
-  #        docker push ${IMAGE}
-  #        echo "*************************************"
-  #        pwd
-  #        ls -la
-  #        echo "*************************************"
-  #job2: 
-  #  name: deploy-stm    
-  #  if: github.event.action != 'closed'
-  #  needs: job1
-  #  runs-on: ubuntu-22.04
-  #  container:
-  #    image:  cimg/php:7.4
-  #    options: --user root
-  #  steps:
-  #    - name: Export Params                
-  #      run: |
-  #        echo "Env Check: CI_PROJECT: $CI_PROJECT CI_PACKAGE_BRANCH: $CI_PACKAGE_BRANCH CI_PR_BODY: $CI_PR_BODY"
-  #        echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
-  #        echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
-  #        echo "IMAGE_TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
-  #        echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
-  #        echo "STM_TOKEN=${{env.STM_TOKEN}}" >> $GITHUB_ENV 
-  #    - name: Clone Repo STM
-  #      run: |
-  #        git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
-  #        cd pm4-stm-docker          
-  #    - name: Configure AWS Credentials
-  #      uses: aws-actions/configure-aws-credentials@v1
-  #      with:
-  #        aws-access-key-id: ${{ env.aws-access-key-id }}
-  #        aws-secret-access-key: ${{ env.aws-secret-access-key }}
-  #        aws-region: ${{ env.aws-region }}
-  #    - name: Login to Amazon ECR 
-  #      id: login-ecr
-  #      uses: aws-actions/amazon-ecr-login@v1
-  #    - name: Deploy STM
-  #      id: stm
-  #      run: |
-  #        mkdir -p /tmp/workspace
-  #        cd pm4-stm-docker/deploy-stm
-  #        composer install --no-dev
-  #        php run.php
-  #        if [ -f "url.txt" ]; then
-  #          INSTANCE_URL=$(cat url.txt)
-  #        fi
-  #        echo "Instance URL: '${INSTANCE_URL}'"
-  #        echo "INSTANCE_URL=${INSTANCE_URL}" >> "$GITHUB_ENV"
-  #    - name: Publish the URL to the Github PR 
-  #      if: success() || steps.stm.conclusion == 'success'
-  #      run: |
-  #        cd pm4-stm-docker
-  #        echo "Instance URL: '${INSTANCE_URL}'"
-  #        bash ./github_comment.sh "$PROJECT" "$pull_req_id"
+  job1:
+    name: build-stm-image 
+    if: github.event.action != 'closed'
+    runs-on: self-hosted
+    steps:     
+      - name: Export Params                
+        run: |
+          echo "Env Check: CI_PROJECT: $CI_PROJECT CI_PACKAGE_BRANCH: $CI_PACKAGE_BRANCH CI_PR_BODY: $CI_PR_BODY"
+          echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
+          echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
+          echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
+          #Additional
+          echo "CACHEBUSTER="$(date +%s) >> $GITHUB_ENV
+      - name: Clone Repo STM
+        run: |
+          mkdir $run_number && cd $run_number/pm4-stm-docker
+          git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
+          echo "*************************************"
+          pwd
+          echo "*************************************"
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.aws-access-key-id }}
+          aws-secret-access-key: ${{ env.aws-secret-access-key }}
+          aws-region: ${{ env.aws-region }}
+      - name: Login to ECR
+        run: |          
+          aws ecr get-login-password | docker login --username AWS --password-stdin ${{env.aws-url}}
+      - name: Build and Push the base images
+        if: contains(github.event.pull_request.body, 'ci:build-base') || github.event_name == 'schedule'
+        run: |
+          cd $run_number/pm4-stm-docker
+          docker-compose build --no-cache base
+          docker-compose build --no-cache cache
+          docker push ${REPOSITORY}:ci-base
+          docker push ${REPOSITORY}:ci-cache
+      - name: Build and Push the image to ECR
+        run: |
+          cd $run_number/pm4-stm-docker
+          docker-compose build processmaker
+          docker push ${IMAGE}
+          echo "*************************************"
+          pwd
+          ls -la
+          echo "*************************************"
+  job2: 
+    name: deploy-stm    
+    if: github.event.action != 'closed'
+    needs: job1
+    runs-on: self-hosted
+    container:
+      image:  cimg/php:7.4
+      options: --user root
+    steps:
+      - name: Export Params                
+        run: |
+          echo "Env Check: CI_PROJECT: $CI_PROJECT CI_PACKAGE_BRANCH: $CI_PACKAGE_BRANCH CI_PR_BODY: $CI_PR_BODY"
+          echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
+          echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
+          echo "IMAGE_TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
+          echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
+          echo "STM_TOKEN=${{env.STM_TOKEN}}" >> $GITHUB_ENV 
+      #- name: Clone Repo STM
+      #  run: |
+      #    #git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
+      #    #cd pm4-stm-docker 
+      #    cd $run_number/pm4-stm-docker         
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.aws-access-key-id }}
+          aws-secret-access-key: ${{ env.aws-secret-access-key }}
+          aws-region: ${{ env.aws-region }}
+      - name: Login to Amazon ECR 
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Deploy STM
+        id: stm
+        run: |
+          mkdir -p /tmp/workspace
+          cd pm4-stm-docker/deploy-stm
+          composer install --no-dev
+          php run.php
+          if [ -f "url.txt" ]; then
+            INSTANCE_URL=$(cat url.txt)
+          fi
+          echo "Instance URL: '${INSTANCE_URL}'"
+          echo "INSTANCE_URL=${INSTANCE_URL}" >> "$GITHUB_ENV"
+      - name: Publish the URL to the Github PR 
+        if: success() || steps.stm.conclusion == 'success'
+        run: |
+          #cd pm4-stm-docker
+          cd $run_number/pm4-stm-docker
+          echo "Instance URL: '${INSTANCE_URL}'"
+          bash ./github_comment.sh "$PROJECT" "$pull_req_id"
   job3: 
    name: run-phpunit
    if: github.event.action != 'closed'
-   #needs: job1
+   needs: job1
    runs-on: self-hosted
    steps:
      - name: Export Params                
@@ -158,16 +161,14 @@ jobs:
        id: login-ecr
        uses: aws-actions/amazon-ecr-login@v1
      - name: PHPUnits
-       run: |    
-         mkdir testDevelop
-         mkdir $run_id
+       run: |
          echo $REPOSITORY
          echo $IMAGE     
          echo '***********************************' 
          pwd
          ls -la
          echo '***********************************'
-         cd pm4-stm-docker          
+         cd $run_number/pm4-stm-docker          
          #docker pull $IMAGE          
          docker-compose down -v          
          docker-compose build phpunit          
