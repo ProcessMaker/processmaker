@@ -1,10 +1,11 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\ProcessTemplates;
+use ProcessMaker\Upgrades\UpgradeMigration as Upgrade;
 
-return new class extends Migration {
+class RemoveSeededDefaultTemplates extends Upgrade
+{
     /**
      * Run the migrations.
      *
