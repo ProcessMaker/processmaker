@@ -88,7 +88,6 @@
 </template>
 
 <script>
-import { debounce } from "lodash";
 import ButtonCard from "./ButtonCard.vue";
 import TemplateSelectCard from "./TemplateSelectCard.vue";
 import TemplateDetails from "./TemplateDetails.vue";
@@ -133,12 +132,6 @@ export default {
     perPage() {
       this.fetch();
     },
-    filter() {
-      this.fetchDebounced();
-    },
-  },
-  created() {
-    this.fetchDebounced = debounce(this.fetch, 300);
   },
   methods: {
     showDetails($event) {
@@ -185,9 +178,11 @@ export default {
                 this.totalRow = response.data.meta.total;
                 this.apiDataLoading = false;
                 this.apiNoResults = false;
-                this.loading = false;
                 this.noResults = false;
                 }
+            })
+            .finally(() => {
+              this.loading = false;
             });
       },
   },
