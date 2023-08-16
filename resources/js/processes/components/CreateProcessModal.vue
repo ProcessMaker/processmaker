@@ -97,6 +97,7 @@
         categoryOptions: "",
         description: "",
         process_category_id: "",
+        template_version: null,
         addError: {},
         status: "",
         bpmn: "",
@@ -114,6 +115,7 @@
           this.name = this.templateData.name;
           this.description = this.templateData.description;  
           this.process_category_id = this.templateData.category_id;
+          this.template_version = this.templateData.version;
         }
       },
       manager: function() {
@@ -182,6 +184,7 @@
           formData.append("file", this.file);
         }
         if (this.selectedTemplate) {
+          formData.append("version", this.template_version);
           this.handleCreateFromTemplate(this.templateData.id, formData);
         } else {
           if (this.generativeProcessData) {
