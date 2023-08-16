@@ -8,45 +8,48 @@
           <b-col cols="9" class="h-100 p-0">
             <b-row class="h-100">
               <b-col cols="12" class="h-100 p-0">
-                <monaco-editor
-                  ref="editor"
-                  v-show="showEditor"
-                  class="h-100"
-                  v-model="code"
-                  :class="{hidden: resizing}"
-                  :options="monacoOptions"
-                  :language="language"
-                  :diff-editor="false"
-                />
-
-                <monaco-editor
-                  ref="explainEditor"
-                  v-show="showExplainEditor"
-                  class="diff-height"
-                  :class="{hidden: resizing}"
-                  :options="monacoOptionsExplain"
-                  :language="language"
-                  :diff-editor="false"
-                  :value="newCode"
-                />
-
-                <div v-if="packageAi" v-show="showDiffEditor">
+                <div v-if="packageAi" v-show="showDiffEditor || showExplainEditor">
                   <div class="d-flex">
                     <div class="left-header-width pb-3 pl-3">
                       <div class="card-header h-100 d-flex align-items-center justify-content-between editor-header-border">
-                        <b>Current Script</b>
+                        <b>{{ $t('Current Script') }}</b>
                       </div>
                     </div>
-                    <div class="right-header-width pb-3 pl-3">
+                    <div v-if="showDiffEditor" class="right-header-width pb-3 pl-3">
                       <div class="card-header h-100 bg-primary-light d-flex align-items-center justify-content-between editor-header-border">
-                        <b>AI Generated Response</b>
+                        <b>{{ $t('AI Generated Response') }}</b>
                         <div>
-                          <button class="btn btn-sm btn-light" @click="cancelChanges()">Cancel</button>
-                          <button class="btn btn-sm btn-primary" @click="applyChanges()" v-b-tooltip.hover :title="$t('Apply recommended changes')">Apply</button>
+                          <button class="btn btn-sm btn-light" @click="cancelChanges()">{{ $t('Cancel') }}</button>
+                          <button class="btn btn-sm btn-primary" @click="applyChanges()" v-b-tooltip.hover :title="$t('Apply recommended changes')">{{ $t('Apply') }}</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div v-else-if="showExplainEditor" class="right-header-width pb-3 pl-3">
+                      <div class="card-header h-100 bg-primary-light d-flex align-items-center justify-content-between editor-header-border">
+                        <b>{{ $t('AI Explanation') }}</b>
+                        <div>
+                          <button class="btn btn-lg" @click="closeExplanation()" v-b-tooltip.hover :title="$t('Close Explanation')">
+                            <i class="fa fa-times"></i>
+                        </button>
                         </div>
                       </div>
                     </div>
                   </div>
+                </div>
+                <div class="d-flex h-100 justify-content-between">
+                  <monaco-editor
+                    ref="editor"
+                    v-show="showEditor"
+                    class=""
+                    v-model="code"
+                    :class="[{hidden: resizing}, showExplainEditor ? 'w-50' : 'w-100']"
+                    :options="monacoOptions"
+                    :language="language"
+                    :diff-editor="false"
+                  />
+                  <div v-if="showExplainEditor" class="w-50 h-100 py-2 px-4">
+                    {{ newCode }}
+                  </div>  
                 </div>
                 <monaco-editor
                   ref="diffEditor"
