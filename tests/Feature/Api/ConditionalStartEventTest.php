@@ -13,7 +13,7 @@ class ConditionalStartEventTest extends TestCase
     public function testConditionalEventMustTriggeredWhenActive()
     {
         //Create a conditional process with ACTIVE status by default
-        ImportProcess::dispatchNow(
+        ImportProcess::dispatchSync(
             file_get_contents(__DIR__ . '/../../Fixtures/conditional_event_process.json')
         );
 
@@ -27,7 +27,7 @@ class ConditionalStartEventTest extends TestCase
     public function testConditionalEventMustNotTriggeredWhenInactive()
     {
         //Create a conditional process with ACTIVE status by default
-        ImportProcess::dispatchNow(
+        ImportProcess::dispatchSync(
             file_get_contents(__DIR__ . '/../../Fixtures/conditional_event_process.json')
         );
 

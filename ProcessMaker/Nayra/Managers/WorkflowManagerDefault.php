@@ -72,7 +72,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
         //Validate data
         $element = $token->getDefinition(true);
         $this->validateData($data, $definitions, $element);
-        CompleteActivity::dispatchNow($definitions, $instance, $token, $data);
+        CompleteActivity::dispatchSync($definitions, $instance, $token, $data);
     }
 
     /**
@@ -90,7 +90,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
         //Validate data
         $element = $token->getDefinition(true);
         $this->validateData($data, $definitions, $element);
-        CatchEvent::dispatchNow($definitions, $instance, $token, $data);
+        CatchEvent::dispatchSync($definitions, $instance, $token, $data);
     }
 
     /**
@@ -113,7 +113,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
     ) {
         //Validate data
         $this->validateData($data, $definitions, $boundaryEvent);
-        BoundaryEvent::dispatchNow($definitions, $instance, $token, $boundaryEvent, $data);
+        BoundaryEvent::dispatchSync($definitions, $instance, $token, $boundaryEvent, $data);
     }
 
     /**
@@ -129,7 +129,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
         //Validate data
         $this->validateData($data, $definitions, $event);
         //Schedule BPMN Action
-        return StartEvent::dispatchNow($definitions, $event, $data);
+        return StartEvent::dispatchSync($definitions, $event, $data);
     }
 
     /**
@@ -149,7 +149,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
         //Validate BPMN rules
         //Log BPMN actions
         //Schedule BPMN Action
-        return CallProcess::dispatchNow($definitions, $process, $data);
+        return CallProcess::dispatchSync($definitions, $process, $data);
     }
 
     /**

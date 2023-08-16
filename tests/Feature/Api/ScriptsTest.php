@@ -572,7 +572,7 @@ class ScriptsTest extends TestCase
         $this->user->giveDirectPermission('view-scripts');
         app()->instance(PolicyExtension::class, null); // clear in case packages are installed in test context
 
-        ImportProcess::dispatchNow(
+        ImportProcess::dispatchSync(
             file_get_contents(__DIR__ . '/../../Fixtures/process_with_script_watcher.json')
         );
         $process = Process::orderBy('id', 'desc')->first();

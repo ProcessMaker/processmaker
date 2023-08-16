@@ -17,7 +17,7 @@ class SignalEventTest extends TestCase
     public function testSignalEventMustTriggeredWhenProcessActive()
     {
         //Create a signal process that TRIGGER a signal with ACTIVE status by default
-        ImportProcess::dispatchNow(
+        ImportProcess::dispatchSync(
             file_get_contents(__DIR__ . '/../../Fixtures/signal_event_process_trigger.json')
         );
 
@@ -31,7 +31,7 @@ class SignalEventTest extends TestCase
         $signalRef = $triggerProcess->signal_events[0];
 
         //Create a signal process that CATCH a signal with ACTIVE status by default
-        ImportProcess::dispatchNow(
+        ImportProcess::dispatchSync(
             file_get_contents(__DIR__ . '/../../Fixtures/signal_event_process_catcher.json')
         );
 
@@ -45,7 +45,7 @@ class SignalEventTest extends TestCase
     public function testSignalEventMustNotTriggeredWhenProcessInactive()
     {
         //Create a signal process that TRIGGER a signal with ACTIVE status by default
-        ImportProcess::dispatchNow(
+        ImportProcess::dispatchSync(
             file_get_contents(__DIR__ . '/../../Fixtures/signal_event_process_trigger.json')
         );
 
@@ -59,7 +59,7 @@ class SignalEventTest extends TestCase
         $signalRef = $triggerProcess->signal_events[0];
 
         //Create a signal process that CATCH a signal with ACTIVE status by default
-        ImportProcess::dispatchNow(
+        ImportProcess::dispatchSync(
             file_get_contents(__DIR__ . '/../../Fixtures/signal_event_process_catcher.json')
         );
 
@@ -86,7 +86,7 @@ class SignalEventTest extends TestCase
     public function testSignalStarEventWithPayloadToRequestVariable()
     {
         // The process used for the tests
-        ImportProcess::dispatchNow(
+        ImportProcess::dispatchSync(
             file_get_contents(__DIR__ . '/../../Fixtures/signal_catch_with_payload.json')
         );
 
@@ -94,7 +94,7 @@ class SignalEventTest extends TestCase
         $payload = ['payload1' => 1, 'payload2' => 2];
 
         // Dispatch the job synchronously for the test (signal 3 triggers the "Payload in variable" start event)
-        ThrowSignalEvent::dispatchNow('Signal3', $payload, []);
+        ThrowSignalEvent::dispatchSync('Signal3', $payload, []);
 
         // Verify that the created request has the payload stored in the request variable "incoming_data"
         $createdRequestData = ProcessRequest::all()->first()->data;
@@ -110,7 +110,7 @@ class SignalEventTest extends TestCase
     public function testSignalStarEventWithPayloadToRequestData()
     {
         // The process used for the tests
-        ImportProcess::dispatchNow(
+        ImportProcess::dispatchSync(
             file_get_contents(__DIR__ . '/../../Fixtures/signal_catch_with_payload.json')
         );
 
@@ -118,7 +118,7 @@ class SignalEventTest extends TestCase
         $payload = ['payload1' => 1, 'payload2' => 2];
 
         // Dispatch the job synchronously for the test
-        ThrowSignalEvent::dispatchNow('Signal4', $payload, []);
+        ThrowSignalEvent::dispatchSync('Signal4', $payload, []);
 
         // Verify that the created request has the payload stored in the request variable "incoming_data"
         $createdRequestData = ProcessRequest::all()->first()->data;

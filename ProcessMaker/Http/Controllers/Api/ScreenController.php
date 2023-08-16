@@ -448,7 +448,7 @@ class ScreenController extends Controller
      */
     public function export(Request $request, Screen $screen)
     {
-        $fileKey = ExportScreen::dispatchNow($screen);
+        $fileKey = ExportScreen::dispatchSync($screen);
 
         if ($fileKey) {
             return ['url' => url("/designer/screens/{$screen->id}/download/{$fileKey}")];
@@ -504,7 +504,7 @@ class ScreenController extends Controller
             );
         }
 
-        $import = ImportScreen::dispatchNow($content);
+        $import = ImportScreen::dispatchSync($content);
 
         return ['status' => $import];
     }

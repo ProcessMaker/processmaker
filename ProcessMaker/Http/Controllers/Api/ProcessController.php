@@ -888,7 +888,7 @@ class ProcessController extends Controller
      */
     public function export(Request $request, Process $process)
     {
-        $fileKey = ExportProcess::dispatchNow($process);
+        $fileKey = ExportProcess::dispatchSync($process);
 
         if ($fileKey) {
             $url = url("/processes/{$process->id}/download/{$fileKey}");
@@ -999,7 +999,7 @@ class ProcessController extends Controller
                 'code' => $code,
             ];
         }
-        $import = ImportProcess::dispatchNow($content);
+        $import = ImportProcess::dispatchSync($content);
 
         return response([
             'status' => $import->status,

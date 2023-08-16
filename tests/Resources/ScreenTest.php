@@ -18,7 +18,7 @@ class ScreenTest extends TestCase
         $content = file_get_contents(
             __DIR__ . '/../Fixtures/nested_screen_process.json'
         );
-        $import = ImportProcess::dispatchNow($content);
+        $import = ImportProcess::dispatchSync($content);
 
         $processRequest = WorkflowManager::triggerStartEvent(
             $import->process,

@@ -222,7 +222,7 @@ class SettingController extends Controller
         $content = $request->file('file')->get();
 
         try {
-            $imported = ImportSettings::dispatchNow($content);
+            $imported = ImportSettings::dispatchSync($content);
         } catch (Throwable $e) {
             return response([
                 'error' => $e->getMessage(),

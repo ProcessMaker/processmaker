@@ -99,7 +99,7 @@ class ProcessMakerTest extends Command
     private function testHorizonService()
     {
         $testDispatchNow = 'Test immediate Jobs';
-        TestStatusJob::dispatchNow($testDispatchNow);
+        TestStatusJob::dispatchSync($testDispatchNow);
         $this->waitTestPassed($testDispatchNow, 5);
 
         $testDelayedWorkers = 'Test dispatch Jobs';

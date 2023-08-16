@@ -233,7 +233,7 @@ class ScriptController extends Controller
         $code = $script->code;
 
         if ($request->get('sync') === true) {
-            return ExecuteScript::dispatchNow($script, $request->user(), $code, $data, $watcher, $config, true);
+            return ExecuteScript::dispatchSync($script, $request->user(), $code, $data, $watcher, $config, true);
         } else {
             ExecuteScript::dispatch($script, $request->user(), $code, $data, $watcher, $config)->onQueue('bpmn');
         }
