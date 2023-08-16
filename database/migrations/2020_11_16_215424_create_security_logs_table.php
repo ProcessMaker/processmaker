@@ -6,8 +6,7 @@ use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\SecurityLog;
 
-class CreateSecurityLogsTable extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -47,4 +46,4 @@ class CreateSecurityLogsTable extends Migration
             $permission->delete();
         }
     }
-}
+};

@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddNotificationsIndexToProcessRequestTokens extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -31,4 +30,4 @@ class AddNotificationsIndexToProcessRequestTokens extends Migration
             $table->dropIndex(['user_id', 'status', 'due_at', 'due_notified']);
         });
     }
-}
+};

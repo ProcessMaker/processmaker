@@ -5,8 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\Permission;
 
-class AddFieldsToSettingsTable extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -60,4 +59,4 @@ class AddFieldsToSettingsTable extends Migration
             $permission->delete();
         }
     }
-}
+};

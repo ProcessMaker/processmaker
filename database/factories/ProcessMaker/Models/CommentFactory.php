@@ -31,8 +31,8 @@ class CommentFactory extends Factory
             },
             'commentable_id' => $model::factory(),
             'commentable_type' => $model,
-            'subject' => $this->faker->sentence,
-            'body' => $this->faker->sentence,
+            'subject' => $this->faker->sentence(),
+            'body' => $this->faker->sentence(),
             'hidden' => $this->faker->randomElement([true, false]),
             'type' => $this->faker->randomElement(['LOG', 'MESSAGE']),
         ];

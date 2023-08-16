@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddIsTemplateColumnToSpecificTables extends Migration
-{
+return new class extends Migration {
     public function up()
     {
         // Add the names of the tables you want to modify here
@@ -31,4 +30,4 @@ class AddIsTemplateColumnToSpecificTables extends Migration
             });
         }
     }
-}
+};

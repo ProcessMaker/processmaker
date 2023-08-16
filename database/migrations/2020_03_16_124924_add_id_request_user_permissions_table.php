@@ -5,8 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\ProcessRequest;
 
-class AddIdRequestUserPermissionsTable extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -35,4 +34,4 @@ class AddIdRequestUserPermissionsTable extends Migration
             $table->primary(['request_id', 'user_id']);
         });
     }
-}
+};

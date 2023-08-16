@@ -5,8 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\ScreenType;
 
-class AddInteractiveColumnToScreenTypesTable extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -41,4 +40,4 @@ class AddInteractiveColumnToScreenTypesTable extends Migration
             $table->dropColumn('is_interactive');
         });
     }
-}
+};

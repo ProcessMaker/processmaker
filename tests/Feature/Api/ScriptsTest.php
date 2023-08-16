@@ -130,7 +130,7 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('POST', $url, [
             'title' => 'Script Title',
             'language' => 'php',
-            'code' => $faker->sentence($faker->randomDigitNotNull),
+            'code' => $faker->sentence($faker->randomDigitNotNull()),
             'script_category_id' => $script->script_category_id,
         ]);
         $response->assertStatus(422);
@@ -165,9 +165,9 @@ class ScriptsTest extends TestCase
         // add scripts to process
         Script::query()->delete();
         $faker = Faker::create();
-        $total = $faker->randomDigitNotNull;
+        $total = $faker->randomDigitNotNull();
         Script::factory()->count($total)->create([
-            'code' => $faker->sentence($faker->randomDigitNotNull),
+            'code' => $faker->sentence($faker->randomDigitNotNull()),
         ]);
 
         // Create script with a key set. These should NOT be in the results.

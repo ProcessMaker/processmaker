@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class DeletePermissionsTables extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -54,4 +53,4 @@ class DeletePermissionsTables extends Migration
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
         });
     }
-}
+};

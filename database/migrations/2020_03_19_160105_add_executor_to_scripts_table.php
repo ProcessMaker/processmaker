@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddExecutorToScriptsTable extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -37,4 +36,4 @@ class AddExecutorToScriptsTable extends Migration
             $table->dropColumn('script_executor_id');
         });
     }
-}
+};

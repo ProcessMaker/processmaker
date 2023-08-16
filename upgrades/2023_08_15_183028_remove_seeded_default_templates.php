@@ -26,4 +26,4 @@ class RemoveSeededDefaultTemplates extends Upgrade
     {
         //
     }
-}
+};

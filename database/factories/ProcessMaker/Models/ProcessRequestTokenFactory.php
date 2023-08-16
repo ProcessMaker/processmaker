@@ -20,8 +20,8 @@ class ProcessRequestTokenFactory extends Factory
     {
         return [
             'element_type' => 'TASK',
-            'element_id' => $this->faker->randomDigit,
-            'element_name' => $this->faker->name,
+            'element_id' => $this->faker->randomDigit(),
+            'element_name' => $this->faker->name(),
             'status' => $this->faker->randomElement(['ACTIVE', 'FAILING', 'COMPLETED', 'CLOSED', 'EVENT_CATCH']),
             'process_id' => function () {
                 return Process::factory()->create()->getKey();

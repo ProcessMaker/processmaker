@@ -5,8 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\Permission;
 
-class AddIso27001ColumnsForSecurityLogsTable extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -44,4 +43,4 @@ class AddIso27001ColumnsForSecurityLogsTable extends Migration
             $permission->delete();
         }
     }
-}
+};

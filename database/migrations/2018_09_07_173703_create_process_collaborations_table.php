@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateProcessCollaborationsTable extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -39,4 +38,4 @@ class CreateProcessCollaborationsTable extends Migration
     {
         Schema::dropIfExists('process_collaborations');
     }
-}
+};

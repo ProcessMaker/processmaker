@@ -5,8 +5,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddUuidsToProcessRequestsTables extends Migration
-{
+return new class extends Migration {
     const TABLES = [
         'process_requests',
         'process_request_tokens',
@@ -32,4 +31,4 @@ class AddUuidsToProcessRequestsTables extends Migration
     {
         MigrationHelper::removeUuidsFromTables(self::TABLES);
     }
-}
+};
