@@ -151,6 +151,7 @@ export default {
       const nonce = Math.floor(Math.random() * max);
       this.currentNonce = nonce;
       localStorage.currentNonce = this.currentNonce;
+      this.$emit("current-nonce-changed", this.currentNonce);
     },
 
     getPromptSession() {

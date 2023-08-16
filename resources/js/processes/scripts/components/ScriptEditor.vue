@@ -36,7 +36,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="d-flex h-100 justify-content-between">
+                <div class="d-flex editors-container justify-content-between">
                   <monaco-editor
                     ref="editor"
                     v-show="showEditor"
@@ -47,22 +47,23 @@
                     :language="language"
                     :diff-editor="false"
                   />
-                  <div v-if="showExplainEditor" class="w-50 h-100 py-2 px-4">
+                  <div v-if="showExplainEditor" class="w-50 h-100 py-2 px-4 explain-editor">
                     {{ newCode }}
-                  </div>  
+                  </div>
+
+                  <monaco-editor
+                    ref="diffEditor"
+                    v-show="showDiffEditor"
+                    class="diff-height w-100"
+                    :class="{hidden: resizing}"
+                    :options="monacoOptionsDiff"
+                    :language="language"
+                    :diff-editor="true"
+                    :value="newCode"
+                    :original="code"
+                    @hook:mounted="diffEditorMounted"
+                  />
                 </div>
-                <monaco-editor
-                  ref="diffEditor"
-                  v-show="showDiffEditor"
-                  class="diff-height"
-                  :class="{hidden: resizing}"
-                  :options="monacoOptionsDiff"
-                  :language="language"
-                  :diff-editor="true"
-                  :value="newCode"
-                  :original="code"
-                  @hook:mounted="diffEditorMounted"
-                />
               </b-col>
             </b-row>
           </b-col>
@@ -78,7 +79,7 @@
                 <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="{'width': progress.progress + '%'}" :aria-valuenow="progress.progress" aria-valuemin="0" aria-valuemax="100"></div>
               </div>
               <div class="text-right progress-panel-footer">
-                <button class="btn btn-light">Cancel</button>
+                <button class="btn btn-light" @click="cancelRequest()">{{ $t('Cancel') }}</button>
               </div>
             </div>
           </b-col>
@@ -108,6 +109,7 @@
                   <cornea-tab
                     @get-selection="onGetSelection"
                     @request-started="onRequestStarted"
+                    @current-nonce-changed="onCurrentNonceChanged"
                     @set-diff="onSetDiff"
                     :user="user"
                     :sourceCode="code"
@@ -321,6 +323,7 @@ export default {
       loading: false,
       selection: null,
       isDiffEditor: false,
+      currentNonce: null,
       progress: {
         progress: 0,
       },
@@ -445,6 +448,20 @@ export default {
     cancelChanges() {
       this.newCode = "";
       this.changesApplied = true;
+    },
+    cancelRequest() {
+      if (this.currentNonce) {
+        this.cancelledJobs.push(this.currentNonce);
+        localStorage.setItem("cancelledJobs", JSON.stringify(this.cancelledJobs));
+        this.loading = false;
+        this.progress.progress = 0;
+      }
+    },
+    closeExplanation() {
+      this.newCode = "";
+    },
+    onCurrentNonceChanged(currentNonce) {
+      this.currentNonce = currentNonce;
     },
     onSetDiff(isDiff) {
       this.isDiffEditor = isDiff;
@@ -727,5 +744,12 @@ export default {
   position: absolute;
   bottom: 1rem;
   right: 2rem;
+}
+.editors-container {
+  height: calc(100% - 4.1rem);
+}
+.explain-editor {
+  white-space: pre-line;
+  overflow-y: auto;
 }
 </style>
