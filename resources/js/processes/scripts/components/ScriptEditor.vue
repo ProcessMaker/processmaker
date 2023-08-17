@@ -28,7 +28,7 @@
                       <div class="card-header h-100 bg-primary-light d-flex align-items-center justify-content-between editor-header-border">
                         <b>{{ $t('AI Explanation') }}</b>
                         <div>
-                          <button class="btn btn-lg" @click="closeExplanation()" v-b-tooltip.hover :title="$t('Close Explanation')">
+                          <button class="btn" @click="closeExplanation()" v-b-tooltip.hover :title="$t('Close Explanation')">
                             <i class="fa fa-times"></i>
                         </button>
                         </div>
