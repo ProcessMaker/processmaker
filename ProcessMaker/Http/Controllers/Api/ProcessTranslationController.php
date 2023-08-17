@@ -106,7 +106,7 @@ class ProcessTranslationController extends Controller
 
         // Available Pm Languages (user settings)
         $pmLangs = [];
-        foreach (scandir(resource_path('lang')) as $file) {
+        foreach (scandir(app()->langPath()) as $file) {
             preg_match('/([a-z]{2})\\.json/', $file, $matches);
             if (!empty($matches)) {
                 $pmLangs[] = $matches[1];
