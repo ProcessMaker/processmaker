@@ -1,10 +1,10 @@
 name: BUILD-PM4
 on: 
-  push:
-    branches:
-      - FOUR-9303
-  #pull_request:
-  #  types: [opened, reopened, synchronize, edited, closed]
+  # push:
+  #  branches:
+  #    - FOUR-9303
+  pull_request:
+    types: [opened, reopened, synchronize, edited, closed]
   #schedule:
   #  - cron: '30 2 * * *'  # every day at midnight     
   #workflow_dispatch:
