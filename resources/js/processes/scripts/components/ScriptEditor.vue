@@ -16,7 +16,7 @@
                       </div>
                     </div>
                     <div v-if="showDiffEditor" class="right-header-width pb-3 pl-3">
-                      <div class="card-header h-100 bg-primary-light d-flex align-items-center justify-content-between editor-header-border">
+                      <div class="card-header h-100 bg-primary-light d-flex align-items-center justify-content-between editor-header-border pulse">
                         <b>{{ $t('AI Generated Response') }}</b>
                         <div>
                           <button class="btn btn-sm btn-light" @click="cancelChanges()">{{ $t('Cancel') }}</button>
@@ -751,5 +751,18 @@ export default {
 .explain-editor {
   white-space: pre-line;
   overflow-y: auto;
+}
+
+.pulse {
+  animation: pulse-animation 2s infinite;
+}
+
+@keyframes pulse-animation {
+  0% {
+    box-shadow: 0 0 0 0px rgb(28 114 194 / 50%);;
+  }
+  100% {
+    box-shadow: 0 0 0 13px rgba(0, 0, 0, 0);
+  }
 }
 </style>
