@@ -1,21 +1,25 @@
 <template>
   <div
     id="asset-quick-create"
-    class="mt-2"
+    class="my-2"
   >
     <a
       class="asset-link"
       @click="goToAsset"
-    >Create a new {{ label }} <i class="fa fa-plus" /></a>
+    >{{ $t("Create a new") }} {{ label }} <i class="fa fa-plus" /></a>
   </div>
 </template>
 <script>
+import { kebabCase } from "lodash";
 
 const AssetTypes = Object.freeze({
   SCREEN: "screen",
   SCRIPT: "script",
   DECISION_TABLE: "decision table",
 });
+
+const channel = new BroadcastChannel("assetCreation");
+
 export default {
   name: "ModelerAssetQuickCreate",
   props: {
@@ -28,18 +32,24 @@ export default {
       },
     },
   },
+  mounted() {
+    channel.addEventListener("message", ({ data }) => {
+      this.$emit("asset", data);
+    });
+  },
   methods: {
     goToAsset() {
-      return window.open(`/designer/${this.label}?create`, "_blank");
+      return window.open(`/designer/${kebabCase(this.label)}s?create=true`, "_blank");
     },
   },
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 #asset-quick-create {
   .asset-link {
     &:hover {
-      color: darken(#0872C2, 5%);
+      cursor: pointer;
+      color: #054779;
     }
   }
 }
