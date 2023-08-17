@@ -168,8 +168,3 @@ Route::get('password/success', function () {
 })->name('password-success');
 
 Route::get('/unavailable', [UnavailableController::class, 'show'])->name('error.unavailable');
-
-Route::get('/jsoncrack/widget', function () {
-    $contenido = file_get_contents(public_path('jsoncrack/widget.html'));
-    return response($contenido);
-})->name('jsoncrack.widget');

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <iframe id="jsoncrackEmbed" ref="jsonCrackEmbed" src="/jsoncrack/widget"/>
+    <iframe id="jsoncrackEmbed" ref="jsonCrackEmbed" src="/json-browser/widget.html"/>
   </div>
 </template>
 
