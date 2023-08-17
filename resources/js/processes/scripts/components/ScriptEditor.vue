@@ -36,7 +36,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="d-flex editors-container justify-content-between">
+                <div class="d-flex justify-content-between" :class="{'h-100': !(showExplainEditor || showDiffEditor), 'editors-container': showExplainEditor || showDiffEditor}">
                   <monaco-editor
                     ref="editor"
                     v-show="showEditor"
