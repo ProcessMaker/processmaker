@@ -9,7 +9,9 @@ class ScriptExecutorExporter extends ExporterBase
 {
     public static $fallbackMatchColumn = 'title';
 
-    public $discard = false;
+    // Do not copy if it exists on the target instance. Only create if it does
+    // not exist. Otherwise associate existing on import.
+    public static $forceUpdate = true;
 
     public function export() : void
     {
@@ -19,6 +21,7 @@ class ScriptExecutorExporter extends ExporterBase
     {
         switch ($this->mode) {
             case 'copy':
+            case 'new':
                 BuildScriptExecutor::dispatch($this->model->id, auth()->user()->id);
                 break;
             case 'update':
