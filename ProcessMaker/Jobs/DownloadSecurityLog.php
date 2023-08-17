@@ -102,7 +102,9 @@ class DownloadSecurityLog implements ShouldQueue
     {
         $uuid = Uuid::uuid4()->toString() . Str::random(8);
 
-        return 'security-logs/' . $uuid . '.' . $this->format;
+        $s3Uri = empty(config('app.security_log_s3_uri')) ? 'security-logs' : config('app.security_log_s3_uri');
+
+        return $s3Uri .'/'. $uuid . '.' . $this->format;
     }
 
     /**
