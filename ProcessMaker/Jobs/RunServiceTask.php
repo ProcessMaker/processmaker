@@ -4,6 +4,7 @@ namespace ProcessMaker\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Exception\ConfigurationException;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Managers\DataManager;
@@ -29,6 +30,8 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
 
     public $backoff = 60;
 
+    public $attemptNum;
+
     /**
      * Create a new job instance.
      *
@@ -37,7 +40,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
      * @param \ProcessMaker\Models\ProcessRequestToken $token
      * @param array $data
      */
-    public function __construct(Definitions $definitions, ProcessRequest $instance, ProcessRequestToken $token, array $data)
+    public function __construct(Definitions $definitions, ProcessRequest $instance, ProcessRequestToken $token, array $data, $attemptNum = 1)
     {
         if ($token->getOwner()) {
             $pmConfig = json_decode($token->getOwnerElement()->getProperty('config', '{}'), true);
@@ -50,6 +53,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
         $this->tokenId = $token->getKey();
         $this->elementId = $token->getProperty('element_ref');
         $this->data = $data;
+        $this->attemptNum = $attemptNum;
     }
 
     /**
@@ -65,12 +69,12 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
         }
         $implementation = $element->getImplementation();
         $configuration = json_decode($element->getProperty('config'), true);
-        $errorHandling = json_decode($element->getProperty('errorHandling'), true);
 
         // Check to see if we've failed parsing.  If so, let's convert to empty array.
         if ($configuration === null) {
             $configuration = [];
         }
+        $errorHandling = null;
         try {
             if (empty($implementation)) {
                 throw new ScriptException('Service task implementation not defined');
@@ -84,43 +88,71 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
                 throw new ScriptException('Service task not implemented: ' . $implementation);
             }
 
+            $errorHandling = new ErrorHandling($element, $token);
+            $errorHandling->setDefaultsFromDataSourceConfig($configuration);
+
             $this->unlock();
             $dataManager = new DataManager();
             $data = $dataManager->getData($token);
 
+            /**
+             * todo: Please review the "else" section as it appears unreachable since if `$existsImpl`
+             * is not true, an exception is thrown a few lines above.
+             */
             if ($existsImpl) {
                 $response = [
-                    'output' => WorkflowManager::runServiceImplementation($implementation, $data, $configuration, $token->getId(), $errorHandling),
+                    'output' => WorkflowManager::runServiceImplementation($implementation, $data, $configuration, $token->getId(), $errorHandling->timeout()),
                 ];
             } else {
-                $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling);
+                $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling->timeout());
             }
-            $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
-                // Exit if the task was completed or closed
-                if (!$token || !$element) {
-                    return;
-                }
-                // Update data
-                if (is_array($response['output'])) {
-                    // Validate data
-                    WorkflowManager::validateData($response['output'], $processModel, $element);
-                    $dataManager = new DataManager();
-                    $dataManager->updateData($token, $response['output']);
-                    $engine->runToNextState();
-                }
-                $element->complete($token);
-                $this->engine = $engine;
-                $this->instance = $instance;
-            });
+            $this->updateData($response);
+        } catch (ConfigurationException $exception) {
+            $this->unlock();
+            $this->updateData(['output' => $exception->getMessageForData($token)]);
         } catch (Throwable $exception) {
-            // Change to error status
-            $token->setStatus(ServiceTaskInterface::TOKEN_STATE_FAILING);
+            $finalAttempt = true;
+            if ($errorHandling) {
+                [$message, $finalAttempt] = $errorHandling->handleRetries($this, $exception);
+            }
+
+            if ($finalAttempt) {
+                // Change to error status
+                $token->setStatus(ServiceTaskInterface::TOKEN_STATE_FAILING);
+            }
+
             $error = $element->getRepository()->createError();
-            $error->setName($exception->getMessage());
+            $error->setName($message);
+
             $token->setProperty('error', $error);
-            Log::info('Service task failed: ' . $implementation . ' - ' . $exception->getMessage());
+            $exceptionClass = get_class($exception);
+            $modifiedException = new $exceptionClass($message);
+            $token->logError($modifiedException, $element);
+
+            Log::error('Service task failed: ' . $implementation . ' - ' . $message);
             Log::error($exception->getTraceAsString());
         }
+    }
+
+    private function updateData($response)
+    {
+        $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
+            // Exit if the task was completed or closed
+            if (!$token || !$element) {
+                return;
+            }
+            // Update data
+            if (is_array($response['output'])) {
+                // Validate data
+                WorkflowManager::validateData($response['output'], $processModel, $element);
+                $dataManager = new DataManager();
+                $dataManager->updateData($token, $response['output']);
+                $engine->runToNextState();
+            }
+            $element->complete($token);
+            $this->engine = $engine;
+            $this->instance = $instance;
+        });
     }
 
     /**

@@ -233,11 +233,22 @@ if (openAiEnabled) {
   window.ProcessMaker.openAi = {
     enabled: openAiEnabled.content,
   };
+} else {
+  window.ProcessMaker.openAi = {
+    enabled: false,
+  };
 }
 
 const userID = document.head.querySelector("meta[name=\"user-id\"]");
 const formatDate = document.head.querySelector("meta[name=\"datetime-format\"]");
 const timezone = document.head.querySelector("meta[name=\"timezone\"]");
+const appUrl = document.head.querySelector("meta[name=\"app-url\"]");
+
+if (appUrl) {
+  window.ProcessMaker.app = {
+    url: appUrl.content,
+  };
+}
 
 if (userID) {
   window.ProcessMaker.user = {

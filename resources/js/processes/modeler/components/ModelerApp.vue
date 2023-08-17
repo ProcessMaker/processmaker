@@ -79,7 +79,6 @@ export default {
       processName: window.ProcessMaker.modeler.process.name,
       processId: window.ProcessMaker.modeler.process.id,
       currentUserId: window.ProcessMaker.modeler.process.user_id,
-      closeHref: "/processes",
     };
   },
   computed: {
@@ -106,7 +105,7 @@ export default {
             window.ProcessMaker.EventBus.$emit("save-changes");
             this.$set(this, "warnings", response.data.warnings || []);
             if (response.data.warnings && response.data.warnings.length > 0) {
-              this.$refs.validationStatus.autoValidate = true;
+              window.ProcessMaker.EventBus.$emit("save-changes-activate-autovalidate");
             }
             // Set draft status.
             this.setVersionIndicator(true);
@@ -122,6 +121,9 @@ export default {
           });
       };
     },
+    closeHref() {
+      return this.process?.asset_type === 'PM_BLOCK' ? "/designer/pm-blocks" : "/processes";
+    }
   },
   watch: {
     validationErrors: {
@@ -247,7 +249,7 @@ export default {
         window.ProcessMaker.EventBus.$emit("save-changes");
         this.$set(this, "warnings", response.data.warnings || []);
         if (response.data.warnings && response.data.warnings.length > 0) {
-          this.$refs.validationStatus.autoValidate = true;
+          window.ProcessMaker.EventBus.$emit("save-changes-activate-autovalidate");
         }
         if (typeof onSuccess === "function") {
           onSuccess(response);

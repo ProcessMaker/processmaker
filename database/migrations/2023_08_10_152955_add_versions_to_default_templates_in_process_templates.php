@@ -1,12 +1,11 @@
 <?php
 
-use Database\Seeders\ProcessTemplatesSeeder;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\ProcessTemplates;
 
-class AddExpenseApprovalDefaultTemplateToProcessTemplates extends Migration
+class AddVersionsToDefaultTemplatesInProcessTemplates extends Migration
 {
     /**
      * Run the migrations.
@@ -15,10 +14,9 @@ class AddExpenseApprovalDefaultTemplateToProcessTemplates extends Migration
      */
     public function up()
     {
-        Artisan::call('db:seed', [
-            '--class' => ProcessTemplatesSeeder::class,
-            '--force' => true,
-        ]);
+        ProcessTemplates::where('user_id', null)
+        ->where('version', null)
+        ->update(['version' => '1.0.0']);
     }
 
     /**
@@ -28,7 +26,8 @@ class AddExpenseApprovalDefaultTemplateToProcessTemplates extends Migration
      */
     public function down()
     {
-        // Revert LDAP Buttons
-        ProcessTemplates::where('name', 'Expense Approval')->where('key', 'default_templates')->delete();
+        ProcessTemplates::where('user_id', null)
+        ->where('version', '1.0.0')
+        ->update(['version' => null]);
     }
 }

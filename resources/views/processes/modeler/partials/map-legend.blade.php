@@ -8,20 +8,26 @@
       <span class="line completed-line"></span>
       {{ __('Completed') }}
     </p>
+    <p class="map-legend-label map-legend-label-margin">
+      <span class="line idle-line"></span>
+      {{ __('Pending / Not Executed') }}
+    </p>
   </div>
 </div>
 
 @section('css')
   <style>
+    /* See node_modules/@processmaker/modeler/src/components/highlightColors.js */
     :root {
-      --color-line-in-progress: #1572C2;
-      --color-line-completed: #00875A;
+      --color-line-in-progress: #3FA6FF;
+      --color-line-completed: #00BA7C;
+      --color-line-idle: #CCCCCC;
     }
 
     #map-legend.map-legend-card {
       position: absolute;
-      top: 70px;
-      right: 35px;
+      top: 30px;
+      right: 30px;
     }
 
     .map-legend-body {
@@ -48,7 +54,7 @@
     }
 
     .in-progress-line {
-      border-right-style: dashed;
+      border-right-style: solid;
       border-right-color: var(--color-line-in-progress);
     }
 
@@ -56,5 +62,10 @@
       border-right-style: solid;
       border-right-color: var(--color-line-completed);
     }
+    .idle-line {
+      border-right-style: solid;
+      border-right-color: var(--color-line-idle);
+    }
+
   </style>
 @endsection

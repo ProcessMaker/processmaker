@@ -4,6 +4,7 @@ namespace ProcessMaker\Nayra\MessageBrokers;
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
+use ProcessMaker\Helpers\DBHelper;
 use ProcessMaker\Nayra\Repositories\PersistenceHandler;
 
 class ServiceRabbitMq
@@ -28,9 +29,11 @@ class ServiceRabbitMq
         $rabbitMqPort = config('rabbitmq.port');
         $rabbitMqLogin = config('rabbitmq.login');
         $rabbitMqPassword = config('rabbitmq.password');
+        $rabbitmqKeepalive = true;
+        $rabbitmqHeartbeat = config('rabbitmq.heartbeat', 60);
 
         // Create connection
-        $this->connection = new AMQPStreamConnection($rabbitMqHost, $rabbitMqPort, $rabbitMqLogin, $rabbitMqPassword);
+        $this->connection = new AMQPStreamConnection($rabbitMqHost, $rabbitMqPort, $rabbitMqLogin, $rabbitMqPassword, '/', false, 'AMQPLAIN', null, 'en_US', 3, 3, null, $rabbitmqKeepalive, $rabbitmqHeartbeat);
         $this->channel = $this->connection->channel();
 
         // Set channel config
@@ -61,16 +64,20 @@ class ServiceRabbitMq
     public function sendMessage(string $subject, string $collaborationId, mixed $body): void
     {
         // Connect to RabbitMQ
-        $this->connect();
+        if (!($this->connection instanceof AMQPStreamConnection) || !$this->connection->isConnected()) {
+            $this->connect();
+        }
 
         // Prepare the message to send
-        $message = new AMQPMessage(json_encode(['data' => $body, 'collaboration_id' => $collaborationId]));
+        if ($subject === 'scripts') {
+            $payload = json_encode($body);
+        } else {
+            $payload = json_encode(['data' => $body, 'collaboration_id' => $collaborationId]);
+        }
+        $message = new AMQPMessage($payload);
 
         // Publish the message
-        $this->channel->basic_publish($message, '', self::QUEUE_NAME_PUBLISH);
-
-        // Close connection to RabbitMQ
-        $this->disconnect();
+        $this->channel->basic_publish($message, '', $subject);
     }
 
     /**
@@ -90,10 +97,13 @@ class ServiceRabbitMq
     public function worker(): void
     {
         // Connect to service
+        echo "\033[0;32m" . 'ProcessMaker consumer using rabbitmq.' . "\033[0m" . PHP_EOL;
         $this->connect();
 
         // Set callback to process the transactions
         $callback = function ($message) {
+            DBHelper::db_health_check();
+
             // Parse transactions
             $transactions = json_decode($message->body, true);
 
@@ -114,7 +124,9 @@ class ServiceRabbitMq
         }
 
         // Disconnect from service
-        $this->disconnect();
+        if ($this->connection->isConnected()) {
+            $this->disconnect();
+        }
     }
 
     /**

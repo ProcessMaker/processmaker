@@ -77,11 +77,13 @@ class ExportController extends Controller
             $payload = $exporter->encrypt($password, $payload);
         }
 
+        $filename = strtolower(str_replace(' ', '_', $payload['name'])) . '.json';
+
         return response()->streamDownload(
             function () use ($payload) {
                 echo json_encode($payload);
             },
-            $payload['name'] . '.json',
+            $filename,
             [
                 'Content-type' => 'application/json',
                 'export-info' => $exported,

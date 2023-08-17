@@ -104,8 +104,21 @@ class ProcessTranslationController extends Controller
             }
         }
 
+        // Available Pm Languages (user settings)
+        $pmLangs = [];
+        foreach (scandir(resource_path('lang')) as $file) {
+            preg_match('/([a-z]{2})\\.json/', $file, $matches);
+            if (!empty($matches)) {
+                $pmLangs[] = $matches[1];
+            }
+        }
+
+        // Our form controls need attribute:value pairs sot we convert the langs array to and associative one
+        $availablePmLanguages = array_combine($pmLangs, $pmLangs);
+
         return response()->json([
             'availableLanguages' => $availableLanguages,
+            'availablePmLanguages' => $availablePmLanguages,
         ]);
     }
 

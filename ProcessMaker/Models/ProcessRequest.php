@@ -41,6 +41,7 @@ use Throwable;
  * @property string $name
  * @property string $status
  * @property string $data
+ * @property string $collaboration_uuid
  * @property \Carbon\Carbon $initiated_at
  * @property \Carbon\Carbon $completed_at
  * @property \Carbon\Carbon $updated_at
@@ -905,5 +906,19 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     public function getMedia(string $collectionName = 'default', $filters = []): Collection
     {
         return \ProcessMaker\Models\Media::getFilesRequest($this);
+    }
+
+    public function getErrors()
+    {
+        if ($this->errors) {
+            return $this->errors;
+        }
+        // select tokens with errors
+        return $this->tokens()
+            ->select('token_properties->error as message', 'created_at', 'element_name')
+            ->where('status', '=', ActivityInterface::TOKEN_STATE_FAILING)
+            ->limit(10)
+            ->get()
+            ->toArray();
     }
 }

@@ -224,7 +224,7 @@ class ProcessController extends Controller
     {
         $request->validate(Process::rules());
         $data = $request->all();
-
+        $processCreated = ProcessCreated::BLANK_CREATION;
         // If bpmn exists (from Generative AI)
         if ($request->input('bpmn')) {
             $data['bpmn'] = $request->input('bpmn');
@@ -236,6 +236,7 @@ class ProcessController extends Controller
             $request->request->add(['bpmn' => $data['bpmn']]);
             $request->request->remove('file');
             unset($data['file']);
+            $processCreated = ProcessCreated::BPMN_CREATION;
         }
 
         if ($schemaErrors = $this->validateBpmn($request)) {
@@ -278,7 +279,7 @@ class ProcessController extends Controller
             );
         }
         // Register the Event
-        ProcessCreated::dispatch($process->refresh(), ProcessCreated::BLANK_CREATION);
+        ProcessCreated::dispatch($process->refresh(), $processCreated);
 
         return new Resource($process->refresh());
     }
@@ -369,7 +370,7 @@ class ProcessController extends Controller
                 $response = (new TemplateController(new Template()))->updateTemplateManifest('process', $process->id, $request);
 
                 //Call Event to Log Template Changes
-                TemplateUpdated::dispatch([], [], true);
+                TemplateUpdated::dispatch([], [], true, $process);
 
                 return new Resource($process->refresh());
             } catch (\Exception $error) {
@@ -388,6 +389,7 @@ class ProcessController extends Controller
             );
         }
         $changes = $process->getChanges();
+        $changes['tmp_process_category_id'] = $request->input('process_category_id');
 
         // Register the Event
         ProcessPublished::dispatch($process->refresh(), $changes, $original);

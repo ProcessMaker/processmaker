@@ -28,11 +28,13 @@
             <b-alert v-for="(item, index) in alerts" :key="index" class="d-none d-lg-block alertBox" :show="item.alertShow" :variant="item.alertVariant" dismissible fade @dismissed="alertDismissed(item)" @dismiss-count-down="alertDownChanged($event, item)" style="white-space:pre-line">
               <span v-if="item.showLoader" class="spinner-border spinner-border-sm mb-1 mr-2"></span>
               <span>@{{item.alertText}}</span>
-              <span v-if="item.alertLink"><a :href="item.alertLink">@{{item.alertLink}}</a></span>
+              <span v-if="item.alertLink"><a :href="item.alertLink">{{ __('Download') }}</a></span>
             </b-alert>
         </div>
         @php
             $menuItems = [];
+            // Add here the package to add in the topNav menu
+            $packagesList = ['package-analytics-reporting'];
             $existsMenuProvider = Menu::get('customtopnav') !== null;
             $items = $existsMenuProvider ? Menu::get('customtopnav')->items->all() : [];
 
@@ -64,6 +66,12 @@
                 $newItem['isCustom'] = count($itemsInCustom) > 0;
                 $menuItems[] = $newItem;
             }
+            // @todo make a refactor in the topNav reviewing the active() function
+            // The add a menu the Request is always highligth
+            if (in_array(Request::path(), $packagesList)) {
+                $menuItems[0]['isActive'] = false;
+            }
+
             // If a menu provider is installed, remove menu items from ProcessMaker but preserve any other (from packages, for example)
             if ($existsMenuProvider) {
                 $menuItems = array_filter($menuItems, function ($item) use($customNav) {

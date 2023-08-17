@@ -29,7 +29,6 @@ html {
   font-weight: 400;
   font-style: normal;
   background-color: $body-bg;
-  overflow-x: hidden;
 }
 
 .fw-medium {
@@ -953,7 +952,6 @@ nav {
 .simple-error-message-icon {
   color: var(--warning);
   font-size: 144px;
-  margin-top: 25px;
 }
 
 .simple-error-message-title {

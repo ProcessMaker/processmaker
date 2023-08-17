@@ -42,6 +42,12 @@
             </b-form-checkbox>
           </div>
         </div>
+
+        <div class="mt-3" v-if="showLanguageWarning">
+          <p class="alert alert-warning m-0">
+            {{ $t("Since there is no interface translation for this language, translations for these screens will only render for anonymous users in web entries.") }}
+          </p>
+        </div>
       </div>
 
       <!-- Processing translations section -->
@@ -143,6 +149,7 @@ export default {
       disabled: false,
       aiLoading: false,
       availableLanguages: [],
+      availablePmLanguages: [],
       selectedLanguage: null,
       selectedScreen: null,
       screensTranslations: [],
@@ -159,13 +166,25 @@ export default {
         {'content': '< Back', 'action': 'showSelectTargetLanguage', 'variant': 'link', 'disabled': false, 'hidden': true, 'ariaLabel': 'Back to select language'},
       ],
       customModalButtons: [
-        {'content': 'Cancel', 'action': 'hide()', 'variant': 'outline-secondary', 'disabled': false, 'hidden': false},
+        {'content': 'Close', 'action': 'hide()', 'variant': 'outline-secondary', 'disabled': false, 'hidden': false},
         {'content': 'Translate Process', 'action': 'translate', 'variant': 'secondary', 'disabled': true, 'hidden': false, 'dataTest': 'translation-translate-process'},
         {'content': 'Save Translation', 'action': 'saveTranslations', 'variant': 'secondary', 'disabled': false, 'hidden': true, 'dataTest': 'translation-save-translation-button'},
       ],
     };
   },
 
+  computed: {
+    showLanguageWarning() {
+      if (!this.selectedLanguage) {
+        return false;
+      }
+
+      if (this.availablePmLanguages[this.selectedLanguage.language] === undefined) {
+        return true;
+      }
+      return false;
+    },
+  },
   watch: {
     selectedScreen(val) {
       this.currentScreenTranslations = [];
@@ -390,6 +409,7 @@ export default {
       ProcessMaker.apiClient.post("/process/translations/languages", params)
         .then((response) => {
           this.availableLanguages = JSON.parse(JSON.stringify(response.data.availableLanguages));
+          this.availablePmLanguages = JSON.parse(JSON.stringify(response.data.availablePmLanguages));
           this.loading = false;
         });
     },

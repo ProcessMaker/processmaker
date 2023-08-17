@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta http-equiv="Content-Security-Policy" content="script-src * 'unsafe-inline' 'unsafe-eval'; object-src 'none';">
+    <meta http-equiv="Content-Security-Policy" content="script-src * 'unsafe-inline' 'unsafe-eval'; object-src 'self';">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="app-url" content="{{ config('app.url') }}">
@@ -59,8 +59,17 @@
           key: "{{config('broadcasting.connections.pusher.key')}}",
           cluster: "{{config('broadcasting.connections.pusher.options.cluster')}}",
           forceTLS: {{config('broadcasting.connections.pusher.options.use_tls') ? 'true' : 'false'}},
-          debug: {{config('broadcasting.connections.pusher.options.debug') ? 'true' : 'false'}}
+          debug: {{config('broadcasting.connections.pusher.options.debug') ? 'true' : 'false'}},
+          enabledTransports: ['ws', 'wss'],
+          disableStats: true,
         };
+        
+        @if(config('broadcasting.connections.pusher.options.host'))
+          window.Processmaker.broadcasting.wsHost = "{{config('broadcasting.connections.pusher.options.host')}}";
+          window.Processmaker.broadcasting.wsPort = "{{config('broadcasting.connections.pusher.options.port')}}";
+          window.Processmaker.broadcasting.wssPort = "{{config('broadcasting.connections.pusher.options.port')}}";
+        @endif
+
       @endif
     @endif
   </script>

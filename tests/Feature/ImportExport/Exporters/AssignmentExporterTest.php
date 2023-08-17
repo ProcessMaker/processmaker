@@ -161,4 +161,52 @@ class AssignmentExporterTest extends TestCase
         $this->assertEquals("$newGroupIds[6],$newGroupIds[7],$newGroupIds[8]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[1]', 'pm:assignedGroups'));
         $this->assertEquals("$newGroupIds[9]", Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:callActivity[2]', 'pm:assignedGroups'));
     }
+
+    public function testSomeAssignmentsDoNotExistOnTarget()
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $group1 = Group::factory()->create();
+        $group2 = Group::factory()->create();
+        $process = $this->createProcess('process-with-different-kinds-of-assignments', ['name' => 'processTest']);
+
+        // Assign users to process assignments
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedUsers', $user1->id . ',' . $user2->id);
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedGroups', $group1->id . ',' . $group2->id);
+
+        $process->save();
+
+        $this->runExportAndImport($process, ProcessExporter::class, function () use ($user1, $group1) {
+            $user1->forceDelete();
+            $group1->forceDelete();
+            Process::query()->forceDelete();
+        }, false);
+
+        $process = Process::where('name', 'processTest')->firstOrFail();
+        $this->assertEquals($user2->id, Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedUsers'));
+        $this->assertEquals($group2->id, Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedGroups'));
+    }
+
+    public function testAllAssignmentsDoNotExistOnTarget()
+    {
+        $user = User::factory()->create();
+        $group = Group::factory()->create();
+        $process = $this->createProcess('process-with-different-kinds-of-assignments', ['name' => 'processTest']);
+
+        // Assign users to process assignments
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedUsers', $user->id);
+        Utils::setAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedGroups', $group->id);
+
+        $process->save();
+
+        $this->runExportAndImport($process, ProcessExporter::class, function () {
+            User::query()->forceDelete();
+            Group::query()->forceDelete();
+            Process::query()->forceDelete();
+        }, false);
+
+        $process = Process::where('name', 'processTest')->firstOrFail();
+        $this->assertEquals('', Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedUsers'));
+        $this->assertEquals('', Utils::getAttributeAtXPath($process, '/bpmn:definitions/bpmn:process/bpmn:task[1]', 'pm:assignedGroups'));
+    }
 }

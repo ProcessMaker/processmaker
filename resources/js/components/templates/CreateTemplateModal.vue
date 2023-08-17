@@ -51,6 +51,22 @@
               ></b-form-textarea>
             </b-form-group>
 
+            <b-form-group
+              required
+              :label="$t('Version')"
+              :invalid-feedback="errorMessage('version', errors)"
+              :state="errorState('version', errors)"
+            >
+              <b-form-input
+                required
+                autofocus
+                v-model="version"
+                autocomplete="off"
+                :state="errorState('version', errors)"
+                name="version"
+              ></b-form-input>
+            </b-form-group>
+
               <category-select
                 v-model="process_category_id"
                 :label="$t('Category')"
@@ -92,6 +108,7 @@ export default {
       name: "",
       description: "",
       process_category_id: "",
+      version: null,
       addError: {},
       showModal: false,
       disabled: true,
@@ -156,15 +173,18 @@ export default {
         formData.append("asset_id", this.assetId);
         formData.append("name", this.name);
         formData.append("description", this.description);
+        formData.append("version", this.version);
         formData.append("user_id", this.currentUserId);
         formData.append("saveAssetsMode", this.saveAssetsMode);
         formData.append("process_category_id", this.process_category_id);
+        this.customModalButtons[1].disabled = true;
         ProcessMaker.apiClient.post("template/" + this.assetType + "/" + this.assetId, formData)
         .then(response => {
           ProcessMaker.alert(this.$t("Template successfully created"), "success");
           this.close();
         }).catch(error => {
           this.errors = error.response.data;
+          this.customModalButtons[1].disabled = false;
           if (this.errors.hasOwnProperty('errors')) {
             this.errors = this.errors.errors;
           } else if (_.includes(this.errors.name, 'The template name must be unique.')) {
@@ -180,14 +200,15 @@ export default {
       },  
       updateTemplate() {   
         let putData = {
-        name: this.name,
-        description: this.description,
-        user_id: this.currentUserId,
-        mode: this.saveAssetsMode,
-        process_id: this.assetId,
-        process_category_id: this.process_category_id,
-      };
-      ProcessMaker.apiClient.put("template/" + this.assetType + "/" + this.existingAssetId, putData)
+          name: this.name,
+          description: this.description,
+          description: this.version,
+          user_id: this.currentUserId,
+          mode: this.saveAssetsMode,
+          process_id: this.assetId,
+          process_category_id: this.process_category_id,
+        };
+        ProcessMaker.apiClient.put("template/" + this.assetType + "/" + this.existingAssetId, putData)
         .then(response => {
           ProcessMaker.alert( this.$t("Template successfully updated"),"success");
           this.close();

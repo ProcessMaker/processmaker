@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Events;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 
@@ -31,7 +32,8 @@ class TemplateCreated implements SecurityLogEventInterface
         return [
             'type' => $this->payload['type'] ?? '',
             'version' => $this->payload['version'] ?? '',
-            'name' => $this->payload['name'] ?? ''
+            'name' => $this->payload['name'] ?? '',
+            'created_at' => $this->payload['created_at'] ?? Carbon::now(),
         ];
     }
 
@@ -43,7 +45,7 @@ class TemplateCreated implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            'root' => $this->payload['root'] ?? ''
+            'root' => $this->payload['root'] ?? '',
         ];
     }
 

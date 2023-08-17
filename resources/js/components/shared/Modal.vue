@@ -70,7 +70,8 @@
     </template>
     <slot></slot>
     <template v-if="setCustomButtons" #modal-footer>
-      <div class="d-flex justify-content-between align-items-center w-100">
+      <div class="d-flex align-items-center w-100"
+        :class="{'justify-content-end': !showAiSlogan, 'justify-content-between': showAiSlogan}">
         <div v-if="showAiSlogan" class="slogan">
           <img src="/img/favicon.svg"> {{ $t("Powered by ProcessMaker AI") }}
         </div>
@@ -99,7 +100,8 @@
       "title", 
       "okDisabled", 
       "okOnly", 
-      "okTitle", "setCustomButtons",
+      "okTitle", 
+      "setCustomButtons",
       "customButtons", 
       "subtitle", 
       "size", 

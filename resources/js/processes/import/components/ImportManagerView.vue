@@ -146,7 +146,7 @@ export default {
                     const asset = this.$root.manifest[uuid];           
                     return asset && asset.existing_id !== null && settings.mode !== 'discard' && !settings.discardedByParent;
                 }).map(([uuid, _]) => {
-                    const asset = this.$root.manifest[uuid];  
+                    const asset = this.$root.manifest[uuid];
                     return {
                         type: asset.type,
                         typeHuman: asset.type_human,
@@ -155,6 +155,8 @@ export default {
                         importingName: asset.name,
                         existingId: asset.existing_id,
                         matchedBy: asset.matched_by,
+                        existingUpdatedAt: asset.existing_attributes?.updated_at,
+                        importingUpdatedAt: asset.attributes?.updated_at,
                     };
                 });
             }
@@ -403,7 +405,7 @@ export default {
                     const { processId } = response.data;
                     const successMessage = this.$t('Process was successfully imported');
 
-                    if (response.data.message) {
+                    if (response.data.message && response.data.message.type === "warning" && response.data.message.serviceTasksNames.length) {
                         const message = response.data.message;
                         let taskList = "";
 

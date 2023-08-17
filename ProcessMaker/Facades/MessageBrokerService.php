@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Facade;
 use ProcessMaker\Nayra\MessageBrokers\ServiceInterface;
 
 /**
+ * @see \ProcessMaker\Nayra\MessageBrokers\ServiceKafka
+ * @see \ProcessMaker\Nayra\MessageBrokers\ServiceRabbitMq
+ *
  * @method static void connect()
  * @method static void disconnect()
  * @method static void sendMessage(string $subject, string $collaborationId, mixed $body)

@@ -6,6 +6,7 @@
       :ok-disabled="disabled"
       @ok.prevent="onSubmit"
       @hidden="onClose"
+      @shown="onShown()"
     >
       <template v-if="countCategories">
         <required></required>
@@ -42,7 +43,7 @@
         </b-form-group>
         <category-select :label="$t('Category')" api-get="process_categories"
           api-list="process_categories" v-model="process_category_id"
-          :errors="addError.process_category_id"
+          :errors="addError?.process_category_id"
           name="category"
         ></category-select>
        <b-form-group
@@ -96,6 +97,7 @@
         categoryOptions: "",
         description: "",
         process_category_id: "",
+        template_version: null,
         addError: {},
         status: "",
         bpmn: "",
@@ -113,10 +115,22 @@
           this.name = this.templateData.name;
           this.description = this.templateData.description;  
           this.process_category_id = this.templateData.category_id;
+          this.template_version = this.templateData.version;
         }
-      }
+      },
+      manager: function() {
+        if (!this.manager) {
+          this.manager = "";
+        }
+      },
     },
     methods: {
+      onShown() {
+        if (this.generativeProcessData) {
+          this.name = this.generativeProcessData.process_title;
+          this.description = this.generativeProcessData.process_description;
+        }
+      },
       show() {
       this.$bvModal.show("createProcess");
       },
@@ -170,6 +184,7 @@
           formData.append("file", this.file);
         }
         if (this.selectedTemplate) {
+          formData.append("version", this.template_version);
           this.handleCreateFromTemplate(this.templateData.id, formData);
         } else {
           if (this.generativeProcessData) {
@@ -202,6 +217,9 @@
           }
         })
         .then(response => {
+          if (this.generativeProcessData) {
+            this.$emit("clear-ai-history");
+          }
           ProcessMaker.alert(this.$t('The process was created.'), "success");
           window.location = "/modeler/" + response.data.id;
         })

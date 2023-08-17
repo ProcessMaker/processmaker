@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use ProcessMaker\Http\Controllers\Api\TemplateController as TemplateApiController;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Template;
@@ -53,6 +54,7 @@ class TemplateController extends Controller
     {
         $templateApiController = new TemplateApiController(new Template);
         $response = $templateApiController->show('process', $request);
+        Session::flash('_alert', json_encode(['success', __('The template was created.')]));
 
         return view('processes.modeler.showTemplate')->with('id', $response['id']);
     }

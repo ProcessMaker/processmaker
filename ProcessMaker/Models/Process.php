@@ -18,7 +18,6 @@ use ProcessMaker\Exception\InvalidUserAssignmentException;
 use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Exception\ThereIsNoProcessManagerAssignedException;
-use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Facades\WorkflowUserManager;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Nayra\Bpmn\Models\Activity;
@@ -27,6 +26,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
+use ProcessMaker\Nayra\Managers\WorkflowManagerDefault;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Package\WebEntry\Models\WebentryRoute;
 use ProcessMaker\Rules\BPMNValidation;
@@ -198,6 +198,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         'started',
         'canceled',
         'completed',
+        'error',
     ];
 
     public $taskNotifiableTypes = [
@@ -584,7 +585,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                 if ($escalateToManager) {
                     $user = WorkflowUserManager::escalateToManager($token, $user);
                 } else {
-                    $res = WorkflowManager::runProcess($assignmentProcess, 'assign', [
+                    $res = (new WorkflowManagerDefault)->runProcess($assignmentProcess, 'assign', [
                         'user_id' => $user,
                         'process_id' => $this->id,
                         'request_id' => $token->getInstance()->getId(),
@@ -1608,34 +1609,42 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         };
     }
 
-     /**
-      * Filter settings with a string
-      *
-      * @param $query
-      *
-      * @param $filter string
-      */
-     public function scopeFilter($query, $filterStr)
-     {
-         $filter = '%' . mb_strtolower($filterStr) . '%';
-         $query->where(function ($query) use ($filter, $filterStr) {
-             $query->where('processes.name', 'like', $filter)
-                  ->orWhere('processes.description', 'like', $filter)
-                  ->orWhere('processes.status', '=', $filterStr)
-                  ->orWhere('user.firstname', 'like', $filter)
-                  ->orWhere('user.lastname', 'like', $filter)
-                  ->orWhereIn('processes.id', function ($qry) use ($filter) {
-                      $qry->select('assignable_id')
-                          ->from('category_assignments')
-                          ->leftJoin('process_categories', function ($join) {
-                              $join->on('process_categories.id', '=', 'category_assignments.category_id');
-                              $join->where('category_assignments.category_type', '=', ProcessCategory::class);
-                              $join->where('category_assignments.assignable_type', '=', self::class);
-                          })
-                          ->where('process_categories.name', 'like', $filter);
-                  });
-         });
+    /**
+     * Filter settings with a string
+     *
+     * @param $query
+     *
+     * @param $filter string
+     */
+    public function scopeFilter($query, $filterStr)
+    {
+        $filter = '%' . mb_strtolower($filterStr) . '%';
+        $query->where(function ($query) use ($filter, $filterStr) {
+            $query->where('processes.name', 'like', $filter)
+                 ->orWhere('processes.description', 'like', $filter)
+                 ->orWhere('processes.status', '=', $filterStr)
+                 ->orWhere('user.firstname', 'like', $filter)
+                 ->orWhere('user.lastname', 'like', $filter)
+                 ->orWhereIn('processes.id', function ($qry) use ($filter) {
+                     $qry->select('assignable_id')
+                         ->from('category_assignments')
+                         ->leftJoin('process_categories', function ($join) {
+                             $join->on('process_categories.id', '=', 'category_assignments.category_id');
+                             $join->where('category_assignments.category_type', '=', ProcessCategory::class);
+                             $join->where('category_assignments.assignable_type', '=', self::class);
+                         })
+                         ->where('process_categories.name', 'like', $filter);
+                 });
+        });
 
-         return $query;
-     }
+        return $query;
+    }
+
+    /**
+     * Define the "belongsTo" relationship between the Process model and the PmBlock model.
+     */
+    public function pmBlock()
+    {
+        return $this->belongsTo('ProcessMaker\Package\PackagePmBlocks\Models\PmBlock', 'id', 'editing_process_id');
+    }
 }

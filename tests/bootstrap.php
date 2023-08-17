@@ -16,7 +16,7 @@ app()->make(Kernel::class)->bootstrap();
 // Cache with new config so we don't overwrite our local development database
 Artisan::call('config:cache', ['--env' => 'testing']);
 
-//Ensure storage directory is linked
+// Ensure storage directory is linked
 Artisan::call('storage:link', []);
 
 if (env('RUN_MSSQL_TESTS')) {

@@ -11,6 +11,7 @@ use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\SecurityLogs;
 use ProcessMaker\Jobs\DownloadSecurityLog;
+use ProcessMaker\Models\Media;
 use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Models\User;
 
@@ -129,7 +130,7 @@ class SecurityLogController extends Controller
     {
         $request->validate(SecurityLog::rules());
 
-        $securityLog = new SecurityLog;
+        $securityLog = new SecurityLog();
         $fields = SensitiveDataHelper::parseArray($request->json()->all());
         $securityLog->fill($fields);
         $securityLog->saveOrFail();
@@ -139,17 +140,25 @@ class SecurityLogController extends Controller
 
     private function download(Request $request, User $user = null)
     {
+        if (!Media::s3IsReady()) {
+            return response()->json([
+                'success' => false,
+                'message' => __('You seem to be missing access to this feature. Please contact ProcessMaker Support.'),
+            ]);
+        }
         $request->validate([
             'format' => 'required|string|in:xml,csv',
         ]);
-        sleep(1);
         $sessionUser = Auth::user();
+
+        // Call the Event
         DownloadSecurityLog::dispatch($sessionUser, $request->input('format'), $user ? $user->id : null)
             ->delay(now()->addSeconds(5));
 
         return response()->json([
-            'message' => __('The log file is being prepared and will be sent to your email as soon as it is ready.'),
-        ], 200);
+            'success' => true,
+            'message' => __('The file is processing. You may continue working while the log file compiles.'),
+        ]);
     }
 
     public function downloadForAllUsers(Request $request)

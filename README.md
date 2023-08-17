@@ -56,7 +56,7 @@ https://processmaker.atlassian.net/wiki/spaces/PM4/pages/480149598/Server+Deploy
 
 The online documentation for usage of ProcessMaker 4 can be found by clicking the link below.
 
-https://processmaker.gitbook.io/processmaker/
+https://docs.processmaker.com/
 
 ## Testing
 All PRs for PM4 and it's packages should be accompanied by a test.

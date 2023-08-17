@@ -1,5 +1,10 @@
 <?php
 
+$_port = env('RABBITMQ_PORT', 5672);
+if (preg_match('/\d+$/', $_port, $_match)) {
+    $_port = intval($_match[0]) ?: 5672;
+}
+
 return [
     /*
      * Set to "horizon" if you wish to use Laravel Horizon.
@@ -18,11 +23,12 @@ return [
     'factory_class' => Enqueue\AmqpLib\AmqpConnectionFactory::class,
 
     'host' => env('RABBITMQ_HOST', '127.0.0.1'),
-    'port' => env('RABBITMQ_PORT', 5672),
+    'port' => $_port,
 
     'vhost' => env('RABBITMQ_VHOST', '/'),
     'login' => env('RABBITMQ_LOGIN', 'guest'),
     'password' => env('RABBITMQ_PASSWORD', 'guest'),
+    'heartbeat' => intval(env('RABBITMQ_HEARTBEAT') ?: 60),
 
     'queue' => env('RABBITMQ_QUEUE', 'default'),
 

@@ -11,7 +11,11 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
+use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
+use ProcessMaker\Packages\Connectors\DataSources\Models\DataSource;
+use ProcessMaker\Packages\Connectors\DataSources\Models\DataSourceCategory;
 
 trait HideSystemResources
 {
@@ -55,17 +59,41 @@ trait HideSystemResources
         if (substr(static::class, -8) === 'Category') {
             return $query->where('is_system', false);
         } elseif (static::class === Process::class) {
-            $systemCategory = ProcessCategory::where('is_system', true)->pluck('id');
-
-            return $query->whereNotIn('process_category_id', $systemCategory)
+            return $query
                 ->where('is_template', false)
                 ->when(Schema::hasColumn('processes', 'asset_type'), function ($query) {
                     return $query->whereNull('asset_type');
+                })
+                ->whereDoesntHave('categories', function ($query) {
+                    $query->where('is_system', true);
                 });
         } elseif (static::class === Screen::class) {
-            $systemCategory = ScreenCategory::where('is_system', true)->pluck('id');
-
-            return $query->whereNotIn('screen_category_id', $systemCategory)->where('is_template', false);
+            return $query
+                ->where('is_template', false)
+                ->when(Schema::hasColumn('screens', 'asset_type'), function ($query) {
+                    return $query->whereNull('asset_type');
+                })
+                ->whereDoesntHave('categories', function ($query) {
+                    $query->where('is_system', true);
+                });
+        } elseif (static::class === Script::class) {
+            return $query
+                ->where('is_template', false)
+                ->when(Schema::hasColumn('scripts', 'asset_type'), function ($query) {
+                    return $query->whereNull('asset_type');
+                })
+                ->whereDoesntHave('categories', function ($query) {
+                    $query->where('is_system', true);
+                });
+        } elseif (static::class === DataSource::class) {
+            return $query
+                ->where('is_template', false)
+                ->when(Schema::hasColumn('data_sources', 'asset_type'), function ($query) {
+                    return $query->whereNull('asset_type');
+                })
+                ->whereDoesntHave('categories', function ($query) {
+                    $query->where('is_system', true);
+                });
         } elseif (static::class == ProcessRequest::class) {
             // ProcessRequests must be filtered this way since
             // they could be in a separate database

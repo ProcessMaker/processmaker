@@ -20,7 +20,9 @@ class ScriptExporter extends ExporterBase
             $this->addDependent(DependentType::ENVIRONMENT_VARIABLES, $environmentVariable, EnvironmentVariableExporter::class);
         }
 
-        $this->addDependent('user', $this->model->runAsUser, UserExporter::class);
+        if ($this->model->runAsUser) {
+            $this->addDependent('user', $this->model->runAsUser, UserExporter::class);
+        }
 
         $this->addDependent('executor', $this->model->scriptExecutor, ScriptExecutorExporter::class);
     }
@@ -29,7 +31,7 @@ class ScriptExporter extends ExporterBase
     {
         $this->associateCategories(ScriptCategory::class, 'script_category_id');
 
-        foreach ($this->getDependents('user') as $dependent) {
+        foreach ($this->getDependents('user', true) as $dependent) {
             $scriptUser = $dependent->model;
             $this->model->run_as_user_id = $scriptUser->id;
         }
@@ -49,7 +51,7 @@ class ScriptExporter extends ExporterBase
 
         // Search for environment variable present in the code
         foreach ($environmentVariables as $variable) {
-            if (strpos($this->model->code, $variable->name)) {
+            if (preg_match('/[^a-zA-Z0-9\s]' . $variable->name . '[^a-zA-Z0-9\s]?/', $this->model->code)) {
                 $environmentVariablesFound[] = $variable;
             }
         }

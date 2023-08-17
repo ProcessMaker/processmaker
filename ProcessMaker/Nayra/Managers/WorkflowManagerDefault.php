@@ -10,6 +10,8 @@ use ProcessMaker\Contracts\WorkflowManagerInterface;
 use ProcessMaker\Jobs\BoundaryEvent;
 use ProcessMaker\Jobs\CallProcess;
 use ProcessMaker\Jobs\CatchEvent;
+use ProcessMaker\Jobs\CatchSignalEventInRequest;
+use ProcessMaker\Jobs\CatchSignalEventProcess;
 use ProcessMaker\Jobs\CompleteActivity;
 use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Jobs\RunServiceTask;
@@ -18,6 +20,7 @@ use ProcessMaker\Jobs\ThrowMessageEvent;
 use ProcessMaker\Jobs\ThrowSignalEvent;
 use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\Models\Process as Definitions;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken as Token;
 use ProcessMaker\Nayra\Contracts\Bpmn\BoundaryEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface;
@@ -29,6 +32,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
+use ProcessMaker\Repositories\DefinitionsRepository;
 
 class WorkflowManagerDefault implements WorkflowManagerInterface
 {
@@ -256,6 +260,38 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
     }
 
     /**
+     * Throw a signal event by signalRef into a specific process.
+     *
+     * @param int $process
+     * @param string $signalRef
+     * @param array $data
+     */
+    public function throwSignalEventProcess($processId, $signalRef, array $data)
+    {
+        CatchSignalEventProcess::dispatch(
+            $processId,
+            $signalRef,
+            $data
+        )->onQueue('bpmn');
+    }
+
+    /**
+     * Throw a signal event by signalRef into a specific request.
+     *
+     * @param ProcessRequest $request
+     * @param string $signalRef
+     * @param array $data
+     */
+    public function throwSignalEventRequest(ProcessRequest $request, $signalRef, array $data)
+    {
+        CatchSignalEventInRequest::dispatchSync(
+            $request,
+            $data,
+            $signalRef
+        );
+    }
+
+    /**
      * Catch a signal event.
      *
      * @param EventDefinitionInterface $sourceEventDefinition
@@ -357,11 +393,11 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
      *
      * @return mixed
      */
-    public function runServiceImplementation($implementation, array $data, array $config, $tokenId = '', $errorHandling = [])
+    public function runServiceImplementation($implementation, array $data, array $config, $tokenId = '', $timeout = 0)
     {
         $class = $this->serviceTaskImplementations[$implementation];
         $service = new $class();
 
-        return $service->run($data, $config, $tokenId, $errorHandling);
+        return $service->run($data, $config, $tokenId, $timeout);
     }
 }

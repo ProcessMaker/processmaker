@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -136,9 +137,9 @@ class ProcessRequestController extends Controller
         if (!empty($filter)) {
             $query->filter($filter);
         }
-        
+
         $query->nonSystem();
-        
+
         $pmql = $request->input('pmql', '');
         if (!empty($pmql)) {
             try {
@@ -639,6 +640,7 @@ class ProcessRequestController extends Controller
         ]);
 
         $elementId = null;
+        $countFlag = false;
         $maxTokenId = $this->getMaxTokenId($request, $httpRequest->element_id);
         if ($maxTokenId === null) {
             $bpmn = $request->process->versions()
@@ -660,6 +662,8 @@ class ProcessRequestController extends Controller
 
                 // Get the minimum repeated node ID.
                 $elementId = ($sourceTokensCount < $targetTokensCount) ? $sourceRef : $targetRef;
+                // Get a Flag to adjust the repeat quantity
+                $countFlag = $this->getCountFlag($sourceTokensCount, $targetTokensCount, $sourceRef, $request);
             }
 
             // Get the maximum node ID.
@@ -671,7 +675,7 @@ class ProcessRequestController extends Controller
             ->where('id', $maxTokenId)
             ->select('user_id', 'element_id', 'element_name', 'created_at', 'completed_at', 'status')
             ->with([
-                'user' => fn ($query) => $query->select('id', 'username'),
+                'user' => fn ($query) => $query->select('id', 'username', 'firstname', 'lastname'),
             ])
             ->firstOrFail();
 
@@ -684,7 +688,7 @@ class ProcessRequestController extends Controller
             default => $token->status,
         };
         $token->status_translation = $translatedStatus;
-        $token->completed_by = $token->completed_at ? ($token->user['username'] ?? '-') : '-';
+        $token->completed_by = $token->completed_at ? ($token->user['fullname'] ?? '-') : '-';
 
         // Get the number of times the flow has run.
         $tokensCount = $request->tokens()
@@ -692,7 +696,10 @@ class ProcessRequestController extends Controller
                 'element_id' => $httpRequest->element_id,
                 'process_request_id'=> $request->id,
             ])->count();
-        $token->count = $tokensCount;
+        $token->count = $countFlag ? $tokensCount - 1 : $tokensCount;
+        if ($token->count === 0) {
+            throw new ModelNotFoundException();
+        }
 
         return new ApiResource($token);
     }

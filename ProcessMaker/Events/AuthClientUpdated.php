@@ -14,46 +14,46 @@ class AuthClientUpdated implements SecurityLogEventInterface
 
     private array $original;
 
-    private array $data;
-
     private array $changes;
 
     private string $clientId;
+
+    private string $clientName;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(string $clientId, array $originalValues, array $changedValues)
+    public function __construct(string $clientId, array $originalValues, array $changedValues, $name = '')
     {
         $this->original = $originalValues;
         $this->changes = $changedValues;
         $this->clientId = $clientId;
+        $this->clientName = $name;
     }
 
-
     /**
-     * Return event data
      * Return event data
      */
     public function getData(): array
     {
         return array_merge([
-            'auth_client_id' => $this->clientId,
-            'last_modified' => $this->changes['updated_at'] ?? Carbon::now()
+            'name' => [
+                'label' => $this->changes['name'] ?? $this->clientName,
+                'link' => route('auth-clients.index'),
+            ],
+            'last_modified' => $this->changes['updated_at'] ?? Carbon::now(),
         ], $this->formatChanges($this->changes, $this->original));
     }
 
-
     /**
-     * Return event changes
      * Return event changes
      */
     public function getChanges(): array
     {
         return [
-            'auth_client_id' => $this->clientId,
+            'id' => $this->clientId,
         ];
     }
 

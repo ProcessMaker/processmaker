@@ -54,7 +54,7 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
 
         Route::get('script-executors', [ScriptExecutorController::class, 'index'])->name('script-executors.index');
 
-        //temporary, should be removed
+        // temporary, should be removed
         Route::get('security-logs/download/all', [\ProcessMaker\Http\Controllers\Api\SecurityLogController::class, 'downloadForAllUsers'])->middleware('can:view-security-logs');
         Route::get('security-logs/download/{user}', [\ProcessMaker\Http\Controllers\Api\SecurityLogController::class, 'downloadForUser'])->middleware('can:view-security-logs');
     });
@@ -97,6 +97,7 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
     Route::put('processes/{process}', [ProcessController::class, 'update'])->name('processes.update')->middleware('can:edit-processes');
     Route::delete('processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy')->middleware('can:archive-processes');
 
+    Route::get('process_events/{process}', [ProcessController::class, 'triggerStartEventApi'])->name('process_events.trigger')->middleware('can:start,process');
     Route::get('processes/{process}/export/translation/{language}', [ProcessTranslationController::class, 'export']);
     Route::get('processes/{process}/import/translation', [ProcessTranslationController::class, 'import']);
 
@@ -105,8 +106,8 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
     Route::get('profile/edit', [ProfileController::class, 'edit'])->name('profile.edit')->middleware('can:edit-personal-profile');
     Route::get('profile/{id}', [ProfileController::class, 'show'])->name('profile.show');
     // Ensure our modeler loads at a distinct url
-    Route::get('modeler/{process}', [ModelerController::class, 'show'])->name('modeler.show')->middleware('can:edit-processes');
-    Route::get('modeler/{process}/inflight', [ModelerController::class, 'inflight'])->name('modeler.inflight')->middleware('can:edit-processes');
+    Route::get('modeler/{process}', [ModelerController::class, 'show'])->name('modeler.show')->middleware('can:edit,process');
+    Route::get('modeler/{process}/inflight/{request?}', [ModelerController::class, 'inflight'])->name('modeler.inflight')->middleware('can:view,request');
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
 

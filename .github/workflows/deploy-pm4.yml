@@ -6,7 +6,7 @@ on:
   #pull_request:
   #  types: [opened, reopened, synchronize, edited, closed]
   #schedule:
-  #  - cron: '0 0 * * *'  # every day at midnight     
+  #  - cron: '30 2 * * *'  # every day at midnight     
   #workflow_dispatch:
   #pull_request:
   #  branches:

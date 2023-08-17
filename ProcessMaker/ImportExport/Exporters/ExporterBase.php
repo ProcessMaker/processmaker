@@ -165,14 +165,21 @@ abstract class ExporterBase implements ExporterInterface
         return $dependent;
     }
 
-    public function getDependents($type = null)
+    public function getDependents($type = null, $includeEmptyModels = false)
     {
         return array_values(
-            array_filter($this->dependents, function ($dependent) use ($type) {
+            array_filter($this->dependents, function ($dependent) use ($type, $includeEmptyModels) {
                 if ($type && $dependent->type !== $type) {
                     return false;
                 }
                 if ($dependent->model === null) {
+                    if ($includeEmptyModels) {
+                        // Return an empty model when the dependent does not exist
+                        $dependent->model = new $dependent->modelClass();
+
+                        return true;
+                    }
+
                     return false;
                 }
 
@@ -388,6 +395,9 @@ abstract class ExporterBase implements ExporterInterface
                 }
                 $i++;
                 $value = $handler($value);
+                if ($value === null) {
+                    break;
+                }
             }
             $this->model->$attribute = $value;
         }
@@ -421,8 +431,14 @@ abstract class ExporterBase implements ExporterInterface
     public function handleDuplicateAttributes() : array
     {
         $handlers = [];
-        foreach ($this->handleDuplicatesByIncrementing as $attr) {
-            $handlers[$attr] = fn ($name) => $this->incrementString($name);
+        foreach ($this->handleDuplicatesByIncrementing as  $index => $attr) {
+            if (is_array($this->incrementStringSeparator)) {
+                $seperator = $this->incrementStringSeparator[$index];
+                $handlers[$attr] = fn ($name) => $this->incrementString($name, $seperator);
+            } else {
+                $seperator = $this->incrementStringSeparator;
+                $handlers[$attr] = fn ($name) => $this->incrementString($name, $seperator);
+            }
         }
 
         return $handlers;
@@ -433,20 +449,20 @@ abstract class ExporterBase implements ExporterInterface
         $this->log[$key] = $value;
     }
 
-    protected function incrementString(string $string)
+    protected function incrementString(string $string, $seperator = ' ')
     {
-        if (preg_match('/' . $this->incrementStringSeparator . '(\d+)$/', $string, $matches)) {
+        if (preg_match('/' . $seperator . '(\d+)$/', $string, $matches)) {
             $num = (int) $matches[1];
             $new = $num + 1;
 
             return preg_replace(
-                '/' . $this->incrementStringSeparator . '\d+$/',
-                $this->incrementStringSeparator . (string) $new,
+                '/' . $seperator . '\d+$/',
+                $seperator . (string) $new,
                 $string
             );
         }
 
-        return $string . $this->incrementStringSeparator . '2';
+        return $string . $seperator . '2';
     }
 
     protected function exportCategories()

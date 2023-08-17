@@ -107,7 +107,7 @@ class ScriptExecutorController extends Controller
         $request->validate(ScriptExecutor::rules());
 
         $scriptExecutor = ScriptExecutor::create(
-            $request->only((new ScriptExecutor)->getFillable())
+            $request->only((new ScriptExecutor())->getFillable())
         );
 
         ScriptExecutorCreated::dispatch($scriptExecutor->getAttributes());
@@ -169,13 +169,15 @@ class ScriptExecutorController extends Controller
         $this->checkAuth($request);
         $request->validate(ScriptExecutor::rules());
 
-        $original_values = $scriptExecutor->getAttributes();
+        $original = $scriptExecutor->getAttributes();
 
         $scriptExecutor->update(
             $request->only($scriptExecutor->getFillable())
         );
 
-        ScriptExecutorUpdated::dispatch($scriptExecutor->id, $original_values, $scriptExecutor->getChanges());
+        if (!empty($scriptExecutor->getChanges())) {
+            ScriptExecutorUpdated::dispatch($scriptExecutor->id, $original, $scriptExecutor->getChanges());
+        }
 
         BuildScriptExecutor::dispatch($scriptExecutor->id, $request->user()->id);
 
@@ -243,9 +245,9 @@ class ScriptExecutorController extends Controller
             }
         }
 
-        ScriptExecutorDeleted::dispatch($scriptExecutor->getAttributes());
-
         ScriptExecutor::destroy($scriptExecutor->id);
+
+        ScriptExecutorDeleted::dispatch($scriptExecutor->getAttributes());
 
         return ['status' => 'done'];
     }
@@ -253,7 +255,7 @@ class ScriptExecutorController extends Controller
     private function checkAuth($request)
     {
         if (!$request->user()->is_administrator) {
-            throw new AuthorizationException;
+            throw new AuthorizationException();
         }
     }
 

@@ -3,9 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use ProcessMaker\Models\ProcessTemplates;
 
-class AddVendorOnBoardingInProcessTemplatesTable extends Migration
+class AddVersionColumnToProcessTemplates extends Migration
 {
     /**
      * Run the migrations.
@@ -14,10 +13,9 @@ class AddVendorOnBoardingInProcessTemplatesTable extends Migration
      */
     public function up()
     {
-        Artisan::call('db:seed', [
-            '--class' => ProcessTemplatesSeeder::class,
-            '--force' => true,
-        ]);
+        Schema::table('process_templates', function (Blueprint $table) {
+            $table->string('version')->nullable()->after('description');
+        });
     }
 
     /**
@@ -27,6 +25,8 @@ class AddVendorOnBoardingInProcessTemplatesTable extends Migration
      */
     public function down()
     {
-        ProcessTemplates::where('name', 'Vendor Onboarding')->where('key', 'default_templates')->delete();
+        Schema::table('process_templates', function (Blueprint $table) {
+            $table->dropColumn('version');
+        });
     }
 }

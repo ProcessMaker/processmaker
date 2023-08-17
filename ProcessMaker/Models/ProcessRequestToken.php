@@ -9,13 +9,13 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Notification;
 use Laravel\Scout\Searchable;
 use Log;
-use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Facades\WorkflowUserManager;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\MultiInstanceLoopCharacteristicsInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
+use ProcessMaker\Nayra\Managers\WorkflowManagerDefault;
 use ProcessMaker\Notifications\ActivityActivatedNotification;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasUuids;
@@ -319,14 +319,27 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
     /**
      * Get the form assigned to the task.
-     *
-     * @return Screen
      */
-    public function getScreen()
+    public function getScreen(): ?Screen
     {
         $definition = $this->getDefinition();
+        $screenRef = $definition['screenRef'] ?? null;
+        $screen = Screen::find($screenRef);
 
-        return empty($definition['screenRef']) ? null : Screen::find($definition['screenRef']);
+        if ($screen === null) {
+            // Attempt to retrieve the localName property from the bpmnDefinition object.
+            // It uses a try-catch block to handle any exceptions that might occur, for example in test environments.
+            try {
+                $localName = $this->getBpmnDefinition()->localName;
+            } catch (\Throwable $t) {
+                $localName = null;
+            }
+            $isManualTask = $localName === 'manualTask';
+            $defaultScreen = $isManualTask ? 'default-display-screen' : 'default-form-screen';
+            $screen = Screen::firstWhere('key', $defaultScreen);
+        }
+
+        return $screen;
     }
 
     /**
@@ -338,7 +351,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     {
         $screen = $this->getScreen();
 
-        if (!$screen) {
+        if ($screen === null) {
             return null;
         }
 
@@ -823,7 +836,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
     public function updateTokenProperties()
     {
-        $allowed = ['conditionals', 'loopCharacteristics', 'data'];
+        $allowed = ['conditionals', 'loopCharacteristics', 'data', 'error'];
         $this->token_properties = array_filter(
             $this->getProperties(),
             function ($key) use ($allowed) {
@@ -900,7 +913,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         }
         $assignmentProcess = Process::where('name', Process::ASSIGNMENT_PROCESS)->first();
         if ($assignmentProcess) {
-            $res = WorkflowManager::runProcess($assignmentProcess, 'assign', [
+            $res = (new WorkflowManagerDefault)->runProcess($assignmentProcess, 'assign', [
                 'task_id' => $this->id,
                 'user_id' => $userId,
                 'process_id' => $this->process_id,

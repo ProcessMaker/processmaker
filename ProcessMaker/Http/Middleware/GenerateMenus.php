@@ -20,20 +20,32 @@ class GenerateMenus
     {
         Menu::make('topnav', function ($menu) {
             $menu->group(['prefix' => 'requests'], function ($request_items) {
-                $request_items->add(__('Requests'), ['route' => 'requests.index'])->active('requests/*');
+                $request_items->add(
+                    __('Requests'),
+                    ['route' => 'requests.index', 'id' => 'requests']
+                )->active('requests/*');
             });
             //@TODO change the index to the correct blade
             $menu->group(['prefix' => 'tasks'], function ($request_items) {
-                $request_items->add(__('Tasks'), ['route' => 'tasks.index'])->active('tasks/*');
+                $request_items->add(
+                    __('Tasks'),
+                    ['route' => 'tasks.index', 'id' => 'tasks']
+                )->active('tasks/*');
             });
             if (\Auth::check() && \Auth::user()->canAny('view-processes|view-process-categories|view-scripts|view-screens|view-environment_variables')) {
                 $menu->group(['prefix' => 'processes'], function ($request_items) {
-                    $request_items->add(__('Designer'), ['route' => 'processes.index'])->active('processes/*');
+                    $request_items->add(
+                        __('Designer'),
+                        ['route' => 'processes.index', 'id' => 'designer']
+                    )->active('processes/*');
                 });
             }
             if (\Auth::check() && \Auth::user()->canAny('view-users|view-groups|view-auth_clients|view-settings')) {
                 $menu->group(['prefix' => 'admin'], function ($admin_items) {
-                    $admin_items->add(__('Admin'), ['route' => 'admin.index'])->active('admin/*');
+                    $admin_items->add(
+                        __('Admin'),
+                        ['route' => 'admin.index', 'id' => 'admin']
+                    )->active('admin/*');
                 });
             }
         });
@@ -179,7 +191,7 @@ class GenerateMenus
                 'id' => 'dropdownItem',
             ]);
             $submenu->add(__('Documentation'), [
-                'url' => 'https://processmaker.gitbook.io/processmaker',
+                'url' => 'https://docs.processmaker.com',
                 'icon' => 'fa-question-circle',
                 'id' => 'dropdownItem',
                 'target' => '_blank',

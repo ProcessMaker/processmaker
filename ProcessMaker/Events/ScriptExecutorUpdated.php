@@ -12,8 +12,6 @@ class ScriptExecutorUpdated implements SecurityLogEventInterface
     use Dispatchable;
     use FormatSecurityLogChanges;
 
-    private array $data;
-
     private array $changes;
 
     private array $original;
@@ -32,28 +30,28 @@ class ScriptExecutorUpdated implements SecurityLogEventInterface
         $this->scriptId = $scriptId;
     }
 
-
     /**
-     * Return event data
      * Return event data
      */
     public function getData(): array
     {
         return array_merge([
+            'name' => [
+                'label' => $this->changes['name'] ?? $this->scriptId,
+                'link' => route('script-executors.index'),
+            ],
             'script_executor_id' => $this->scriptId,
-            'last_modified' => $this->changes['updated_at'] ?? Carbon::now()
+            'last_modified' => $this->changes['updated_at'] ?? Carbon::now(),
         ], $this->formatChanges($this->changes, $this->original));
     }
 
-
     /**
-     * Return event changes
      * Return event changes
      */
     public function getChanges(): array
     {
         return [
-            'script_executor_id' => $this->scriptId
+            'script_executor_id' => $this->scriptId,
         ];
     }
 
