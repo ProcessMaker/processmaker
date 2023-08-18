@@ -1,5 +1,5 @@
 <template>
-  <div :class="['p-2', { 'h-100': showPreview }]">
+  <div class="p-2">
     <div class="p-2 d-flex justify-content-between">
       <div>{{ $t("Description:") }}</div>
       <div class="text-muted" data-test="token-count">
@@ -13,13 +13,13 @@
         data-test="prompt-area"
         v-model="text"
         placeholder="Enter your prompt!..."
-        :rows="showPreview ? 18 : 4"
-        :max-rows="showPreview ? 18 : 4"
+        rows="4"
+        max-rows="4"
       ></b-form-textarea>
     </div>
     <div class="d-flex p-2 align-items-center">
       <div role="button" class="text-primary" @click="toggleSuggestions()">
-        <i class="fa fa-lightbulb mr-2"></i>{{ $t('Give me inspiration!') }}
+        <i class="fa fa-lightbulb mr-2"></i>Give me inspiration!
       </div>
       <b-btn
         class="p-1 ml-auto"
@@ -48,7 +48,7 @@ import _, { debounce } from "lodash";
 import Suggestions from "./Suggestions";
 
 export default {
-  props: ["promptSessionId", "showPreview"],
+  props: ["promptSessionId"],
   name: "GenerateScriptTextPrompt",
   components: {
     Suggestions,
