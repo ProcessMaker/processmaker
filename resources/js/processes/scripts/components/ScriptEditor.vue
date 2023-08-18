@@ -1,12 +1,12 @@
 <template>
   <b-container class="h-100">
     <b-card no-body class="h-100" >
-      <top-menu ref="menuScript" :options="optionsMenu" />
+      <top-menu v-if="!previewChanges" ref="menuScript" :options="optionsMenu" />
 
       <b-card-body ref="editorContainer" class="overflow-hidden p-4" >
         <b-row class="h-100">
-          <b-col cols="9" class="h-100 p-0">
-            <b-row class="h-100">
+          <b-col :cols="previewChanges && action !== 'generate' ? 12 : 9" class="h-100 p-0">
+            <b-row class="h-100 w-100">
               <b-col cols="12" class="h-100 p-0">
                 <div v-if="packageAi" v-show="showDiffEditor || showExplainEditor">
                   <div class="d-flex">
@@ -47,8 +47,9 @@
                     :language="language"
                     :diff-editor="false"
                   />
-                  <div v-if="showExplainEditor" class="w-50 h-100 py-2 px-4 explain-editor">
-                    {{ newCode }}
+                  <div v-if="showExplainEditor" class="w-50 h-100 py-2 px-4 explain-editor-container">
+                    <div class="mx-auto explain-editor pb-5" v-html="newCode">
+                    </div>
                   </div>
 
                   <monaco-editor
@@ -69,7 +70,7 @@
           </b-col>
 
           <!-- Progress panel -->
-          <b-col v-if="packageAi && loading" cols="3" class="h-100 pl-5">
+          <b-col v-if="packageAi && loading" cols="3" class="h-100">
             <div class="h-100 px-5 d-flex justify-items-center justify-content-center flex-column progress-panel">
               <div class="w-100 d-flex justify-content-between text-muted">
                 <div><small>{{ loaderAction }}...</small></div>
@@ -85,7 +86,7 @@
           </b-col>
 
           <!-- Right panel -->
-          <b-col v-if="!loading" cols="3" class="h-100 pl-5">
+          <b-col v-if="!loading && !previewChanges" cols="3" class="h-100">
             <b-card no-body class="h-100">
               <b-card-header class="light-gray-background">
                 <b-row class="d-flex align-items-center">
@@ -107,15 +108,18 @@
               <b-card-body class="overflow-hidden p-0">
                 <b-list-group class="w-100 h-100 overflow-auto">
                   <cornea-tab
+                    :user="user"
+                    :source-code="code"
+                    :language="language"
+                    :selection="selection"
+                    :package-ai="packageAi"
+                    :default-prompt="prompt"
                     @get-selection="onGetSelection"
                     @request-started="onRequestStarted"
                     @current-nonce-changed="onCurrentNonceChanged"
                     @set-diff="onSetDiff"
-                    :user="user"
-                    :sourceCode="code"
-                    :language="language"
-                    :selection="selection"
-                    :package-ai="packageAi"
+                    @set-action="onSetAction"
+                    @prompt-changed="onPromptChanged"
                   />
                   <b-list-group-item class="script-toggle border-0 mb-0">
                     <b-row v-b-toggle.configuration>
@@ -211,6 +215,35 @@
                       </div>
                     </b-collapse>
                   </b-list-group-item>
+                </b-list-group>
+              </b-card-body>
+            </b-card>
+          </b-col>
+
+          <!-- Right Panel generate script -->
+          <b-col v-if="!loading && previewChanges && action ==='generate'" cols="3" class="h-100">
+            <b-card no-body class="h-100">
+              <b-card-header class="light-gray-background">
+                {{ $t('Generate Script From Text') }}
+              </b-card-header>
+
+              <b-card-body class="overflow-hidden p-0">
+                <b-list-group class="w-100 h-100 overflow-auto">
+                  <cornea-tab
+                    :default-prompt="prompt"
+                    :user="user"
+                    :sourceCode="code"
+                    :language="language"
+                    :selection="selection"
+                    :package-ai="packageAi"
+                    :default-selected="'generate'"
+                    @get-selection="onGetSelection"
+                    @request-started="onRequestStarted"
+                    @current-nonce-changed="onCurrentNonceChanged"
+                    @set-diff="onSetDiff"
+                    @set-action="onSetAction"
+                    @prompt-changed="onPromptChanged"
+                  />
                 </b-list-group>
               </b-card-body>
             </b-card>
@@ -320,6 +353,8 @@ export default {
       },
       code: this.script.code,
       newCode: "",
+      prompt: "",
+      action: "",
       loading: false,
       selection: null,
       isDiffEditor: false,
@@ -358,6 +393,9 @@ export default {
     };
   },
   computed: {
+    previewChanges() {
+      return this.showDiffEditor || this.showExplainEditor;
+    },
     showEditor() {
       return !this.showDiffEditor;
     },
@@ -444,10 +482,12 @@ export default {
       this.code = this.newCode;
       this.newCode = "";
       this.changesApplied = true;
+      this.action = "";
     },
     cancelChanges() {
       this.newCode = "";
       this.changesApplied = true;
+      this.action = "";
     },
     cancelRequest() {
       if (this.currentNonce) {
@@ -455,16 +495,24 @@ export default {
         localStorage.setItem("cancelledJobs", JSON.stringify(this.cancelledJobs));
         this.loading = false;
         this.progress.progress = 0;
+        this.action = "";
       }
     },
     closeExplanation() {
       this.newCode = "";
+      this.action = "";
     },
     onCurrentNonceChanged(currentNonce) {
       this.currentNonce = currentNonce;
     },
     onSetDiff(isDiff) {
       this.isDiffEditor = isDiff;
+    },
+    onSetAction(action) {
+      this.action = action;
+    },
+    onPromptChanged(prompt) {
+      this.prompt = prompt;
     },
     onGetSelection() {
       const editor = this.$refs.editor.getMonaco();
@@ -746,13 +794,16 @@ export default {
   right: 2rem;
 }
 .editors-container {
-  height: calc(100% - 4.1rem);
+  height: calc(100% - 1rem);
+  text-align: justify;
 }
-.explain-editor {
+.explain-editor-container {
   white-space: pre-line;
   overflow-y: auto;
 }
-
+.explain-editor {
+  max-width: 700px;
+}
 .pulse {
   animation: pulse-animation 2s infinite;
 }
@@ -764,5 +815,25 @@ export default {
   100% {
     box-shadow: 0 0 0 13px rgba(0, 0, 0, 0);
   }
+}
+</style>
+
+<style lang="scss">
+.summary-header {
+  font-size: 130%;
+}
+.summary-content {
+  border: 0;
+  border-left: 5px solid #1c72c2;
+  background: #cbdfff47;
+  color: #114a75;
+  text-align: justify;
+  border-radius: 3px;
+  padding: 1.5rem;
+}
+.explanation-header {
+  font-size: 130%;
+}
+.explanation-content {
 }
 </style>

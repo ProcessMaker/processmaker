@@ -1,6 +1,6 @@
 <template>
-  <div class="d-flex suggestions-container flex-column" :class="{'expanded': !showSuggestions}">
-    <div v-if="!showSuggestions" class="d-flex flex-column align-items-center mb-0 suggestions-cards-container" @mouseover="stopCarrousel()" @mouseleave="startCarrousel()">
+  <div v-if="showSuggestions" class="d-flex suggestions-container flex-column h-100" :class="{'expanded': !showSuggestions}">
+    <div class="d-flex flex-column align-items-center mb-0 suggestions-cards-container" @mouseover="stopCarrousel()" @mouseleave="startCarrousel()">
       <div v-if="loading">
         <i class="fa fa-spin fa-spinner mr-1"></i>
       </div>
@@ -15,7 +15,7 @@
         <b class="">{{ suggestion.suggestion }}</b>
       </div>
     </div>
-    <div v-if="!showSuggestions" class="mt-1 mb-1 w-100">
+    <div class="mt-1 mb-1 w-100">
       <div class="d-flex justify-content-center">
         <div v-for="suggestionsPage, index in suggestionsPages" 
           class="navigation-dot ml-1 mr-1" 

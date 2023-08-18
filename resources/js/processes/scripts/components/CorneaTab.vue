@@ -1,5 +1,13 @@
 <template>
-  <div>
+  <div v-if="defaultSelected === 'generate'" class="h-100">
+    <generate-script-text-prompt
+      v-if="showPromptArea || defaultSelected === 'generate'"
+      :default-prompt="defaultPrompt"
+      :prompt-session-id="promptSessionId"
+      @generate-script="onGenerateScript"
+    />
+  </div>
+  <div v-else>
     <b-list-group-item class="script-toggle border-0 mb-0">
       <b-row v-b-toggle.assistant data-test="cornea-tab-toggle">
         <b-col v-if="!showPromptArea">
@@ -26,6 +34,7 @@
         </b-col>
       </b-row>
     </b-list-group-item>
+
     <b-list-group-item
       class="p-0 border-left-0 border-right-0 border-top-0 mb-0"
     >
@@ -98,7 +107,7 @@
           </div>
         </div>
         <generate-script-text-prompt
-          v-else
+          v-if="showPromptArea || defaultSelected === 'generate'"
           :prompt-session-id="promptSessionId"
           @generate-script="onGenerateScript"
         />
@@ -114,7 +123,7 @@ export default {
   components: {
     GenerateScriptTextPrompt,
   },
-  props: ["user", "sourceCode", "language", "selection", "packageAi"],
+  props: ["user", "sourceCode", "language", "selection", "packageAi", "defaultSelected", "defaultPrompt"],
   data() {
     return {
       showPromptArea: false,
@@ -127,6 +136,7 @@ export default {
       newCode: `\n $a = 3+4; \n $b = $a / 2;`,
       loading: false,
       promptSessionId: "",
+      prompt: "",
       progress: {
         progress: 0,
       },
@@ -139,6 +149,10 @@ export default {
       this.currentNonce = localStorage.currentNonce;
 
       this.getPromptSession();
+    }
+
+    if (this.defaultPrompt) {
+      this.prompt = this.defaultPrompt;
     }
   },
 
@@ -153,7 +167,6 @@ export default {
       localStorage.currentNonce = this.currentNonce;
       this.$emit("current-nonce-changed", this.currentNonce);
     },
-
     getPromptSession() {
       const url = "/package-ai/getPromptSessionHistory";
 
@@ -194,12 +207,15 @@ export default {
     },
     onGenerateScript(prompt) {
       this.prompt = prompt;
+      this.$emit("prompt-changed", prompt);
+      console.log("after emit");
       this.generateScript();
     },
     async generateScript() {
       this.getSelection();
       this.getNonce();
       this.$emit("set-diff", true);
+      this.$emit("set-action", "generate");
 
       await this.$nextTick();
 
@@ -235,6 +251,7 @@ export default {
       this.getSelection();
       this.getNonce();
       this.$emit("set-diff", true);
+      this.$emit("set-action", "clean");
 
       await this.$nextTick();
 
@@ -269,6 +286,7 @@ export default {
       this.getSelection();
       this.getNonce();
       this.$emit("set-diff", true);
+      this.$emit("set-action", "document");
 
       await this.$nextTick();
 
@@ -302,6 +320,7 @@ export default {
       this.getSelection();
       this.getNonce();
       this.$emit("set-diff", false);
+      this.$emit("set-action", "explain");
 
       await this.$nextTick();
 
@@ -356,6 +375,8 @@ export default {
 .ai-button {
   border-radius: 8px;
   box-shadow: 0 0 8px 0px #ddd;
+  padding-left: 0.5rem !important;
+  padding-right: 0.5rem !important;
 }
 .ai-button:hover {
   background: #f5f5f5 !important;

@@ -1,13 +1,14 @@
 <template>
-  <div class="p-2">
+  <div class="p-2 h-100 d-flex flex-column">
     <div class="p-2 d-flex justify-content-between">
       <div>{{ $t("Description:") }}</div>
       <div class="text-muted" data-test="token-count">
         <span :class="{'text-danger': maxTokensExceeded}">{{ tokens }}</span>/{{ maxTokens }} {{ $t("tokens") }}
       </div>
     </div>
-    <div class="p-2">
+    <div class="p-2 h-100">
       <b-form-textarea
+        class="h-100"
         id="textarea"
         ref="textArea"
         data-test="prompt-area"
@@ -48,7 +49,7 @@ import _, { debounce } from "lodash";
 import Suggestions from "./Suggestions";
 
 export default {
-  props: ["promptSessionId"],
+  props: ["promptSessionId", "defaultPrompt"],
   name: "GenerateScriptTextPrompt",
   components: {
     Suggestions,
@@ -82,6 +83,7 @@ export default {
   },
   mounted() {
     this.fetchSuggestions();
+    this.text = this.defaultPrompt;
   },
   methods: {
     toggleSuggestions() {
@@ -140,4 +142,4 @@ export default {
     },
   },
 };
-</script>
+  </script>
