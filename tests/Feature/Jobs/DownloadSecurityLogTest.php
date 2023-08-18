@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Jobs;
 
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Events\SecurityLogDownloadJobCompleted;
 use ProcessMaker\Jobs\DownloadSecurityLog;
@@ -97,12 +98,13 @@ class DownloadSecurityLogTest extends TestCase
                 'AWS S3 service is not available.'
             );
         } else {
-            $this->expectsEvents(SecurityLogDownloadJobCompleted::class);
+            Event::fake([SecurityLogDownloadJobCompleted::class]);
             $job = new DownloadSecurityLog($this->user, DownloadSecurityLog::FORMAT_CSV);
             $url = (new ReflectionMethod($job, 'handle'))->invoke($job);
             $this->assertNotEmpty($url);
             $data = file_get_contents($url);
             $this->assertNotEmpty($data);
+            Event::assertDispatched(SecurityLogDownloadJobCompleted::class);
         }
     }
 
@@ -118,7 +120,7 @@ class DownloadSecurityLogTest extends TestCase
                 'AWS S3 service is not available.'
             );
         } else {
-            $this->expectsEvents(SecurityLogDownloadJobCompleted::class);
+            Event::fake([SecurityLogDownloadJobCompleted::class]);
             $job = new DownloadSecurityLog($this->user, DownloadSecurityLog::FORMAT_CSV);
             $filename = (new ReflectionMethod($job, 'createTemporaryFilename'))->invoke($job);
             $expires = (new ReflectionMethod($job, 'getExpires'))->invoke($job);
@@ -126,6 +128,7 @@ class DownloadSecurityLogTest extends TestCase
             $this->assertNotEmpty($url);
             $data = file_get_contents($url);
             $this->assertNotEmpty($data);
+            Event::assertDispatched(SecurityLogDownloadJobCompleted::class);
         }
     }
 }
