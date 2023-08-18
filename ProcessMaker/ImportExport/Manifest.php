@@ -163,6 +163,10 @@ class Manifest
             case 'copy':
                 // Make new copy of the model with a new UUID
                 unset($attrs['uuid']);
+                // parameter for templates
+                if (array_key_exists('editing_process_uuid', $attrs)) {
+                    unset($attrs['editing_process_uuid']);
+                }
                 $model = new $class();
                 $model->fill($attrs);
                 break;
