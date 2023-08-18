@@ -99,6 +99,7 @@ class Template extends ProcessMakerModel
         return [
             'name' => ['required', $unique, 'alpha_spaces', 'max:255'],
             'description' => 'required',
+            'version' => ['required', 'regex:/^[0-9.]+$/'],
         ];
     }
 
