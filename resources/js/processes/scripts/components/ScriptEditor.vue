@@ -1,7 +1,7 @@
 <template>
   <b-container class="h-100">
     <b-card no-body class="h-100" >
-      <top-menu ref="menuScript" :options="optionsMenu" />
+      <top-menu v-if="!showDiffEditor" ref="menuScript" :options="optionsMenu" />
 
       <b-card-body ref="editorContainer" class="overflow-hidden p-4" >
         <b-row class="h-100">
@@ -87,7 +87,7 @@
           <!-- Right panel -->
           <b-col v-if="!loading" cols="3" class="h-100 pl-5">
             <b-card no-body class="h-100">
-              <b-card-header class="light-gray-background">
+              <b-card-header v-if="!showDiffEditor" class="light-gray-background">
                 <b-row class="d-flex align-items-center">
                   <b-col>{{ $t('Debugger') }}</b-col>
 
@@ -116,8 +116,9 @@
                     :language="language"
                     :selection="selection"
                     :package-ai="packageAi"
+                    :showPreview="showDiffEditor"
                   />
-                  <b-list-group-item class="script-toggle border-0 mb-0">
+                  <b-list-group-item v-if="!showDiffEditor" class="script-toggle border-0 mb-0">
                     <b-row v-b-toggle.configuration>
                       <b-col>
                         <i class="fas fa-cog" />
@@ -132,7 +133,7 @@
                       </b-col>
                     </b-row>
                   </b-list-group-item>
-                  <b-list-group-item class="p-0 border-left-0 border-right-0 border-top-0 mb-0">
+                  <b-list-group-item v-if="!showDiffEditor" class="p-0 border-left-0 border-right-0 border-top-0 mb-0">
                     <b-collapse id="configuration">
                       <monaco-editor
                         v-model="preview.config"
@@ -143,7 +144,7 @@
                     </b-collapse>
                   </b-list-group-item>
 
-                  <b-list-group-item class="script-toggle border-0 mb-0">
+                  <b-list-group-item v-if="!showDiffEditor" class="script-toggle border-0 mb-0">
                     <b-row v-b-toggle.input>
                       <b-col>
                         <i class="fas fa-sign-in-alt" />
@@ -158,7 +159,7 @@
                       </b-col>
                     </b-row>
                   </b-list-group-item>
-                  <b-list-group-item class="p-0 border-left-0 border-right-0 border-top-0 mb-0">
+                  <b-list-group-item v-if="!showDiffEditor" class="p-0 border-left-0 border-right-0 border-top-0 mb-0">
                     <b-collapse id="input">
                       <monaco-editor
                         v-model="preview.data"
@@ -169,7 +170,7 @@
                     </b-collapse>
                   </b-list-group-item>
 
-                  <b-list-group-item class="script-toggle border-0 mb-0">
+                  <b-list-group-item  v-if="!showDiffEditor" class="script-toggle border-0 mb-0">
                     <b-row
                       :class="outputOpen ? null : 'collapsed'"
                       :aria-expanded="outputOpen ? 'true' : 'false'"
@@ -189,7 +190,7 @@
                       </b-col>
                     </b-row>
                   </b-list-group-item>
-                  <b-list-group-item class="p-0 border-left-0 border-right-0 border-top-0 mb-0">
+                  <b-list-group-item v-if="!showDiffEditor" class="p-0 border-left-0 border-right-0 border-top-0 mb-0">
                     <b-collapse
                       id="output"
                       class="bg-dark"

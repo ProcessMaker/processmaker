@@ -7,11 +7,9 @@
           {{ $t("Cornea AI Assistant") }}
         </b-col>
         <b-col
-          v-else
           data-test="arrow-generate-back"
-          @click="showPromptArea = false"
         >
-          <i class="mr-2 fa fa-arrow-left" />
+          <i v-if="!showPreview" class="mr-2 fa fa-arrow-left" @click="showPromptArea = false" />
           {{ $t("Generate Script From Text") }}
         </b-col>
         <b-col v-if="!showPromptArea" class="p-0 text-right" cols="3">
@@ -21,7 +19,7 @@
             {{ $t("NEW") }}
           </span>
         </b-col>
-        <b-col align-self="end" cols="1" class="mr-2">
+        <b-col v-if="!showPreview" align-self="end" cols="1" class="mr-2">
           <i class="fas fa-chevron-down accordion-icon" />
         </b-col>
       </b-row>
@@ -99,6 +97,7 @@
         </div>
         <generate-script-text-prompt
           v-else
+          :showPreview="showPreview"
           :prompt-session-id="promptSessionId"
           @generate-script="onGenerateScript"
         />
@@ -114,7 +113,7 @@ export default {
   components: {
     GenerateScriptTextPrompt,
   },
-  props: ["user", "sourceCode", "language", "selection", "packageAi"],
+  props: ["user", "sourceCode", "language", "selection", "packageAi", "showPreview"],
   data() {
     return {
       showPromptArea: false,
