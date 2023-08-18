@@ -59,8 +59,17 @@
           key: "{{config('broadcasting.connections.pusher.key')}}",
           cluster: "{{config('broadcasting.connections.pusher.options.cluster')}}",
           forceTLS: {{config('broadcasting.connections.pusher.options.use_tls') ? 'true' : 'false'}},
-          debug: {{config('broadcasting.connections.pusher.options.debug') ? 'true' : 'false'}}
+          debug: {{config('broadcasting.connections.pusher.options.debug') ? 'true' : 'false'}},
+          enabledTransports: ['ws', 'wss'],
+          disableStats: true,
         };
+        
+        @if(config('broadcasting.connections.pusher.options.host'))
+          window.Processmaker.broadcasting.wsHost = "{{config('broadcasting.connections.pusher.options.host')}}";
+          window.Processmaker.broadcasting.wsPort = "{{config('broadcasting.connections.pusher.options.port')}}";
+          window.Processmaker.broadcasting.wssPort = "{{config('broadcasting.connections.pusher.options.port')}}";
+        @endif
+
       @endif
     @endif
   </script>

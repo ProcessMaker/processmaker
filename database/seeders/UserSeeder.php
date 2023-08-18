@@ -34,7 +34,7 @@ class UserSeeder extends Seeder
             'is_administrator' => true,
         ], [
             'username' => self::$INSTALLER_ADMIN_USERNAME,
-            'password' => Hash::make(self::$INSTALLER_ADMIN_PASSWORD),
+            'password' => Hash::make(env('INSTALL_ADMIN_PASSWORD', self::$INSTALLER_ADMIN_PASSWORD)),
             'email' => self::$INSTALLER_ADMIN_EMAIL,
             'firstname' => self::$INSTALLER_ADMIN_FIRSTNAME,
             'lastname' => self::$INSTALLER_ADMIN_LASTNAME,

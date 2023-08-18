@@ -233,6 +233,10 @@ if (openAiEnabled) {
   window.ProcessMaker.openAi = {
     enabled: openAiEnabled.content,
   };
+} else {
+  window.ProcessMaker.openAi = {
+    enabled: false,
+  };
 }
 
 const userID = document.head.querySelector("meta[name=\"user-id\"]");
