@@ -208,11 +208,18 @@ export default {
     onGenerateScript(prompt) {
       this.prompt = prompt;
       this.$emit("prompt-changed", prompt);
-      console.log("after emit");
-      this.generateScript();
+      this.getSelection();
+
+      ProcessMaker.confirmModal(
+        this.$t("Notice"),
+        this.$t("The generated text will be inserted at the last position of your cursor on the current script"),
+        "",
+        () => {
+          this.generateScript();
+        },
+      );
     },
     async generateScript() {
-      this.getSelection();
       this.getNonce();
       this.$emit("set-diff", true);
       this.$emit("set-action", "generate");

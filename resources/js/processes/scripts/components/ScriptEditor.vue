@@ -519,6 +519,22 @@ export default {
       if (editor) {
         const selection = editor.getSelection();
         this.selection = selection;
+
+        const contextCurrentLine = editor.getModel().getLineContent(selection.startLineNumber);
+        let contextPreviousLine;
+        let contextNextLine;
+
+        if (selection.startLineNumber === 1) {
+          contextPreviousLine = null;
+        } else {
+          contextPreviousLine = editor.getModel().getLineContent(selection.startLineNumber - 1);
+        }
+
+        if (editor.getModel().getLineCount() === selection.startLineNumber) {
+          contextNextLine = null;
+        } else {
+          contextNextLine = editor.getModel().getLineContent(selection.startLineNumber + 1);
+        }
       }
     },
     onRequestStarted(progress, action) {
@@ -730,6 +746,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.custom-alert {
+  z-index: 999;
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 800px;
+  margin: auto;
+  top: 3px;
+}
 .container {
   max-width: 100%;
   padding: 0 0 0 0;
@@ -795,7 +820,7 @@ export default {
 }
 .editors-container {
   height: calc(100% - 1rem);
-  text-align: justify;
+  // text-align: justify;
 }
 .explain-editor-container {
   white-space: pre-line;
@@ -836,4 +861,31 @@ export default {
 }
 .explanation-content {
 }
+
+.blink {
+  animation: blink-animation .8s infinite;
+}
+@keyframes blink-animation {
+  0% { opacity: 0 }
+  100% { opacity: 1 }
+}
 </style>
+
+<!-- 
+<pre class="d-flex text-muted align-items-center" style="
+    background: #eeeeee8f;
+    padding: 4px;
+"><div class="" style="
+    width: 38px;
+    /* background: #338bdb3d; */
+    text-align: center;
+    border-right: 1px solid;
+    margin-right: 7px;
+    color: #1076d2;
+    font-weight: 600;
+    font-size: 115%;
+">9</div>...by their ID $api-&gt;users()<span class="blink text-primary" style="
+    font-size: 130%;
+">|</span>-&gt;getUserById(1)['...
+</pre>
+ -->
