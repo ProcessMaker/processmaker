@@ -208,24 +208,33 @@ export default {
     onGenerateScript(prompt) {
       this.prompt = prompt;
       this.$emit("prompt-changed", prompt);
-      this.getSelection();
-
-      ProcessMaker.confirmModal(
-        this.$t("Notice"),
-        this.$t("The generated text will be inserted at the last position of your cursor on the current script"),
-        "",
-        () => {
-          this.generateScript();
-        },
-      );
     },
     async generateScript() {
       this.getNonce();
       this.$emit("set-diff", true);
       this.$emit("set-action", "generate");
+      this.getSelection();
+
+      // verificar si hay seleccion o solo el puntero en una posicion
+      // Si no hay seleccion entra al if
+      if (this.selection) {
+        ProcessMaker.confirmModal(
+          this.$t("Notice"),
+          this.$t("The generated text will be inserted at the last position of your cursor on the current script"),
+          "",
+          () => {
+            this.callGenerateScript();
+          },
+        );
+      } else {
+        // Si hay seleccion entra aca
+        this.callGenerateScript();
+      }
 
       await this.$nextTick();
+    },
 
+    callGenerateScript() {
       const params = {
         promptSessionId: this.promptSessionId,
         sourceCode: this.sourceCode,
