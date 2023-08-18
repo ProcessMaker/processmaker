@@ -142,6 +142,10 @@ class Manifest
             $mode = 'discard';
         }
 
+        if ($exporterClass::$forceUpdate) {
+            $mode = 'update';
+        }
+
         $attrs = $exporterClass::prepareAttributes($attrs);
 
         if (!$model) {
