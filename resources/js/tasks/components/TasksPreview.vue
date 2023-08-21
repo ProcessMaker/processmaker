@@ -1,15 +1,18 @@
 <template>
   <div>
-    <b-sidebar
-      id="tasks-preview"
-      ref="tasks-preview"
-      v-model="showPreview"
-      :right="showRight"
-      shadow
-      no-header
+    <div
+    id="tasks-preview"
+    ref="tasks-preview"
+    v-if="showPreview"
     >
-      <template #default="{ hide }">
-        <div class="p-3">
+    <div 
+      id="resizer"
+      ref="resizer"
+    >
+      <i class='fas fa-grip-lines-vertical text-secondary'></i>
+    </div>
+    <template>
+        <div class="ml-2 p-3">
           <div class="d-flex w-100 h-100 mb-3">
             <div class="my-1">
               <a class="lead text-secondary font-weight-bold">
@@ -47,7 +50,6 @@
               <b-button
                 class="btn-light text-secondary"
                 :aria-label="$t('Close')"
-                @click="hide"
               >
                 <i class="fas fa-times" />
               </b-button>
@@ -71,7 +73,7 @@
           </div>
         </div>
       </template>
-    </b-sidebar>
+    </div>
   </div>
 </template>
 
@@ -103,6 +105,17 @@ export default {
       this.existPrev = false;
       this.existNext = false;
       this.defineNextPrevTask();
+      
+      this.$ref['resizer'].addEventListener("mousedown", (event) => {
+        document.addEventListener("mousemove", this.resize, false);
+        document.addEventListener("mouseup", () => {
+          document.removeEventListener("mousemove", this.resize, false);
+        }, false);
+      });
+    },
+    resize(e) {
+      const size = `${e.x}px`;
+      this.$ref['tasks-preview'].style.flexBasis = size;
     },
     /**
      * Defined Previuos and Next task
@@ -159,8 +172,30 @@ export default {
 
 <style>
 #tasks-preview {
-  top: 11%;
+  top: 0;
+  right: 0;
   width: 50%;
+  height: 100%;
+  position: absolute;
+  background: white;
+  min-width: 40%;
+  box-shadow: -2px 0px 5px grey;
+}
+#resizer {
+  float: left;
+  flex-basis: 18px;
+  z-index: 2;
+  height: 100%;
+  width: 10px;
+  position: relative;
+  cursor: col-resize;
+  background: lightgrey;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 .loadingFrame {
   opacity: 0.6;
