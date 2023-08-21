@@ -1,19 +1,21 @@
 <template>
-  <button
-    :class="{ 'disabled': isLoading }"
+  <a
+    href="#"
+    role="button"
+    :class="{ 'btn-disabled': isLoading }"
     :aria-disabled="isLoading"
     :disabled="isLoading"
     @click="convertSVGtoPDF()"
   >
-    <div
+    <span
       v-if="isLoading"
       class="spinner-border spinner-border-sm"
       role="status"
     />
-    <div v-else>
+    <span v-else>
       {{ $t("Download as PDF") }}
-    </div>
-  </button>
+    </span>
+  </a>
 </template>
 <script>
 import { jsPDF } from "jspdf";
