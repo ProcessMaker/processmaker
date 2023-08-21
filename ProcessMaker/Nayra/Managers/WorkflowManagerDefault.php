@@ -129,7 +129,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
         //Validate data
         $this->validateData($data, $definitions, $event);
         //Schedule BPMN Action
-        return StartEvent::dispatchSync($definitions, $event, $data);
+        return (new StartEvent($definitions, $event, $data))->handle();
     }
 
     /**
@@ -149,7 +149,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
         //Validate BPMN rules
         //Log BPMN actions
         //Schedule BPMN Action
-        return CallProcess::dispatchSync($definitions, $process, $data);
+        return (new CallProcess($definitions, $process, $data))->handle();
     }
 
     /**

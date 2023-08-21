@@ -52,9 +52,9 @@ class TriggerSignalInRequestTest extends TestCase
 
     public function testBoundaryLoop()
     {
-        $import = ImportProcess::dispatchSync(
+        $import = (new ImportProcess(
             file_get_contents(base_path('tests/Fixtures/boundary_loop.json'))
-        );
+        ))->handle();
         $process = $import->process;
         $event = $process->getDefinitions()->getEvent('node_1');
         Passport::actingAs($this->user);

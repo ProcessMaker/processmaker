@@ -751,7 +751,7 @@ class ExportImportTest extends TestCase
         $content = file_get_contents(
             __DIR__ . '/../../Fixtures/nested_screen_process.json'
         );
-        $result = ImportProcess::dispatchSync($content);
+        $result = (new ImportProcess($content))->handle();
         $processId = $result->process->id;
         $this->apiCall('POST', "/processes/{$processId}/export");
     }

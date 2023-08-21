@@ -24,7 +24,7 @@ class TaskTest extends TestCase
         $content = file_get_contents(
             __DIR__ . '/../Fixtures/nested_screen_process.json'
         );
-        $import = ImportProcess::dispatchSync($content);
+        $import = (new ImportProcess($content))->handle();
 
         $parent = Screen::where('title', 'parent')->orderBy('id', 'desc')->firstOrFail();
         $child = Screen::where('title', 'child')->orderBy('id', 'desc')->firstOrFail();
