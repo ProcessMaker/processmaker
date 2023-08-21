@@ -19,9 +19,6 @@ export default {
       showTree: this.value,
     };
   },
-  mounted() {
-    console.log(this.showTree);
-  },
   methods: {
     emitSwitchValue(event) {
       this.$emit("input", event.target.checked);
