@@ -93,6 +93,14 @@ export default {
       loading: true,
     };
   },
+  updated() {
+    document.getElementById("resizer").addEventListener("mousedown", (event) => {
+        document.addEventListener("mousemove", this.resize, false);
+        document.addEventListener("mouseup", () => {
+          document.removeEventListener("mousemove", this.resize, false);
+        }, false);
+      });
+  },
   methods: {
     /**
      * Show the sidebar
@@ -105,17 +113,10 @@ export default {
       this.existPrev = false;
       this.existNext = false;
       this.defineNextPrevTask();
-      
-      this.$ref['resizer'].addEventListener("mousedown", (event) => {
-        document.addEventListener("mousemove", this.resize, false);
-        document.addEventListener("mouseup", () => {
-          document.removeEventListener("mousemove", this.resize, false);
-        }, false);
-      });
     },
     resize(e) {
       const size = `${e.x}px`;
-      this.$ref['tasks-preview'].style.flexBasis = size;
+      document.getElementById("tasks-preview").style.flexBasis = size;
     },
     /**
      * Defined Previuos and Next task
