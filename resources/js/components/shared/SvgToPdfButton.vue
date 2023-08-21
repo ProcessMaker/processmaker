@@ -13,7 +13,7 @@
       role="status"
     />
     <span v-else>
-      {{ $t("Download as PDF") }}
+      {{ $t(buttonLabel) }}
     </span>
   </a>
 </template>
@@ -31,6 +31,10 @@ export default {
     fileName: {
       type: String,
       default: "document",
+    },
+    buttonLabel: {
+      type: String,
+      default: "Download as PDF",
     },
   },
   data() {
