@@ -1,6 +1,11 @@
 <template>
   <div>
-    <iframe id="jsoncrackEmbed" ref="jsonCrackEmbed" src="/json-browser/widget.html"/>
+    <iframe
+      id="jsoncrackEmbed"
+      ref="jsonCrackEmbed"
+      src="/json-browser/widget.html"
+      :style="{ height: iframeHeight }"
+    />
   </div>
 </template>
 
@@ -9,6 +14,10 @@ export default {
   props: {
     value: {
       type: String,
+    },
+    iframeHeight: {
+      type: String,
+      default: "700px",
     },
   },
   data() {
@@ -26,16 +35,13 @@ export default {
   },
   mounted() {
     const jsonCrackEmbed = this.$refs.jsonCrackEmbed;
-
     const json = this.jsonData;
     const options = {
       theme: "light",
       direction: "RIGHT",
     };
-
     this.handleMessage = () => {
       const iframeOrigin = jsonCrackEmbed.src;
-
       jsonCrackEmbed.contentWindow.postMessage(
         {
           json,
@@ -44,7 +50,6 @@ export default {
         iframeOrigin,
       );
     };
-
     window?.addEventListener("message", this.handleMessage);
   },
   beforeDestroy() {
@@ -63,7 +68,6 @@ export default {
   flex: 1;
   order: 2;
   width: 100%;
-  height: 700px;
   border: none;
 }
 </style>

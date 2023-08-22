@@ -9,6 +9,8 @@ import RequestErrors from "./components/RequestErrors.vue";
 import Timeline from "../components/Timeline.vue";
 import TimelineItem from "../components/TimelineItem.vue";
 import RequestScreens from "./components/RequestScreens.vue";
+import DataTreeToggle from "../components/common/data-tree-toggle.vue";
+import TreeView from "../components/TreeView.vue";
 
 Vue.component("DataSummary", DataSummary);
 Vue.component("RequestDetail", RequestDetail);
@@ -18,5 +20,7 @@ Vue.component("MonacoEditor", MonacoEditor);
 Vue.component("Timeline", Timeline);
 Vue.component("TimelineItem", TimelineItem);
 Vue.component("RequestScreens", RequestScreens);
+Vue.component("TreeView", TreeView);
+Vue.component("DataTreeToggle", DataTreeToggle);
 Vue.use("vue-form-renderer", VueFormRenderer);
 window.debounce = debounce;
