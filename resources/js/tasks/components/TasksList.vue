@@ -135,7 +135,7 @@ import AvatarImage from "../../components/AvatarImage";
 import isPMQL from "../../modules/isPMQL";
 import moment from "moment";
 import { createUniqIdsMixin } from "vue-uniq-ids";
-import TasksPreview from './TasksPreview.vue';
+import TasksPreview from "./TasksPreview.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
