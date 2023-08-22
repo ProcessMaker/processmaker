@@ -14,7 +14,7 @@
           <div class="d-flex w-100 h-100 mb-3">
             <div class="my-1">
               <a class="lead text-secondary font-weight-bold">
-                {{ task.element_name }}
+                {{ taskTitle }}
               </a>
             </div>
             <div class="ml-auto mr-0 text-right">
@@ -54,7 +54,10 @@
               </b-button>
             </div>
           </div>
-          <div class="frame-container">
+          <div
+            v-if="!stopFrame"
+            class="frame-container"
+          >
             <b-embed
               v-if="showFrame1"
               id="tasksFrame1"
@@ -72,6 +75,9 @@
               @load="frameLoaded()"
             />
           </div>
+          <div v-else>
+            <task-loading />
+          </div>
         </div>
       </template>
     </b-sidebar>
@@ -79,7 +85,10 @@
 </template>
 
 <script>
+import TaskLoading from "./TaskLoading.vue";
+
 export default {
+  components: { TaskLoading },
   data() {
     return {
       showPreview: false,
@@ -88,15 +97,17 @@ export default {
       linkTasks2: "",
       task: {},
       data: [],
+      taskTitle: "",
       prevTask: {},
       nextTask: {},
       existPrev: false,
       existNext: false,
       loading: true,
-      isLoading: false,
       showFrame: 1,
       showFrame1: false,
       showFrame2: false,
+      isLoading: "",
+      stopFrame: false,
     };
   },
   methods: {
@@ -104,6 +115,8 @@ export default {
      * Show the sidebar
      */
     showSideBar(info, data, firstTime = false) {
+      this.stopFrame = false;
+      this.taskTitle = info.element_name;
       this.showFrame1 = firstTime ? true : this.showFrame1;
       this.task = info;
       if (this.showFrame === 1) {
@@ -154,6 +167,13 @@ export default {
      * Go to previous or next task
      */
     goPrevNext(action) {
+      // Init counter of 5 seconds
+      this.isLoading = setTimeout(() => {
+        this.stopFrame = true;
+        this.taskTitle = this.$t("Task Lorem");
+      }, 5000);
+
+      this.stopFrame = false;
       this.linkTasks = "";
       this.loading = true;
       if (action === "Next") {
@@ -168,15 +188,16 @@ export default {
      */
     frameLoaded() {
       this.loading = false;
+      clearTimeout(this.isLoading);
       if (this.showFrame === 1) {
         this.showFrame1 = true;
         this.showFrame2 = false;
         this.showFrame = 2;
-      } else {
-        this.showFrame2 = true;
-        this.showFrame1 = false;
-        this.showFrame = 1;
+        return;
       }
+      this.showFrame2 = true;
+      this.showFrame1 = false;
+      this.showFrame = 1;
     },
   },
 };
