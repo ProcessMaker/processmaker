@@ -31,7 +31,7 @@
   export default {
     components: { Modal, ProjectSelect, Required },
     mixins: [FormErrorsMixin],
-    props: ["assetName", "currentUserId"],
+    props: ["assetName", "currentUserId", 'assetType', 'assetId'],
     data() {
       return {
         errors: {},
@@ -71,7 +71,7 @@
         addToProject() {
           let formData = new FormData();
           formData.append("asset_type", this.assetType);
-          formData.append("asset_id", this.asset_id);
+          formData.append("asset_id", this.assetId);
           formData.append("projects", this.projects);
           this.customModalButtons[1].disabled = true;
           ProcessMaker.apiClient.post("/projects/assets/assign", formData)
