@@ -123,7 +123,7 @@ export default {
   components: {
     GenerateScriptTextPrompt,
   },
-  props: ["user", "sourceCode", "language", "selection", "packageAi", "defaultSelected", "defaultPrompt"],
+  props: ["user", "sourceCode", "language", "selection", "packageAi", "defaultSelected", "defaultPrompt", "lineContext"],
   data() {
     return {
       showPromptArea: false,
@@ -208,6 +208,7 @@ export default {
     onGenerateScript(prompt) {
       this.prompt = prompt;
       this.$emit("prompt-changed", prompt);
+      this.generateScript();
     },
     async generateScript() {
       this.getNonce();
@@ -215,23 +216,43 @@ export default {
       this.$emit("set-action", "generate");
       this.getSelection();
 
-      // verificar si hay seleccion o solo el puntero en una posicion
-      // Si no hay seleccion entra al if
-      if (this.selection) {
+      await this.$nextTick();
+
+      const startColumn = this.selection.startColumn;
+      const endColumn = this.selection.endColumn;
+      const startLineNumber = this.selection.startLineNumber;
+      const endLineNumber = this.selection.endLineNumber;
+
+      if (startLineNumber === endLineNumber && startColumn === endColumn) {
         ProcessMaker.confirmModal(
           this.$t("Notice"),
-          this.$t("The generated text will be inserted at the last position of your cursor on the current script"),
+          this.$t("The generated text will be inserted at the last position of your cursor on the current script") +
+          `<pre class="d-flex pt-4 mb-0 text-muted flex-column code-preview">
+            ${this.lineContext.previousLine === null ? '' : '...'}
+            <div class="d-flex">
+              <div class="line-number-preview">${(startLineNumber - 1) > 0 ? startLineNumber - 1 : ''}</div>
+              <div>${this.lineContext.previousLine !== null ? this.lineContext.previousLine : '' }</div>
+            </div>
+            <div class="d-flex">
+              <div class="line-number-preview">${startLineNumber}</div>
+              <div>${this.lineContext.currentLine.substring(0, startColumn - 1)}</div>
+              <span class="blink text-primary cursor-preview">|</span>
+              <div>${this.lineContext.currentLine.substring(startColumn - 1)}</div>
+            </div>
+            <div class="d-flex">
+              <div class="line-number-preview">${this.lineContext.nextLine !== null ? startLineNumber + 1 : ''}</div>
+              <div>${this.lineContext.nextLine ? this.lineContext.nextLine : ''}</div>
+            </div>
+            ${this.lineContext.nextLine === null ? '' : '...'}
+          </pre>`,
           "",
           () => {
             this.callGenerateScript();
           },
         );
       } else {
-        // Si hay seleccion entra aca
         this.callGenerateScript();
       }
-
-      await this.$nextTick();
     },
 
     callGenerateScript() {
@@ -366,7 +387,7 @@ export default {
           window.ProcessMaker.alert(errorMsg, "danger");
         });
     }
-  },
+  }
 };
 </script>
 <style>
@@ -374,6 +395,25 @@ export default {
   cursor: pointer;
   user-select: none;
   background: #f7f7f7;
+}
+
+.code-preview {
+  background: #eeeeee8f;
+  padding: 4px;
+}
+
+.line-number-preview {
+  min-width: 38px;
+  text-align: center;
+  border-right: 1px solid;
+  margin-right: 7px;
+  color: #1076d2;
+  font-weight: 600;
+  font-size: 115%;
+}
+
+.cursor-preview {
+  font-size: 130%;
 }
 
 .accordion-icon {

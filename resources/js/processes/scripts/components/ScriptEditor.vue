@@ -40,7 +40,6 @@
                   <monaco-editor
                     ref="editor"
                     v-show="showEditor"
-                    class=""
                     v-model="code"
                     :class="[{hidden: resizing}, showExplainEditor ? 'w-50' : 'w-100']"
                     :options="monacoOptions"
@@ -114,6 +113,7 @@
                     :selection="selection"
                     :package-ai="packageAi"
                     :default-prompt="prompt"
+                    :lineContext="lineContext"
                     @get-selection="onGetSelection"
                     @request-started="onRequestStarted"
                     @current-nonce-changed="onCurrentNonceChanged"
@@ -237,6 +237,7 @@
                     :selection="selection"
                     :package-ai="packageAi"
                     :default-selected="'generate'"
+                    :lineContext="lineContext"
                     @get-selection="onGetSelection"
                     @request-started="onRequestStarted"
                     @current-nonce-changed="onCurrentNonceChanged"
@@ -357,6 +358,7 @@ export default {
       action: "",
       loading: false,
       selection: null,
+      lineContext: null,
       isDiffEditor: false,
       currentNonce: null,
       progress: {
@@ -465,6 +467,7 @@ export default {
       this.outputResponse(response);
     });
     this.loadBoilerplateTemplate();
+    this.onGetSelection();
 
     // Display version indicator.
     this.setVersionIndicator();
@@ -515,26 +518,26 @@ export default {
       this.prompt = prompt;
     },
     onGetSelection() {
-      const editor = this.$refs.editor.getMonaco();
+      const editor = this.showDiffEditor ? this.$refs.diffEditor.getMonaco() : this.$refs.editor.getMonaco();
       if (editor) {
-        const selection = editor.getSelection();
+        let context = {};
+        const selection = editor.getSelection() ;
         this.selection = selection;
-
-        const contextCurrentLine = editor.getModel().getLineContent(selection.startLineNumber);
-        let contextPreviousLine;
-        let contextNextLine;
-
-        if (selection.startLineNumber === 1) {
-          contextPreviousLine = null;
+        
+        context.currentLine = editor.getModel().getLineContent(selection.startLineNumber);
+        if (this.selection.startLineNumber === 1) {
+          context.previousLine = null;
         } else {
-          contextPreviousLine = editor.getModel().getLineContent(selection.startLineNumber - 1);
+          context.previousLine = editor.getModel().getLineContent(selection.startLineNumber - 1);
         }
 
         if (editor.getModel().getLineCount() === selection.startLineNumber) {
-          contextNextLine = null;
+          context.nextLine = null;
         } else {
-          contextNextLine = editor.getModel().getLineContent(selection.startLineNumber + 1);
+          context.nextLine = editor.getModel().getLineContent(selection.startLineNumber + 1);
         }
+
+        this.lineContext = context;
       }
     },
     onRequestStarted(progress, action) {
@@ -870,22 +873,3 @@ export default {
   100% { opacity: 1 }
 }
 </style>
-
-<!-- 
-<pre class="d-flex text-muted align-items-center" style="
-    background: #eeeeee8f;
-    padding: 4px;
-"><div class="" style="
-    width: 38px;
-    /* background: #338bdb3d; */
-    text-align: center;
-    border-right: 1px solid;
-    margin-right: 7px;
-    color: #1076d2;
-    font-weight: 600;
-    font-size: 115%;
-">9</div>...by their ID $api-&gt;users()<span class="blink text-primary" style="
-    font-size: 130%;
-">|</span>-&gt;getUserById(1)['...
-</pre>
- -->
