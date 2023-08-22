@@ -2,20 +2,22 @@
   <div>
     <splitpanes
       id="splitpane"
+      ref="inspectorSplitPanes"
       class="default-theme" 
+      :dbl-click-splitter="false"
       v-if="showPreview"
     >
       <pane style="opacity: 0;">
         <div></div>
       </pane>
-      <pane min-size="40" max-size="99">
+      <pane :min-size="paneMinSize" max-size="99">
         <div
           id="tasks-preview"
           ref="tasks-preview"
-          class="h-100"
+          class="h-100 p-3"
         >
           <template>
-            <div class="ml-2 p-3">
+            <div>
               <div class="d-flex w-100 h-100 mb-3">
                 <div class="my-1">
                   <a class="lead text-secondary font-weight-bold">
@@ -101,7 +103,15 @@ export default {
       existPrev: false,
       existNext: false,
       loading: true,
+      paneMinSize: 0,
     };
+  },
+  updated() {
+    const resize_ob = new ResizeObserver((entries) => {
+      const width = entries[0].contentRect.width;
+      this.setPaneMinSize(width, 480);
+    });
+    resize_ob.observe(this.$refs.inspectorSplitPanes.container);
   },
   methods: {
     /**
@@ -116,8 +126,11 @@ export default {
       this.existNext = false;
       this.defineNextPrevTask();
     },
-    onClose(){
+    onClose() {
       this.showPreview = false;
+    },
+    setPaneMinSize(splitpanesWidth, minPixelWidth) {
+      this.paneMinSize = (minPixelWidth * 100) / splitpanesWidth;
     },
     /**
      * Defined Previuos and Next task
